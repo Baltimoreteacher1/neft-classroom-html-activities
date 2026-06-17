@@ -1,12 +1,13 @@
 (function () {
   // Global Subject State
   var subject = document.body.dataset.subject || "hub";
-  var storageKey = "ewl-aviad-" + subject + "-v2";
+  var storageKey = "ewl-aviad-" + subject + "-v3";
   
   var state = {
     done: {},
     notes: {},
-    interactive: {} // Stores responses for matching/sorting/solving
+    interactive: {}, // Stores responses for matching/sorting/solving
+    highScores: {}   // Stores highest score achieved in embedded subject games
   };
 
   try {
@@ -18,9 +19,9 @@
     console.error("Failed to load local state:", error);
   }
 
-  // Web Audio Chime Synthesizer
+  // Web Audio Synth for Arcade Sound Effects
   var audioCtx = null;
-  function playRewardSound(isFail) {
+  function playArcadeSound(type) {
     try {
       if (!audioCtx) {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -30,37 +31,79 @@
       }
       
       var now = audioCtx.currentTime;
-      if (isFail) {
-        // Play a quick "not quite" buzz
+      
+      if (type === 'fail' || type === true) {
+        // Lower frequency descending buzz
         var osc = audioCtx.createOscillator();
         var gain = audioCtx.createGain();
         osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(120, now);
-        osc.frequency.exponentialRampToValueAtTime(80, now + 0.15);
-        gain.gain.setValueAtTime(0.12, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+        osc.frequency.setValueAtTime(140, now);
+        osc.frequency.linearRampToValueAtTime(70, now + 0.2);
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
         osc.connect(gain);
         gain.connect(audioCtx.destination);
         osc.start(now);
-        osc.stop(now + 0.16);
-      } else {
-        // Play a beautiful ascending chime
-        var notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        osc.stop(now + 0.22);
+      } else if (type === 'success' || type === false) {
+        // High ascending shiny arpeggio
+        var freqs = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        freqs.forEach(function (freq, i) {
+          var osc = audioCtx.createOscillator();
+          var gain = audioCtx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, now + i * 0.07);
+          gain.gain.setValueAtTime(0.08, now + i * 0.07);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.07 + 0.25);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now + i * 0.07);
+          osc.stop(now + i * 0.07 + 0.35);
+        });
+      } else if (type === 'game-start') {
+        // Upbeat arcade insert coin sound
+        var notes = [440, 554.37, 659.25, 880]; // A4, C#5, E5, A5
         notes.forEach(function (freq, i) {
           var osc = audioCtx.createOscillator();
           var gain = audioCtx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(freq, now + i * 0.08);
-          gain.gain.setValueAtTime(0.08, now + i * 0.08);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.3);
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(freq, now + i * 0.05);
+          gain.gain.setValueAtTime(0.05, now + i * 0.05);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.05 + 0.15);
           osc.connect(gain);
           gain.connect(audioCtx.destination);
-          osc.start(now + i * 0.08);
-          osc.stop(now + i * 0.08 + 0.35);
+          osc.start(now + i * 0.05);
+          osc.stop(now + i * 0.05 + 0.2);
         });
+      } else if (type === 'hit') {
+        // Damage sound
+        var osc = audioCtx.createOscillator();
+        var gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(300, now);
+        osc.frequency.exponentialRampToValueAtTime(100, now + 0.1);
+        gain.gain.setValueAtTime(0.1, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.12);
+      } else if (type === 'powerup') {
+        // Rising retro laser
+        var osc = audioCtx.createOscillator();
+        var gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(400, now);
+        osc.frequency.exponentialRampToValueAtTime(1600, now + 0.3);
+        gain.gain.setValueAtTime(0.06, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.32);
       }
     } catch (err) {
-      console.warn("Web Audio failed to initialize or play sound:", err);
+      console.warn("Web Audio chime synth failed:", err);
     }
   }
 
@@ -102,13 +145,14 @@
 
     // Save subject progress to global registry for main hub
     try {
-      var hubRegistry = JSON.parse(localStorage.getItem("ewl-aviad-registry-v2")) || {};
+      var hubRegistry = JSON.parse(localStorage.getItem("ewl-aviad-registry-v3")) || {};
       hubRegistry[subject] = {
         doneCount: doneCount,
         totalCount: cards.length,
-        pct: pct
+        pct: pct,
+        highScores: state.highScores || {}
       };
-      localStorage.setItem("ewl-aviad-registry-v2", JSON.stringify(hubRegistry));
+      localStorage.setItem("ewl-aviad-registry-v3", JSON.stringify(hubRegistry));
     } catch (e) {}
   }
 
@@ -151,12 +195,12 @@
         e.preventDefault();
         container.classList.remove("dragover");
         if (draggedItem) {
-          // If container has single-item limit, return previous item to drawer
+          // Check limits
           var maxItems = parseInt(container.dataset.max, 10) || Infinity;
           var currentItems = container.querySelectorAll(".drag-item");
           
           if (currentItems.length >= maxItems) {
-            // Find parent drawer to send back
+            // Return first item to its drawer
             var drawerId = currentItems[0].dataset.drawer;
             var drawer = document.getElementById(drawerId);
             if (drawer) {
@@ -168,7 +212,7 @@
           
           container.appendChild(draggedItem);
           
-          // Trigger validation check on parent activity
+          // Trigger validation
           var activity = container.closest(".activity");
           if (activity && typeof window.validateActivityState === "function") {
             window.validateActivityState(activity);
@@ -176,6 +220,21 @@
         }
       }
     });
+  }
+
+  // Global High Score Saver
+  function saveHighScore(gameId, score) {
+    if (!state.highScores) state.highScores = {};
+    var currentHigh = state.highScores[gameId] || 0;
+    if (score > currentHigh) {
+      state.highScores[gameId] = score;
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(state));
+      } catch (e) {}
+      updateProgress();
+      return true; // New High Score
+    }
+    return false;
   }
 
   // Click Event Listeners
@@ -201,7 +260,6 @@
         state.notes[id] = area.value;
       }
       
-      // Save current answers state if any page custom logic exists
       if (typeof window.getInteractiveState === "function") {
         state.interactive[id] = window.getInteractiveState(saveCard);
       }
@@ -211,7 +269,7 @@
       } catch (e) {}
 
       target.textContent = "Saved";
-      target.style.background = "#059669";
+      target.style.background = "var(--success)";
       target.style.color = "#ffffff";
       setTimeout(function () {
         target.textContent = "Save workspace";
@@ -226,19 +284,19 @@
       var id = card.dataset.id;
       var area = card.querySelector("textarea");
       
-      // Validate if we need interactive completion first
+      // Validate
       if (typeof window.checkInteractiveComplete === "function") {
         var validation = window.checkInteractiveComplete(card);
         if (!validation.success) {
-          playRewardSound(true);
-          alert(validation.message || "Complete the interactive elements first!");
+          playArcadeSound('fail');
+          alert(validation.message || "Complete the activity requirements first!");
           return;
         }
       } else {
-        // Default text evidence validation
+        // Default text validation
         var textVal = area ? area.value.trim() : "";
         if (!state.done[id] && textVal.length < 20) {
-          playRewardSound(true);
+          playArcadeSound('fail');
           if (area) {
             area.placeholder = "Please enter real evidence here first (at least 20 letters) so your parent or teacher can see your work!";
             area.focus();
@@ -247,19 +305,18 @@
         }
       }
 
-      // Toggle Done state
+      // Toggle Done
       state.done[id] = !state.done[id];
       if (area) {
         state.notes[id] = area.value;
       }
       
       if (state.done[id]) {
-        playRewardSound(false);
+        playArcadeSound('success');
       }
       
       updateProgress();
       
-      // Refresh UI representation
       target.textContent = state.done[id] ? "Mark Incomplete" : "Complete with evidence";
       target.classList.toggle("secondary", state.done[id]);
     }
@@ -274,14 +331,14 @@
       } catch (e) {}
     },
     updateProgress: updateProgress,
-    playAudio: playRewardSound
+    playAudio: playArcadeSound,
+    saveHighScore: saveHighScore
   };
 
   // Initialize
   updateProgress();
   initDragAndDrop();
   
-  // Update button labels initially based on saved status
   setTimeout(function() {
     document.querySelectorAll(".activity").forEach(function(card) {
       var id = card.dataset.id;
@@ -291,7 +348,6 @@
         completeBtn.classList.add("secondary");
       }
       
-      // Restore interactive data if page-specific restore function exists
       if (state.interactive[id] && typeof window.restoreInteractiveState === "function") {
         window.restoreInteractiveState(card, state.interactive[id]);
       }

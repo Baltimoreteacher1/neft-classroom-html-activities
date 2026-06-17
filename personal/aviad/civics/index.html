@@ -7,7 +7,6 @@
     <title>Aviad Civics - EduWonderLab</title>
     <link rel="stylesheet" href="/personal/aviad/shared.css" />
     <style>
-      /* Civics-specific styles */
       .civics-2col {
         display: grid;
         grid-template-columns: 1fr;
@@ -21,8 +20,8 @@
       
       .evidence-text-highlightable {
         padding: 12px;
-        background: #f8fafc;
-        border: 1px solid var(--border-color);
+        background: var(--bg-slate-900);
+        border: 1px solid var(--border-glow);
         border-radius: var(--radius-sm);
         line-height: 1.6;
         font-size: 0.95rem;
@@ -35,22 +34,21 @@
         font-weight: 500;
       }
       .clickable-ev.active {
-        background: rgba(21, 101, 192, 0.15);
+        background: rgba(37, 99, 235, 0.25);
         border-bottom-style: solid;
-        color: var(--accent);
+        color: var(--text-white);
       }
       
       .scale-container {
         display: flex;
         flex-direction: column;
         align-items: center;
-        background: #ffffff;
-        border: 1px solid var(--border-color);
+        background: var(--bg-slate-900);
+        border: 1px solid var(--border-glow);
         border-radius: var(--radius-sm);
         padding: 10px;
       }
       
-      /* Federalism bins */
       .fed-grid {
         display: grid;
         grid-template-columns: 1fr;
@@ -61,10 +59,9 @@
           grid-template-columns: repeat(3, 1fr);
         }
       }
-      
       .fed-bin {
-        background: #f1f5f9;
-        border: 1px solid var(--border-color);
+        background: var(--bg-slate-900);
+        border: 1px solid var(--border-glow);
         border-radius: var(--radius-sm);
         padding: 10px;
         display: flex;
@@ -74,19 +71,18 @@
       }
       .fed-title {
         font-family: var(--font-title);
-        font-weight: 800;
+        font-weight: 700;
         font-size: 0.8rem;
         text-transform: uppercase;
         color: var(--accent);
         text-align: center;
-        border-bottom: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-glow);
         padding-bottom: 4px;
       }
       
-      /* Electoral blocks */
       .electoral-map-container {
-        background: #ffffff;
-        border: 1px solid var(--border-color);
+        background: #0b0f19;
+        border: 1px solid var(--border-glow);
         border-radius: var(--radius-sm);
         padding: 10px;
         display: flex;
@@ -95,23 +91,23 @@
       }
       .region-block {
         cursor: pointer;
-        fill: #e2e8f0;
-        stroke: #94a3b8;
+        fill: var(--bg-slate-800);
+        stroke: var(--text-muted);
         stroke-width: 1.5;
         transition: fill 0.2s ease;
       }
       .region-block:hover {
-        fill: #cbd5e1;
+        fill: var(--bg-slate-700);
       }
       .region-block.selected {
         fill: var(--accent);
-        stroke: #ffd166;
+        stroke: #fbbf24;
       }
       .region-text {
         font-family: var(--font-title);
-        font-weight: 800;
+        font-weight: 700;
         font-size: 10px;
-        fill: #334155;
+        fill: var(--text-muted);
         pointer-events: none;
         text-anchor: middle;
       }
@@ -119,46 +115,44 @@
         fill: #ffffff;
       }
       
-      /* Gerrymander styles */
       .gm-cell {
         stroke: #ffffff;
         stroke-width: 2;
         transition: opacity 0.2s;
       }
-      .gm-cell.blue {
-        fill: #1565c0;
-      }
-      .gm-cell.red {
-        fill: #ef4444;
-      }
+      .gm-cell.blue { fill: #2563eb; }
+      .gm-cell.red { fill: #ef4444; }
       .gm-text {
         fill: #ffffff;
         font-family: var(--font-title);
-        font-weight: 800;
+        font-weight: 700;
         font-size: 12px;
         text-anchor: middle;
         pointer-events: none;
       }
       .gm-border {
         fill: none;
-        stroke: #ffd166;
+        stroke: #fbbf24;
         stroke-width: 4;
         stroke-linecap: round;
         stroke-linejoin: round;
       }
+      
+      .maze-wall { fill: #1e293b; }
+      .maze-path { fill: #0b0f19; }
     </style>
   </head>
-  <body data-subject="civics" style="--accent: #1565c0">
+  <body data-subject="civics" style="--accent: #2563eb">
     <main class="wrap">
       <header class="hero">
         <a class="back" href="/personal/aviad/">&larr; Aviad hub</a>
         <span class="badge">Civics 10</span>
         <h1>Civics &amp; Government</h1>
-        <p class="lead">Step into the halls of justice. Rule on constitutional lawsuits, balance public policies, construct federalism structures, and map presidential coalitions.</p>
+        <p class="lead">Rule on lawsuits, balance slider variables, map presidential electors, and steer legislation through the Bill Runner maze.</p>
         
         <div class="stats">
           <div class="stat"><b id="xp">0 XP</b><span>earned here</span></div>
-          <div class="stat"><b>8</b><span>developed activities</span></div>
+          <div class="stat"><b>12</b><span>developed activities</span></div>
           <div class="stat"><b id="done">0%</b><span>completion</span></div>
         </div>
       </header>
@@ -168,8 +162,9 @@
     <nav class="tabs">
       <div class="tabbar" role="tablist">
         <button class="tab" aria-selected="true" data-filter="all">All</button>
-        <button class="tab" data-filter="Workshop">Workshops</button>
+        <button class="tab" data-filter="Learn">Learn &amp; Read</button>
         <button class="tab" data-filter="Practice">Practice</button>
+        <button class="tab" data-filter="Game">Arcade Games</button>
         <button class="tab" data-filter="Project">Projects</button>
       </div>
     </nav>
@@ -177,68 +172,116 @@
     <!-- Main Activities Panel -->
     <main class="wrap panel active">
       <div class="section-head">
-        <h2>Readiness Challenges</h2>
+        <h2>Civics Readiness Challenges</h2>
         <p class="muted">Complete interactive tasks, verify your solutions, and save your work to log XP.</p>
       </div>
 
       <div class="grid">
         
-        <!-- Activity 1: Rights Case File (Workshop) -->
+        <!-- Activity 1: Bill Runner (Game) -->
+        <article class="activity" data-id="bill-runner" data-type="Game">
+          <div class="meta">
+            <span class="pill">Arcade Game</span>
+            <span class="pill">Objective: Reach Chest</span>
+          </div>
+          <h3>Bill Runner</h3>
+          <p>Steer your Bill (glowing circle) using the buttons. Avoid red Special Interest hazards to reach the gold President's desk.</p>
+          
+          <div class="activity-interactive-area">
+            <div class="game-container" style="background:#0b0f19;">
+              <svg viewBox="0 0 320 180" width="100%" height="100%" id="maze-svg">
+                <!-- Maze Walls -->
+                <rect x="0" y="0" width="320" height="10" class="maze-wall" />
+                <rect x="0" y="170" width="320" height="10" class="maze-wall" />
+                <rect x="0" y="0" width="10" height="180" class="maze-wall" />
+                <rect x="310" y="0" width="10" height="180" class="maze-wall" />
+                
+                <rect x="70" y="10" width="20" height="100" class="maze-wall" />
+                <rect x="150" y="70" width="20" height="100" class="maze-wall" />
+                <rect x="230" y="10" width="20" height="100" class="maze-wall" />
+                
+                <!-- Target President Desk -->
+                <circle cx="285" cy="145" r="10" fill="#fbbf24" stroke="#ffffff" stroke-width="2" />
+                <text x="285" y="148" font-size="8" font-family="sans-serif" font-weight="700" fill="#000000" text-anchor="middle">Desk</text>
+                
+                <!-- Player Bill -->
+                <circle id="player-bill" cx="30" cy="30" r="8" fill="#2563eb" stroke="#ffffff" stroke-width="1.5" />
+                
+                <!-- Hazards -->
+                <circle id="haz-1" cx="120" cy="50" r="6" fill="#ef4444" />
+                <circle id="haz-2" cx="200" cy="130" r="6" fill="#ef4444" />
+              </svg>
+              
+              <div class="game-overlay" id="game-overlay-br">
+                <h4>Bill Runner</h4>
+                <p>Pass the legislative checks to sign the bill.</p>
+                <button class="btn" id="game-btn-br">Start Run</button>
+              </div>
+            </div>
+            
+            <!-- Mobile steering buttons -->
+            <div style="display:flex; justify-content:center; gap:8px; margin-top:8px;">
+              <button class="btn secondary" id="br-up" style="min-height:36px; padding:0 12px;">▲ Up</button>
+              <button class="btn secondary" id="br-left" style="min-height:36px; padding:0 12px;">◀ Left</button>
+              <button class="btn secondary" id="br-right" style="min-height:36px; padding:0 12px;">▶ Right</button>
+              <button class="btn secondary" id="br-down" style="min-height:36px; padding:0 12px;">▼ Down</button>
+            </div>
+            
+            <div style="font-size:0.8rem; font-weight:700; color:var(--text-muted); text-align:center; margin-top:8px;">
+              Lives: <span id="br-lives-val" style="color:var(--danger);">3</span>
+            </div>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-bill-runner"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 2: Rights Case File (Workshop) -->
         <article class="activity" data-id="courtroom" data-type="Workshop">
           <div class="meta">
             <span class="pill">Workshop</span>
             <span class="pill">25 min</span>
           </div>
           <h3>Rights Case File</h3>
-          <p>A courtroom simulator. Read the lawsuit description below, click on two pieces of evidence, match the amendment, and issue a ruling.</p>
+          <p>A courtroom simulator. Highlight two evidence segments, select the amendment, and rule.</p>
           
           <div class="activity-interactive-area">
             <div class="evidence-text-highlightable" id="lawsuit-text">
-              Leo, a high school sophomore, was suspended by Pikesville High. The school claims Leo violated conduct rules when he <span class="clickable-ev" id="ev-1" data-desc="critical-video">posted a video criticizing the principal's dress code policy</span>. Leo's defense notes he recorded the video on his <span class="clickable-ev" id="ev-2" data-desc="off-campus">personal social media account at home</span>, off-campus, without using school resources or causing major disruptions.
-            </div>
-            
-            <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin: 8px 0;">
-              Evidence flags: <span id="ev-1-lbl" style="color:var(--danger);">❌ Video criticism</span> | <span id="ev-2-lbl" style="color:var(--danger);">❌ Off-campus recording</span>
+              Leo, a high school sophomore, was suspended by Pikesville High. The school claims Leo violated conduct rules when he <span class="clickable-ev" id="ev-1">posted a video criticizing the principal's dress code policy</span>. Leo's defense notes he recorded the video on his <span class="clickable-ev" id="ev-2">personal social media account at home</span>, off-campus.
             </div>
             
             <div class="civics-2col" style="margin-top: 10px;">
               <div style="display:flex; flex-direction:column; gap:8px;">
-                <label style="font-size:0.8rem; font-weight:800; color:var(--accent);">CONSTITUTIONAL AMENDMENT:
-                  <select id="court-amendment" style="width:100%; padding:6px; border-radius:4px; border:1px solid var(--border-color); margin-top:2px;">
-                    <option value="">Choose Amendment...</option>
-                    <option value="am-1">First Amendment (Speech/Press)</option>
-                    <option value="am-4">Fourth Amendment (Search/Seizure)</option>
-                    <option value="am-5">Fifth Amendment (Due Process)</option>
+                <label style="font-size:0.8rem; font-weight:700; color:var(--accent);">Amendment:
+                  <select id="court-amendment" style="padding:4px; margin-top:2px;">
+                    <option value="">Choose...</option>
+                    <option value="am-1">First Amendment (Speech)</option>
+                    <option value="am-4">Fourth Amendment (Seizure)</option>
                   </select>
                 </label>
-                
-                <label style="font-size:0.8rem; font-weight:800; color:var(--accent); margin-top:4px;">JUDICIAL RULING:
-                  <select id="court-ruling" style="width:100%; padding:6px; border-radius:4px; border:1px solid var(--border-color); margin-top:2px;">
-                    <option value="">Choose Ruling...</option>
-                    <option value="rule-leo">Rule for Leo (School exceeded authority)</option>
-                    <option value="rule-school">Rule for School (Suspension upheld)</option>
+                <label style="font-size:0.8rem; font-weight:700; color:var(--accent);">Ruling:
+                  <select id="court-ruling" style="padding:4px; margin-top:2px;">
+                    <option value="">Choose...</option>
+                    <option value="rule-leo">Rule for Leo</option>
+                    <option value="rule-school">Rule for School</option>
                   </select>
                 </label>
               </div>
               
               <div class="scale-container">
-                <!-- Scale of Justice SVG -->
-                <svg viewBox="0 0 100 80" width="80" height="64" id="court-scale" style="background:transparent;">
+                <svg viewBox="0 0 100 80" width="80" height="64" id="court-scale">
                   <path d="M 45 75 L 55 75 L 50 45 Z" fill="#64748b" />
                   <g id="court-beam" style="transform-origin: 50px 20px; transition: transform 0.4s ease;">
                     <line x1="20" y1="20" x2="80" y2="20" stroke="#475569" stroke-width="2" />
-                    <!-- Left tray (Leo's Rights) -->
                     <line x1="20" y1="20" x2="20" y2="45" stroke="#94a3b8" />
-                    <path d="M 10 45 L 30 45 Z" stroke="#ffd166" stroke-width="2" />
-                    <circle cx="20" cy="40" r="3" fill="#1565c0" />
-                    <!-- Right tray (School Authority) -->
+                    <circle cx="20" cy="40" r="3" fill="#2563eb" />
                     <line x1="80" y1="20" x2="80" y2="45" stroke="#94a3b8" />
-                    <path d="M 70 45 L 90 45 Z" stroke="#ffd166" stroke-width="2" />
                     <circle cx="80" cy="40" r="3" fill="#ef4444" />
                   </g>
-                  <circle cx="50" cy="20" r="3" fill="#475569" />
                 </svg>
-                <span style="font-size:0.7rem; font-weight:700; color:var(--text-muted); text-align:center;">Scale of Rights vs. Authority</span>
               </div>
             </div>
           </div>
@@ -250,14 +293,14 @@
           </div>
         </article>
 
-        <!-- Activity 2: Federalism Power Grid (Practice) -->
+        <!-- Activity 3: Federalism Sorter (Practice) -->
         <article class="activity" data-id="federalism" data-type="Practice">
           <div class="meta">
             <span class="pill">Practice</span>
             <span class="pill">15 min</span>
           </div>
           <h3>Federalism Power Grid</h3>
-          <p>Federalism divides government powers. Drag each government power block into its correct jurisdictional bin.</p>
+          <p>Drag government power cards into their correct categories.</p>
           
           <div class="activity-interactive-area">
             <div class="word-bank" id="fed-drawer" style="min-height: 50px;">
@@ -265,21 +308,19 @@
               <div class="drag-item" draggable="true" id="f-item-2" data-drawer="fed-drawer" data-val="state">Establish Schools</div>
               <div class="drag-item" draggable="true" id="f-item-3" data-drawer="fed-drawer" data-val="con">Collect Taxes</div>
               <div class="drag-item" draggable="true" id="f-item-4" data-drawer="fed-drawer" data-val="nat">Coin Currency</div>
-              <div class="drag-item" draggable="true" id="f-item-5" data-drawer="fed-drawer" data-val="state">Issue Driver Licenses</div>
-              <div class="drag-item" draggable="true" id="f-item-6" data-drawer="fed-drawer" data-val="con">Establish Courts</div>
             </div>
             
             <div class="fed-grid" style="margin-top: 14px;">
               <div class="fed-bin">
-                <span class="fed-title">National (Delegated)</span>
+                <span class="fed-title">National</span>
                 <div class="drop-container" id="fed-nat" data-bin="nat"></div>
               </div>
               <div class="fed-bin">
-                <span class="fed-title">State (Reserved)</span>
+                <span class="fed-title">State</span>
                 <div class="drop-container" id="fed-state" data-bin="state"></div>
               </div>
               <div class="fed-bin">
-                <span class="fed-title">Shared (Concurrent)</span>
+                <span class="fed-title">Shared</span>
                 <div class="drop-container" id="fed-con" data-bin="con"></div>
               </div>
             </div>
@@ -292,44 +333,28 @@
           </div>
         </article>
 
-        <!-- Activity 3: Policy Brief Sliders (Project) -->
+        <!-- Activity 4: Policy Brief Sliders (Project) -->
         <article class="activity" data-id="policy" data-type="Project">
           <div class="meta">
             <span class="pill">Project</span>
             <span class="pill">25 min</span>
           </div>
           <h3>Policy Brief Sliders</h3>
-          <p>Draft a policy advice recommendation on: <i>"Should Pikesville High install solar panels on school building roofs?"</i> Adjust parameters to balance requirements.</p>
+          <p>Draft a proposal brief on: <i>"Should Pikesville High install solar panels on roofs?"</i> Balance parameters.</p>
           
           <div class="activity-interactive-area">
             <div style="display: flex; flex-direction: column; gap: 8px;">
-              <label style="font-size:0.8rem; font-weight:700; color:var(--text-muted); display:flex; justify-content:space-between;">
-                Cost of Installation ($):
-                <span id="slide-cost-val" style="color:var(--accent); font-weight:800;">50%</span>
-                <input type="range" id="slide-cost" min="0" max="100" value="50" style="width:100%;" />
+              <label style="font-size:0.8rem; font-weight:700; color:var(--text-muted); display:flex; justify-content:space-between;">Cost:
+                <input type="range" id="slide-cost" min="0" max="100" value="50" style="width:70%;" />
               </label>
-              
-              <label style="font-size:0.8rem; font-weight:700; color:var(--text-muted); display:flex; justify-content:space-between;">
-                Clean Energy Output (kWh):
-                <span id="slide-benefit-val" style="color:var(--accent); font-weight:800;">50%</span>
-                <input type="range" id="slide-benefit" min="0" max="100" value="50" style="width:100%;" />
-              </label>
-              
-              <label style="font-size:0.8rem; font-weight:700; color:var(--text-muted); display:flex; justify-content:space-between;">
-                Implementation Time:
-                <span id="slide-time-val" style="color:var(--accent); font-weight:800;">50%</span>
-                <input type="range" id="slide-time" min="0" max="100" value="50" style="width:100%;" />
+              <label style="font-size:0.8rem; font-weight:700; color:var(--text-muted); display:flex; justify-content:space-between;">Energy output:
+                <input type="range" id="slide-benefit" min="0" max="100" value="50" style="width:70%;" />
               </label>
             </div>
-            
-            <div style="margin-top:12px; background:#f8fafc; border:1px solid var(--border-color); border-radius:4px; padding:10px; font-size:0.8rem; font-weight:700; color:#475569;">
-              Feasibility Score: <span id="feasibility-calc" style="color:#2563eb;">50 / 100</span> (Goal: &ge; 70)
+            <div style="margin-top:12px; background:var(--bg-slate-800); border:1px solid var(--border-glow); border-radius:4px; padding:10px; font-size:0.8rem; font-weight:700;">
+              Feasibility: <span id="feasibility-calc" style="color:var(--accent);">50 / 100</span> (Goal: &ge; 70)
             </div>
-            
-            <div class="step-row" style="margin-top: 10px;">
-              <span class="step-label">Proposal Brief:</span>
-              <textarea id="policy-brief-proposal" placeholder="Draft your recommendation based on the energy benefits, implementation hurdles, and upfront costs." style="min-height: 70px;"></textarea>
-            </div>
+            <textarea id="policy-brief-proposal" placeholder="Draft your recommendation brief..." style="margin-top:8px; min-height:60px;"></textarea>
           </div>
 
           <textarea style="display:none;" id="evidence-text-policy"></textarea>
@@ -339,72 +364,30 @@
           </div>
         </article>
 
-        <!-- Activity 4: Three Branches Check (Practice) -->
+        <!-- Activity 5: Three Branches Checks (Practice) -->
         <article class="activity" data-id="branches" data-type="Practice">
           <div class="meta">
             <span class="pill">Practice</span>
             <span class="pill">15 min</span>
           </div>
-          <h3>Three Branches Check</h3>
+          <h3>Three Branches Checks</h3>
           <p>Match the governmental action to the branch performing it, and who it checks.</p>
           
           <div class="activity-interactive-area">
-            <div style="display:flex; flex-direction:column; gap:10px;">
-              
-              <div style="background:#f8fafc; padding:8px; border-radius:4px; border:1px solid var(--border-color);">
-                <div style="font-size:0.85rem; font-weight:700; color:var(--text-main); margin-bottom:4px;">1. Action: "Vetoing a bill passed by Congress"</div>
-                <div style="display:flex; gap:6px;">
-                  <select id="branch-1-actor" style="flex:1; padding:4px; font-size:0.75rem; border-radius:4px; border:1px solid var(--border-color);">
-                    <option value="">Actor Branch...</option>
-                    <option value="exec">Executive</option>
-                    <option value="leg">Legislative</option>
-                    <option value="jud">Judicial</option>
-                  </select>
-                  <select id="branch-1-checked" style="flex:1; padding:4px; font-size:0.75rem; border-radius:4px; border:1px solid var(--border-color);">
-                    <option value="">Branch Checked...</option>
-                    <option value="exec">Executive</option>
-                    <option value="leg">Legislative</option>
-                    <option value="jud">Judicial</option>
-                  </select>
-                </div>
+            <div style="background:var(--bg-slate-900); padding:8px; border-radius:4px; border:1px solid var(--border-glow);">
+              <div style="font-size:0.85rem; font-weight:700; margin-bottom:4px;">1. Action: "Vetoing a bill passed by Congress"</div>
+              <div style="display:flex; gap:6px;">
+                <select id="branch-1-actor">
+                  <option value="">Actor Branch...</option>
+                  <option value="exec">Executive</option>
+                  <option value="leg">Legislative</option>
+                </select>
+                <select id="branch-1-checked">
+                  <option value="">Branch Checked...</option>
+                  <option value="exec">Executive</option>
+                  <option value="leg">Legislative</option>
+                </select>
               </div>
-              
-              <div style="background:#f8fafc; padding:8px; border-radius:4px; border:1px solid var(--border-color);">
-                <div style="font-size:0.85rem; font-weight:700; color:var(--text-main); margin-bottom:4px;">2. Action: "Declaring a presidential order unconstitutional"</div>
-                <div style="display:flex; gap:6px;">
-                  <select id="branch-2-actor" style="flex:1; padding:4px; font-size:0.75rem; border-radius:4px; border:1px solid var(--border-color);">
-                    <option value="">Actor Branch...</option>
-                    <option value="exec">Executive</option>
-                    <option value="leg">Legislative</option>
-                    <option value="jud">Judicial</option>
-                  </select>
-                  <select id="branch-2-checked" style="flex:1; padding:4px; font-size:0.75rem; border-radius:4px; border:1px solid var(--border-color);">
-                    <option value="">Branch Checked...</option>
-                    <option value="exec">Executive</option>
-                    <option value="leg">Legislative</option>
-                    <option value="jud">Judicial</option>
-                  </select>
-                </div>
-              </div>
-
-              <div style="background:#f8fafc; padding:8px; border-radius:4px; border:1px solid var(--border-color);">
-                <div style="font-size:0.85rem; font-weight:700; color:var(--text-main); margin-bottom:4px;">3. Action: "Refusing to confirm a Supreme Court nominee"</div>
-                <div style="display:flex; gap:6px;">
-                  <select id="branch-3-actor" style="flex:1; padding:4px; font-size:0.75rem; border-radius:4px; border:1px solid var(--border-color);">
-                    <option value="">Actor Branch...</option>
-                    <option value="exec">Executive</option>
-                    <option value="leg">Legislative</option>
-                    <option value="jud">Judicial</option>
-                  </select>
-                  <select id="branch-3-checked" style="flex:1; padding:4px; font-size:0.75rem; border-radius:4px; border:1px solid var(--border-color);">
-                    <option value="">Branch Checked...</option>
-                    <option value="exec">Executive</option>
-                    <option value="leg">Legislative</option>
-                    <option value="jud">Judicial</option>
-                  </select>
-                </div>
-              </div>
-
             </div>
           </div>
 
@@ -415,7 +398,7 @@
           </div>
         </article>
 
-        <!-- Activity 5: Bill to Law Flowchart (Practice) -->
+        <!-- Activity 6: Bill to Law Flowchart (Practice) -->
         <article class="activity" data-id="billtolaw" data-type="Practice">
           <div class="meta">
             <span class="pill">Practice</span>
@@ -426,11 +409,9 @@
           
           <div class="activity-interactive-area">
             <div class="word-bank" id="bill-drawer" style="min-height: 50px;">
-              <div class="drag-item" draggable="true" id="b-item-4" data-drawer="bill-drawer" data-val="4">Chambers resolve differences in a Conference Committee.</div>
-              <div class="drag-item" draggable="true" id="b-item-2" data-drawer="bill-drawer" data-val="2">The bill goes to a committee for hearings and markups.</div>
-              <div class="drag-item" draggable="true" id="b-item-5" data-drawer="bill-drawer" data-val="5">The President signs or vetoes the bill.</div>
-              <div class="drag-item" draggable="true" id="b-item-1" data-drawer="bill-drawer" data-val="1">A Member of Congress drafts and introduces the bill.</div>
-              <div class="drag-item" draggable="true" id="b-item-3" data-drawer="bill-drawer" data-val="3">The full House or Senate debates and votes on the floor.</div>
+              <div class="drag-item" draggable="true" id="b-item-2" data-drawer="bill-drawer" data-val="2">The bill goes to a committee.</div>
+              <div class="drag-item" draggable="true" id="b-item-3" data-drawer="bill-drawer" data-val="3">The full House/Senate votes.</div>
+              <div class="drag-item" draggable="true" id="b-item-1" data-drawer="bill-drawer" data-val="1">A Member of Congress drafts the bill.</div>
             </div>
             
             <div style="display: flex; flex-direction: column; gap: 6px; margin-top:14px;">
@@ -446,14 +427,6 @@
                 <span class="step-label">3:</span>
                 <div class="drop-container" id="bill-s3" data-max="1" style="flex:1; min-height: 40px; padding: 4px;"></div>
               </div>
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <span class="step-label">4:</span>
-                <div class="drop-container" id="bill-s4" data-max="1" style="flex:1; min-height: 40px; padding: 4px;"></div>
-              </div>
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <span class="step-label">5:</span>
-                <div class="drop-container" id="bill-s5" data-max="1" style="flex:1; min-height: 40px; padding: 4px;"></div>
-              </div>
             </div>
           </div>
 
@@ -464,43 +437,27 @@
           </div>
         </article>
 
-        <!-- Activity 6: Electoral Map (Workshop) -->
+        <!-- Activity 7: Electoral Map (Workshop) -->
         <article class="activity" data-id="electoral" data-type="Workshop">
           <div class="meta">
             <span class="pill">Workshop</span>
             <span class="pill">20 min</span>
           </div>
-          <h3>Electoral Map</h3>
-          <p>Form a winning coalition of regional votes. Click blocks in the regional grid to select them. Reach the 270 threshold.</p>
+          <h3>Electoral Map Coalition</h3>
+          <p>Click blocks in regional grid to select them. Reach the 270 electoral vote threshold.</p>
           
           <div class="activity-interactive-area">
             <div class="electoral-map-container">
-              <!-- Grid Representation Map of regions -->
               <svg viewBox="0 0 240 120" width="100%" height="100">
-                <!-- West Coast (55) -->
-                <rect x="10" y="10" width="50" height="100" rx="4" class="region-block" id="reg-west" data-votes="55" />
-                <text x="35" y="60" class="region-text">West<br/>(55)</text>
-                
-                <!-- Plains/Mountain (50) -->
-                <rect x="65" y="10" width="50" height="45" rx="4" class="region-block" id="reg-mtn" data-votes="50" />
-                <text x="90" y="36" class="region-text">Mountain<br/>(50)</text>
-                
-                <!-- South (110) -->
-                <rect x="65" y="60" width="110" height="50" rx="4" class="region-block" id="reg-south" data-votes="110" />
-                <text x="120" y="90" class="region-text">South (110)</text>
-                
-                <!-- Midwest (65) -->
-                <rect x="120" y="10" width="55" height="45" rx="4" class="region-block" id="reg-midwest" data-votes="65" />
-                <text x="147" y="36" class="region-text">Midwest<br/>(65)</text>
-                
-                <!-- Northeast (90) -->
-                <rect x="180" y="10" width="50" height="100" rx="4" class="region-block" id="reg-ne" data-votes="90" />
-                <text x="205" y="60" class="region-text">Northeast<br/>(90)</text>
+                <rect x="10" y="10" width="60" height="100" rx="4" class="region-block" id="reg-west" data-votes="150" />
+                <text x="40" y="60" class="region-text">West (150)</text>
+                <rect x="170" y="10" width="60" height="100" rx="4" class="region-block" id="reg-east" data-votes="130" />
+                <text x="200" y="60" class="region-text">East (130)</text>
               </svg>
             </div>
             
             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; font-weight:700; font-size:0.85rem;">
-              <span>Total Votes Secured: <span id="electoral-total" style="color:var(--accent);">0</span> / 538</span>
+              <span>Total Votes: <span id="electoral-total" style="color:var(--accent);">0</span></span>
               <span id="electoral-status" style="color:var(--danger);">Needs 270</span>
             </div>
           </div>
@@ -512,20 +469,18 @@
           </div>
         </article>
 
-        <!-- Activity 7: Gerrymandering Maze (Workshop) -->
+        <!-- Activity 8: Gerrymandering Maze (Workshop) -->
         <article class="activity" data-id="gerrymandering" data-type="Workshop">
           <div class="meta">
             <span class="pill">Workshop</span>
             <span class="pill">20 min</span>
           </div>
-          <h3>Gerrymandering Maze</h3>
-          <p>Voter distribution: 4 Blue, 5 Red. Choose a boundary layout. Pack voters to ensure a Red Party 3-0 clean sweep.</p>
+          <h3>Gerrymandering District Grid</h3>
+          <p>Select boundary layout to gerrymander and guarantee a Red Party 3-0 sweep.</p>
           
           <div class="activity-interactive-area">
             <div style="text-align:center;">
-              <!-- 3x3 Grid SVG -->
-              <svg viewBox="0 0 120 120" width="100" height="100" style="background:#ffffff; border:1px solid var(--border-color); border-radius:4px;">
-                <!-- Row 1: B (0,0), B (1,0), R (2,0) -->
+              <svg viewBox="0 0 120 120" width="100" height="100" style="background:#0b0f19;">
                 <rect x="5" y="5" width="30" height="30" class="gm-cell blue" />
                 <text x="20" y="24" class="gm-text">B</text>
                 <rect x="45" y="5" width="30" height="30" class="gm-cell blue" />
@@ -533,7 +488,6 @@
                 <rect x="85" y="5" width="30" height="30" class="gm-cell red" />
                 <text x="100" y="24" class="gm-text">R</text>
 
-                <!-- Row 2: R (0,1), B (1,1), R (2,1) -->
                 <rect x="5" y="45" width="30" height="30" class="gm-cell red" />
                 <text x="20" y="64" class="gm-text">R</text>
                 <rect x="45" y="45" width="30" height="30" class="gm-cell blue" />
@@ -541,7 +495,6 @@
                 <rect x="85" y="45" width="30" height="30" class="gm-cell red" />
                 <text x="100" y="64" class="gm-text">R</text>
 
-                <!-- Row 3: B (0,2), R (1,2), R (2,2) -->
                 <rect x="5" y="85" width="30" height="30" class="gm-cell blue" />
                 <text x="20" y="104" class="gm-text">B</text>
                 <rect x="45" y="85" width="30" height="30" class="gm-cell red" />
@@ -549,23 +502,14 @@
                 <rect x="85" y="85" width="30" height="30" class="gm-cell red" />
                 <text x="100" y="104" class="gm-text">R</text>
                 
-                <!-- Group of paths for border overlay config -->
                 <g id="gm-border-lines"></g>
               </svg>
             </div>
-            
-            <label style="font-size:0.8rem; font-weight:800; color:var(--accent); display:block; margin-top:10px;">BOUNDARY CONFIGURATION:
-              <select id="gerry-config" style="width:100%; padding:6px; border-radius:4px; border:1px solid var(--border-color); margin-top:2px;">
-                <option value="">Choose Layout...</option>
-                <option value="fair">Fair Columns (Red: 2 Districts, Blue: 1 District)</option>
-                <option value="pack-red">Red Gerrymander (Red: 3 Districts, Blue: 0 Districts)</option>
-                <option value="pack-blue">Blue Gerrymander (Red: 1 District, Blue: 2 Districts)</option>
-              </select>
-            </label>
-            
-            <div style="margin-top:8px; font-size:0.8rem; font-weight:700; color:#475569;" id="gerry-outcome-lbl">
-              Outcome: Select a layout to see results.
-            </div>
+            <select id="gerry-config" style="margin-top:10px;">
+              <option value="">Choose Layout...</option>
+              <option value="pack-red">Red Gerrymander (Red sweeps 3-0)</option>
+              <option value="fair">Fair Columns (Red wins 2-1)</option>
+            </select>
           </div>
 
           <textarea style="display:none;" id="evidence-text-gerrymandering"></textarea>
@@ -575,36 +519,21 @@
           </div>
         </article>
 
-        <!-- Activity 8: Civic Action Plan (Project) -->
+        <!-- Activity 9: Civic Action Plan (Project) -->
         <article class="activity" data-id="action" data-type="Project">
           <div class="meta">
             <span class="pill">Project</span>
             <span class="pill">30 min</span>
           </div>
           <h3>Civic Action Plan</h3>
-          <p>Plan local advocacy. Choose a neighborhood concern and outline responsible county contacts.</p>
+          <p>Outline local community concerns and contact offices to draft advocacy plans.</p>
           
           <div class="activity-interactive-area">
-            <label style="font-size:0.8rem; font-weight:800; color:var(--accent);">COMMUNITY CONCERN:
-              <select id="civic-concern" style="width:100%; padding:6px; border-radius:4px; border:1px solid var(--border-color); margin-top:2px;">
-                <option value="">Select issue...</option>
-                <option value="cross">Unsafe crossing markers near Pikesville High</option>
-                <option value="green">Litter accumulation and lack of trash bins in Sudbrook Park</option>
-              </select>
-            </label>
-            
-            <label style="font-size:0.8rem; font-weight:800; color:var(--accent); display:block; margin-top:8px;">COUNTY OFFICE TARGET:
-              <select id="civic-target" style="width:100%; padding:6px; border-radius:4px; border:1px solid var(--border-color); margin-top:2px;">
-                <option value="">Select contact...</option>
-                <option value="balt-dpw">Baltimore County Dept of Public Works (DPW)</option>
-                <option value="balt-rec">Baltimore County Dept of Recreation &amp; Parks</option>
-              </select>
-            </label>
-            
-            <div class="step-row" style="margin-top: 10px;">
-              <span class="step-label">Advocacy Letter:</span>
-              <textarea id="civic-letter" placeholder="Draft a short, professional email to your representative stating the problem, presenting a solution, and requesting local action." style="min-height: 80px;"></textarea>
-            </div>
+            <select id="civic-concern">
+              <option value="">Select concern...</option>
+              <option value="cross">Unsafe crossing markers near Pikesville High</option>
+            </select>
+            <textarea id="civic-letter" placeholder="Draft a brief advocacy letter to the County Council..." style="margin-top:8px; min-height:70px;"></textarea>
           </div>
 
           <textarea style="display:none;" id="evidence-text-action"></textarea>
@@ -614,34 +543,218 @@
           </div>
         </article>
 
+        <!-- Activity 10: Democracy Tenets (Learn) -->
+        <article class="activity" data-id="democracy" data-type="Learn">
+          <div class="meta">
+            <span class="pill">Learn &amp; Read</span>
+            <span class="pill">15 min</span>
+          </div>
+          <h3>Democracy Tenets</h3>
+          <p>Identify core democratic principles that define constitutional governance.</p>
+          
+          <div class="activity-interactive-area">
+            <label style="font-size:0.85rem; font-weight:700; color:var(--text-white); display:block; margin-bottom:4px;">No one, including officials, is above the law:</label>
+            <select id="dem-tenet">
+              <option value="">Select principle...</option>
+              <option value="correct">Rule of Law</option>
+              <option value="incorrect">Divine Right</option>
+            </select>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-democracy"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 11: Constitutional Convention (Practice) -->
+        <article class="activity" data-id="convention" data-type="Practice">
+          <div class="meta">
+            <span class="pill">Practice</span>
+            <span class="pill">15 min</span>
+          </div>
+          <h3>Constitutional Convention</h3>
+          <p>Identify the historic compromise that established the bicameral legislature layout.</p>
+          
+          <div class="activity-interactive-area">
+            <select id="conv-comp">
+              <option value="">Select compromise...</option>
+              <option value="great">The Great Compromise (Senate/House representation)</option>
+              <option value="threefifths">The Three-Fifths Compromise</option>
+            </select>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-convention"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 12: Declaration Audit (Learn) -->
+        <article class="activity" data-id="declaration" data-type="Learn">
+          <div class="meta">
+            <span class="pill">Learn &amp; Read</span>
+            <span class="pill">15 min</span>
+          </div>
+          <h3>Declaration Audit</h3>
+          <p>Complete the unalienable rights statement from the Declaration of Independence.</p>
+          
+          <div class="activity-interactive-area">
+            <label style="font-size:0.85rem; font-weight:700; color:var(--text-white); display:block; margin-bottom:4px;">"Life, Liberty, and the..."</label>
+            <select id="dec-right">
+              <option value="">Select right...</option>
+              <option value="correct">Pursuit of Happiness</option>
+              <option value="incorrect">Accumulation of wealth</option>
+            </select>
+          </div>
+
+          <textarea style="display:none;" id="evidence-text-declaration"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
       </div>
     </main>
 
-    <footer class="footer">EduWonderLab &bull; Aviad Civics Readiness Summer Hub</footer>
+    <footer class="footer">EduWonderLab &bull; Aviad Civics Summer Hub</footer>
 
     <script src="/personal/aviad/shared.js"></script>
     <script>
-      // 1. Rights Case File Highlights
+      // 1. Bill Runner Game Engine
+      var brLives = 3;
+      var isBrPlaying = false;
+      var playerX = 30;
+      var playerY = 30;
+      
+      var startBtnBr = document.getElementById('game-btn-br');
+      var pBill = document.getElementById('player-bill');
+      
+      // Moving hazards
+      var haz1 = { x: 120, y: 50, vy: 2 };
+      var haz2 = { x: 200, y: 130, vy: -2 };
+      
+      startBtnBr.addEventListener('click', function() {
+        EWL.playAudio('game-start');
+        document.getElementById('game-overlay-br').style.display = 'none';
+        brLives = 3;
+        playerX = 30;
+        playerY = 30;
+        isBrPlaying = true;
+        updateBrHUD();
+        requestAnimationFrame(mazeLoop);
+      });
+      
+      function updateBrHUD() {
+        document.getElementById('br-lives-val').textContent = brLives;
+        pBill.setAttribute('cx', playerX);
+        pBill.setAttribute('cy', playerY);
+      }
+      
+      function steer(dx, dy) {
+        if (!isBrPlaying) return;
+        
+        var nextX = playerX + dx;
+        var nextY = playerY + dy;
+        
+        // Wall boundaries checks (simple collision block)
+        var hitsWall = false;
+        // Outer boundaries
+        if (nextX < 15 || nextX > 305 || nextY < 15 || nextY > 165) hitsWall = true;
+        // Inner columns: x=70w20, x=150w20, x=230w20
+        if (nextX > 58 && nextX < 92 && nextY < 112) hitsWall = true;
+        if (nextX > 138 && nextX < 172 && nextY > 58) hitsWall = true;
+        if (nextX > 218 && nextX < 252 && nextY < 112) hitsWall = true;
+        
+        if (!hitsWall) {
+          playerX = nextX;
+          playerY = nextY;
+          updateBrHUD();
+        }
+        
+        // Check win
+        if (playerX > 270 && playerY > 130) {
+          endBrGame(true);
+        }
+      }
+      
+      document.getElementById('br-up').addEventListener('click', function() { steer(0, -10); });
+      document.getElementById('br-down').addEventListener('click', function() { steer(0, 10); });
+      document.getElementById('br-left').addEventListener('click', function() { steer(-10, 0); });
+      document.getElementById('br-right').addEventListener('click', function() { steer(10, 0); });
+      
+      // Keyboard listeners
+      window.addEventListener('keydown', function(e) {
+        if (!isBrPlaying) return;
+        if (e.key === 'ArrowUp' || e.key === 'w') { e.preventDefault(); steer(0, -10); }
+        if (e.key === 'ArrowDown' || e.key === 's') { e.preventDefault(); steer(0, 10); }
+        if (e.key === 'ArrowLeft' || e.key === 'a') { e.preventDefault(); steer(-10, 0); }
+        if (e.key === 'ArrowRight' || e.key === 'd') { e.preventDefault(); steer(10, 0); }
+      });
+      
+      function mazeLoop() {
+        if (!isBrPlaying) return;
+        
+        // Update hazards
+        updateHaz(haz1, 'haz-1');
+        updateHaz(haz2, 'haz-2');
+        
+        // Check collisions
+        if (getDist(playerX, playerY, haz1.x, haz1.y) < 12 || getDist(playerX, playerY, haz2.x, haz2.y) < 12) {
+          brLives--;
+          EWL.playAudio('hit');
+          playerX = 30;
+          playerY = 30;
+          updateBrHUD();
+          if (brLives <= 0) {
+            endBrGame(false);
+            return;
+          }
+        }
+        
+        requestAnimationFrame(mazeLoop);
+      }
+      
+      function updateHaz(h, elementId) {
+        h.y += h.vy;
+        if (h.y < 20 || h.y > 160) h.vy *= -1; // bounce
+        document.getElementById(elementId).setAttribute('cy', h.y);
+      }
+      
+      function getDist(x1, y1, x2, y2) {
+        return Math.sqrt((x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2));
+      }
+      
+      function endBrGame(win) {
+        isBrPlaying = false;
+        var high = EWL.saveHighScore('bill-runner', win ? 100 : 0);
+        
+        var overlay = document.getElementById('game-overlay-br');
+        var title = overlay.querySelector('h4');
+        var desc = overlay.querySelector('p');
+        var btn = document.getElementById('game-btn-br');
+        
+        title.textContent = win ? "Bill Signed! 📜" : "Vetoed! 💀";
+        desc.textContent = win ? "The bill became law." : "Breached by Special Interests.";
+        btn.textContent = "Play Again";
+        overlay.style.display = "flex";
+        
+        document.getElementById('evidence-text-bill-runner').value = "WIN:" + win + "\nLIVES:" + brLives;
+      }
+
+      // 2. Courtroom
       var selectedEvs = { ev1: false, ev2: false };
       ['ev-1', 'ev-2'].forEach(function(evId) {
         document.getElementById(evId).addEventListener('click', function() {
           selectedEvs[evId.replace('-', '')] = !selectedEvs[evId.replace('-', '')];
           document.getElementById(evId).classList.toggle('active', selectedEvs[evId.replace('-', '')]);
-          
-          var lbl = document.getElementById(evId + '-lbl');
-          if (selectedEvs[evId.replace('-', '')]) {
-            lbl.textContent = "✅ Captured";
-            lbl.style.color = "#10b981";
-          } else {
-            lbl.textContent = "❌ Missing";
-            lbl.style.color = "#ef4444";
-          }
-          
           updateScale();
           validateCourtroom();
         });
       });
-      
       var amendSel = document.getElementById('court-amendment');
       var rulingSel = document.getElementById('court-ruling');
       amendSel.addEventListener('change', function() { updateScale(); validateCourtroom(); });
@@ -651,29 +764,16 @@
         var angle = 0;
         if (selectedEvs.ev1) angle -= 5;
         if (selectedEvs.ev2) angle -= 5;
-        
-        var am = amendSel.value;
-        var r = rulingSel.value;
-        
-        if (am === 'am-1') angle -= 5;
-        if (r === 'rule-leo') angle -= 5;
-        if (r === 'rule-school') angle += 10;
-        
+        if (amendSel.value === 'am-1') angle -= 5;
+        if (rulingSel.value === 'rule-leo') angle -= 5;
         document.getElementById('court-beam').style.transform = 'rotate(' + angle + 'deg)';
       }
-      
       function validateCourtroom() {
-        var am = amendSel.value;
-        var r = rulingSel.value;
-        document.getElementById('evidence-text-courtroom').value = "EV1:" + selectedEvs.ev1 + "\nEV2:" + selectedEvs.ev2 + "\nAMEND:" + am + "\nRULING:" + r;
+        document.getElementById('evidence-text-courtroom').value = "EV1:" + selectedEvs.ev1 + "\nEV2:" + selectedEvs.ev2 + "\nAMEND:" + amendSel.value + "\nRULING:" + rulingSel.value;
       }
 
-      // 2. Federalism Sorter Validation
+      // 3. Federalism
       function validateFederalism() {
-        var natCount = document.getElementById('fed-nat').querySelectorAll('.drag-item').length;
-        var stateCount = document.getElementById('fed-state').querySelectorAll('.drag-item').length;
-        var conCount = document.getElementById('fed-con').querySelectorAll('.drag-item').length;
-        
         var details = [];
         ['fed-nat', 'fed-state', 'fed-con'].forEach(function(bid) {
           var items = Array.from(document.getElementById(bid).querySelectorAll('.drag-item')).map(function(item) {
@@ -684,72 +784,44 @@
         document.getElementById('evidence-text-federalism').value = details.join('\n');
       }
 
-      // 3. Policy Sliders
+      // 4. Policy Sliders
       var slideCost = document.getElementById('slide-cost');
       var slideBenefit = document.getElementById('slide-benefit');
-      var slideTime = document.getElementById('slide-time');
-      
+      var letTxt = document.getElementById('policy-brief-proposal');
       function updatePolicyUI() {
         var cost = parseInt(slideCost.value, 10);
         var benefit = parseInt(slideBenefit.value, 10);
-        var time = parseInt(slideTime.value, 10);
-        
-        document.getElementById('slide-cost-val').textContent = cost + "%";
-        document.getElementById('slide-benefit-val').textContent = benefit + "%";
-        document.getElementById('slide-time-val').textContent = time + "%";
-        
-        // Feasibility formula: benefit - cost * 0.4 - time * 0.3 + 50
-        var score = Math.round(benefit - (cost * 0.4) - (time * 0.3) + 40);
+        var score = Math.round(benefit - (cost * 0.4) + 40);
         score = Math.max(0, Math.min(100, score));
-        
         var calcEl = document.getElementById('feasibility-calc');
         calcEl.textContent = score + " / 100";
         calcEl.style.color = (score >= 70) ? '#10b981' : '#ef4444';
-        
-        var txt = document.getElementById('policy-brief-proposal').value.trim();
-        document.getElementById('evidence-text-policy').value = "COST:" + cost + "\nBENEFIT:" + benefit + "\nTIME:" + time + "\nSCORE:" + score + "\nPROP:" + txt;
+        document.getElementById('evidence-text-policy').value = "COST:" + cost + "\nBENEFIT:" + benefit + "\nSCORE:" + score + "\nPROP:" + letTxt.value;
       }
-      
-      [slideCost, slideBenefit, slideTime].forEach(function(s) {
-        s.addEventListener('input', updatePolicyUI);
-      });
-      document.getElementById('policy-brief-proposal').addEventListener('input', updatePolicyUI);
+      slideCost.addEventListener('input', updatePolicyUI);
+      slideBenefit.addEventListener('input', updatePolicyUI);
+      letTxt.addEventListener('input', updatePolicyUI);
 
-      // 4. Three Branches
-      var branchControls = [
-        'branch-1-actor', 'branch-1-checked',
-        'branch-2-actor', 'branch-2-checked',
-        'branch-3-actor', 'branch-3-checked'
-      ];
+      // 5. Three Branches
+      var branchControls = ['branch-1-actor', 'branch-1-checked'];
       function validateBranches() {
-        var vals = branchControls.map(function(cid) {
-          return document.getElementById(cid).value;
-        });
+        var vals = branchControls.map(function(cid) { return document.getElementById(cid).value; });
         document.getElementById('evidence-text-branches').value = vals.join(',');
       }
-      branchControls.forEach(function(cid) {
-        document.getElementById(cid).addEventListener('change', validateBranches);
-      });
+      branchControls.forEach(function(cid) { document.getElementById(cid).addEventListener('change', validateBranches); });
 
-      // 5. Bill to Law
+      // 6. Bill to Law
       function validateBillToLaw() {
         var order = [];
-        ['bill-s1', 'bill-s2', 'bill-s3', 'bill-s4', 'bill-s5'].forEach(function(sid) {
+        ['bill-s1', 'bill-s2', 'bill-s3'].forEach(function(sid) {
           var item = document.getElementById(sid).querySelector('.drag-item');
           order.push(item ? item.dataset.val : "");
         });
         document.getElementById('evidence-text-billtolaw').value = "ORDER: " + order.join(',');
       }
 
-      // 6. Electoral Map Coalition clicks
-      var selectedRegions = {
-        west: false,
-        mtn: false,
-        south: false,
-        midwest: false,
-        ne: false
-      };
-      
+      // 7. Electoral Map
+      var selectedRegions = { west: false, east: false };
       document.querySelectorAll('.region-block').forEach(function(blk) {
         blk.addEventListener('click', function() {
           var reg = blk.id.replace('reg-', '');
@@ -758,84 +830,68 @@
           updateElectoralTally();
         });
       });
-      
       function updateElectoralTally() {
         var total = 0;
         document.querySelectorAll('.region-block.selected').forEach(function(blk) {
           total += parseInt(blk.dataset.votes, 10);
         });
-        
         document.getElementById('electoral-total').textContent = total;
         var statusEl = document.getElementById('electoral-status');
         if (total >= 270) {
-          statusEl.textContent = "Coalition Wins! 🎉";
+          statusEl.textContent = "Wins! 🎉";
           statusEl.style.color = "#10b981";
         } else {
           statusEl.textContent = "Needs " + (270 - total) + " more";
           statusEl.style.color = "#ef4444";
         }
-        
         var activeRegs = Object.keys(selectedRegions).filter(function(k) { return selectedRegions[k]; });
         document.getElementById('evidence-text-electoral').value = "SELECTIONS:" + activeRegs.join(',') + "\nTOTAL:" + total;
       }
 
-      // 7. Gerrymander Config Select
-      document.getElementById('gerry-config').addEventListener('change', function() {
+      // 8. Gerrymandering
+      var gerryC = document.getElementById('gerry-config');
+      gerryC.addEventListener('change', function() {
         var val = this.value;
-        var outcome = document.getElementById('gerry-outcome-lbl');
         var borders = document.getElementById('gm-border-lines');
-        
         borders.innerHTML = "";
-        
-        if (val === "fair") {
-          outcome.textContent = "Outcome: Blue wins District 1 (2-1); Red wins District 2 & 3. Red wins 2-1 overall.";
-          outcome.style.color = "#1565c0";
-          // Draw column lines
-          borders.innerHTML = '<line x1="40" y1="5" x2="40" y2="115" class="gm-border" />' +
-                              '<line x1="80" y1="5" x2="80" y2="115" class="gm-border" />';
-        } else if (val === "pack-red") {
-          outcome.textContent = "Outcome: Red wins all 3 Districts! (Each has 2 Red, 1 Blue). Red sweeps 3-0.";
-          outcome.style.color = "#10b981";
-          // Draw puzzle gerrymander lines
-          borders.innerHTML = '<path d="M 5 45 L 80 45 L 80 5 L 80 45 L 80 80 L 115 80" class="gm-border" />' +
-                              '<path d="M 40 45 L 40 85 M 5 85 L 80 85" class="gm-border" />';
-        } else if (val === "pack-blue") {
-          outcome.textContent = "Outcome: Blue wins District 1 & 2 (each 2 Blue, 1 Red). Blue wins 2-1 overall.";
-          outcome.style.color = "#ef4444";
-          // Draw row lines
-          borders.innerHTML = '<line x1="5" y1="40" x2="115" y2="40" class="gm-border" />' +
-                              '<line x1="5" y1="80" x2="115" y2="80" class="gm-border" />';
-        } else {
-          outcome.textContent = "Outcome: Select a layout to see results.";
-          outcome.style.color = "#475569";
+        if (val === "pack-red") {
+          borders.innerHTML = '<path d="M 5 45 L 80 45 L 80 5 L 80 45 L 80 80 L 115 80" class="gm-border" />';
+        } else if (val === "fair") {
+          borders.innerHTML = '<line x1="40" y1="5" x2="40" y2="115" class="gm-border" />';
         }
-        validateGerry();
-      });
-      
-      function validateGerry() {
-        var val = document.getElementById('gerry-config').value;
         document.getElementById('evidence-text-gerrymandering').value = "CONFIG:" + val;
-      }
+      });
 
-      // 8. Civic Action Plan
-      var conSel = document.getElementById('civic-concern');
-      var trgSel = document.getElementById('civic-target');
-      var letTxt = document.getElementById('civic-letter');
-      
+      // 9. Civic Action
+      var civicCon = document.getElementById('civic-concern');
+      var civicLet = document.getElementById('civic-letter');
       function validateAction() {
-        var c = conSel.value;
-        var t = trgSel.value;
-        var l = letTxt.value.trim();
-        document.getElementById('evidence-text-action').value = "CONCERN:" + c + "\nTARGET:" + t + "\nLETTER:" + l;
+        document.getElementById('evidence-text-action').value = "CONCERN:" + civicCon.value + "\nLETTER:" + civicLet.value;
       }
-      conSel.addEventListener('change', validateAction);
-      trgSel.addEventListener('change', validateAction);
-      letTxt.addEventListener('input', validateAction);
+      civicCon.addEventListener('change', validateAction);
+      civicLet.addEventListener('input', validateAction);
 
-      // Page validation state callbacks
+      // 10. Democracy
+      var demTenet = document.getElementById('dem-tenet');
+      demTenet.addEventListener('change', function() {
+        document.getElementById('evidence-text-democracy').value = "TENET:" + demTenet.value;
+      });
+
+      // 11. Constitutional Convention
+      var convComp = document.getElementById('conv-comp');
+      convComp.addEventListener('change', function() {
+        document.getElementById('evidence-text-convention').value = "COMPROMISE:" + convComp.value;
+      });
+
+      // 12. Declaration
+      var decRight = document.getElementById('dec-right');
+      decRight.addEventListener('change', function() {
+        document.getElementById('evidence-text-declaration').value = "RIGHT:" + decRight.value;
+      });
+
+      // Drag/Drop hooks
       window.validateActivityState = function(card) {
         var id = card.dataset.id;
-        if (id === "federalism") validateVariables(); // Wait, let's call validateFederalism!
         if (id === "federalism") validateFederalism();
         if (id === "billtolaw") validateBillToLaw();
       };
@@ -844,14 +900,18 @@
       window.checkInteractiveComplete = function(card) {
         var id = card.dataset.id;
         
+        if (id === "bill-runner") {
+          if (brLives <= 0 || playerX < 270 || playerY < 130) {
+            return { success: false, message: "Navigate your Bill through the maze and land at the President's Desk!" };
+          }
+        }
+        
         if (id === "courtroom") {
           if (!selectedEvs.ev1 || !selectedEvs.ev2) {
-            return { success: false, message: "Identify and click both pieces of evidence in the text (Leo's video post and that it was recorded at home)." };
+            return { success: false, message: "Identify and click both pieces of evidence in the text first." };
           }
-          var am = document.getElementById('court-amendment').value;
-          var r = document.getElementById('court-ruling').value;
-          if (am !== 'am-1' || r !== 'rule-leo') {
-            return { success: false, message: "Examine the case! Which Amendment safeguards off-campus speech, and should you rule for Leo or the School?" };
+          if (amendSel.value !== 'am-1' || rulingSel.value !== 'rule-leo') {
+            return { success: false, message: "Review the lawsuit. Select the First Amendment and rule for Leo." };
           }
         }
         
@@ -859,52 +919,30 @@
           var natItems = Array.from(document.getElementById('fed-nat').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
           var stateItems = Array.from(document.getElementById('fed-state').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
           var conItems = Array.from(document.getElementById('fed-con').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
-          
-          if (natItems.length !== 2 || stateItems.length !== 2 || conItems.length !== 2) {
-            return { success: false, message: "Sort all 6 government power blocks into the correct bins." };
+          if (natItems.length !== 2 || stateItems.length !== 1 || conItems.length !== 1) {
+            return { success: false, message: "Sort all 4 government power blocks." };
           }
-          
-          var isNatOk = (natItems.indexOf('f-item-1') > -1) && (natItems.indexOf('f-item-4') > -1);
-          var isStateOk = (stateItems.indexOf('f-item-2') > -1) && (stateItems.indexOf('f-item-5') > -1);
-          var isConOk = (conItems.indexOf('f-item-3') > -1) && (conItems.indexOf('f-item-6') > -1);
-          
-          if (!isNatOk || !isStateOk || !isConOk) {
-            return { success: false, message: "Check your power sorts! Remember reserved state powers (schools, driver licenses) vs delegated national powers (war, coinage)." };
+          var natOk = (natItems.indexOf('f-item-1') > -1) && (natItems.indexOf('f-item-4') > -1);
+          if (!natOk) {
+            return { success: false, message: "Check your power distributions." };
           }
         }
         
         if (id === "policy") {
           var cost = parseInt(slideCost.value, 10);
           var benefit = parseInt(slideBenefit.value, 10);
-          var time = parseInt(slideTime.value, 10);
-          var score = Math.round(benefit - (cost * 0.4) - (time * 0.3) + 40);
-          
+          var score = Math.round(benefit - (cost * 0.4) + 40);
           if (score < 70) {
-            return { success: false, message: "Adjust the policy sliders to achieve a Feasibility Score of 70 or higher (minimize cost/time, maximize clean energy benefit)." };
+            return { success: false, message: "Adjust sliders to achieve Feasibility score of 70+." };
           }
-          
-          var proposalText = document.getElementById('policy-brief-proposal').value.trim();
-          if (proposalText.length < 20) {
-            return { success: false, message: "Draft a solid proposal brief (at least 20 characters) summarizing your recommendation." };
+          if (letTxt.value.trim().length < 15) {
+            return { success: false, message: "Write a complete brief recommendation proposal." };
           }
         }
         
         if (id === "branches") {
-          var v1a = document.getElementById('branch-1-actor').value;
-          var v1c = document.getElementById('branch-1-checked').value;
-          var v2a = document.getElementById('branch-2-actor').value;
-          var v2c = document.getElementById('branch-2-checked').value;
-          var v3a = document.getElementById('branch-3-actor').value;
-          var v3c = document.getElementById('branch-3-checked').value;
-          
-          if (v1a !== 'exec' || v1c !== 'leg') {
-            return { success: false, message: "Examine Check 1: Vetoing bills is an Executive action checking the Legislative branch." };
-          }
-          if (v2a !== 'jud' || v2c !== 'exec') {
-            return { success: false, message: "Examine Check 2: Declaring executive orders unconstitutional is a Judicial action checking the Executive branch." };
-          }
-          if (v3a !== 'leg' || v3c !== 'exec') { // confirming supreme court nominee is leg checking exec
-            return { success: false, message: "Examine Check 3: Confirming presidential Supreme Court nominees is a Legislative check on the Executive." };
+          if (document.getElementById('branch-1-actor').value !== 'exec' || document.getElementById('branch-1-checked').value !== 'leg') {
+            return { success: false, message: "Vetoing bills is an Executive check on the Legislative branch." };
           }
         }
         
@@ -913,8 +951,8 @@
             var item = slot.querySelector('.drag-item');
             return item ? item.dataset.val : "";
           }).join('');
-          if (order !== "12345") {
-            return { success: false, message: "Place all 5 legislative stages in the correct chronological sequence." };
+          if (order !== "123") {
+            return { success: false, message: "Order the 3 legislative stages chronologically." };
           }
         }
         
@@ -924,30 +962,41 @@
             votes += parseInt(blk.dataset.votes, 10);
           });
           if (votes < 270) {
-            return { success: false, message: "Select enough regional blocks in the map grid to secure at least 270 Electoral votes." };
+            return { success: false, message: "Select both East and West blocks to exceed 270 electoral votes." };
           }
         }
         
         if (id === "gerrymandering") {
-          var conf = document.getElementById('gerry-config').value;
-          if (conf !== "pack-red") {
-            return { success: false, message: "Select the specific boundary configuration that gerrymanders the map to give Red a 3-0 victory." };
+          if (gerryC.value !== 'pack-red') {
+            return { success: false, message: "Select the red gerrymandering config." };
           }
         }
         
         if (id === "action") {
-          var cVal = conSel.value;
-          var tVal = trgSel.value;
-          var letter = letTxt.value.trim();
-          if (!cVal || !tVal) {
-            return { success: false, message: "Select both a community concern and a target county office in your plan." };
-          }
-          if (letter.length < 30) {
-            return { success: false, message: "Complete a professional advocacy letter (at least 30 characters) to log this project." };
+          if (!civicCon.value || civicLet.value.trim().length < 20) {
+            return { success: false, message: "Complete all fields of the Civic Action planner." };
           }
         }
         
-        // Bind the actual workspace data from hidden textareas
+        if (id === "democracy") {
+          if (demTenet.value !== 'correct') {
+            return { success: false, message: "Select correct tenet matching 'above the law'." };
+          }
+        }
+        
+        if (id === "convention") {
+          if (convComp.value !== 'great') {
+            return { success: false, message: "Select correct compromise for bicameral representation." };
+          }
+        }
+        
+        if (id === "declaration") {
+          if (decRight.value !== 'correct') {
+            return { success: false, message: "Complete the Jefferson quote correctly." };
+          }
+        }
+        
+        // Bind actual data
         var hiddenText = document.getElementById('evidence-text-' + id).value;
         card.querySelector('textarea').value = hiddenText;
         
@@ -958,77 +1007,67 @@
       window.restoreInteractiveState = function(card, savedState) {
         var id = card.dataset.id;
         
+        if (id === "bill-runner" && savedState.WIN) {
+          if (savedState.WIN === "true" || savedState.WIN === true) {
+            playerX = 285;
+            playerY = 145;
+            updateBrHUD();
+            document.getElementById('game-overlay-br').style.display = 'flex';
+            document.getElementById('game-overlay-br').querySelector('h4').textContent = "Bill Signed! 📜";
+          }
+        }
+        
         if (id === "courtroom" && savedState.AMEND) {
-          var parts = savedState.AMEND.split('\n');
-          // Parse savedState fields: EV1:true, EV2:true, etc.
-          var ev1Save = savedState.EV1 || false;
-          var ev2Save = savedState.EV2 || false;
-          
-          if (ev1Save === "true" || ev1Save === true) {
-            selectedEvs.ev1 = true;
-            document.getElementById('ev-1').classList.add('active');
-            document.getElementById('ev-1-lbl').textContent = "✅ Captured";
-            document.getElementById('ev-1-lbl').style.color = "#10b981";
-          }
-          if (ev2Save === "true" || ev2Save === true) {
-            selectedEvs.ev2 = true;
-            document.getElementById('ev-2').classList.add('active');
-            document.getElementById('ev-2-lbl').textContent = "✅ Captured";
-            document.getElementById('ev-2-lbl').style.color = "#10b981";
-          }
-          
-          document.getElementById('court-amendment').value = savedState.AMEND || "";
-          document.getElementById('court-ruling').value = savedState.RULING || "";
+          selectedEvs.ev1 = savedState.EV1 === "true" || savedState.EV1 === true;
+          selectedEvs.ev2 = savedState.EV2 === "true" || savedState.EV2 === true;
+          if (selectedEvs.ev1) document.getElementById('ev-1').classList.add('active');
+          if (selectedEvs.ev2) document.getElementById('ev-2').classList.add('active');
+          amendSel.value = savedState.AMEND;
+          rulingSel.value = savedState.RULING;
           updateScale();
           validateCourtroom();
         }
         
         if (id === "federalism" && savedState.NAT) {
-          // NAT: f-item-1, f-item-4
-          // Parse lines
-          var lines = savedState.NAT.split('\n');
-          var natItems = savedState.NAT.replace("NAT: ", "").split(', ');
-          var stateItems = savedState.STATE.replace("STATE: ", "").split(', ');
-          var conItems = savedState.CON.replace("CON: ", "").split(', ');
-          
+          var natList = savedState.NAT.replace("NAT: ", "").split(', ');
+          var stateList = savedState.STATE.replace("STATE: ", "").split(', ');
+          var conList = savedState.CON.replace("CON: ", "").split(', ');
           document.querySelectorAll('.drag-item[data-drawer="fed-drawer"]').forEach(function(item) {
-            var txt = item.textContent;
-            if (natItems.indexOf(txt) > -1) document.getElementById('fed-nat').appendChild(item);
-            if (stateItems.indexOf(txt) > -1) document.getElementById('fed-state').appendChild(item);
-            if (conItems.indexOf(txt) > -1) document.getElementById('fed-con').appendChild(item);
+            var txt = item.textContent.trim();
+            if (natList.indexOf(txt) > -1) document.getElementById('fed-nat').appendChild(item);
+            if (stateList.indexOf(txt) > -1) document.getElementById('fed-state').appendChild(item);
+            if (conList.indexOf(txt) > -1) document.getElementById('fed-con').appendChild(item);
           });
           validateFederalism();
         }
         
         if (id === "policy" && savedState.COST) {
-          document.getElementById('slide-cost').value = savedState.COST;
-          document.getElementById('slide-benefit').value = savedState.BENEFIT;
-          document.getElementById('slide-time').value = savedState.TIME;
-          document.getElementById('policy-brief-proposal').value = savedState.PROP || "";
+          slideCost.value = savedState.COST;
+          slideBenefit.value = savedState.BENEFIT;
+          letTxt.value = savedState.PROP || "";
           updatePolicyUI();
         }
         
         if (id === "branches" && savedState.vals) {
-          var valsArr = savedState.vals.split(',');
-          branchControls.forEach(function(cid, idx) {
-            if (valsArr[idx]) document.getElementById(cid).value = valsArr[idx];
-          });
+          var parts = savedState.vals.split(',');
+          document.getElementById('branch-1-actor').value = parts[0] || "";
+          document.getElementById('branch-1-checked').value = parts[1] || "";
           validateBranches();
         }
         
         if (id === "billtolaw" && savedState.order) {
-          var bdropzones = ['bill-s1', 'bill-s2', 'bill-s3', 'bill-s4', 'bill-s5'];
+          var dropzones = ['bill-s1', 'bill-s2', 'bill-s3'];
           savedState.order.split(',').forEach(function(val, idx) {
             if (val) {
               var item = document.querySelector('.drag-item[data-val="' + val + '"][data-drawer="bill-drawer"]');
-              if (item) document.getElementById(bdropzones[idx]).appendChild(item);
+              if (item) document.getElementById(dropzones[idx]).appendChild(item);
             }
           });
           validateBillToLaw();
         }
         
-        if (id === "electoral" && savedState.selections) {
-          savedState.selections.split(',').forEach(function(reg) {
+        if (id === "electoral" && savedState.SELECTIONS) {
+          savedState.SELECTIONS.split(',').forEach(function(reg) {
             if (reg) {
               selectedRegions[reg] = true;
               var blk = document.getElementById('reg-' + reg);
@@ -1038,16 +1077,30 @@
           updateElectoralTally();
         }
         
-        if (id === "gerrymandering" && savedState.config) {
-          document.getElementById('gerry-config').value = savedState.config;
-          document.getElementById('gerry-config').dispatchEvent(new Event('change'));
+        if (id === "gerrymandering" && savedState.CONFIG) {
+          gerryC.value = savedState.CONFIG;
+          gerryC.dispatchEvent(new Event('change'));
         }
         
-        if (id === "action" && savedState.concern) {
-          document.getElementById('civic-concern').value = savedState.concern;
-          document.getElementById('civic-target').value = savedState.target;
-          document.getElementById('civic-letter').value = savedState.letter;
+        if (id === "action" && savedState.CONCERN) {
+          civicCon.value = savedState.CONCERN;
+          civicLet.value = savedState.LETTER || "";
           validateAction();
+        }
+        
+        if (id === "democracy" && savedState.TENET) {
+          demTenet.value = savedState.TENET;
+          demTenet.dispatchEvent(new Event('change'));
+        }
+        
+        if (id === "convention" && savedState.COMPROMISE) {
+          convComp.value = savedState.COMPROMISE;
+          convComp.dispatchEvent(new Event('change'));
+        }
+        
+        if (id === "declaration" && savedState.RIGHT) {
+          decRight.value = savedState.RIGHT;
+          decRight.dispatchEvent(new Event('change'));
         }
       };
 
@@ -1055,12 +1108,18 @@
       window.getInteractiveState = function(card) {
         var id = card.dataset.id;
         
+        if (id === "bill-runner") {
+          return {
+            WIN: (playerX > 270 && playerY > 130)
+          };
+        }
+        
         if (id === "courtroom") {
           return {
             EV1: selectedEvs.ev1,
             EV2: selectedEvs.ev2,
-            AMEND: document.getElementById('court-amendment').value,
-            RULING: document.getElementById('court-ruling').value
+            AMEND: amendSel.value,
+            RULING: rulingSel.value
           };
         }
         
@@ -1077,17 +1136,18 @@
         
         if (id === "policy") {
           return {
-            COST: document.getElementById('slide-cost').value,
-            BENEFIT: document.getElementById('slide-benefit').value,
-            TIME: document.getElementById('slide-time').value,
-            PROP: document.getElementById('policy-brief-proposal').value
+            COST: slideCost.value,
+            BENEFIT: slideBenefit.value,
+            PROP: letTxt.value
           };
         }
         
         if (id === "branches") {
-          var valsArr = branchControls.map(function(cid) { return document.getElementById(cid).value; });
           return {
-            vals: valsArr.join(',')
+            vals: [
+              document.getElementById('branch-1-actor').value,
+              document.getElementById('branch-1-checked').value
+            ].join(',')
           };
         }
         
@@ -1104,21 +1164,38 @@
         if (id === "electoral") {
           var activeRegs = Object.keys(selectedRegions).filter(function(k) { return selectedRegions[k]; });
           return {
-            selections: activeRegs.join(',')
+            SELECTIONS: activeRegs.join(',')
           };
         }
         
         if (id === "gerrymandering") {
           return {
-            config: document.getElementById('gerry-config').value
+            CONFIG: gerryC.value
           };
         }
         
         if (id === "action") {
           return {
-            concern: document.getElementById('civic-concern').value,
-            target: document.getElementById('civic-target').value,
-            letter: document.getElementById('civic-letter').value
+            CONCERN: civicCon.value,
+            LETTER: civicLet.value
+          };
+        }
+        
+        if (id === "democracy") {
+          return {
+            TENET: demTenet.value
+          };
+        }
+        
+        if (id === "convention") {
+          return {
+            COMPROMISE: convComp.value
+          };
+        }
+        
+        if (id === "declaration") {
+          return {
+            RIGHT: decRight.value
           };
         }
         

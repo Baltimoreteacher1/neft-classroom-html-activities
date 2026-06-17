@@ -9,14 +9,16 @@
     <style>
       /* Hebrew tab-specific styles */
       .hebrew-passage-container {
-        max-height: 250px;
+        max-height: 300px;
         overflow-y: auto;
-        background: #ffffff;
-        border: 1px solid var(--border-color);
+        background: rgba(30, 41, 59, 0.45);
+        border: 1px solid var(--border-glow);
         border-radius: var(--radius-sm);
         padding: 20px;
         line-height: 2;
-        box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
+        box-shadow: var(--shadow-sm);
+        direction: rtl;
+        text-align: right;
       }
       
       .rtl-sentence-builder {
@@ -26,8 +28,8 @@
         gap: 8px;
         overflow-x: auto;
         padding: 10px;
-        background: #f1f5f9;
-        border: 2px dashed #cbd5e1;
+        background: var(--bg-slate-900);
+        border: 2px dashed var(--border-glow);
         border-radius: var(--radius-sm);
         min-height: 60px;
         align-items: center;
@@ -42,7 +44,6 @@
       .bubble {
         padding: 12px 16px;
         border-radius: 12px;
-        max-width: 80%;
         font-family: var(--hebrew-font);
         font-size: 1.05rem;
         line-height: 1.5;
@@ -50,7 +51,8 @@
         box-shadow: var(--shadow-sm);
       }
       .bubble.left {
-        background: #f1f5f9;
+        background: var(--bg-slate-800);
+        border: 1px solid var(--border-glow);
         align-self: flex-start;
         border-bottom-left-radius: 2px;
         direction: rtl;
@@ -58,7 +60,7 @@
       }
       .bubble.right {
         background: var(--accent-light);
-        border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+        border: 1px solid var(--border-focus);
         align-self: flex-end;
         border-bottom-right-radius: 2px;
         direction: rtl;
@@ -68,26 +70,66 @@
       .dialogue-select {
         font-family: var(--hebrew-font);
         font-size: 0.95rem;
-        padding: 4px 8px;
-        border-radius: 4px;
-        border: 1px solid var(--accent);
+        padding: 6px 10px;
+        border-radius: 6px;
+        border: 1px solid var(--border-focus);
         outline: none;
         direction: rtl;
-        background: #ffffff;
+        background: var(--bg-slate-900);
+        color: var(--text-white);
+      }
+
+      /* CSS-only translation tooltip styling */
+      .hover-word {
+        position: relative;
+        cursor: help;
+        border-bottom: 1px dotted var(--accent);
+        display: inline-block;
+      }
+      .hover-word:hover {
+        color: var(--accent);
+        background: var(--accent-light);
+        border-radius: 3px;
+      }
+      .hover-word::after {
+        content: attr(data-translation);
+        position: absolute;
+        bottom: 130%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--bg-slate-900);
+        border: 1px solid var(--accent);
+        color: var(--text-white);
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-family: var(--font-body);
+        white-space: nowrap;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.15s ease, transform 0.15s ease;
+        z-index: 100;
+        box-shadow: var(--shadow-md);
+        pointer-events: none;
+      }
+      .hover-word:hover::after {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(-50%) translateY(-2px);
       }
     </style>
   </head>
-  <body data-subject="hebrew" style="--accent: #b45309">
+  <body data-subject="hebrew" style="--accent: #f97316">
     <main class="wrap">
       <header class="hero">
         <a class="back" href="/personal/aviad/">&larr; Aviad hub</a>
         <span class="badge">Hebrew Campaign</span>
-        <h1>Hebrew Language</h1>
-        <p class="lead">Connect to your heritage and study vocabulary. Read with interactive translation assistance, conjugate verbs across tenses, and map word roots.</p>
+        <h1>Hebrew Language Campaign</h1>
+        <p class="lead">Connect to your heritage and study vocabulary. Read with interactive translation assistance, conjugate verbs across tenses, map word roots, and complete Sophomore challenges.</p>
         
         <div class="stats">
           <div class="stat"><b id="xp">0 XP</b><span>earned here</span></div>
-          <div class="stat"><b>8</b><span>developed activities</span></div>
+          <div class="stat"><b>12</b><span>developed activities</span></div>
           <div class="stat"><b id="done">0%</b><span>completion</span></div>
         </div>
       </header>
@@ -97,8 +139,10 @@
     <nav class="tabs">
       <div class="tabbar" role="tablist">
         <button class="tab" aria-selected="true" data-filter="all">All</button>
-        <button class="tab" data-filter="Workshop">Workshops</button>
+        <button class="tab" data-filter="Learn">Learn &amp; Read</button>
         <button class="tab" data-filter="Practice">Practice</button>
+        <button class="tab" data-filter="Workshop">Workshops</button>
+        <button class="tab" data-filter="Game">Arcade Games</button>
         <button class="tab" data-filter="Project">Projects</button>
       </div>
     </nav>
@@ -106,16 +150,16 @@
     <!-- Main Activities Panel -->
     <main class="wrap panel active">
       <div class="section-head">
-        <h2>Readiness Challenges</h2>
+        <h2>Hebrew Readiness Challenges</h2>
         <p class="muted">Complete interactive tasks, verify your solutions, and save your work to log XP.</p>
       </div>
 
       <div class="grid">
         
-        <!-- Activity 1: Passage Reader (Workshop) -->
-        <article class="activity" data-id="passage" data-type="Workshop">
+        <!-- Activity 1: Passage Reader (Learn) -->
+        <article class="activity" data-id="passage" data-type="Learn">
           <div class="meta">
-            <span class="pill">Workshop</span>
+            <span class="pill">Learn</span>
             <span class="pill">25 min</span>
           </div>
           <h3>Passage Reader</h3>
@@ -155,7 +199,7 @@
               <span class="step-label">Question:</span>
               <div style="flex:1;">
                 <p style="font-size:0.85rem; font-weight:700; color:var(--text-main); margin-bottom:4px;">According to the text, which academic subjects does Aviad love studying?</p>
-                <input type="text" id="pass-q-ans" placeholder="Enter subjects (in English or Hebrew)..." style="width:100%; padding:8px; border:1px solid var(--border-color); border-radius:4px;" />
+                <input type="text" id="pass-q-ans" placeholder="Enter subjects (in English or Hebrew)..." style="width:100%; padding:8px; border:1px solid var(--border-glow); border-radius:4px; background:var(--bg-slate-900); color:var(--text-white);" />
               </div>
             </div>
           </div>
@@ -232,9 +276,9 @@
           <div class="activity-interactive-area">
             <div style="display:flex; flex-direction:column; gap:10px;">
               
-              <div style="background:#f8fafc; padding:10px; border-radius:4px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+              <div style="background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
                 <span class="hebrew" style="font-size:1.1rem; font-weight:700;">ספרייה (Library)</span>
-                <select id="root-w1" style="padding:4px; border-radius:4px; border:1px solid var(--border-color);">
+                <select id="root-w1" style="padding:4px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
                   <option value="">Select Root...</option>
                   <option value="spr">ס - פ - ר (Book/Count)</option>
                   <option value="ktb">כ - ת - ב (Writing)</option>
@@ -242,9 +286,9 @@
                 </select>
               </div>
               
-              <div style="background:#f8fafc; padding:10px; border-radius:4px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+              <div style="background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
                 <span class="hebrew" style="font-size:1.1rem; font-weight:700;">מכתב (Letter)</span>
-                <select id="root-w2" style="padding:4px; border-radius:4px; border:1px solid var(--border-color);">
+                <select id="root-w2" style="padding:4px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
                   <option value="">Select Root...</option>
                   <option value="spr">ס - פ - ר</option>
                   <option value="ktb">כ - ת - ב</option>
@@ -252,9 +296,9 @@
                 </select>
               </div>
 
-              <div style="background:#f8fafc; padding:10px; border-radius:4px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+              <div style="background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
                 <span class="hebrew" style="font-size:1.1rem; font-weight:700;">מילה (Word)</span>
-                <select id="root-w3" style="padding:4px; border-radius:4px; border:1px solid var(--border-color);">
+                <select id="root-w3" style="padding:4px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
                   <option value="">Select Root...</option>
                   <option value="spr">ס - פ - ר</option>
                   <option value="ktb">כ - ת - ב</option>
@@ -262,9 +306,9 @@
                 </select>
               </div>
 
-              <div style="background:#f8fafc; padding:10px; border-radius:4px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+              <div style="background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
                 <span class="hebrew" style="font-size:1.1rem; font-weight:700;">כותב (Writer)</span>
-                <select id="root-w4" style="padding:4px; border-radius:4px; border:1px solid var(--border-color);">
+                <select id="root-w4" style="padding:4px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
                   <option value="">Select Root...</option>
                   <option value="spr">ס - פ - ר</option>
                   <option value="ktb">כ - ת - ב</option>
@@ -294,9 +338,9 @@
           <div class="activity-interactive-area">
             <div style="display:flex; flex-direction:column; gap:10px;">
               
-              <div style="background:#f8fafc; padding:10px; border-radius:4px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+              <div style="background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
                 <span class="hebrew" style="font-size:1.4rem; font-weight:900;">בָ / בַ (Kamatz / Patach)</span>
-                <select id="vow-1" style="padding:4px; border-radius:4px; border:1px solid var(--border-color);">
+                <select id="vow-1" style="padding:4px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
                   <option value="">Select sound...</option>
                   <option value="ah">"Ah" sound (as in father)</option>
                   <option value="ee">"Ee" sound (as in beet)</option>
@@ -304,9 +348,9 @@
                 </select>
               </div>
               
-              <div style="background:#f8fafc; padding:10px; border-radius:4px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+              <div style="background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
                 <span class="hebrew" style="font-size:1.4rem; font-weight:900;">בִ (Hirik)</span>
-                <select id="vow-2" style="padding:4px; border-radius:4px; border:1px solid var(--border-color);">
+                <select id="vow-2" style="padding:4px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
                   <option value="">Select sound...</option>
                   <option value="ah">"Ah" sound</option>
                   <option value="ee">"Ee" sound (as in beet)</option>
@@ -314,9 +358,9 @@
                 </select>
               </div>
 
-              <div style="background:#f8fafc; padding:10px; border-radius:4px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+              <div style="background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
                 <span class="hebrew" style="font-size:1.4rem; font-weight:900;">בֵ / בֶ (Tzere / Segol)</span>
-                <select id="vow-3" style="padding:4px; border-radius:4px; border:1px solid var(--border-color);">
+                <select id="vow-3" style="padding:4px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
                   <option value="">Select sound...</option>
                   <option value="oh">"Oh" sound</option>
                   <option value="eh">"Eh" sound (as in bet)</option>
@@ -346,9 +390,9 @@
           <div class="activity-interactive-area">
             <div style="display:flex; flex-direction:column; gap:10px;">
               
-              <div style="background:#f8fafc; padding:10px; border-radius:4px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+              <div style="background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
                 <span class="hebrew" style="font-size:1.1rem; font-weight:700;">אני (Ani)</span>
-                <select id="pro-1" style="padding:4px; border-radius:4px; border:1px solid var(--border-color);">
+                <select id="pro-1" style="padding:4px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
                   <option value="">Select meaning...</option>
                   <option value="i">I</option>
                   <option value="we">We</option>
@@ -356,9 +400,9 @@
                 </select>
               </div>
               
-              <div style="background:#f8fafc; padding:10px; border-radius:4px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+              <div style="background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
                 <span class="hebrew" style="font-size:1.1rem; font-weight:700;">אנחנו (Anachnu)</span>
-                <select id="pro-2" style="padding:4px; border-radius:4px; border:1px solid var(--border-color);">
+                <select id="pro-2" style="padding:4px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
                   <option value="">Select meaning...</option>
                   <option value="they">They</option>
                   <option value="we">We</option>
@@ -366,9 +410,9 @@
                 </select>
               </div>
 
-              <div style="background:#f8fafc; padding:10px; border-radius:4px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+              <div style="background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
                 <span class="hebrew" style="font-size:1.1rem; font-weight:700;">הוא (Hu)</span>
-                <select id="pro-3" style="padding:4px; border-radius:4px; border:1px solid var(--border-color);">
+                <select id="pro-3" style="padding:4px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
                   <option value="">Select meaning...</option>
                   <option value="she">She</option>
                   <option value="he">He</option>
@@ -376,9 +420,9 @@
                 </select>
               </div>
 
-              <div style="background:#f8fafc; padding:10px; border-radius:4px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+              <div style="background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
                 <span class="hebrew" style="font-size:1.1rem; font-weight:700;">היא (Hi)</span>
-                <select id="pro-4" style="padding:4px; border-radius:4px; border:1px solid var(--border-color);">
+                <select id="pro-4" style="padding:4px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
                   <option value="">Select meaning...</option>
                   <option value="she">She</option>
                   <option value="they">They</option>
@@ -408,9 +452,9 @@
           <div class="activity-interactive-area">
             <div style="display:flex; flex-direction:column; gap:10px;">
               
-              <div style="background:#f8fafc; padding:10px; border-radius:4px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+              <div style="background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
                 <span class="hebrew" style="font-size:1.1rem; font-weight:700;">תיכון (Tichon)</span>
-                <select id="voc-1" style="padding:4px; border-radius:4px; border:1px solid var(--border-color);">
+                <select id="voc-1" style="padding:4px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
                   <option value="">Select meaning...</option>
                   <option value="elementary">Elementary School</option>
                   <option value="high">High School</option>
@@ -418,9 +462,9 @@
                 </select>
               </div>
               
-              <div style="background:#f8fafc; padding:10px; border-radius:4px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+              <div style="background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
                 <span class="hebrew" style="font-size:1.1rem; font-weight:700;">מבחן (Mivchan)</span>
-                <select id="voc-2" style="padding:4px; border-radius:4px; border:1px solid var(--border-color);">
+                <select id="voc-2" style="padding:4px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
                   <option value="">Select meaning...</option>
                   <option value="homework">Homework</option>
                   <option value="notebook">Notebook</option>
@@ -428,9 +472,9 @@
                 </select>
               </div>
 
-              <div style="background:#f8fafc; padding:10px; border-radius:4px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+              <div style="background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
                 <span class="hebrew" style="font-size:1.1rem; font-weight:700;">חברים (Chaverim)</span>
-                <select id="voc-3" style="padding:4px; border-radius:4px; border:1px solid var(--border-color);">
+                <select id="voc-3" style="padding:4px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
                   <option value="">Select meaning...</option>
                   <option value="teachers">Teachers</option>
                   <option value="friends">Friends / Classmates</option>
@@ -522,11 +566,204 @@
             
             <div class="step-row" style="margin-top: 10px;">
               <span class="step-label">Reflection:</span>
-              <textarea id="dial-reflection" placeholder="Draft a brief reflection in English about what goals you have for Hebrew language learning this upcoming school year." style="min-height: 60px;"></textarea>
+              <textarea id="dial-reflection" placeholder="Draft a brief reflection in English about what goals you have for Hebrew language learning this upcoming school year." style="min-height: 60px; background:var(--bg-slate-900); border:1px solid var(--border-glow); color:var(--text-white); width:100%; padding:8px; border-radius:4px;"></textarea>
             </div>
           </div>
 
           <textarea style="display:none;" id="evidence-text-dialogue"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 9: Root Sorter Arcade (Game) -->
+        <article class="activity" data-id="root-sorter-game" data-type="Game">
+          <div class="meta">
+            <span class="pill">Game</span>
+            <span class="pill">15 min</span>
+          </div>
+          <h3>Root Sorter Arcade</h3>
+          <p>Sort falling Hebrew words into their correct roots: <b>ס-פ-ר</b>, <b>כ-ת-ב</b>, or <b>ד-ב-ר</b>. Get a score of 100 to pass.</p>
+          <div class="activity-interactive-area">
+            <div class="game-container">
+              <div class="game-hud">
+                <div class="game-score-card">Score: <span id="game-score-val-hebrew">0</span></div>
+                <div class="game-score-card">High Score: <span id="high-score-hebrew">0</span></div>
+                <div class="game-score-card">Lives: <span id="game-lives-val-hebrew">3</span></div>
+              </div>
+              <div class="game-overlay" id="game-overlay-hebrew">
+                <h4 id="game-over-title-hebrew">Root Sorter</h4>
+                <p id="game-over-desc-hebrew">Match the three-letter Hebrew roots!</p>
+                <button class="btn" id="game-btn-hebrew">Start Game</button>
+              </div>
+              <canvas class="game-canvas" id="canvas-hebrew"></canvas>
+            </div>
+          </div>
+          <textarea style="display:none;" id="evidence-text-root-sorter-game"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 10: Gender Decoder (Practice) -->
+        <article class="activity" data-id="genders" data-type="Practice">
+          <div class="meta">
+            <span class="pill">Practice</span>
+            <span class="pill">15 min</span>
+          </div>
+          <h3>Gender Decoder</h3>
+          <p>Classify the following Hebrew nouns into Masculine or Feminine genders.</p>
+          <div class="activity-interactive-area">
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <div style="background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
+                <span class="hebrew" style="font-size:1.1rem; font-weight:700;">ספר (Book)</span>
+                <select id="gen-1" style="padding:6px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
+                  <option value="">Choose Gender...</option>
+                  <option value="masc">Masculine (זכר)</option>
+                  <option value="fem">Feminine (נקבה)</option>
+                </select>
+              </div>
+              <div style="background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
+                <span class="hebrew" style="font-size:1.1rem; font-weight:700;">כיתה (Classroom)</span>
+                <select id="gen-2" style="padding:6px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
+                  <option value="">Choose Gender...</option>
+                  <option value="masc">Masculine (זכר)</option>
+                  <option value="fem">Feminine (נקבה)</option>
+                </select>
+              </div>
+              <div style="background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
+                <span class="hebrew" style="font-size:1.1rem; font-weight:700;">עיפרון (Pencil)</span>
+                <select id="gen-3" style="padding:6px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
+                  <option value="">Choose Gender...</option>
+                  <option value="masc">Masculine (זכר)</option>
+                  <option value="fem">Feminine (נקבה)</option>
+                </select>
+              </div>
+              <div style="background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
+                <span class="hebrew" style="font-size:1.1rem; font-weight:700;">מנורה (Lamp)</span>
+                <select id="gen-4" style="padding:6px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
+                  <option value="">Choose Gender...</option>
+                  <option value="masc">Masculine (זכר)</option>
+                  <option value="fem">Feminine (נקבה)</option>
+                </select>
+              </div>
+              <div style="background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
+                <span class="hebrew" style="font-size:1.1rem; font-weight:700;">מחברת (Notebook)</span>
+                <select id="gen-5" style="padding:6px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
+                  <option value="">Choose Gender...</option>
+                  <option value="masc">Masculine (זכר)</option>
+                  <option value="fem">Feminine (נקבה)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <textarea style="display:none;" id="evidence-text-genders"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 11: Preposition Matrix (Practice) -->
+        <article class="activity" data-id="prepositions" data-type="Practice">
+          <div class="meta">
+            <span class="pill">Practice</span>
+            <span class="pill">15 min</span>
+          </div>
+          <h3>Preposition Matrix</h3>
+          <p>Match the Hebrew preposition inflections to their correct English definitions.</p>
+          <div class="activity-interactive-area">
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <div style="background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
+                <span class="hebrew" style="font-size:1.1rem; font-weight:700;">איתי (Iti)</span>
+                <select id="prep-1" style="padding:6px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
+                  <option value="">Choose translation...</option>
+                  <option value="with-me">With me</option>
+                  <option value="with-us">With us</option>
+                  <option value="to-him">To him</option>
+                </select>
+              </div>
+              <div style="background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
+                <span class="hebrew" style="font-size:1.1rem; font-weight:700;">איתנו (Itanu)</span>
+                <select id="prep-2" style="padding:6px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
+                  <option value="">Choose translation...</option>
+                  <option value="with-us">With us</option>
+                  <option value="with-her">With her</option>
+                  <option value="to-me">To me</option>
+                </select>
+              </div>
+              <div style="background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
+                <span class="hebrew" style="font-size:1.1rem; font-weight:700;">אליה (Eleiha)</span>
+                <select id="prep-3" style="padding:6px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
+                  <option value="">Choose translation...</option>
+                  <option value="to-her">To her</option>
+                  <option value="to-you">To you (m.s.)</option>
+                  <option value="with-her">With her</option>
+                </select>
+              </div>
+              <div style="background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
+                <span class="hebrew" style="font-size:1.1rem; font-weight:700;">אליך (Eleicha)</span>
+                <select id="prep-4" style="padding:6px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
+                  <option value="">Choose translation...</option>
+                  <option value="to-you">To you (m.s.)</option>
+                  <option value="to-me">To me</option>
+                  <option value="with-you">With you (m.s.)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <textarea style="display:none;" id="evidence-text-prepositions"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 12: Heritage Geography (Project) -->
+        <article class="activity" data-id="heritage" data-type="Project">
+          <div class="meta">
+            <span class="pill">Project</span>
+            <span class="pill">25 min</span>
+          </div>
+          <h3>Heritage Geography</h3>
+          <p>Read the paragraph below in Hebrew, then answer the questions.</p>
+          <div class="activity-interactive-area">
+            <div class="hebrew-passage-container hebrew" style="margin-bottom: 14px;">
+              ירושלים היא עיר הבירה של ישראל, עיר עתיקה והיסטורית. תל אביב היא עיר מודרנית השוכנת לחוף הים התיכון, מרכז התרבות והכלכלה. הגליל בצפון הוא אזור הררי וירוק.
+            </div>
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              <div>
+                <p style="font-size:0.85rem; font-weight:700; color:var(--text-main); margin-bottom:4px;">1. Which city is the capital (עיר הבירה)?</p>
+                <select id="her-q1" style="padding:6px; width:100%; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
+                  <option value="">Select...</option>
+                  <option value="tel-aviv">תל אביב</option>
+                  <option value="jerusalem">ירושלים</option>
+                  <option value="haifa">חיפה</option>
+                </select>
+              </div>
+              <div>
+                <p style="font-size:0.85rem; font-weight:700; color:var(--text-main); margin-bottom:4px;">2. Where is Tel Aviv located?</p>
+                <select id="her-q2" style="padding:6px; width:100%; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
+                  <option value="">Select...</option>
+                  <option value="south">In the South (בדרום)</option>
+                  <option value="coast">Mediterranean Coast (חוף הים התיכון)</option>
+                  <option value="north">In the North (בצפון)</option>
+                </select>
+              </div>
+              <div>
+                <p style="font-size:0.85rem; font-weight:700; color:var(--text-main); margin-bottom:4px;">3. What describes the Galilee (הגליל)?</p>
+                <select id="her-q3" style="padding:6px; width:100%; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
+                  <option value="">Select...</option>
+                  <option value="desert">Dry desert (מדבר יבש)</option>
+                  <option value="mountain">Mountainous and green (הררי וירוק)</option>
+                  <option value="sea">Deep sea (ים עמוק)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <textarea style="display:none;" id="evidence-text-heritage"></textarea>
           <div class="actions">
             <button class="btn secondary" data-save>Save workspace</button>
             <button class="btn" data-complete>Complete with evidence</button>
@@ -619,6 +856,36 @@
       dial2.addEventListener('change', validateDialogue);
       dialRef.addEventListener('input', validateDialogue);
 
+      // 10. Genders
+      var genControls = ['gen-1', 'gen-2', 'gen-3', 'gen-4', 'gen-5'];
+      function validateGenders() {
+        var vals = genControls.map(function(cid) { return document.getElementById(cid).value; });
+        document.getElementById('evidence-text-genders').value = vals.join(',');
+      }
+      genControls.forEach(function(cid) {
+        document.getElementById(cid).addEventListener('change', validateGenders);
+      });
+
+      // 11. Prepositions
+      var prepControls = ['prep-1', 'prep-2', 'prep-3', 'prep-4'];
+      function validatePrepositions() {
+        var vals = prepControls.map(function(cid) { return document.getElementById(cid).value; });
+        document.getElementById('evidence-text-prepositions').value = vals.join(',');
+      }
+      prepControls.forEach(function(cid) {
+        document.getElementById(cid).addEventListener('change', validatePrepositions);
+      });
+
+      // 12. Heritage Geography
+      var herControls = ['her-q1', 'her-q2', 'her-q3'];
+      function validateHeritage() {
+        var vals = herControls.map(function(cid) { return document.getElementById(cid).value; });
+        document.getElementById('evidence-text-heritage').value = vals.join(',');
+      }
+      herControls.forEach(function(cid) {
+        document.getElementById(cid).addEventListener('change', validateHeritage);
+      });
+
       // Drag and drop trigger validate callbacks
       window.validateActivityState = function(card) {
         var id = card.dataset.id;
@@ -694,10 +961,9 @@
           if (items.length !== 4) {
             return { success: false, message: "Drag all 4 word blocks into the drop zone first." };
           }
-          // Correct order (RTL reading): התלמיד (student) כותב (writes) מכתב (letter) בעברית (hebrew)
           var vals = items.map(function(item) { return item.dataset.val; }).join(',');
           if (vals !== "student,writes,letter,hebrew") {
-            return { success: false, message: "Arrange the words in correct Hebrew grammatical order (Subject -> Verb -> Object -> Preposition) reading from right to left!" };
+            return { success: false, message: "Arrange the words in correct Hebrew grammatical order reading from right to left!" };
           }
         }
         
@@ -707,10 +973,48 @@
           var ref = dialRef.value.trim();
           
           if (d1 !== 'ok' || d2 !== 'ready') {
-            return { success: false, message: "Complete the dialogue flow by choosing the polite and appropriate classmate responses." };
+            return { success: false, message: "Complete the dialogue flow by choosing the polite classmate responses." };
           }
           if (ref.length < 20) {
             return { success: false, message: "Complete the reflection text box (at least 20 characters) explaining your language learning goals." };
+          }
+        }
+
+        if (id === "root-sorter-game") {
+          var scoreVal = parseInt(document.getElementById('game-score-val-hebrew').textContent, 10);
+          var hsVal = parseInt(document.getElementById('high-score-hebrew').textContent, 10);
+          if (Math.max(scoreVal, hsVal) < 100) {
+            return { success: false, message: "Start the game and sort Hebrew roots until you achieve a score of at least 100!" };
+          }
+        }
+        
+        if (id === "genders") {
+          var g1 = document.getElementById('gen-1').value;
+          var g2 = document.getElementById('gen-2').value;
+          var g3 = document.getElementById('gen-3').value;
+          var g4 = document.getElementById('gen-4').value;
+          var g5 = document.getElementById('gen-5').value;
+          if (g1 !== 'masc' || g2 !== 'fem' || g3 !== 'masc' || g4 !== 'fem' || g5 !== 'fem') {
+            return { success: false, message: "Classify all 5 words with their correct Hebrew genders." };
+          }
+        }
+        
+        if (id === "prepositions") {
+          var p1 = document.getElementById('prep-1').value;
+          var p2 = document.getElementById('prep-2').value;
+          var p3 = document.getElementById('prep-3').value;
+          var p4 = document.getElementById('prep-4').value;
+          if (p1 !== 'with-me' || p2 !== 'with-us' || p3 !== 'to-her' || p4 !== 'to-you') {
+            return { success: false, message: "Select the correct English translations for all 4 preposition inflections." };
+          }
+        }
+        
+        if (id === "heritage") {
+          var h1 = document.getElementById('her-q1').value;
+          var h2 = document.getElementById('her-q2').value;
+          var h3 = document.getElementById('her-q3').value;
+          if (h1 !== 'jerusalem' || h2 !== 'coast' || h3 !== 'mountain') {
+            return { success: false, message: "Answer all 3 reading questions correctly about Israeli heritage geography." };
           }
         }
         
@@ -731,9 +1035,7 @@
         }
         
         if (id === "conjugate" && savedState.s1) {
-          // Parse list of lines
           var lines = savedState.s1.split('\n');
-          // Format is conj-s1:ti, conj-s2:a, etc.
           lines.forEach(function(line) {
             var parts = line.split(':');
             var sid = parts[0];
@@ -794,6 +1096,36 @@
           dial2.value = savedState.DIAL2;
           dialRef.value = savedState.REFLECTION || "";
           validateDialogue();
+        }
+
+        if (id === "root-sorter-game" && savedState.SCORE) {
+          scoreHeb = parseInt(savedState.SCORE, 10);
+          updateHUDHeb();
+          document.getElementById('high-score-hebrew').textContent = scoreHeb;
+        }
+
+        if (id === "genders" && savedState.genVal) {
+          var parts = savedState.genVal.split(',');
+          genControls.forEach(function(cid, idx) {
+            if (parts[idx]) document.getElementById(cid).value = parts[idx];
+          });
+          validateGenders();
+        }
+
+        if (id === "prepositions" && savedState.prepVal) {
+          var parts = savedState.prepVal.split(',');
+          prepControls.forEach(function(cid, idx) {
+            if (parts[idx]) document.getElementById(cid).value = parts[idx];
+          });
+          validatePrepositions();
+        }
+
+        if (id === "heritage" && savedState.herVal) {
+          var parts = savedState.herVal.split(',');
+          herControls.forEach(function(cid, idx) {
+            if (parts[idx]) document.getElementById(cid).value = parts[idx];
+          });
+          validateHeritage();
         }
       };
 
@@ -862,9 +1194,290 @@
             REFLECTION: dialRef.value
           };
         }
+
+        if (id === "root-sorter-game") {
+          return {
+            SCORE: document.getElementById('game-score-val-hebrew').textContent
+          };
+        }
+
+        if (id === "genders") {
+          return {
+            genVal: genControls.map(function(cid) { return document.getElementById(cid).value; }).join(',')
+          };
+        }
+
+        if (id === "prepositions") {
+          return {
+            prepVal: prepControls.map(function(cid) { return document.getElementById(cid).value; }).join(',')
+          };
+        }
+
+        if (id === "heritage") {
+          return {
+            herVal: herControls.map(function(cid) { return document.getElementById(cid).value; }).join(',')
+          };
+        }
         
         return {};
       };
+
+      // Root Sorter Canvas Game
+      var canvHeb = document.getElementById('canvas-hebrew');
+      var ctxHeb = canvHeb.getContext('2d');
+      var scoreHeb = 0;
+      var livesHeb = 3;
+      var isPlayingHeb = false;
+      var fallingWordsHeb = [];
+      var shieldButtonsHeb = [];
+      var particleExplosionsHeb = [];
+      
+      var rootPairs = [
+        { word: "ספר", root: "ס-פ-ר" },
+        { word: "ספרייה", root: "ס-פ-ר" },
+        { word: "סיפור", root: "ס-פ-ר" },
+        { word: "סופר", root: "ס-פ-ר" },
+        { word: "כותב", root: "כ-ת-ב" },
+        { word: "מכתב", root: "כ-ת-ב" },
+        { word: "כתיבה", root: "כ-ת-ב" },
+        { word: "כתבתי", root: "כ-ת-ב" },
+        { word: "מדבר", root: "ד-ב-ר" },
+        { word: "דיברתי", root: "ד-ב-ר" },
+        { word: "דיבור", root: "ד-ב-ר" },
+        { word: "דברים", root: "ד-ב-ר" }
+      ];
+      
+      var currentRoundHeb = null;
+      var nextSpawnHeb = 0;
+      
+      function resizeCanvasHeb() {
+        var rect = canvHeb.parentNode.getBoundingClientRect();
+        canvHeb.width = rect.width;
+        canvHeb.height = rect.width * 9 / 16;
+      }
+      window.addEventListener('resize', resizeCanvasHeb);
+      resizeCanvasHeb();
+      
+      var startBtnHeb = document.getElementById('game-btn-hebrew');
+      startBtnHeb.addEventListener('click', function() {
+        if (!isPlayingHeb) {
+          EWL.playAudio('game-start');
+          document.getElementById('game-overlay-hebrew').style.display = 'none';
+          scoreHeb = 0;
+          livesHeb = 3;
+          isPlayingHeb = true;
+          fallingWordsHeb = [];
+          particleExplosionsHeb = [];
+          nextSpawnHeb = Date.now();
+          updateHUDHeb();
+          setupNewRoundHeb();
+          gameLoopHeb();
+        }
+      });
+      
+      function updateHUDHeb() {
+        document.getElementById('game-score-val-hebrew').textContent = scoreHeb;
+        document.getElementById('game-lives-val-hebrew').textContent = livesHeb;
+      }
+      
+      function setupNewRoundHeb() {
+        var randomPair = rootPairs[Math.floor(Math.random() * rootPairs.length)];
+        currentRoundHeb = {
+          word: randomPair.word,
+          root: randomPair.root
+        };
+        
+        shieldButtonsHeb = [];
+        var numShields = 3;
+        var btnWidth = canvHeb.width / 4;
+        var yPos = canvHeb.height - 40;
+        
+        var options = [currentRoundHeb.root];
+        var rootsList = ["ס-פ-ר", "כ-ת-ב", "ד-ב-ר"];
+        rootsList.forEach(function(r) {
+          if (options.indexOf(r) === -1) options.push(r);
+        });
+        
+        options.sort(function() { return 0.5 - Math.random(); });
+        
+        for (var i = 0; i < numShields; i++) {
+          shieldButtonsHeb.push({
+            x: (i + 1) * (canvHeb.width / 4) - btnWidth / 2,
+            y: yPos,
+            w: btnWidth,
+            h: 30,
+            root: options[i]
+          });
+        }
+      }
+      
+      canvHeb.addEventListener('click', function(e) {
+        if (!isPlayingHeb) return;
+        var rect = canvHeb.getBoundingClientRect();
+        var clickX = e.clientX - rect.left;
+        var clickY = e.clientY - rect.top;
+        
+        var scaleX = canvHeb.width / rect.width;
+        var scaleY = canvHeb.height / rect.height;
+        var x = clickX * scaleX;
+        var y = clickY * scaleY;
+        
+        shieldButtonsHeb.forEach(function(shield) {
+          if (x >= shield.x && x <= shield.x + shield.w && y >= shield.y && y <= shield.y + shield.h) {
+            if (shield.root === currentRoundHeb.root) {
+              scoreHeb += 25;
+              EWL.playAudio('powerup');
+              createExplosionHeb(shield.x + shield.w/2, shield.y, '#f97316');
+              fallingWordsHeb = [];
+              updateHUDHeb();
+              if (scoreHeb >= 100) {
+                endGameHeb(true);
+              } else {
+                setupNewRoundHeb();
+              }
+            } else {
+              livesHeb--;
+              EWL.playAudio('fail');
+              createExplosionHeb(x, y, '#ef4444');
+              updateHUDHeb();
+              if (livesHeb <= 0) endGameHeb(false);
+            }
+          }
+        });
+      });
+      
+      function createExplosionHeb(x, y, color) {
+        for (var i = 0; i < 15; i++) {
+          particleExplosionsHeb.push({
+            x: x,
+            y: y,
+            vx: (Math.random() - 0.5) * 6,
+            vy: (Math.random() - 0.5) * 6,
+            radius: Math.random() * 3 + 1,
+            color: color,
+            alpha: 1
+          });
+        }
+      }
+      
+      function spawnWordHeb() {
+        var x = Math.random() * (canvHeb.width - 120) + 60;
+        fallingWordsHeb.push({
+          x: x,
+          y: 0,
+          word: currentRoundHeb.word,
+          speed: 1.1 + (scoreHeb * 0.005)
+        });
+      }
+      
+      function gameLoopHeb() {
+        if (!isPlayingHeb) return;
+        
+        ctxHeb.clearRect(0, 0, canvHeb.width, canvHeb.height);
+        
+        // Target word display
+        ctxHeb.fillStyle = "rgba(30, 41, 59, 0.8)";
+        ctxHeb.fillRect(10, 10, canvHeb.width - 20, 45);
+        ctxHeb.strokeStyle = "#f97316";
+        ctxHeb.strokeRect(10, 10, canvHeb.width - 20, 45);
+        
+        ctxHeb.fillStyle = "#ffffff";
+        ctxHeb.font = "bold 13px Inter, sans-serif";
+        ctxHeb.textAlign = "center";
+        ctxHeb.fillText("MATCH ROOT OF: " + currentRoundHeb.word, canvHeb.width / 2, 36);
+        
+        if (Date.now() > nextSpawnHeb && fallingWordsHeb.length === 0) {
+          spawnWordHeb();
+          nextSpawnHeb = Date.now() + 4000;
+        }
+        
+        fallingWordsHeb.forEach(function(word, idx) {
+          word.y += word.speed;
+          
+          ctxHeb.fillStyle = "#f97316";
+          ctxHeb.font = "bold 18px sans-serif";
+          ctxHeb.fillText(word.word, word.x, word.y);
+          
+          if (word.y >= canvHeb.height - 50) {
+            livesHeb--;
+            EWL.playAudio('hit');
+            createExplosionHeb(word.x, word.y, '#ef4444');
+            fallingWordsHeb.splice(idx, 1);
+            updateHUDHeb();
+            if (livesHeb <= 0) {
+              endGameHeb(false);
+            } else {
+              setupNewRoundHeb();
+            }
+          }
+        });
+        
+        shieldButtonsHeb.forEach(function(shield) {
+          var isCorrect = (shield.root === currentRoundHeb.root);
+          ctxHeb.fillStyle = isCorrect ? "rgba(249, 115, 22, 0.3)" : "rgba(30, 41, 59, 0.9)";
+          ctxHeb.strokeStyle = isCorrect ? "#f97316" : "#94a3b8";
+          ctxHeb.lineWidth = isCorrect ? 2 : 1;
+          
+          ctxHeb.beginPath();
+          ctxHeb.roundRect(shield.x, shield.y, shield.w, shield.h, 6);
+          ctxHeb.fill();
+          ctxHeb.stroke();
+          
+          ctxHeb.fillStyle = "#ffffff";
+          ctxHeb.font = "12px Inter, sans-serif";
+          ctxHeb.fillText(shield.root, shield.x + shield.w / 2, shield.y + 18);
+        });
+        
+        particleExplosionsHeb.forEach(function(p, pIdx) {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.alpha -= 0.02;
+          if (p.alpha <= 0) {
+            particleExplosionsHeb.splice(pIdx, 1);
+          } else {
+            ctxHeb.fillStyle = p.color;
+            ctxHeb.globalAlpha = p.alpha;
+            ctxHeb.beginPath();
+            ctxHeb.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+            ctxHeb.fill();
+            ctxHeb.globalAlpha = 1.0;
+          }
+        });
+        
+        if (isPlayingHeb) {
+          requestAnimationFrame(gameLoopHeb);
+        }
+      }
+      
+      function endGameHeb(win) {
+        isPlayingHeb = false;
+        var high = EWL.saveHighScore('root-sorter-game', scoreHeb);
+        
+        var titleEl = document.getElementById('game-over-title-hebrew');
+        var descEl = document.getElementById('game-over-desc-hebrew');
+        var overlay = document.getElementById('game-overlay-hebrew');
+        var startBtn = document.getElementById('game-btn-hebrew');
+        
+        document.getElementById('evidence-text-root-sorter-game').value = "SCORE:" + scoreHeb + "\nWIN:" + win + "\nHIGH:" + (scoreHeb >= 100);
+        
+        if (win) {
+          titleEl.textContent = "Victory! 🎉";
+          descEl.textContent = "Root sorting complete! Score: " + scoreHeb + " XP logged." + (high ? " (New High Score!)" : "");
+          startBtn.textContent = "Play Again";
+          overlay.style.display = "flex";
+        } else {
+          titleEl.textContent = "Game Over 💀";
+          descEl.textContent = "Breached! Total Score: " + scoreHeb;
+          startBtn.textContent = "Try Again";
+          overlay.style.display = "flex";
+        }
+      }
+      
+      // Load saved high score initially
+      setTimeout(function() {
+        var hs = EWL.state.highScores['root-sorter-game'] || 0;
+        document.getElementById('high-score-hebrew').textContent = hs;
+      }, 150);
     </script>
   </body>
 </html>

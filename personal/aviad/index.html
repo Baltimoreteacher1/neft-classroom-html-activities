@@ -7,53 +7,54 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Aviad Hub" />
-    <meta name="theme-color" content="#4b2d73" />
-    <title>Aviad 10th Grade Readiness Summer Hub</title>
+    <meta name="theme-color" content="#0b0f19" />
+    <title>Aviad 10th Grade Summer Readiness Hub</title>
     
     <link rel="stylesheet" href="/personal/aviad/shared.css" />
     <style>
-      :root {
-        --accent: #4b2d73;
-        --accent-light: rgba(75, 45, 115, 0.08);
-      }
-      
       .hub-header {
         text-align: center;
-        margin-bottom: 40px;
-        padding-top: 20px;
+        margin-bottom: 45px;
+        padding-top: 30px;
       }
       
       .avatar-container {
         display: flex;
         justify-content: center;
-        margin-bottom: 20px;
+        margin-bottom: 24px;
       }
       
       .avatar {
-        width: 100px;
-        height: 100px;
+        width: 110px;
+        height: 110px;
         border-radius: 50%;
-        background: linear-gradient(135deg, var(--accent) 0%, #087f8c 100%);
-        border: 4px solid #ffffff;
-        box-shadow: var(--shadow-lg);
+        background: linear-gradient(135deg, #a855f7 0%, #06b6d4 100%);
+        border: 4px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 0 30px rgba(139, 92, 246, 0.4);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 3rem;
+        font-size: 3.5rem;
         user-select: none;
+        animation: float 6s ease-in-out infinite;
+      }
+      
+      @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-8px); }
       }
       
       .global-progress-card {
-        background: var(--bg-card);
-        border: 1px solid var(--border-color);
+        background: rgba(30, 41, 59, 0.45);
+        border: 1px solid var(--border-glow);
         border-radius: var(--radius-lg);
-        box-shadow: var(--shadow-premium);
-        padding: 30px;
-        margin-bottom: 40px;
-        backdrop-filter: blur(12px);
+        box-shadow: var(--shadow-lg), var(--shadow-glow);
+        padding: 35px;
+        margin-bottom: 45px;
+        backdrop-filter: blur(20px);
         display: grid;
         grid-template-columns: 1fr;
-        gap: 24px;
+        gap: 30px;
         position: relative;
         overflow: hidden;
       }
@@ -69,74 +70,115 @@
         left: 0;
         right: 0;
         height: 6px;
-        background: linear-gradient(90deg, #4b2d73, #087f8c, #267a46, #1f5fbf, #8a4b00, #5b6478);
+        background: linear-gradient(90deg, #a855f7, #06b6d4, #10b981, #2563eb, #f97316, #6366f1);
       }
       
       .progress-info h2 {
-        font-size: 2.2rem;
-        margin-bottom: 8px;
-        letter-spacing: -0.03em;
+        font-size: 2.4rem;
+        margin-bottom: 12px;
+        letter-spacing: -0.02em;
+        background: linear-gradient(90deg, #ffffff 40%, #a855f7 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
       }
       
       .bar-outer {
-        height: 16px;
-        background: #e2e8f0;
+        height: 18px;
+        background: var(--bg-slate-900);
         border-radius: var(--radius-full);
         overflow: hidden;
-        margin: 16px 0;
-        box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        margin: 20px 0;
+        border: 1px solid var(--border-glow);
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
       }
       .bar-inner {
         height: 100%;
         width: 0%;
-        background: linear-gradient(90deg, var(--accent) 0%, #087f8c 100%);
+        background: linear-gradient(90deg, #a855f7 0%, #06b6d4 100%);
         border-radius: var(--radius-full);
-        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
       }
       
       .rank-display {
-        background: #ffffff;
-        border: 1px solid var(--border-color);
+        background: var(--bg-slate-900);
+        border: 1px solid var(--border-glow);
         border-radius: var(--radius-md);
-        padding: 20px;
+        padding: 24px;
         text-align: center;
         display: flex;
         flex-direction: column;
         justify-content: center;
-        box-shadow: var(--shadow-sm);
+        box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4);
       }
       .rank-display span {
         font-size: 0.8rem;
         font-weight: 700;
         color: var(--text-muted);
         text-transform: uppercase;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.08em;
       }
       .rank-display b {
-        font-size: 1.5rem;
-        color: var(--accent);
+        font-size: 1.7rem;
+        color: var(--text-white);
         font-family: var(--font-title);
-        margin: 4px 0;
-        font-weight: 900;
+        margin: 6px 0;
+        font-weight: 700;
       }
       
-      /* Subject Cards */
+      /* Arcade Leaderboard Section */
+      .arcade-leaderboard {
+        background: rgba(30, 41, 59, 0.3);
+        border: 1px solid var(--border-glow);
+        border-radius: var(--radius-lg);
+        padding: 30px;
+        margin-bottom: 45px;
+        backdrop-filter: blur(16px);
+      }
+      .arcade-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 16px;
+        margin-top: 20px;
+      }
+      .arcade-stat {
+        background: var(--bg-slate-900);
+        border: 1px solid var(--border-glow);
+        border-radius: var(--radius-sm);
+        padding: 16px;
+        text-align: center;
+        box-shadow: var(--shadow-sm);
+      }
+      .arcade-stat span {
+        display: block;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+      .arcade-stat b {
+        font-size: 1.4rem;
+        color: var(--gold);
+        font-family: var(--font-title);
+      }
+      
+      /* Subject Cards Grid */
       .subjects-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-        gap: 24px;
+        grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+        gap: 28px;
       }
       
       .subject-card {
-        background: var(--bg-card);
-        border: 2px solid var(--border-color);
+        background: rgba(30, 41, 59, 0.45);
+        border: 1px solid var(--border-glow);
         border-radius: var(--radius-lg);
-        padding: 28px;
+        padding: 32px;
         text-decoration: none;
         color: var(--text-main);
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 16px;
         position: relative;
         overflow: hidden;
         box-shadow: var(--shadow-md);
@@ -148,14 +190,13 @@
         top: 0;
         left: 0;
         right: 0;
-        height: 8px;
-        background: var(--sub-color);
+        height: 6px;
+        background: var(--sub-gradient);
       }
       .subject-card:hover {
         transform: translateY(-5px);
         border-color: var(--sub-color);
-        box-shadow: var(--shadow-premium);
-        background: var(--bg-card-hover);
+        box-shadow: var(--shadow-lg), 0 0 25px rgba(255,255,255,0.03);
       }
       
       .card-header {
@@ -164,31 +205,32 @@
         align-items: flex-start;
       }
       .card-icon {
-        font-size: 2.2rem;
+        font-size: 2.5rem;
         line-height: 1;
+        filter: drop-shadow(0 0 8px rgba(255,255,255,0.1));
       }
       .card-count {
-        background: var(--accent-light);
-        color: var(--sub-color);
+        background: var(--bg-slate-900);
+        color: var(--text-white);
         font-size: 0.75rem;
-        font-weight: 800;
-        padding: 4px 10px;
+        font-weight: 700;
+        padding: 6px 12px;
         border-radius: var(--radius-full);
         text-transform: uppercase;
         letter-spacing: 0.05em;
         font-family: var(--font-title);
+        border: 1px solid var(--border-glow);
       }
       
       .subject-card h3 {
-        font-size: 1.5rem;
-        font-weight: 800;
-        color: var(--sub-color);
-        margin-top: 4px;
+        font-size: 1.7rem;
+        font-weight: 700;
+        color: var(--text-white);
       }
       .subject-card p {
         color: var(--text-muted);
         font-size: 0.95rem;
-        line-height: 1.5;
+        line-height: 1.6;
         flex-grow: 1;
       }
       
@@ -198,50 +240,52 @@
         font-size: 0.8rem;
         font-weight: 700;
         color: var(--text-muted);
-        margin-top: 8px;
+        margin-top: 10px;
       }
       
       .card-bar-outer {
         height: 8px;
-        background: #e2e8f0;
+        background: var(--bg-slate-900);
         border-radius: var(--radius-full);
         overflow: hidden;
+        border: 1px solid var(--border-glow);
       }
       .card-bar-inner {
         height: 100%;
         width: 0%;
-        background: var(--sub-color);
+        background: var(--sub-gradient);
         border-radius: var(--radius-full);
-        transition: width 0.4s ease;
+        transition: width 0.5s ease;
       }
       
       .go-arrow {
         align-self: flex-end;
-        font-weight: 900;
-        color: var(--sub-color);
-        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--text-white);
+        font-size: 0.95rem;
         display: flex;
         align-items: center;
         gap: 6px;
         transition: transform 0.2s ease;
+        font-family: var(--font-title);
       }
       .subject-card:hover .go-arrow {
-        transform: translateX(4px);
+        transform: translateX(6px);
       }
       
       .disclaimer {
-        margin-top: 40px;
-        background: rgba(255, 255, 255, 0.5);
-        border: 2px dashed var(--border-color);
+        margin-top: 50px;
+        background: rgba(30, 41, 59, 0.2);
+        border: 1px dashed var(--border-glow);
         border-radius: var(--radius-md);
-        padding: 20px;
+        padding: 24px;
         text-align: center;
         color: var(--text-muted);
-        font-size: 0.9rem;
-        line-height: 1.5;
+        font-size: 0.95rem;
+        line-height: 1.6;
       }
       .disclaimer b {
-        color: var(--text-main);
+        color: var(--text-white);
       }
     </style>
   </head>
@@ -250,32 +294,63 @@
       
       <header class="hub-header">
         <div class="avatar-container">
-          <div class="avatar">🐾</div>
+          <div class="avatar">🐈‍⬛</div>
         </div>
         <span class="badge">Aviad Hub · Pikesville High School</span>
-        <h1>10th Grade Summer Hub</h1>
-        <p class="lead">Prepare for sophomore year at Pikesville. Earn XP, complete challenges, practice Hebrew, and master your Panther Life schedule.</p>
+        <h1>Sophomore Summer Hub</h1>
+        <p class="lead">Prepare for 10th-grade. Earn XP, check off comprehensive reading passages, defeat mathematical bosses, and master your Panther schedule.</p>
       </header>
       
       <!-- Global Progress Dashboard -->
       <section class="global-progress-card">
         <div class="progress-info">
-          <h2>Sophomore Readiness Journey</h2>
-          <p class="lead" style="font-size: 1rem; margin-bottom: 12px;" id="journey-sub">Get ready to level up! Completed tasks earn XP and raise your Rank.</p>
+          <h2>Sophomore Readiness Campaign</h2>
+          <p class="lead" style="font-size: 1.05rem; margin-bottom: 12px; text-align: left; margin-left: 0;" id="journey-sub">Level up by completing subject challenges. Unlock achievements and increase your rank.</p>
           <div class="bar-outer">
             <div class="bar-inner" id="global-fill"></div>
           </div>
           <div class="card-progress-label" style="margin-top: 0;">
-            <span id="tasks-completed">0 / 48 Tasks Completed</span>
+            <span id="tasks-completed">0 / 72 Tasks Completed</span>
             <span id="global-pct">0% Complete</span>
           </div>
         </div>
         
         <div class="rank-display">
-          <span>Current Level</span>
+          <span>Current Rank</span>
           <b id="rank-title">Freshman</b>
-          <span>Total Score</span>
-          <b id="xp-display" style="font-size: 1.8rem; margin-top: 4px;">0 XP</b>
+          <span>Academic Score</span>
+          <b id="xp-display" style="font-size: 2rem; margin-top: 4px; color: var(--gold);">0 XP</b>
+        </div>
+      </section>
+
+      <!-- Arcade High Scores Dashboard -->
+      <section class="arcade-leaderboard">
+        <h2 style="font-size: 1.5rem; text-align: center; letter-spacing: 0.05em; text-transform: uppercase;">🕹️ Arcade High Scores</h2>
+        <div class="arcade-grid">
+          <div class="arcade-stat">
+            <span>Word Defender</span>
+            <b id="score-english">0</b>
+          </div>
+          <div class="arcade-stat">
+            <span>Equation Gladiator</span>
+            <b id="score-math">0</b>
+          </div>
+          <div class="arcade-stat">
+            <span>Reaction Lab</span>
+            <b id="score-science">0</b>
+          </div>
+          <div class="arcade-stat">
+            <span>Bill Runner</span>
+            <b id="score-civics">0</b>
+          </div>
+          <div class="arcade-stat">
+            <span>Root Sorter</span>
+            <b id="score-hebrew">0</b>
+          </div>
+          <div class="arcade-stat">
+            <span>Backpack Rush</span>
+            <b id="score-panther">0</b>
+          </div>
         </div>
       </section>
       
@@ -283,13 +358,13 @@
       <nav class="subjects-grid" aria-label="Summer Hub Subject Tabs">
         
         <!-- English 10 -->
-        <a class="subject-card" href="/personal/aviad/english/" style="--sub-color: #5e35b1; --accent-light: rgba(94, 53, 177, 0.08);">
+        <a class="subject-card" href="/personal/aviad/english/" style="--sub-color: #a855f7; --sub-gradient: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);">
           <div class="card-header">
             <span class="card-icon">📚</span>
-            <span class="card-count">8 Activities</span>
+            <span class="card-count" id="count-english">12 Activities</span>
           </div>
           <h3>English 10</h3>
-          <p>Analyze high-school passages, highlight evidence, master quote embedding, and write solid CER arguments.</p>
+          <p>Read Narrative, Informational, and Poetic passages. Answer multi-stage comprehension questions and defend definitions in Word Defender.</p>
           <div class="card-progress-label">
             <span>Progress</span>
             <span id="progress-english">0%</span>
@@ -297,17 +372,17 @@
           <div class="card-bar-outer">
             <div class="card-bar-inner" id="fill-english"></div>
           </div>
-          <span class="go-arrow">Open English Suite &rarr;</span>
+          <span class="go-arrow">Open English Campaign &rarr;</span>
         </a>
         
         <!-- Math Readiness -->
-        <a class="subject-card" href="/personal/aviad/math/" style="--sub-color: #00838f; --accent-light: rgba(0, 131, 143, 0.08);">
+        <a class="subject-card" href="/personal/aviad/math/" style="--sub-color: #06b6d4; --sub-gradient: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);">
           <div class="card-header">
             <span class="card-icon">📐</span>
-            <span class="card-count">8 Activities</span>
+            <span class="card-count" id="count-math">12 Activities</span>
           </div>
           <h3>Math Readiness</h3>
-          <p>Solve multi-step equations, construct interactive two-column geometric proofs, map slopes, and lock triangle angles.</p>
+          <p>Solve system graphs and functions, complete proofs, and defeat the Math Monster in Equation Gladiator.</p>
           <div class="card-progress-label">
             <span>Progress</span>
             <span id="progress-math">0%</span>
@@ -315,17 +390,17 @@
           <div class="card-bar-outer">
             <div class="card-bar-inner" id="fill-math"></div>
           </div>
-          <span class="go-arrow">Open Math Suite &rarr;</span>
+          <span class="go-arrow">Open Math Campaign &rarr;</span>
         </a>
         
         <!-- Science -->
-        <a class="subject-card" href="/personal/aviad/science/" style="--sub-color: #2e7d32; --accent-light: rgba(46, 125, 50, 0.08);">
+        <a class="subject-card" href="/personal/aviad/science/" style="--sub-color: #10b981; --sub-gradient: linear-gradient(135deg, #10b981 0%, #84cc16 100%);">
           <div class="card-header">
             <span class="card-icon">🔬</span>
-            <span class="card-count">8 Activities</span>
+            <span class="card-count" id="count-science">12 Activities</span>
           </div>
           <h3>Science</h3>
-          <p>Identify experimental variables, critique scientific models, analyze outliers in graphs, and bust common science myths.</p>
+          <p>Analyze outliers in graphs, balance metabolic reactions, map mitosis stages, and match elements in the Reaction Lab simulator.</p>
           <div class="card-progress-label">
             <span>Progress</span>
             <span id="progress-science">0%</span>
@@ -333,17 +408,17 @@
           <div class="card-bar-outer">
             <div class="card-bar-inner" id="fill-science"></div>
           </div>
-          <span class="go-arrow">Open Science Suite &rarr;</span>
+          <span class="go-arrow">Open Science Campaign &rarr;</span>
         </a>
         
         <!-- Civics -->
-        <a class="subject-card" href="/personal/aviad/civics/" style="--sub-color: #1565c0; --accent-light: rgba(21, 101, 192, 0.08);">
+        <a class="subject-card" href="/personal/aviad/civics/" style="--sub-color: #2563eb; --sub-gradient: linear-gradient(135deg, #2563eb 0%, #f59e0b 100%);">
           <div class="card-header">
             <span class="card-icon">⚖️</span>
-            <span class="card-count">8 Activities</span>
+            <span class="card-count" id="count-civics">12 Activities</span>
           </div>
           <h3>Civics</h3>
-          <p>Simulate Supreme Court cases, sort federalist powers, calculate public policy cost-benefit sliders, and draft debate briefs.</p>
+          <p>Rule on Supreme Court lawsuits, sort federalist powers, map electoral coalitions, and navigate the legislative maze in Bill Runner.</p>
           <div class="card-progress-label">
             <span>Progress</span>
             <span id="progress-civics">0%</span>
@@ -351,17 +426,17 @@
           <div class="card-bar-outer">
             <div class="card-bar-inner" id="fill-civics"></div>
           </div>
-          <span class="go-arrow">Open Civics Suite &rarr;</span>
+          <span class="go-arrow">Open Civics Campaign &rarr;</span>
         </a>
         
         <!-- Hebrew -->
-        <a class="subject-card" href="/personal/aviad/hebrew/" style="--sub-color: #b45309; --accent-light: rgba(180, 83, 9, 0.08);">
+        <a class="subject-card" href="/personal/aviad/hebrew/" style="--sub-color: #f97316; --sub-gradient: linear-gradient(135deg, #f97316 0%, #b45309 100%);">
           <div class="card-header">
             <span class="card-icon">עב</span>
-            <span class="card-count">8 Activities</span>
+            <span class="card-count" id="count-hebrew">12 Activities</span>
           </div>
           <h3>Hebrew</h3>
-          <p>Read passages with hover translation, conjugate verbs in tenses, and map related Hebrew words to their roots.</p>
+          <p>Read passages with hover-translation assistance, match root families, conjugate tenses, and play Root Sorter.</p>
           <div class="card-progress-label">
             <span>Progress</span>
             <span id="progress-hebrew">0%</span>
@@ -373,13 +448,13 @@
         </a>
         
         <!-- Panther Life -->
-        <a class="subject-card" href="/personal/aviad/panther/" style="--sub-color: #6d28d9; --accent-light: rgba(109, 40, 217, 0.08);">
+        <a class="subject-card" href="/personal/aviad/panther/" style="--sub-color: #6366f1; --sub-gradient: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);">
           <div class="card-header">
             <span class="card-icon">🐾</span>
-            <span class="card-count">8 Activities</span>
+            <span class="card-count" id="count-panther">12 Activities</span>
           </div>
           <h3>Panther Life</h3>
-          <p>Map your high school schedule, set up gaming boundaries, draft respectful teacher emails, and pack your backpack pack.</p>
+          <p>Select sophomore classes, build routines, inspect map facilities, compose letters, and packing gear in Backpack Rush.</p>
           <div class="card-progress-label">
             <span>Progress</span>
             <span id="progress-panther">0%</span>
@@ -387,7 +462,7 @@
           <div class="card-bar-outer">
             <div class="card-bar-inner" id="fill-panther"></div>
           </div>
-          <span class="go-arrow">Open Panther Life Suite &rarr;</span>
+          <span class="go-arrow">Open Panther Campaign &rarr;</span>
         </a>
         
       </nav>
@@ -396,48 +471,66 @@
         <b>Parent &amp; Student Note:</b> Progress is saved automatically to your device's browser memory (localStorage). No login, password, or student data collection required. Check FOCUS for officially confirmed BCPS courses, clubs, and athletic schedules.
       </div>
       
-      <footer class="footer">EduWonderLab &bull; Aviad Sophomore Readiness Summer Hub</footer>
+      <footer class="footer">EduWonderLab &bull; Aviad Sophomore Summer Hub</footer>
     </div>
     
     <script>
       (function() {
-        // Load global progress from registry
         var registry = {};
         try {
-          registry = JSON.parse(localStorage.getItem("ewl-aviad-registry-v2")) || {};
+          registry = JSON.parse(localStorage.getItem("ewl-aviad-registry-v3")) || {};
         } catch(e) {}
         
         var subjects = ["english", "math", "science", "civics", "hebrew", "panther"];
         var totalDone = 0;
-        var totalCount = 48; // 6 subjects * 8 activities
+        var totalCount = 0;
         
         subjects.forEach(function(sub) {
-          var data = registry[sub] || { doneCount: 0, totalCount: 8, pct: 0 };
+          // Read registry stats or fallback
+          var data = registry[sub] || { doneCount: 0, totalCount: 12, pct: 0, highScores: {} };
           totalDone += data.doneCount;
+          totalCount += data.totalCount || 12;
           
           var fillEl = document.getElementById("fill-" + sub);
           var pctEl = document.getElementById("progress-" + sub);
+          var countEl = document.getElementById("count-" + sub);
           
           if (fillEl) fillEl.style.width = data.pct + "%";
           if (pctEl) pctEl.textContent = data.pct + "%";
+          if (countEl && data.totalCount) countEl.textContent = data.totalCount + " Activities";
+          
+          // Populate arcade game high score
+          var scoreEl = document.getElementById("score-" + sub);
+          if (scoreEl) {
+            var high = 0;
+            if (data.highScores) {
+              var keys = Object.keys(data.highScores);
+              if (keys.length > 0) {
+                high = data.highScores[keys[0]] || 0; // Retrieve first score recorded
+              }
+            }
+            scoreEl.textContent = high;
+          }
         });
         
-        // Calculate global metrics
+        if (totalCount === 0) totalCount = 72; // Default fallback
         var globalPct = Math.round((totalDone / totalCount) * 100);
         var totalXp = totalDone * 50;
         
         // Determine Rank Title
         var rank = "Freshman";
-        if (totalXp >= 2000) {
-          rank = "Academic Legend";
-        } else if (totalXp >= 1500) {
+        if (totalXp >= 3000) {
+          rank = "Academic Champion";
+        } else if (totalXp >= 2400) {
           rank = "Elite Scholar";
-        } else if (totalXp >= 1000) {
+        } else if (totalXp >= 1800) {
           rank = "Sophomore Honor Roll";
-        } else if (totalXp >= 500) {
+        } else if (totalXp >= 1200) {
           rank = "Rising Sophomore";
-        } else if (totalXp > 0) {
+        } else if (totalXp >= 600) {
           rank = "Apprentice Scholar";
+        } else if (totalXp > 0) {
+          rank = "Apprentice";
         }
         
         // Update DOM

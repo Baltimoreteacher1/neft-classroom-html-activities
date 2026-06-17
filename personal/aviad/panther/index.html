@@ -7,140 +7,96 @@
     <title>Aviad Panther Life - EduWonderLab</title>
     <link rel="stylesheet" href="/personal/aviad/shared.css" />
     <style>
-      /* Panther Life tab overrides */
-      .panther-2col {
-        display: grid;
-        grid-template-columns: 1fr;
+      /* Page-specific overrides */
+      .scheduler-row {
+        display: flex;
         gap: 16px;
+        margin-top: 14px;
+        flex-direction: column;
       }
-      @media (min-width: 768px) {
-        .panther-2col {
-          grid-template-columns: 1.2fr 0.8fr;
+      @media (min-width: 600px) {
+        .scheduler-row {
+          flex-direction: row;
         }
       }
       
-      .backpack-svg-container {
-        display: flex;
-        justify-content: center;
-        background: #ffffff;
-        border: 1px solid var(--border-color);
+      .pocket-container {
+        flex: 1;
+        min-height: 80px;
+        background: var(--bg-slate-900);
+        border: 2px dashed var(--border-glow);
         border-radius: var(--radius-sm);
         padding: 10px;
-      }
-      .pocket-target {
-        fill: #f1f5f9;
-        stroke: #94a3b8;
-        stroke-dasharray: 4 4;
-        transition: fill 0.2s ease, stroke 0.2s ease;
-      }
-      .pocket-target.dragover {
-        fill: rgba(109, 40, 217, 0.1);
-        stroke: var(--accent);
-      }
-      
-      /* Email builder */
-      .email-canvas {
-        background: #ffffff;
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-sm);
-        padding: 16px;
-        box-shadow: var(--shadow-sm);
-      }
-      .email-header-row {
-        display: grid;
-        grid-template-columns: 80px 1fr;
-        border-bottom: 1px solid #f1f5f9;
-        padding: 6px 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
         align-items: center;
-        font-size: 0.85rem;
       }
-      .email-label {
-        font-weight: 700;
+      .pocket-container h4 {
+        font-size: 0.8rem;
+        text-transform: uppercase;
         color: var(--text-muted);
+        letter-spacing: 0.05em;
+        margin-bottom: 6px;
       }
       
-      /* School Map SVG */
       .map-svg {
         width: 100%;
-        height: auto;
-        background: #ffffff;
-        border: 1px solid var(--border-color);
+        max-width: 480px;
+        border: 1px solid var(--border-glow);
         border-radius: var(--radius-sm);
-      }
-      .room-block {
-        fill: #f1f5f9;
-        stroke: #cbd5e1;
-        stroke-width: 2;
-        cursor: pointer;
-        transition: fill 0.2s ease;
-      }
-      .room-block:hover {
-        fill: #e2e8f0;
-      }
-      .room-block.located {
-        fill: #d1fae5;
-        stroke: #10b981;
+        background: var(--bg-slate-900);
       }
       
-      /* Notification simulator card */
-      .notif-card {
-        background: #ffffff;
-        border: 1px solid var(--border-color);
-        border-left: 4px solid #3b82f6;
+      .room-block {
+        fill: rgba(30, 41, 59, 0.6);
+        stroke: var(--border-glow);
+        stroke-width: 1.5;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .room-block:hover {
+        fill: var(--accent-light);
+        stroke: var(--accent);
+      }
+      .room-block.located {
+        fill: rgba(16, 185, 129, 0.2);
+        stroke: var(--success);
+      }
+      
+      /* Slider formatting */
+      .slider-row {
+        background: rgba(30, 41, 59, 0.4);
+        padding: 12px;
         border-radius: 6px;
-        padding: 10px;
-        margin-bottom: 8px;
-        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-glow);
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .slider-header {
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        gap: 12px;
-      }
-      .notif-card.distractor {
-        border-left-color: #ef4444;
-      }
-      .notif-card.correct-mute {
-        opacity: 0.6;
-        border-left-color: #94a3b8;
-        background: #f8fafc;
-      }
-      .notif-title {
-        font-size: 0.85rem;
+        font-size: 0.9rem;
         font-weight: 700;
-        margin-bottom: 2px;
       }
-      .notif-body {
-        font-size: 0.75rem;
-        color: var(--text-muted);
-      }
-      .notif-badge {
-        font-size: 0.65rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        padding: 2px 6px;
-        border-radius: var(--radius-full);
-      }
-      .badge-danger {
-        background: #fee2e2;
-        color: #991b1b;
-      }
-      .badge-info {
-        background: #dbeafe;
-        color: #1e40af;
+      .slider-input {
+        width: 100%;
+        accent-color: var(--accent);
       }
     </style>
   </head>
-  <body data-subject="panther" style="--accent: #6d28d9">
+  <body data-subject="panther" style="--accent: #6366f1">
     <main class="wrap">
       <header class="hero">
         <a class="back" href="/personal/aviad/">&larr; Aviad hub</a>
         <span class="badge">Panther Life</span>
-        <h1>Panther Life Readiness</h1>
-        <p class="lead">Own your sophomore schedule. Master course requirements, balance sleep with extracurriculars, send professional teacher emails, and pack your gear.</p>
+        <h1>Panther Life Campaign</h1>
+        <p class="lead">Master sophomore logistics. Learn to schedule classes, budget your afternoon activities, navigate Pikesville High, and defend your locker in Backpack Rush.</p>
         
         <div class="stats">
           <div class="stat"><b id="xp">0 XP</b><span>earned here</span></div>
-          <div class="stat"><b>8</b><span>developed activities</span></div>
+          <div class="stat"><b>12</b><span>developed activities</span></div>
           <div class="stat"><b id="done">0%</b><span>completion</span></div>
         </div>
       </header>
@@ -152,6 +108,7 @@
         <button class="tab" aria-selected="true" data-filter="all">All</button>
         <button class="tab" data-filter="Workshop">Workshops</button>
         <button class="tab" data-filter="Practice">Practice</button>
+        <button class="tab" data-filter="Game">Arcade Games</button>
         <button class="tab" data-filter="Project">Projects</button>
       </div>
     </nav>
@@ -159,45 +116,45 @@
     <!-- Main Activities Panel -->
     <main class="wrap panel active">
       <div class="section-head">
-        <h2>Readiness Challenges</h2>
-        <p class="muted">Complete interactive tasks, verify your solutions, and save your work to log XP.</p>
+        <h2>Panther Life Readiness</h2>
+        <p class="muted">Complete logistics tasks, optimize schedules, and practice your daily preparation.</p>
       </div>
 
       <div class="grid">
         
-        <!-- Activity 1: FOCUS Course Room (Workshop) -->
+        <!-- Activity 1: FOCUS Course Control (Workshop) -->
         <article class="activity" data-id="courses" data-type="Workshop">
           <div class="meta">
             <span class="pill">Workshop</span>
             <span class="pill">15 min</span>
           </div>
           <h3>FOCUS Course Control</h3>
-          <p>Drag sophomore courses into your 4-period schedule layout to model a balanced school day.</p>
+          <p>Drag your required 10th-grade core courses into the correct period blocks (Prerequisites check).</p>
           
           <div class="activity-interactive-area">
-            <div class="word-bank" id="course-drawer" style="min-height: 50px;">
-              <div class="drag-item" draggable="true" id="crs-eng" data-drawer="course-drawer" data-val="eng">English 10 Honors</div>
-              <div class="drag-item" draggable="true" id="crs-alg" data-drawer="course-drawer" data-val="alg">Algebra II / Trig</div>
-              <div class="drag-item" draggable="true" id="crs-bio" data-drawer="course-drawer" data-val="bio">Biology Lab</div>
-              <div class="drag-item" draggable="true" id="crs-gov" data-drawer="course-drawer" data-val="gov">AP Government</div>
+            <div class="word-bank" id="courses-drawer" style="min-height: 50px;">
+              <div class="drag-item" draggable="true" id="crs-eng" data-drawer="courses-drawer" data-val="english10">English 10</div>
+              <div class="drag-item" draggable="true" id="crs-math" data-drawer="courses-drawer" data-val="geometry">Geometry / Alg II</div>
+              <div class="drag-item" draggable="true" id="crs-sci" data-drawer="courses-drawer" data-val="chemistry">Chemistry</div>
+              <div class="drag-item" draggable="true" id="crs-civ" data-drawer="courses-drawer" data-val="civics">US Government</div>
             </div>
             
-            <div style="display: flex; flex-direction: column; gap: 6px; margin-top:14px;">
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <span class="step-label">Period 1:</span>
-                <div class="drop-container" id="p-slot-1" data-max="1" style="flex:1; min-height: 40px; padding: 4px;"></div>
+            <div class="scheduler-row">
+              <div style="flex:1;">
+                <label style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Period 1 (Math):</label>
+                <div class="drop-container" id="p-slot-1" data-max="1" data-slot="geometry" style="min-height:50px;"></div>
               </div>
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <span class="step-label">Period 2:</span>
-                <div class="drop-container" id="p-slot-2" data-max="1" style="flex:1; min-height: 40px; padding: 4px;"></div>
+              <div style="flex:1;">
+                <label style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Period 2 (English):</label>
+                <div class="drop-container" id="p-slot-2" data-max="1" data-slot="english10" style="min-height:50px;"></div>
               </div>
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <span class="step-label">Period 3:</span>
-                <div class="drop-container" id="p-slot-3" data-max="1" style="flex:1; min-height: 40px; padding: 4px;"></div>
+              <div style="flex:1;">
+                <label style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Period 3 (Social Studies):</label>
+                <div class="drop-container" id="p-slot-3" data-max="1" data-slot="civics" style="min-height:50px;"></div>
               </div>
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <span class="step-label">Period 4:</span>
-                <div class="drop-container" id="p-slot-4" data-max="1" style="flex:1; min-height: 40px; padding: 4px;"></div>
+              <div style="flex:1;">
+                <label style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Period 4 (Science):</label>
+                <div class="drop-container" id="p-slot-4" data-max="1" data-slot="chemistry" style="min-height:50px;"></div>
               </div>
             </div>
           </div>
@@ -216,26 +173,23 @@
             <span class="pill">25 min</span>
           </div>
           <h3>Weekly Map Builder</h3>
-          <p>Model school-week time. Drag blocks to schedule your afternoon routine. Keep gaming moderate and sleep high.</p>
+          <p>Design a balanced Monday schedule. Drag blocks to schedule your evening. **Warning: excessive gaming hours trigger flags!**</p>
           
           <div class="activity-interactive-area">
             <div class="word-bank" id="sched-drawer" style="min-height: 50px;">
-              <div class="drag-item" draggable="true" id="sc-sleep" data-drawer="sched-drawer" data-val="sleep">Sleep (8 hrs)</div>
-              <div class="drag-item" draggable="true" id="sc-study" data-drawer="sched-drawer" data-val="study">Study Core (2 hrs)</div>
-              <div class="drag-item" draggable="true" id="sc-hebrew" data-drawer="sched-drawer" data-val="hebrew">Hebrew Practice (1 hr)</div>
-              <div class="drag-item" draggable="true" id="sc-game-high" data-drawer="sched-drawer" data-val="game-hi">Gaming (6 hrs!)</div>
-              <div class="drag-item" draggable="true" id="sc-game-low" data-drawer="sched-drawer" data-val="game-lo">Gaming (1.5 hrs)</div>
+              <div class="drag-item" draggable="true" id="sc-study" data-drawer="sched-drawer" data-val="study">Study (2 hr)</div>
+              <div class="drag-item" draggable="true" id="sc-heb" data-drawer="sched-drawer" data-val="hebrew">Hebrew (1 hr)</div>
+              <div class="drag-item" draggable="true" id="sc-game1" data-drawer="sched-drawer" data-val="game-lo">Gaming (1 hr)</div>
+              <div class="drag-item" draggable="true" id="sc-game2" data-drawer="sched-drawer" data-val="game-hi">Gaming Marathon (4 hr)</div>
             </div>
             
-            <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 14px;">
-              <div class="bin-container" style="background:#fff; border-color:#cbd5e1;">
-                <span class="bin-title" style="color:var(--accent); text-align:left;">Monday Afternoon Slots (Max 4 blocks)</span>
-                <div class="drop-container" id="sched-mon" data-max="4" style="min-height:60px;"></div>
-              </div>
+            <div style="margin-top:14px;">
+              <label style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Monday Evening Slots:</label>
+              <div class="drop-container" id="sched-mon" data-max="3" style="min-height:70px; margin-top:4px;"></div>
             </div>
             
-            <div style="margin-top:8px; display:none; background:var(--danger-bg); color:var(--danger-text); border:1px solid var(--danger); border-radius:4px; padding:8px; font-size:0.8rem; font-weight:700;" id="sched-warn-box">
-              ⚠️ Warning: Gaming exceeds 2 hours! Sleep and grades may suffer.
+            <div id="sched-warn-box" style="display:none; margin-top:10px; padding:10px; background:rgba(239, 68, 68, 0.15); border:1px solid var(--danger); border-radius:4px; font-size:0.8rem; color:#f87171;">
+              ⚠️ warning: Gaming Marathon selected! High recreational time will limit study blocks and Hebrew review.
             </div>
           </div>
 
@@ -253,38 +207,28 @@
             <span class="pill">15 min</span>
           </div>
           <h3>Backpack Systems</h3>
-          <p>Pack your bag. Drag items to their dedicated pockets to avoid losing school materials.</p>
+          <p>Drag each school item into the designated backpack compartment for quick access.</p>
           
           <div class="activity-interactive-area">
-            <div class="word-bank" id="backpack-drawer" style="min-height: 45px;">
-              <div class="drag-item" draggable="true" id="bp-chromebook" data-drawer="backpack-drawer" data-val="large">Chromebook &amp; Charger</div>
-              <div class="drag-item" draggable="true" id="bp-notebooks" data-drawer="backpack-drawer" data-val="large">Math &amp; Hebrew Notebooks</div>
-              <div class="drag-item" draggable="true" id="bp-calculator" data-drawer="backpack-drawer" data-val="med">Graphing Calculator</div>
-              <div class="drag-item" draggable="true" id="bp-id" data-drawer="backpack-drawer" data-val="small">Student ID &amp; Bus Pass</div>
+            <div class="word-bank" id="backpack-drawer" style="min-height: 50px;">
+              <div class="drag-item" draggable="true" id="bp-cbook" data-drawer="backpack-drawer" data-val="cbook">Chromebook</div>
+              <div class="drag-item" draggable="true" id="bp-pens" data-drawer="backpack-drawer" data-val="pcase">Pencil Case</div>
+              <div class="drag-item" draggable="true" id="bp-badge" data-drawer="backpack-drawer" data-val="badge">ID Badge</div>
+              <div class="drag-item" draggable="true" id="bp-calc" data-drawer="backpack-drawer" data-val="calc">TI-84 Calc</div>
             </div>
             
-            <div class="panther-2col" style="margin-top: 14px;">
-              <div class="backpack-svg-container">
-                <!-- Backpack SVG diagram -->
-                <svg viewBox="0 0 120 160" width="90" height="120" id="backpack-svg">
-                  <!-- Main Body -->
-                  <path d="M 10 40 C 10 10, 110 10, 110 40 L 110 150 L 10 150 Z" fill="#6d28d9" stroke="#4c1d95" stroke-width="3" />
-                  
-                  <!-- Main pocket slot -->
-                  <rect x="20" y="45" width="80" height="30" rx="3" class="pocket-target" id="pocket-large" data-pocket="large" />
-                  
-                  <!-- Med pocket slot -->
-                  <rect x="25" y="85" width="70" height="25" rx="3" class="pocket-target" id="pocket-med" data-pocket="med" />
-                  
-                  <!-- Small pocket slot -->
-                  <rect x="30" y="120" width="60" height="20" rx="3" class="pocket-target" id="pocket-small" data-pocket="small" />
-                </svg>
+            <div class="scheduler-row">
+              <div class="pocket-container" id="pocket-large" data-max="2" data-slot="cbook">
+                <h4>Large Pocket</h4>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Items: <span id="bp-l-lbl">0</span></div>
               </div>
-              
-              <div style="display:flex; flex-direction:column; gap:6px; font-size:0.75rem; font-weight:700;">
-                <div>Large Pocket items: <span id="bp-l-lbl" style="color:var(--accent);">0</span> / 2</div>
-                <div>Medium Pocket items: <span id="bp-m-lbl" style="color:var(--accent);">0</span> / 1</div>
-                <div>Small Pocket items: <span id="bp-s-lbl" style="color:var(--accent);">0</span> / 1</div>
+              <div class="pocket-container" id="pocket-med" data-max="2" data-slot="pcase,calc">
+                <h4>Medium Pocket</h4>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Items: <span id="bp-m-lbl">0</span></div>
+              </div>
+              <div class="pocket-container" id="pocket-small" data-max="1" data-slot="badge">
+                <h4>Small Pocket</h4>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Items: <span id="bp-s-lbl">0</span></div>
               </div>
             </div>
           </div>
@@ -296,47 +240,43 @@
           </div>
         </article>
 
-        <!-- Activity 4: Teacher Email Editor (Practice) -->
+        <!-- Activity 4: Teacher Email (Practice) -->
         <article class="activity" data-id="email" data-type="Practice">
           <div class="meta">
             <span class="pill">Practice</span>
-            <span class="pill">15 min</span>
+            <span class="pill">20 min</span>
           </div>
           <h3>Teacher Email Editor</h3>
-          <p>Draft a professional email request to your teacher regarding a scheduled sports absence.</p>
+          <p>Compose a formal, polite email requesting help from your teacher regarding an assignment.</p>
           
           <div class="activity-interactive-area">
-            <div class="email-canvas">
-              <div class="email-header-row">
-                <span class="email-label">To:</span>
-                <span>mdavis@bcps.org</span>
-              </div>
-              <div class="email-header-row">
-                <span class="email-label">Subject:</span>
-                <select id="em-subject" style="padding:4px; font-size:0.8rem; border-radius:4px; border:1px solid var(--border-color); width:100%;">
-                  <option value="">Select Subject Line...</option>
-                  <option value="wrong1">i won't be in class</option>
-                  <option value="correct">Absence Request: Aviad (Period 2 Math) - Friday Soccer Match</option>
-                  <option value="wrong2">hey mr davis</option>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <div>
+                <label style="font-size:0.8rem; font-weight:700; color:var(--text-main);">Subject Line:</label>
+                <select id="em-subject" style="width:100%; padding:8px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
+                  <option value="">Choose subject...</option>
+                  <option value="missed">Question about Chemistry assignment - Aviad</option>
+                  <option value="yo">yo when is the homework due?</option>
                 </select>
               </div>
-              <div style="padding: 10px 0; display:flex; flex-direction:column; gap:8px;">
-                <select id="em-salut" style="padding:4px; font-size:0.8rem; border-radius:4px; border:1px solid var(--border-color); width:160px;">
-                  <option value="">Select Salutation...</option>
-                  <option value="correct">Dear Mr. Davis,</option>
-                  <option value="wrong">Hey man,</option>
+              <div>
+                <label style="font-size:0.8rem; font-weight:700; color:var(--text-main);">Salutation:</label>
+                <select id="em-salut" style="width:100%; padding:8px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
+                  <option value="">Choose salutation...</option>
+                  <option value="formal">Dear Mr. Davis,</option>
+                  <option value="informal">Hey Davis,</option>
                 </select>
-                
-                <select id="em-body" style="padding:4px; font-size:0.8rem; border-radius:4px; border:1px solid var(--border-color); width:100%;">
-                  <option value="">Select Email Body...</option>
-                  <option value="correct">I am writing to notify you that I will miss class this Friday due to a scheduled varsity soccer game. I will check Schoology and submit my homework assignment early.</option>
-                  <option value="wrong">i have a game on friday so i won't show up. tell me what we are doing or if i can skip the test.</option>
-                </select>
-                
-                <select id="em-close" style="padding:4px; font-size:0.8rem; border-radius:4px; border:1px solid var(--border-color); width:140px;">
-                  <option value="">Select Closing...</option>
-                  <option value="correct">Respectfully, Aviad</option>
-                  <option value="wrong">Thanks, see ya</option>
+              </div>
+              <div>
+                <label style="font-size:0.8rem; font-weight:700; color:var(--text-main);">Email Body (Polite request):</label>
+                <textarea id="em-body" placeholder="Write a professional message explaining which assignment you have a question about and proposing a time to drop by..." style="min-height:80px; background:var(--bg-slate-900); border:1px solid var(--border-glow); color:var(--text-white); width:100%; padding:8px; border-radius:4px;"></textarea>
+              </div>
+              <div>
+                <label style="font-size:0.8rem; font-weight:700; color:var(--text-main);">Sign-off Closing:</label>
+                <select id="em-close" style="width:100%; padding:8px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
+                  <option value="">Choose closing...</option>
+                  <option value="formal">Sincerely, Aviad</option>
+                  <option value="lazy">laters</option>
                 </select>
               </div>
             </div>
@@ -355,32 +295,32 @@
             <span class="pill">Practice</span>
             <span class="pill">15 min</span>
           </div>
-          <h3>Sports/Clubs Planner</h3>
-          <p>Plan extracurriculars. Stay active but keep your total commitment within a healthy 10-20 hour range.</p>
+          <h3>Sports &amp; Clubs Planner</h3>
+          <p>Select extracurricular activities while keeping weekly commitments healthy (10 to 20 hours total).</p>
           
           <div class="activity-interactive-area">
             <div style="display:flex; flex-direction:column; gap:8px;">
-              <label style="display:flex; align-items:center; gap:8px; font-size:0.9rem; font-weight:600;">
+              <label style="display:flex; align-items:center; gap:10px; background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow);">
                 <input type="checkbox" id="club-soccer" data-hours="12" />
-                Varsity Soccer Team (12 hrs/week)
+                <span>⚽ Varsity Soccer (12 hours/wk)</span>
               </label>
-              <label style="display:flex; align-items:center; gap:8px; font-size:0.9rem; font-weight:600;">
+              <label style="display:flex; align-items:center; gap:10px; background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow);">
                 <input type="checkbox" id="club-debate" data-hours="4" />
-                Debate Club (4 hrs/week)
+                <span>🗣️ Debate Team (4 hours/wk)</span>
               </label>
-              <label style="display:flex; align-items:center; gap:8px; font-size:0.9rem; font-weight:600;">
-                <input type="checkbox" id="club-hebrew" data-hours="2" />
-                Hebrew Culture Club (2 hrs/week)
+              <label style="display:flex; align-items:center; gap:10px; background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow);">
+                <input type="checkbox" id="club-hebrew" data-hours="3" />
+                <span>עב Heritage Club (3 hours/wk)</span>
               </label>
-              <label style="display:flex; align-items:center; gap:8px; font-size:0.9rem; font-weight:600;">
-                <input type="checkbox" id="club-robotics" data-hours="6" />
-                Robotics Team (6 hrs/week)
+              <label style="display:flex; align-items:center; gap:10px; background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow);">
+                <input type="checkbox" id="club-robotics" data-hours="5" />
+                <span>🤖 Robotics League (5 hours/wk)</span>
               </label>
-            </div>
-            
-            <div style="margin-top:12px; background:#f8fafc; border:1px solid var(--border-color); border-radius:4px; padding:10px; font-size:0.85rem; font-weight:700; color:#475569;">
-              Total Scheduled Hours: <span id="club-hours-total" style="color:var(--accent);">0</span> hrs
-              <br/><span id="club-hours-status" style="font-size:0.75rem; color:var(--danger); font-weight:500;">Commitment too low (Must be &ge; 10 hrs)</span>
+              
+              <div style="margin-top:12px; font-weight:700; font-size:0.9rem;">
+                Total Commitment: <span id="club-hours-total" style="color:var(--accent);">0</span> / 20 hours
+                <p id="club-hours-status" style="font-size:0.8rem; font-weight:500; color:var(--text-muted); margin-top:4px;">No activities selected.</p>
+              </div>
             </div>
           </div>
 
@@ -398,25 +338,33 @@
             <span class="pill">15 min</span>
           </div>
           <h3>Exam Prep Strategy</h3>
-          <p>Drag study methods into categories representing their scientific memory effectiveness.</p>
+          <p>Classify study techniques. Identify if they represent highly effective Active study or passive Review.</p>
           
           <div class="activity-interactive-area">
-            <div class="word-bank" id="study-drawer" style="min-height: 50px;">
-              <div class="drag-item" draggable="true" id="st-practice" data-drawer="study-drawer" data-val="high">Taking Practice Quizzes</div>
-              <div class="drag-item" draggable="true" id="st-highlight" data-drawer="study-drawer" data-val="low">Re-reading Highlights</div>
-              <div class="drag-item" draggable="true" id="st-flash" data-drawer="study-drawer" data-val="high">Spaced Repetition Flashcards</div>
-              <div class="drag-item" draggable="true" id="st-teach" data-drawer="study-drawer" data-val="high">Explaining topic to a friend</div>
-              <div class="drag-item" draggable="true" id="st-cram" data-drawer="study-drawer" data-val="low">6-hour night-before cramming</div>
-            </div>
-            
-            <div class="science-grid-2col" style="margin-top:14px;">
-              <div class="bin-container">
-                <span class="bin-title" style="color:#10b981;">High Effectiveness</span>
-                <div class="drop-container" id="study-bin-high" data-bin="high"></div>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <div style="background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:0.9rem; font-weight:600;">Re-reading highlighted passages:</span>
+                <select id="prep-opt-1" style="padding:4px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
+                  <option value="">Select...</option>
+                  <option value="passive">Passive Review</option>
+                  <option value="active">Active Recall</option>
+                </select>
               </div>
-              <div class="bin-container">
-                <span class="bin-title" style="color:#ef4444;">Low Effectiveness</span>
-                <div class="drop-container" id="study-bin-low" data-bin="low"></div>
+              <div style="background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:0.9rem; font-weight:600;">Taking practice quizzes:</span>
+                <select id="prep-opt-2" style="padding:4px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
+                  <option value="">Select...</option>
+                  <option value="passive">Passive Review</option>
+                  <option value="active">Active Recall</option>
+                </select>
+              </div>
+              <div style="background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:0.9rem; font-weight:600;">Writing custom flashcard questions:</span>
+                <select id="prep-opt-3" style="padding:4px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
+                  <option value="">Select...</option>
+                  <option value="passive">Passive Review</option>
+                  <option value="active">Active Recall</option>
+                </select>
               </div>
             </div>
           </div>
@@ -432,70 +380,37 @@
         <article class="activity" data-id="distractions" data-type="Practice">
           <div class="meta">
             <span class="pill">Practice</span>
-            <span class="pill">20 min</span>
+            <span class="pill">15 min</span>
           </div>
           <h3>Distraction Blocker</h3>
-          <p>Select the correct action on these 4 incoming phone notifications to keep Aviad focused during study sessions.</p>
+          <p>Configure device notification groups to optimize study concentration without missing critical announcements.</p>
           
           <div class="activity-interactive-area">
-            <div style="display:flex; flex-direction:column;">
-              
-              <!-- Notification 1 -->
-              <div class="notif-card distractor" id="notif-1-box">
-                <div>
-                  <span class="notif-badge badge-danger">Social Media</span>
-                  <div class="notif-title">TikTok Alert</div>
-                  <div class="notif-body">Friend tagged you in a viral dance compilation.</div>
-                </div>
-                <select id="notif-1-action" style="padding:4px; font-size:0.75rem; border-radius:4px; border:1px solid var(--border-color);">
-                  <option value="">Action...</option>
-                  <option value="accept">Open TikTok</option>
-                  <option value="mute">Mute Notification</option>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <div style="background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:0.9rem; font-weight:600;">Social Media DMs:</span>
+                <select id="dist-opt-1" style="padding:4px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
+                  <option value="">Choose setting...</option>
+                  <option value="block">Mute / Block completely</option>
+                  <option value="allow">Deliver immediately</option>
                 </select>
               </div>
-              
-              <!-- Notification 2 -->
-              <div class="notif-card" id="notif-2-box">
-                <div>
-                  <span class="notif-badge badge-info">School</span>
-                  <div class="notif-title">Schoology Announcement</div>
-                  <div class="notif-body">Mr. Davis uploaded the Unit 1 Geometry Study Guide.</div>
-                </div>
-                <select id="notif-2-action" style="padding:4px; font-size:0.75rem; border-radius:4px; border:1px solid var(--border-color);">
-                  <option value="">Action...</option>
-                  <option value="accept">Open Study Guide</option>
-                  <option value="mute">Mute/Ignore</option>
+              <div style="background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:0.9rem; font-weight:600;">FOCUS Grade Alerts:</span>
+                <select id="dist-opt-2" style="padding:4px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
+                  <option value="">Choose setting...</option>
+                  <option value="deliver">Deliver immediately</option>
+                  <option value="block">Block during study</option>
                 </select>
               </div>
-
-              <!-- Notification 3 -->
-              <div class="notif-card distractor" id="notif-3-box">
-                <div>
-                  <span class="notif-badge badge-danger">Gaming</span>
-                  <div class="notif-title">Fortnite Invite</div>
-                  <div class="notif-body">Squad has room for one more for ranked matches.</div>
-                </div>
-                <select id="notif-3-action" style="padding:4px; font-size:0.75rem; border-radius:4px; border:1px solid var(--border-color);">
-                  <option value="">Action...</option>
-                  <option value="accept">Join Match</option>
-                  <option value="mute">Mute Notification</option>
+              <div style="background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:0.9rem; font-weight:600;">Parent/Family Calls:</span>
+                <select id="dist-opt-3" style="padding:4px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
+                  <option value="">Choose setting...</option>
+                  <option value="deliver">Deliver immediately</option>
+                  <option value="block">Block during study</option>
                 </select>
               </div>
-
-              <!-- Notification 4 -->
-              <div class="notif-card" id="notif-4-box">
-                <div>
-                  <span class="notif-badge badge-info">Calendar</span>
-                  <div class="notif-title">Hebrew Homework reminder</div>
-                  <div class="notif-body">Daily verb worksheets due at midnight.</div>
-                </div>
-                <select id="notif-4-action" style="padding:4px; font-size:0.75rem; border-radius:4px; border:1px solid var(--border-color);">
-                  <option value="">Action...</option>
-                  <option value="accept">Open Worksheet</option>
-                  <option value="mute">Ignore/Swipe away</option>
-                </select>
-              </div>
-
             </div>
           </div>
 
@@ -521,32 +436,222 @@
             </div>
             
             <div style="text-align:center;">
-              <!-- School map layout SVG -->
               <svg viewBox="0 0 240 120" class="map-svg">
                 <!-- Room A: Gymnasium -->
                 <rect x="10" y="10" width="100" height="50" class="room-block" id="rm-gym" data-name="Gymnasium" />
-                <text x="60" y="40" font-size="8" font-family="sans-serif" font-weight="700" fill="#64748b" text-anchor="middle" pointer-events="none">GYM</text>
+                <text x="60" y="40" font-size="8" font-family="sans-serif" font-weight="700" fill="#94a3b8" text-anchor="middle" pointer-events="none">GYM</text>
                 
                 <!-- Room B: Cafeteria -->
                 <rect x="10" y="65" width="100" height="45" class="room-block" id="rm-cafe" data-name="Cafeteria" />
-                <text x="60" y="90" font-size="8" font-family="sans-serif" font-weight="700" fill="#64748b" text-anchor="middle" pointer-events="none">CAFETERIA</text>
+                <text x="60" y="90" font-size="8" font-family="sans-serif" font-weight="700" fill="#94a3b8" text-anchor="middle" pointer-events="none">CAFETERIA</text>
                 
                 <!-- Room C: Library -->
                 <rect x="120" y="10" width="110" height="50" class="room-block" id="rm-lib" data-name="Library" />
-                <text x="175" y="40" font-size="8" font-family="sans-serif" font-weight="700" fill="#64748b" text-anchor="middle" pointer-events="none">LIBRARY</text>
+                <text x="175" y="40" font-size="8" font-family="sans-serif" font-weight="700" fill="#94a3b8" text-anchor="middle" pointer-events="none">LIBRARY</text>
                 
                 <!-- Room D: Front Office -->
                 <rect x="120" y="65" width="110" height="45" class="room-block" id="rm-office" data-name="Front Office" />
-                <text x="175" y="90" font-size="8" font-family="sans-serif" font-weight="700" fill="#64748b" text-anchor="middle" pointer-events="none">FRONT OFFICE</text>
+                <text x="175" y="90" font-size="8" font-family="sans-serif" font-weight="700" fill="#94a3b8" text-anchor="middle" pointer-events="none">FRONT OFFICE</text>
               </svg>
             </div>
             
-            <div style="margin-top:8px; font-size:0.8rem; font-weight:700; color:#475569;" id="map-outcome-lbl">
+            <div style="margin-top:8px; font-size:0.8rem; font-weight:700; color:var(--text-muted);" id="map-outcome-lbl">
               Located: <span id="map-located-count">0 / 4</span> rooms
             </div>
           </div>
 
           <textarea style="display:none;" id="evidence-text-schoolmap"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 9: Backpack Packing Rush (Game) -->
+        <article class="activity" data-id="backpack-game" data-type="Game">
+          <div class="meta">
+            <span class="pill">Game</span>
+            <span class="pill">15 min</span>
+          </div>
+          <h3>Backpack Packing Rush</h3>
+          <p>Sort falling school gear into their correct pockets: <b>Large</b>, <b>Medium</b>, or <b>Small</b>. Get a score of 100 to pass.</p>
+          <div class="activity-interactive-area">
+            <div class="game-container">
+              <div class="game-hud">
+                <div class="game-score-card">Score: <span id="game-score-val-panther">0</span></div>
+                <div class="game-score-card">High Score: <span id="high-score-panther">0</span></div>
+                <div class="game-score-card">Lives: <span id="game-lives-val-panther">3</span></div>
+              </div>
+              <div class="game-overlay" id="game-overlay-panther">
+                <h4 id="game-over-title-panther">Backpack Rush</h4>
+                <p id="game-over-desc-panther">Pack the school gear correctly!</p>
+                <button class="btn" id="game-btn-panther">Start Game</button>
+              </div>
+              <canvas class="game-canvas" id="canvas-panther"></canvas>
+            </div>
+          </div>
+          <textarea style="display:none;" id="evidence-text-backpack-game"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 10: Routine Optimizer (Practice) -->
+        <article class="activity" data-id="routine-opt" data-type="Practice">
+          <div class="meta">
+            <span class="pill">Practice</span>
+            <span class="pill">15 min</span>
+          </div>
+          <h3>Routine Optimizer</h3>
+          <p>Sort the following routine milestones chronologically to establish healthy daily preparation habits.</p>
+          <div class="activity-interactive-area">
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <div style="background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:0.9rem; font-weight:600;">"Wake up, hydrate, stretch"</span>
+                <select id="rout-1" style="padding:6px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
+                  <option value="">Select step...</option>
+                  <option value="s1">Step 1: Morning Start</option>
+                  <option value="s2">Step 2: Pre-School Prep</option>
+                  <option value="s3">Step 3: After-School Study</option>
+                  <option value="s4">Step 4: Evening Wind-down</option>
+                </select>
+              </div>
+              <div style="background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:0.9rem; font-weight:600;">"Pack Chromebook &amp; ID card"</span>
+                <select id="rout-2" style="padding:6px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
+                  <option value="">Select step...</option>
+                  <option value="s1">Step 1: Morning Start</option>
+                  <option value="s2">Step 2: Pre-School Prep</option>
+                  <option value="s3">Step 3: After-School Study</option>
+                  <option value="s4">Step 4: Evening Wind-down</option>
+                </select>
+              </div>
+              <div style="background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:0.9rem; font-weight:600;">"Review study blocks &amp; review notes"</span>
+                <select id="rout-3" style="padding:6px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
+                  <option value="">Select step...</option>
+                  <option value="s1">Step 1: Morning Start</option>
+                  <option value="s2">Step 2: Pre-School Prep</option>
+                  <option value="s3">Step 3: After-School Study</option>
+                  <option value="s4">Step 4: Evening Wind-down</option>
+                </select>
+              </div>
+              <div style="background:rgba(30, 41, 59, 0.4); padding:10px; border-radius:4px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:0.9rem; font-weight:600;">"Shut down screens and read"</span>
+                <select id="rout-4" style="padding:6px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
+                  <option value="">Select step...</option>
+                  <option value="s1">Step 1: Morning Start</option>
+                  <option value="s2">Step 2: Pre-School Prep</option>
+                  <option value="s3">Step 3: After-School Study</option>
+                  <option value="s4">Step 4: Evening Wind-down</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <textarea style="display:none;" id="evidence-text-routine-opt"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 11: Time Block Budgeter (Practice) -->
+        <article class="activity" data-id="time-budget" data-type="Practice">
+          <div class="meta">
+            <span class="pill">Practice</span>
+            <span class="pill">20 min</span>
+          </div>
+          <h3>Time Block Budgeter</h3>
+          <p>Allocate a healthy 24-hour balance. School is fixed at 7 hours. Sum must equal exactly 24. Gaming must be &le; 1.5 hours.</p>
+          <div class="activity-interactive-area">
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              <div class="slider-row">
+                <div class="slider-header">
+                  <span>Sleep Hours:</span>
+                  <span id="lbl-sleep">8 hr</span>
+                </div>
+                <input type="range" id="tb-sleep" class="slider-input" min="5" max="11" value="8" />
+              </div>
+              <div class="slider-row">
+                <div class="slider-header">
+                  <span>School Hours (Fixed):</span>
+                  <span>7 hr</span>
+                </div>
+              </div>
+              <div class="slider-row">
+                <div class="slider-header">
+                  <span>Study / Homework:</span>
+                  <span id="lbl-study">3 hr</span>
+                </div>
+                <input type="range" id="tb-study" class="slider-input" min="1" max="5" value="3" />
+              </div>
+              <div class="slider-row">
+                <div class="slider-header">
+                  <span>Gaming Hours:</span>
+                  <span id="lbl-gaming">1 hr</span>
+                </div>
+                <input type="range" id="tb-gaming" class="slider-input" min="0" max="4" step="0.5" value="1" />
+              </div>
+              <div class="slider-row">
+                <div class="slider-header">
+                  <span>Sports / Hobbies:</span>
+                  <span id="lbl-extra">5 hr</span>
+                </div>
+                <input type="range" id="tb-extra" class="slider-input" min="1" max="8" value="5" />
+              </div>
+              <div style="font-weight:700; margin-top:8px; font-size:0.95rem;">
+                Total Allocated: <span id="tb-total-hours">24</span> / 24 hours
+                <p id="tb-budget-status" style="font-size:0.8rem; color:var(--success); margin-top:4px;">Perfect balance configured.</p>
+              </div>
+            </div>
+          </div>
+          <textarea style="display:none;" id="evidence-text-time-budget"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 12: High School Goals Planner (Project) -->
+        <article class="activity" data-id="goals-plan" data-type="Project">
+          <div class="meta">
+            <span class="pill">Project</span>
+            <span class="pill">20 min</span>
+          </div>
+          <h3>Goals Planner</h3>
+          <p>Draft your milestones for the upcoming Sophomore academic year at Pikesville High.</p>
+          <div class="activity-interactive-area">
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <div>
+                <label style="font-size:0.8rem; font-weight:700;">Target Unweighted GPA Goal:</label>
+                <select id="goals-gpa" style="width:100%; padding:6px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
+                  <option value="">Select GPA Goal...</option>
+                  <option value="3.5">3.5 - 3.7 (Honors list)</option>
+                  <option value="3.8">3.8 - 3.9 (High Honors)</option>
+                  <option value="4.0">4.0 (Sophomore Honor Roll)</option>
+                </select>
+              </div>
+              <div>
+                <label style="font-size:0.8rem; font-weight:700;">Primary Club or Sport Target:</label>
+                <input type="text" id="goals-activity" placeholder="e.g. Varsity Soccer, Robotics, Debate" style="width:100%; padding:6px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);" />
+              </div>
+              <div>
+                <label style="font-size:0.8rem; font-weight:700;">Sophomore Study Strategy:</label>
+                <select id="goals-strategy" style="width:100%; padding:6px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);">
+                  <option value="">Select strategy...</option>
+                  <option value="recall">Active Recall &amp; Quiz practice</option>
+                  <option value="spaced">Spaced Repetition with flashcards</option>
+                  <option value="group">Study groups with classmates</option>
+                </select>
+              </div>
+              <div>
+                <label style="font-size:0.8rem; font-weight:700;">My Sophomore Personal Mission Statement:</label>
+                <textarea id="goals-statement" placeholder="Detail your commitment statement for GPA, sports, and language studies (minimum 30 characters)..." style="width:100%; min-height:60px; padding:6px; border-radius:4px; border:1px solid var(--border-glow); background:var(--bg-slate-900); color:var(--text-white);"></textarea>
+              </div>
+            </div>
+          </div>
+          <textarea style="display:none;" id="evidence-text-goals-plan"></textarea>
           <div class="actions">
             <button class="btn secondary" data-save>Save workspace</button>
             <button class="btn" data-complete>Complete with evidence</button>
@@ -623,6 +728,7 @@
       [emSub, emSal, emBod, emCls].forEach(function(el) {
         el.addEventListener('change', validateEmail);
       });
+      emBod.addEventListener('input', validateEmail);
 
       // 5. Sports/Clubs Planner
       var checkboxes = ['club-soccer', 'club-debate', 'club-hebrew', 'club-robotics'];
@@ -651,86 +757,140 @@
           statusEl.style.color = "#10b981";
         }
         
-        document.getElementById('evidence-text-clubs').value = "CLUBS:" + selected.join(',') + "\nHOURS:" + totalHours;
+        document.getElementById('evidence-text-clubs').value = "CLUBS:" + selected.join(',') + "\nTOTAL_HOURS:" + totalHours;
       }
       checkboxes.forEach(function(cid) {
         document.getElementById(cid).addEventListener('change', validateClubs);
       });
 
       // 6. Exam Prep
-      function validateExamPrep() {
-        var highItems = Array.from(document.getElementById('study-bin-high').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
-        var lowItems = Array.from(document.getElementById('study-bin-low').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
-        document.getElementById('evidence-text-examprep').value = "HIGH:" + highItems.join(',') + "\nLOW:" + lowItems.join(',');
+      var prepControls = ['prep-opt-1', 'prep-opt-2', 'prep-opt-3'];
+      function validatePrep() {
+        var vals = prepControls.map(function(cid) { return document.getElementById(cid).value; });
+        document.getElementById('evidence-text-examprep').value = vals.join(',');
       }
+      prepControls.forEach(function(cid) {
+        document.getElementById(cid).addEventListener('change', validatePrep);
+      });
 
       // 7. Distraction Blocker
-      var notifControls = ['notif-1-action', 'notif-2-action', 'notif-3-action', 'notif-4-action'];
+      var distControls = ['dist-opt-1', 'dist-opt-2', 'dist-opt-3'];
       function validateDistractions() {
-        var vals = notifControls.map(function(cid) {
-          var val = document.getElementById(cid).value;
-          var box = document.getElementById(cid.replace('-action', '-box'));
-          if (val === "mute") {
-            box.classList.add('correct-mute');
-          } else {
-            box.classList.remove('correct-mute');
-          }
-          return val;
-        });
+        var vals = distControls.map(function(cid) { return document.getElementById(cid).value; });
         document.getElementById('evidence-text-distractions').value = vals.join(',');
       }
-      notifControls.forEach(function(cid) {
+      distControls.forEach(function(cid) {
         document.getElementById(cid).addEventListener('change', validateDistractions);
       });
 
       // 8. Pikesville Map Finder
-      var roomsFound = {
-        'Front Office': false,
-        'Library': false,
-        'Gymnasium': false,
-        'Cafeteria': false
-      };
-      var targetsSequence = ['Front Office', 'Library', 'Gymnasium', 'Cafeteria'];
-      var targetIdx = 0;
+      var locatedRooms = [];
+      var mapTargets = ["Front Office", "Gymnasium", "Cafeteria", "Library"];
+      var currentTargetIdx = 0;
       
-      document.querySelectorAll('.room-block').forEach(function(blk) {
-        blk.addEventListener('click', function() {
-          var name = blk.dataset.name;
-          var currentTarget = targetsSequence[targetIdx];
+      document.querySelectorAll('.room-block').forEach(function(el) {
+        el.addEventListener('click', function() {
+          var name = el.dataset.name;
+          var activeTarget = mapTargets[currentTargetIdx];
           
-          if (name === currentTarget) {
-            roomsFound[name] = true;
-            blk.classList.add('located');
-            targetIdx = (targetIdx + 1) % targetsSequence.length;
+          if (name === activeTarget) {
+            EWL.playAudio('success');
+            el.classList.add('located');
+            locatedRooms.push(name);
+            document.getElementById('map-located-count').textContent = locatedRooms.length + " / 4";
             
-            var count = Object.values(roomsFound).filter(Boolean).length;
-            document.getElementById('map-located-count').textContent = count;
-            
-            if (count === 4) {
-              document.getElementById('map-target-prompt').textContent = "All found! 🎉";
-              document.getElementById('map-target-prompt').style.color = "#10b981";
+            if (locatedRooms.length < 4) {
+              currentTargetIdx++;
+              document.getElementById('map-target-prompt').textContent = mapTargets[currentTargetIdx];
             } else {
-              document.getElementById('map-target-prompt').textContent = targetsSequence[targetIdx];
+              document.getElementById('map-target-prompt').textContent = "COMPLETED!";
+              document.getElementById('map-target-prompt').style.color = "var(--success)";
             }
-            validateMap();
+            
+            validateSchoolMap();
           } else {
-            EWL.playAudio(true); // Warning chime
+            EWL.playAudio('fail');
           }
         });
       });
       
-      function validateMap() {
-        var count = Object.values(roomsFound).filter(Boolean).length;
-        document.getElementById('evidence-text-schoolmap').value = "ROOMS_FOUND_COUNT:" + count;
+      function validateSchoolMap() {
+        document.getElementById('evidence-text-schoolmap').value = "ROOMS_LOCATED:" + locatedRooms.join(',');
       }
 
-      // Drag and drop event handlers
+      // 10. Routine Optimizer
+      var routControls = ['rout-1', 'rout-2', 'rout-3', 'rout-4'];
+      function validateRoutineOpt() {
+        var vals = routControls.map(function(cid) { return document.getElementById(cid).value; });
+        document.getElementById('evidence-text-routine-opt').value = vals.join(',');
+      }
+      routControls.forEach(function(cid) {
+        document.getElementById(cid).addEventListener('change', validateRoutineOpt);
+      });
+
+      // 11. Time Block Budgeter
+      var tbSleep = document.getElementById('tb-sleep');
+      var tbStudy = document.getElementById('tb-study');
+      var tbGaming = document.getElementById('tb-gaming');
+      var tbExtra = document.getElementById('tb-extra');
+
+      function validateTimeBudget() {
+        var s = parseInt(tbSleep.value, 10);
+        var h = parseInt(tbStudy.value, 10);
+        var g = parseFloat(tbGaming.value);
+        var e = parseInt(tbExtra.value, 10);
+        var total = s + 7 + h + g + e;
+
+        document.getElementById('lbl-sleep').textContent = s + " hr";
+        document.getElementById('lbl-study').textContent = h + " hr";
+        document.getElementById('lbl-gaming').textContent = g + " hr";
+        document.getElementById('lbl-extra').textContent = e + " hr";
+        document.getElementById('tb-total-hours').textContent = total;
+
+        var statusEl = document.getElementById('tb-budget-status');
+        if (total !== 24) {
+          statusEl.textContent = "Sum of blocks must be exactly 24 hours (Current: " + total + " hr)";
+          statusEl.style.color = "var(--danger)";
+        } else if (g > 1.5) {
+          statusEl.textContent = "Gaming time must be limited to 1.5 hours or less for healthy balance!";
+          statusEl.style.color = "var(--gold)";
+        } else {
+          statusEl.textContent = "Perfect balance configured! Ready to save.";
+          statusEl.style.color = "var(--success)";
+        }
+
+        document.getElementById('evidence-text-time-budget').value = "SLEEP:" + s + "\nSTUDY:" + h + "\nGAMING:" + g + "\nEXTRA:" + e + "\nTOTAL:" + total;
+      }
+      [tbSleep, tbStudy, tbGaming, tbExtra].forEach(function(slider) {
+        slider.addEventListener('input', validateTimeBudget);
+      });
+
+      // 12. Goals Planner
+      var goalGpa = document.getElementById('goals-gpa');
+      var goalAct = document.getElementById('goals-activity');
+      var goalStrat = document.getElementById('goals-strategy');
+      var goalState = document.getElementById('goals-statement');
+
+      function validateGoalsPlan() {
+        var g = goalGpa.value;
+        var a = goalAct.value.trim();
+        var s = goalStrat.value;
+        var st = goalState.value.trim();
+        document.getElementById('evidence-text-goals-plan').value = "GPA:" + g + "\nACTIVITY:" + a + "\nSTRATEGY:" + s + "\nSTATEMENT:" + st;
+      }
+      [goalGpa, goalStrat].forEach(function(el) {
+        el.addEventListener('change', validateGoalsPlan);
+      });
+      [goalAct, goalState].forEach(function(el) {
+        el.addEventListener('input', validateGoalsPlan);
+      });
+
+      // Drag and drop trigger validate callbacks
       window.validateActivityState = function(card) {
         var id = card.dataset.id;
         if (id === "courses") validateCourses();
         if (id === "scheduler") validateScheduler();
         if (id === "backpack") validateBackpack();
-        if (id === "examprep") validateExamPrep();
       };
 
       // Integrate with EWL shared validation
@@ -738,100 +898,139 @@
         var id = card.dataset.id;
         
         if (id === "courses") {
-          var items = ['p-slot-1', 'p-slot-2', 'p-slot-3', 'p-slot-4'].map(function(sid) {
-            var el = document.getElementById(sid).querySelector('.drag-item');
-            return el ? el.id : "";
-          });
-          if (items.indexOf("") > -1) {
-            return { success: false, message: "Place a course in all 4 periods to build your schedule." };
+          var s1 = document.getElementById('p-slot-1').querySelector('.drag-item');
+          var s2 = document.getElementById('p-slot-2').querySelector('.drag-item');
+          var s3 = document.getElementById('p-slot-3').querySelector('.drag-item');
+          var s4 = document.getElementById('p-slot-4').querySelector('.drag-item');
+          
+          if (!s1 || !s2 || !s3 || !s4) {
+            return { success: false, message: "Place a course in all 4 periods first." };
+          }
+          if (s1.dataset.val !== 'geometry' || s2.dataset.val !== 'english10' || s3.dataset.val !== 'civics' || s4.dataset.val !== 'chemistry') {
+            return { success: false, message: "Check course prerequisites! Math (Period 1), English (Period 2), Government (Period 3), Chemistry (Period 4)." };
           }
         }
         
         if (id === "scheduler") {
-          var items = Array.from(document.getElementById('sched-mon').querySelectorAll('.drag-item')).map(function(item) {
-            return item.dataset.val;
+          var items = Array.from(document.getElementById('sched-mon').querySelectorAll('.drag-item')).map(function(el) {
+            return el.dataset.val;
           });
-          if (items.length < 3) {
-            return { success: false, message: "Schedule at least 3 blocks (e.g. sleep, study, hebrew) to establish a healthy routine." };
+          if (items.length === 0) {
+            return { success: false, message: "Drag at least one activity block into the Monday schedule." };
           }
           if (items.indexOf('game-hi') > -1) {
-            return { success: false, message: "Review your schedule! Gaming for 6 hours is too high on school nights. Replace it with moderate gaming." };
+            return { success: false, message: "A 4-hour Gaming Marathon is too long for a study night! Select healthier routine blocks." };
           }
         }
         
         if (id === "backpack") {
-          var lItems = Array.from(document.getElementById('pocket-large').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
-          var mItems = Array.from(document.getElementById('pocket-med').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
-          var sItems = Array.from(document.getElementById('pocket-small').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
+          var l = document.getElementById('pocket-large').querySelectorAll('.drag-item');
+          var m = document.getElementById('pocket-med').querySelectorAll('.drag-item');
+          var s = document.getElementById('pocket-small').querySelectorAll('.drag-item');
           
-          if (lItems.length !== 2 || mItems.length !== 1 || sItems.length !== 1) {
-            return { success: false, message: "Sort all 4 items into their correct physical backpack pockets." };
+          var correct = true;
+          l.forEach(function(x) { if (x.dataset.val !== 'cbook') correct = false; });
+          m.forEach(function(x) { if (x.dataset.val !== 'pcase' && x.dataset.val !== 'calc') correct = false; });
+          s.forEach(function(x) { if (x.dataset.val !== 'badge') correct = false; });
+          
+          if (l.length !== 1 || m.length !== 2 || s.length !== 1) {
+            return { success: false, message: "Sort all 4 items into the correct pocket sizes (Large: Chromebook, Med: Pencil Case & Calculator, Small: ID Badge)." };
           }
-          var lOk = (lItems.indexOf('bp-chromebook') > -1) && (lItems.indexOf('bp-notebooks') > -1);
-          var mOk = (mItems.indexOf('bp-calculator') > -1);
-          var sOk = (sItems.indexOf('bp-id') > -1);
-          if (!lOk || !mOk || !sOk) {
-            return { success: false, message: "Double-check your pockets! Large flat files go in the main pocket; calculators in middle; ID/pass in the small outer pocket." };
+          if (!correct) {
+            return { success: false, message: "Some items are in the wrong pockets! Check placement." };
           }
         }
         
         if (id === "email") {
           var s = emSub.value;
           var sal = emSal.value;
-          var b = emBod.value;
+          var body = emBod.value.trim();
           var c = emCls.value;
-          if (s !== 'correct' || sal !== 'correct' || b !== 'correct' || c !== 'correct') {
-            return { success: false, message: "Assemble the email using polite, professional components appropriate for teacher communication." };
+          
+          if (s !== 'missed' || sal !== 'formal' || c !== 'formal') {
+            return { success: false, message: "Ensure you choose formal parameters for the subject line, salutation, and closing." };
+          }
+          if (body.length < 30) {
+            return { success: false, message: "Draft a complete explanation in the email body (at least 30 characters)." };
           }
         }
         
         if (id === "clubs") {
-          var totalHours = 0;
-          checkboxes.forEach(function(cid) {
-            var el = document.getElementById(cid);
-            if (el.checked) totalHours += parseInt(el.dataset.hours, 10);
-          });
+          var totalHours = parseInt(document.getElementById('club-hours-total').textContent, 10);
           if (totalHours < 10 || totalHours > 20) {
-            return { success: false, message: "Adjust your activity checkboxes! Total commitment hours must be between 10 and 20 hours to balance school life." };
+            return { success: false, message: "Select a combination of clubs that budgets between 10 and 20 hours per week." };
           }
         }
         
         if (id === "examprep") {
-          var hItems = Array.from(document.getElementById('study-bin-high').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
-          var lItems = Array.from(document.getElementById('study-bin-low').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
-          
-          if (hItems.length !== 3 || lItems.length !== 2) {
-            return { success: false, message: "Sort all 5 study activities into the efficiency bins." };
-          }
-          
-          var hOk = (hItems.indexOf('st-practice') > -1) && (hItems.indexOf('st-flash') > -1) && (hItems.indexOf('st-teach') > -1);
-          if (!hOk) {
-            return { success: false, message: "Check your sorts! Recall that active recall (testing, teaching, flashcards) is much more effective than passive reading or cramming." };
+          var o1 = document.getElementById('prep-opt-1').value;
+          var o2 = document.getElementById('prep-opt-2').value;
+          var o3 = document.getElementById('prep-opt-3').value;
+          if (o1 !== 'passive' || o2 !== 'active' || o3 !== 'active') {
+            return { success: false, message: "Classify all 3 exam prep strategies correctly (Active Recall vs Passive Review)." };
           }
         }
         
         if (id === "distractions") {
-          var v1 = document.getElementById('notif-1-action').value;
-          var v2 = document.getElementById('notif-2-action').value;
-          var v3 = document.getElementById('notif-3-action').value;
-          var v4 = document.getElementById('notif-4-action').value;
-          
-          if (v1 !== 'mute' || v3 !== 'mute') {
-            return { success: false, message: "Mute distracting alerts (social media, gaming) to maintain deep focus." };
-          }
-          if (v2 !== 'accept' || v4 !== 'accept') {
-            return { success: false, message: "Keep school alerts open! Accept study guides and homework reminders." };
+          var d1 = document.getElementById('dist-opt-1').value;
+          var d2 = document.getElementById('dist-opt-2').value;
+          var d3 = document.getElementById('dist-opt-3').value;
+          if (d1 !== 'block' || d2 !== 'deliver' || d3 !== 'deliver') {
+            return { success: false, message: "Configure notification groups appropriately to minimize distractions while keeping essential alerts." };
           }
         }
         
         if (id === "schoolmap") {
-          var count = Object.values(roomsFound).filter(Boolean).length;
-          if (count < 4) {
-            return { success: false, message: "Locate all 4 facilities on the high school floor plan." };
+          if (locatedRooms.length < 4) {
+            return { success: false, message: "Explore the map layout and locate all 4 target school resources." };
+          }
+        }
+
+        if (id === "backpack-game") {
+          var scoreVal = parseInt(document.getElementById('game-score-val-panther').textContent, 10);
+          var hsVal = parseInt(document.getElementById('high-score-panther').textContent, 10);
+          if (Math.max(scoreVal, hsVal) < 100) {
+            return { success: false, message: "Start the game and pack falling gear until you achieve a score of at least 100!" };
+          }
+        }
+
+        if (id === "routine-opt") {
+          var r1 = document.getElementById('rout-1').value;
+          var r2 = document.getElementById('rout-2').value;
+          var r3 = document.getElementById('rout-3').value;
+          var r4 = document.getElementById('rout-4').value;
+          if (r1 !== 's1' || r2 !== 's2' || r3 !== 's3' || r4 !== 's4') {
+            return { success: false, message: "Arrange all 4 routine tasks in their correct chronological sequence." };
+          }
+        }
+
+        if (id === "time-budget") {
+          var s = parseInt(tbSleep.value, 10);
+          var h = parseInt(tbStudy.value, 10);
+          var g = parseFloat(tbGaming.value);
+          var e = parseInt(tbExtra.value, 10);
+          var total = s + 7 + h + g + e;
+          if (total !== 24) {
+            return { success: false, message: "Reallocate sliders so that the total hours sum up exactly to 24." };
+          }
+          if (g > 1.5) {
+            return { success: false, message: "Limit daily gaming hours to 1.5 or less to maintain a healthy study balance!" };
+          }
+        }
+
+        if (id === "goals-plan") {
+          var gpa = goalGpa.value;
+          var act = goalAct.value.trim();
+          var strat = goalStrat.value;
+          var st = goalState.value.trim();
+          if (!gpa || !act || !strat) {
+            return { success: false, message: "Select all goals options and enter your primary extracurricular activity." };
+          }
+          if (st.length < 30) {
+            return { success: false, message: "Write a detailed personal Sophomore mission statement (at least 30 characters)." };
           }
         }
         
-        // Bind the actual workspace data from hidden textareas
         var hiddenText = document.getElementById('evidence-text-' + id).value;
         card.querySelector('textarea').value = hiddenText;
         
@@ -843,10 +1042,11 @@
         var id = card.dataset.id;
         
         if (id === "courses" && savedState.COURSES) {
+          var parts = savedState.COURSES.split(':')[1].split(',');
           var slots = ['p-slot-1', 'p-slot-2', 'p-slot-3', 'p-slot-4'];
-          savedState.COURSES.replace("COURSES: ", "").split(',').forEach(function(val, idx) {
+          parts.forEach(function(val, idx) {
             if (val) {
-              var item = document.querySelector('.drag-item[data-val="' + val + '"][data-drawer="course-drawer"]');
+              var item = document.querySelector('.drag-item[data-val="' + val + '"][data-drawer="courses-drawer"]');
               if (item) document.getElementById(slots[idx]).appendChild(item);
             }
           });
@@ -854,27 +1054,30 @@
         }
         
         if (id === "scheduler" && savedState.SCHED) {
-          savedState.SCHED.replace("SCHED: ", "").split(',').forEach(function(val) {
+          var parts = savedState.SCHED.split(':')[1].split(',');
+          var dropzone = document.getElementById('sched-mon');
+          parts.forEach(function(val) {
             if (val) {
               var item = document.querySelector('.drag-item[data-val="' + val + '"][data-drawer="sched-drawer"]');
-              if (item) document.getElementById('sched-mon').appendChild(item);
+              if (item) dropzone.appendChild(item);
             }
           });
           validateScheduler();
         }
         
-        if (id === "backpack" && savedState.bpVal) {
+        if (id === "backpack" && savedState.pocketlarge) {
           // Parse lines
-          var lines = savedState.bpVal.split('\n');
+          var lines = savedState.pocketlarge.split('\n');
           lines.forEach(function(line) {
             var parts = line.split(':');
             var pid = parts[0];
             var itemsStr = parts[1];
             if (itemsStr) {
               itemsStr.split(', ').forEach(function(txt) {
-                document.querySelectorAll('.drag-item[data-drawer="backpack-drawer"]').forEach(function(item) {
-                  if (item.textContent === txt) document.getElementById(pid).appendChild(item);
+                var item = Array.from(document.querySelectorAll('.drag-item[data-drawer="backpack-drawer"]')).find(function(el) {
+                  return el.textContent === txt;
                 });
+                if (item) document.getElementById(pid).appendChild(item);
               });
             }
           });
@@ -890,45 +1093,79 @@
         }
         
         if (id === "clubs" && savedState.CLUBS) {
-          var selections = savedState.CLUBS.replace("CLUBS:", "").split(',');
-          selections.forEach(function(cid) {
-            if (cid) {
-              var el = document.getElementById(cid);
-              if (el) el.checked = true;
-            }
+          var selected = savedState.CLUBS.split(':')[1].split(',');
+          checkboxes.forEach(function(cid) {
+            document.getElementById(cid).checked = (selected.indexOf(cid) > -1);
           });
           validateClubs();
         }
         
-        if (id === "examprep" && savedState.HIGH) {
-          var highList = savedState.HIGH.replace("HIGH:", "").split(',');
-          var lowList = savedState.LOW.replace("LOW:", "").split(',');
-          
-          document.querySelectorAll('.drag-item[data-drawer="study-drawer"]').forEach(function(item) {
-            if (highList.indexOf(item.id) > -1) document.getElementById('study-bin-high').appendChild(item);
-            if (lowList.indexOf(item.id) > -1) document.getElementById('study-bin-low').appendChild(item);
+        if (id === "examprep" && savedState.prepVal) {
+          var parts = savedState.prepVal.split(',');
+          prepControls.forEach(function(cid, idx) {
+            if (parts[idx]) document.getElementById(cid).value = parts[idx];
           });
-          validateExamPrep();
+          validatePrep();
         }
         
-        if (id === "distractions" && savedState.vals) {
-          var parts = savedState.vals.split(',');
-          notifControls.forEach(function(cid, idx) {
+        if (id === "distractions" && savedState.distVal) {
+          var parts = savedState.distVal.split(',');
+          distControls.forEach(function(cid, idx) {
             if (parts[idx]) document.getElementById(cid).value = parts[idx];
           });
           validateDistractions();
         }
         
-        if (id === "schoolmap" && savedState.ROOMS_FOUND_COUNT) {
-          var count = parseInt(savedState.ROOMS_FOUND_COUNT.replace("ROOMS_FOUND_COUNT:", ""), 10);
-          if (count === 4) {
-            roomsFound = { 'Front Office': true, 'Library': true, 'Gymnasium': true, 'Cafeteria': true };
-            document.querySelectorAll('.room-block').forEach(function(blk) { blk.classList.add('located'); });
-            document.getElementById('map-located-count').textContent = 4;
-            document.getElementById('map-target-prompt').textContent = "All found! 🎉";
-            document.getElementById('map-target-prompt').style.color = "#10b981";
-            validateMap();
+        if (id === "schoolmap" && savedState.ROOMS_LOCATED) {
+          var rooms = savedState.ROOMS_LOCATED.split(':')[1].split(',');
+          rooms.forEach(function(name) {
+            if (name) {
+              var el = Array.from(document.querySelectorAll('.room-block')).find(function(b) {
+                return b.dataset.name === name;
+              });
+              if (el) el.classList.add('located');
+              locatedRooms.push(name);
+            }
+          });
+          currentTargetIdx = locatedRooms.length;
+          if (currentTargetIdx < 4) {
+            document.getElementById('map-target-prompt').textContent = mapTargets[currentTargetIdx];
+          } else {
+            document.getElementById('map-target-prompt').textContent = "COMPLETED!";
+            document.getElementById('map-target-prompt').style.color = "var(--success)";
           }
+          document.getElementById('map-located-count').textContent = locatedRooms.length + " / 4";
+          validateSchoolMap();
+        }
+
+        if (id === "backpack-game" && savedState.SCORE) {
+          scorePan = parseInt(savedState.SCORE, 10);
+          updateHUDPan();
+          document.getElementById('high-score-panther').textContent = scorePan;
+        }
+
+        if (id === "routine-opt" && savedState.routVal) {
+          var parts = savedState.routVal.split(',');
+          routControls.forEach(function(cid, idx) {
+            if (parts[idx]) document.getElementById(cid).value = parts[idx];
+          });
+          validateRoutineOpt();
+        }
+
+        if (id === "time-budget" && savedState.SLEEP) {
+          tbSleep.value = parseInt(savedState.SLEEP.split(':')[1], 10);
+          tbStudy.value = parseInt(savedState.STUDY.split(':')[1], 10);
+          tbGaming.value = parseFloat(savedState.GAMING.split(':')[1]);
+          tbExtra.value = parseInt(savedState.EXTRA.split(':')[1], 10);
+          validateTimeBudget();
+        }
+
+        if (id === "goals-plan" && savedState.GPA) {
+          goalGpa.value = savedState.GPA.split(':')[1];
+          goalAct.value = savedState.ACTIVITY.split(':')[1];
+          goalStrat.value = savedState.STRATEGY.split(':')[1];
+          goalState.value = savedState.STATEMENT.split(':')[1];
+          validateGoalsPlan();
         }
       };
 
@@ -943,7 +1180,7 @@
             order.push(item ? item.dataset.val : "");
           });
           return {
-            COURSES: "COURSES: " + order.join(',')
+            COURSES: "COURSES:" + order.join(',')
           };
         }
         
@@ -952,16 +1189,20 @@
             return item.dataset.val;
           });
           return {
-            SCHED: "SCHED: " + items.join(',')
+            SCHED: "SCHED:" + items.join(',')
           };
         }
         
         if (id === "backpack") {
-          var largeText = Array.from(document.getElementById('pocket-large').querySelectorAll('.drag-item')).map(function(item) { return item.textContent; }).join(', ');
-          var medText = Array.from(document.getElementById('pocket-med').querySelectorAll('.drag-item')).map(function(item) { return item.textContent; }).join(', ');
-          var smallText = Array.from(document.getElementById('pocket-small').querySelectorAll('.drag-item')).map(function(item) { return item.textContent; }).join(', ');
+          var details = [];
+          ['pocket-large', 'pocket-med', 'pocket-small'].forEach(function(pid) {
+            var items = Array.from(document.getElementById(pid).querySelectorAll('.drag-item')).map(function(item) {
+              return item.textContent;
+            });
+            details.push(pid + ":" + items.join(', '));
+          });
           return {
-            bpVal: "pocket-large:" + largeText + "\npocket-med:" + medText + "\npocket-small:" + smallText
+            pocketlarge: details.join('\n')
           };
         }
         
@@ -975,38 +1216,311 @@
         }
         
         if (id === "clubs") {
-          var selected = checkboxes.filter(function(cid) { return document.getElementById(cid).checked; });
+          var selected = [];
+          checkboxes.forEach(function(cid) {
+            var el = document.getElementById(cid);
+            if (el.checked) selected.push(cid);
+          });
           return {
-            CLUBS: "CLUBS:" + selected.join(','),
-            HOURS: document.getElementById('club-hours-total').textContent
+            CLUBS: "CLUBS:" + selected.join(',')
           };
         }
         
         if (id === "examprep") {
-          var highItems = Array.from(document.getElementById('study-bin-high').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
-          var lowItems = Array.from(document.getElementById('study-bin-low').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
           return {
-            HIGH: "HIGH:" + highItems.join(','),
-            LOW: "LOW:" + lowItems.join(',')
+            prepVal: prepControls.map(function(cid) { return document.getElementById(cid).value; }).join(',')
           };
         }
         
         if (id === "distractions") {
-          var valsArr = notifControls.map(function(cid) { return document.getElementById(cid).value; });
           return {
-            vals: valsArr.join(',')
+            distVal: distControls.map(function(cid) { return document.getElementById(cid).value; }).join(',')
           };
         }
         
         if (id === "schoolmap") {
-          var count = Object.values(roomsFound).filter(Boolean).length;
           return {
-            ROOMS_FOUND_COUNT: "ROOMS_FOUND_COUNT:" + count
+            ROOMS_LOCATED: "ROOMS_LOCATED:" + locatedRooms.join(',')
+          };
+        }
+
+        if (id === "backpack-game") {
+          return {
+            SCORE: document.getElementById('game-score-val-panther').textContent
+          };
+        }
+
+        if (id === "routine-opt") {
+          return {
+            routVal: routControls.map(function(cid) { return document.getElementById(cid).value; }).join(',')
+          };
+        }
+
+        if (id === "time-budget") {
+          return {
+            SLEEP: "SLEEP:" + tbSleep.value,
+            STUDY: "STUDY:" + tbStudy.value,
+            GAMING: "GAMING:" + tbGaming.value,
+            EXTRA: "EXTRA:" + tbExtra.value
+          };
+        }
+
+        if (id === "goals-plan") {
+          return {
+            GPA: "GPA:" + goalGpa.value,
+            ACTIVITY: "ACTIVITY:" + goalAct.value,
+            STRATEGY: "STRATEGY:" + goalStrat.value,
+            STATEMENT: "STATEMENT:" + goalState.value
           };
         }
         
         return {};
       };
+
+      // Backpack Game logic
+      var canvPan = document.getElementById('canvas-panther');
+      var ctxPan = canvPan.getContext('2d');
+      var scorePan = 0;
+      var livesPan = 3;
+      var isPlayingPan = false;
+      var fallingItemsPan = [];
+      var shieldButtonsPan = [];
+      var particleExplosionsPan = [];
+      
+      var backpackItems = [
+        { name: "Chromebook", pocket: "Large" },
+        { name: "Textbook", pocket: "Large" },
+        { name: "Notebook", pocket: "Large" },
+        { name: "Pencil Case", pocket: "Medium" },
+        { name: "TI-84 Calc", pocket: "Medium" },
+        { name: "ID Badge", pocket: "Small" },
+        { name: "Locker Key", pocket: "Small" }
+      ];
+      
+      var currentRoundPan = null;
+      var nextSpawnPan = 0;
+      
+      function resizeCanvasPan() {
+        var rect = canvPan.parentNode.getBoundingClientRect();
+        canvPan.width = rect.width;
+        canvPan.height = rect.width * 9 / 16;
+      }
+      window.addEventListener('resize', resizeCanvasPan);
+      resizeCanvasPan();
+      
+      var startBtnPan = document.getElementById('game-btn-panther');
+      startBtnPan.addEventListener('click', function() {
+        if (!isPlayingPan) {
+          EWL.playAudio('game-start');
+          document.getElementById('game-overlay-panther').style.display = 'none';
+          scorePan = 0;
+          livesPan = 3;
+          isPlayingPan = true;
+          fallingItemsPan = [];
+          particleExplosionsPan = [];
+          nextSpawnPan = Date.now();
+          updateHUDPan();
+          setupNewRoundPan();
+          gameLoopPan();
+        }
+      });
+      
+      function updateHUDPan() {
+        document.getElementById('game-score-val-panther').textContent = scorePan;
+        document.getElementById('game-lives-val-panther').textContent = livesPan;
+      }
+      
+      function setupNewRoundPan() {
+        var randomItem = backpackItems[Math.floor(Math.random() * backpackItems.length)];
+        currentRoundPan = {
+          name: randomItem.name,
+          pocket: randomItem.pocket
+        };
+        
+        shieldButtonsPan = [];
+        var numShields = 3;
+        var btnWidth = canvPan.width / 4;
+        var yPos = canvPan.height - 40;
+        
+        var options = ["Large", "Medium", "Small"];
+        
+        for (var i = 0; i < numShields; i++) {
+          shieldButtonsPan.push({
+            x: (i + 1) * (canvPan.width / 4) - btnWidth / 2,
+            y: yPos,
+            w: btnWidth,
+            h: 30,
+            pocket: options[i]
+          });
+        }
+      }
+      
+      canvPan.addEventListener('click', function(e) {
+        if (!isPlayingPan) return;
+        var rect = canvPan.getBoundingClientRect();
+        var clickX = e.clientX - rect.left;
+        var clickY = e.clientY - rect.top;
+        
+        var scaleX = canvPan.width / rect.width;
+        var scaleY = canvPan.height / rect.height;
+        var x = clickX * scaleX;
+        var y = clickY * scaleY;
+        
+        shieldButtonsPan.forEach(function(shield) {
+          if (x >= shield.x && x <= shield.x + shield.w && y >= shield.y && y <= shield.y + shield.h) {
+            if (shield.pocket === currentRoundPan.pocket) {
+              scorePan += 25;
+              EWL.playAudio('powerup');
+              createExplosionPan(shield.x + shield.w/2, shield.y, '#6366f1');
+              fallingItemsPan = [];
+              updateHUDPan();
+              if (scorePan >= 100) {
+                endGamePan(true);
+              } else {
+                setupNewRoundPan();
+              }
+            } else {
+              livesPan--;
+              EWL.playAudio('fail');
+              createExplosionPan(x, y, '#ef4444');
+              updateHUDPan();
+              if (livesPan <= 0) endGamePan(false);
+            }
+          }
+        });
+      });
+      
+      function createExplosionPan(x, y, color) {
+        for (var i = 0; i < 15; i++) {
+          particleExplosionsPan.push({
+            x: x,
+            y: y,
+            vx: (Math.random() - 0.5) * 6,
+            vy: (Math.random() - 0.5) * 6,
+            radius: Math.random() * 3 + 1,
+            color: color,
+            alpha: 1
+          });
+        }
+      }
+      
+      function spawnItemPan() {
+        var x = Math.random() * (canvPan.width - 120) + 60;
+        fallingItemsPan.push({
+          x: x,
+          y: 0,
+          name: currentRoundPan.name,
+          speed: 1.1 + (scorePan * 0.005)
+        });
+      }
+      
+      function gameLoopPan() {
+        if (!isPlayingPan) return;
+        
+        ctxPan.clearRect(0, 0, canvPan.width, canvPan.height);
+        
+        // Target display
+        ctxPan.fillStyle = "rgba(30, 41, 59, 0.8)";
+        ctxPan.fillRect(10, 10, canvPan.width - 20, 45);
+        ctxPan.strokeStyle = "#6366f1";
+        ctxPan.strokeRect(10, 10, canvPan.width - 20, 45);
+        
+        ctxPan.fillStyle = "#ffffff";
+        ctxPan.font = "bold 13px Inter, sans-serif";
+        ctxPan.textAlign = "center";
+        ctxPan.fillText("PACK ITEM: " + currentRoundPan.name, canvPan.width / 2, 36);
+        
+        if (Date.now() > nextSpawnPan && fallingItemsPan.length === 0) {
+          spawnItemPan();
+          nextSpawnPan = Date.now() + 4000;
+        }
+        
+        fallingItemsPan.forEach(function(item, idx) {
+          item.y += item.speed;
+          
+          ctxPan.fillStyle = "#6366f1";
+          ctxPan.font = "bold 15px Inter, sans-serif";
+          ctxPan.fillText("🎒 " + item.name, item.x, item.y);
+          
+          if (item.y >= canvPan.height - 50) {
+            livesPan--;
+            EWL.playAudio('hit');
+            createExplosionPan(item.x, item.y, '#ef4444');
+            fallingItemsPan.splice(idx, 1);
+            updateHUDPan();
+            if (livesPan <= 0) {
+              endGamePan(false);
+            } else {
+              setupNewRoundPan();
+            }
+          }
+        });
+        
+        shieldButtonsPan.forEach(function(shield) {
+          var isCorrect = (shield.pocket === currentRoundPan.pocket);
+          ctxPan.fillStyle = isCorrect ? "rgba(99, 102, 241, 0.3)" : "rgba(30, 41, 59, 0.9)";
+          ctxPan.strokeStyle = isCorrect ? "#6366f1" : "#94a3b8";
+          ctxPan.lineWidth = isCorrect ? 2 : 1;
+          
+          ctxPan.beginPath();
+          ctxPan.roundRect(shield.x, shield.y, shield.w, shield.h, 6);
+          ctxPan.fill();
+          ctxPan.stroke();
+          
+          ctxPan.fillStyle = "#ffffff";
+          ctxPan.font = "12px Inter, sans-serif";
+          ctxPan.fillText(shield.pocket + " Pocket", shield.x + shield.w / 2, shield.y + 18);
+        });
+        
+        particleExplosionsPan.forEach(function(p, pIdx) {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.alpha -= 0.02;
+          if (p.alpha <= 0) {
+            particleExplosionsPan.splice(pIdx, 1);
+          } else {
+            ctxPan.fillStyle = p.color;
+            ctxPan.globalAlpha = p.alpha;
+            ctxPan.beginPath();
+            ctxPan.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+            ctxPan.fill();
+            ctxPan.globalAlpha = 1.0;
+          }
+        });
+        
+        if (isPlayingPan) {
+          requestAnimationFrame(gameLoopPan);
+        }
+      }
+      
+      function endGamePan(win) {
+        isPlayingPan = false;
+        var high = EWL.saveHighScore('backpack-game', scorePan);
+        
+        var titleEl = document.getElementById('game-over-title-panther');
+        var descEl = document.getElementById('game-over-desc-panther');
+        var overlay = document.getElementById('game-overlay-panther');
+        var startBtn = document.getElementById('game-btn-panther');
+        
+        document.getElementById('evidence-text-backpack-game').value = "SCORE:" + scorePan + "\nWIN:" + win + "\nHIGH:" + (scorePan >= 100);
+        
+        if (win) {
+          titleEl.textContent = "Victory! 🎉";
+          descEl.textContent = "Backpack packed correctly! Score: " + scorePan + " XP logged." + (high ? " (New High Score!)" : "");
+          startBtn.textContent = "Play Again";
+          overlay.style.display = "flex";
+        } else {
+          titleEl.textContent = "Game Over 💀";
+          descEl.textContent = "Items dropped! Total Score: " + scorePan;
+          startBtn.textContent = "Try Again";
+          overlay.style.display = "flex";
+        }
+      }
+      
+      setTimeout(function() {
+        var hs = EWL.state.highScores['backpack-game'] || 0;
+        document.getElementById('high-score-panther').textContent = hs;
+      }, 150);
     </script>
   </body>
 </html>
