@@ -2686,6 +2686,25 @@
         var hs = EWL.state.highScores["backpack-game"] || 0;
         document.getElementById("high-score-panther").textContent = hs;
       }, 150);
+
+      // Instant correct/incorrect feedback on every graded dropdown
+      if (window.EWL && EWL.registerAnswers) {
+        EWL.registerAnswers({
+          "em-subject": "missed",
+          "em-salut": "formal",
+          "em-close": "formal",
+          "prep-opt-1": "passive",
+          "prep-opt-2": "active",
+          "prep-opt-3": "active",
+          "dist-opt-1": "block",
+          "dist-opt-2": "deliver",
+          "dist-opt-3": "deliver",
+          "rout-1": "s1",
+          "rout-2": "s2",
+          "rout-3": "s3",
+          "rout-4": "s4",
+        });
+      }
     </script>
   </body>
 </html>
