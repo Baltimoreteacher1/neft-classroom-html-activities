@@ -6359,7 +6359,7 @@
           display.textContent = "0";
         } else if (val === "=") {
           try {
-            const sanitized = calcExpression.replace(/[^0-9+\\-*/().]/g, "");
+            const sanitized = calcExpression.replace(/[^0-9+*\/().-]/g, "");
             const result = eval(sanitized);
             display.textContent = result !== undefined ? parseFloat(result.toFixed(4)) : "0";
             calcExpression = display.textContent;
