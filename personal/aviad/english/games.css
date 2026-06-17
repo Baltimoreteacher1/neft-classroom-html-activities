@@ -1,0 +1,262 @@
+/* games.css — full-page arcade game chrome + boards. Extends shared.css. */
+.eng-game-wrap {
+  width: min(900px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 30px 0 60px;
+}
+.eng-game-head {
+  text-align: center;
+  margin-bottom: 22px;
+}
+.eng-game-head .back {
+  display: inline-flex;
+  gap: 8px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-weight: 600;
+  font-family: var(--font-title);
+  margin-bottom: 16px;
+}
+.eng-game-head .back:hover {
+  color: #fff;
+}
+.eng-game-head h1 {
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  margin-bottom: 8px;
+}
+.eng-game-head p {
+  color: var(--text-muted);
+  max-width: 60ch;
+  margin: 0 auto 14px;
+}
+.eng-howto {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #131b2e;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 10px 18px;
+  min-height: 44px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.eng-howto:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+/* shared game HUD */
+.eng-hud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.eng-chip {
+  background: #131b2e;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #fff;
+}
+.eng-chip b {
+  color: #c084fc;
+}
+
+/* Word Defender stage */
+.eng-stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: #05080f;
+  border: 2px solid rgba(168, 85, 247, 0.3);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+.eng-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.eng-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  text-align: center;
+  padding: 24px;
+  background: rgba(8, 12, 22, 0.92);
+}
+.eng-overlay h2 {
+  font-size: 2rem;
+}
+.eng-overlay p {
+  color: #cbd5e1;
+  max-width: 46ch;
+}
+
+/* Vocab Match board */
+.eng-match {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+@media (max-width: 640px) {
+  .eng-match {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+.eng-match .eng-tile {
+  aspect-ratio: 3 / 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 10px;
+  background: #1e293b;
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+.eng-match .eng-tile.is-word {
+  font-family: var(--font-title);
+  font-size: 1rem;
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.22), #1e293b);
+}
+.eng-match .eng-tile:hover {
+  border-color: #a855f7;
+}
+.eng-match .eng-tile.sel {
+  border-color: #ec4899;
+  transform: scale(1.04);
+}
+.eng-match .eng-tile.matched {
+  border-color: #22c55e;
+  background: rgba(34, 197, 94, 0.16);
+  color: #22c55e;
+  pointer-events: none;
+  opacity: 0.65;
+}
+.eng-match .eng-tile.miss {
+  border-color: #f43f5e;
+  background: rgba(244, 63, 94, 0.16);
+}
+.eng-win {
+  grid-column: 1 / -1;
+  text-align: center;
+  font-family: var(--font-title);
+  font-weight: 700;
+  color: #22c55e;
+  padding: 8px;
+}
+
+/* Gauntlet / Rally board */
+.eng-timer {
+  height: 10px;
+  border-radius: 6px;
+  background: #1e293b;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+.eng-timer-fill {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, #a855f7, #ec4899);
+  transition: width 0.06s linear;
+}
+.eng-sentence {
+  background: #131b2e;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 26px;
+  font-size: 1.3rem;
+  line-height: 1.9;
+  min-height: 110px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+.eng-sentence .muted {
+  color: #94a3b8;
+  font-size: 0.95rem;
+}
+.eng-gword {
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+  border-bottom: 2px solid transparent;
+  transition: all 0.12s ease;
+}
+.eng-gword:hover {
+  background: rgba(168, 85, 247, 0.2);
+  border-bottom-color: #a855f7;
+}
+.eng-gword.ok {
+  background: rgba(34, 197, 94, 0.18);
+  color: #22c55e;
+}
+.eng-gword.no {
+  background: rgba(244, 63, 94, 0.18);
+}
+.eng-gword.reveal {
+  background: rgba(168, 85, 247, 0.22);
+}
+.eng-appeals {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.eng-appeals .btn {
+  flex: 1;
+  font-size: 1rem;
+}
+.eng-feedback {
+  min-height: 26px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.eng-feedback.show {
+  opacity: 1;
+}
+.eng-feedback.ok {
+  color: #22c55e;
+}
+.eng-feedback.no {
+  color: #f43f5e;
+}
+
+/* How-to dialog */
+dialog.eng-howto-dlg {
+  width: min(520px, calc(100% - 32px));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  background: #141c30;
+  color: #e8edf6;
+  padding: 28px;
+  box-shadow: var(--shadow-lg);
+}
+dialog.eng-howto-dlg::backdrop {
+  background: rgba(5, 8, 16, 0.72);
+  backdrop-filter: blur(4px);
+}
+dialog.eng-howto-dlg h2 {
+  font-size: 1.4rem;
+  margin-bottom: 14px;
+}
+dialog.eng-howto-dlg .btn {
+  margin-top: 16px;
+}

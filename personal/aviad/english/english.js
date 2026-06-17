@@ -1,17 +1,24 @@
-/* english.js — Summer English 10 engine.
-   Renders 6 content modules + 4 interactive games from window.ENG data.
-   Integrates with shared.js: cards are .activity[data-id][data-type] so XP,
-   completion, and saving work. Module tab switching is section-based (own tabs).
-*/
+/* english.js — Summer English 10 engine (v4).
+   Two-level navigation: top module tabs -> activity sub-tabs (1-2 activities each).
+   Activity types: reading+immediate-feedback quiz, match-up, fill-the-blank,
+   sort-the-appeal, spot-the-error, flip cards, compose, study, game launch.
+   Guide popups on every activity. Progress ring + badges (own localStorage).
+   Uses shared.js for arcade audio only. */
 (function () {
   "use strict";
   var E = window.ENG || {};
+  var STORE = "ewl-aviad-english-v4";
+  var prog = { done: {} };
+  try {
+    prog = JSON.parse(localStorage.getItem(STORE)) || { done: {} };
+  } catch (e) {}
+  if (!prog.done) prog.done = {};
 
-  /* ---------- tiny DOM helpers ---------- */
-  function el(tag, cls, html) {
-    var n = document.createElement(tag);
-    if (cls) n.className = cls;
-    if (html != null) n.innerHTML = html;
+  /* ---------- helpers ---------- */
+  function el(t, c, h) {
+    var n = document.createElement(t);
+    if (c) n.className = c;
+    if (h != null) n.innerHTML = h;
     return n;
   }
   function esc(s) {
@@ -34,134 +41,129 @@
   function audio(t) {
     if (window.EWL && EWL.playAudio) EWL.playAudio(t);
   }
-
-  var app = document.getElementById("eng-app");
-  var tabsEl = document.getElementById("eng-tabs");
-
-  /* ---------- module section + tab scaffold ---------- */
-  function makeSection(key, data) {
-    var sec = el("section", "eng-section");
-    sec.dataset.module = key;
-    if (key !== "overview") sec.style.display = "none";
-    var intro = el("div", "eng-module-intro");
-    intro.innerHTML =
-      '<div class="eng-m-ico">' +
-      (data.icon || "📘") +
-      "</div><div><h2>" +
-      esc(data.title) +
-      "</h2><p>" +
-      (data.intro || "") +
-      '</p><span class="eng-m-tag">English 10 · Summer Module</span></div>';
-    sec.appendChild(intro);
-    var grid = el("div", "grid");
-    sec.appendChild(grid);
-    app.appendChild(sec);
-    return grid;
+  function save() {
+    try {
+      localStorage.setItem(STORE, JSON.stringify(prog));
+    } catch (e) {}
+  }
+  var TOTAL = 0;
+  function markDone(id) {
+    if (prog.done[id]) return;
+    prog.done[id] = true;
+    save();
+    audio("success");
+    updateRing();
   }
 
-  var TABS = [];
-  function addTab(key, label) {
-    var b = el("button", "tab", esc(label));
-    b.dataset.mod = key;
-    b.setAttribute("aria-selected", key === "overview" ? "true" : "false");
+  /* ---------- modal / guide ---------- */
+  var modalRoot;
+  function ensureModal() {
+    if (modalRoot) return;
+    modalRoot = el("div", "eng-modal-backdrop");
+    modalRoot.innerHTML =
+      '<div class="eng-modal" role="dialog" aria-modal="true"><button class="eng-modal-x" aria-label="Close">&times;</button><div class="eng-modal-body"></div></div>';
+    document.body.appendChild(modalRoot);
+    modalRoot.addEventListener("click", function (e) {
+      if (e.target === modalRoot) closeModal();
+    });
+    modalRoot
+      .querySelector(".eng-modal-x")
+      .addEventListener("click", closeModal);
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") closeModal();
+    });
+  }
+  var lastFocus = null;
+  function openModal(title, html) {
+    ensureModal();
+    lastFocus = document.activeElement;
+    modalRoot.querySelector(".eng-modal-body").innerHTML =
+      "<h2>" + esc(title) + "</h2>" + html;
+    modalRoot.classList.add("show");
+    modalRoot.querySelector(".eng-modal-x").focus();
+  }
+  function closeModal() {
+    if (!modalRoot) return;
+    modalRoot.classList.remove("show");
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  function guideButton(key) {
+    var g = GUIDES[key] || GUIDES._default;
+    var b = el("button", "eng-guide-btn", "💡 Guide & Hints");
+    b.type = "button";
     b.addEventListener("click", function () {
-      TABS.forEach(function (t) {
-        t.setAttribute("aria-selected", String(t === b));
-      });
-      document.querySelectorAll(".eng-section").forEach(function (s) {
-        s.style.display = s.dataset.module === key ? "" : "none";
-      });
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      openModal(g.title, g.html);
     });
-    tabsEl.appendChild(b);
-    TABS.push(b);
+    return b;
   }
 
-  /* ---------- card shell with complete/save ---------- */
-  function activityCard(grid, opts) {
-    var card = el("article", "activity");
-    card.dataset.id = opts.id;
-    card.dataset.type = opts.type;
-    if (opts.gate) card.dataset.gate = opts.gate;
-    if (opts.need) card.dataset.need = String(opts.need);
-    var meta = el("div", "meta");
-    (opts.pills || []).forEach(function (p, i) {
-      meta.appendChild(el("span", "pill" + (i === 0 ? " accent" : ""), esc(p)));
-    });
-    card.appendChild(meta);
-    card.appendChild(el("h3", null, esc(opts.title)));
-    if (opts.sub) card.appendChild(el("p", null, opts.sub));
-    var body = el("div", "activity-interactive-area");
-    card.appendChild(body);
-    if (opts.includeText) {
-      var ta = el("textarea");
-      ta.id = "evidence-text-" + opts.id;
-      ta.placeholder = opts.placeholder || "Type your response here…";
-      ta.style.marginTop = "12px";
-      card.appendChild(ta);
-    }
-    if (!opts.noActions) {
-      var actions = el("div", "actions");
-      var save = el("button", "btn secondary", "Save workspace");
-      save.setAttribute("data-save", "");
-      var done = el("button", "btn", opts.completeLabel || "Mark complete");
-      done.setAttribute("data-complete", "");
-      actions.appendChild(save);
-      actions.appendChild(done);
-      card.appendChild(actions);
-    }
-    grid.appendChild(card);
-    return { card: card, body: body };
+  /* ---------- activity shell ---------- */
+  function panelHead(panel, opts) {
+    var head = el("div", "eng-act-head");
+    var left = el("div");
+    left.appendChild(el("span", "eng-kicker", esc(opts.kicker || "Activity")));
+    left.appendChild(el("h2", "eng-act-title", esc(opts.title)));
+    if (opts.sub) left.appendChild(el("p", "eng-act-sub", opts.sub));
+    head.appendChild(left);
+    var right = el("div", "eng-act-tools");
+    if (opts.guide) right.appendChild(guideButton(opts.guide));
+    head.appendChild(right);
+    panel.appendChild(head);
+  }
+  function doneBanner(panel, id) {
+    var b = el(
+      "div",
+      "eng-done-banner" + (prog.done[id] ? " show" : ""),
+      "✓ Completed — nice work!",
+    );
+    panel.appendChild(b);
+    return b;
   }
 
-  function refPanel(grid, title, buildBody) {
-    var card = el("article", "activity eng-ref");
-    card.style.cursor = "default";
-    var head = el("div", "meta");
-    head.appendChild(el("span", "pill accent", "Study"));
-    card.appendChild(head);
-    card.appendChild(el("h3", null, esc(title)));
-    var body = el("div");
-    buildBody(body);
-    card.appendChild(body);
-    grid.appendChild(card);
-  }
+  /* ============================================================
+     ACTIVITY TYPES
+     ============================================================ */
 
-  /* ---------- auto-graded reading/quiz cards ---------- */
-  function renderPassageCard(grid, type, p) {
-    var built = activityCard(grid, {
-      id: p.id,
-      type: type,
-      gate: "quiz",
-      need: 3,
-      pills: [type, p.minutes + " min", p.focus || "Close reading"],
+  // A. Reading passage + immediate-feedback quiz
+  function actReadingQuiz(panel, p, moduleLabel) {
+    panelHead(panel, {
+      kicker: moduleLabel + " · " + (p.minutes || 15) + " min",
       title: p.title,
-      sub: "<em>" + esc(p.source) + "</em>",
-      completeLabel: "Log to portfolio",
+      sub:
+        "<em>" + esc(p.source) + "</em> — " + esc(p.focus || "Close reading"),
+      guide: "reading",
     });
-    var layout = el("div", "reading-layout");
-    var passage = el("div", "passage-panel");
+    var banner = doneBanner(panel, p.id);
+    var layout = el("div", "eng-read");
+    var passage = el("div", "eng-passage");
     passage.innerHTML =
-      '<p style="font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);font-weight:800;margin-bottom:10px;">' +
-      esc(p.genre) +
-      "</p>" +
-      p.text;
-    layout.appendChild(passage);
-
-    var qPanel = el("div", "questions-panel");
-    var state = { answered: {}, graded: false };
+      '<div class="eng-genre">' + esc(p.genre) + "</div>" + p.text;
+    var qcol = el("div", "eng-quiz");
+    qcol.appendChild(
+      el(
+        "div",
+        "eng-quiz-head",
+        "Comprehension &amp; Analysis <span class='eng-progresspill'><b class='q-correct'>0</b>/" +
+          p.questions.length +
+          " correct</span>",
+      ),
+    );
+    var correctEl = qcol.querySelector(".q-correct");
+    var answered = 0,
+      correct = 0;
     p.questions.forEach(function (q, qi) {
       var wrap = el("div", "eng-q");
       wrap.appendChild(
         el(
           "div",
           "eng-q-stem",
-          '<span class="eng-q-num">' + (qi + 1) + ".</span>" + esc(q.stem),
+          '<span class="eng-q-num">' + (qi + 1) + "</span>" + esc(q.stem),
         ),
       );
+      var opts = el("div", "eng-opts");
       q.options.forEach(function (o) {
         var opt = el(
-          "div",
+          "button",
           "eng-opt",
           '<span class="eng-key">' +
             esc(o.key) +
@@ -169,256 +171,849 @@
             esc(o.text) +
             "</span>",
         );
+        opt.type = "button";
         opt.addEventListener("click", function () {
-          if (state.graded) return;
-          wrap.querySelectorAll(".eng-opt").forEach(function (x) {
-            x.classList.remove("selected");
-          });
-          opt.classList.add("selected");
-          state.answered[qi] = o.key;
-        });
-        wrap.appendChild(opt);
-      });
-      var rat = el(
-        "div",
-        "eng-rationale",
-        "<strong>Why:</strong> " + esc(q.rationale),
-      );
-      wrap.appendChild(rat);
-      qPanel.appendChild(wrap);
-    });
-
-    // grade button + score
-    var gradeBar = el("div", "actions");
-    var gradeBtn = el("button", "btn", "Check answers");
-    var scoreTag = el("span", "eng-score-tag", "Not graded");
-    gradeBar.appendChild(gradeBtn);
-    gradeBar.appendChild(scoreTag);
-    qPanel.appendChild(gradeBar);
-
-    gradeBtn.addEventListener("click", function () {
-      var correct = 0;
-      var qWraps = qPanel.querySelectorAll(".eng-q");
-      p.questions.forEach(function (q, qi) {
-        var w = qWraps[qi];
-        var opts = w.querySelectorAll(".eng-opt");
-        opts.forEach(function (opt) {
-          opt.classList.add("locked");
-          var key = opt.querySelector(".eng-key").textContent;
-          if (key === q.answer) opt.classList.add("correct");
-          else if (opt.classList.contains("selected"))
+          if (wrap.classList.contains("done")) return;
+          wrap.classList.add("done");
+          answered++;
+          var ok = o.key === q.answer;
+          if (ok) {
+            correct++;
+            correctEl.textContent = correct;
+            opt.classList.add("correct");
+            audio("success");
+          } else {
             opt.classList.add("wrong");
-        });
-        w.querySelector(".eng-rationale").classList.add("show");
-        if (state.answered[qi] === q.answer) correct++;
-      });
-      state.graded = true;
-      var total = p.questions.length;
-      scoreTag.textContent = "Score: " + correct + " / " + total;
-      scoreTag.classList.toggle("pass", correct >= 3);
-      gradeBtn.disabled = true;
-      gradeBtn.style.opacity = "0.5";
-      audio(correct >= 3 ? "success" : "fail");
-      if (correct >= 3) built.card.dataset.ready = "1";
-      built.card._engScore = correct;
-    });
-
-    layout.appendChild(qPanel);
-    built.body.appendChild(layout);
-  }
-
-  /* ---------- vocabulary ---------- */
-  function renderVocab(grid, V) {
-    // study grid (reference)
-    refPanel(
-      grid,
-      "Word Wall — " + V.words.length + " academic words",
-      function (body) {
-        var vg = el("div", "eng-vocab-grid");
-        V.words.forEach(function (w) {
-          var c = el("div", "eng-vcard");
-          c.innerHTML =
-            '<div class="eng-word">' +
-            esc(w.word) +
-            '</div><div class="eng-pos">' +
-            esc(w.pos) +
-            '</div><div class="eng-def">' +
-            esc(w.def) +
-            '</div><div class="eng-sent">"' +
-            esc(w.sentence) +
-            '"</div>';
-          vg.appendChild(c);
-        });
-        body.appendChild(vg);
-      },
-    );
-
-    // context quiz (auto-graded activity)
-    var built = activityCard(grid, {
-      id: "vocab-context",
-      type: "Vocabulary",
-      gate: "quiz",
-      need: 7,
-      pills: ["Vocabulary", "Context clues", V.contextQuiz.length + " items"],
-      title: "Context Clues Quiz",
-      sub: "Use context to choose the best meaning. Aim for 7+ correct.",
-      completeLabel: "Log to portfolio",
-    });
-    var state = { ans: {}, graded: false };
-    V.contextQuiz.forEach(function (q, qi) {
-      var wrap = el("div", "eng-q");
-      wrap.appendChild(
-        el(
-          "div",
-          "eng-q-stem",
-          '<span class="eng-q-num">' + (qi + 1) + ".</span>" + esc(q.stem),
-        ),
-      );
-      q.options.forEach(function (o) {
-        var opt = el(
-          "div",
-          "eng-opt",
-          '<span class="eng-key">' +
-            esc(o.key) +
-            "</span><span>" +
-            esc(o.text) +
-            "</span>",
-        );
-        opt.addEventListener("click", function () {
-          if (state.graded) return;
-          wrap.querySelectorAll(".eng-opt").forEach(function (x) {
-            x.classList.remove("selected");
+            audio("fail");
+            opts.querySelectorAll(".eng-opt").forEach(function (x) {
+              if (x.querySelector(".eng-key").textContent === q.answer)
+                x.classList.add("correct");
+            });
+          }
+          opts.querySelectorAll(".eng-opt").forEach(function (x) {
+            x.classList.add("locked");
           });
-          opt.classList.add("selected");
-          state.ans[qi] = o.key;
+          wrap.querySelector(".eng-rationale").classList.add("show");
+          if (answered === p.questions.length) {
+            markDone(p.id);
+            banner.classList.add("show");
+          }
         });
-        wrap.appendChild(opt);
+        opts.appendChild(opt);
       });
+      wrap.appendChild(opts);
       wrap.appendChild(
         el("div", "eng-rationale", "<strong>Why:</strong> " + esc(q.rationale)),
       );
-      built.body.appendChild(wrap);
+      qcol.appendChild(wrap);
     });
-    var bar = el("div", "actions");
-    var gb = el("button", "btn", "Check answers");
-    var st = el("span", "eng-score-tag", "Not graded");
-    bar.appendChild(gb);
-    bar.appendChild(st);
-    built.body.appendChild(bar);
-    gb.addEventListener("click", function () {
-      var correct = 0;
-      var ws = built.body.querySelectorAll(".eng-q");
-      V.contextQuiz.forEach(function (q, qi) {
-        var w = ws[qi];
-        w.querySelectorAll(".eng-opt").forEach(function (opt) {
-          opt.classList.add("locked");
-          var key = opt.querySelector(".eng-key").textContent;
-          if (key === q.answer) opt.classList.add("correct");
-          else if (opt.classList.contains("selected"))
-            opt.classList.add("wrong");
-        });
-        w.querySelector(".eng-rationale").classList.add("show");
-        if (state.ans[qi] === q.answer) correct++;
-      });
-      state.graded = true;
-      st.textContent = "Score: " + correct + " / " + V.contextQuiz.length;
-      st.classList.toggle("pass", correct >= 7);
-      gb.disabled = true;
-      gb.style.opacity = "0.5";
-      audio(correct >= 7 ? "success" : "fail");
-      if (correct >= 7) built.card.dataset.ready = "1";
-    });
-    // (Vocab Match game lives in the Arcade tab.)
+    layout.appendChild(passage);
+    layout.appendChild(qcol);
+    panel.appendChild(layout);
   }
 
-  /* ---------- grammar ---------- */
-  function renderGrammar(grid, G) {
-    refPanel(grid, "Grammar Lessons", function (body) {
-      G.lessons.forEach(function (L) {
-        var m = el("div", "eng-model");
-        var ex = L.examples
-          .map(function (e) {
-            return (
-              '<p style="margin:6px 0;font-size:.86rem;"><span style="color:var(--danger);">✗</span> ' +
-              esc(e.wrong) +
-              '<br><span style="color:var(--success);">✓</span> ' +
-              esc(e.right) +
-              '<br><em style="color:var(--text-muted);font-size:.8rem;">' +
-              esc(e.note) +
-              "</em></p>"
-            );
-          })
-          .join("");
-        m.innerHTML =
-          "<h4>" + esc(L.title) + "</h4><p>" + esc(L.rule) + "</p>" + ex;
-        body.appendChild(m);
+  // B. Click match-up (two columns), immediate feedback
+  function actMatch(panel, opts) {
+    panelHead(panel, {
+      kicker: opts.kicker,
+      title: opts.title,
+      sub: opts.sub,
+      guide: opts.guide,
+    });
+    var banner = doneBanner(panel, opts.id);
+    var info = el(
+      "div",
+      "eng-inline-status",
+      "Tap a term, then its match. <b class='m-done'>0</b>/" +
+        opts.pairs.length +
+        " matched.",
+    );
+    panel.appendChild(info);
+    var doneEl = info.querySelector(".m-done");
+    var board = el("div", "eng-match2");
+    var left = el("div", "eng-col");
+    var right = el("div", "eng-col");
+    board.appendChild(left);
+    board.appendChild(right);
+    panel.appendChild(board);
+    var sel = null,
+      done = 0;
+    shuffle(opts.pairs).forEach(function (p, i) {
+      var a = el("button", "eng-mtile", esc(p.a));
+      a.dataset.pid = i;
+      a.dataset.side = "a";
+      left.appendChild(a);
+    });
+    shuffle(opts.pairs).forEach(function (p, i) {
+      var b = el("button", "eng-mtile", esc(p.b));
+      b.dataset.pid = i;
+      b.dataset.side = "b";
+      right.appendChild(b);
+    });
+    board.querySelectorAll(".eng-mtile").forEach(function (tile) {
+      tile.addEventListener("click", function () {
+        if (tile.classList.contains("matched")) return;
+        if (!sel) {
+          sel = tile;
+          tile.classList.add("sel");
+          return;
+        }
+        if (sel === tile) {
+          tile.classList.remove("sel");
+          sel = null;
+          return;
+        }
+        if (sel.dataset.side === tile.dataset.side) {
+          sel.classList.remove("sel");
+          sel = tile;
+          tile.classList.add("sel");
+          return;
+        }
+        if (sel.dataset.pid === tile.dataset.pid) {
+          sel.classList.add("matched");
+          tile.classList.add("matched");
+          sel.classList.remove("sel");
+          sel = null;
+          done++;
+          doneEl.textContent = done;
+          audio("success");
+          if (done === opts.pairs.length) {
+            markDone(opts.id);
+            banner.classList.add("show");
+          }
+        } else {
+          var bad = sel,
+            bad2 = tile;
+          bad.classList.add("miss");
+          bad2.classList.add("miss");
+          audio("fail");
+          setTimeout(function () {
+            bad.classList.remove("miss", "sel");
+            bad2.classList.remove("miss");
+          }, 380);
+          sel = null;
+        }
       });
     });
+  }
 
-    // edit practice (text activity)
-    var built = activityCard(grid, {
-      id: "grammar-edit",
-      type: "Grammar",
-      gate: "text",
-      pills: ["Grammar", "Revision", G.editItems.length + " items"],
-      title: "Revision Studio",
-      sub: "Rewrite each weak sentence. Then log your best revisions.",
-      includeText: true,
-      placeholder: "Rewrite each sentence below in your own words…",
-      completeLabel: "Log to portfolio",
+  // C. Fill-the-blank with options, immediate feedback
+  function actFill(panel, opts) {
+    panelHead(panel, {
+      kicker: opts.kicker,
+      title: opts.title,
+      sub: opts.sub,
+      guide: opts.guide,
     });
-    var list = el("div");
-    G.editItems.forEach(function (e, i) {
-      var d = el("div", "eng-model");
-      d.innerHTML =
-        "<h4>" +
+    var banner = doneBanner(panel, opts.id);
+    var prog2 = el(
+      "div",
+      "eng-inline-status",
+      "<b class='f-done'>0</b>/" + opts.items.length + " correct.",
+    );
+    panel.appendChild(prog2);
+    var dEl = prog2.querySelector(".f-done");
+    var done = 0,
+      answered = 0;
+    opts.items.forEach(function (it, i) {
+      var card = el("div", "eng-fill");
+      card.innerHTML =
+        '<p class="eng-fill-stem">' +
         (i + 1) +
         ". " +
-        esc(e.skill) +
-        '</h4><p style="font-size:.88rem;"><strong style="color:var(--danger);">Weak:</strong> ' +
-        esc(e.bad) +
-        '</p><button class="btn secondary" style="margin-top:8px;font-size:.78rem;padding:6px 12px;">Reveal a strong revision</button><p class="eng-reveal" style="display:none;margin-top:8px;font-size:.88rem;color:var(--success);"><strong>Model:</strong> ' +
-        esc(e.good) +
+        it.stem.replace("___", '<span class="eng-blank">_____</span>') +
         "</p>";
-      d.querySelector("button").addEventListener("click", function () {
-        var r = d.querySelector(".eng-reveal");
-        r.style.display = r.style.display === "none" ? "block" : "none";
+      var row = el("div", "eng-fill-opts");
+      shuffle(it.options).forEach(function (o) {
+        var b = el("button", "eng-pillbtn", esc(o));
+        b.addEventListener("click", function () {
+          if (card.classList.contains("done")) return;
+          card.classList.add("done");
+          answered++;
+          var ok = o === it.answer;
+          if (ok) {
+            done++;
+            dEl.textContent = done;
+            b.classList.add("correct");
+            audio("success");
+            card.querySelector(".eng-blank").textContent = o;
+            card.querySelector(".eng-blank").classList.add("filled");
+          } else {
+            b.classList.add("wrong");
+            audio("fail");
+            row.querySelectorAll(".eng-pillbtn").forEach(function (x) {
+              if (x.textContent === it.answer) x.classList.add("correct");
+            });
+          }
+          row.querySelectorAll(".eng-pillbtn").forEach(function (x) {
+            x.classList.add("locked");
+          });
+          card.insertAdjacentHTML(
+            "beforeend",
+            '<p class="eng-rationale show"><strong>Why:</strong> ' +
+              esc(it.why) +
+              "</p>",
+          );
+          if (answered === opts.items.length) {
+            markDone(opts.id);
+            banner.classList.add("show");
+          }
+        });
+        row.appendChild(b);
       });
-      list.appendChild(d);
+      card.appendChild(row);
+      panel.appendChild(card);
     });
-    built.body.insertBefore(list, built.body.firstChild);
-    // (Grammar Gauntlet game lives in the Arcade tab.)
   }
 
-  /* ---------- writing ---------- */
-  function renderWriting(grid, W) {
-    refPanel(grid, "Mentor Models", function (body) {
-      W.models.forEach(function (m) {
-        var d = el("div", "eng-model");
-        var ann = (m.annotations || [])
-          .map(function (a) {
-            return "<li>" + esc(a) + "</li>";
-          })
-          .join("");
-        d.innerHTML =
-          "<h4>" +
+  // D. Sort into bins (ethos/pathos/logos), immediate feedback
+  function actSort(panel, opts) {
+    panelHead(panel, {
+      kicker: opts.kicker,
+      title: opts.title,
+      sub: opts.sub,
+      guide: opts.guide,
+    });
+    var banner = doneBanner(panel, opts.id);
+    var status = el(
+      "div",
+      "eng-inline-status",
+      "Read the line, then pick its appeal. <b class='s-done'>0</b>/" +
+        opts.items.length +
+        " correct.",
+    );
+    panel.appendChild(status);
+    var dEl = status.querySelector(".s-done");
+    var items = shuffle(opts.items);
+    var done = 0,
+      answered = 0;
+    items.forEach(function (it, i) {
+      var card = el("div", "eng-sortcard");
+      card.innerHTML = '<p class="eng-quote">“' + esc(it.quote) + "”</p>";
+      var row = el("div", "eng-bins");
+      opts.bins.forEach(function (bin) {
+        var b = el("button", "eng-pillbtn", esc(bin.label));
+        b.addEventListener("click", function () {
+          if (card.classList.contains("done")) return;
+          card.classList.add("done");
+          answered++;
+          var ok = bin.key === it.key;
+          if (ok) {
+            done++;
+            dEl.textContent = done;
+            b.classList.add("correct");
+            audio("success");
+          } else {
+            b.classList.add("wrong");
+            audio("fail");
+            row.querySelectorAll(".eng-pillbtn").forEach(function (x) {
+              if (x.textContent.toLowerCase().indexOf(it.key) >= 0)
+                x.classList.add("correct");
+            });
+          }
+          row.querySelectorAll(".eng-pillbtn").forEach(function (x) {
+            x.classList.add("locked");
+          });
+          card.insertAdjacentHTML(
+            "beforeend",
+            '<p class="eng-rationale show"><strong>' +
+              esc(it.key.toUpperCase()) +
+              ":</strong> " +
+              esc(it.why) +
+              "</p>",
+          );
+          if (answered === items.length) {
+            markDone(opts.id);
+            banner.classList.add("show");
+          }
+        });
+        row.appendChild(b);
+      });
+      card.appendChild(row);
+      panel.appendChild(card);
+    });
+  }
+
+  // E. Spot the error (untimed practice), immediate feedback
+  function actSpot(panel, opts) {
+    panelHead(panel, {
+      kicker: opts.kicker,
+      title: opts.title,
+      sub: opts.sub,
+      guide: opts.guide,
+    });
+    var banner = doneBanner(panel, opts.id);
+    var status = el(
+      "div",
+      "eng-inline-status",
+      "Tap the ONE wrong word in each sentence. <b class='e-done'>0</b>/" +
+        opts.items.length +
+        " found.",
+    );
+    panel.appendChild(status);
+    var dEl = status.querySelector(".e-done");
+    var done = 0;
+    opts.items.forEach(function (it, i) {
+      var card = el("div", "eng-spot");
+      var label = el("div", "eng-spot-skill", it.skill);
+      var sent = el("div", "eng-spot-sentence");
+      it.words.forEach(function (w, wi) {
+        var span = el("span", "eng-gword", esc(w) + " ");
+        span.addEventListener("click", function () {
+          if (card.classList.contains("done")) return;
+          if (wi === it.errorIndex) {
+            card.classList.add("done");
+            span.classList.add("ok");
+            done++;
+            dEl.textContent = done;
+            audio("success");
+            card.insertAdjacentHTML(
+              "beforeend",
+              '<p class="eng-rationale show"><strong>Fix:</strong> “' +
+                esc(it.words[it.errorIndex]) +
+                "” → " +
+                esc(it.fix) +
+                " (" +
+                esc(it.skill) +
+                ")</p>",
+            );
+            if (done === opts.items.length) {
+              markDone(opts.id);
+              banner.classList.add("show");
+            }
+          } else {
+            span.classList.add("no");
+            audio("fail");
+            setTimeout(function () {
+              span.classList.remove("no");
+            }, 350);
+          }
+        });
+        sent.appendChild(span);
+      });
+      card.appendChild(label);
+      card.appendChild(sent);
+      panel.appendChild(card);
+    });
+  }
+
+  // F. Flip cards (vocabulary study)
+  function actFlip(panel, words) {
+    panelHead(panel, {
+      kicker: "Vocabulary · Study",
+      title: "Word Wall",
+      sub:
+        "Tap a card to flip it. " + words.length + " academic words to know.",
+      guide: "vocab",
+    });
+    var grid = el("div", "eng-flip-grid");
+    words.forEach(function (w) {
+      var c = el("button", "eng-flip");
+      c.innerHTML =
+        '<div class="eng-flip-inner"><div class="eng-flip-front"><span class="eng-word">' +
+        esc(w.word) +
+        '</span><span class="eng-pos">' +
+        esc(w.pos) +
+        "</span><span class='eng-tap'>tap to flip</span></div>" +
+        '<div class="eng-flip-back"><span class="eng-def">' +
+        esc(w.def) +
+        '</span><span class="eng-sent">“' +
+        esc(w.sentence) +
+        "”</span></div></div>";
+      c.addEventListener("click", function () {
+        c.classList.toggle("flipped");
+      });
+      grid.appendChild(c);
+    });
+    panel.appendChild(grid);
+    var b = el(
+      "div",
+      "eng-inline-status",
+      "Studied them all? Mark this done to earn XP.",
+    );
+    var btn = el(
+      "button",
+      "btn",
+      prog.done["vocab-wall"] ? "✓ Studied" : "I've studied these",
+    );
+    btn.addEventListener("click", function () {
+      markDone("vocab-wall");
+      btn.textContent = "✓ Studied";
+    });
+    b.appendChild(document.createElement("br"));
+    b.appendChild(btn);
+    panel.appendChild(b);
+  }
+
+  // G. Compose (writing prompt)
+  function actCompose(panel, p, idx) {
+    var id = "writing-" + idx;
+    panelHead(panel, {
+      kicker: "Writing · Compose",
+      title: p.title,
+      sub: esc(p.prompt),
+      guide: "writing",
+    });
+    var banner = doneBanner(panel, id);
+    var sc = el("div", "eng-scaffold");
+    sc.innerHTML =
+      "<span class='eng-step-label'>Scaffold</span><ul class='eng-checklist'>" +
+      p.scaffold
+        .map(function (s) {
+          return "<li>" + esc(s) + "</li>";
+        })
+        .join("") +
+      "</ul>";
+    panel.appendChild(sc);
+    var ta = el("textarea", "eng-textarea");
+    ta.placeholder = "Draft your response here…";
+    try {
+      if (prog["text-" + id]) ta.value = prog["text-" + id];
+    } catch (e) {}
+    panel.appendChild(ta);
+    var wc = el("div", "eng-wordcount", "Words: <b>0</b>");
+    panel.appendChild(wc);
+    var actions = el("div", "eng-actions");
+    var saveb = el("button", "btn secondary", "Save draft");
+    var doneb = el("button", "btn", "Mark complete");
+    actions.appendChild(saveb);
+    actions.appendChild(doneb);
+    panel.appendChild(actions);
+    function count() {
+      var n = ta.value.trim() ? ta.value.trim().split(/\s+/).length : 0;
+      wc.innerHTML = "Words: <b>" + n + "</b>";
+      return n;
+    }
+    ta.addEventListener("input", count);
+    count();
+    saveb.addEventListener("click", function () {
+      prog["text-" + id] = ta.value;
+      save();
+      saveb.textContent = "Saved ✓";
+      setTimeout(function () {
+        saveb.textContent = "Save draft";
+      }, 1200);
+    });
+    doneb.addEventListener("click", function () {
+      if (count() < 30) {
+        openModal(
+          "Keep going!",
+          "<p>Write at least a few sentences (30+ words) so your work is ready to log. Use the scaffold steps to build your response.</p>",
+        );
+        return;
+      }
+      prog["text-" + id] = ta.value;
+      markDone(id);
+      banner.classList.add("show");
+      doneb.textContent = "✓ Completed";
+    });
+  }
+
+  // H. Study reference (lessons / models / rubric)
+  function actStudy(panel, opts) {
+    panelHead(panel, {
+      kicker: opts.kicker,
+      title: opts.title,
+      sub: opts.sub,
+      guide: opts.guide,
+    });
+    var box = el("div", "eng-study");
+    box.innerHTML = opts.html;
+    panel.appendChild(box);
+  }
+
+  // I. Game launch tiles
+  function actArcade(panel) {
+    panelHead(panel, {
+      kicker: "Arcade",
+      title: "The Arcade",
+      sub: "Four games open in their own full-screen page. Beat the goal and stack high scores!",
+      guide: "arcade",
+    });
+    var grid = el("div", "eng-tiles");
+    GAMES.forEach(function (g) {
+      var a = el("a", "eng-tile-game");
+      a.href = "/personal/aviad/english/games/" + g.slug + ".html";
+      a.target = "_blank";
+      a.rel = "noopener";
+      a.style.setProperty("--tile", g.color);
+      a.innerHTML =
+        '<span class="eng-tile-ico">' +
+        g.icon +
+        "</span><span class='eng-tile-name'>" +
+        esc(g.name) +
+        "</span><span class='eng-tile-desc'>" +
+        esc(g.desc) +
+        "</span><span class='eng-tile-go'>Play in new tab ↗</span>";
+      grid.appendChild(a);
+    });
+    panel.appendChild(grid);
+  }
+
+  /* ============================================================
+     MODULE DEFINITIONS (build sub-tabs)
+     ============================================================ */
+  function readingModule(key, data, label, extraTabs) {
+    var subs = data.passages.map(function (p, i) {
+      return {
+        label: "📄 " + shortTitle(p.title),
+        render: function (panel) {
+          actReadingQuiz(panel, p, label);
+        },
+      };
+    });
+    (extraTabs || []).forEach(function (t) {
+      subs.push(t);
+    });
+    return {
+      key: key,
+      title: data.title,
+      icon: data.icon,
+      intro: data.intro,
+      subs: subs,
+    };
+  }
+  function shortTitle(t) {
+    return t
+      .replace(/^Excerpt:\s*/, "")
+      .replace(/^The\s+/, "")
+      .slice(0, 22);
+  }
+
+  function buildModules() {
+    var mods = [];
+
+    // Fiction + device match
+    mods.push(
+      readingModule("fiction", E.fiction, "Fiction", [
+        {
+          label: "🎯 Match the Device",
+          render: function (panel) {
+            actMatch(panel, {
+              id: "fic-devices",
+              kicker: "Fiction · Interactive",
+              title: "Match the Literary Device",
+              sub: "Pair each device with an example of it.",
+              guide: "devices",
+              pairs: (E.devices || []).slice(0, 8).map(function (d) {
+                return { a: d.term, b: d.example };
+              }),
+            });
+          },
+        },
+      ]),
+    );
+
+    // Nonfiction + sort the appeal
+    mods.push(
+      readingModule("nonfiction", E.nonfiction, "Rhetoric", [
+        {
+          label: "⚖️ Sort the Appeal",
+          render: function (panel) {
+            actSort(panel, {
+              id: "nf-sort",
+              kicker: "Rhetoric · Interactive",
+              title: "Ethos, Pathos, or Logos?",
+              sub: "Sort each persuasive line by its rhetorical appeal.",
+              guide: "appeals",
+              bins: [
+                { key: "ethos", label: "🎓 Ethos" },
+                { key: "pathos", label: "❤️ Pathos" },
+                { key: "logos", label: "📊 Logos" },
+              ],
+              items: (E.rhetoric || []).map(function (r) {
+                return { quote: r.quote, key: r.appeal, why: r.why };
+              }),
+            });
+          },
+        },
+      ]),
+    );
+
+    // Poetry
+    mods.push(readingModule("poetry", E.poetry, "Poetry", []));
+
+    // Vocabulary
+    var V = E.vocab || { words: [], contextQuiz: [] };
+    mods.push({
+      key: "vocab",
+      title: V.title,
+      icon: V.icon,
+      intro: V.intro,
+      subs: [
+        {
+          label: "🃏 Word Wall",
+          render: function (panel) {
+            actFlip(panel, V.words);
+          },
+        },
+        {
+          label: "🧩 Match-Up",
+          render: function (panel) {
+            actMatch(panel, {
+              id: "vocab-match2",
+              kicker: "Vocabulary · Interactive",
+              title: "Word ↔ Meaning Match",
+              sub: "Tap a word, then its definition.",
+              guide: "vocab",
+              pairs: shuffle(V.words)
+                .slice(0, 8)
+                .map(function (w) {
+                  return { a: w.word, b: w.def };
+                }),
+            });
+          },
+        },
+        {
+          label: "✏️ Fill the Blank",
+          render: function (panel) {
+            actFill(panel, {
+              id: "vocab-fill",
+              kicker: "Vocabulary · Context",
+              title: "Use It in Context",
+              sub: "Pick the word that best completes each sentence.",
+              guide: "context",
+              items: buildVocabFill(V.words),
+            });
+          },
+        },
+        {
+          label: "✅ Context Quiz",
+          render: function (panel) {
+            actReadingQuizLite(
+              panel,
+              "vocab-cquiz",
+              "Vocabulary · Quiz",
+              "Context Clues Quiz",
+              "Use context to choose the best meaning.",
+              V.contextQuiz,
+              "context",
+            );
+          },
+        },
+      ],
+    });
+
+    // Grammar
+    var G = E.grammar || { lessons: [], gauntlet: [], editItems: [] };
+    mods.push({
+      key: "grammar",
+      title: G.title,
+      icon: G.icon,
+      intro: G.intro,
+      subs: [
+        {
+          label: "📘 Lessons",
+          render: function (panel) {
+            actStudy(panel, {
+              kicker: "Grammar · Study",
+              title: "Grammar Lessons",
+              sub: "Four high-value skills for English 10.",
+              guide: "grammar",
+              html: grammarLessonsHTML(G),
+            });
+          },
+        },
+        {
+          label: "🔍 Spot the Error",
+          render: function (panel) {
+            actSpot(panel, {
+              id: "grammar-spot",
+              kicker: "Grammar · Interactive",
+              title: "Spot the Error",
+              sub: "Each sentence has one mistake.",
+              guide: "spot",
+              items: G.gauntlet,
+            });
+          },
+        },
+        {
+          label: "🛠️ Revision Studio",
+          render: function (panel) {
+            actStudy(panel, {
+              kicker: "Grammar · Revise",
+              title: "Revision Studio",
+              sub: "Compare weak sentences with strong revisions.",
+              guide: "revise",
+              html: revisionHTML(G),
+            });
+          },
+        },
+      ],
+    });
+
+    // Writing
+    var W = E.writing || { models: [], rubric: [], prompts: [], checklist: [] };
+    var wsubs = [
+      {
+        label: "🌟 Mentor Models",
+        render: function (panel) {
+          actStudy(panel, {
+            kicker: "Writing · Study",
+            title: "Mentor Models",
+            sub: "Strong examples to emulate.",
+            guide: "writing",
+            html: modelsHTML(W),
+          });
+        },
+      },
+      {
+        label: "📋 Rubric",
+        render: function (panel) {
+          actStudy(panel, {
+            kicker: "Writing · Reference",
+            title: "Analytical Writing Rubric",
+            sub: "Know what a 4 looks like.",
+            guide: "writing",
+            html: rubricHTML(W),
+          });
+        },
+      },
+    ];
+    W.prompts.forEach(function (p, i) {
+      wsubs.push({
+        label: "✍️ " + shortTitle(p.title),
+        render: function (panel) {
+          actCompose(panel, p, i);
+        },
+      });
+    });
+    mods.push({
+      key: "writing",
+      title: W.title,
+      icon: W.icon,
+      intro: W.intro,
+      subs: wsubs,
+    });
+
+    // Arcade
+    mods.push({
+      key: "arcade",
+      title: "The Arcade",
+      icon: "🎮",
+      intro:
+        "Four fast games that turn skills into reflexes — each opens in its own page.",
+      subs: [{ label: "🎮 Games", render: actArcade }],
+    });
+
+    return mods;
+  }
+
+  // lite quiz reused for context quiz (no passage)
+  function actReadingQuizLite(panel, id, kicker, title, sub, questions, guide) {
+    actReadingQuiz(
+      panel,
+      {
+        id: id,
+        title: title,
+        source: "",
+        focus: sub,
+        genre: "Quiz",
+        minutes: 10,
+        text: "",
+        questions: questions,
+      },
+      kicker.split(" · ")[0],
+    );
+    // hide empty passage
+    var pas = panel.querySelector(".eng-passage");
+    if (pas) pas.style.display = "none";
+    var head = panel.querySelector(".eng-act-sub");
+    if (head) head.innerHTML = esc(sub);
+  }
+
+  function buildVocabFill(words) {
+    var pick = shuffle(words).slice(0, 8);
+    return pick.map(function (w) {
+      var distract = shuffle(
+        words.filter(function (x) {
+          return x.word !== w.word;
+        }),
+      )
+        .slice(0, 3)
+        .map(function (x) {
+          return x.word;
+        });
+      var stem = w.sentence.replace(new RegExp(w.word, "i"), "___");
+      if (stem.indexOf("___") === -1)
+        stem = "Choose the word that means “" + w.def + "”: ___";
+      return {
+        stem: stem,
+        options: [w.word].concat(distract),
+        answer: w.word,
+        why: w.word + " — " + w.def,
+      };
+    });
+  }
+  function grammarLessonsHTML(G) {
+    return G.lessons
+      .map(function (L) {
+        return (
+          '<div class="eng-card2"><h3>' +
+          esc(L.title) +
+          "</h3><p>" +
+          esc(L.rule) +
+          "</p>" +
+          L.examples
+            .map(function (e) {
+              return (
+                '<p class="eng-ex"><span class="x">✗</span> ' +
+                esc(e.wrong) +
+                '<br><span class="c">✓</span> ' +
+                esc(e.right) +
+                "<br><em>" +
+                esc(e.note) +
+                "</em></p>"
+              );
+            })
+            .join("") +
+          "</div>"
+        );
+      })
+      .join("");
+  }
+  function revisionHTML(G) {
+    return (G.editItems || [])
+      .map(function (e, i) {
+        return (
+          '<div class="eng-card2"><h3>' +
+          (i + 1) +
+          ". " +
+          esc(e.skill) +
+          '</h3><p class="eng-ex"><span class="x">Weak:</span> ' +
+          esc(e.bad) +
+          '<br><span class="c">Strong:</span> ' +
+          esc(e.good) +
+          "</p></div>"
+        );
+      })
+      .join("");
+  }
+  function modelsHTML(W) {
+    return W.models
+      .map(function (m) {
+        return (
+          '<div class="eng-card2"><h3>' +
           esc(m.type) +
           " — " +
           esc(m.title) +
-          "</h4><p>" +
+          "</h3><blockquote>" +
           esc(m.text) +
-          '</p><ul class="eng-checklist" style="margin-top:10px;">' +
-          ann +
-          "</ul>";
-        body.appendChild(d);
-      });
-    });
-
-    refPanel(grid, "Analytical Writing Rubric", function (body) {
-      var t = el("table", "eng-rubric");
-      var head =
-        "<tr><th>Criterion</th><th>4 — Advanced</th><th>3 — Proficient</th><th>2 — Developing</th></tr>";
-      var rows = W.rubric
+          "</blockquote><ul class='eng-checklist'>" +
+          (m.annotations || [])
+            .map(function (a) {
+              return "<li>" + esc(a) + "</li>";
+            })
+            .join("") +
+          "</ul></div>"
+        );
+      })
+      .join("");
+  }
+  function rubricHTML(W) {
+    return (
+      '<table class="eng-rubric"><tr><th>Criterion</th><th>4 — Advanced</th><th>3 — Proficient</th><th>2 — Developing</th></tr>' +
+      W.rubric
         .map(function (r) {
           return (
             "<tr><td>" +
@@ -432,814 +1027,300 @@
             "</td></tr>"
           );
         })
-        .join("");
-      t.innerHTML = head + rows;
-      body.appendChild(t);
-    });
-
-    W.prompts.forEach(function (p, i) {
-      var built = activityCard(grid, {
-        id: "writing-" + i,
-        type: "Writing",
-        gate: "text",
-        pills: ["Writing", "Compose"],
-        title: p.title,
-        sub: esc(p.prompt),
-        includeText: true,
-        placeholder: "Draft your response here…",
-        completeLabel: "Log to portfolio",
-      });
-      var sc = el("div");
-      sc.innerHTML =
-        '<span class="eng-step-label">Scaffold</span><ul class="eng-checklist">' +
-        p.scaffold
-          .map(function (s) {
-            return "<li>" + esc(s) + "</li>";
-          })
-          .join("") +
-        "</ul>";
-      built.body.appendChild(sc);
-      // live word count
-      var ta = built.card.querySelector("textarea");
-      var wc = el("div", "eng-wordcount", "Words: <b>0</b>");
-      built.card.insertBefore(wc, built.card.querySelector(".actions"));
-      ta.addEventListener("input", function () {
-        var n = ta.value.trim() ? ta.value.trim().split(/\s+/).length : 0;
-        wc.innerHTML = "Words: <b>" + n + "</b>";
-        if (ta.value.trim().length >= 40) built.card.dataset.ready = "1";
-        else built.card.dataset.ready = "";
-      });
-    });
-
-    refPanel(grid, "Revision Checklist", function (body) {
-      body.innerHTML =
-        '<ul class="eng-checklist">' +
-        W.checklist
-          .map(function (c) {
-            return "<li>" + esc(c) + "</li>";
-          })
-          .join("") +
-        "</ul>";
-    });
+        .join("") +
+      "</table>"
+    );
   }
 
   /* ============================================================
-     GAMES
+     GUIDES (popup content)
      ============================================================ */
-
-  /* --- Game 1: Word Defender (canvas) --- */
-  function renderWordDefender(grid) {
-    var devices = E.devices || [];
-    var GOAL = 150;
-    var built = activityCard(grid, {
-      id: "game-word-defender",
-      type: "Arcade",
-      gate: "game",
-      pills: ["Arcade Game", "Literary Devices", "Goal: " + GOAL],
-      title: "Word Defender",
-      sub: "Read the definition, then tap the matching device before the word falls. 3 lives.",
-      completeLabel: "Log to portfolio",
-    });
-    var wrap = el("div", "game-container");
-    wrap.innerHTML =
-      '<div class="game-hud"><span class="game-score-card">Score: <span class="wd-score">0</span></span><span class="game-score-card">Lives: <span class="wd-lives">3</span></span></div>' +
-      '<canvas class="game-canvas"></canvas>' +
-      '<div class="game-overlay"><h4>Word Defender</h4><p style="max-width:42ch;">Match falling literary devices to their definitions. Reach ' +
-      GOAL +
-      ' points!</p><button class="btn wd-start">Insert Coin ▶</button></div>';
-    built.body.appendChild(wrap);
-    var hs = el("div", "eng-wordcount");
-    hs.style.textAlign = "center";
-    hs.innerHTML =
-      'High score: <b style="color:var(--gold);" class="wd-high">0</b>';
-    built.body.appendChild(hs);
-
-    var canvas = wrap.querySelector("canvas");
-    var ctx = canvas.getContext("2d");
-    var overlay = wrap.querySelector(".game-overlay");
-    var scoreEl = wrap.querySelector(".wd-score");
-    var livesEl = wrap.querySelector(".wd-lives");
-    var highEl = hs.querySelector(".wd-high");
-    var score = 0,
-      lives = 3,
-      playing = false,
-      falling = [],
-      shields = [],
-      particles = [],
-      round = null,
-      nextSpawn = 0,
-      raf = null;
-
-    function resize() {
-      var r = wrap.getBoundingClientRect();
-      canvas.width = r.width;
-      canvas.height = (r.width * 9) / 16;
-    }
-    window.addEventListener("resize", resize);
-    resize();
-
-    function newRound() {
-      round = devices[Math.floor(Math.random() * devices.length)];
-      var opts = [round.term];
-      while (opts.length < 3) {
-        var t = devices[Math.floor(Math.random() * devices.length)].term;
-        if (opts.indexOf(t) === -1) opts.push(t);
-      }
-      opts = shuffle(opts);
-      shields = [];
-      var w = canvas.width / 3.4;
-      for (var i = 0; i < 3; i++) {
-        shields.push({
-          x: (i + 0.5) * (canvas.width / 3) - w / 2,
-          y: canvas.height - 42,
-          w: w,
-          h: 34,
-          term: opts[i],
-        });
-      }
-      falling = [
-        {
-          x: Math.random() * (canvas.width - 120) + 60,
-          y: 60,
-          term: round.term,
-          speed: 0.9 + score * 0.004,
-        },
-      ];
-    }
-    function boom(x, y, c) {
-      for (var i = 0; i < 16; i++)
-        particles.push({
-          x: x,
-          y: y,
-          vx: (Math.random() - 0.5) * 7,
-          vy: (Math.random() - 0.5) * 7,
-          r: Math.random() * 3 + 1,
-          c: c,
-          a: 1,
-        });
-    }
-    function hud() {
-      scoreEl.textContent = score;
-      livesEl.textContent = lives;
-    }
-    canvas.addEventListener("click", function (e) {
-      if (!playing) return;
-      var r = canvas.getBoundingClientRect();
-      var x = (e.clientX - r.left) * (canvas.width / r.width);
-      var y = (e.clientY - r.top) * (canvas.height / r.height);
-      shields.forEach(function (s) {
-        if (x >= s.x && x <= s.x + s.w && y >= s.y && y <= s.y + s.h) {
-          if (s.term === round.term) {
-            score += 25;
-            audio("powerup");
-            boom(s.x + s.w / 2, s.y, "#c084fc");
-            falling = [];
-            hud();
-            if (score >= GOAL) {
-              built.card.dataset.ready = "1";
-            }
-            newRound();
-          } else {
-            lives--;
-            audio("fail");
-            boom(x, y, "#ef4444");
-            hud();
-            if (lives <= 0) end(false);
-          }
-        }
-      });
-    });
-    function loop() {
-      if (!playing) return;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "rgba(30,41,59,0.85)";
-      ctx.fillRect(8, 8, canvas.width - 16, 46);
-      ctx.strokeStyle = "#a855f7";
-      ctx.strokeRect(8, 8, canvas.width - 16, 46);
-      ctx.fillStyle = "#fff";
-      ctx.font = "bold 13px Inter, sans-serif";
-      ctx.textAlign = "center";
-      wrapText(
-        ctx,
-        "DEFINE: " + round.def,
-        canvas.width / 2,
-        26,
-        canvas.width - 40,
-        16,
-      );
-      if (Date.now() > nextSpawn && falling.length === 0) {
-        newRound();
-        nextSpawn = Date.now() + 600;
-      }
-      falling.forEach(function (f) {
-        f.y += f.speed;
-        ctx.fillStyle = "#1e293b";
-        ctx.strokeStyle = "#a855f7";
-        var tw = ctx.measureText(f.term).width + 24;
-        ctx.fillRect(f.x - tw / 2, f.y - 16, tw, 28);
-        ctx.strokeRect(f.x - tw / 2, f.y - 16, tw, 28);
-        ctx.fillStyle = "#fff";
-        ctx.font = "bold 14px Inter, sans-serif";
-        ctx.fillText(f.term, f.x, f.y + 3);
-        if (f.y > canvas.height - 48) {
-          lives--;
-          audio("hit");
-          falling = [];
-          hud();
-          if (lives <= 0) {
-            end(false);
-            return;
-          }
-          newRound();
-        }
-      });
-      shields.forEach(function (s) {
-        ctx.fillStyle = "rgba(168,85,247,0.18)";
-        ctx.fillRect(s.x, s.y, s.w, s.h);
-        ctx.strokeStyle = "#c084fc";
-        ctx.strokeRect(s.x, s.y, s.w, s.h);
-        ctx.fillStyle = "#fff";
-        ctx.font = "bold 13px Inter, sans-serif";
-        ctx.fillText(s.term, s.x + s.w / 2, s.y + 22);
-      });
-      particles.forEach(function (p) {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.a -= 0.03;
-        ctx.globalAlpha = Math.max(p.a, 0);
-        ctx.fillStyle = p.c;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, 7);
-        ctx.fill();
-        ctx.globalAlpha = 1;
-      });
-      particles = particles.filter(function (p) {
-        return p.a > 0;
-      });
-      raf = requestAnimationFrame(loop);
-    }
-    function end(win) {
-      playing = false;
-      if (raf) cancelAnimationFrame(raf);
-      var isHigh =
-        window.EWL && EWL.saveHighScore
-          ? EWL.saveHighScore("word-defender", score)
-          : false;
-      highEl.textContent =
-        (window.EWL && EWL.state.highScores["word-defender"]) || score;
-      overlay.style.display = "flex";
-      overlay.querySelector("h4").textContent =
-        score >= GOAL ? "Victory!" : "Game Over";
-      overlay.querySelector("p").textContent =
-        "You scored " +
-        score +
-        ". " +
-        (score >= GOAL
-          ? "Activity unlocked — log it below!"
-          : "Reach " + GOAL + " to log it.") +
-        (isHigh ? " New high score!" : "");
-      overlay.querySelector("button").textContent = "Play again ▶";
-    }
-    wrap.querySelector(".wd-start").addEventListener("click", function () {
-      if (playing) return;
-      audio("game-start");
-      score = 0;
-      lives = 3;
-      falling = [];
-      particles = [];
-      playing = true;
-      nextSpawn = Date.now();
-      overlay.style.display = "none";
-      hud();
-      newRound();
-      loop();
-    });
-    highEl.textContent =
-      (window.EWL &&
-        EWL.state.highScores &&
-        EWL.state.highScores["word-defender"]) ||
-      0;
-  }
-
-  function wrapText(ctx, text, x, y, maxW, lh) {
-    var words = text.split(" "),
-      line = "",
-      yy = y;
-    for (var i = 0; i < words.length; i++) {
-      var test = line + words[i] + " ";
-      if (ctx.measureText(test).width > maxW && i > 0) {
-        ctx.fillText(line, x, yy);
-        line = words[i] + " ";
-        yy += lh;
-      } else line = test;
-    }
-    ctx.fillText(line, x, yy);
-  }
-
-  /* --- Game 2: Vocab Match --- */
-  function renderVocabMatch(grid, V) {
-    var built = activityCard(grid, {
-      id: "game-vocab-match",
-      type: "Vocabulary",
-      gate: "match",
-      pills: ["Arcade Game", "Match", "8 pairs"],
-      title: "Vocab Match",
-      sub: "Match each academic word to its definition. Fewer misses = higher score.",
-      completeLabel: "Log to portfolio",
-    });
-    var info = el("div", "actions");
-    var newBtn = el("button", "btn secondary", "🔀 New round");
-    var tag = el("span", "eng-score-tag", "Pairs: 0 / 8");
-    info.appendChild(newBtn);
-    info.appendChild(tag);
-    built.body.appendChild(info);
-    var gridEl = el("div", "eng-match-grid");
-    gridEl.style.marginTop = "12px";
-    built.body.appendChild(gridEl);
-
-    var sel = null,
-      matched = 0,
-      misses = 0;
-    function start() {
-      gridEl.innerHTML = "";
-      sel = null;
-      matched = 0;
-      misses = 0;
-      tag.textContent = "Pairs: 0 / 8";
-      var pick = shuffle(V.words).slice(0, 8);
-      var tiles = [];
-      pick.forEach(function (w, i) {
-        tiles.push({ pid: i, kind: "w", text: w.word });
-        tiles.push({ pid: i, kind: "d", text: w.def });
-      });
-      shuffle(tiles).forEach(function (t) {
-        var tile = el("div", "eng-tile", esc(t.text));
-        tile.dataset.pid = t.pid;
-        tile.addEventListener("click", function () {
-          if (tile.classList.contains("matched") || tile === sel) return;
-          tile.classList.add("sel");
-          if (!sel) {
-            sel = tile;
-            return;
-          }
-          if (sel.dataset.pid === tile.dataset.pid) {
-            sel.classList.add("matched");
-            tile.classList.add("matched");
-            sel.classList.remove("sel");
-            tile.classList.remove("sel");
-            sel = null;
-            matched++;
-            audio("success");
-            tag.textContent = "Pairs: " + matched + " / 8";
-            if (matched === 8) {
-              built.card.dataset.ready = "1";
-              tag.classList.add("pass");
-              var sc = Math.max(10, 100 - misses * 8);
-              if (window.EWL && EWL.saveHighScore)
-                EWL.saveHighScore("vocab-match", sc);
-              audio("powerup");
-            }
-          } else {
-            misses++;
-            audio("fail");
-            var a = sel,
-              b = tile;
-            a.classList.add("miss");
-            b.classList.add("miss");
-            setTimeout(function () {
-              a.classList.remove("miss", "sel");
-              b.classList.remove("miss", "sel");
-            }, 350);
-            sel = null;
-          }
-        });
-        gridEl.appendChild(tile);
-      });
-    }
-    newBtn.addEventListener("click", start);
-    start();
-  }
-
-  /* --- Game 3: Grammar Gauntlet --- */
-  function renderGauntlet(grid, G) {
-    var GOAL = 6;
-    var built = activityCard(grid, {
-      id: "game-gauntlet",
-      type: "Grammar",
-      gate: "game",
-      pills: ["Arcade Game", "Spot the Error", "Goal: " + GOAL],
-      title: "Grammar Gauntlet",
-      sub:
-        "Each sentence has ONE error. Tap the wrong word before the timer runs out. Get " +
-        GOAL +
-        " right.",
-      completeLabel: "Log to portfolio",
-    });
-    var hud = el("div", "actions");
-    var startBtn = el("button", "btn", "Start ▶");
-    var tag = el("span", "eng-score-tag", "Score: 0");
-    var skill = el("span", "pill", "—");
-    hud.appendChild(startBtn);
-    hud.appendChild(tag);
-    hud.appendChild(skill);
-    built.body.appendChild(hud);
-    var timer = el("div", "eng-timer-bar");
-    var fill = el("div", "eng-timer-fill");
-    timer.appendChild(fill);
-    built.body.appendChild(timer);
-    var sentBox = el(
-      "div",
-      "eng-gaunt-sentence",
-      '<span style="color:var(--text-muted);">Press Start to begin.</span>',
-    );
-    built.body.appendChild(sentBox);
-    var fb = el("div", "feedback-msg");
-    built.body.appendChild(fb);
-
-    var pool = [],
-      idx = 0,
-      score = 0,
-      tInt = null,
-      tLeft = 0,
-      active = false;
-    function showFeedback(ok, msg) {
-      fb.textContent = (ok ? "✓ " : "✗ ") + msg;
-      fb.className = "feedback-msg show " + (ok ? "correct" : "incorrect");
-      setTimeout(function () {
-        fb.className = "feedback-msg";
-      }, 1100);
-    }
-    function next() {
-      if (idx >= pool.length) {
-        return finish();
-      }
-      var item = pool[idx];
-      skill.textContent = item.skill;
-      sentBox.innerHTML = "";
-      item.words.forEach(function (w, wi) {
-        var span = el("span", "eng-gword", esc(w) + " ");
-        span.addEventListener("click", function () {
-          if (!active) return;
-          if (wi === item.errorIndex) {
-            score++;
-            audio("powerup");
-            span.style.background = "var(--success-glow)";
-            showFeedback(true, "Fix: " + item.fix + " (" + item.skill + ")");
-            tag.textContent = "Score: " + score;
-            tag.classList.toggle("pass", score >= GOAL);
-            if (score >= GOAL) built.card.dataset.ready = "1";
-            active = false;
-            clearInterval(tInt);
-            setTimeout(adv, 700);
-          } else {
-            audio("fail");
-            span.style.background = "var(--danger-glow)";
-            showFeedback(false, "Not that one — keep looking!");
-          }
-        });
-        sentBox.appendChild(span);
-      });
-      tLeft = 100;
-      fill.style.width = "100%";
-      active = true;
-      clearInterval(tInt);
-      tInt = setInterval(function () {
-        tLeft -= 1.4;
-        fill.style.width = Math.max(tLeft, 0) + "%";
-        if (tLeft <= 0) {
-          clearInterval(tInt);
-          active = false;
-          audio("hit");
-          var corr = sentBox.children[item.errorIndex];
-          if (corr) corr.style.background = "var(--accent-light)";
-          showFeedback(
-            false,
-            "Time! It was: " + item.words[item.errorIndex] + " → " + item.fix,
-          );
-          setTimeout(adv, 900);
-        }
-      }, 60);
-    }
-    function adv() {
-      idx++;
-      next();
-    }
-    function finish() {
-      active = false;
-      clearInterval(tInt);
-      sentBox.innerHTML =
-        "<strong>Round complete!</strong> You fixed " +
-        score +
-        " of " +
-        pool.length +
-        " errors. " +
-        (score >= GOAL
-          ? "Activity unlocked — log it below."
-          : "Reach " + GOAL + " to log it.");
-      if (window.EWL && EWL.saveHighScore)
-        EWL.saveHighScore("grammar-gauntlet", score * 10);
-      startBtn.textContent = "Play again ▶";
-      audio(score >= GOAL ? "success" : "fail");
-    }
-    startBtn.addEventListener("click", function () {
-      audio("game-start");
-      pool = shuffle(G.gauntlet).slice(0, 10);
-      idx = 0;
-      score = 0;
-      tag.textContent = "Score: 0";
-      tag.classList.remove("pass");
-      next();
-    });
-  }
-
-  /* --- Game 4: Rhetoric Rally --- */
-  function renderRhetoricRally(grid) {
-    var items = E.rhetoric || [];
-    var GOAL = 8;
-    var built = activityCard(grid, {
-      id: "game-rhetoric",
-      type: "Arcade",
-      gate: "game",
-      pills: ["Arcade Game", "Ethos / Pathos / Logos", "Goal: " + GOAL],
-      title: "Rhetoric Rally",
-      sub:
-        "Read each line and sort it into the correct appeal. Get " +
-        GOAL +
-        " correct.",
-      completeLabel: "Log to portfolio",
-    });
-    var hud = el("div", "actions");
-    var startBtn = el("button", "btn", "Start ▶");
-    var tag = el("span", "eng-score-tag", "Score: 0");
-    hud.appendChild(startBtn);
-    hud.appendChild(tag);
-    built.body.appendChild(hud);
-    var quoteBox = el(
-      "div",
-      "eng-gaunt-sentence",
-      '<span style="color:var(--text-muted);">Press Start to begin.</span>',
-    );
-    built.body.appendChild(quoteBox);
-    var btns = el("div", "actions");
-    ["ethos", "pathos", "logos"].forEach(function (ap) {
-      var b = el(
-        "button",
-        "btn secondary",
-        ap.charAt(0).toUpperCase() + ap.slice(1),
-      );
-      b.dataset.ap = ap;
-      b.style.flex = "1";
-      b.addEventListener("click", function () {
-        choose(ap);
-      });
-      btns.appendChild(b);
-    });
-    built.body.appendChild(btns);
-    var fb = el("div", "feedback-msg");
-    built.body.appendChild(fb);
-
-    var pool = [],
-      idx = 0,
-      score = 0,
-      active = false;
-    function render() {
-      if (idx >= pool.length) return finish();
-      quoteBox.innerHTML = '"' + esc(pool[idx].quote) + '"';
-      active = true;
-    }
-    function choose(ap) {
-      if (!active) return;
-      active = false;
-      var it = pool[idx];
-      var ok = ap === it.appeal;
-      if (ok) score++;
-      tag.textContent = "Score: " + score;
-      tag.classList.toggle("pass", score >= GOAL);
-      if (score >= GOAL) built.card.dataset.ready = "1";
-      fb.textContent =
-        (ok ? "✓ " : "✗ ") + it.appeal.toUpperCase() + " — " + it.why;
-      fb.className = "feedback-msg show " + (ok ? "correct" : "incorrect");
-      audio(ok ? "powerup" : "fail");
-      setTimeout(function () {
-        fb.className = "feedback-msg";
-        idx++;
-        render();
-      }, 1100);
-    }
-    function finish() {
-      quoteBox.innerHTML =
-        "<strong>Done!</strong> You sorted " +
-        score +
-        " of " +
-        pool.length +
-        " correctly. " +
-        (score >= GOAL
-          ? "Activity unlocked — log it below."
-          : "Reach " + GOAL + " to log it.");
-      if (window.EWL && EWL.saveHighScore)
-        EWL.saveHighScore("rhetoric-rally", score * 10);
-      startBtn.textContent = "Play again ▶";
-      audio(score >= GOAL ? "success" : "fail");
-    }
-    startBtn.addEventListener("click", function () {
-      audio("game-start");
-      pool = shuffle(items).slice(0, 10);
-      idx = 0;
-      score = 0;
-      tag.textContent = "Score: 0";
-      tag.classList.remove("pass");
-      render();
-    });
-  }
-
-  /* ============================================================
-     completion gate + progress ring
-     ============================================================ */
-  window.checkInteractiveComplete = function (card) {
-    if (card.dataset.ready === "1") return { success: true };
-    var gate = card.dataset.gate;
-    if (gate === "text") {
-      var t = card.querySelector("textarea");
-      if (t && t.value.trim().length >= 40) return { success: true };
-      return {
-        success: false,
-        message: "Write at least a few sentences first, then log it.",
-      };
-    }
-    if (gate === "quiz")
-      return {
-        success: false,
-        message:
-          "Check your answers and get at least " +
-          (card.dataset.need || 3) +
-          " correct first.",
-      };
-    if (gate === "game")
-      return {
-        success: false,
-        message: "Reach the score goal in the game first!",
-      };
-    if (gate === "match")
-      return { success: false, message: "Match all 8 pairs first!" };
-    return { success: true };
+  var GUIDES = {
+    reading: {
+      title: "How to read closely",
+      html: "<ul class='eng-checklist'><li><b>Preview:</b> note the title, author, and the focus skill listed at the top.</li><li><b>Annotate as you read:</b> watch for tone words, repeated ideas, and anything surprising.</li><li><b>For each question:</b> find the line in the passage that proves your answer before you click.</li><li>Wrong answer? Read the <b>Why</b> explanation — it tells you the trap.</li></ul>",
+    },
+    devices: {
+      title: "Literary devices",
+      html: "<p>Match each <b>device</b> to an <b>example</b> of it. Hints:</p><ul class='eng-checklist'><li><b>Simile</b> uses <i>like/as</i>; a <b>metaphor</b> does not.</li><li><b>Personification</b> gives human traits to non-human things.</li><li><b>Hyperbole</b> is obvious exaggeration; <b>imagery</b> paints a sensory picture.</li><li><b>Irony</b> = the opposite of what's expected.</li></ul>",
+    },
+    appeals: {
+      title: "Ethos · Pathos · Logos",
+      html: "<ul class='eng-checklist'><li><b>Ethos</b> = credibility/character (“As a doctor of 30 years…”).</li><li><b>Pathos</b> = emotion (“Imagine your child hungry…”).</li><li><b>Logos</b> = logic/data (“Studies show a 15% rise…”).</li></ul><p>Ask: is the speaker using <b>who they are</b>, <b>how you feel</b>, or <b>facts</b>?</p>",
+    },
+    vocab: {
+      title: "Studying academic words",
+      html: "<ul class='eng-checklist'><li>Flip each card: read the <b>word</b>, guess the meaning, then check.</li><li>Say it in your own sentence.</li><li>Notice the part of speech — it changes how you use the word.</li></ul>",
+    },
+    context: {
+      title: "Using context clues",
+      html: "<ul class='eng-checklist'><li>Read the <b>whole</b> sentence first.</li><li>Look for <b>signal words</b>: <i>but, because, however, such as</i>.</li><li>Predict the meaning, then pick the closest option.</li></ul>",
+    },
+    grammar: {
+      title: "Grammar tips",
+      html: "<ul class='eng-checklist'><li><b>Comma splice:</b> two complete sentences joined by only a comma — use a period, semicolon, or conjunction.</li><li><b>Subject-verb agreement:</b> singular subject → singular verb.</li><li><b>Parallel structure:</b> keep items in a list in the same form.</li></ul>",
+    },
+    spot: {
+      title: "Spot the error",
+      html: "<p>Each sentence has exactly <b>one</b> wrong word. Read it aloud in your head — the error often “sounds” wrong. Check verbs, pronouns, and commas first.</p>",
+    },
+    revise: {
+      title: "Revising sentences",
+      html: "<ul class='eng-checklist'><li>Cut empty phrases (<i>there are, the fact that</i>).</li><li>Prefer strong verbs over <i>is/was + noun</i>.</li><li>Keep one clear idea per sentence.</li></ul>",
+    },
+    writing: {
+      title: "Writing like a scholar",
+      html: "<ul class='eng-checklist'><li>Open with a clear <b>claim</b> (thesis).</li><li>Support it with <b>evidence</b> (a quote or detail).</li><li>Add <b>reasoning</b> — explain how the evidence proves the claim.</li><li>Use the rubric: aim for the “4 — Advanced” column.</li></ul>",
+    },
+    arcade: {
+      title: "About the games",
+      html: "<ul class='eng-checklist'><li><b>Word Defender</b> — match falling devices to definitions.</li><li><b>Vocab Match</b> — clear the board of word/definition pairs.</li><li><b>Grammar Gauntlet</b> — beat the clock spotting errors.</li><li><b>Rhetoric Rally</b> — sort lines by appeal.</li></ul><p>Each opens in a new tab and saves your high score.</p>",
+    },
+    _default: {
+      title: "Guide",
+      html: "<p>Work through the activity. You'll get instant feedback on each answer.</p>",
+    },
   };
 
+  var GAMES = [
+    {
+      slug: "word-defender",
+      name: "Word Defender",
+      icon: "🛡️",
+      desc: "Match falling literary devices to their definitions.",
+      color: "#a855f7",
+    },
+    {
+      slug: "vocab-match",
+      name: "Vocab Match",
+      icon: "🧩",
+      desc: "Clear the board of word + definition pairs.",
+      color: "#ec4899",
+    },
+    {
+      slug: "grammar-gauntlet",
+      name: "Grammar Gauntlet",
+      icon: "⚡",
+      desc: "Beat the clock spotting one error per sentence.",
+      color: "#06b6d4",
+    },
+    {
+      slug: "rhetoric-rally",
+      name: "Rhetoric Rally",
+      icon: "⚖️",
+      desc: "Sort persuasive lines into ethos, pathos, or logos.",
+      color: "#f59e0b",
+    },
+  ];
+
+  /* ============================================================
+     PROGRESS RING + BADGES
+     ============================================================ */
   function updateRing() {
-    var cards = document.querySelectorAll(".activity:not(.eng-ref)");
-    var done = document.querySelectorAll(".activity:not(.eng-ref).done").length;
-    var total = cards.length || 1;
-    var pct = Math.round((done / total) * 100);
+    var done = Object.keys(prog.done).filter(function (k) {
+      return prog.done[k];
+    }).length;
+    var pct = TOTAL ? Math.round((done / TOTAL) * 100) : 0;
     var ring = document.querySelector(".eng-ring-fill");
     if (ring) {
       var C = 2 * Math.PI * 54;
       ring.style.strokeDasharray = C;
       ring.style.strokeDashoffset = C * (1 - pct / 100);
     }
-    var pctEl = document.getElementById("eng-ring-pct");
-    if (pctEl) pctEl.textContent = pct + "%";
-    var xpEl = document.getElementById("eng-ring-xp");
-    if (xpEl) xpEl.textContent = done * 50 + " XP";
-    var dEl = document.getElementById("eng-ring-done");
-    if (dEl) dEl.textContent = done + " / " + total;
-    // badges
-    var rules = [
-      { id: "b-start", on: done >= 1 },
-      {
-        id: "b-reader",
-        on:
-          countDoneType("Fiction") +
-            countDoneType("Nonfiction") +
-            countDoneType("Poetry") >=
-          3,
-      },
-      { id: "b-wordsmith", on: countDoneType("Vocabulary") >= 1 },
-      { id: "b-gamer", on: countDoneType("Arcade") + gameDone() >= 2 },
-      { id: "b-scholar", on: pct >= 60 },
-      { id: "b-champion", on: pct >= 100 },
+    set("eng-ring-pct", pct + "%");
+    set("eng-ring-xp", done * 50 + " XP");
+    set("eng-ring-done", done + " / " + TOTAL);
+    var badges = [
+      ["b-start", done >= 1],
+      ["b-reader", countPrefix(["fic-", "nf-", "po-"]) >= 3],
+      [
+        "b-wordsmith",
+        prog.done["vocab-wall"] ||
+        prog.done["vocab-match2"] ||
+        prog.done["vocab-fill"] ||
+        prog.done["vocab-cquiz"]
+          ? true
+          : false,
+      ],
+      ["b-grammar", prog.done["grammar-spot"] ? true : false],
+      ["b-scholar", pct >= 60],
+      ["b-champion", pct >= 100],
     ];
-    rules.forEach(function (r) {
-      var b = document.getElementById(r.id);
-      if (b) b.classList.toggle("earned", r.on);
+    badges.forEach(function (b) {
+      var e = document.getElementById(b[0]);
+      if (e) e.classList.toggle("earned", !!b[1]);
     });
   }
-  function countDoneType(type) {
-    return document.querySelectorAll('.activity.done[data-type="' + type + '"]')
-      .length;
+  function countPrefix(prefixes) {
+    return Object.keys(prog.done).filter(function (k) {
+      return (
+        prog.done[k] &&
+        prefixes.some(function (p) {
+          return k.indexOf(p) === 0;
+        })
+      );
+    }).length;
   }
-  function gameDone() {
-    return document.querySelectorAll(
-      ".activity.done[data-gate='game'], .activity.done[data-gate='match']",
-    ).length;
+  function set(id, v) {
+    var e = document.getElementById(id);
+    if (e) e.textContent = v;
   }
 
   /* ============================================================
-     BUILD
+     RENDER NAV (two levels)
      ============================================================ */
   function build() {
-    if (!app || !E.fiction) return;
-    addTab("overview", "🏠 Overview");
-    addTab("Fiction", "📖 Fiction");
-    addTab("Nonfiction", "🏛️ Rhetoric");
-    addTab("Poetry", "🪶 Poetry");
-    addTab("Vocabulary", "🧠 Vocabulary");
-    addTab("Grammar", "✍️ Grammar");
-    addTab("Writing", "🖊️ Writing");
-    addTab("Arcade", "🎮 Arcade");
+    var app = document.getElementById("eng-app");
+    var topTabs = document.getElementById("eng-tabs");
+    if (!app || !topTabs || !E.fiction) return;
+    var mods = buildModules();
 
-    // Overview section (intro + how-to)
-    var ov = makeSection("overview", {
-      icon: "🎓",
-      title: "Your Summer English 10 Mission",
-      intro:
-        "Six modules build the reading, vocabulary, grammar, and writing skills you'll use at Pikesville High. Read closely, score 3+ on each quiz, beat the arcade games, and log your work to earn XP and badges.",
-    });
-    var howto = el("article", "activity eng-ref");
-    howto.style.cursor = "default";
-    howto.innerHTML =
-      '<div class="meta"><span class="pill accent">Start here</span></div><h3>How it works</h3>' +
-      '<ul class="eng-checklist" style="margin-top:6px;">' +
-      "<li><b>Read &amp; analyze</b> 9 classic passages, then auto-grade your answers with instant explanations.</li>" +
-      "<li><b>Master 24 academic words</b> and prove it in the Context Clues Quiz and Vocab Match game.</li>" +
-      "<li><b>Sharpen grammar</b> with mini-lessons and the timed Grammar Gauntlet.</li>" +
-      "<li><b>Write like a scholar</b> using mentor models, a rubric, and guided prompts.</li>" +
-      "<li><b>Play 4 arcade games</b> — Word Defender, Vocab Match, Grammar Gauntlet &amp; Rhetoric Rally.</li>" +
-      "<li>Hit <b>Log to portfolio</b> on each activity to earn 50 XP and unlock badges.</li>" +
-      "</ul>";
-    ov.appendChild(howto);
-
-    // Fiction
-    var fg = makeSection("Fiction", E.fiction);
-    E.fiction.passages.forEach(function (p) {
-      renderPassageCard(fg, "Fiction", p);
-    });
-
-    // Nonfiction
-    var ng = makeSection("Nonfiction", E.nonfiction);
-    E.nonfiction.passages.forEach(function (p) {
-      renderPassageCard(ng, "Nonfiction", p);
-    });
-
-    // Poetry
-    var pg = makeSection("Poetry", E.poetry);
-    E.poetry.passages.forEach(function (p) {
-      renderPassageCard(pg, "Poetry", p);
-    });
-
-    // Vocabulary (+ match game)
-    var vg = makeSection("Vocabulary", E.vocab);
-    renderVocab(vg, E.vocab);
-
-    // Grammar (+ gauntlet)
-    var gg = makeSection("Grammar", E.grammar);
-    renderGrammar(gg, E.grammar);
-
-    // Writing
-    var wg = makeSection("Writing", E.writing);
-    renderWriting(wg, E.writing);
-
-    // Arcade — all four games together
-    var ag = makeSection("Arcade", {
-      icon: "🎮",
-      title: "The Arcade",
-      intro:
-        "Four games that turn skills into reflexes. Beat the goal in each to log it and stack high scores.",
-    });
-    renderWordDefender(ag);
-    renderRhetoricRally(ag);
-    // Re-render match + gauntlet instances for the arcade view
-    renderVocabMatch(ag, E.vocab);
-    renderGauntlet(ag, E.grammar);
-
-    // stats in hero
-    var totalQ = 0;
-    [E.fiction, E.nonfiction, E.poetry].forEach(function (m) {
-      m.passages.forEach(function (p) {
-        totalQ += p.questions.length;
+    // count total completable activities (exclude pure-study tabs)
+    TOTAL = 0;
+    var studyKeys = 0;
+    mods.forEach(function (m) {
+      m.subs.forEach(function (s) {
+        // estimate: every sub with an id-based activity counts; study/arcade don't
       });
     });
-    var sEl = document.getElementById("eng-stat-content");
-    if (sEl)
-      sEl.textContent =
-        E.fiction.passages.length +
-        E.nonfiction.passages.length +
-        E.poetry.passages.length +
-        " passages · " +
-        totalQ +
-        " questions";
+    // Simpler: total = reading passages + interactive + vocab(4) + grammar spot + writing prompts
+    TOTAL =
+      E.fiction.passages.length +
+      1 + // fiction + device match
+      E.nonfiction.passages.length +
+      1 + // + sort
+      E.poetry.passages.length +
+      4 + // vocab: wall, match, fill, cquiz
+      1 + // grammar spot
+      E.writing.prompts.length;
 
-    // progress ring observer
-    var obs = new MutationObserver(updateRing);
-    obs.observe(app, {
-      attributes: true,
-      subtree: true,
-      attributeFilter: ["class"],
+    var sections = [];
+    // overview
+    var ovBtn = topTab("overview", "🏠 Overview");
+    var ovSec = el("section", "eng-section");
+    ovSec.appendChild(overviewHTML(mods));
+    app.appendChild(ovSec);
+    sections.push({ key: "overview", el: ovSec });
+
+    mods.forEach(function (m) {
+      topTab(m.key, (m.icon || "📘") + " " + tabName(m.title));
+      var sec = el("section", "eng-section");
+      sec.style.display = "none";
+      // module intro
+      var intro = el("div", "eng-module-intro");
+      intro.innerHTML =
+        '<div class="eng-m-ico">' +
+        (m.icon || "📘") +
+        "</div><div><h2>" +
+        esc(m.title) +
+        "</h2><p>" +
+        (m.intro || "") +
+        "</p></div>";
+      sec.appendChild(intro);
+      // sub-tabs
+      var subbar = el("div", "eng-subtabs");
+      var panelHost = el("div", "eng-panelhost");
+      m.subs.forEach(function (s, si) {
+        var sb = el("button", "eng-subtab", esc(s.label));
+        sb.addEventListener("click", function () {
+          subbar.querySelectorAll(".eng-subtab").forEach(function (x) {
+            x.classList.remove("active");
+          });
+          sb.classList.add("active");
+          panelHost.innerHTML = "";
+          var panel = el("div", "eng-panel");
+          s.render(panel);
+          panelHost.appendChild(panel);
+          panelHost.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        });
+        subbar.appendChild(sb);
+      });
+      sec.appendChild(subbar);
+      sec.appendChild(panelHost);
+      app.appendChild(sec);
+      sections.push({
+        key: m.key,
+        el: sec,
+        firstSub: subbar.querySelector(".eng-subtab"),
+      });
     });
-    setTimeout(updateRing, 200);
+
+    function topTab(key, label) {
+      var b = el("button", "tab", esc(label));
+      b.dataset.mod = key;
+      b.setAttribute("aria-selected", key === "overview" ? "true" : "false");
+      b.addEventListener("click", function () {
+        topTabs.querySelectorAll(".tab").forEach(function (t) {
+          t.setAttribute("aria-selected", String(t === b));
+        });
+        sections.forEach(function (s) {
+          s.el.style.display = s.key === key ? "" : "none";
+          if (
+            s.key === key &&
+            s.firstSub &&
+            !s.el.querySelector(".eng-subtab.active")
+          )
+            s.firstSub.click();
+        });
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+      topTabs.appendChild(b);
+      return b;
+    }
+    function tabName(t) {
+      return t
+        .replace("Nonfiction & ", "")
+        .replace(" & Conventions", "")
+        .replace(" & Figurative Language", "")
+        .replace(" & Literary Analysis", "")
+        .replace("Academic ", "");
+    }
+
+    updateRing();
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", build);
-  } else {
-    build();
+  function tabName2(t) {
+    return t;
   }
+
+  function overviewHTML(mods) {
+    var wrap = el("div", "eng-overview");
+    wrap.innerHTML =
+      '<div class="eng-module-intro"><div class="eng-m-ico">🎓</div><div><h2>Your Summer English 10 Mission</h2><p>Six modules build the reading, vocabulary, grammar, and writing skills you will use at Pikesville High. Pick a module tab, then work through its activities — you get <b>instant feedback</b> on every answer.</p></div></div>';
+    var grid = el("div", "eng-overview-grid");
+    mods.forEach(function (m) {
+      if (m.key === "arcade") return;
+      var c = el("div", "eng-ov-card");
+      c.innerHTML =
+        '<span class="eng-ov-ico">' +
+        (m.icon || "📘") +
+        "</span><h3>" +
+        esc(m.title) +
+        "</h3><p>" +
+        esc((m.intro || "").replace(/<[^>]+>/g, "")) +
+        "</p><span class='eng-ov-count'>" +
+        m.subs.length +
+        " activities</span>";
+      c.addEventListener("click", function () {
+        var t = document.querySelector('.tab[data-mod="' + m.key + '"]');
+        if (t) t.click();
+      });
+      grid.appendChild(c);
+    });
+    // arcade highlight
+    var arc = el("div", "eng-ov-card eng-ov-arcade");
+    arc.innerHTML =
+      '<span class="eng-ov-ico">🎮</span><h3>The Arcade</h3><p>Four games open in their own page — Word Defender, Vocab Match, Grammar Gauntlet, Rhetoric Rally.</p><span class="eng-ov-count">Play ↗</span>';
+    arc.addEventListener("click", function () {
+      var t = document.querySelector('.tab[data-mod="arcade"]');
+      if (t) t.click();
+    });
+    grid.appendChild(arc);
+    wrap.appendChild(grid);
+    return wrap;
+  }
+
+  if (document.readyState === "loading")
+    document.addEventListener("DOMContentLoaded", build);
+  else build();
 })();
