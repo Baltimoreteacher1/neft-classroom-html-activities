@@ -29,7 +29,7 @@
         </p>
         <button
           class="eng-howto"
-          onclick="document.getElementById('howto').showModal()"
+          onclick="(function(d){d.showModal?d.showModal():d.setAttribute('open','')})(document.getElementById('howto'))"
         >
           💡 How to play
         </button>
@@ -48,7 +48,7 @@
           shown after each.
         </li>
       </ul>
-      <button class="btn" onclick="this.closest('dialog').close()">
+      <button class="btn" onclick="(function(d){d.close?d.close():d.removeAttribute('open')})(this.closest('dialog'))">
         Got it ▶
       </button>
     </dialog>
