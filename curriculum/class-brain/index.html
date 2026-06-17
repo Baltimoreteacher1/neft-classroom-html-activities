@@ -1,0 +1,731 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Living Class Brain — Mr. Neft</title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --navy: #17324d;
+        --teal: #1fa6a2;
+        --ink: #24323f;
+        --line: #d9e2ec;
+        --gold: #f2c15b;
+        --bg: #f7f4ec;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          "Nunito",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        line-height: 1.5;
+      }
+      .cb-wrap {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 20px 16px 60px;
+      }
+      .cb-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 16px;
+        padding: 22px 22px 20px;
+        color: #fff;
+        background:
+          radial-gradient(
+            900px 300px at 100% 0%,
+            rgba(31, 166, 162, 0.4),
+            rgba(26, 115, 232, 0.18),
+            transparent 60%
+          ),
+          linear-gradient(135deg, #0b0f19 0%, #102a3c 100%);
+        border: 1px solid rgba(31, 166, 162, 0.25);
+        box-shadow: 0 10px 24px rgba(11, 15, 25, 0.2);
+      }
+      .cb-hero .tag {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        background: linear-gradient(90deg, #7fe3df, #8ab4f8);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin: 0 0 4px;
+      }
+      .cb-hero h1 {
+        margin: 0 0 4px;
+        font-size: clamp(1.4rem, 3vw, 1.9rem);
+        font-weight: 800;
+      }
+      .cb-hero p {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.85);
+        max-width: 64ch;
+        font-size: 0.95rem;
+      }
+      .cb-hero a.back {
+        position: absolute;
+        top: 16px;
+        right: 18px;
+        color: #cfe9e8;
+        font-weight: 700;
+        text-decoration: none;
+        font-size: 0.85rem;
+      }
+      .cb-hero a.back:hover {
+        text-decoration: underline;
+      }
+      .cb-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+        margin-top: 18px;
+      }
+      @media (max-width: 760px) {
+        .cb-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .cb-card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 18px;
+        box-shadow: 0 6px 18px rgba(23, 50, 77, 0.06);
+      }
+      .cb-card h2 {
+        margin: 0 0 12px;
+        font-size: 1.15rem;
+        color: var(--navy);
+        font-weight: 800;
+      }
+      .cb-field {
+        margin-bottom: 12px;
+      }
+      .cb-field label {
+        display: block;
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: var(--navy);
+        margin-bottom: 4px;
+      }
+      .cb-field .hint {
+        font-weight: 600;
+        color: #6b7a89;
+        font-size: 0.78rem;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        font: inherit;
+        padding: 9px 11px;
+        border: 1.5px solid var(--line);
+        border-radius: 10px;
+        background: #fbfdff;
+        color: var(--ink);
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: 3px solid rgba(31, 166, 162, 0.35);
+        border-color: var(--teal);
+      }
+      textarea {
+        min-height: 88px;
+        resize: vertical;
+      }
+      .cb-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .cb-btn {
+        appearance: none;
+        cursor: pointer;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 16px;
+        font: inherit;
+        font-weight: 800;
+        color: #06231f;
+        background: linear-gradient(90deg, #7fe3df, #1fa6a2);
+        width: 100%;
+        margin-top: 4px;
+        transition:
+          opacity 0.15s,
+          box-shadow 0.15s;
+      }
+      .cb-btn:hover {
+        opacity: 0.92;
+        box-shadow: 0 0 14px rgba(31, 166, 162, 0.35);
+      }
+      .cb-btn.ghost {
+        background: #fff;
+        color: var(--navy);
+        border: 2px solid var(--line);
+      }
+      .cb-actions {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 10px;
+      }
+      /* Output card */
+      .card-out {
+        white-space: normal;
+      }
+      .card-out .muted {
+        color: #6b7a89;
+        font-size: 0.85rem;
+        margin: 0 0 10px;
+      }
+      .stat-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 0 0 12px;
+      }
+      .stat {
+        flex: 1 1 110px;
+        background: #f2fbf7;
+        border: 1px solid #a7d7c5;
+        border-radius: 12px;
+        padding: 10px 12px;
+      }
+      .stat b {
+        display: block;
+        font-size: 1.35rem;
+        color: var(--navy);
+      }
+      .stat span {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #4a6173;
+      }
+      .adj {
+        background: #fffaf0;
+        border: 1px solid #f1d08a;
+        border-left: 5px solid var(--gold);
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin: 8px 0;
+        font-weight: 600;
+      }
+      .adj code {
+        background: #fff;
+        border: 1px solid #e7d8b2;
+        border-radius: 5px;
+        padding: 1px 5px;
+        font-size: 0.85em;
+      }
+      .misc-list {
+        margin: 6px 0 0;
+        padding-left: 18px;
+      }
+      .misc-list li {
+        margin: 2px 0;
+      }
+      .verify {
+        margin-top: 10px;
+        color: #a15b00;
+        background: #fff6e6;
+        border-radius: 8px;
+        padding: 8px 10px;
+        font-size: 0.85rem;
+      }
+      .empty {
+        color: #6b7a89;
+        font-style: italic;
+      }
+      h3.sec {
+        margin: 16px 0 4px;
+        font-size: 0.95rem;
+        color: var(--navy);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .hist {
+        margin-top: 18px;
+      }
+      .hist table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+      }
+      .hist th,
+      .hist td {
+        text-align: left;
+        padding: 7px 8px;
+        border-bottom: 1px solid var(--line);
+      }
+      .hist th {
+        color: var(--navy);
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .hist .danger {
+        color: #b3261e;
+        font-weight: 800;
+      }
+      .hist-tools {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 6px;
+      }
+      .linkbtn {
+        background: none;
+        border: none;
+        color: #b3261e;
+        font-weight: 700;
+        cursor: pointer;
+        font-size: 0.82rem;
+      }
+      @media print {
+        .cb-input,
+        .cb-hero a.back,
+        .cb-actions,
+        .hist {
+          display: none !important;
+        }
+        .cb-grid {
+          grid-template-columns: 1fr;
+        }
+        body {
+          background: #fff;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="cb-wrap">
+      <header class="cb-hero">
+        <a class="back" href="/curriculum/">← Curriculum Hub</a>
+        <span class="tag">Teacher Tool</span>
+        <h1>Living Class Brain</h1>
+        <p>
+          Drop in one exit ticket's results and get a ready-to-use "Tomorrow's
+          Adjustments" card — what to re-teach, which misconception to target,
+          where to slow down. Saved in this browser, builds a running picture of
+          the class over time.
+        </p>
+      </header>
+
+      <div class="cb-grid">
+        <!-- INPUT -->
+        <section
+          class="cb-card cb-input"
+          aria-label="Enter exit ticket results"
+        >
+          <h2>1 · Enter the evidence</h2>
+          <div class="cb-row">
+            <div class="cb-field">
+              <label for="f-date">Date</label>
+              <input type="date" id="f-date" />
+            </div>
+            <div class="cb-field">
+              <label for="f-session">Session</label>
+              <select id="f-session">
+                <option value="">—</option>
+                <option value="S1">S1</option>
+                <option value="S2">S2</option>
+              </select>
+            </div>
+          </div>
+          <div class="cb-field">
+            <label for="f-standard"
+              >Standard <span class="hint">(e.g. 6.RP.A.3)</span></label
+            >
+            <input type="text" id="f-standard" placeholder="6.RP.A.3" />
+          </div>
+          <div class="cb-field">
+            <label for="f-desc"
+              >Standard description <span class="hint">(optional)</span></label
+            >
+            <input
+              type="text"
+              id="f-desc"
+              placeholder="Use ratio and rate reasoning…"
+            />
+          </div>
+          <div class="cb-row">
+            <div class="cb-field">
+              <label for="f-correct"># Correct</label>
+              <input
+                type="number"
+                id="f-correct"
+                min="0"
+                step="1"
+                placeholder="15"
+              />
+            </div>
+            <div class="cb-field">
+              <label for="f-total"># Total responses</label>
+              <input
+                type="number"
+                id="f-total"
+                min="0"
+                step="1"
+                placeholder="24"
+              />
+            </div>
+          </div>
+          <div class="cb-field">
+            <label for="f-misc"
+              >Misconceptions seen
+              <span class="hint"
+                >— one per line. Add a count like "reversed-iv-dv x4"</span
+              >
+            </label>
+            <textarea
+              id="f-misc"
+              placeholder="reversed-dependent-independent x9&#10;ignored-initial-value x3&#10;added-instead-of-multiplied"
+            ></textarea>
+          </div>
+          <div class="cb-actions">
+            <button class="cb-btn" id="btn-generate">
+              Generate adjustments
+            </button>
+            <button class="cb-btn ghost" id="btn-clear-form">Clear form</button>
+          </div>
+        </section>
+
+        <!-- OUTPUT -->
+        <section class="cb-card card-out" id="out" aria-live="polite">
+          <h2>2 · Tomorrow's Adjustments</h2>
+          <p class="empty" id="out-empty">
+            Enter an exit ticket on the left and press <b>Generate</b>. Your
+            card appears here and is saved to this device.
+          </p>
+          <div id="out-body" hidden></div>
+        </section>
+      </div>
+
+      <!-- HISTORY -->
+      <section class="cb-card hist" aria-label="Capture history">
+        <div class="hist-tools">
+          <h2 style="margin: 0">Class trend</h2>
+          <button class="linkbtn" id="btn-reset">Reset brain</button>
+        </div>
+        <div id="hist-body">
+          <p class="empty">No captures yet.</p>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      "use strict";
+      const KEY = "neft-class-brain-v1";
+
+      // ---- capture.py logic, ported ----
+      function bandFromPct(pct) {
+        if (pct === null) return 0;
+        if (pct < 50) return 1;
+        if (pct < 70) return 2;
+        if (pct < 85) return 3;
+        return 4;
+      }
+      function blend(prior, band) {
+        if (prior === null || prior === undefined) return Number(band);
+        return Math.round((0.5 * prior + 0.5 * band) * 10) / 10;
+      }
+      function mergeMisconceptions(prior, newCounts) {
+        const counts = {};
+        prior.forEach((m) => (counts[m.name] = m.count));
+        Object.keys(newCounts).forEach(
+          (n) => (counts[n] = (counts[n] || 0) + newCounts[n]),
+        );
+        return Object.keys(counts)
+          .map((k) => ({ name: k, count: counts[k] }))
+          .sort((a, b) => b.count - a.count)
+          .slice(0, 6);
+      }
+      function loadBrain() {
+        try {
+          const b = JSON.parse(localStorage.getItem(KEY));
+          if (b && b.class) return b;
+        } catch (e) {}
+        return {
+          rosterStatus: "AWAITING_NEW_ROSTER",
+          class: {
+            standardsMastery: {},
+            liveMisconceptions: [],
+            lastClassAveragePct: null,
+          },
+          lastUpdated: null,
+          captureLog: [],
+        };
+      }
+      function saveBrain(b) {
+        localStorage.setItem(KEY, JSON.stringify(b));
+      }
+      // parse "name x4" / "name (4)" / "name" -> {name, count}
+      function parseMisc(text) {
+        const out = {};
+        text
+          .split("\n")
+          .map((l) => l.trim())
+          .filter(Boolean)
+          .forEach((line) => {
+            const m = line.match(/^(.*?)[\s]*(?:x|\(|=)\s*(\d+)\)?\s*$/i);
+            let name, count;
+            if (m) {
+              name = m[1].trim();
+              count = parseInt(m[2], 10);
+            } else {
+              name = line;
+              count = 1;
+            }
+            if (name) out[name] = (out[name] || 0) + count;
+          });
+        return out;
+      }
+      function daysBetween(a, b) {
+        if (!a || !b) return null;
+        const d = (new Date(b) - new Date(a)) / 86400000;
+        return isNaN(d) ? null : Math.round(d);
+      }
+      function esc(s) {
+        return String(s).replace(
+          /[&<>]/g,
+          (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c],
+        );
+      }
+
+      // ---- capture run ----
+      function runCapture(cap) {
+        const brain = loadBrain();
+        const std = cap.standard;
+        const totalItems = cap.total || 0;
+        const totalCorrect = Math.min(cap.correct || 0, totalItems);
+        const pct = totalItems
+          ? Math.round((1000 * totalCorrect) / totalItems) / 10
+          : null;
+        const band = bandFromPct(pct);
+        const flagged = totalItems === 0;
+
+        const cm = brain.class.standardsMastery;
+        cm[std] = blend(cm[std], band);
+        brain.class.liveMisconceptions = mergeMisconceptions(
+          brain.class.liveMisconceptions || [],
+          cap.miscCounts,
+        );
+        brain.class.lastClassAveragePct = pct;
+
+        const prior = brain.lastUpdated;
+        const daysSince = prior
+          ? daysBetween(prior.slice(0, 10), cap.date)
+          : null;
+        brain.lastUpdated = cap.date;
+
+        const top = brain.class.liveMisconceptions.length
+          ? brain.class.liveMisconceptions[0].name
+          : null;
+        brain.captureLog.push({
+          date: cap.date,
+          session: cap.session,
+          standard: std,
+          classPct: pct,
+          mastery: cm[std],
+          topMisconception: top,
+          source: "web",
+        });
+        saveBrain(brain);
+
+        // adjustments
+        const adj = [];
+        if (pct !== null && pct < 70)
+          adj.push(
+            "Below 70% — <b>expand Guided Practice + add a re-teach spiral</b> next session.",
+          );
+        if (top)
+          adj.push(
+            "Dominant misconception — <b>feature <code>" +
+              esc(top) +
+              "</code> in the Reteach station.</b>",
+          );
+        if (pct !== null && pct > 85)
+          adj.push("Above 85% — <b>compress Guided, expand Enrichment.</b>");
+        if (!adj.length) adj.push("On pace — hold the planned sequence.");
+
+        return {
+          cap,
+          pct,
+          mastery: cm[std],
+          top,
+          adj,
+          flagged,
+          daysSince,
+          stack: brain.class.liveMisconceptions,
+        };
+      }
+
+      // ---- render ----
+      function renderCard(r) {
+        const c = r.cap;
+        const stale =
+          r.daysSince === null
+            ? "first capture"
+            : r.daysSince + " day(s) since last capture";
+        const mode = "class-level (roster blank)";
+        const miscItems = r.stack.length
+          ? r.stack
+              .map((m) => "<li>" + esc(m.name) + " (" + m.count + ")</li>")
+              .join("")
+          : "<li>(none captured)</li>";
+        const verify = r.flagged
+          ? '<div class="verify">[VERIFY] No total entered — mastery band recorded as no-evidence (0). Add # total for a scored band.</div>'
+          : "";
+        document.getElementById("out-empty").hidden = true;
+        const body = document.getElementById("out-body");
+        body.hidden = false;
+        body.innerHTML =
+          '<p class="muted"><b>' +
+          esc(c.standard) +
+          "</b>" +
+          (c.desc ? " — " + esc(c.desc) : "") +
+          " · " +
+          esc(c.date) +
+          (c.session ? " · " + esc(c.session) : "") +
+          " · " +
+          mode +
+          " · " +
+          stale +
+          "</p>" +
+          '<div class="stat-row">' +
+          '<div class="stat"><b>' +
+          (r.pct === null ? "n/a" : r.pct + "%") +
+          "</b><span>Class average</span></div>" +
+          '<div class="stat"><b>' +
+          r.mastery +
+          " / 4</b><span>Mastery band</span></div>" +
+          '<div class="stat"><b>' +
+          (r.top ? esc(r.top) : "—") +
+          "</b><span>Top misconception</span></div>" +
+          "</div>" +
+          '<h3 class="sec">Adjustments (auto-fired)</h3>' +
+          r.adj.map((a) => '<div class="adj">' + a + "</div>").join("") +
+          '<h3 class="sec">Live misconception stack</h3>' +
+          '<ul class="misc-list">' +
+          miscItems +
+          "</ul>" +
+          verify;
+        renderHistory();
+      }
+
+      function renderHistory() {
+        const brain = loadBrain();
+        const log = brain.captureLog || [];
+        const el = document.getElementById("hist-body");
+        if (!log.length) {
+          el.innerHTML = '<p class="empty">No captures yet.</p>';
+          return;
+        }
+        const rows = log
+          .slice()
+          .reverse()
+          .map(
+            (e) =>
+              "<tr><td>" +
+              esc(e.date) +
+              (e.session ? " " + esc(e.session) : "") +
+              "</td><td>" +
+              esc(e.standard || "—") +
+              "</td><td>" +
+              (e.classPct === null ? "n/a" : e.classPct + "%") +
+              '</td><td class="' +
+              (e.mastery < 2 ? "danger" : "") +
+              '">' +
+              e.mastery +
+              " / 4</td><td>" +
+              esc(e.topMisconception || "—") +
+              "</td></tr>",
+          )
+          .join("");
+        el.innerHTML =
+          "<table><thead><tr><th>When</th><th>Standard</th><th>Class %</th><th>Mastery</th><th>Top misconception</th></tr></thead><tbody>" +
+          rows +
+          "</tbody></table>";
+      }
+
+      // ---- wiring ----
+      function todayISO() {
+        const d = new Date();
+        return new Date(d.getTime() - d.getTimezoneOffset() * 60000)
+          .toISOString()
+          .slice(0, 10);
+      }
+      document.getElementById("f-date").value = todayISO();
+      renderHistory();
+
+      document.getElementById("btn-generate").addEventListener("click", () => {
+        const standard = document.getElementById("f-standard").value.trim();
+        const total =
+          parseInt(document.getElementById("f-total").value, 10) || 0;
+        const correct =
+          parseInt(document.getElementById("f-correct").value, 10) || 0;
+        const miscText = document.getElementById("f-misc").value;
+        if (!standard) {
+          alert("Enter a standard (e.g. 6.RP.A.3) first.");
+          return;
+        }
+        if (total === 0 && !miscText.trim()) {
+          alert(
+            "Add # total responses (and # correct), or at least the misconceptions you saw.",
+          );
+          return;
+        }
+        const cap = {
+          date: document.getElementById("f-date").value || todayISO(),
+          session: document.getElementById("f-session").value,
+          standard,
+          desc: document.getElementById("f-desc").value.trim(),
+          correct,
+          total,
+          miscCounts: parseMisc(miscText),
+        };
+        renderCard(runCapture(cap));
+        document
+          .getElementById("out")
+          .scrollIntoView({ behavior: "smooth", block: "nearest" });
+      });
+
+      document
+        .getElementById("btn-clear-form")
+        .addEventListener("click", () => {
+          ["f-standard", "f-desc", "f-correct", "f-total", "f-misc"].forEach(
+            (id) => (document.getElementById(id).value = ""),
+          );
+          document.getElementById("f-session").value = "";
+          document.getElementById("f-date").value = todayISO();
+        });
+
+      document.getElementById("btn-reset").addEventListener("click", () => {
+        if (
+          confirm(
+            "Reset the Class Brain on this device? This clears all saved captures and trends.",
+          )
+        ) {
+          localStorage.removeItem(KEY);
+          document.getElementById("out-body").hidden = true;
+          document.getElementById("out-empty").hidden = false;
+          renderHistory();
+        }
+      });
+    </script>
+  </body>
+</html>
