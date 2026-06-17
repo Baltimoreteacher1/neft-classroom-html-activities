@@ -1,0 +1,169 @@
+name: Pre-Deploy Gate
+
+# ─────────────────────────────────────────────────────────────────────────────
+# DEPLOYMENT GATE
+#
+# Production deploys are performed by Cloudflare Pages' Git integration: when a
+# commit lands on `main`, Cloudflare builds (`npm run build`) and promotes it.
+# GitHub Actions does NOT run the deploy itself (doing so would race Cloudflare
+# and has historically reverted production — see CLAUDE.md). Instead, this
+# workflow GATES what is allowed to reach `main`, in strict order:
+#
+#   1. validate  — repo static + reveal-math + hub-lock checks
+#   2. build     — full Vite production build must succeed
+#   3. claude-predeploy-verify — read-only Claude deploy-readiness review
+#
+# Each stage `needs` the previous one, so Claude only runs after validate+build
+# pass, and the gate only goes green if all three pass. Wire these as REQUIRED
+# status checks on `main` (branch protection) so a failing gate blocks the merge
+# that would otherwise trigger the Cloudflare deploy. Deployment therefore runs
+# last, and only when every prior check passes.
+#
+# This workflow never deploys, never runs wrangler, and never edits files.
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+# Default to read-only for the whole workflow; individual jobs widen only as needed.
+permissions:
+  contents: read
+
+concurrency:
+  group: predeploy-gate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── Stage 1: validation must pass ───────────────────────────────────────────
+  validate:
+    name: Validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Static + reveal-math + hub-lock validation
+        run: npm run validate
+
+  # ── Stage 2: build must pass (only after validate) ──────────────────────────
+  build:
+    name: Build
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Vite production build
+        run: npm run build
+
+  # ── Stage 3: Claude deploy-readiness review (only after validate + build) ────
+  claude-predeploy-verify:
+    name: Claude pre-deploy verification
+    needs: build
+    runs-on: ubuntu-latest
+    # Read-only: Claude inspects the change but must not write, commit, or deploy.
+    permissions:
+      contents: read
+      pull-requests: read
+      id-token: write # required by claude-code-action (OIDC)
+      actions: read # lets Claude read prior CI results for this ref
+    steps:
+      - name: Checkout (full history for diffing)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Claude pre-deploy verification (read-only)
+        id: predeploy
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          additional_permissions: |
+            actions: read
+          # Deny-by-default tool allowlist: read/inspect only. No Edit/Write,
+          # no wrangler, no deploy, no npm scripts that mutate or publish.
+          claude_args: >-
+            --max-turns 25
+            --allowed-tools "Read,Grep,Glob,Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git status:*),Bash(ls:*),Bash(cat:*),Bash(head:*),Bash(tail:*),Bash(wc:*),Bash(grep:*),Bash(rg:*),Bash(find:*)"
+            --disallowed-tools "Edit,Write,NotebookEdit,Bash(wrangler:*),Bash(npm run deploy:*),Bash(npm run build:*),Bash(git push:*),Bash(git commit:*)"
+          prompt: |
+            You are the PRE-DEPLOY VERIFIER for a public, student-facing classroom
+            website (ESOL / Reading / Writing / Math). Cloudflare auto-deploys any
+            commit that reaches `main`, so your job is the last human-readable gate
+            before student-facing content goes live.
+
+            HARD RULES (non-negotiable):
+            - You are READ-ONLY. Do NOT edit, create, or delete any file.
+            - Do NOT deploy. Do NOT run `npm run deploy`, `wrangler deploy`, or any
+              publish/build/commit/push command.
+            - Do NOT modify Cloudflare or any deployment settings.
+            - Only inspect the change with read-only git/grep/read tools.
+
+            WHAT TO INSPECT:
+            - On a pull request: review the PR diff against its base branch
+              (`git diff origin/${{ github.base_ref }}...HEAD`).
+            - On a push to main: review the pushed commit(s) (`git show HEAD`,
+              `git diff HEAD~1...HEAD` when a parent exists).
+
+            BLOCK the deploy (decision FAIL) if the change introduces ANY of:
+            - Answer-key / solution leaks exposed to students.
+            - Teacher-only content exposed to students.
+            - Hidden dashboard / admin / teacher controls exposed to students.
+            - Student privacy risks (PII, tracking, unsafe data collection).
+            - Broken routes or broken internal links.
+            - Broken imports / references to missing assets or scripts.
+            - Accessibility regressions (contrast, alt text, keyboard, font size).
+            - Unclear or missing student-facing directions.
+            - ESOL / SPED usability regressions (reading level, clarity, recovery).
+            - Removal or weakening of any deploy guard (e.g. master-copy-guard,
+              ALLOW_DEPLOY/env gating, validation/audit steps).
+            - Cloudflare / deployment setting changes (_headers, _redirects,
+              wrangler.toml, vite.config output, 404.html, deploy workflows).
+            - Broad redesigns or page-structure changes not clearly requested.
+            - Build or validation risks (Save/Resume wiring, shared asset paths).
+
+            If you are uncertain whether something is safe, FAIL (fail closed).
+            Do NOT approve if answer keys, secrets, or teacher-only content are
+            exposed, if any deploy guard is removed/weakened, or if page structure
+            changed without a clear reason.
+
+            OUTPUT:
+            1. A short summary of what the change does.
+            2. A bullet list of every blocker found, or "No blockers found."
+            3. As the VERY LAST line of your response, output exactly ONE of:
+               CLAUDE_PREDEPLOY_DECISION: PASS
+               CLAUDE_PREDEPLOY_DECISION: FAIL
+
+      # Fail the gate (fail-closed) on FAIL, missing output, or no clear decision.
+      - name: Enforce Claude pre-deploy decision
+        env:
+          EXEC_FILE: ${{ steps.predeploy.outputs.execution_file }}
+        run: |
+          set -euo pipefail
+          if [ -z "${EXEC_FILE:-}" ] || [ ! -f "$EXEC_FILE" ]; then
+            echo "::error::No Claude execution output found — failing closed (deployment blocked)."
+            exit 1
+          fi
+          if grep -q "CLAUDE_PREDEPLOY_DECISION: FAIL" "$EXEC_FILE"; then
+            echo "::error::Claude pre-deploy verification returned FAIL — deployment blocked."
+            exit 1
+          fi
+          if ! grep -q "CLAUDE_PREDEPLOY_DECISION: PASS" "$EXEC_FILE"; then
+            echo "::error::Claude did not emit a clear PASS decision — failing closed (deployment blocked)."
+            exit 1
+          fi
+          echo "Claude pre-deploy verification: PASS — deploy-readiness gate satisfied."
