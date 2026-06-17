@@ -1895,6 +1895,197 @@
           grid-template-columns: 1fr;
         }
       }
+
+      /* Upgraded Styles by Google Ed Experts */
+      .tools-toggle-btn {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: linear-gradient(135deg, #4285f4 0%, #9b72cb 100%);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 56px;
+        height: 56px;
+        font-size: 24px;
+        cursor: pointer;
+        box-shadow: 0 4px 20px rgba(66, 133, 244, 0.4);
+        z-index: 1000;
+        transition: transform 0.2s, background-color 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .tools-toggle-btn:hover {
+        transform: scale(1.1);
+      }
+      .tools-drawer {
+        position: fixed;
+        top: 80px;
+        right: -320px;
+        width: 300px;
+        bottom: 24px;
+        background: rgba(10, 14, 32, 0.95);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        overflow-y: auto;
+      }
+      .tools-drawer.open {
+        right: 24px;
+      }
+      .drawer-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding-bottom: 8px;
+      }
+      .drawer-header h4 {
+        margin: 0;
+        font-family: var(--font-heading);
+        font-weight: 800;
+        color: #8ab4f8;
+      }
+      .close-drawer-btn {
+        background: none;
+        border: none;
+        color: var(--text-secondary);
+        font-size: 20px;
+        cursor: pointer;
+      }
+      .scratchpad-container {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .scratchpad-canvas {
+        background: #0d0f1e;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        cursor: crosshair;
+        touch-action: none;
+      }
+      .scratchpad-controls {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .calculator-container {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .calc-display {
+        background: #0d0f1e;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 8px 12px;
+        text-align: right;
+        font-family: monospace;
+        font-size: 1.25rem;
+        color: #8ab4f8;
+        min-height: 40px;
+      }
+      .calc-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+      }
+      .calc-btn {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: white;
+        padding: 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-family: var(--font-heading);
+        font-weight: 700;
+        transition: background-color 0.1s;
+      }
+      .calc-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+      .calc-btn.op {
+        background: rgba(66, 133, 244, 0.15);
+        color: #8ab4f8;
+        border-color: rgba(66, 133, 244, 0.3);
+      }
+      .calc-btn.eq {
+        background: rgba(16, 185, 129, 0.2);
+        color: #10b981;
+        border-color: rgba(16, 185, 129, 0.4);
+      }
+      .calc-btn.clear {
+        background: rgba(239, 68, 68, 0.15);
+        color: #ef4444;
+        border-color: rgba(239, 68, 68, 0.3);
+      }
+      .active-prompt-card {
+        background: linear-gradient(135deg, rgba(66, 133, 244, 0.1) 0%, rgba(155, 114, 203, 0.1) 100%);
+        border: 1px solid rgba(138, 180, 248, 0.25);
+        border-radius: 14px;
+        padding: 12px 16px;
+        margin-bottom: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .active-prompt-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: #8ab4f8;
+        letter-spacing: 0.5px;
+      }
+      .active-prompt-body {
+        font-size: 0.88rem;
+        color: var(--text-secondary);
+        line-height: 1.4;
+      }
+      .speak-btn {
+        background: none;
+        border: none;
+        color: #8ab4f8;
+        cursor: pointer;
+        padding: 4px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.1s;
+      }
+      .speak-btn:hover {
+        transform: scale(1.1);
+      }
+      .speak-btn.active svg {
+        fill: #10b981;
+        animation: pulseAudio 1s infinite alternate;
+      }
+      @keyframes pulseAudio {
+        from { transform: scale(1); }
+        to { transform: scale(1.25); }
+      }
+      .svg-canvas svg {
+        transition: border 0.3s, box-shadow 0.3s;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+      }
+      .svg-canvas svg.success-glow {
+        border-color: #10b981;
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.25);
+      }
+
     </style>
   </head>
   <body class="ai-hub-page">
@@ -1918,6 +2109,63 @@
         <a href="/curriculum/" class="back-btn">← Back to Curriculum</a>
       </div>
     </header>
+
+    
+    <!-- Math Tools Drawer (Google Education Overhaul) -->
+    <button class="tools-toggle-btn" id="tools-toggle" onclick="toggleToolsDrawer()" aria-label="Toggle math tools drawer">🧮</button>
+    
+    <div class="tools-drawer" id="tools-drawer" aria-hidden="true">
+      <div class="drawer-header">
+        <h4>Math Workspace Tools</h4>
+        <button class="close-drawer-btn" onclick="toggleToolsDrawer()">✕</button>
+      </div>
+      
+      <!-- Scratchpad -->
+      <div class="scratchpad-container">
+        <span class="preview-label">Scratchpad Drawing Board</span>
+        <canvas id="scratchpad-canvas" class="scratchpad-canvas" width="260" height="200"></canvas>
+        <div class="scratchpad-controls">
+          <button class="calc-btn clear" style="flex: 1; padding: 6px;" onclick="clearScratchpad()">Clear</button>
+          <div style="display: flex; gap: 4px;">
+            <button class="calc-btn" style="background: #ef4444; width: 24px; height: 24px; border-radius: 50%; padding:0;" onclick="setScratchColor('#ef4444')"></button>
+            <button class="calc-btn" style="background: #4285f4; width: 24px; height: 24px; border-radius: 50%; padding:0;" onclick="setScratchColor('#4285f4')"></button>
+            <button class="calc-btn" style="background: #10b981; width: 24px; height: 24px; border-radius: 50%; padding:0;" onclick="setScratchColor('#10b981')"></button>
+            <button class="calc-btn" style="background: #ffffff; width: 24px; height: 24px; border-radius: 50%; padding:0;" onclick="setScratchColor('#ffffff')"></button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Calculator -->
+      <div class="calculator-container">
+        <span class="preview-label">Tutor Math Calculator</span>
+        <div class="calc-display" id="calc-display">0</div>
+        <div class="calc-grid">
+          <button class="calc-btn clear" onclick="pressCalc('C')">C</button>
+          <button class="calc-btn op" onclick="pressCalc('(')">(</button>
+          <button class="calc-btn op" onclick="pressCalc(')')">)</button>
+          <button class="calc-btn op" onclick="pressCalc('/')">/</button>
+          
+          <button class="calc-btn" onclick="pressCalc('7')">7</button>
+          <button class="calc-btn" onclick="pressCalc('8')">8</button>
+          <button class="calc-btn" onclick="pressCalc('9')">9</button>
+          <button class="calc-btn op" onclick="pressCalc('*')">*</button>
+          
+          <button class="calc-btn" onclick="pressCalc('4')">4</button>
+          <button class="calc-btn" onclick="pressCalc('5')">5</button>
+          <button class="calc-btn" onclick="pressCalc('6')">6</button>
+          <button class="calc-btn op" onclick="pressCalc('-')">-</button>
+          
+          <button class="calc-btn" onclick="pressCalc('1')">1</button>
+          <button class="calc-btn" onclick="pressCalc('2')">2</button>
+          <button class="calc-btn" onclick="pressCalc('3')">3</button>
+          <button class="calc-btn op" onclick="pressCalc('+')">+</button>
+          
+          <button class="calc-btn" onclick="pressCalc('0')">0</button>
+          <button class="calc-btn" onclick="pressCalc('.')">.</button>
+          <button class="calc-btn eq" style="grid-column: span 2;" onclick="pressCalc('=')">=</button>
+        </div>
+      </div>
+    </div>
 
     <div class="hub-wrap">
       <!-- Hero -->
@@ -3846,6 +4094,38 @@
         ]
       };
 
+
+      // Bilingual support definitions co-developed with Google Education
+      const BILINGUAL_GLOSSARY = {
+        "multiply": "multiply (multiplicar)",
+        "multiplied": "multiplied (multiplicado)",
+        "divide": "divide (dividir)",
+        "divided": "divided (dividido)",
+        "subtract": "subtract (restar)",
+        "add": "add (sumar)",
+        "decimal point": "decimal point (punto decimal)",
+        "decimal place": "decimal place (cifra decimal)",
+        "factors": "factors (factores)",
+        "multiples": "multiples (múltiplos)",
+        "reciprocal": "reciprocal (recíproco)",
+        "fraction": "fraction (fracción)",
+        "ratio": "ratio (razón)",
+        "percent": "percent (porcentaje)",
+        "area": "area (área)",
+        "volume": "volume (volumen)",
+        "surface area": "surface area (área de superficie)",
+        "perimeter": "perimeter (perímetro)",
+        "equation": "equation (ecuación)",
+        "coordinate": "coordinate (coordenada)",
+        "quadrant": "quadrant (cuadrante)",
+        "reflect": "reflect (reflejar)",
+        "sales tax": "sales tax (impuesto sobre las ventas)",
+        "interest": "interest (interés)",
+        "discount": "discount (descuento)"
+      };
+
+      let sessionDialogues = [];
+
       const BUILDER_ROLES = [
         { label: "Student Helper", desc: "Friendly tutor for students" },
         { label: "Math Teacher", desc: "Clear lesson-style explanation" },
@@ -4091,6 +4371,7 @@
 
       // Select Role (Step 1)
       function selectRole(selectedRole) {
+        loadProgress();
         role = selectedRole;
         if (role === "ai101") {
           showHubTab("ai101");
@@ -4179,30 +4460,43 @@
           currentDialogueIndex = 0;
 
           container.innerHTML = `
-            ${isUnitComplete ? `
+            \${isUnitComplete ? \`
               <div class="certificate-banner" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(66, 133, 244, 0.15) 100%); border: 2px solid rgba(16, 185, 129, 0.4); border-radius: 16px; padding: 24px; text-align: center; margin-bottom: 24px; box-shadow: 0 8px 32px rgba(16, 185, 129, 0.1);">
                 <span style="font-size: 2.5rem; display: block; margin-bottom: 8px;">🏆</span>
                 <h4 style="margin: 0 0 8px; font-family: var(--font-heading); font-weight: 900; color: #10b981; font-size: 1.3rem;">Gemini AI Math Explorer Badge Earned!</h4>
                 <p style="margin: 0 auto; max-width: 600px; font-size: 0.9rem; color: #cbd5e1; line-height: 1.5;">
-                  Fantastic achievement! You have successfully engineered prompts and worked through all 5 step-by-step math challenges in <strong>${data.name}</strong>. You have unlocked the elite Google Education & Gemini AI Math Explorer certification!
+                  Fantastic achievement! You have successfully engineered prompts and worked through all 5 step-by-step math challenges in <strong>\${data.name}</strong>. You have unlocked the elite Google Education & Gemini AI Math Explorer certification!
                 </p>
               </div>
-            ` : ''}
+            \` : ''}
 
             <!-- Workspace Layout (Chat on Left, Live SVG on Right) -->
             <div class="workspace-layout">
               <div class="chat-column">
+                <!-- Active Prompt Card -->
+                <div class="active-prompt-card" id="active-prompt-info" style="display: none;">
+                  <div class="active-prompt-header">
+                    <span>Active Prompt Engine</span>
+                    <span style="color: #10b981; font-weight: bold; display: flex; align-items: center; gap: 4px;">
+                      <span style="width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></span> Active
+                    </span>
+                  </div>
+                  <div class="active-prompt-body" id="active-prompt-summary">
+                    No active prompt configuration.
+                  </div>
+                </div>
+
                 <!-- Unit Progress Tracker -->
                 <div class="progress-tracker-panel" style="background: rgba(255,255,255,0.01); border: 1px dashed var(--bg-panel-border); border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
                   <span style="font-size: 0.78rem; font-weight: 800; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px;">Unit Progress Tracker</span>
                   <div style="display: flex; gap: 8px;">
-                    ${data.examples.map((ex, idx) => {
+                    \${data.examples.map((ex, idx) => {
                       let isDone = completedChallenges[selectedUnit][idx];
-                      return `
-                        <div class="progress-star" style="width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid ${isDone ? '#10b981' : 'var(--bg-panel-border)'}; background: ${isDone ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.02)'}; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; color: ${isDone ? '#10b981' : 'var(--text-secondary)'}; cursor: default;" title="${ex.mathProblem}">
-                          ${isDone ? '★' : String.fromCharCode(65 + idx)}
+                      return \`
+                        <div class="progress-star" style="width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid \${isDone ? '#10b981' : 'var(--bg-panel-border)'}; background: \${isDone ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.02)'}; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; color: \${isDone ? '#10b981' : 'var(--text-secondary)'}; cursor: default;" title="\${ex.mathProblem}">
+                          \${isDone ? '★' : String.fromCharCode(65 + idx)}
                         </div>
-                      `;
+                      \`;
                     }).join('')}
                   </div>
                 </div>
@@ -4210,9 +4504,9 @@
                 <div class="math-box">
                   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                     <span class="math-label">Math Homework Challenge</span>
-                    <span class="ccss-badge" id="current-math-ccss" style="margin:0;">${data.examples[selectedExample].ccss}</span>
+                    <span class="ccss-badge" id="current-math-ccss" style="margin:0;">\${data.examples[selectedExample].ccss}</span>
                   </div>
-                  <p class="math-problem" id="current-math-problem">${data.examples[selectedExample].mathProblem}</p>
+                  <p class="math-problem" id="current-math-problem">\${data.examples[selectedExample].mathProblem}</p>
                 </div>
                 
                 <div class="builder-section" id="prompt-builder-area">
@@ -4221,19 +4515,19 @@
                   <div class="builder-grid">
                     <div class="builder-col">
                       <span class="col-label">1. Choose Role</span>
-                      ${getUnitRoles(selectedUnit).map((r) => `<button type="button" class="builder-chip" data-value="${escapeForAttr(r.label)}" aria-label="Choose role: ${escapeForAttr(r.label)}" onclick="selectBuilderChip('role', this)">${r.label}<small>${r.desc}</small></button>`).join('')}
+                      \${getUnitRoles(selectedUnit).map((r) => \`<button type="button" class="builder-chip" data-value="\\\${escapeForAttr(r.label)}" aria-label="Choose role: \\\${escapeForAttr(r.label)}" onclick="selectBuilderChip('role', this)">\\\${r.label}<small>\\\${r.desc}</small></button>\`).join('')}
                     </div>
                     <div class="builder-col">
                       <span class="col-label">2. Choose Lesson</span>
-                      ${getUnitLessons(selectedUnit).map((lesson) => {
+                      \${getUnitLessons(selectedUnit).map((lesson) => {
                         const idx = getLessonExampleIndex(selectedUnit, lesson.id);
-                        const label = `Lesson ${lesson.id.replace("-", ".")}: ${lesson.title}`;
-                        return `<button type="button" class="builder-chip" data-value="${escapeForAttr(label)}" data-example-index="${idx}" aria-label="Choose ${escapeForAttr(label)}" onclick="selectBuilderChip('topic', this)">${label}</button>`;
+                        const label = \`Lesson \\\${lesson.id.replace("-", ".")}: \\\${lesson.title}\`;
+                        return \`<button type="button" class="builder-chip" data-value="\\\${escapeForAttr(label)}" data-example-index="\\\${idx}" aria-label="Choose \\\${escapeForAttr(label)}" onclick="selectBuilderChip('topic', this)">\\\${label}</button>\`;
                       }).join('')}
                     </div>
                     <div class="builder-col">
                       <span class="col-label">3. Choose Help Amount</span>
-                      ${HELP_LEVELS.map((h) => `<button type="button" class="builder-chip" data-value="${escapeForAttr(h.label + ': ' + h.desc)}" aria-label="Choose help amount: ${escapeForAttr(h.label)}" onclick="selectBuilderChip('help', this)">${h.label}<small>${h.desc}</small></button>`).join('')}
+                      \${HELP_LEVELS.map((h) => \`<button type="button" class="builder-chip" data-value="\\\${escapeForAttr(h.label + ': ' + h.desc)}" aria-label="Choose help amount: \\\${escapeForAttr(h.label)}" onclick="selectBuilderChip('help', this)">\${h.label}<small>\${h.desc}</small></button>\`).join('')}
                     </div>
                     <div class="builder-col">
                       <span class="col-label">4. Choose Level</span>
@@ -4289,9 +4583,14 @@
                   </div>
                 </div>
               </div>
-            </div>          `;
+            </div> `;
+          
+          setTimeout(() => {
+            initScratchpad();
+          }, 100);
+          
           drawVisualModel(0);
-        } else if (role === "parent") {
+        } else if (role === "parent") {        } else if (role === "parent") {
           // Render Parent Visual Guide
           const lang = PARENT_LANG[parentLang];
           const prompts = lang.prompts[selectedUnit];
@@ -4492,6 +4791,8 @@
       }
 
       // Submit prompt to trigger simulated AI evaluation
+
+      // Overhauled logic for Google Ed experts
       function submitPrompt() {
         const feedbackAlert = document.getElementById("result-feedback");
         const builderArea = document.getElementById("prompt-builder-area");
@@ -4505,6 +4806,19 @@
           </p>
         `;
         builderArea.style.display = "none";
+        
+        // Update active prompt display
+        const activePromptInfo = document.getElementById("active-prompt-info");
+        const activePromptSummary = document.getElementById("active-prompt-summary");
+        if (activePromptInfo && activePromptSummary) {
+          const levelObj = LEVELS[promptSelections.level] || { name: promptSelections.level };
+          activePromptSummary.innerHTML = `<strong>Role:</strong> \${promptSelections.role}<br>
+                                               <strong>Goal:</strong> Help with \${promptSelections.topic}<br>
+                                               <strong>Scaffolding:</strong> \${promptSelections.help}<br>
+                                               <strong>Explanations:</strong> \${levelObj.name}`;
+          activePromptInfo.style.display = "block";
+        }
+        
         startTutorChat();
 
         if (feedbackAlert.scrollIntoView) {
@@ -4512,80 +4826,66 @@
         }
       }
 
-      // Start Chat
       function startTutorChat() {
         const chatConsole = document.getElementById("chat-console");
         const chatLog = document.getElementById("chat-log");
-        const data = UNIT_DATA[selectedUnit];
 
         chatConsole.style.display = "block";
         chatLog.innerHTML = "";
         currentDialogueIndex = 0;
 
+        // Build 4-5 turn scaffolded dialogue steps
+        sessionDialogues = buildSessionDialogues(selectedUnit, selectedExample);
+
         const levelName = LEVELS[promptSelections.level].name;
         const article = (promptSelections.level === 'absolute_beginner' || promptSelections.level === 'understanding' || promptSelections.level === 'expert') ? 'an' : 'a';
-        appendTutorMessage("user", `Act as a ${promptSelections.role}. I need help with ${promptSelections.topic}. Please help me by ${promptSelections.help} for ${article} ${levelName} level of explanation.`);
+        appendTutorMessage("user", `Act as a \${promptSelections.role}. I need help with \${promptSelections.topic}. Please help me by \${promptSelections.help} for \${article} \${levelName} level of explanation.`);
 
         showTypingIndicator();
         setTimeout(() => {
           hideTypingIndicator();
-          const rawQ = data.examples[selectedExample].dialogues[0].q;
-          const levelObj = LEVELS[promptSelections.level] || { prefix: "", suffix: "" };
-          appendTutorMessage("bot", levelObj.prefix + rawQ + levelObj.suffix);
+          const rawQ = sessionDialogues[0].q;
+          const adaptedQ = adaptTutorMessage(rawQ, promptSelections.role, promptSelections.level);
+          appendTutorMessage("bot", adaptedQ);
         }, 1200);
       }
 
-      // Append Message Helper
       function appendTutorMessage(sender, text) {
         const chatLog = document.getElementById("chat-log");
         const row = document.createElement("div");
-        row.className = `chat-row ${sender}`;
+        row.className = `chat-row \${sender}`;
 
         const avatar = document.createElement("div");
-        avatar.className = `chat-avatar ${sender}`;
+        avatar.className = `chat-avatar \${sender}`;
         avatar.innerHTML = sender === "user" ? "S" : `
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12,2 C12,7.5 16.5,12 22,12 C16.5,12 12,16.5 12,22 C12,16.5 7.5,12 2,12 C7.5,12 12,7.5 12,2 Z" fill="#8ab4f8" /></svg>
         `;
 
         const bubble = document.createElement("div");
         bubble.className = "chat-bubble";
-        bubble.textContent = text;
+        bubble.innerHTML = text; // allow markup for glossary links/hints
 
         row.appendChild(avatar);
         row.appendChild(bubble);
+
+        if (sender === "bot") {
+          const speakBtn = document.createElement("button");
+          speakBtn.className = "speak-btn";
+          speakBtn.setAttribute("aria-label", "Read aloud");
+          speakBtn.innerHTML = `
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            </svg>
+          `;
+          speakBtn.onclick = () => speakText(text, speakBtn);
+          row.appendChild(speakBtn);
+        }
+
         chatLog.appendChild(row);
         chatLog.scrollTop = chatLog.scrollHeight;
       }
 
-      // Typing Indicator Helpers
-      function showTypingIndicator() {
-        const chatLog = document.getElementById("chat-log");
-        const indicator = document.createElement("div");
-        indicator.className = "typing-indicator";
-        indicator.id = "chat-typing-dots";
-        indicator.style.display = "flex";
-        indicator.innerHTML = `
-          <div class="typing-dot"></div>
-          <div class="typing-dot"></div>
-          <div class="typing-dot"></div>
-        `;
-        chatLog.appendChild(indicator);
-        chatLog.scrollTop = chatLog.scrollHeight;
-      }
-
-      // Hide typing
-      function hideTypingIndicator() {
-        const indicator = document.getElementById("chat-typing-dots");
-        if (indicator) indicator.remove();
-      }
-
-      function handleChatKeyDown(e) {
-        if (e.key === "Enter") {
-          sendChatAnswer();
-        }
-      }
-
-      // Send chat answer
       function sendChatAnswer() {
         const inputEl = document.getElementById("chat-input");
         const text = inputEl.value.trim();
@@ -4595,11 +4895,16 @@
         document.getElementById("hint-box").style.display = "none";
         appendTutorMessage("user", text);
 
-        const data = UNIT_DATA[selectedUnit];
-        const dialogue = data.examples[selectedExample].dialogues[currentDialogueIndex];
+        const dialogue = sessionDialogues[currentDialogueIndex];
+        const isLastStep = (currentDialogueIndex === sessionDialogues.length - 1);
         
-        const cleanUserText = text.toLowerCase().replace(/[\$\s\s+]/g, "").replace(",", ".");
-        const isCorrect = dialogue.expected.some(exp => cleanUserText.includes(exp.toLowerCase()));
+        let isCorrect = false;
+        if (isLastStep) {
+          isCorrect = text.length > 2; // accept any non-empty reflection
+        } else {
+          const cleanUserText = text.toLowerCase().replace(/[\\$\s\s+]/g, "").replace(",", ".");
+          isCorrect = dialogue.expected.some(exp => cleanUserText.includes(exp.toLowerCase()));
+        }
 
         showTypingIndicator();
 
@@ -4610,15 +4915,21 @@
             currentDialogueIndex++;
             drawVisualModel(currentDialogueIndex);
 
-            if (currentDialogueIndex < data.examples[selectedExample].dialogues.length) {
-              const rawQ = data.examples[selectedExample].dialogues[currentDialogueIndex].q;
-              const levelObj = LEVELS[promptSelections.level] || { prefix: "", suffix: "" };
-              appendTutorMessage("bot", levelObj.prefix + rawQ + levelObj.suffix);
+            if (currentDialogueIndex < sessionDialogues.length) {
+              const rawQ = sessionDialogues[currentDialogueIndex].q;
+              const adaptedQ = adaptTutorMessage(rawQ, promptSelections.role, promptSelections.level);
+              appendTutorMessage("bot", adaptedQ);
             } else {
               if (!completedChallenges[selectedUnit]) {
                 completedChallenges[selectedUnit] = [false, false, false, false, false];
               }
               completedChallenges[selectedUnit][selectedExample] = true;
+              saveProgress();
+
+              const canvasSvg = document.querySelector("#svg-canvas-container svg");
+              if (canvasSvg) {
+                canvasSvg.classList.add("success-glow");
+              }
 
               appendTutorMessage("bot", "Fantastic! You solved the math problem successfully. That is how we use AI to learn! 🎉");
               document.querySelector(".chat-input-bar").style.display = "none";
@@ -4630,27 +4941,509 @@
               
               setTimeout(() => {
                 renderWorkspace();
-              }, 1500);
+              }, 2000);
             }
           } else {
-            const rawHint = `Not quite! Let's think: ${dialogue.hint} Try again!`;
-            const levelObj = LEVELS[promptSelections.level] || { prefix: "", suffix: "" };
-            appendTutorMessage("bot", levelObj.prefix + rawHint + levelObj.suffix);
+            // Adaptive Hint & Diagnostic check
+            let responseText = "";
+            const userVal = parseFloat(text.replace(/[^0-9.]/g, ""));
+            const expectedVal = parseFloat(dialogue.expected[0]);
+            
+            if (!isNaN(userVal) && !isNaN(expectedVal)) {
+              if (userVal === expectedVal * 10 || userVal === expectedVal * 100) {
+                responseText = "It looks like you did the math right, but did you place the decimal point correctly? Check place value!";
+              } else if (userVal === expectedVal / 10 || userVal === expectedVal / 100) {
+                responseText = "Double check your decimal positions. Did you move it too far?";
+              }
+            }
+            
+            if (!responseText) {
+              responseText = `Not quite! Let's think: \${dialogue.hint} Try again!`;
+            }
+
+            const adaptedMsg = adaptTutorMessage(responseText, promptSelections.role, promptSelections.level);
+            appendTutorMessage("bot", adaptedMsg);
           }
         }, 1000);
       }
 
       function revealHint() {
-        const data = UNIT_DATA[selectedUnit];
         const hintBox = document.getElementById("hint-box");
-        hintBox.textContent = `💡 Hint: ${data.examples[selectedExample].dialogues[currentDialogueIndex].hint}`;
+        hintBox.textContent = `💡 Hint: \${sessionDialogues[currentDialogueIndex].hint}`;
         hintBox.style.display = "block";
       }
 
       function resetWorkspace() {
         renderWorkspace();
-        document.getElementById("result-feedback").style.display = "none";
+        const feedback = document.getElementById("result-feedback");
+        if (feedback) feedback.style.display = "none";
       }
+
+      // Google Ed Custom helper functions
+      function adaptTutorMessage(text, role, level) {
+        let adapted = text;
+
+        const prefixes = {
+          absolute_beginner: "Hey friend! 🎒 Let's learn together. 🌟 ",
+          beginner: "Let's take it step-by-step: ✏️ ",
+          understanding: "Let's review the mathematical steps: 🧠 ",
+          expert: "Greetings, advanced learner. Let's analyze this formally: 🎓 "
+        };
+        const levelPrefix = prefixes[level] || "";
+        
+        if (role === "Spanish/English Support Helper") {
+          Object.keys(BILINGUAL_GLOSSARY).forEach(term => {
+            const regex = new RegExp("\\\\b" + term + "\\\\b", "gi");
+            adapted = adapted.replace(regex, BILINGUAL_GLOSSARY[term]);
+          });
+          adapted += `<br><span style="display:block; margin-top:8px; font-size:0.85rem; color:#a78bfa; border-left:2px solid #a78bfa; padding-left:8px; font-style:italic;">Bilingual Hint / Ayuda: You can write the numbers directly. Puedes escribir los números directamente.</span>`;
+        }
+
+        return levelPrefix + adapted;
+      }
+
+      // Tools Drawer Toggle
+      function toggleToolsDrawer() {
+        const drawer = document.getElementById("tools-drawer");
+        if (!drawer) return;
+        const isOpen = drawer.classList.contains("open");
+        if (isOpen) {
+          drawer.classList.remove("open");
+          drawer.setAttribute("aria-hidden", "true");
+        } else {
+          drawer.classList.add("open");
+          drawer.setAttribute("aria-hidden", "false");
+          setTimeout(() => {
+            initScratchpad();
+          }, 100);
+        }
+      }
+
+      // Drawing Scratchpad logic
+      let isDrawing = false;
+      let lastX = 0;
+      let lastY = 0;
+      let drawColor = "#ffffff";
+      let canvas, ctx;
+
+      function initScratchpad() {
+        canvas = document.getElementById("scratchpad-canvas");
+        if (!canvas) return;
+        ctx = canvas.getContext("2d");
+        ctx.strokeStyle = drawColor;
+        ctx.lineJoin = "round";
+        ctx.lineCap = "round";
+        ctx.lineWidth = 3;
+
+        // Mouse Events
+        canvas.addEventListener("mousedown", (e) => {
+          isDrawing = true;
+          [lastX, lastY] = [e.offsetX, e.offsetY];
+        });
+        canvas.addEventListener("mousemove", draw);
+        canvas.addEventListener("mouseup", () => isDrawing = false);
+        canvas.addEventListener("mouseout", () => isDrawing = false);
+
+        // Touch Events
+        canvas.addEventListener("touchstart", (e) => {
+          isDrawing = true;
+          const rect = canvas.getBoundingClientRect();
+          lastX = e.touches[0].clientX - rect.left;
+          lastY = e.touches[0].clientY - rect.top;
+        });
+        canvas.addEventListener("touchmove", (e) => {
+          if (!isDrawing) return;
+          e.preventDefault();
+          const rect = canvas.getBoundingClientRect();
+          const x = e.touches[0].clientX - rect.left;
+          const y = e.touches[0].clientY - rect.top;
+          
+          ctx.strokeStyle = drawColor;
+          ctx.beginPath();
+          ctx.moveTo(lastX, lastY);
+          ctx.lineTo(x, y);
+          ctx.stroke();
+          [lastX, lastY] = [x, y];
+        });
+        canvas.addEventListener("touchend", () => isDrawing = false);
+      }
+
+      function draw(e) {
+        if (!isDrawing) return;
+        ctx.strokeStyle = drawColor;
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(e.offsetX, e.offsetY);
+        ctx.stroke();
+        [lastX, lastY] = [e.offsetX, e.offsetY];
+      }
+
+      function clearScratchpad() {
+        if (ctx && canvas) {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
+
+      function setScratchColor(color) {
+        drawColor = color;
+      }
+
+      // Calculator logic
+      let calcExpression = "";
+      function pressCalc(val) {
+        const display = document.getElementById("calc-display");
+        if (!display) return;
+
+        if (val === "C") {
+          calcExpression = "";
+          display.textContent = "0";
+        } else if (val === "=") {
+          try {
+            const sanitized = calcExpression.replace(/[^0-9+\\-*/().]/g, "");
+            const result = eval(sanitized);
+            display.textContent = result !== undefined ? parseFloat(result.toFixed(4)) : "0";
+            calcExpression = display.textContent;
+          } catch (e) {
+            display.textContent = "Error";
+            calcExpression = "";
+          }
+        } else {
+          if (calcExpression === "" && !isNaN(val)) {
+            calcExpression = val;
+          } else {
+            calcExpression += val;
+          }
+          display.textContent = calcExpression;
+        }
+      }
+
+      // Text-To-Speech
+      let currentUtterance = null;
+      function speakText(text, btn) {
+        if ('speechSynthesis' in window) {
+          if (window.speechSynthesis.speaking) {
+            window.speechSynthesis.cancel();
+            document.querySelectorAll(".speak-btn").forEach(b => b.classList.remove("active"));
+            if (currentUtterance && currentUtterance.btn === btn) {
+              currentUtterance = null;
+              return;
+            }
+          }
+
+          const cleanText = text.replace(/<[^>]*>/g, "");
+          const utterance = new SpeechSynthesisUtterance(cleanText);
+          utterance.onend = () => {
+            btn.classList.remove("active");
+            currentUtterance = null;
+          };
+          utterance.onerror = () => {
+            btn.classList.remove("active");
+            currentUtterance = null;
+          };
+          
+          btn.classList.add("active");
+          currentUtterance = { utterance, btn };
+          window.speechSynthesis.speak(utterance);
+        } else {
+          alert("Text-to-Speech is not supported in this browser.");
+        }
+      }
+
+      // Progress persistence
+      function saveProgress() {
+        try {
+          localStorage.setItem("ai-hub-completed-challenges", JSON.stringify(completedChallenges));
+        } catch (e) {}
+      }
+      
+      function loadProgress() {
+        try {
+          const saved = localStorage.getItem("ai-hub-completed-challenges");
+          if (saved) {
+            completedChallenges = JSON.parse(saved);
+          }
+        } catch (e) {}
+      }
+
+      // Build session dialogues dynamically
+      function buildSessionDialogues(unitNum, exIdx) {
+        const data = UNIT_DATA[unitNum];
+        const ex = data.examples[exIdx];
+        const orig = ex.dialogues;
+        const steps = [];
+
+        // 1. Warmup / Estimate Question
+        let q1 = "";
+        let exp1 = [];
+        let hint1 = "";
+
+        if (unitNum === 1) { // Decimals
+          if (exIdx === 0) { // 12.5 x 4
+            q1 = "Before we find the exact answer for 12.5 × 4, let's estimate! Since 12.5 is close to 12, what is 12 × 4?";
+            exp1 = ["48"];
+            hint1 = "Think: 10 x 4 = 40, and 2 x 4 = 8. Add them together.";
+          } else if (exIdx === 1) { // 14.8 / 2
+            q1 = "Let's make an estimate first. Since 14.8 is close to 14, what is 14 ÷ 2?";
+            exp1 = ["7"];
+            hint1 = "Just divide 14 by 2.";
+          } else if (exIdx === 2) { // 3.5 x 1.2
+            q1 = "Let's estimate the size of 3.5 × 1.2. If we round 3.5 to 3 and 1.2 to 1, what is 3 × 1?";
+            exp1 = ["3"];
+            hint1 = "Multiply 3 by 1.";
+          } else if (exIdx === 3) { // GCF
+            q1 = "We need the factors of 24 and 36. Is 2 a common factor of both 24 and 36? (Type 'yes' or 'no')";
+            exp1 = ["yes", "si"];
+            hint1 = "Both 24 and 36 are even numbers, so they can be divided by 2.";
+          } else { // LCM
+            q1 = "We want the LCM of 6 and 8. What is the first multiple of 6? (6 × 1)";
+            exp1 = ["6"];
+            hint1 = "The first multiple is just the number itself.";
+          }
+        } else if (unitNum === 2) { // Fractions
+          if (exIdx === 0 || exIdx === 1 || exIdx === 2) {
+            q1 = "We are dividing fractions. What is the reciprocal of a fraction? It is the flipped fraction. If we have 1/3, what is its reciprocal?";
+            exp1 = ["3", "3/1"];
+            hint1 = "Invert 1/3, meaning swap numerator and denominator.";
+          } else if (exIdx === 3) { // 1 1/2 / 1/4
+            q1 = "Before we divide, what is 1 1/2 written as a mixed number's improper fraction?";
+            exp1 = ["3/2"];
+            hint1 = "Multiply the whole number 1 by denominator 2, add numerator 1: 3 halves.";
+          } else { // 4 / 2/3
+            q1 = "We are dividing 4 by 2/3. To divide, we multiply by the reciprocal. What is the reciprocal of 2/3?";
+            exp1 = ["3/2"];
+            hint1 = "Flip 2/3 upside down.";
+          }
+        } else if (unitNum === 3) { // Ratios
+          if (exIdx === 0) { // flour/cookies
+            q1 = "Let's look at ratio scaling. If 3 cups flour makes 12 cookies, is the number of cookies greater than the cups of flour? (Type 'yes' or 'no')";
+            exp1 = ["yes", "si"];
+            hint1 = "12 is larger than 3.";
+          } else if (exIdx === 1) { // miles/hours
+            q1 = "If a car travels 150 miles in 3 hours, does it travel more than 40 miles in 1 hour? (Type 'yes' or 'no')";
+            exp1 = ["yes", "si"];
+            hint1 = "150 divided by 3 is 50, which is greater than 40.";
+          } else if (exIdx === 2) { // juice cost
+            q1 = "If 6 juice packs cost $12, does one juice pack cost more than $1? (Type 'yes' or 'no')";
+            exp1 = ["yes", "si"];
+            hint1 = "$12 divided by 6 packs is $2 per pack.";
+          } else if (exIdx === 3) { // unit rate miles/hours
+            q1 = "A car travels 120 miles in 2 hours. Is its hourly rate (miles per 1 hour) greater than 50? (Type 'yes' or 'no')";
+            exp1 = ["yes", "si"];
+            hint1 = "120 divided by 2 is 60.";
+          } else { // options comparison
+            q1 = "We are comparing Option 1 (3 cans for $6) and Option 2 (5 cans for $9). If 3 cans cost $6, how much is 1 can?";
+            exp1 = ["2", "$2"];
+            hint1 = "Divide $6 by 3.";
+          }
+        } else if (unitNum === 4) { // Percents
+          if (exIdx === 0) { // discount
+            q1 = "Let's review percents. If an item has a discount, will the final price be higher or lower than the original price? (Type 'higher' or 'lower')";
+            exp1 = ["lower", "menor", "bajo"];
+            hint1 = "A discount subtracts money, so it makes it lower.";
+          } else if (exIdx === 1) { // tip
+            q1 = "A tip is added to the bill. Will the total cost including tip be higher or lower than the bill? (Type 'higher' or 'lower')";
+            exp1 = ["higher", "mayor", "alto"];
+            hint1 = "A tip adds money, so it makes it higher.";
+          } else if (exIdx === 2) { // tax
+            q1 = "Sales tax is calculated as a percentage. What is 100% of $30?";
+            exp1 = ["30", "$30"];
+            hint1 = "100% of any number is the number itself.";
+          } else if (exIdx === 3) { // 4/5 as percent
+            q1 = "Percent means 'out of 100'. If we want to write a fraction as a percent, we want the denominator to be what number?";
+            exp1 = ["100"];
+            hint1 = "Per-cent means per 100.";
+          } else { // 80% of 50
+            q1 = "What is 50% (half) of 50?";
+            exp1 = ["25"];
+            hint1 = "Find half of 50.";
+          }
+        } else if (unitNum === 5) { // Area
+          if (exIdx === 0) { // composite area L-shape
+            q1 = "We have an L-shaped figure. Can we split (decompose) it into two simple rectangles to find the area? (Type 'yes' or 'no')";
+            exp1 = ["yes", "si"];
+            hint1 = "Yes, decomposing shapes makes finding their area simple.";
+          } else if (exIdx === 1) { // triangle base 8, height 5
+            q1 = "Look at the triangle. The formula for the area of a triangle is base × height divided by what number?";
+            exp1 = ["2", "two"];
+            hint1 = "A triangle is half of a rectangle, so we divide by 2.";
+          } else if (exIdx === 2) { // parallelogram base 7, height 4
+            q1 = "If we slide a triangle from one side of a parallelogram to the other, what shape does it form?";
+            exp1 = ["rectangle", "rectangulo"];
+            hint1 = "It forms a rectangle with the same base and height.";
+          } else if (exIdx === 3) { // trapezoid
+            q1 = "A trapezoid has two parallel bases, b1 and b2. In our problem, b1 is 6m and b2 is 10m. What is their sum (b1 + b2)?";
+            exp1 = ["16"];
+            hint1 = "Add 6 + 10.";
+          } else { // decimal rectangle
+            q1 = "We have a rectangle of 5.5m by 4m. What is 5 × 4?";
+            exp1 = ["20"];
+            hint1 = "Multiply 5 by 4.";
+          }
+        } else if (unitNum === 6) { // Volume & SA
+          if (exIdx === 0) { // SA box 3x4x5
+            q1 = "To find the surface area of a box, we add up the areas of all its faces. How many faces does a box have?";
+            exp1 = ["6"];
+            hint1 = "A rectangular prism has 6 faces (front, back, top, bottom, left, right).";
+          } else if (exIdx === 1) { // volume 4x3x2
+            q1 = "Volume measures the space inside. Is volume measured in square units or cubic units? (Type 'square' or 'cubic')";
+            exp1 = ["cubic", "cubicas", "cube"];
+            hint1 = "Volume has three dimensions, so it is measured in cubic units.";
+          } else if (exIdx === 2) { // cube side 3
+            q1 = "A cube has 6 square faces that are all identical. If one side is 3 inches, what is the area of one face?";
+            exp1 = ["9"];
+            hint1 = "Area of a square is side × side (3 × 3).";
+          } else if (exIdx === 3) { // fractional volume
+            q1 = "The dimensions are 1/2 in, 3/4 in, and 2 in. What is 1/2 × 2?";
+            exp1 = ["1", "2/2"];
+            hint1 = "Half of 2 is 1.";
+          } else { // triangular prism net
+            q1 = "A triangular prism net has 2 triangles and how many rectangles?";
+            exp1 = ["3", "three"];
+            hint1 = "Look at the unfolded drawing. There are 3 rectangular faces in the middle.";
+          }
+        } else if (unitNum === 7) { // Equations
+          if (exIdx === 0) { // 2x + 5 = 15
+            q1 = "Let's isolate x in 2x + 5 = 15. We start by removing the +5. What is the opposite of addition?";
+            exp1 = ["subtraction", "subtract", "minus", "restar"];
+            hint1 = "The inverse of addition is subtraction.";
+          } else if (exIdx === 1) { // x - 8 = 12
+            q1 = "In x - 8 = 12, we want to isolate x by undoing the subtraction of 8. What is the opposite of subtraction?";
+            exp1 = ["addition", "add", "plus", "sumar"];
+            hint1 = "The inverse of subtraction is addition.";
+          } else if (exIdx === 2) { // 3x = 27
+            q1 = "In 3x = 27, x is multiplied by 3. What is the opposite operation of multiplication?";
+            exp1 = ["division", "divide", "dividido"];
+            hint1 = "The inverse of multiplication is division.";
+          } else if (exIdx === 3) { // x + 7 = 15
+            q1 = "To solve x + 7 = 15, we must subtract the constant term from both sides. What is that constant term?";
+            exp1 = ["7"];
+            hint1 = "Subtract 7 from both sides.";
+          } else { // x / 4 = 6
+            q1 = "In x ÷ 4 = 6, x is divided by 4. What is the opposite of division?";
+            exp1 = ["multiplication", "multiply", "multiplicar"];
+            hint1 = "The inverse of division is multiplication.";
+          }
+        } else if (unitNum === 8) { // Stats
+          if (exIdx === 0) { // median of 10, 3, 8, 5, 9
+            q1 = "To find the median, what is the very first step we must do with the numbers?";
+            exp1 = ["sort", "order", "arrange", "ordenar", "put in order"];
+            hint1 = "We must arrange them from least to greatest.";
+          } else if (exIdx === 1) { // mean of 4, 8, 5, 7
+            q1 = "To find the mean (average), we first find the sum of all values. How many values are in the list?";
+            exp1 = ["4"];
+            hint1 = "Count the numbers: 4, 8, 5, and 7.";
+          } else if (exIdx === 2) { // range of 15, 3, 12, 18, 5
+            q1 = "Range measures the spread. To calculate it, we find the difference between which two values? (Type 'max and min' or 'mean and median')";
+            exp1 = ["max and min", "maximum and minimum", "largest and smallest", "highest and lowest"];
+            hint1 = "Subtract the smallest value from the largest value.";
+          } else if (exIdx === 3) { // mode of 2, 5, 2, 8, 2, 9
+            q1 = "The mode is the value that appears most often. Does a dataset always have to have only one mode? (Type 'yes' or 'no')";
+            exp1 = ["no"];
+            hint1 = "A dataset can have one mode, multiple modes, or no mode at all.";
+          } else { // MAD of 3, 5, 7
+            q1 = "MAD stands for Mean Absolute Deviation. Deviation measures how far values are from the mean. Is absolute distance always positive? (Type 'yes' or 'no')";
+            exp1 = ["yes", "si"];
+            hint1 = "Absolute value represents distance, which is always positive or zero.";
+          }
+        } else if (unitNum === 9) { // Coordinate Plane
+          if (exIdx === 0) { // (1,2) to (-2,2)
+            q1 = "We are moving from (1, 2) to (-2, 2). Since the y-coordinates are both 2, are we moving horizontally or vertically? (Type 'horizontally' or 'vertically')";
+            exp1 = ["horizontally", "horizontal"];
+            hint1 = "We are moving along the x-axis, which is horizontal.";
+          } else if (exIdx === 1) { // distance (3,-4) to (3,5)
+            q1 = "We are finding the distance between (3, -4) and (3, 5). Since the x-coordinates are both 3, are we moving horizontally or vertically?";
+            exp1 = ["vertically", "vertical"];
+            hint1 = "We are moving along the y-axis, which is vertical.";
+          } else if (exIdx === 2) { // quadrant (-3,-5)
+            q1 = "A coordinate plane has 4 quadrants. In Quadrant I, both x and y are positive (+, +). What quadrant is located directly below Quadrant I? (Type '2', '3', or '4')";
+            exp1 = ["4", "quadrant 4"];
+            hint1 = "The quadrants go counter-clockwise starting from top-right: I, II, III, IV.";
+          } else if (exIdx === 3) { // perimeter
+            q1 = "We have vertices (1,1), (4,1), (4,3), (1,3). How many vertices does a rectangle have?";
+            exp1 = ["4"];
+            hint1 = "Count the given points.";
+          } else { // reflect (2,3) across x-axis
+            q1 = "We are reflecting (2, 3) across the horizontal axis (x-axis). Will the point move to the upper half or lower half of the grid? (Type 'upper' or 'lower')";
+            exp1 = ["lower", "abajo"];
+            hint1 = "(2, 3) is in Quadrant I (top-right). Reflecting it down across the x-axis moves it to Quadrant IV (bottom-right).";
+          }
+        } else { // Unit 10 Financial
+          if (exIdx === 0) { // 6% tax on 50
+            q1 = "We need to calculate 6% sales tax. Is sales tax added to or subtracted from the cost? (Type 'added' or 'subtracted')";
+            exp1 = ["added", "sumado", "add"];
+            hint1 = "Sales tax is an extra fee you pay, so it is added.";
+          } else if (exIdx === 1) { // interest
+            q1 = "If you save money in a bank, the bank pays you interest. Does interest increase or decrease your savings over time? (Type 'increase' or 'decrease')";
+            exp1 = ["increase", "aumenta", "crece"];
+            hint1 = "Interest adds money to your savings, so it increases it.";
+          } else if (exIdx === 2) { // discount
+            q1 = "A capsule toy has a 20% discount. Does a discount increase or decrease the final price? (Type 'increase' or 'decrease')";
+            exp1 = ["decrease", "disminuye", "baja"];
+            hint1 = "A discount subtracts from the price, so it decreases it.";
+          } else if (exIdx === 3) { // earnings
+            q1 = "If you earn $15 per hour, how much do you earn for working 1 hour in dollars?";
+            exp1 = ["15", "$15"];
+            hint1 = "The rate is $15 per single hour.";
+          } else { // checking account compare
+            q1 = "If an account has a $10 fee every single month, how many months are in a year?";
+            exp1 = ["12"];
+            hint1 = "A standard year has 12 months.";
+          }
+        }
+
+        // Add Step 1 (Warmup)
+        steps.push({ q: q1, expected: exp1, hint: hint1 });
+
+        // Add Step 2 (Original Dialogue Step 1)
+        steps.push(orig[0]);
+
+        // Add Step 3 (Original Dialogue Step 2, or a calculation summary)
+        if (orig.length > 1) {
+          steps.push(orig[1]);
+          if (orig.length > 2) {
+            steps.push(orig[2]);
+          }
+        } else {
+          steps.push({
+            q: "Excellent work! What is the final calculated value for this challenge?",
+            expected: orig[0].expected,
+            hint: orig[0].hint
+          });
+        }
+
+        // Add Step 4: Explain-Back / Reflection
+        let qReflect = "";
+        if (unitNum === 1) {
+          qReflect = "Superb job! In your own words, explain how we find the greatest common factor or how we multiply decimals.";
+        } else if (unitNum === 2) {
+          qReflect = "Excellent division! In your own words, explain the 'Keep-Change-Flip' rule for dividing fractions.";
+        } else if (unitNum === 3) {
+          qReflect = "Wonderful ratio scaling! Explain why finding the 'unit rate' (the cost or rate for 1 item) makes it easier to scale ratios.";
+        } else if (unitNum === 4) {
+          qReflect = "Percent wizard! In your own words, explain what a percentage is or how you find 10% of any number quickly.";
+        } else if (unitNum === 5) {
+          qReflect = "Geometry star! Explain why we can decompose a composite polygon into rectangles to find its total area.";
+        } else if (unitNum === 6) {
+          qReflect = "Volume explorer! Explain the difference between volume (space inside) and surface area (area of the outside net).";
+        } else if (unitNum === 7) {
+          qReflect = "Algebra master! Why must we perform the exact same operation on *both* sides of the equation when solving?";
+        } else if (unitNum === 8) {
+          qReflect = "Statistics analyst! Explain the difference between finding the average (mean) and finding the middle number (median).";
+        } else if (unitNum === 9) {
+          qReflect = "Coordinate navigator! In your own words, explain what happens to a coordinate when we reflect it across the x-axis.";
+        } else {
+          qReflect = "Financial literacy expert! Explain how we calculate a sales tax or a discount, and how they affect the total price.";
+        }
+
+        steps.push({
+          q: qReflect,
+          expected: [""],
+          hint: "Just write a short explanation of your understanding!"
+        });
+
+        return steps;
+      }
+
 
       // Copy Prompt text (Parent Mode)
       function copyPromptText(idx) {
@@ -5608,5 +6401,8 @@ Instructions:
         window.addEventListener("hashchange", handleDeepLink);
       }
     </script>
-  </body>
+  <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"70d0f16e89e149969ae26b879257bf36","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
 </html>
+
+
