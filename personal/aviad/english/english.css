@@ -1,0 +1,496 @@
+/* english.css — Summer English 10 module set.
+   Extends shared.css (dark glassmorphic system). Module-scoped, prefix eng-. */
+
+/* Module cards read best full-width (passage + questions side by side),
+   so override the shared multi-column auto-fit grid inside module sections. */
+.eng-section > .grid {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+}
+.eng-section .passage-panel {
+  max-height: 620px;
+  font-size: 1.08rem;
+  line-height: 1.85;
+}
+
+/* ---------- Hero: progress ring + module dashboard ---------- */
+.eng-hero-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 28px;
+  align-items: center;
+  margin-top: 28px;
+}
+@media (min-width: 820px) {
+  .eng-hero-grid {
+    grid-template-columns: 1.4fr 1fr;
+  }
+}
+.eng-ring-card {
+  background: var(--bg-slate-800);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 26px;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  backdrop-filter: blur(16px);
+}
+.eng-ring {
+  flex: 0 0 auto;
+  width: 132px;
+  height: 132px;
+  position: relative;
+}
+.eng-ring svg {
+  transform: rotate(-90deg);
+}
+.eng-ring-track {
+  stroke: var(--bg-slate-700);
+}
+.eng-ring-fill {
+  stroke: url(#engGrad);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.eng-ring-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.eng-ring-label b {
+  font-family: var(--font-title);
+  font-size: 2rem;
+  color: var(--text-white);
+  line-height: 1;
+}
+.eng-ring-label span {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 3px;
+}
+.eng-ring-meta h3 {
+  font-size: 1.2rem;
+  margin-bottom: 6px;
+}
+.eng-ring-meta p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+}
+.eng-ring-meta .eng-xp {
+  color: var(--gold);
+  font-weight: 700;
+}
+
+/* Badges / achievements */
+.eng-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.eng-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-slate-800);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-full);
+  padding: 8px 14px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  opacity: 0.55;
+  filter: grayscale(0.8);
+  transition: all 0.3s ease;
+}
+.eng-badge.earned {
+  opacity: 1;
+  filter: none;
+  color: var(--text-white);
+  border-color: var(--gold);
+  box-shadow: 0 0 16px var(--gold-glow);
+}
+.eng-badge .ico {
+  font-size: 1.1rem;
+}
+
+/* ---------- Module intro banners ---------- */
+.eng-module-intro {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  background:
+    linear-gradient(135deg, var(--accent-light), transparent 60%),
+    var(--bg-slate-800);
+  border: 1px solid var(--border-glow);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius-md);
+  padding: 22px 26px;
+  margin-bottom: 4px;
+}
+.eng-module-intro .eng-m-ico {
+  font-size: 2.4rem;
+  line-height: 1;
+}
+.eng-module-intro h2 {
+  font-size: 1.6rem;
+  margin-bottom: 6px;
+}
+.eng-module-intro p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  max-width: 70ch;
+}
+.eng-module-intro .eng-m-tag {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+}
+
+/* ---------- Quiz items (auto-graded) ---------- */
+.eng-q {
+  margin-bottom: 18px;
+}
+.eng-q-stem {
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 10px;
+  color: var(--text-white);
+}
+.eng-q-stem .eng-q-num {
+  color: var(--accent);
+  font-family: var(--font-title);
+  margin-right: 6px;
+}
+.eng-opt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-slate-800);
+  border: 1px solid var(--border-glow);
+  padding: 11px 14px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  margin-bottom: 8px;
+  transition: all 0.18s ease;
+  font-size: 0.9rem;
+}
+.eng-opt:hover {
+  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.03);
+}
+.eng-opt .eng-key {
+  flex: 0 0 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: var(--bg-slate-700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+.eng-opt.selected {
+  border-color: var(--accent);
+  background: var(--accent-light);
+  font-weight: 600;
+}
+.eng-opt.correct {
+  border-color: var(--success);
+  background: var(--success-glow);
+}
+.eng-opt.correct .eng-key {
+  background: var(--success);
+  color: #fff;
+}
+.eng-opt.wrong {
+  border-color: var(--danger);
+  background: var(--danger-glow);
+}
+.eng-opt.wrong .eng-key {
+  background: var(--danger);
+  color: #fff;
+}
+.eng-opt.locked {
+  pointer-events: none;
+}
+.eng-rationale {
+  margin-top: 8px;
+  font-size: 0.84rem;
+  line-height: 1.55;
+  color: #cbd5e1;
+  background: var(--bg-slate-900);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  padding: 10px 12px;
+  display: none;
+}
+.eng-rationale.show {
+  display: block;
+}
+.eng-score-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  background: var(--bg-slate-700);
+  color: var(--text-muted);
+}
+.eng-score-tag.pass {
+  background: var(--success-glow);
+  color: var(--success);
+}
+
+/* annotated passage terms */
+.passage-text mark,
+.eng-gloss {
+  background: var(--accent-light);
+  color: #fff;
+  border-radius: 4px;
+  padding: 0 3px;
+  border-bottom: 1px dotted var(--accent);
+  cursor: help;
+}
+
+/* ---------- Vocabulary cards ---------- */
+.eng-vocab-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+}
+.eng-vcard {
+  background: var(--bg-slate-900);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  perspective: 800px;
+  min-height: 140px;
+  cursor: pointer;
+}
+.eng-vcard .eng-word {
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--text-white);
+}
+.eng-vcard .eng-pos {
+  font-size: 0.72rem;
+  color: var(--accent);
+  font-style: italic;
+  margin-bottom: 8px;
+}
+.eng-vcard .eng-def {
+  font-size: 0.85rem;
+  color: #cbd5e1;
+  line-height: 1.5;
+}
+.eng-vcard .eng-sent {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-top: 8px;
+  border-top: 1px solid var(--border-glow);
+  padding-top: 8px;
+}
+
+/* ---------- Match game grid ---------- */
+.eng-match-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+@media (max-width: 560px) {
+  .eng-match-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+.eng-tile {
+  aspect-ratio: 3 / 2;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-glow);
+  background: var(--bg-slate-700);
+  color: var(--text-white);
+  font-size: 0.78rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.eng-tile:hover {
+  border-color: var(--accent);
+}
+.eng-tile.sel {
+  border-color: var(--accent);
+  background: var(--accent-light);
+  transform: scale(1.03);
+}
+.eng-tile.matched {
+  border-color: var(--success);
+  background: var(--success-glow);
+  color: var(--success);
+  pointer-events: none;
+  opacity: 0.65;
+}
+.eng-tile.miss {
+  border-color: var(--danger);
+  background: var(--danger-glow);
+  animation: eng-shake 0.3s;
+}
+@keyframes eng-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+/* ---------- Grammar Gauntlet ---------- */
+.eng-gaunt-sentence {
+  font-size: 1.05rem;
+  line-height: 1.9;
+  background: var(--bg-slate-900);
+  border-radius: var(--radius-sm);
+  padding: 18px;
+  margin-bottom: 14px;
+  min-height: 80px;
+}
+.eng-gword {
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s ease;
+}
+.eng-gword:hover {
+  background: var(--accent-light);
+  border-bottom-color: var(--accent);
+}
+.eng-timer-bar {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--bg-slate-700);
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.eng-timer-fill {
+  height: 100%;
+  width: 100%;
+  background: var(--accent-gradient);
+  transition: width 0.1s linear;
+}
+
+/* ---------- Writing workshop model/rubric ---------- */
+.eng-model {
+  background: var(--bg-slate-900);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-sm);
+  padding: 18px;
+  margin-bottom: 14px;
+}
+.eng-model h4 {
+  font-size: 0.95rem;
+  color: var(--accent);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.eng-model p {
+  font-size: 0.92rem;
+  line-height: 1.65;
+  color: #e2e8f0;
+}
+.eng-rubric {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  margin-top: 6px;
+}
+.eng-rubric th,
+.eng-rubric td {
+  border: 1px solid var(--border-glow);
+  padding: 8px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+.eng-rubric th {
+  background: var(--bg-slate-700);
+  color: var(--text-white);
+  font-family: var(--font-title);
+}
+.eng-rubric td:first-child {
+  font-weight: 700;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+/* small helpers */
+.eng-checklist {
+  list-style: none;
+  margin: 8px 0;
+}
+.eng-checklist li {
+  position: relative;
+  padding-left: 26px;
+  margin-bottom: 6px;
+  font-size: 0.88rem;
+  color: #cbd5e1;
+}
+.eng-checklist li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--accent);
+  font-weight: 800;
+}
+.eng-wordcount {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-align: right;
+  margin-top: 4px;
+}
+.eng-wordcount b {
+  color: var(--text-white);
+}
+.eng-step-label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 10px 0 4px;
+}
+.eng-hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-top: 6px;
+}
