@@ -65,7 +65,17 @@ export async function onRequest(context) {
     "/personal/first-grade-hebrew/",
     "/personal/first-grade-hebrew/index.html",
   ]);
-  if (PUBLIC_PATHS.has(url.pathname) || url.pathname.startsWith("/personal/CW")) return next();
+  // Aviad's English 10 summer module is student-facing and may be opened without
+  // the class password. The whole module subtree plus the two shared assets it
+  // loads are public; the other aviad subjects stay gated.
+  if (
+    PUBLIC_PATHS.has(url.pathname) ||
+    url.pathname.startsWith("/personal/CW") ||
+    url.pathname.startsWith("/personal/aviad/english/") ||
+    url.pathname === "/personal/aviad/shared.css" ||
+    url.pathname === "/personal/aviad/shared.js"
+  )
+    return next();
 
   const header = request.headers.get("Authorization") || "";
   const [scheme, encoded] = header.split(" ");
