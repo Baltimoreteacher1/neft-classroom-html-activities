@@ -28,23 +28,23 @@ committed accidentally. Everything else was left untouched.
 
 ## What was checked
 
-| Area                                                 | Result                                                                                                                                                                |
-| ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Git status / untracked files                         | 990 working-tree entries — 979 are the Save/Resume feature (other task); 8 pre-existing `config.json` edits; this audit added 1 (`.gitignore`).                       |
-| Branch / remotes                                     | On feature branch; `origin` HTTPS remote present; `git fetch --all --prune` OK (8 new refs).                                                                          |
-| Large files (>2 MB tracked)                          | **None.**                                                                                                                                                             |
-| Duplicate / conflict files                           | None. 678 `index.html` files are per-activity, not duplicates. No `*.orig`/merge-conflict files.                                                                      |
-| `.DS_Store` / caches / temp / logs / build artifacts | **None tracked or present** (no `.DS_Store`, `*.log`, `*.tmp`, `*.swp`, `Thumbs.db`).                                                                                 |
-| `.gitignore` gaps                                    | `.wrangler/` (present, untracked) was **not** ignored → **fixed**. Added `.vite/`, `.playwright-mcp/`, `*.local`, `Thumbs.db`, `*.swp`, `*~`.                         |
-| `dist/` & `node_modules/` tracked?                   | **No** — correctly ignored (Pages builds `dist` at deploy).                                                                                                           |
-| package manager / lockfile                           | `package.json` and `package-lock.json` names match; `lockfileVersion: 3`. Consistent.                                                                                 |
-| Dependencies                                         | Minimal: `docx`, `vite` (dev), `@resvg/resvg-js`. No obvious warnings.                                                                                                |
-| npm scripts                                          | All 13 script targets resolve to existing files. **No broken scripts.** No `test`/`lint` scripts defined.                                                             |
-| Broken internal references                           | Save/Resume refs verified resolvable (`/shared/...` 200 in build). No broken-script scan flags in audited tool.                                                       |
-| GitHub Actions                                       | `deploy-pages.yml` (manual `workflow_dispatch`, uses `CLOUDFLARE_API_TOKEN`/`ACCOUNT_ID` repo secrets — **no hardcoded creds**) and `patch-fix-it-gemini-prompt.yml`. |
-| Deployment config                                    | `wrangler.toml` (Pages, `dist` output, KV namespace id — a non-secret resource id). `results-worker/wrangler.toml`, `*.example` templates.                            |
-| Exposed secrets                                      | **None found.** OAuth reads `env.GOOGLE_CLIENT_ID` / `env.GOOGLE_CLIENT_SECRET` (binding-based). No hardcoded keys/tokens in JS/TOML/JSON. No tracked `.env`.         |
-| README accuracy                                      | Mentions `npm run build` / `npm run preview` and Cloudflare Pages output. Accurate.                                                                                   |
+| Area                                                 | Result                                                                                                                                                        |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Git status / untracked files                         | 990 working-tree entries — 979 are the Save/Resume feature (other task); 8 pre-existing `config.json` edits; this audit added 1 (`.gitignore`).               |
+| Branch / remotes                                     | On feature branch; `origin` HTTPS remote present; `git fetch --all --prune` OK (8 new refs).                                                                  |
+| Large files (>2 MB tracked)                          | **None.**                                                                                                                                                     |
+| Duplicate / conflict files                           | None. 678 `index.html` files are per-activity, not duplicates. No `*.orig`/merge-conflict files.                                                              |
+| `.DS_Store` / caches / temp / logs / build artifacts | **None tracked or present** (no `.DS_Store`, `*.log`, `*.tmp`, `*.swp`, `Thumbs.db`).                                                                         |
+| `.gitignore` gaps                                    | `.wrangler/` (present, untracked) was **not** ignored → **fixed**. Added `.vite/`, `.playwright-mcp/`, `*.local`, `Thumbs.db`, `*.swp`, `*~`.                 |
+| `dist/` & `node_modules/` tracked?                   | **No** — correctly ignored (Pages builds `dist` at deploy).                                                                                                   |
+| package manager / lockfile                           | `package.json` and `package-lock.json` names match; `lockfileVersion: 3`. Consistent.                                                                         |
+| Dependencies                                         | Minimal: `docx`, `vite` (dev), `@resvg/resvg-js`. No obvious warnings.                                                                                        |
+| npm scripts                                          | All 13 script targets resolve to existing files. **No broken scripts.** No `test`/`lint` scripts defined.                                                     |
+| Broken internal references                           | Save/Resume refs verified resolvable (`/shared/...` 200 in build). No broken-script scan flags in audited tool.                                               |
+| GitHub Actions                                       | `deploy-pages.yml` (manual `workflow_dispatch`, uses `CLOUDFLARE_API_TOKEN`/`ACCOUNT_ID` repo secrets — **no hardcoded creds**).                              |
+| Deployment config                                    | `wrangler.toml` (Pages, `dist` output, KV namespace id — a non-secret resource id). `results-worker/wrangler.toml`, `*.example` templates.                    |
+| Exposed secrets                                      | **None found.** OAuth reads `env.GOOGLE_CLIENT_ID` / `env.GOOGLE_CLIENT_SECRET` (binding-based). No hardcoded keys/tokens in JS/TOML/JSON. No tracked `.env`. |
+| README accuracy                                      | Mentions `npm run build` / `npm run preview` and Cloudflare Pages output. Accurate.                                                                           |
 
 ---
 
