@@ -2,12 +2,12 @@
   // Global Subject State
   var subject = document.body.dataset.subject || "hub";
   var storageKey = "ewl-aviad-" + subject + "-v3";
-  
+
   var state = {
     done: {},
     notes: {},
     interactive: {}, // Stores responses for matching/sorting/solving
-    highScores: {}   // Stores highest score achieved in embedded subject games
+    highScores: {}, // Stores highest score achieved in embedded subject games
   };
 
   try {
@@ -26,17 +26,17 @@
       if (!audioCtx) {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       }
-      if (audioCtx.state === 'suspended') {
+      if (audioCtx.state === "suspended") {
         audioCtx.resume();
       }
-      
+
       var now = audioCtx.currentTime;
-      
-      if (type === 'fail' || type === true) {
+
+      if (type === "fail" || type === true) {
         // Lower frequency descending buzz
         var osc = audioCtx.createOscillator();
         var gain = audioCtx.createGain();
-        osc.type = 'sawtooth';
+        osc.type = "sawtooth";
         osc.frequency.setValueAtTime(140, now);
         osc.frequency.linearRampToValueAtTime(70, now + 0.2);
         gain.gain.setValueAtTime(0.15, now);
@@ -45,13 +45,13 @@
         gain.connect(audioCtx.destination);
         osc.start(now);
         osc.stop(now + 0.22);
-      } else if (type === 'success' || type === false) {
+      } else if (type === "success" || type === false) {
         // High ascending shiny arpeggio
-        var freqs = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        var freqs = [523.25, 659.25, 783.99, 1046.5]; // C5, E5, G5, C6
         freqs.forEach(function (freq, i) {
           var osc = audioCtx.createOscillator();
           var gain = audioCtx.createGain();
-          osc.type = 'triangle';
+          osc.type = "triangle";
           osc.frequency.setValueAtTime(freq, now + i * 0.07);
           gain.gain.setValueAtTime(0.08, now + i * 0.07);
           gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.07 + 0.25);
@@ -60,13 +60,13 @@
           osc.start(now + i * 0.07);
           osc.stop(now + i * 0.07 + 0.35);
         });
-      } else if (type === 'game-start') {
+      } else if (type === "game-start") {
         // Upbeat arcade insert coin sound
         var notes = [440, 554.37, 659.25, 880]; // A4, C#5, E5, A5
         notes.forEach(function (freq, i) {
           var osc = audioCtx.createOscillator();
           var gain = audioCtx.createGain();
-          osc.type = 'square';
+          osc.type = "square";
           osc.frequency.setValueAtTime(freq, now + i * 0.05);
           gain.gain.setValueAtTime(0.05, now + i * 0.05);
           gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.05 + 0.15);
@@ -75,11 +75,11 @@
           osc.start(now + i * 0.05);
           osc.stop(now + i * 0.05 + 0.2);
         });
-      } else if (type === 'hit') {
+      } else if (type === "hit") {
         // Damage sound
         var osc = audioCtx.createOscillator();
         var gain = audioCtx.createGain();
-        osc.type = 'sawtooth';
+        osc.type = "sawtooth";
         osc.frequency.setValueAtTime(300, now);
         osc.frequency.exponentialRampToValueAtTime(100, now + 0.1);
         gain.gain.setValueAtTime(0.1, now);
@@ -88,11 +88,11 @@
         gain.connect(audioCtx.destination);
         osc.start(now);
         osc.stop(now + 0.12);
-      } else if (type === 'powerup') {
+      } else if (type === "powerup") {
         // Rising retro laser
         var osc = audioCtx.createOscillator();
         var gain = audioCtx.createGain();
-        osc.type = 'sine';
+        osc.type = "sine";
         osc.frequency.setValueAtTime(400, now);
         osc.frequency.exponentialRampToValueAtTime(1600, now + 0.3);
         gain.gain.setValueAtTime(0.06, now);
@@ -111,33 +111,33 @@
   function updateProgress() {
     var cards = Array.from(document.querySelectorAll(".activity"));
     if (!cards.length) return;
-    
+
     var doneCount = 0;
     cards.forEach(function (card) {
       var id = card.dataset.id;
       var area = card.querySelector("textarea");
       var isCompleted = Boolean(state.done[id]);
-      
+
       card.classList.toggle("done", isCompleted);
-      
+
       // Load saved notes if textarea is empty or reset
       if (area && !area.value && state.notes[id]) {
         area.value = state.notes[id];
       }
-      
+
       if (isCompleted) {
         doneCount += 1;
       }
     });
 
     var pct = Math.round((doneCount / cards.length) * 100);
-    
+
     var xpEl = document.getElementById("xp");
     var doneEl = document.getElementById("done");
-    
-    if (xpEl) xpEl.textContent = (doneCount * 50) + " XP";
+
+    if (xpEl) xpEl.textContent = doneCount * 50 + " XP";
     if (doneEl) doneEl.textContent = pct + "%";
-    
+
     // Save state back to localStorage
     try {
       localStorage.setItem(storageKey, JSON.stringify(state));
@@ -145,14 +145,18 @@
 
     // Save subject progress to global registry for main hub
     try {
-      var hubRegistry = JSON.parse(localStorage.getItem("ewl-aviad-registry-v3")) || {};
+      var hubRegistry =
+        JSON.parse(localStorage.getItem("ewl-aviad-registry-v3")) || {};
       hubRegistry[subject] = {
         doneCount: doneCount,
         totalCount: cards.length,
         pct: pct,
-        highScores: state.highScores || {}
+        highScores: state.highScores || {},
       };
-      localStorage.setItem("ewl-aviad-registry-v3", JSON.stringify(hubRegistry));
+      localStorage.setItem(
+        "ewl-aviad-registry-v3",
+        JSON.stringify(hubRegistry),
+      );
     } catch (e) {}
   }
 
@@ -164,7 +168,10 @@
       if (e.target.matches(".drag-item")) {
         draggedItem = e.target;
         e.target.classList.add("dragging");
-        e.dataTransfer.setData("text/plain", e.target.dataset.val || e.target.textContent);
+        e.dataTransfer.setData(
+          "text/plain",
+          e.target.dataset.val || e.target.textContent,
+        );
       }
     });
 
@@ -198,7 +205,7 @@
           // Check limits
           var maxItems = parseInt(container.dataset.max, 10) || Infinity;
           var currentItems = container.querySelectorAll(".drag-item");
-          
+
           if (currentItems.length >= maxItems) {
             // Return first item to its drawer
             var drawerId = currentItems[0].dataset.drawer;
@@ -209,9 +216,9 @@
               currentItems[0].remove();
             }
           }
-          
+
           container.appendChild(draggedItem);
-          
+
           // Trigger validation
           var activity = container.closest(".activity");
           if (activity && typeof window.validateActivityState === "function") {
@@ -247,7 +254,11 @@
         button.setAttribute("aria-selected", String(button === target));
       });
       document.querySelectorAll(".activity").forEach(function (card) {
-        card.style.display = (target.dataset.filter === "all" || card.dataset.type === target.dataset.filter) ? "flex" : "none";
+        card.style.display =
+          target.dataset.filter === "all" ||
+          card.dataset.type === target.dataset.filter
+            ? "flex"
+            : "none";
       });
     }
 
@@ -259,11 +270,11 @@
       if (area) {
         state.notes[id] = area.value;
       }
-      
+
       if (typeof window.getInteractiveState === "function") {
         state.interactive[id] = window.getInteractiveState(saveCard);
       }
-      
+
       try {
         localStorage.setItem(storageKey, JSON.stringify(state));
       } catch (e) {}
@@ -283,22 +294,25 @@
       var card = target.closest(".activity");
       var id = card.dataset.id;
       var area = card.querySelector("textarea");
-      
+
       // Validate
       if (typeof window.checkInteractiveComplete === "function") {
         var validation = window.checkInteractiveComplete(card);
         if (!validation.success) {
-          playArcadeSound('fail');
-          alert(validation.message || "Complete the activity requirements first!");
+          playArcadeSound("fail");
+          alert(
+            validation.message || "Complete the activity requirements first!",
+          );
           return;
         }
       } else {
         // Default text validation
         var textVal = area ? area.value.trim() : "";
         if (!state.done[id] && textVal.length < 20) {
-          playArcadeSound('fail');
+          playArcadeSound("fail");
           if (area) {
-            area.placeholder = "Please enter real evidence here first (at least 20 letters) so your parent or teacher can see your work!";
+            area.placeholder =
+              "Please enter real evidence here first (at least 20 letters) so your parent or teacher can see your work!";
             area.focus();
           }
           return;
@@ -310,45 +324,113 @@
       if (area) {
         state.notes[id] = area.value;
       }
-      
+
       if (state.done[id]) {
-        playArcadeSound('success');
+        playArcadeSound("success");
       }
-      
+
       updateProgress();
-      
-      target.textContent = state.done[id] ? "Mark Incomplete" : "Complete with evidence";
+
+      target.textContent = state.done[id]
+        ? "Mark Incomplete"
+        : "Complete with evidence";
       target.classList.toggle("secondary", state.done[id]);
     }
+  });
+
+  // ---- Per-selection instant correct/incorrect feedback ----
+  // Pages register an answer key: { selectId: "correctVal" | ["v1","v2"] }.
+  // Any registered <select> is graded the moment a choice is made.
+  var answerKey = {};
+
+  function isCorrect(id, value) {
+    var key = answerKey[id];
+    if (key == null) return null;
+    var list = Array.isArray(key) ? key : [key];
+    return list.indexOf(value) !== -1;
+  }
+
+  function gradeSelect(sel) {
+    if (!sel || !sel.id || !(sel.id in answerKey)) return;
+    var mark = sel.parentNode
+      ? sel.parentNode.querySelector('.sel-mark[data-for="' + sel.id + '"]')
+      : null;
+    if (!mark) {
+      mark = document.createElement("span");
+      mark.className = "sel-mark";
+      mark.setAttribute("data-for", sel.id);
+      mark.setAttribute("aria-hidden", "true");
+      sel.insertAdjacentElement("afterend", mark);
+    }
+    if (!sel.value) {
+      sel.classList.remove("sel-correct", "sel-incorrect");
+      mark.textContent = "";
+      mark.className = "sel-mark";
+      return;
+    }
+    var ok = isCorrect(sel.id, sel.value);
+    sel.classList.toggle("sel-correct", ok === true);
+    sel.classList.toggle("sel-incorrect", ok === false);
+    mark.textContent = ok ? "✓" : "✗";
+    mark.className = "sel-mark " + (ok ? "ok" : "no");
+  }
+
+  function gradeAllSelects() {
+    Object.keys(answerKey).forEach(function (id) {
+      var sel = document.getElementById(id);
+      if (sel && sel.value) gradeSelect(sel);
+    });
+  }
+
+  document.addEventListener("change", function (e) {
+    var sel = e.target;
+    if (!sel || !sel.matches || !sel.matches("select")) return;
+    if (!(sel.id in answerKey) || !sel.value) {
+      if (sel.id in answerKey) gradeSelect(sel);
+      return;
+    }
+    gradeSelect(sel);
+    playArcadeSound(isCorrect(sel.id, sel.value) ? "success" : "fail");
   });
 
   // Expose API
   window.EWL = {
     state: state,
-    save: function() {
+    save: function () {
       try {
         localStorage.setItem(storageKey, JSON.stringify(state));
       } catch (e) {}
     },
     updateProgress: updateProgress,
     playAudio: playArcadeSound,
-    saveHighScore: saveHighScore
+    saveHighScore: saveHighScore,
+    registerAnswers: function (map) {
+      Object.keys(map || {}).forEach(function (id) {
+        answerKey[id] = map[id];
+      });
+      gradeAllSelects();
+      // Re-grade after restore pass populates saved selections.
+      setTimeout(gradeAllSelects, 250);
+    },
   };
 
   // Initialize
   updateProgress();
   initDragAndDrop();
-  
-  setTimeout(function() {
-    document.querySelectorAll(".activity").forEach(function(card) {
+
+  setTimeout(function () {
+    document.querySelectorAll(".activity").forEach(function (card) {
       var id = card.dataset.id;
       var completeBtn = card.querySelector("[data-complete]");
       if (completeBtn && state.done[id]) {
         completeBtn.textContent = "Mark Incomplete";
         completeBtn.classList.add("secondary");
       }
-      
-      if (state.interactive[id] && typeof window.restoreInteractiveState === "function") {
+
+      if (
+        state.interactive[id] &&
+        typeof window.restoreInteractiveState === "function"
+      ) {
         window.restoreInteractiveState(card, state.interactive[id]);
       }
     });

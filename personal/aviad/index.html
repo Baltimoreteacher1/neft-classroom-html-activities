@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-title" content="Aviad Hub" />
     <meta name="theme-color" content="#0b0f19" />
     <title>Aviad 10th Grade Summer Readiness Hub</title>
-    
+
     <link rel="stylesheet" href="/personal/aviad/shared.css" />
     <style>
       .hub-header {
@@ -17,13 +17,13 @@
         margin-bottom: 45px;
         padding-top: 30px;
       }
-      
+
       .avatar-container {
         display: flex;
         justify-content: center;
         margin-bottom: 24px;
       }
-      
+
       .avatar {
         width: 110px;
         height: 110px;
@@ -38,12 +38,17 @@
         user-select: none;
         animation: float 6s ease-in-out infinite;
       }
-      
+
       @keyframes float {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-8px); }
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-8px);
+        }
       }
-      
+
       .global-progress-card {
         background: rgba(30, 41, 59, 0.45);
         border: 1px solid var(--border-glow);
@@ -64,15 +69,23 @@
         }
       }
       .global-progress-card::after {
-        content: '';
+        content: "";
         position: absolute;
         bottom: 0;
         left: 0;
         right: 0;
         height: 6px;
-        background: linear-gradient(90deg, #a855f7, #06b6d4, #10b981, #2563eb, #f97316, #6366f1);
+        background: linear-gradient(
+          90deg,
+          #a855f7,
+          #06b6d4,
+          #10b981,
+          #2563eb,
+          #f97316,
+          #6366f1
+        );
       }
-      
+
       .progress-info h2 {
         font-size: 2.4rem;
         margin-bottom: 12px;
@@ -81,7 +94,7 @@
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
       }
-      
+
       .bar-outer {
         height: 18px;
         background: var(--bg-slate-900);
@@ -89,7 +102,7 @@
         overflow: hidden;
         margin: 20px 0;
         border: 1px solid var(--border-glow);
-        box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
       }
       .bar-inner {
         height: 100%;
@@ -99,7 +112,7 @@
         transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
       }
-      
+
       .rank-display {
         background: var(--bg-slate-900);
         border: 1px solid var(--border-glow);
@@ -125,50 +138,14 @@
         margin: 6px 0;
         font-weight: 700;
       }
-      
-      /* Arcade Leaderboard Section */
-      .arcade-leaderboard {
-        background: rgba(30, 41, 59, 0.3);
-        border: 1px solid var(--border-glow);
-        border-radius: var(--radius-lg);
-        padding: 30px;
-        margin-bottom: 45px;
-        backdrop-filter: blur(16px);
-      }
-      .arcade-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-        gap: 16px;
-        margin-top: 20px;
-      }
-      .arcade-stat {
-        background: var(--bg-slate-900);
-        border: 1px solid var(--border-glow);
-        border-radius: var(--radius-sm);
-        padding: 16px;
-        text-align: center;
-        box-shadow: var(--shadow-sm);
-      }
-      .arcade-stat span {
-        display: block;
-        font-size: 0.75rem;
-        color: var(--text-muted);
-        font-weight: 700;
-        text-transform: uppercase;
-      }
-      .arcade-stat b {
-        font-size: 1.4rem;
-        color: var(--gold);
-        font-family: var(--font-title);
-      }
-      
+
       /* Subject Cards Grid */
       .subjects-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
         gap: 28px;
       }
-      
+
       .subject-card {
         background: rgba(30, 41, 59, 0.45);
         border: 1px solid var(--border-glow);
@@ -185,7 +162,7 @@
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
       .subject-card::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 0;
         left: 0;
@@ -196,9 +173,11 @@
       .subject-card:hover {
         transform: translateY(-5px);
         border-color: var(--sub-color);
-        box-shadow: var(--shadow-lg), 0 0 25px rgba(255,255,255,0.03);
+        box-shadow:
+          var(--shadow-lg),
+          0 0 25px rgba(255, 255, 255, 0.03);
       }
-      
+
       .card-header {
         display: flex;
         justify-content: space-between;
@@ -207,7 +186,7 @@
       .card-icon {
         font-size: 2.5rem;
         line-height: 1;
-        filter: drop-shadow(0 0 8px rgba(255,255,255,0.1));
+        filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.1));
       }
       .card-count {
         background: var(--bg-slate-900);
@@ -221,7 +200,7 @@
         font-family: var(--font-title);
         border: 1px solid var(--border-glow);
       }
-      
+
       .subject-card h3 {
         font-size: 1.7rem;
         font-weight: 700;
@@ -233,7 +212,7 @@
         line-height: 1.6;
         flex-grow: 1;
       }
-      
+
       .card-progress-label {
         display: flex;
         justify-content: space-between;
@@ -242,7 +221,7 @@
         color: var(--text-muted);
         margin-top: 10px;
       }
-      
+
       .card-bar-outer {
         height: 8px;
         background: var(--bg-slate-900);
@@ -257,7 +236,7 @@
         border-radius: var(--radius-full);
         transition: width 0.5s ease;
       }
-      
+
       .go-arrow {
         align-self: flex-end;
         font-weight: 700;
@@ -272,7 +251,7 @@
       .subject-card:hover .go-arrow {
         transform: translateX(6px);
       }
-      
+
       .disclaimer {
         margin-top: 50px;
         background: rgba(30, 41, 59, 0.2);
@@ -291,80 +270,78 @@
   </head>
   <body>
     <div class="wrap">
-      
       <header class="hub-header">
         <div class="avatar-container">
           <div class="avatar">🐈‍⬛</div>
         </div>
         <span class="badge">Aviad Hub · Pikesville High School</span>
         <h1>Sophomore Summer Hub</h1>
-        <p class="lead">Prepare for 10th-grade. Earn XP, check off comprehensive reading passages, defeat mathematical bosses, and master your Panther schedule.</p>
+        <p class="lead">
+          Prepare for 10th-grade. Earn XP, check off comprehensive reading
+          passages, defeat mathematical bosses, and master your Panther
+          schedule.
+        </p>
       </header>
-      
+
       <!-- Global Progress Dashboard -->
       <section class="global-progress-card">
         <div class="progress-info">
           <h2>Sophomore Readiness Campaign</h2>
-          <p class="lead" style="font-size: 1.05rem; margin-bottom: 12px; text-align: left; margin-left: 0;" id="journey-sub">Level up by completing subject challenges. Unlock achievements and increase your rank.</p>
+          <p
+            class="lead"
+            style="
+              font-size: 1.05rem;
+              margin-bottom: 12px;
+              text-align: left;
+              margin-left: 0;
+            "
+            id="journey-sub"
+          >
+            Level up by completing subject challenges. Unlock achievements and
+            increase your rank.
+          </p>
           <div class="bar-outer">
             <div class="bar-inner" id="global-fill"></div>
           </div>
-          <div class="card-progress-label" style="margin-top: 0;">
+          <div class="card-progress-label" style="margin-top: 0">
             <span id="tasks-completed">0 / 72 Tasks Completed</span>
             <span id="global-pct">0% Complete</span>
           </div>
         </div>
-        
+
         <div class="rank-display">
           <span>Current Rank</span>
           <b id="rank-title">Freshman</b>
           <span>Academic Score</span>
-          <b id="xp-display" style="font-size: 2rem; margin-top: 4px; color: var(--gold);">0 XP</b>
+          <b
+            id="xp-display"
+            style="font-size: 2rem; margin-top: 4px; color: var(--gold)"
+            >0 XP</b
+          >
         </div>
       </section>
 
-      <!-- Arcade High Scores Dashboard -->
-      <section class="arcade-leaderboard">
-        <h2 style="font-size: 1.5rem; text-align: center; letter-spacing: 0.05em; text-transform: uppercase;">🕹️ Arcade High Scores</h2>
-        <div class="arcade-grid">
-          <div class="arcade-stat">
-            <span>Word Defender</span>
-            <b id="score-english">0</b>
-          </div>
-          <div class="arcade-stat">
-            <span>Equation Gladiator</span>
-            <b id="score-math">0</b>
-          </div>
-          <div class="arcade-stat">
-            <span>Reaction Lab</span>
-            <b id="score-science">0</b>
-          </div>
-          <div class="arcade-stat">
-            <span>Bill Runner</span>
-            <b id="score-civics">0</b>
-          </div>
-          <div class="arcade-stat">
-            <span>Root Sorter</span>
-            <b id="score-hebrew">0</b>
-          </div>
-          <div class="arcade-stat">
-            <span>Backpack Rush</span>
-            <b id="score-panther">0</b>
-          </div>
-        </div>
-      </section>
-      
       <!-- Subjects Grid -->
       <nav class="subjects-grid" aria-label="Summer Hub Subject Tabs">
-        
         <!-- English 10 -->
-        <a class="subject-card" href="/personal/aviad/english/" style="--sub-color: #a855f7; --sub-gradient: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);">
+        <a
+          class="subject-card"
+          href="/personal/aviad/english/"
+          style="
+            --sub-color: #a855f7;
+            --sub-gradient: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+          "
+        >
           <div class="card-header">
             <span class="card-icon">📚</span>
             <span class="card-count" id="count-english">12 Activities</span>
           </div>
           <h3>English 10</h3>
-          <p>Read Narrative, Informational, and Poetic passages. Answer multi-stage comprehension questions and defend definitions in Word Defender.</p>
+          <p>
+            Read Narrative, Informational, and Poetic passages. Answer
+            multi-stage comprehension questions and defend definitions in Word
+            Defender.
+          </p>
           <div class="card-progress-label">
             <span>Progress</span>
             <span id="progress-english">0%</span>
@@ -374,15 +351,25 @@
           </div>
           <span class="go-arrow">Open English Campaign &rarr;</span>
         </a>
-        
+
         <!-- Math Readiness -->
-        <a class="subject-card" href="/personal/aviad/math/" style="--sub-color: #06b6d4; --sub-gradient: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);">
+        <a
+          class="subject-card"
+          href="/personal/aviad/math/"
+          style="
+            --sub-color: #06b6d4;
+            --sub-gradient: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+          "
+        >
           <div class="card-header">
             <span class="card-icon">📐</span>
             <span class="card-count" id="count-math">12 Activities</span>
           </div>
           <h3>Math Readiness</h3>
-          <p>Solve system graphs and functions, complete proofs, and defeat the Math Monster in Equation Gladiator.</p>
+          <p>
+            Solve system graphs and functions, complete proofs, and defeat the
+            Math Monster in Equation Gladiator.
+          </p>
           <div class="card-progress-label">
             <span>Progress</span>
             <span id="progress-math">0%</span>
@@ -392,15 +379,25 @@
           </div>
           <span class="go-arrow">Open Math Campaign &rarr;</span>
         </a>
-        
+
         <!-- Science -->
-        <a class="subject-card" href="/personal/aviad/science/" style="--sub-color: #10b981; --sub-gradient: linear-gradient(135deg, #10b981 0%, #84cc16 100%);">
+        <a
+          class="subject-card"
+          href="/personal/aviad/science/"
+          style="
+            --sub-color: #10b981;
+            --sub-gradient: linear-gradient(135deg, #10b981 0%, #84cc16 100%);
+          "
+        >
           <div class="card-header">
             <span class="card-icon">🔬</span>
             <span class="card-count" id="count-science">12 Activities</span>
           </div>
           <h3>Science</h3>
-          <p>Analyze outliers in graphs, balance metabolic reactions, map mitosis stages, and match elements in the Reaction Lab simulator.</p>
+          <p>
+            Analyze outliers in graphs, balance metabolic reactions, map mitosis
+            stages, and match elements in the Reaction Lab simulator.
+          </p>
           <div class="card-progress-label">
             <span>Progress</span>
             <span id="progress-science">0%</span>
@@ -410,15 +407,26 @@
           </div>
           <span class="go-arrow">Open Science Campaign &rarr;</span>
         </a>
-        
+
         <!-- Civics -->
-        <a class="subject-card" href="/personal/aviad/civics/" style="--sub-color: #2563eb; --sub-gradient: linear-gradient(135deg, #2563eb 0%, #f59e0b 100%);">
+        <a
+          class="subject-card"
+          href="/personal/aviad/civics/"
+          style="
+            --sub-color: #2563eb;
+            --sub-gradient: linear-gradient(135deg, #2563eb 0%, #f59e0b 100%);
+          "
+        >
           <div class="card-header">
             <span class="card-icon">⚖️</span>
             <span class="card-count" id="count-civics">12 Activities</span>
           </div>
           <h3>Civics</h3>
-          <p>Rule on Supreme Court lawsuits, sort federalist powers, map electoral coalitions, and navigate the legislative maze in Bill Runner.</p>
+          <p>
+            Rule on Supreme Court lawsuits, sort federalist powers, map
+            electoral coalitions, and navigate the legislative maze in Bill
+            Runner.
+          </p>
           <div class="card-progress-label">
             <span>Progress</span>
             <span id="progress-civics">0%</span>
@@ -428,15 +436,25 @@
           </div>
           <span class="go-arrow">Open Civics Campaign &rarr;</span>
         </a>
-        
+
         <!-- Hebrew -->
-        <a class="subject-card" href="/personal/aviad/hebrew/" style="--sub-color: #f97316; --sub-gradient: linear-gradient(135deg, #f97316 0%, #b45309 100%);">
+        <a
+          class="subject-card"
+          href="/personal/aviad/hebrew/"
+          style="
+            --sub-color: #f97316;
+            --sub-gradient: linear-gradient(135deg, #f97316 0%, #b45309 100%);
+          "
+        >
           <div class="card-header">
             <span class="card-icon">עב</span>
             <span class="card-count" id="count-hebrew">12 Activities</span>
           </div>
           <h3>Hebrew</h3>
-          <p>Read passages with hover-translation assistance, match root families, conjugate tenses, and play Root Sorter.</p>
+          <p>
+            Read passages with hover-translation assistance, match root
+            families, conjugate tenses, and play Root Sorter.
+          </p>
           <div class="card-progress-label">
             <span>Progress</span>
             <span id="progress-hebrew">0%</span>
@@ -446,15 +464,25 @@
           </div>
           <span class="go-arrow">Open Hebrew Campaign &rarr;</span>
         </a>
-        
+
         <!-- Panther Life -->
-        <a class="subject-card" href="/personal/aviad/panther/" style="--sub-color: #6366f1; --sub-gradient: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);">
+        <a
+          class="subject-card"
+          href="/personal/aviad/panther/"
+          style="
+            --sub-color: #6366f1;
+            --sub-gradient: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+          "
+        >
           <div class="card-header">
             <span class="card-icon">🐾</span>
             <span class="card-count" id="count-panther">12 Activities</span>
           </div>
           <h3>Panther Life</h3>
-          <p>Select sophomore classes, build routines, inspect map facilities, compose letters, and packing gear in Backpack Rush.</p>
+          <p>
+            Select sophomore classes, build routines, inspect map facilities,
+            compose letters, and packing gear in Backpack Rush.
+          </p>
           <div class="card-progress-label">
             <span>Progress</span>
             <span id="progress-panther">0%</span>
@@ -464,59 +492,94 @@
           </div>
           <span class="go-arrow">Open Panther Campaign &rarr;</span>
         </a>
-        
+
+        <!-- Gen Z 101 -->
+        <a
+          class="subject-card"
+          href="/personal/aviad/genz/"
+          style="
+            --sub-color: #ec4899;
+            --sub-gradient: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+          "
+        >
+          <div class="card-header">
+            <span class="card-icon">😎</span>
+            <span class="card-count" id="count-genz">10 Activities</span>
+          </div>
+          <h3>Gen Z 101</h3>
+          <p>
+            Decode the slang, level up your confidence, master group-chat
+            etiquette, handle relationships with respect, and pass the Vibe
+            Check Quiz.
+          </p>
+          <div class="card-progress-label">
+            <span>Progress</span>
+            <span id="progress-genz">0%</span>
+          </div>
+          <div class="card-bar-outer">
+            <div class="card-bar-inner" id="fill-genz"></div>
+          </div>
+          <span class="go-arrow">Open Gen Z Campaign &rarr;</span>
+        </a>
       </nav>
-      
+
       <div class="disclaimer">
-        <b>Parent &amp; Student Note:</b> Progress is saved automatically to your device's browser memory (localStorage). No login, password, or student data collection required. Check FOCUS for officially confirmed BCPS courses, clubs, and athletic schedules.
+        <b>Parent &amp; Student Note:</b> Progress is saved automatically to
+        your device's browser memory (localStorage). No login, password, or
+        student data collection required. Check FOCUS for officially confirmed
+        BCPS courses, clubs, and athletic schedules.
       </div>
-      
-      <footer class="footer">EduWonderLab &bull; Aviad Sophomore Summer Hub</footer>
+
+      <footer class="footer">
+        EduWonderLab &bull; Aviad Sophomore Summer Hub
+      </footer>
     </div>
-    
+
     <script>
-      (function() {
+      (function () {
         var registry = {};
         try {
-          registry = JSON.parse(localStorage.getItem("ewl-aviad-registry-v3")) || {};
-        } catch(e) {}
-        
-        var subjects = ["english", "math", "science", "civics", "hebrew", "panther"];
+          registry =
+            JSON.parse(localStorage.getItem("ewl-aviad-registry-v3")) || {};
+        } catch (e) {}
+
+        var subjects = [
+          "english",
+          "math",
+          "science",
+          "civics",
+          "hebrew",
+          "panther",
+          "genz",
+        ];
         var totalDone = 0;
         var totalCount = 0;
-        
-        subjects.forEach(function(sub) {
+
+        subjects.forEach(function (sub) {
           // Read registry stats or fallback
-          var data = registry[sub] || { doneCount: 0, totalCount: 12, pct: 0, highScores: {} };
+          var data = registry[sub] || {
+            doneCount: 0,
+            totalCount: 12,
+            pct: 0,
+            highScores: {},
+          };
           totalDone += data.doneCount;
           totalCount += data.totalCount || 12;
-          
+
           var fillEl = document.getElementById("fill-" + sub);
           var pctEl = document.getElementById("progress-" + sub);
           var countEl = document.getElementById("count-" + sub);
-          
+
           if (fillEl) fillEl.style.width = data.pct + "%";
           if (pctEl) pctEl.textContent = data.pct + "%";
-          if (countEl && data.totalCount) countEl.textContent = data.totalCount + " Activities";
-          
-          // Populate arcade game high score
-          var scoreEl = document.getElementById("score-" + sub);
-          if (scoreEl) {
-            var high = 0;
-            if (data.highScores) {
-              var keys = Object.keys(data.highScores);
-              if (keys.length > 0) {
-                high = data.highScores[keys[0]] || 0; // Retrieve first score recorded
-              }
-            }
-            scoreEl.textContent = high;
-          }
+          if (countEl && data.totalCount)
+            countEl.textContent = data.totalCount + " Activities";
         });
-        
+
         if (totalCount === 0) totalCount = 72; // Default fallback
         var globalPct = Math.round((totalDone / totalCount) * 100);
         var totalXp = totalDone * 50;
-        
+
         // Determine Rank Title
         var rank = "Freshman";
         if (totalXp >= 3000) {
@@ -532,10 +595,12 @@
         } else if (totalXp > 0) {
           rank = "Apprentice";
         }
-        
+
         // Update DOM
-        document.getElementById("tasks-completed").textContent = totalDone + " / " + totalCount + " Tasks Completed";
-        document.getElementById("global-pct").textContent = globalPct + "% Complete";
+        document.getElementById("tasks-completed").textContent =
+          totalDone + " / " + totalCount + " Tasks Completed";
+        document.getElementById("global-pct").textContent =
+          globalPct + "% Complete";
         document.getElementById("global-fill").style.width = globalPct + "%";
         document.getElementById("xp-display").textContent = totalXp + " XP";
         document.getElementById("rank-title").textContent = rank;

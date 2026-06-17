@@ -1,0 +1,1138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Aviad Gen Z - EduWonderLab</title>
+    <link rel="stylesheet" href="/personal/aviad/shared.css" />
+    <style>
+      /* Gen Z page-specific flourishes */
+      .genz-row {
+        background: rgba(30, 41, 59, 0.4);
+        padding: 10px 12px;
+        border-radius: 6px;
+        border: 1px solid var(--border-glow);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .genz-row .term {
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: var(--text-white);
+      }
+      .genz-select {
+        padding: 6px 8px;
+        border-radius: 6px;
+        border: 1px solid var(--border-glow);
+        background: var(--bg-slate-900);
+        color: var(--text-white);
+        max-width: 240px;
+      }
+      .genz-scenario {
+        background: var(--bg-slate-800);
+        border: 1px solid var(--border-glow);
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 10px;
+      }
+      .genz-scenario p.prompt {
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin: 0 0 8px;
+      }
+      .genz-reflect {
+        width: 100%;
+        min-height: 70px;
+        background: var(--bg-slate-900);
+        border: 1px solid var(--border-glow);
+        color: var(--text-white);
+        padding: 8px;
+        border-radius: 6px;
+      }
+      .genz-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+    </style>
+  </head>
+  <body data-subject="genz" style="--accent: #ec4899">
+    <main class="wrap">
+      <header class="hero">
+        <a class="back" href="/personal/aviad/">&larr; Aviad hub</a>
+        <span class="badge">Gen Z 101</span>
+        <h1>Gen Z Life Skills Campaign</h1>
+        <p class="lead">
+          Level up the real-life stuff before high school: decode the slang,
+          build authentic confidence, keep friendships drama-free, handle money
+          like a main character, and stay smart online. No cap &mdash; all W's
+          here.
+        </p>
+
+        <div class="stats">
+          <div class="stat"><b id="xp">0 XP</b><span>earned here</span></div>
+          <div class="stat"><b>10</b><span>developed activities</span></div>
+          <div class="stat"><b id="done">0%</b><span>completion</span></div>
+        </div>
+      </header>
+    </main>
+
+    <!-- Tabs selector -->
+    <nav class="tabs">
+      <div class="tabbar" role="tablist">
+        <button class="tab" aria-selected="true" data-filter="all">All</button>
+        <button class="tab" data-filter="Learn">Vibe Check &amp; Read</button>
+        <button class="tab" data-filter="Practice">Practice</button>
+        <button class="tab" data-filter="Game">Mini Games</button>
+        <button class="tab" data-filter="Project">Projects</button>
+      </div>
+    </nav>
+
+    <!-- Main Activities Panel -->
+    <main class="wrap panel active">
+      <div class="section-head">
+        <h2>Gen Z Readiness</h2>
+        <p class="muted">
+          Make your picks, get instant feedback, and save your work to log XP.
+          Confidence, kindness, and good choices = the real glow-up.
+        </p>
+      </div>
+
+      <div class="grid">
+        <!-- Activity 1: Slang Decoder (Learn) -->
+        <article class="activity" data-id="slang" data-type="Learn">
+          <div class="meta">
+            <span class="pill">Vibe Check</span>
+            <span class="pill">15 min</span>
+          </div>
+          <h3>Slang Decoder</h3>
+          <p>
+            Match each Gen Z term to its clean, plain-English meaning. Get the
+            whole set right to pass.
+          </p>
+
+          <div class="activity-interactive-area">
+            <div class="genz-stack">
+              <div class="genz-row">
+                <span class="term">rizz</span>
+                <select id="slang-1" class="genz-select">
+                  <option value="">Pick a meaning...</option>
+                  <option value="charm">Charm / smooth social skills</option>
+                  <option value="money">A pile of money</option>
+                  <option value="boring">Something very boring</option>
+                </select>
+              </div>
+              <div class="genz-row">
+                <span class="term">mid</span>
+                <select id="slang-2" class="genz-select">
+                  <option value="">Pick a meaning...</option>
+                  <option value="amazing">Amazing and top-tier</option>
+                  <option value="average">Average / nothing special</option>
+                  <option value="middle">The middle of the day</option>
+                </select>
+              </div>
+              <div class="genz-row">
+                <span class="term">bussin</span>
+                <select id="slang-3" class="genz-select">
+                  <option value="">Pick a meaning...</option>
+                  <option value="broken">Broken or busted</option>
+                  <option value="delicious">Really good (usually food)</option>
+                  <option value="busy">Extremely busy</option>
+                </select>
+              </div>
+              <div class="genz-row">
+                <span class="term">no cap</span>
+                <select id="slang-4" class="genz-select">
+                  <option value="">Pick a meaning...</option>
+                  <option value="truth">For real / no lie</option>
+                  <option value="hat">Wearing no hat</option>
+                  <option value="limit">There is no limit</option>
+                </select>
+              </div>
+              <div class="genz-row">
+                <span class="term">W</span>
+                <select id="slang-5" class="genz-select">
+                  <option value="">Pick a meaning...</option>
+                  <option value="win">A win / something good</option>
+                  <option value="loss">A loss / a fail</option>
+                  <option value="letter">Just the letter W</option>
+                </select>
+              </div>
+              <div class="genz-row">
+                <span class="term">NPC</span>
+                <select id="slang-6" class="genz-select">
+                  <option value="">Pick a meaning...</option>
+                  <option value="leader">A strong leader</option>
+                  <option value="background">
+                    Someone acting on autopilot, blending into the background
+                  </option>
+                  <option value="newcomputer">A new computer</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <textarea style="display: none" id="evidence-text-slang"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 2: How to Be Cool, Authentically (Practice) -->
+        <article class="activity" data-id="cool" data-type="Practice">
+          <div class="meta">
+            <span class="pill">Practice</span>
+            <span class="pill">15 min</span>
+          </div>
+          <h3>How to Be Cool (Authentically)</h3>
+          <p>
+            Real confidence is being kind and chill, not loud or fake. Pick the
+            most confident <i>and</i> kind move in each moment.
+          </p>
+
+          <div class="activity-interactive-area">
+            <div class="genz-stack">
+              <div class="genz-scenario">
+                <p class="prompt">
+                  1. You want to join a group of classmates you don't know well
+                  at lunch. What's the move?
+                </p>
+                <select id="cool-1" class="genz-select" style="max-width: 100%">
+                  <option value="">Choose your response...</option>
+                  <option value="ask">
+                    Walk over, smile, and ask "Mind if I sit here?"
+                  </option>
+                  <option value="brag">
+                    Sit down and immediately brag to impress them
+                  </option>
+                  <option value="hover">
+                    Stand there silently waiting to be invited
+                  </option>
+                </select>
+              </div>
+              <div class="genz-scenario">
+                <p class="prompt">
+                  2. You trip in the hallway and a few people laugh. Coolest
+                  reaction?
+                </p>
+                <select id="cool-2" class="genz-select" style="max-width: 100%">
+                  <option value="">Choose your response...</option>
+                  <option value="laugh">
+                    Laugh it off, take a bow, keep walking
+                  </option>
+                  <option value="anger">Snap at whoever laughed</option>
+                  <option value="hide">
+                    Get embarrassed and avoid everyone for a week
+                  </option>
+                </select>
+              </div>
+              <div class="genz-scenario">
+                <p class="prompt">
+                  3. A classmate shares an opinion you disagree with. Confident
+                  move?
+                </p>
+                <select id="cool-3" class="genz-select" style="max-width: 100%">
+                  <option value="">Choose your response...</option>
+                  <option value="respect">
+                    Say "I see it differently, here's why" calmly
+                  </option>
+                  <option value="mock">Mock them so others laugh</option>
+                  <option value="silent">
+                    Stay quiet and secretly resent them
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <textarea style="display: none" id="evidence-text-cool"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 3: Green Flags & Respect (Practice) -->
+        <article class="activity" data-id="respect" data-type="Practice">
+          <div class="meta">
+            <span class="pill">Practice</span>
+            <span class="pill">15 min</span>
+          </div>
+          <h3>Healthy Relationships &amp; Respect</h3>
+          <p>
+            Spot the green flag (respectful) choice versus the red flag in each
+            friendship situation.
+          </p>
+
+          <div class="activity-interactive-area">
+            <div class="genz-stack">
+              <div class="genz-scenario">
+                <p class="prompt">
+                  1. A friend says they need space tonight. The green flag is
+                  to:
+                </p>
+                <select
+                  id="respect-1"
+                  class="genz-select"
+                  style="max-width: 100%"
+                >
+                  <option value="">Choose...</option>
+                  <option value="respect">
+                    Respect it and check in another day
+                  </option>
+                  <option value="guilt">
+                    Guilt-trip them until they hang out
+                  </option>
+                  <option value="ghost">
+                    Get mad and ignore them for weeks
+                  </option>
+                </select>
+              </div>
+              <div class="genz-scenario">
+                <p class="prompt">
+                  2. A friend trusted you with a secret. Respectful move?
+                </p>
+                <select
+                  id="respect-2"
+                  class="genz-select"
+                  style="max-width: 100%"
+                >
+                  <option value="">Choose...</option>
+                  <option value="keep">
+                    Keep it private like you promised
+                  </option>
+                  <option value="share">
+                    Share it for clout if it's interesting
+                  </option>
+                  <option value="trade">
+                    Trade it to look cool with others
+                  </option>
+                </select>
+              </div>
+              <div class="genz-scenario">
+                <p class="prompt">
+                  3. You and a friend disagree. A green-flag friendship looks
+                  like:
+                </p>
+                <select
+                  id="respect-3"
+                  class="genz-select"
+                  style="max-width: 100%"
+                >
+                  <option value="">Choose...</option>
+                  <option value="talk">
+                    Talking it out honestly and still respecting each other
+                  </option>
+                  <option value="win">Doing whatever it takes to "win"</option>
+                  <option value="silent">
+                    Giving the silent treatment for days
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <textarea style="display: none" id="evidence-text-respect"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 4: Group Chat Etiquette (Practice) -->
+        <article class="activity" data-id="groupchat" data-type="Practice">
+          <div class="meta">
+            <span class="pill">Practice</span>
+            <span class="pill">10 min</span>
+          </div>
+          <h3>Group Chat Etiquette</h3>
+          <p>
+            Pick the move that keeps the group chat fun and drama-free for
+            everyone.
+          </p>
+
+          <div class="activity-interactive-area">
+            <div class="genz-stack">
+              <div class="genz-scenario">
+                <p class="prompt">
+                  1. Two friends start arguing in the chat. Best move?
+                </p>
+                <select id="gc-1" class="genz-select" style="max-width: 100%">
+                  <option value="">Choose...</option>
+                  <option value="dm">
+                    Suggest they sort it out privately and change the vibe
+                  </option>
+                  <option value="pickside">Pick a side and pile on</option>
+                  <option value="screenshot">
+                    Screenshot it to share with others
+                  </option>
+                </select>
+              </div>
+              <div class="genz-scenario">
+                <p class="prompt">
+                  2. Someone shares exciting news. You should:
+                </p>
+                <select id="gc-2" class="genz-select" style="max-width: 100%">
+                  <option value="">Choose...</option>
+                  <option value="hype">Hype them up genuinely</option>
+                  <option value="ignore">Leave them on read every time</option>
+                  <option value="oneup">Immediately one-up them</option>
+                </select>
+              </div>
+              <div class="genz-scenario">
+                <p class="prompt">
+                  3. You realize you sent a message that hurt a friend. Do you:
+                </p>
+                <select id="gc-3" class="genz-select" style="max-width: 100%">
+                  <option value="">Choose...</option>
+                  <option value="apologize">
+                    Apologize honestly and clear it up
+                  </option>
+                  <option value="deny">Pretend you never sent it</option>
+                  <option value="blame">Blame them for being sensitive</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <textarea
+            style="display: none"
+            id="evidence-text-groupchat"
+          ></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 5: Money Glow-Up (Practice) -->
+        <article class="activity" data-id="money" data-type="Practice">
+          <div class="meta">
+            <span class="pill">Practice</span>
+            <span class="pill">15 min</span>
+          </div>
+          <h3>Money Glow-Up (Finance)</h3>
+          <p>
+            Build smart money habits early. Pick the choice future-you will
+            thank you for.
+          </p>
+
+          <div class="activity-interactive-area">
+            <div class="genz-stack">
+              <div class="genz-scenario">
+                <p class="prompt">
+                  1. You get $100 for your birthday. Smartest first move?
+                </p>
+                <select
+                  id="money-1"
+                  class="genz-select"
+                  style="max-width: 100%"
+                >
+                  <option value="">Choose...</option>
+                  <option value="save">
+                    Save some, then spend a planned amount
+                  </option>
+                  <option value="blow">
+                    Spend it all today on impulse buys
+                  </option>
+                  <option value="lend">
+                    Loan it all to a friend you barely know
+                  </option>
+                </select>
+              </div>
+              <div class="genz-scenario">
+                <p class="prompt">
+                  2. An ad promises to "double your money in a day." You:
+                </p>
+                <select
+                  id="money-2"
+                  class="genz-select"
+                  style="max-width: 100%"
+                >
+                  <option value="">Choose...</option>
+                  <option value="skip">
+                    Skip it &mdash; that's almost always a scam
+                  </option>
+                  <option value="all">Put in all your savings fast</option>
+                  <option value="card">
+                    Send them your parents' card number
+                  </option>
+                </select>
+              </div>
+              <div class="genz-scenario">
+                <p class="prompt">
+                  3. You want sneakers that cost more than you have. Best plan?
+                </p>
+                <select
+                  id="money-3"
+                  class="genz-select"
+                  style="max-width: 100%"
+                >
+                  <option value="">Choose...</option>
+                  <option value="goal">
+                    Set a savings goal and wait until you can afford them
+                  </option>
+                  <option value="borrow">
+                    Borrow money from everyone you know
+                  </option>
+                  <option value="now">Buy now and worry about it later</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <textarea style="display: none" id="evidence-text-money"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 6: Meme Literacy & Online Safety (Practice) -->
+        <article class="activity" data-id="online" data-type="Practice">
+          <div class="meta">
+            <span class="pill">Practice</span>
+            <span class="pill">15 min</span>
+          </div>
+          <h3>Meme Literacy &amp; Online Safety</h3>
+          <p>
+            Be a smart, kind digital citizen. Spot misinformation and scams
+            before they fool you.
+          </p>
+
+          <div class="activity-interactive-area">
+            <div class="genz-stack">
+              <div class="genz-scenario">
+                <p class="prompt">
+                  1. A viral post makes a wild claim with no source. You:
+                </p>
+                <select
+                  id="online-1"
+                  class="genz-select"
+                  style="max-width: 100%"
+                >
+                  <option value="">Choose...</option>
+                  <option value="check">
+                    Fact-check it before sharing or believing it
+                  </option>
+                  <option value="share">Instantly reshare it everywhere</option>
+                  <option value="argue">Start an argument based on it</option>
+                </select>
+              </div>
+              <div class="genz-scenario">
+                <p class="prompt">
+                  2. A DM says "You won a prize! Click this link and log in."
+                  You:
+                </p>
+                <select
+                  id="online-2"
+                  class="genz-select"
+                  style="max-width: 100%"
+                >
+                  <option value="">Choose...</option>
+                  <option value="delete">
+                    Don't click &mdash; it's a phishing scam
+                  </option>
+                  <option value="login">Click and enter your password</option>
+                  <option value="forward">
+                    Forward it to all your friends
+                  </option>
+                </select>
+              </div>
+              <div class="genz-scenario">
+                <p class="prompt">
+                  3. A meme could embarrass a real classmate. Posting it is:
+                </p>
+                <select
+                  id="online-3"
+                  class="genz-select"
+                  style="max-width: 100%"
+                >
+                  <option value="">Choose...</option>
+                  <option value="dont">
+                    Not okay &mdash; don't punch down for laughs
+                  </option>
+                  <option value="post">Fine, it's just a joke</option>
+                  <option value="tag">Even better if you tag them</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <textarea style="display: none" id="evidence-text-online"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 7: Drip Check / Personal Style (Practice) -->
+        <article class="activity" data-id="drip" data-type="Practice">
+          <div class="meta">
+            <span class="pill">Practice</span>
+            <span class="pill">10 min</span>
+          </div>
+          <h3>Drip Check / Personal Style</h3>
+          <p>
+            Style is about feeling like yourself, not copying everyone. Pick
+            what builds an authentic personal style.
+          </p>
+
+          <div class="activity-interactive-area">
+            <div class="genz-stack">
+              <div class="genz-scenario">
+                <p class="prompt">1. The best way to find your style is to:</p>
+                <select id="drip-1" class="genz-select" style="max-width: 100%">
+                  <option value="">Choose...</option>
+                  <option value="you">
+                    Wear what makes you feel confident and comfortable
+                  </option>
+                  <option value="copy">Copy one popular person exactly</option>
+                  <option value="expensive">
+                    Only wear the most expensive brands
+                  </option>
+                </select>
+              </div>
+              <div class="genz-scenario">
+                <p class="prompt">
+                  2. Someone clowns your outfit. Confident response?
+                </p>
+                <select id="drip-2" class="genz-select" style="max-width: 100%">
+                  <option value="">Choose...</option>
+                  <option value="own">
+                    Own it &mdash; you dress for you, not them
+                  </option>
+                  <option value="change">Change everything to fit in</option>
+                  <option value="insult">
+                    Insult their outfit back harder
+                  </option>
+                </select>
+              </div>
+              <div class="genz-scenario">
+                <p class="prompt">
+                  3. A classmate tries a bold new look. The kind move is to:
+                </p>
+                <select id="drip-3" class="genz-select" style="max-width: 100%">
+                  <option value="">Choose...</option>
+                  <option value="support">
+                    Give a genuine compliment if you like it
+                  </option>
+                  <option value="laugh">Laugh at them with friends</option>
+                  <option value="ignore">Make them feel invisible</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <textarea style="display: none" id="evidence-text-drip"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 8: Touch Grass Challenge (Project) -->
+        <article class="activity" data-id="touchgrass" data-type="Project">
+          <div class="meta">
+            <span class="pill">Project</span>
+            <span class="pill">15 min</span>
+          </div>
+          <h3>Touch Grass Challenge</h3>
+          <p>
+            Screens are great, but balance is the real flex. Reflect on how
+            you'll mix screen time with real life this summer. Write at least a
+            few honest sentences (20+ characters).
+          </p>
+
+          <div class="activity-interactive-area">
+            <textarea
+              id="grass-reflect"
+              class="genz-reflect"
+              placeholder="Example: I'll keep gaming, but I'll hoop with friends in the afternoon, read before bed instead of scrolling, and put my phone in another room while doing homework..."
+            ></textarea>
+          </div>
+
+          <textarea
+            style="display: none"
+            id="evidence-text-touchgrass"
+          ></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 9: Main Character Goals (Project) -->
+        <article class="activity" data-id="goals" data-type="Project">
+          <div class="meta">
+            <span class="pill">Project</span>
+            <span class="pill">15 min</span>
+          </div>
+          <h3>Main Character Goals</h3>
+          <p>
+            Set one SMART-ish goal for your sophomore year (Specific,
+            Measurable, and with a deadline). Be real and write at least a few
+            sentences (20+ characters).
+          </p>
+
+          <div class="activity-interactive-area">
+            <textarea
+              id="goals-reflect"
+              class="genz-reflect"
+              placeholder="Example: By the end of the first marking period, I'll keep all my grades at B or higher by doing homework right after school and asking for help within 2 days of being confused..."
+            ></textarea>
+          </div>
+
+          <textarea style="display: none" id="evidence-text-goals"></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+
+        <!-- Activity 10: Vibe Check Quiz (Game) -->
+        <article class="activity" data-id="vibequiz" data-type="Game">
+          <div class="meta">
+            <span class="pill">Mini Game</span>
+            <span class="pill">10 min</span>
+          </div>
+          <h3>Vibe Check Quiz</h3>
+          <p>
+            Rapid-fire review of everything above. Get all answers right for the
+            W. This one's optional &mdash; just for fun.
+          </p>
+
+          <div class="activity-interactive-area">
+            <div class="genz-stack">
+              <div class="genz-scenario">
+                <p class="prompt">
+                  1. "That fit is bussin, no cap" mostly means:
+                </p>
+                <select id="vibe-1" class="genz-select" style="max-width: 100%">
+                  <option value="">Choose...</option>
+                  <option value="good">
+                    That outfit is genuinely great, for real
+                  </option>
+                  <option value="bad">That outfit is broken</option>
+                  <option value="hat">That outfit needs a hat</option>
+                </select>
+              </div>
+              <div class="genz-scenario">
+                <p class="prompt">2. The real "glow-up" is mostly about:</p>
+                <select id="vibe-2" class="genz-select" style="max-width: 100%">
+                  <option value="">Choose...</option>
+                  <option value="inside">
+                    Confidence, kindness, and healthy habits
+                  </option>
+                  <option value="clout">Getting the most online clout</option>
+                  <option value="money">Only buying expensive things</option>
+                </select>
+              </div>
+              <div class="genz-scenario">
+                <p class="prompt">3. A true "W friend" is someone who:</p>
+                <select id="vibe-3" class="genz-select" style="max-width: 100%">
+                  <option value="">Choose...</option>
+                  <option value="respect">Respects you and hypes you up</option>
+                  <option value="drama">Starts drama for fun</option>
+                  <option value="use">Only uses you when convenient</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <textarea
+            style="display: none"
+            id="evidence-text-vibequiz"
+          ></textarea>
+          <div class="actions">
+            <button class="btn secondary" data-save>Save workspace</button>
+            <button class="btn" data-complete>Complete with evidence</button>
+          </div>
+        </article>
+      </div>
+    </main>
+
+    <section class="wrap resources" aria-label="Additional Gen Z resources">
+      <div class="section-head">
+        <h2>📚 Learn More — Gen Z Life Resources</h2>
+        <p class="muted">
+          Trusted, school-appropriate sites for digital smarts, money basics,
+          and feeling good. Free to explore.
+        </p>
+      </div>
+      <div class="resources-grid">
+        <div class="res-card">
+          <h3>🛡️ Digital Smarts &amp; Online Safety</h3>
+          <p>Be a sharp, kind, scam-proof digital citizen.</p>
+          <ul>
+            <li>
+              <a
+                href="https://www.commonsense.org/education/digital-citizenship"
+                target="_blank"
+                rel="noopener"
+                >Common Sense — Digital Citizenship<span class="res-desc"
+                  >Lessons on privacy, kindness, and online safety</span
+                ></a
+              >
+            </li>
+            <li>
+              <a
+                href="https://kids.usa.gov/online-safety/index.shtml"
+                target="_blank"
+                rel="noopener"
+                >USA.gov — Online Safety<span class="res-desc"
+                  >Government tips on staying safe and avoiding scams</span
+                ></a
+              >
+            </li>
+            <li>
+              <a
+                href="https://www.netsmartz.org/Home"
+                target="_blank"
+                rel="noopener"
+                >NetSmartz<span class="res-desc"
+                  >Internet safety resources for teens</span
+                ></a
+              >
+            </li>
+          </ul>
+        </div>
+        <div class="res-card">
+          <h3>💸 Money Basics</h3>
+          <p>Build money smarts before you even need them.</p>
+          <ul>
+            <li>
+              <a href="https://www.ngpf.org/" target="_blank" rel="noopener"
+                >Next Gen Personal Finance<span class="res-desc"
+                  >Free, fun lessons on saving and budgeting</span
+                ></a
+              >
+            </li>
+            <li>
+              <a
+                href="https://www.khanacademy.org/college-careers-more/financial-literacy"
+                target="_blank"
+                rel="noopener"
+                >Khan Academy — Financial Literacy<span class="res-desc"
+                  >Short videos on money, saving, and avoiding scams</span
+                ></a
+              >
+            </li>
+            <li>
+              <a
+                href="https://www.consumer.ftc.gov/features/feature-0038-onguardonline"
+                target="_blank"
+                rel="noopener"
+                >FTC — Spotting Scams<span class="res-desc"
+                  >How to recognize and avoid online scams</span
+                ></a
+              >
+            </li>
+          </ul>
+        </div>
+        <div class="res-card">
+          <h3>🧠 Wellbeing &amp; Real Life</h3>
+          <p>Confidence, stress, sleep, and balancing screen time.</p>
+          <ul>
+            <li>
+              <a
+                href="https://teenshealth.org/en/teens/"
+                target="_blank"
+                rel="noopener"
+                >TeensHealth<span class="res-desc"
+                  >Doctor-reviewed advice on body, mind, and friendships</span
+                ></a
+              >
+            </li>
+            <li>
+              <a
+                href="https://www.headspace.com/teens"
+                target="_blank"
+                rel="noopener"
+                >Headspace for Teens<span class="res-desc"
+                  >Mindfulness and stress-relief basics</span
+                ></a
+              >
+            </li>
+            <li>
+              <a
+                href="https://bigfuture.collegeboard.org/"
+                target="_blank"
+                rel="noopener"
+                >BigFuture — College Prep<span class="res-desc"
+                  >Free planning for high school, college, and careers</span
+                ></a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">EduWonderLab &bull; Aviad Gen Z Summer Hub</footer>
+
+    <script src="/personal/aviad/shared.js"></script>
+    <script>
+      // ---- Correct-answer keys (used by checkInteractiveComplete + EWL grading) ----
+      var slangKey = {
+        "slang-1": "charm",
+        "slang-2": "average",
+        "slang-3": "delicious",
+        "slang-4": "truth",
+        "slang-5": "win",
+        "slang-6": "background",
+      };
+      var coolKey = { "cool-1": "ask", "cool-2": "laugh", "cool-3": "respect" };
+      var respectKey = {
+        "respect-1": "respect",
+        "respect-2": "keep",
+        "respect-3": "talk",
+      };
+      var gcKey = { "gc-1": "dm", "gc-2": "hype", "gc-3": "apologize" };
+      var moneyKey = {
+        "money-1": "save",
+        "money-2": "skip",
+        "money-3": "goal",
+      };
+      var onlineKey = {
+        "online-1": "check",
+        "online-2": "delete",
+        "online-3": "dont",
+      };
+      var dripKey = { "drip-1": "you", "drip-2": "own", "drip-3": "support" };
+      var vibeKey = {
+        "vibe-1": "good",
+        "vibe-2": "inside",
+        "vibe-3": "respect",
+      };
+
+      // ---- Per-activity validate functions (write evidence summary string) ----
+      function makeValidator(ids, evidenceId) {
+        function run() {
+          var vals = ids.map(function (cid) {
+            return cid + ":" + (document.getElementById(cid).value || "");
+          });
+          document.getElementById("evidence-text-" + evidenceId).value =
+            vals.join("\n");
+        }
+        ids.forEach(function (cid) {
+          var el = document.getElementById(cid);
+          if (el) el.addEventListener("change", run);
+        });
+        return run;
+      }
+
+      var validateSlang = makeValidator(Object.keys(slangKey), "slang");
+      var validateCool = makeValidator(Object.keys(coolKey), "cool");
+      var validateRespect = makeValidator(Object.keys(respectKey), "respect");
+      var validateGroupchat = makeValidator(Object.keys(gcKey), "groupchat");
+      var validateMoney = makeValidator(Object.keys(moneyKey), "money");
+      var validateOnline = makeValidator(Object.keys(onlineKey), "online");
+      var validateDrip = makeValidator(Object.keys(dripKey), "drip");
+      var validateVibe = makeValidator(Object.keys(vibeKey), "vibequiz");
+
+      // ---- Reflection textareas ----
+      var grassEl = document.getElementById("grass-reflect");
+      function validateGrass() {
+        document.getElementById("evidence-text-touchgrass").value =
+          grassEl.value.trim();
+      }
+      grassEl.addEventListener("input", validateGrass);
+
+      var goalsEl = document.getElementById("goals-reflect");
+      function validateGoals() {
+        document.getElementById("evidence-text-goals").value =
+          goalsEl.value.trim();
+      }
+      goalsEl.addEventListener("input", validateGoals);
+
+      // ---- Shared helper: check all selects in a key match correct values ----
+      function allSelectsCorrect(key) {
+        return Object.keys(key).every(function (id) {
+          return document.getElementById(id).value === key[id];
+        });
+      }
+
+      // ---- EWL completion contract ----
+      window.checkInteractiveComplete = function (card) {
+        var id = card.dataset.id;
+
+        if (id === "slang" && !allSelectsCorrect(slangKey)) {
+          return {
+            success: false,
+            message:
+              "Not quite! Re-check the slang meanings until each shows a ✓.",
+          };
+        }
+        if (id === "cool" && !allSelectsCorrect(coolKey)) {
+          return {
+            success: false,
+            message:
+              "Pick the most confident AND kind response in every scenario.",
+          };
+        }
+        if (id === "respect" && !allSelectsCorrect(respectKey)) {
+          return {
+            success: false,
+            message: "Choose the green-flag (respectful) option in each one.",
+          };
+        }
+        if (id === "groupchat" && !allSelectsCorrect(gcKey)) {
+          return {
+            success: false,
+            message: "Pick the drama-free move that keeps friendships strong.",
+          };
+        }
+        if (id === "money" && !allSelectsCorrect(moneyKey)) {
+          return {
+            success: false,
+            message:
+              "Choose the smart-money option future-you will thank you for.",
+          };
+        }
+        if (id === "online" && !allSelectsCorrect(onlineKey)) {
+          return {
+            success: false,
+            message:
+              "Stay safe online: fact-check, skip scams, and be kind. Try again.",
+          };
+        }
+        if (id === "drip" && !allSelectsCorrect(dripKey)) {
+          return {
+            success: false,
+            message: "Authentic style = confidence and kindness. Re-pick.",
+          };
+        }
+        if (id === "vibequiz" && !allSelectsCorrect(vibeKey)) {
+          return {
+            success: false,
+            message: "So close! Get all three right for the W.",
+          };
+        }
+        if (id === "touchgrass") {
+          if (grassEl.value.trim().length < 20) {
+            return {
+              success: false,
+              message:
+                "Write at least a couple of honest sentences (20+ characters).",
+            };
+          }
+        }
+        if (id === "goals") {
+          if (goalsEl.value.trim().length < 20) {
+            return {
+              success: false,
+              message:
+                "Set a real goal in at least a couple of sentences (20+ characters).",
+            };
+          }
+        }
+
+        var hiddenText = document.getElementById("evidence-text-" + id).value;
+        card.querySelector("textarea").value = hiddenText;
+        return { success: true };
+      };
+
+      // ---- Save: capture interactive state ----
+      window.getInteractiveState = function (card) {
+        var id = card.dataset.id;
+        var selectKeys = {
+          slang: slangKey,
+          cool: coolKey,
+          respect: respectKey,
+          groupchat: gcKey,
+          money: moneyKey,
+          online: onlineKey,
+          drip: dripKey,
+          vibequiz: vibeKey,
+        };
+        if (selectKeys[id]) {
+          var out = {};
+          Object.keys(selectKeys[id]).forEach(function (sid) {
+            out[sid] = document.getElementById(sid).value;
+          });
+          return out;
+        }
+        if (id === "touchgrass") return { TEXT: grassEl.value };
+        if (id === "goals") return { TEXT: goalsEl.value };
+        return {};
+      };
+
+      // ---- Restore saved selections / text ----
+      window.restoreInteractiveState = function (card, savedState) {
+        var id = card.dataset.id;
+        if (!savedState) return;
+
+        var validators = {
+          slang: validateSlang,
+          cool: validateCool,
+          respect: validateRespect,
+          groupchat: validateGroupchat,
+          money: validateMoney,
+          online: validateOnline,
+          drip: validateDrip,
+          vibequiz: validateVibe,
+        };
+
+        if (validators[id]) {
+          Object.keys(savedState).forEach(function (sid) {
+            var el = document.getElementById(sid);
+            if (el && typeof savedState[sid] === "string") {
+              el.value = savedState[sid];
+            }
+          });
+          validators[id]();
+          return;
+        }
+
+        if (id === "touchgrass" && savedState.TEXT) {
+          grassEl.value = savedState.TEXT;
+          validateGrass();
+        }
+        if (id === "goals" && savedState.TEXT) {
+          goalsEl.value = savedState.TEXT;
+          validateGoals();
+        }
+      };
+
+      // ---- Register answer keys for instant ✓/✗ feedback on every graded select ----
+      if (window.EWL && EWL.registerAnswers) {
+        EWL.registerAnswers({
+          "slang-1": "charm",
+          "slang-2": "average",
+          "slang-3": "delicious",
+          "slang-4": "truth",
+          "slang-5": "win",
+          "slang-6": "background",
+          "cool-1": "ask",
+          "cool-2": "laugh",
+          "cool-3": "respect",
+          "respect-1": "respect",
+          "respect-2": "keep",
+          "respect-3": "talk",
+          "gc-1": "dm",
+          "gc-2": "hype",
+          "gc-3": "apologize",
+          "money-1": "save",
+          "money-2": "skip",
+          "money-3": "goal",
+          "online-1": "check",
+          "online-2": "delete",
+          "online-3": "dont",
+          "drip-1": "you",
+          "drip-2": "own",
+          "drip-3": "support",
+          "vibe-1": "good",
+          "vibe-2": "inside",
+          "vibe-3": "respect",
+        });
+      }
+    </script>
+  </body>
+</html>

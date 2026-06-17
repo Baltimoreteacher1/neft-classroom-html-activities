@@ -17,7 +17,7 @@
           grid-template-columns: 1fr 1fr;
         }
       }
-      
+
       .bin-container {
         display: flex;
         flex-direction: column;
@@ -36,7 +36,7 @@
         margin-bottom: 4px;
         text-align: center;
       }
-      
+
       .graph-svg {
         width: 100%;
         height: auto;
@@ -49,7 +49,9 @@
         fill: var(--accent);
         stroke: #ffffff;
         stroke-width: 2;
-        transition: fill 0.2s ease, r 0.2s ease;
+        transition:
+          fill 0.2s ease,
+          r 0.2s ease;
       }
       .data-point:hover {
         fill: #ef4444;
@@ -61,7 +63,7 @@
         stroke: #fbbf24;
         stroke-width: 3;
       }
-      
+
       .balance-scale-container {
         display: flex;
         flex-direction: column;
@@ -72,7 +74,7 @@
         padding: 12px;
         margin-bottom: 12px;
       }
-      
+
       .balance-row {
         display: flex;
         align-items: center;
@@ -94,7 +96,7 @@
         background: var(--bg-slate-800);
         outline: none;
       }
-      
+
       .mitosis-stages {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
@@ -115,7 +117,7 @@
         background: #0b0f19;
         border-radius: 4px;
       }
-      
+
       .safety-viewer {
         position: relative;
         background: #0b0f19;
@@ -127,7 +129,9 @@
       .hazard-overlay {
         cursor: pointer;
         opacity: 0.85;
-        transition: opacity 0.2s ease, filter 0.2s ease;
+        transition:
+          opacity 0.2s ease,
+          filter 0.2s ease;
       }
       .hazard-overlay:hover {
         opacity: 1;
@@ -159,8 +163,12 @@
         <a class="back" href="/personal/aviad/">&larr; Aviad hub</a>
         <span class="badge">Science 10</span>
         <h1>Science Readiness</h1>
-        <p class="lead">Think like a researcher. Investigate variables, decode solubility curves, balance chemical reactions, and play Reactant Lab matching games.</p>
-        
+        <p class="lead">
+          Think like a researcher. Investigate variables, decode solubility
+          curves, balance chemical reactions, and play Reactant Lab matching
+          games.
+        </p>
+
         <div class="stats">
           <div class="stat"><b id="xp">0 XP</b><span>earned here</span></div>
           <div class="stat"><b>12</b><span>developed activities</span></div>
@@ -184,11 +192,13 @@
     <main class="wrap panel active">
       <div class="section-head">
         <h2>Science Readiness Challenges</h2>
-        <p class="muted">Complete interactive tasks, verify your solutions, and save your work to log XP.</p>
+        <p class="muted">
+          Complete interactive tasks, verify your solutions, and save your work
+          to log XP.
+        </p>
       </div>
 
       <div class="grid">
-        
         <!-- Activity 1: Reaction Lab (Game) -->
         <article class="activity" data-id="reaction-lab" data-type="Game">
           <div class="meta">
@@ -196,41 +206,100 @@
             <span class="pill">Tally Goal: 3</span>
           </div>
           <h3>Reaction Lab</h3>
-          <p>Mix Reactant A (yellow acid) and Reactant B (magenta base) to match the target color and gas releases.</p>
-          
+          <p>
+            Mix Reactant A (yellow acid) and Reactant B (magenta base) to match
+            the target color and gas releases.
+          </p>
+
           <div class="activity-interactive-area">
-            <div class="game-container" style="background:#0b0f19;">
-              <svg viewBox="0 0 320 180" width="100%" height="100%" id="beaker-svg">
+            <div class="game-container" style="background: #0b0f19">
+              <svg
+                viewBox="0 0 320 180"
+                width="100%"
+                height="100%"
+                id="beaker-svg"
+              >
                 <!-- Beaker drawing -->
-                <path d="M 110 30 L 110 145 C 110 155, 210 155, 210 145 L 210 30" fill="none" stroke="#94a3b8" stroke-width="4" />
-                <line x1="100" y1="30" x2="120" y2="30" stroke="#94a3b8" stroke-width="4" />
-                <line x1="200" y1="30" x2="220" y2="30" stroke="#94a3b8" stroke-width="4" />
-                
+                <path
+                  d="M 110 30 L 110 145 C 110 155, 210 155, 210 145 L 210 30"
+                  fill="none"
+                  stroke="#94a3b8"
+                  stroke-width="4"
+                />
+                <line
+                  x1="100"
+                  y1="30"
+                  x2="120"
+                  y2="30"
+                  stroke="#94a3b8"
+                  stroke-width="4"
+                />
+                <line
+                  x1="200"
+                  y1="30"
+                  x2="220"
+                  y2="30"
+                  stroke="#94a3b8"
+                  stroke-width="4"
+                />
+
                 <!-- Beaker Fluid Pathway (grows based on drops) -->
-                <path id="beaker-fluid" d="M 112 110 L 112 144 C 112 148, 208 148, 208 144 L 208 110 Z" fill="#3b82f6" opacity="0.8" style="transition: fill 0.4s, d 0.4s;" />
-                
+                <path
+                  id="beaker-fluid"
+                  d="M 112 110 L 112 144 C 112 148, 208 148, 208 144 L 208 110 Z"
+                  fill="#3b82f6"
+                  opacity="0.8"
+                  style="
+                    transition:
+                      fill 0.4s,
+                      d 0.4s;
+                  "
+                />
+
                 <!-- Gas circles group -->
                 <g id="gas-layer"></g>
               </svg>
-              
+
               <div class="game-overlay" id="game-overlay-rl">
                 <h4>Reaction Lab</h4>
                 <p>Achieve the exact target color mixture.</p>
                 <button class="btn" id="game-btn-rl">Start Mixing</button>
               </div>
             </div>
-            
-            <div style="background:var(--bg-slate-800); border-radius:4px; padding:12px; border:1px solid var(--border-glow); display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-              <label style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">Reactant A (Yellow):
-                <select id="rl-acid" style="padding:4px; margin-top:2px;">
+
+            <div
+              style="
+                background: var(--bg-slate-800);
+                border-radius: 4px;
+                padding: 12px;
+                border: 1px solid var(--border-glow);
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+              "
+            >
+              <label
+                style="
+                  font-size: 0.8rem;
+                  font-weight: 700;
+                  color: var(--text-muted);
+                "
+                >Reactant A (Yellow):
+                <select id="rl-acid" style="padding: 4px; margin-top: 2px">
                   <option value="0">0 drops</option>
                   <option value="2">2 drops</option>
                   <option value="6">6 drops</option>
                   <option value="10">10 drops!</option>
                 </select>
               </label>
-              <label style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">Reactant B (Magenta):
-                <select id="rl-base" style="padding:4px; margin-top:2px;">
+              <label
+                style="
+                  font-size: 0.8rem;
+                  font-weight: 700;
+                  color: var(--text-muted);
+                "
+                >Reactant B (Magenta):
+                <select id="rl-base" style="padding: 4px; margin-top: 2px">
                   <option value="0">0 drops</option>
                   <option value="3">3 drops</option>
                   <option value="5">5 drops</option>
@@ -238,13 +307,29 @@
                 </select>
               </label>
             </div>
-            
-            <div style="font-size:0.85rem; font-weight:700; color:#475569; margin-top:8px; text-align:center;">
-              Target: <span style="color:#10b981;" id="rl-target-lbl">GREEN (A=6, B=0)</span> | Mixed Matches: <span id="rl-score-val" style="color:var(--gold);">0</span> / 3
+
+            <div
+              style="
+                font-size: 0.85rem;
+                font-weight: 700;
+                color: #475569;
+                margin-top: 8px;
+                text-align: center;
+              "
+            >
+              Target:
+              <span style="color: #10b981" id="rl-target-lbl"
+                >GREEN (A=6, B=0)</span
+              >
+              | Mixed Matches:
+              <span id="rl-score-val" style="color: var(--gold)">0</span> / 3
             </div>
           </div>
 
-          <textarea style="display:none;" id="evidence-text-reaction-lab"></textarea>
+          <textarea
+            style="display: none"
+            id="evidence-text-reaction-lab"
+          ></textarea>
           <div class="actions">
             <button class="btn secondary" data-save>Save workspace</button>
             <button class="btn" data-complete>Complete with evidence</button>
@@ -258,18 +343,65 @@
             <span class="pill">15 min</span>
           </div>
           <h3>Variable Sorter</h3>
-          <p>Scenario: Wavelength of light vs photosynthesis rate. Drag variable cards into correct categories.</p>
-          
+          <p>
+            Scenario: Wavelength of light vs photosynthesis rate. Drag variable
+            cards into correct categories.
+          </p>
+
           <div class="activity-interactive-area">
-            <div class="word-bank" id="variables-drawer" style="min-height: 50px;">
-              <div class="drag-item" draggable="true" id="v-item-1" data-val="IV" data-drawer="variables-drawer">Wavelength (Color) of Light</div>
-              <div class="drag-item" draggable="true" id="v-item-2" data-val="DV" data-drawer="variables-drawer">Oxygen Bubble Production</div>
-              <div class="drag-item" draggable="true" id="v-item-3" data-val="CV" data-drawer="variables-drawer">Water Temperature</div>
-              <div class="drag-item" draggable="true" id="v-item-4" data-val="CV" data-drawer="variables-drawer">Elodea Plant Species</div>
-              <div class="drag-item" draggable="true" id="v-item-5" data-val="CV" data-drawer="variables-drawer">Light Source Intensity</div>
+            <div
+              class="word-bank"
+              id="variables-drawer"
+              style="min-height: 50px"
+            >
+              <div
+                class="drag-item"
+                draggable="true"
+                id="v-item-1"
+                data-val="IV"
+                data-drawer="variables-drawer"
+              >
+                Wavelength (Color) of Light
+              </div>
+              <div
+                class="drag-item"
+                draggable="true"
+                id="v-item-2"
+                data-val="DV"
+                data-drawer="variables-drawer"
+              >
+                Oxygen Bubble Production
+              </div>
+              <div
+                class="drag-item"
+                draggable="true"
+                id="v-item-3"
+                data-val="CV"
+                data-drawer="variables-drawer"
+              >
+                Water Temperature
+              </div>
+              <div
+                class="drag-item"
+                draggable="true"
+                id="v-item-4"
+                data-val="CV"
+                data-drawer="variables-drawer"
+              >
+                Elodea Plant Species
+              </div>
+              <div
+                class="drag-item"
+                draggable="true"
+                id="v-item-5"
+                data-val="CV"
+                data-drawer="variables-drawer"
+              >
+                Light Source Intensity
+              </div>
             </div>
-            
-            <div class="science-grid-2col" style="margin-top: 14px;">
+
+            <div class="science-grid-2col" style="margin-top: 14px">
               <div class="bin-container">
                 <span class="bin-title">Independent (IV)</span>
                 <div class="drop-container" id="bin-iv" data-bin="IV"></div>
@@ -279,13 +411,21 @@
                 <div class="drop-container" id="bin-dv" data-bin="DV"></div>
               </div>
             </div>
-            <div class="bin-container" style="margin-top: 10px;">
+            <div class="bin-container" style="margin-top: 10px">
               <span class="bin-title">Controlled Variables (CV - max 3)</span>
-              <div class="drop-container" id="bin-cv" data-bin="CV" data-max="3"></div>
+              <div
+                class="drop-container"
+                id="bin-cv"
+                data-bin="CV"
+                data-max="3"
+              ></div>
             </div>
           </div>
 
-          <textarea style="display:none;" id="evidence-text-variables"></textarea>
+          <textarea
+            style="display: none"
+            id="evidence-text-variables"
+          ></textarea>
           <div class="actions">
             <button class="btn secondary" data-save>Save workspace</button>
             <button class="btn" data-complete>Complete with evidence</button>
@@ -299,40 +439,155 @@
             <span class="pill">25 min</span>
           </div>
           <h3>Data Detective</h3>
-          <p>Analyze Potassium Nitrate solubility. Click the trial outlier point, and draft a CER explanation.</p>
-          
+          <p>
+            Analyze Potassium Nitrate solubility. Click the trial outlier point,
+            and draft a CER explanation.
+          </p>
+
           <div class="activity-interactive-area">
             <svg class="graph-svg" viewBox="0 0 400 220" id="detective-graph">
-              <line x1="40" y1="20" x2="380" y2="20" stroke="#e2e8f0" stroke-width="1" />
-              <line x1="40" y1="60" x2="380" y2="60" stroke="#e2e8f0" stroke-width="1" />
-              <line x1="40" y1="100" x2="380" y2="100" stroke="#e2e8f0" stroke-width="1" />
-              <line x1="40" y1="140" x2="380" y2="140" stroke="#e2e8f0" stroke-width="1" />
-              <line x1="40" y1="180" x2="380" y2="180" stroke="#e2e8f0" stroke-width="1" />
-              <line x1="40" y1="180" x2="380" y2="180" stroke="#475569" stroke-width="2" />
-              <line x1="40" y1="20" x2="40" y2="180" stroke="#475569" stroke-width="2" />
-              
-              <text x="210" y="212" text-anchor="middle" font-size="10" font-family="sans-serif" fill="#475569" font-weight="700">Temperature (°C)</text>
+              <line
+                x1="40"
+                y1="20"
+                x2="380"
+                y2="20"
+                stroke="#e2e8f0"
+                stroke-width="1"
+              />
+              <line
+                x1="40"
+                y1="60"
+                x2="380"
+                y2="60"
+                stroke="#e2e8f0"
+                stroke-width="1"
+              />
+              <line
+                x1="40"
+                y1="100"
+                x2="380"
+                y2="100"
+                stroke="#e2e8f0"
+                stroke-width="1"
+              />
+              <line
+                x1="40"
+                y1="140"
+                x2="380"
+                y2="140"
+                stroke="#e2e8f0"
+                stroke-width="1"
+              />
+              <line
+                x1="40"
+                y1="180"
+                x2="380"
+                y2="180"
+                stroke="#e2e8f0"
+                stroke-width="1"
+              />
+              <line
+                x1="40"
+                y1="180"
+                x2="380"
+                y2="180"
+                stroke="#475569"
+                stroke-width="2"
+              />
+              <line
+                x1="40"
+                y1="20"
+                x2="40"
+                y2="180"
+                stroke="#475569"
+                stroke-width="2"
+              />
+
+              <text
+                x="210"
+                y="212"
+                text-anchor="middle"
+                font-size="10"
+                font-family="sans-serif"
+                fill="#475569"
+                font-weight="700"
+              >
+                Temperature (°C)
+              </text>
               <!-- Ideal Solubility curve trendline -->
-              <path d="M 40 167 Q 160 145, 220 110 T 340 30" fill="none" stroke="#10b981" stroke-width="2" stroke-dasharray="4" opacity="0.5" />
-              
+              <path
+                d="M 40 167 Q 160 145, 220 110 T 340 30"
+                fill="none"
+                stroke="#10b981"
+                stroke-width="2"
+                stroke-dasharray="4"
+                opacity="0.5"
+              />
+
               <!-- Points -->
-              <circle cx="100" cy="155" r="6" class="data-point" id="pt-1" data-val="20C-45g" />
-              <circle cx="160" cy="137" r="6" class="data-point" id="pt-2" data-val="40C-63g" />
-              <circle cx="220" cy="50" r="6" class="data-point" id="pt-outlier" data-val="60C-150g" /> <!-- Outlier -->
-              <circle cx="280" cy="70" r="6" class="data-point" id="pt-4" data-val="80C-110g" />
+              <circle
+                cx="100"
+                cy="155"
+                r="6"
+                class="data-point"
+                id="pt-1"
+                data-val="20C-45g"
+              />
+              <circle
+                cx="160"
+                cy="137"
+                r="6"
+                class="data-point"
+                id="pt-2"
+                data-val="40C-63g"
+              />
+              <circle
+                cx="220"
+                cy="50"
+                r="6"
+                class="data-point"
+                id="pt-outlier"
+                data-val="60C-150g"
+              />
+              <!-- Outlier -->
+              <circle
+                cx="280"
+                cy="70"
+                r="6"
+                class="data-point"
+                id="pt-4"
+                data-val="80C-110g"
+              />
             </svg>
-            
-            <div style="margin-top: 10px; font-size: 0.85rem; font-weight: 700; color: var(--text-white);">
-              Selected Outlier: <span id="selected-outlier-lbl" style="color:var(--danger);">None</span>
+
+            <div
+              style="
+                margin-top: 10px;
+                font-size: 0.85rem;
+                font-weight: 700;
+                color: var(--text-white);
+              "
+            >
+              Selected Outlier:
+              <span id="selected-outlier-lbl" style="color: var(--danger)"
+                >None</span
+              >
             </div>
-            
-            <div class="step-row" style="margin-top: 10px;">
+
+            <div class="step-row" style="margin-top: 10px">
               <span class="step-label">CER Box:</span>
-              <textarea id="detective-cer" placeholder="State which trial is the outlier, details compared to the trendline, and possible experimental heating error." style="min-height: 70px;"></textarea>
+              <textarea
+                id="detective-cer"
+                placeholder="State which trial is the outlier, details compared to the trendline, and possible experimental heating error."
+                style="min-height: 70px"
+              ></textarea>
             </div>
           </div>
 
-          <textarea style="display:none;" id="evidence-text-detective"></textarea>
+          <textarea
+            style="display: none"
+            id="evidence-text-detective"
+          ></textarea>
           <div class="actions">
             <button class="btn secondary" data-save>Save workspace</button>
             <button class="btn" data-complete>Complete with evidence</button>
@@ -346,44 +601,124 @@
             <span class="pill">20 min</span>
           </div>
           <h3>Procedure Repair Shop</h3>
-          <p>Drag the lab steps into correct chronological sequence and select appropriate metric units.</p>
-          
+          <p>
+            Drag the lab steps into correct chronological sequence and select
+            appropriate metric units.
+          </p>
+
           <div class="activity-interactive-area">
-            <div class="word-bank" id="procedure-drawer" style="min-height: 50px;">
-              <div class="drag-item" draggable="true" id="p-item-3" data-drawer="procedure-drawer" data-val="3">Heat the water to exactly 60°C on a hot plate.</div>
-              <div class="drag-item" draggable="true" id="p-item-1" data-drawer="procedure-drawer" data-val="1">Measure 100 mL of distilled water in a cylinder.</div>
-              <div class="drag-item" draggable="true" id="p-item-4" data-drawer="procedure-drawer" data-val="4">Add 15 g of solute and stir until dissolved.</div>
-              <div class="drag-item" draggable="true" id="p-item-2" data-drawer="procedure-drawer" data-val="2">Pour the water into a clean 250 mL beaker.</div>
+            <div
+              class="word-bank"
+              id="procedure-drawer"
+              style="min-height: 50px"
+            >
+              <div
+                class="drag-item"
+                draggable="true"
+                id="p-item-3"
+                data-drawer="procedure-drawer"
+                data-val="3"
+              >
+                Heat the water to exactly 60°C on a hot plate.
+              </div>
+              <div
+                class="drag-item"
+                draggable="true"
+                id="p-item-1"
+                data-drawer="procedure-drawer"
+                data-val="1"
+              >
+                Measure 100 mL of distilled water in a cylinder.
+              </div>
+              <div
+                class="drag-item"
+                draggable="true"
+                id="p-item-4"
+                data-drawer="procedure-drawer"
+                data-val="4"
+              >
+                Add 15 g of solute and stir until dissolved.
+              </div>
+              <div
+                class="drag-item"
+                draggable="true"
+                id="p-item-2"
+                data-drawer="procedure-drawer"
+                data-val="2"
+              >
+                Pour the water into a clean 250 mL beaker.
+              </div>
             </div>
-            
-            <div style="display: flex; flex-direction: column; gap: 6px; margin: 14px 0;">
-              <div style="display: flex; align-items: center; gap: 8px;">
+
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+                margin: 14px 0;
+              "
+            >
+              <div style="display: flex; align-items: center; gap: 8px">
                 <span class="step-label">Step 1:</span>
-                <div class="drop-container" id="proc-s1" data-max="1" style="flex:1; min-height: 40px; padding: 4px;"></div>
+                <div
+                  class="drop-container"
+                  id="proc-s1"
+                  data-max="1"
+                  style="flex: 1; min-height: 40px; padding: 4px"
+                ></div>
               </div>
-              <div style="display: flex; align-items: center; gap: 8px;">
+              <div style="display: flex; align-items: center; gap: 8px">
                 <span class="step-label">Step 2:</span>
-                <div class="drop-container" id="proc-s2" data-max="1" style="flex:1; min-height: 40px; padding: 4px;"></div>
+                <div
+                  class="drop-container"
+                  id="proc-s2"
+                  data-max="1"
+                  style="flex: 1; min-height: 40px; padding: 4px"
+                ></div>
               </div>
-              <div style="display: flex; align-items: center; gap: 8px;">
+              <div style="display: flex; align-items: center; gap: 8px">
                 <span class="step-label">Step 3:</span>
-                <div class="drop-container" id="proc-s3" data-max="1" style="flex:1; min-height: 40px; padding: 4px;"></div>
+                <div
+                  class="drop-container"
+                  id="proc-s3"
+                  data-max="1"
+                  style="flex: 1; min-height: 40px; padding: 4px"
+                ></div>
               </div>
-              <div style="display: flex; align-items: center; gap: 8px;">
+              <div style="display: flex; align-items: center; gap: 8px">
                 <span class="step-label">Step 4:</span>
-                <div class="drop-container" id="proc-s4" data-max="1" style="flex:1; min-height: 40px; padding: 4px;"></div>
+                <div
+                  class="drop-container"
+                  id="proc-s4"
+                  data-max="1"
+                  style="flex: 1; min-height: 40px; padding: 4px"
+                ></div>
               </div>
             </div>
-            
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-              <label style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">Volume:
+
+            <div
+              style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px"
+            >
+              <label
+                style="
+                  font-size: 0.8rem;
+                  font-weight: 700;
+                  color: var(--text-muted);
+                "
+                >Volume:
                 <select id="unit-vol">
                   <option value="">Choose...</option>
                   <option value="ml">Milliliters (mL)</option>
                   <option value="gallons">Gallons</option>
                 </select>
               </label>
-              <label style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">Mass:
+              <label
+                style="
+                  font-size: 0.8rem;
+                  font-weight: 700;
+                  color: var(--text-muted);
+                "
+                >Mass:
                 <select id="unit-mass">
                   <option value="">Choose...</option>
                   <option value="g">Grams (g)</option>
@@ -393,7 +728,10 @@
             </div>
           </div>
 
-          <textarea style="display:none;" id="evidence-text-procedure"></textarea>
+          <textarea
+            style="display: none"
+            id="evidence-text-procedure"
+          ></textarea>
           <div class="actions">
             <button class="btn secondary" data-save>Save workspace</button>
             <button class="btn" data-complete>Complete with evidence</button>
@@ -408,30 +746,76 @@
           </div>
           <h3>Misconception Breaker</h3>
           <p>Match the common science myth with its refuting fact.</p>
-          
+
           <div class="activity-interactive-area">
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-              <div style="background:var(--bg-slate-900); padding: 10px; border-radius: 4px; border: 1px solid var(--border-glow);">
-                <div style="font-size: 0.85rem; font-weight: 700; color:var(--danger); margin-bottom: 6px;">Myth: "Evolution is just a guess because it is a theory."</div>
-                <select id="myth-1" style="font-size:0.8rem;">
+            <div style="display: flex; flex-direction: column; gap: 10px">
+              <div
+                style="
+                  background: var(--bg-slate-900);
+                  padding: 10px;
+                  border-radius: 4px;
+                  border: 1px solid var(--border-glow);
+                "
+              >
+                <div
+                  style="
+                    font-size: 0.85rem;
+                    font-weight: 700;
+                    color: var(--danger);
+                    margin-bottom: 6px;
+                  "
+                >
+                  Myth: "Evolution is just a guess because it is a theory."
+                </div>
+                <select id="myth-1" style="font-size: 0.8rem">
                   <option value="">Select refuting science fact...</option>
-                  <option value="wrong1">Sound waves travel much faster in denser iron lattices.</option>
-                  <option value="correct">A scientific theory is a thoroughly tested explanation backed by massive evidence.</option>
+                  <option value="wrong1">
+                    Sound waves travel much faster in denser iron lattices.
+                  </option>
+                  <option value="correct">
+                    A scientific theory is a thoroughly tested explanation
+                    backed by massive evidence.
+                  </option>
                 </select>
               </div>
-              
-              <div style="background:var(--bg-slate-900); padding: 10px; border-radius: 4px; border: 1px solid var(--border-glow);">
-                <div style="font-size: 0.85rem; font-weight: 700; color:var(--danger); margin-bottom: 6px;">Myth: "Meteors burn up in space because of friction."</div>
-                <select id="myth-2" style="font-size:0.8rem;">
+
+              <div
+                style="
+                  background: var(--bg-slate-900);
+                  padding: 10px;
+                  border-radius: 4px;
+                  border: 1px solid var(--border-glow);
+                "
+              >
+                <div
+                  style="
+                    font-size: 0.85rem;
+                    font-weight: 700;
+                    color: var(--danger);
+                    margin-bottom: 6px;
+                  "
+                >
+                  Myth: "Meteors burn up in space because of friction."
+                </div>
+                <select id="myth-2" style="font-size: 0.8rem">
                   <option value="">Select refuting science fact...</option>
-                  <option value="correct">Meteors compress the air in front of them rapidly, creating extreme heat.</option>
-                  <option value="wrong2">Solids have closer molecular bonds that propagate kinetic energy quicker.</option>
+                  <option value="correct">
+                    Meteors compress the air in front of them rapidly, creating
+                    extreme heat.
+                  </option>
+                  <option value="wrong2">
+                    Solids have closer molecular bonds that propagate kinetic
+                    energy quicker.
+                  </option>
                 </select>
               </div>
             </div>
           </div>
 
-          <textarea style="display:none;" id="evidence-text-misconception"></textarea>
+          <textarea
+            style="display: none"
+            id="evidence-text-misconception"
+          ></textarea>
           <div class="actions">
             <button class="btn secondary" data-save>Save workspace</button>
             <button class="btn" data-complete>Complete with evidence</button>
@@ -445,8 +829,11 @@
             <span class="pill">20 min</span>
           </div>
           <h3>Equation Balancer</h3>
-          <p>Balance the cellular respiration formula. Adjust coefficients and watch the scale balance.</p>
-          
+          <p>
+            Balance the cellular respiration formula. Adjust coefficients and
+            watch the scale balance.
+          </p>
+
           <div class="activity-interactive-area">
             <div class="balance-row">
               <select id="coef-a" class="balance-select">
@@ -470,24 +857,68 @@
               </select>
               <span>H₂O</span>
             </div>
-            
+
             <div class="balance-scale-container">
               <!-- SVG Scale -->
-              <svg viewBox="0 0 200 100" width="100%" height="80" id="scale-svg" style="background:transparent;">
+              <svg
+                viewBox="0 0 200 100"
+                width="100%"
+                height="80"
+                id="scale-svg"
+                style="background: transparent"
+              >
                 <path d="M 90 90 L 110 90 L 100 60 Z" fill="#64748b" />
                 <circle cx="100" cy="30" r="4" fill="#475569" />
-                <g id="scale-beam" style="transform-origin: 100px 30px; transition: transform 0.4s ease;">
-                  <line x1="40" y1="30" x2="160" y2="30" stroke="#475569" stroke-width="3" />
-                  <line x1="40" y1="30" x2="40" y2="60" stroke="#94a3b8" stroke-width="1.5" />
-                  <path d="M 20 60 L 60 60 A 20 20 0 0 1 20 60 Z" fill="#10b981" opacity="0.8" />
-                  <line x1="160" y1="30" x2="160" y2="60" stroke="#94a3b8" stroke-width="1.5" />
-                  <path d="M 140 60 L 180 60 A 20 20 0 0 1 140 60 Z" fill="#10b981" opacity="0.8" />
+                <g
+                  id="scale-beam"
+                  style="
+                    transform-origin: 100px 30px;
+                    transition: transform 0.4s ease;
+                  "
+                >
+                  <line
+                    x1="40"
+                    y1="30"
+                    x2="160"
+                    y2="30"
+                    stroke="#475569"
+                    stroke-width="3"
+                  />
+                  <line
+                    x1="40"
+                    y1="30"
+                    x2="40"
+                    y2="60"
+                    stroke="#94a3b8"
+                    stroke-width="1.5"
+                  />
+                  <path
+                    d="M 20 60 L 60 60 A 20 20 0 0 1 20 60 Z"
+                    fill="#10b981"
+                    opacity="0.8"
+                  />
+                  <line
+                    x1="160"
+                    y1="30"
+                    x2="160"
+                    y2="60"
+                    stroke="#94a3b8"
+                    stroke-width="1.5"
+                  />
+                  <path
+                    d="M 140 60 L 180 60 A 20 20 0 0 1 140 60 Z"
+                    fill="#10b981"
+                    opacity="0.8"
+                  />
                 </g>
               </svg>
             </div>
           </div>
 
-          <textarea style="display:none;" id="evidence-text-balancer"></textarea>
+          <textarea
+            style="display: none"
+            id="evidence-text-balancer"
+          ></textarea>
           <div class="actions">
             <button class="btn secondary" data-save>Save workspace</button>
             <button class="btn" data-complete>Complete with evidence</button>
@@ -501,32 +932,95 @@
             <span class="pill">15 min</span>
           </div>
           <h3>Hypothesis Forge</h3>
-          <p>Construct a logical biological hypothesis regarding yeast cell respiration rates. Drag blocks to assemble.</p>
-          
+          <p>
+            Construct a logical biological hypothesis regarding yeast cell
+            respiration rates. Drag blocks to assemble.
+          </p>
+
           <div class="activity-interactive-area">
-            <div class="word-bank" id="hypothesis-drawer" style="min-height: 50px;">
-              <div class="drag-item" draggable="true" id="h-item-3" data-drawer="hypothesis-drawer" data-val="BECAUSE">BECAUSE glucose is a simple monosaccharide immediately enterable to glycolysis.</div>
-              <div class="drag-item" draggable="true" id="h-item-1" data-drawer="hypothesis-drawer" data-val="IF">IF we increase glucose concentration in yeast growth media,</div>
-              <div class="drag-item" draggable="true" id="h-item-2" data-drawer="hypothesis-drawer" data-val="THEN">THEN carbon dioxide production will increase proportionally,</div>
+            <div
+              class="word-bank"
+              id="hypothesis-drawer"
+              style="min-height: 50px"
+            >
+              <div
+                class="drag-item"
+                draggable="true"
+                id="h-item-3"
+                data-drawer="hypothesis-drawer"
+                data-val="BECAUSE"
+              >
+                BECAUSE glucose is a simple monosaccharide immediately enterable
+                to glycolysis.
+              </div>
+              <div
+                class="drag-item"
+                draggable="true"
+                id="h-item-1"
+                data-drawer="hypothesis-drawer"
+                data-val="IF"
+              >
+                IF we increase glucose concentration in yeast growth media,
+              </div>
+              <div
+                class="drag-item"
+                draggable="true"
+                id="h-item-2"
+                data-drawer="hypothesis-drawer"
+                data-val="THEN"
+              >
+                THEN carbon dioxide production will increase proportionally,
+              </div>
             </div>
-            
-            <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 14px;">
+
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                margin-top: 14px;
+              "
+            >
               <div class="bin-container">
-                <span class="bin-title" style="color:#3b82f6;">1. IF Condition</span>
-                <div class="drop-container" id="hyp-s1" data-max="1" data-step="IF"></div>
+                <span class="bin-title" style="color: #3b82f6"
+                  >1. IF Condition</span
+                >
+                <div
+                  class="drop-container"
+                  id="hyp-s1"
+                  data-max="1"
+                  data-step="IF"
+                ></div>
               </div>
               <div class="bin-container">
-                <span class="bin-title" style="color:#fbbf24;">2. THEN Prediction</span>
-                <div class="drop-container" id="hyp-s2" data-max="1" data-step="THEN"></div>
+                <span class="bin-title" style="color: #fbbf24"
+                  >2. THEN Prediction</span
+                >
+                <div
+                  class="drop-container"
+                  id="hyp-s2"
+                  data-max="1"
+                  data-step="THEN"
+                ></div>
               </div>
               <div class="bin-container">
-                <span class="bin-title" style="color:#10b981;">3. BECAUSE Mechanism</span>
-                <div class="drop-container" id="hyp-s3" data-max="1" data-step="BECAUSE"></div>
+                <span class="bin-title" style="color: #10b981"
+                  >3. BECAUSE Mechanism</span
+                >
+                <div
+                  class="drop-container"
+                  id="hyp-s3"
+                  data-max="1"
+                  data-step="BECAUSE"
+                ></div>
               </div>
             </div>
           </div>
 
-          <textarea style="display:none;" id="evidence-text-hypothesis"></textarea>
+          <textarea
+            style="display: none"
+            id="evidence-text-hypothesis"
+          ></textarea>
           <div class="actions">
             <button class="btn secondary" data-save>Save workspace</button>
             <button class="btn" data-complete>Complete with evidence</button>
@@ -541,30 +1035,61 @@
           </div>
           <h3>Mitosis Matcher</h3>
           <p>Identify the mitotic division phase from the cell diagrams.</p>
-          
+
           <div class="activity-interactive-area">
             <div class="mitosis-stages">
               <div class="mitosis-stage">
                 <!-- Metaphase -->
                 <svg width="60" height="60" viewBox="0 0 80 80">
-                  <circle cx="40" cy="40" r="35" fill="none" stroke="#64748b" stroke-width="1.5" />
-                  <line x1="30" y1="40" x2="50" y2="40" stroke="#10b981" stroke-width="4" />
+                  <circle
+                    cx="40"
+                    cy="40"
+                    r="35"
+                    fill="none"
+                    stroke="#64748b"
+                    stroke-width="1.5"
+                  />
+                  <line
+                    x1="30"
+                    y1="40"
+                    x2="50"
+                    y2="40"
+                    stroke="#10b981"
+                    stroke-width="4"
+                  />
                 </svg>
-                <select id="mit-s1" style="font-size:0.75rem; padding:2px;">
+                <select id="mit-s1" style="font-size: 0.75rem; padding: 2px">
                   <option value="">Select...</option>
                   <option value="meta">Metaphase</option>
                   <option value="ana">Anaphase</option>
                 </select>
               </div>
-              
+
               <div class="mitosis-stage">
                 <!-- Anaphase -->
                 <svg width="60" height="60" viewBox="0 0 80 80">
-                  <circle cx="40" cy="40" r="35" fill="none" stroke="#64748b" stroke-width="1.5" />
-                  <path d="M 28 26 Q 33 24 38 26" fill="none" stroke="#10b981" stroke-width="3" />
-                  <path d="M 28 54 Q 33 56 38 54" fill="none" stroke="#10b981" stroke-width="3" />
+                  <circle
+                    cx="40"
+                    cy="40"
+                    r="35"
+                    fill="none"
+                    stroke="#64748b"
+                    stroke-width="1.5"
+                  />
+                  <path
+                    d="M 28 26 Q 33 24 38 26"
+                    fill="none"
+                    stroke="#10b981"
+                    stroke-width="3"
+                  />
+                  <path
+                    d="M 28 54 Q 33 56 38 54"
+                    fill="none"
+                    stroke="#10b981"
+                    stroke-width="3"
+                  />
                 </svg>
-                <select id="mit-s2" style="font-size:0.75rem; padding:2px;">
+                <select id="mit-s2" style="font-size: 0.75rem; padding: 2px">
                   <option value="">Select...</option>
                   <option value="meta">Metaphase</option>
                   <option value="ana">Anaphase</option>
@@ -573,7 +1098,7 @@
             </div>
           </div>
 
-          <textarea style="display:none;" id="evidence-text-mitosis"></textarea>
+          <textarea style="display: none" id="evidence-text-mitosis"></textarea>
           <div class="actions">
             <button class="btn secondary" data-save>Save workspace</button>
             <button class="btn" data-complete>Complete with evidence</button>
@@ -587,58 +1112,195 @@
             <span class="pill">30 min</span>
           </div>
           <h3>Lab Safety Inspector</h3>
-          <p>Find the 4 hazards in the lab scene SVG and click to secure the workspace.</p>
-          
+          <p>
+            Find the 4 hazards in the lab scene SVG and click to secure the
+            workspace.
+          </p>
+
           <div class="activity-interactive-area">
             <div class="safety-viewer">
-              <svg viewBox="0 0 320 180" width="100%" height="auto" style="display:block;">
+              <svg
+                viewBox="0 0 320 180"
+                width="100%"
+                height="auto"
+                style="display: block"
+              >
                 <rect x="0" y="0" width="320" height="180" fill="#f1f5f9" />
                 <rect x="10" y="110" width="300" height="10" fill="#cbd5e1" />
                 <rect x="10" y="120" width="300" height="60" fill="#94a3b8" />
-                
+
                 <!-- Hazard A: Open flame -->
                 <g class="hazard-overlay" id="hz-flame">
-                  <rect x="40" y="80" width="24" height="30" rx="3" fill="#1e293b" />
+                  <rect
+                    x="40"
+                    y="80"
+                    width="24"
+                    height="30"
+                    rx="3"
+                    fill="#1e293b"
+                  />
                   <rect x="44" y="84" width="16" height="12" fill="#ef4444" />
-                  <text x="52" y="92" font-size="6" fill="#ffffff" font-weight="700" text-anchor="middle">EtOH</text>
-                  <path id="flame-element" d="M 68 110 Q 72 70 76 110 Q 74 115 70 110 Z" fill="#f97316" />
-                  <circle cx="72" cy="110" r="10" fill="transparent" stroke="#f97316" stroke-dasharray="2 2" stroke-width="1.5" />
+                  <text
+                    x="52"
+                    y="92"
+                    font-size="6"
+                    fill="#ffffff"
+                    font-weight="700"
+                    text-anchor="middle"
+                  >
+                    EtOH
+                  </text>
+                  <path
+                    id="flame-element"
+                    d="M 68 110 Q 72 70 76 110 Q 74 115 70 110 Z"
+                    fill="#f97316"
+                  />
+                  <circle
+                    cx="72"
+                    cy="110"
+                    r="10"
+                    fill="transparent"
+                    stroke="#f97316"
+                    stroke-dasharray="2 2"
+                    stroke-width="1.5"
+                  />
                 </g>
-                
+
                 <!-- Hazard B: Sandwich -->
                 <g class="hazard-overlay" id="hz-food">
-                  <ellipse cx="130" cy="108" rx="15" ry="4" fill="#ffffff" stroke="#64748b" />
-                  <path id="sandwich-element" d="M 120 106 L 140 106 L 130 98 Z" fill="#d97706" />
-                  <circle cx="130" cy="106" r="12" fill="transparent" stroke="#d97706" stroke-dasharray="2 2" stroke-width="1.5" />
+                  <ellipse
+                    cx="130"
+                    cy="108"
+                    rx="15"
+                    ry="4"
+                    fill="#ffffff"
+                    stroke="#64748b"
+                  />
+                  <path
+                    id="sandwich-element"
+                    d="M 120 106 L 140 106 L 130 98 Z"
+                    fill="#d97706"
+                  />
+                  <circle
+                    cx="130"
+                    cy="106"
+                    r="12"
+                    fill="transparent"
+                    stroke="#d97706"
+                    stroke-dasharray="2 2"
+                    stroke-width="1.5"
+                  />
                 </g>
-                
+
                 <!-- Hazard C: Cracked Beaker -->
                 <g class="hazard-overlay" id="hz-glass">
-                  <rect x="200" y="85" width="20" height="25" fill="#e2e8f0" stroke="#475569" stroke-width="1.5" />
-                  <path id="crack-element" d="M 200 95 L 210 100 L 208 110" fill="none" stroke="#ef4444" stroke-width="2" />
-                  <ellipse id="drip-element" cx="202" cy="122" rx="2" ry="4" fill="#f59e0b" />
-                  <circle cx="205" cy="100" r="12" fill="transparent" stroke="#ef4444" stroke-dasharray="2 2" stroke-width="1.5" />
+                  <rect
+                    x="200"
+                    y="85"
+                    width="20"
+                    height="25"
+                    fill="#e2e8f0"
+                    stroke="#475569"
+                    stroke-width="1.5"
+                  />
+                  <path
+                    id="crack-element"
+                    d="M 200 95 L 210 100 L 208 110"
+                    fill="none"
+                    stroke="#ef4444"
+                    stroke-width="2"
+                  />
+                  <ellipse
+                    id="drip-element"
+                    cx="202"
+                    cy="122"
+                    rx="2"
+                    ry="4"
+                    fill="#f59e0b"
+                  />
+                  <circle
+                    cx="205"
+                    cy="100"
+                    r="12"
+                    fill="transparent"
+                    stroke="#ef4444"
+                    stroke-dasharray="2 2"
+                    stroke-width="1.5"
+                  />
                 </g>
-                
+
                 <!-- Hazard D: Unlabelled bottle -->
                 <g class="hazard-overlay" id="hz-label">
-                  <rect x="260" y="80" width="22" height="30" rx="2" fill="#475569" />
-                  <text id="q-element" x="271" y="100" font-size="14" fill="#ffd166" font-weight="900" text-anchor="middle">?</text>
-                  <rect id="lbl-element" x="263" y="88" width="16" height="12" fill="#ffffff" style="display:none;" />
-                  <text id="lbl-text-element" x="271" y="96" font-size="6" fill="#1e293b" font-weight="700" text-anchor="middle" style="display:none;">H2O</text>
-                  <circle cx="271" cy="95" r="12" fill="transparent" stroke="#ffd166" stroke-dasharray="2 2" stroke-width="1.5" />
+                  <rect
+                    x="260"
+                    y="80"
+                    width="22"
+                    height="30"
+                    rx="2"
+                    fill="#475569"
+                  />
+                  <text
+                    id="q-element"
+                    x="271"
+                    y="100"
+                    font-size="14"
+                    fill="#ffd166"
+                    font-weight="900"
+                    text-anchor="middle"
+                  >
+                    ?
+                  </text>
+                  <rect
+                    id="lbl-element"
+                    x="263"
+                    y="88"
+                    width="16"
+                    height="12"
+                    fill="#ffffff"
+                    style="display: none"
+                  />
+                  <text
+                    id="lbl-text-element"
+                    x="271"
+                    y="96"
+                    font-size="6"
+                    fill="#1e293b"
+                    font-weight="700"
+                    text-anchor="middle"
+                    style="display: none"
+                  >
+                    H2O
+                  </text>
+                  <circle
+                    cx="271"
+                    cy="95"
+                    r="12"
+                    fill="transparent"
+                    stroke="#ffd166"
+                    stroke-dasharray="2 2"
+                    stroke-width="1.5"
+                  />
                 </g>
               </svg>
             </div>
-            
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <span class="hazard-status-pill status-danger" id="safety-status-pill">
+
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              "
+            >
+              <span
+                class="hazard-status-pill status-danger"
+                id="safety-status-pill"
+              >
                 ⚠️ <span id="safety-count">0 / 4</span> Hazards Secured
               </span>
             </div>
           </div>
 
-          <textarea style="display:none;" id="evidence-text-safety"></textarea>
+          <textarea style="display: none" id="evidence-text-safety"></textarea>
           <div class="actions">
             <button class="btn secondary" data-save>Save workspace</button>
             <button class="btn" data-complete>Complete with evidence</button>
@@ -652,21 +1314,39 @@
             <span class="pill">15 min</span>
           </div>
           <h3>Food Web Designer</h3>
-          <p>Identify the trophic level for each organism in a forest ecosystem.</p>
-          
+          <p>
+            Identify the trophic level for each organism in a forest ecosystem.
+          </p>
+
           <div class="activity-interactive-area">
-            <div style="display:flex; flex-direction:column; gap:8px;">
-              <label style="display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; font-weight:700;">
+            <div style="display: flex; flex-direction: column; gap: 8px">
+              <label
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  font-size: 0.85rem;
+                  font-weight: 700;
+                "
+              >
                 Oak Tree:
-                <select id="web-oak" style="width:120px; padding:4px;">
+                <select id="web-oak" style="width: 120px; padding: 4px">
                   <option value="">Select...</option>
                   <option value="producer">Producer</option>
                   <option value="consumer">Primary Consumer</option>
                 </select>
               </label>
-              <label style="display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; font-weight:700;">
+              <label
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  font-size: 0.85rem;
+                  font-weight: 700;
+                "
+              >
                 Red Fox:
-                <select id="web-fox" style="width:120px; padding:4px;">
+                <select id="web-fox" style="width: 120px; padding: 4px">
                   <option value="">Select...</option>
                   <option value="producer">Primary Consumer</option>
                   <option value="secondary">Secondary Consumer</option>
@@ -675,7 +1355,10 @@
             </div>
           </div>
 
-          <textarea style="display:none;" id="evidence-text-food-web"></textarea>
+          <textarea
+            style="display: none"
+            id="evidence-text-food-web"
+          ></textarea>
           <div class="actions">
             <button class="btn secondary" data-save>Save workspace</button>
             <button class="btn" data-complete>Complete with evidence</button>
@@ -689,21 +1372,40 @@
             <span class="pill">15 min</span>
           </div>
           <h3>Photosynthesis I/O</h3>
-          <p>Classify Carbon Dioxide (CO₂) and Oxygen (O₂) in the photosynthetic reaction.</p>
-          
+          <p>
+            Classify Carbon Dioxide (CO₂) and Oxygen (O₂) in the photosynthetic
+            reaction.
+          </p>
+
           <div class="activity-interactive-area">
-            <div style="display:flex; flex-direction:column; gap:8px;">
-              <label style="display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; font-weight:700;">
+            <div style="display: flex; flex-direction: column; gap: 8px">
+              <label
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  font-size: 0.85rem;
+                  font-weight: 700;
+                "
+              >
                 Carbon Dioxide (CO₂):
-                <select id="photo-co2" style="width:120px; padding:4px;">
+                <select id="photo-co2" style="width: 120px; padding: 4px">
                   <option value="">Select...</option>
                   <option value="input">Input / Reactant</option>
                   <option value="output">Output / Product</option>
                 </select>
               </label>
-              <label style="display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; font-weight:700;">
+              <label
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  font-size: 0.85rem;
+                  font-weight: 700;
+                "
+              >
                 Oxygen (O₂):
-                <select id="photo-o2" style="width:120px; padding:4px;">
+                <select id="photo-o2" style="width: 120px; padding: 4px">
                   <option value="">Select...</option>
                   <option value="input">Input / Reactant</option>
                   <option value="output">Output / Product</option>
@@ -712,7 +1414,10 @@
             </div>
           </div>
 
-          <textarea style="display:none;" id="evidence-text-photosynthesis"></textarea>
+          <textarea
+            style="display: none"
+            id="evidence-text-photosynthesis"
+          ></textarea>
           <div class="actions">
             <button class="btn secondary" data-save>Save workspace</button>
             <button class="btn" data-complete>Complete with evidence</button>
@@ -727,25 +1432,155 @@
           </div>
           <h3>Cell Theory Audit</h3>
           <p>Identify the core tenet of Cell Theory from the dropdown below.</p>
-          
+
           <div class="activity-interactive-area">
-            <label style="font-size:0.85rem; font-weight:700; color:var(--text-white); display:block; margin-bottom:4px;">All living organisms are composed of:</label>
+            <label
+              style="
+                font-size: 0.85rem;
+                font-weight: 700;
+                color: var(--text-white);
+                display: block;
+                margin-bottom: 4px;
+              "
+              >All living organisms are composed of:</label
+            >
             <select id="cell-tenet">
               <option value="">Select statement...</option>
               <option value="incorrect">Inorganic atomic shells</option>
-              <option value="correct">One or more cells (the basic unit of life)</option>
+              <option value="correct">
+                One or more cells (the basic unit of life)
+              </option>
             </select>
           </div>
 
-          <textarea style="display:none;" id="evidence-text-cell-theory"></textarea>
+          <textarea
+            style="display: none"
+            id="evidence-text-cell-theory"
+          ></textarea>
           <div class="actions">
             <button class="btn secondary" data-save>Save workspace</button>
             <button class="btn" data-complete>Complete with evidence</button>
           </div>
         </article>
-
       </div>
     </main>
+
+    <section class="wrap resources" aria-label="Additional science resources">
+      <div class="section-head">
+        <h2>📚 Learn More — Extra Science Resources</h2>
+        <p class="muted">
+          Free websites, simulations, and videos to explore Biology and
+          Chemistry before 10th grade.
+        </p>
+      </div>
+      <div class="resources-grid">
+        <div class="res-card">
+          <h3>🎥 Video Lessons</h3>
+          <p>Short, clear lessons that re-teach each big idea.</p>
+          <ul>
+            <li>
+              <a
+                href="https://www.khanacademy.org/science/biology"
+                target="_blank"
+                rel="noopener"
+                >Khan Academy — Biology<span class="res-desc"
+                  >Cells, genetics, ecology, and more</span
+                ></a
+              >
+            </li>
+            <li>
+              <a
+                href="https://www.khanacademy.org/science/chemistry"
+                target="_blank"
+                rel="noopener"
+                >Khan Academy — Chemistry<span class="res-desc"
+                  >Atoms, reactions, and balancing equations</span
+                ></a
+              >
+            </li>
+            <li>
+              <a
+                href="https://www.youtube.com/@crashcourse/playlists"
+                target="_blank"
+                rel="noopener"
+                >Crash Course Science<span class="res-desc"
+                  >Fast, fun Biology &amp; Chemistry series</span
+                ></a
+              >
+            </li>
+          </ul>
+        </div>
+        <div class="res-card">
+          <h3>🔬 Interactive Simulations</h3>
+          <p>Run safe virtual experiments and see how things work.</p>
+          <ul>
+            <li>
+              <a
+                href="https://phet.colorado.edu/"
+                target="_blank"
+                rel="noopener"
+                >PhET Simulations<span class="res-desc"
+                  >Free interactive science &amp; math sims</span
+                ></a
+              >
+            </li>
+            <li>
+              <a
+                href="https://learn.genetics.utah.edu/"
+                target="_blank"
+                rel="noopener"
+                >Learn.Genetics (Utah)<span class="res-desc"
+                  >Explore cells, DNA, and heredity</span
+                ></a
+              >
+            </li>
+            <li>
+              <a
+                href="https://www.ck12.org/c/biology/"
+                target="_blank"
+                rel="noopener"
+                >CK-12 Biology<span class="res-desc"
+                  >Free interactive textbook + practice</span
+                ></a
+              >
+            </li>
+          </ul>
+        </div>
+        <div class="res-card">
+          <h3>🌍 Explore &amp; Read</h3>
+          <p>Dig deeper into real science stories and discoveries.</p>
+          <ul>
+            <li>
+              <a href="https://science.nasa.gov/" target="_blank" rel="noopener"
+                >NASA Science<span class="res-desc"
+                  >Space, Earth, and the latest discoveries</span
+                ></a
+              >
+            </li>
+            <li>
+              <a
+                href="https://education.nationalgeographic.org/"
+                target="_blank"
+                rel="noopener"
+                >National Geographic Education<span class="res-desc"
+                  >Articles, photos, and explainers</span
+                ></a
+              >
+            </li>
+            <li>
+              <a
+                href="https://www.sciencenewsexplores.org/"
+                target="_blank"
+                rel="noopener"
+                >Science News Explores<span class="res-desc"
+                  >Science journalism written for students</span
+                ></a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
 
     <footer class="footer">EduWonderLab &bull; Aviad Science Summer Hub</footer>
 
@@ -757,50 +1592,53 @@
       var rlTargets = [
         { name: "GREEN (A=6, B=0)", a: "6", b: "0", color: "#10b981" },
         { name: "YELLOW (A=10, B=0)", a: "10", b: "0", color: "#fbbf24" },
-        { name: "PURPLE (A=2, B=5)", a: "2", b: "5", color: "#a855f7" }
+        { name: "PURPLE (A=2, B=5)", a: "2", b: "5", color: "#a855f7" },
       ];
       var rlRoundIdx = 0;
-      
-      var startBtnRl = document.getElementById('game-btn-rl');
-      var selAcid = document.getElementById('rl-acid');
-      var selBase = document.getElementById('rl-base');
-      var fluid = document.getElementById('beaker-fluid');
-      
-      startBtnRl.addEventListener('click', function() {
-        EWL.playAudio('game-start');
-        document.getElementById('game-overlay-rl').style.display = 'none';
+
+      var startBtnRl = document.getElementById("game-btn-rl");
+      var selAcid = document.getElementById("rl-acid");
+      var selBase = document.getElementById("rl-base");
+      var fluid = document.getElementById("beaker-fluid");
+
+      startBtnRl.addEventListener("click", function () {
+        EWL.playAudio("game-start");
+        document.getElementById("game-overlay-rl").style.display = "none";
         rlScore = 0;
         isRlPlaying = true;
         rlRoundIdx = 0;
         updateRlHUD();
         setupRlRound();
       });
-      
+
       function updateRlHUD() {
-        document.getElementById('rl-score-val').textContent = rlScore;
+        document.getElementById("rl-score-val").textContent = rlScore;
       }
-      
+
       function setupRlRound() {
         var t = rlTargets[rlRoundIdx];
-        document.getElementById('rl-target-lbl').textContent = t.name;
+        document.getElementById("rl-target-lbl").textContent = t.name;
         selAcid.value = "0";
         selBase.value = "0";
         fluid.setAttribute("fill", "#3b82f6");
       }
-      
+
       function triggerMix() {
         if (!isRlPlaying) return;
         var a = selAcid.value;
         var b = selBase.value;
         var t = rlTargets[rlRoundIdx];
-        
+
         // Fluid color shift
-        if (a === "6" && b === "0") fluid.setAttribute("fill", "#10b981"); // green
-        else if (a === "10" && b === "0") fluid.setAttribute("fill", "#fbbf24"); // yellow
-        else if (a === "2" && b === "5") fluid.setAttribute("fill", "#a855f7"); // purple
+        if (a === "6" && b === "0")
+          fluid.setAttribute("fill", "#10b981"); // green
+        else if (a === "10" && b === "0")
+          fluid.setAttribute("fill", "#fbbf24"); // yellow
+        else if (a === "2" && b === "5")
+          fluid.setAttribute("fill", "#a855f7"); // purple
         else if (a === "10" && b === "10") {
           // Explode
-          EWL.playAudio('fail');
+          EWL.playAudio("fail");
           fluid.setAttribute("fill", "#ef4444");
           alert("Explosion! Over-mixing acids and bases cause gas eruptions!");
           rlScore = Math.max(0, rlScore - 1);
@@ -810,10 +1648,10 @@
         } else {
           fluid.setAttribute("fill", "#475569");
         }
-        
+
         if (a === t.a && b === t.b) {
           rlScore++;
-          EWL.playAudio('powerup');
+          EWL.playAudio("powerup");
           triggerGasBubbles();
           updateRlHUD();
           if (rlScore >= 3) {
@@ -824,22 +1662,28 @@
           setTimeout(setupRlRound, 1000);
         }
       }
-      
-      selAcid.addEventListener('change', triggerMix);
-      selBase.addEventListener('change', triggerMix);
-      
+
+      selAcid.addEventListener("change", triggerMix);
+      selBase.addEventListener("change", triggerMix);
+
       function triggerGasBubbles() {
-        var gasGroup = document.getElementById('gas-layer');
+        var gasGroup = document.getElementById("gas-layer");
         gasGroup.innerHTML = "";
         for (var i = 0; i < 5; i++) {
-          var circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          var circle = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "circle",
+          );
           circle.setAttribute("cx", (120 + Math.random() * 70).toString());
           circle.setAttribute("cy", "140");
           circle.setAttribute("r", (2 + Math.random() * 3).toString());
           circle.setAttribute("fill", "#ffffff");
           circle.setAttribute("opacity", "0.6");
-          
-          var anim = document.createElementNS("http://www.w3.org/2000/svg", "animate");
+
+          var anim = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "animate",
+          );
           anim.setAttribute("attributeName", "cy");
           anim.setAttribute("from", "140");
           anim.setAttribute("to", "60");
@@ -849,153 +1693,203 @@
           gasGroup.appendChild(circle);
         }
       }
-      
+
       function endRlGame(win) {
         isRlPlaying = false;
-        var high = EWL.saveHighScore('reaction-lab', win ? 100 : 0);
-        
-        var overlay = document.getElementById('game-overlay-rl');
-        var title = overlay.querySelector('h4');
-        var desc = overlay.querySelector('p');
-        var btn = document.getElementById('game-btn-rl');
-        
+        var high = EWL.saveHighScore("reaction-lab", win ? 100 : 0);
+
+        var overlay = document.getElementById("game-overlay-rl");
+        var title = overlay.querySelector("h4");
+        var desc = overlay.querySelector("p");
+        var btn = document.getElementById("game-btn-rl");
+
         title.textContent = "Reaction Complete! 🧪";
         desc.textContent = "You matched all standard colors. High Score saved.";
         btn.textContent = "Play Again";
         overlay.style.display = "flex";
-        
-        document.getElementById('evidence-text-reaction-lab').value = "SCORE:" + rlScore;
+
+        document.getElementById("evidence-text-reaction-lab").value =
+          "SCORE:" + rlScore;
       }
 
       // 2. Variable Sorter
       function validateVariables() {
-        var ivCount = document.getElementById('bin-iv').querySelectorAll('.drag-item').length;
-        var dvCount = document.getElementById('bin-dv').querySelectorAll('.drag-item').length;
-        var cvCount = document.getElementById('bin-cv').querySelectorAll('.drag-item').length;
-        
+        var ivCount = document
+          .getElementById("bin-iv")
+          .querySelectorAll(".drag-item").length;
+        var dvCount = document
+          .getElementById("bin-dv")
+          .querySelectorAll(".drag-item").length;
+        var cvCount = document
+          .getElementById("bin-cv")
+          .querySelectorAll(".drag-item").length;
+
         var details = [];
-        document.querySelectorAll('.drop-container').forEach(function(bin) {
-          var name = bin.id.replace('bin-', '').toUpperCase();
-          var items = Array.from(bin.querySelectorAll('.drag-item')).map(function(item) {
-            return item.textContent.trim();
-          });
-          details.push(name + ": " + (items.join(', ') || "None"));
+        document.querySelectorAll(".drop-container").forEach(function (bin) {
+          var name = bin.id.replace("bin-", "").toUpperCase();
+          var items = Array.from(bin.querySelectorAll(".drag-item")).map(
+            function (item) {
+              return item.textContent.trim();
+            },
+          );
+          details.push(name + ": " + (items.join(", ") || "None"));
         });
-        document.getElementById('evidence-text-variables').value = details.join('\n');
+        document.getElementById("evidence-text-variables").value =
+          details.join("\n");
       }
 
       // 3. Data Detective
       var selectedOutlier = "";
-      document.querySelectorAll('.data-point').forEach(function(pt) {
-        pt.addEventListener('click', function() {
-          document.querySelectorAll('.data-point').forEach(function(p) { p.classList.remove('selected'); });
-          pt.classList.add('selected');
+      document.querySelectorAll(".data-point").forEach(function (pt) {
+        pt.addEventListener("click", function () {
+          document.querySelectorAll(".data-point").forEach(function (p) {
+            p.classList.remove("selected");
+          });
+          pt.classList.add("selected");
           selectedOutlier = pt.id;
-          document.getElementById('selected-outlier-lbl').textContent = pt.dataset.val;
-          document.getElementById('selected-outlier-lbl').style.color = (pt.id === 'pt-outlier') ? '#10b981' : '#ef4444';
+          document.getElementById("selected-outlier-lbl").textContent =
+            pt.dataset.val;
+          document.getElementById("selected-outlier-lbl").style.color =
+            pt.id === "pt-outlier" ? "#10b981" : "#ef4444";
           validateDetective();
         });
       });
       function validateDetective() {
-        var cerText = document.getElementById('detective-cer').value.trim();
-        document.getElementById('evidence-text-detective').value = "OUTLIER_SELECTION: " + selectedOutlier + "\nCER_RESPONSE: " + cerText;
+        var cerText = document.getElementById("detective-cer").value.trim();
+        document.getElementById("evidence-text-detective").value =
+          "OUTLIER_SELECTION: " +
+          selectedOutlier +
+          "\nCER_RESPONSE: " +
+          cerText;
       }
-      document.getElementById('detective-cer').addEventListener('input', validateDetective);
+      document
+        .getElementById("detective-cer")
+        .addEventListener("input", validateDetective);
 
       // 4. Procedure Repair Shop
       function validateProcedure() {
         var order = [];
-        ['proc-s1', 'proc-s2', 'proc-s3', 'proc-s4'].forEach(function(id) {
-          var child = document.getElementById(id).querySelector('.drag-item');
+        ["proc-s1", "proc-s2", "proc-s3", "proc-s4"].forEach(function (id) {
+          var child = document.getElementById(id).querySelector(".drag-item");
           order.push(child ? child.dataset.val : "");
         });
-        var vUnit = document.getElementById('unit-vol').value;
-        var mUnit = document.getElementById('unit-mass').value;
-        document.getElementById('evidence-text-procedure').value = "ORDER: " + order.join(',') + "\nVOLUME_UNIT: " + vUnit + "\nMASS_UNIT: " + mUnit;
+        var vUnit = document.getElementById("unit-vol").value;
+        var mUnit = document.getElementById("unit-mass").value;
+        document.getElementById("evidence-text-procedure").value =
+          "ORDER: " +
+          order.join(",") +
+          "\nVOLUME_UNIT: " +
+          vUnit +
+          "\nMASS_UNIT: " +
+          mUnit;
       }
-      document.getElementById('unit-vol').addEventListener('change', validateProcedure);
-      document.getElementById('unit-mass').addEventListener('change', validateProcedure);
+      document
+        .getElementById("unit-vol")
+        .addEventListener("change", validateProcedure);
+      document
+        .getElementById("unit-mass")
+        .addEventListener("change", validateProcedure);
 
       // 5. Misconception Breaker
       function validateMisconception() {
-        var m1 = document.getElementById('myth-1').value;
-        var m2 = document.getElementById('myth-2').value;
-        document.getElementById('evidence-text-misconception').value = "MYTH_1: " + m1 + "\nMYTH_2: " + m2;
+        var m1 = document.getElementById("myth-1").value;
+        var m2 = document.getElementById("myth-2").value;
+        document.getElementById("evidence-text-misconception").value =
+          "MYTH_1: " + m1 + "\nMYTH_2: " + m2;
       }
-      document.getElementById('myth-1').addEventListener('change', validateMisconception);
-      document.getElementById('myth-2').addEventListener('change', validateMisconception);
+      document
+        .getElementById("myth-1")
+        .addEventListener("change", validateMisconception);
+      document
+        .getElementById("myth-2")
+        .addEventListener("change", validateMisconception);
 
       // 6. Equation Balancer
-      var coefs = ['coef-a', 'coef-b', 'coef-c', 'coef-d'];
-      coefs.forEach(function(cid) {
-        document.getElementById(cid).addEventListener('change', function() {
-          var a = parseInt(document.getElementById('coef-a').value, 10);
-          var b = parseInt(document.getElementById('coef-b').value, 10);
-          var c = parseInt(document.getElementById('coef-c').value, 10);
-          var d = parseInt(document.getElementById('coef-d').value, 10);
-          
-          var diff = (6 * a + 2 * b) - (2 * c + d);
+      var coefs = ["coef-a", "coef-b", "coef-c", "coef-d"];
+      coefs.forEach(function (cid) {
+        document.getElementById(cid).addEventListener("change", function () {
+          var a = parseInt(document.getElementById("coef-a").value, 10);
+          var b = parseInt(document.getElementById("coef-b").value, 10);
+          var c = parseInt(document.getElementById("coef-c").value, 10);
+          var d = parseInt(document.getElementById("coef-d").value, 10);
+
+          var diff = 6 * a + 2 * b - (2 * c + d);
           var angle = Math.max(-12, Math.min(12, diff * 0.1));
-          document.getElementById('scale-beam').style.transform = 'rotate(' + angle + 'deg)';
-          document.getElementById('evidence-text-balancer').value = "COEFFICIENTS: " + a + "," + b + "," + c + "," + d;
+          document.getElementById("scale-beam").style.transform =
+            "rotate(" + angle + "deg)";
+          document.getElementById("evidence-text-balancer").value =
+            "COEFFICIENTS: " + a + "," + b + "," + c + "," + d;
         });
       });
 
       // 7. Hypothesis Forge
       function validateHypothesis() {
         var steps = [];
-        ['hyp-s1', 'hyp-s2', 'hyp-s3'].forEach(function(id) {
-          var child = document.getElementById(id).querySelector('.drag-item');
+        ["hyp-s1", "hyp-s2", "hyp-s3"].forEach(function (id) {
+          var child = document.getElementById(id).querySelector(".drag-item");
           steps.push(child ? child.dataset.val : "");
         });
-        document.getElementById('evidence-text-hypothesis').value = "HYPOTHESIS_STEPS: " + steps.join(',');
+        document.getElementById("evidence-text-hypothesis").value =
+          "HYPOTHESIS_STEPS: " + steps.join(",");
       }
 
       // 8. Mitosis Matcher
-      var mit1 = document.getElementById('mit-s1');
-      var mit2 = document.getElementById('mit-s2');
+      var mit1 = document.getElementById("mit-s1");
+      var mit2 = document.getElementById("mit-s2");
       function validateMitosis() {
-        document.getElementById('evidence-text-mitosis').value = "MIT_1: " + mit1.value + "\nMIT_2: " + mit2.value;
+        document.getElementById("evidence-text-mitosis").value =
+          "MIT_1: " + mit1.value + "\nMIT_2: " + mit2.value;
       }
-      mit1.addEventListener('change', validateMitosis);
-      mit2.addEventListener('change', validateMitosis);
+      mit1.addEventListener("change", validateMitosis);
+      mit2.addEventListener("change", validateMitosis);
 
       // 9. Lab Safety hotspots click
-      var hazardsResolved = { flame: false, food: false, glass: false, label: false };
-      document.getElementById('hz-flame').addEventListener('click', function() {
-        hazardsResolved.flame = true;
-        document.getElementById('flame-element').style.display = 'none';
-        updateSafetyUI();
-      });
-      document.getElementById('hz-food').addEventListener('click', function() {
+      var hazardsResolved = {
+        flame: false,
+        food: false,
+        glass: false,
+        label: false,
+      };
+      document
+        .getElementById("hz-flame")
+        .addEventListener("click", function () {
+          hazardsResolved.flame = true;
+          document.getElementById("flame-element").style.display = "none";
+          updateSafetyUI();
+        });
+      document.getElementById("hz-food").addEventListener("click", function () {
         hazardsResolved.food = true;
-        document.getElementById('sandwich-element').style.display = 'none';
+        document.getElementById("sandwich-element").style.display = "none";
         updateSafetyUI();
       });
-      document.getElementById('hz-glass').addEventListener('click', function() {
-        hazardsResolved.glass = true;
-        document.getElementById('crack-element').style.display = 'none';
-        document.getElementById('drip-element').style.display = 'none';
-        updateSafetyUI();
-      });
-      document.getElementById('hz-label').addEventListener('click', function() {
-        hazardsResolved.label = true;
-        document.getElementById('q-element').style.display = 'none';
-        document.getElementById('lbl-element').style.display = '';
-        document.getElementById('lbl-text-element').style.display = '';
-        updateSafetyUI();
-      });
-      
+      document
+        .getElementById("hz-glass")
+        .addEventListener("click", function () {
+          hazardsResolved.glass = true;
+          document.getElementById("crack-element").style.display = "none";
+          document.getElementById("drip-element").style.display = "none";
+          updateSafetyUI();
+        });
+      document
+        .getElementById("hz-label")
+        .addEventListener("click", function () {
+          hazardsResolved.label = true;
+          document.getElementById("q-element").style.display = "none";
+          document.getElementById("lbl-element").style.display = "";
+          document.getElementById("lbl-text-element").style.display = "";
+          updateSafetyUI();
+        });
+
       function updateSafetyUI() {
         var count = 0;
         if (hazardsResolved.flame) count++;
         if (hazardsResolved.food) count++;
         if (hazardsResolved.glass) count++;
         if (hazardsResolved.label) count++;
-        
-        var pill = document.getElementById('safety-status-pill');
-        document.getElementById('safety-count').textContent = count + " / 4";
-        
+
+        var pill = document.getElementById("safety-status-pill");
+        document.getElementById("safety-count").textContent = count + " / 4";
+
         if (count === 4) {
           pill.className = "hazard-status-pill status-success";
           pill.innerHTML = "✅ All 4 Hazards Secured";
@@ -1003,37 +1897,48 @@
           pill.className = "hazard-status-pill status-danger";
           pill.innerHTML = "⚠️ " + count + " / 4 Hazards Secured";
         }
-        
-        document.getElementById('evidence-text-safety').value = "FLAME:" + hazardsResolved.flame + "\nFOOD:" + hazardsResolved.food + "\nGLASS:" + hazardsResolved.glass + "\nLABEL:" + hazardsResolved.label;
+
+        document.getElementById("evidence-text-safety").value =
+          "FLAME:" +
+          hazardsResolved.flame +
+          "\nFOOD:" +
+          hazardsResolved.food +
+          "\nGLASS:" +
+          hazardsResolved.glass +
+          "\nLABEL:" +
+          hazardsResolved.label;
       }
 
       // 10. Food Web Designer
-      var webOak = document.getElementById('web-oak');
-      var webFox = document.getElementById('web-fox');
+      var webOak = document.getElementById("web-oak");
+      var webFox = document.getElementById("web-fox");
       function validateFoodWeb() {
-        document.getElementById('evidence-text-food-web').value = "OAK:" + webOak.value + "\nFOX:" + webFox.value;
+        document.getElementById("evidence-text-food-web").value =
+          "OAK:" + webOak.value + "\nFOX:" + webFox.value;
       }
-      webOak.addEventListener('change', validateFoodWeb);
-      webFox.addEventListener('change', validateFoodWeb);
+      webOak.addEventListener("change", validateFoodWeb);
+      webFox.addEventListener("change", validateFoodWeb);
 
       // 11. Photosynthesis Inputs/Outputs
-      var photoCo2 = document.getElementById('photo-co2');
-      var photoO2 = document.getElementById('photo-o2');
+      var photoCo2 = document.getElementById("photo-co2");
+      var photoO2 = document.getElementById("photo-o2");
       function validatePhoto() {
-        document.getElementById('evidence-text-photosynthesis').value = "CO2:" + photoCo2.value + "\nO2:" + photoO2.value;
+        document.getElementById("evidence-text-photosynthesis").value =
+          "CO2:" + photoCo2.value + "\nO2:" + photoO2.value;
       }
-      photoCo2.addEventListener('change', validatePhoto);
-      photoO2.addEventListener('change', validatePhoto);
+      photoCo2.addEventListener("change", validatePhoto);
+      photoO2.addEventListener("change", validatePhoto);
 
       // 12. Cell Theory
-      var cellT = document.getElementById('cell-tenet');
+      var cellT = document.getElementById("cell-tenet");
       function validateCellTheory() {
-        document.getElementById('evidence-text-cell-theory').value = "TENET:" + cellT.value;
+        document.getElementById("evidence-text-cell-theory").value =
+          "TENET:" + cellT.value;
       }
-      cellT.addEventListener('change', validateCellTheory);
+      cellT.addEventListener("change", validateCellTheory);
 
       // Drag/Drop hooks
-      window.validateActivityState = function(card) {
+      window.validateActivityState = function (card) {
         var id = card.dataset.id;
         if (id === "variables") validateVariables();
         if (id === "procedure") validateProcedure();
@@ -1041,225 +1946,321 @@
       };
 
       // Integrate with EWL shared validation
-      window.checkInteractiveComplete = function(card) {
+      window.checkInteractiveComplete = function (card) {
         var id = card.dataset.id;
-        
+
         if (id === "reaction-lab") {
           if (rlScore < 3) {
-            return { success: false, message: "Match all 3 reactant solutions in the Reaction Lab game!" };
+            return {
+              success: false,
+              message:
+                "Match all 3 reactant solutions in the Reaction Lab game!",
+            };
           }
         }
-        
+
         if (id === "variables") {
-          var ivs = Array.from(document.getElementById('bin-iv').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
-          var dvs = Array.from(document.getElementById('bin-dv').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
-          var cvs = Array.from(document.getElementById('bin-cv').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
+          var ivs = Array.from(
+            document.getElementById("bin-iv").querySelectorAll(".drag-item"),
+          ).map(function (item) {
+            return item.id;
+          });
+          var dvs = Array.from(
+            document.getElementById("bin-dv").querySelectorAll(".drag-item"),
+          ).map(function (item) {
+            return item.id;
+          });
+          var cvs = Array.from(
+            document.getElementById("bin-cv").querySelectorAll(".drag-item"),
+          ).map(function (item) {
+            return item.id;
+          });
           if (ivs.length !== 1 || dvs.length !== 1 || cvs.length !== 3) {
-            return { success: false, message: "Sort all 5 variable cards into their bins." };
+            return {
+              success: false,
+              message: "Sort all 5 variable cards into their bins.",
+            };
           }
-          if (ivs[0] !== 'v-item-1' || dvs[0] !== 'v-item-2') {
+          if (ivs[0] !== "v-item-1" || dvs[0] !== "v-item-2") {
             return { success: false, message: "Check your variable sorts!" };
           }
         }
-        
+
         if (id === "detective") {
           if (selectedOutlier !== "pt-outlier") {
-            return { success: false, message: "Identify and select the outlier trial point on the graph." };
+            return {
+              success: false,
+              message:
+                "Identify and select the outlier trial point on the graph.",
+            };
           }
-          var cer = document.getElementById('detective-cer').value.trim();
+          var cer = document.getElementById("detective-cer").value.trim();
           if (cer.length < 25) {
-            return { success: false, message: "Enter a detailed scientific CER paragraph explaining the outlier trial." };
+            return {
+              success: false,
+              message:
+                "Enter a detailed scientific CER paragraph explaining the outlier trial.",
+            };
           }
         }
-        
+
         if (id === "procedure") {
-          var order = Array.from(document.querySelectorAll("[id^='proc-s']")).map(function(slot) {
-            var item = slot.querySelector('.drag-item');
-            return item ? item.dataset.val : "";
-          }).join('');
+          var order = Array.from(document.querySelectorAll("[id^='proc-s']"))
+            .map(function (slot) {
+              var item = slot.querySelector(".drag-item");
+              return item ? item.dataset.val : "";
+            })
+            .join("");
           if (order !== "1234") {
-            return { success: false, message: "Arrange all 4 laboratory steps in correct order." };
+            return {
+              success: false,
+              message: "Arrange all 4 laboratory steps in correct order.",
+            };
           }
-          var vUnit = document.getElementById('unit-vol').value;
-          var mUnit = document.getElementById('unit-mass').value;
-          if (vUnit !== 'ml' || mUnit !== 'g') {
-            return { success: false, message: "Select correct scientific metric units." };
+          var vUnit = document.getElementById("unit-vol").value;
+          var mUnit = document.getElementById("unit-mass").value;
+          if (vUnit !== "ml" || mUnit !== "g") {
+            return {
+              success: false,
+              message: "Select correct scientific metric units.",
+            };
           }
         }
-        
+
         if (id === "misconception") {
-          if (document.getElementById('myth-1').value !== 'correct' || document.getElementById('myth-2').value !== 'correct') {
+          if (
+            document.getElementById("myth-1").value !== "correct" ||
+            document.getElementById("myth-2").value !== "correct"
+          ) {
             return { success: false, message: "Match all myths to facts." };
           }
         }
-        
+
         if (id === "balancer") {
-          var a = document.getElementById('coef-a').value;
-          var b = document.getElementById('coef-b').value;
-          var c = document.getElementById('coef-c').value;
-          var d = document.getElementById('coef-d').value;
-          if (a !== '1' || b !== '6' || c !== '6' || d !== '6') {
-            return { success: false, message: "Balance the respiration equation! Left and right atoms must match." };
+          var a = document.getElementById("coef-a").value;
+          var b = document.getElementById("coef-b").value;
+          var c = document.getElementById("coef-c").value;
+          var d = document.getElementById("coef-d").value;
+          if (a !== "1" || b !== "6" || c !== "6" || d !== "6") {
+            return {
+              success: false,
+              message:
+                "Balance the respiration equation! Left and right atoms must match.",
+            };
           }
         }
-        
+
         if (id === "hypothesis") {
-          var steps = Array.from(document.querySelectorAll("[id^='hyp-s']")).map(function(slot) {
-            var item = slot.querySelector('.drag-item');
-            return item ? item.dataset.val : "";
-          }).join(',');
+          var steps = Array.from(document.querySelectorAll("[id^='hyp-s']"))
+            .map(function (slot) {
+              var item = slot.querySelector(".drag-item");
+              return item ? item.dataset.val : "";
+            })
+            .join(",");
           if (steps !== "IF,THEN,BECAUSE") {
-            return { success: false, message: "Reorder hypothesis components chronologically." };
+            return {
+              success: false,
+              message: "Reorder hypothesis components chronologically.",
+            };
           }
         }
-        
+
         if (id === "mitosis") {
-          if (mit1.value !== 'meta' || mit2.value !== 'ana') {
-            return { success: false, message: "Identify all mitosis diagrams correctly." };
+          if (mit1.value !== "meta" || mit2.value !== "ana") {
+            return {
+              success: false,
+              message: "Identify all mitosis diagrams correctly.",
+            };
           }
         }
-        
+
         if (id === "safety") {
-          var secured = hazardsResolved.flame && hazardsResolved.food && hazardsResolved.glass && hazardsResolved.label;
+          var secured =
+            hazardsResolved.flame &&
+            hazardsResolved.food &&
+            hazardsResolved.glass &&
+            hazardsResolved.label;
           if (!secured) {
-            return { success: false, message: "Find and click all 4 hazards to secure the laboratory workspace." };
+            return {
+              success: false,
+              message:
+                "Find and click all 4 hazards to secure the laboratory workspace.",
+            };
           }
         }
-        
+
         if (id === "food-web") {
-          if (webOak.value !== 'producer' || webFox.value !== 'secondary') {
-            return { success: false, message: "Select correct trophic levels for forest organisms." };
+          if (webOak.value !== "producer" || webFox.value !== "secondary") {
+            return {
+              success: false,
+              message: "Select correct trophic levels for forest organisms.",
+            };
           }
         }
-        
+
         if (id === "photosynthesis") {
-          if (photoCo2.value !== 'input' || photoO2.value !== 'output') {
-            return { success: false, message: "Classify photosynthesis compounds correctly." };
+          if (photoCo2.value !== "input" || photoO2.value !== "output") {
+            return {
+              success: false,
+              message: "Classify photosynthesis compounds correctly.",
+            };
           }
         }
-        
+
         if (id === "cell-theory") {
-          if (cellT.value !== 'correct') {
-            return { success: false, message: "Select correct tenet statement." };
+          if (cellT.value !== "correct") {
+            return {
+              success: false,
+              message: "Select correct tenet statement.",
+            };
           }
         }
-        
+
         // Bind actual data
-        var hiddenText = document.getElementById('evidence-text-' + id).value;
-        card.querySelector('textarea').value = hiddenText;
-        
+        var hiddenText = document.getElementById("evidence-text-" + id).value;
+        card.querySelector("textarea").value = hiddenText;
+
         return { success: true };
       };
 
       // Restore custom Interactive State
-      window.restoreInteractiveState = function(card, savedState) {
+      window.restoreInteractiveState = function (card, savedState) {
         var id = card.dataset.id;
-        
+
         if (id === "reaction-lab" && savedState.SCORE) {
           rlScore = parseInt(savedState.SCORE, 10);
           updateRlHUD();
           if (rlScore >= 3) {
-            document.getElementById('game-overlay-rl').style.display = 'flex';
-            document.getElementById('game-overlay-rl').querySelector('h4').textContent = "Reaction Complete! 🧪";
+            document.getElementById("game-overlay-rl").style.display = "flex";
+            document
+              .getElementById("game-overlay-rl")
+              .querySelector("h4").textContent = "Reaction Complete! 🧪";
           }
         }
-        
+
         if (id === "variables" && savedState.iv) {
-          if (savedState.iv) document.getElementById('bin-iv').appendChild(document.getElementById(savedState.iv));
-          if (savedState.dv) document.getElementById('bin-dv').appendChild(document.getElementById(savedState.dv));
+          if (savedState.iv)
+            document
+              .getElementById("bin-iv")
+              .appendChild(document.getElementById(savedState.iv));
+          if (savedState.dv)
+            document
+              .getElementById("bin-dv")
+              .appendChild(document.getElementById(savedState.dv));
           if (savedState.cv) {
-            savedState.cv.split(',').forEach(function(cid) {
-              if (cid) document.getElementById('bin-cv').appendChild(document.getElementById(cid));
+            savedState.cv.split(",").forEach(function (cid) {
+              if (cid)
+                document
+                  .getElementById("bin-cv")
+                  .appendChild(document.getElementById(cid));
             });
           }
           validateVariables();
         }
-        
+
         if (id === "detective" && savedState.selectedOutlier) {
           selectedOutlier = savedState.selectedOutlier;
           var pt = document.getElementById(selectedOutlier);
           if (pt) {
-            pt.classList.add('selected');
-            document.getElementById('selected-outlier-lbl').textContent = pt.dataset.val;
-            document.getElementById('selected-outlier-lbl').style.color = (pt.id === 'pt-outlier') ? '#10b981' : '#ef4444';
+            pt.classList.add("selected");
+            document.getElementById("selected-outlier-lbl").textContent =
+              pt.dataset.val;
+            document.getElementById("selected-outlier-lbl").style.color =
+              pt.id === "pt-outlier" ? "#10b981" : "#ef4444";
           }
-          document.getElementById('detective-cer').value = savedState.cerText || "";
+          document.getElementById("detective-cer").value =
+            savedState.cerText || "";
           validateDetective();
         }
-        
+
         if (id === "procedure" && savedState.order) {
-          var dropzones = ['proc-s1', 'proc-s2', 'proc-s3', 'proc-s4'];
-          savedState.order.split(',').forEach(function(val, idx) {
+          var dropzones = ["proc-s1", "proc-s2", "proc-s3", "proc-s4"];
+          savedState.order.split(",").forEach(function (val, idx) {
             if (val) {
-              var item = document.querySelector('.drag-item[data-val="' + val + '"][data-drawer="procedure-drawer"]');
-              if (item) document.getElementById(dropzones[idx]).appendChild(item);
+              var item = document.querySelector(
+                '.drag-item[data-val="' +
+                  val +
+                  '"][data-drawer="procedure-drawer"]',
+              );
+              if (item)
+                document.getElementById(dropzones[idx]).appendChild(item);
             }
           });
-          document.getElementById('unit-vol').value = savedState.vUnit || "";
-          document.getElementById('unit-mass').value = savedState.mUnit || "";
+          document.getElementById("unit-vol").value = savedState.vUnit || "";
+          document.getElementById("unit-mass").value = savedState.mUnit || "";
           validateProcedure();
         }
-        
+
         if (id === "misconception" && savedState.m1) {
-          document.getElementById('myth-1').value = savedState.m1;
-          document.getElementById('myth-2').value = savedState.m2;
+          document.getElementById("myth-1").value = savedState.m1;
+          document.getElementById("myth-2").value = savedState.m2;
           validateMisconception();
         }
-        
+
         if (id === "balancer" && savedState.COEFFICIENTS) {
-          var parts = savedState.COEFFICIENTS.replace("COEFFICIENTS: ", "").split(',');
-          document.getElementById('coef-a').value = parts[0];
-          document.getElementById('coef-b').value = parts[1];
-          document.getElementById('coef-c').value = parts[2];
-          document.getElementById('coef-d').value = parts[3];
-          document.getElementById('coef-a').dispatchEvent(new Event('change'));
+          var parts = savedState.COEFFICIENTS.replace(
+            "COEFFICIENTS: ",
+            "",
+          ).split(",");
+          document.getElementById("coef-a").value = parts[0];
+          document.getElementById("coef-b").value = parts[1];
+          document.getElementById("coef-c").value = parts[2];
+          document.getElementById("coef-d").value = parts[3];
+          document.getElementById("coef-a").dispatchEvent(new Event("change"));
         }
-        
+
         if (id === "hypothesis" && savedState.steps) {
-          var hdropzones = ['hyp-s1', 'hyp-s2', 'hyp-s3'];
-          savedState.steps.split(',').forEach(function(stepVal, idx) {
+          var hdropzones = ["hyp-s1", "hyp-s2", "hyp-s3"];
+          savedState.steps.split(",").forEach(function (stepVal, idx) {
             if (stepVal) {
-              var item = document.querySelector('.drag-item[data-val="' + stepVal + '"][data-drawer="hypothesis-drawer"]');
-              if (item) document.getElementById(hdropzones[idx]).appendChild(item);
+              var item = document.querySelector(
+                '.drag-item[data-val="' +
+                  stepVal +
+                  '"][data-drawer="hypothesis-drawer"]',
+              );
+              if (item)
+                document.getElementById(hdropzones[idx]).appendChild(item);
             }
           });
           validateHypothesis();
         }
-        
+
         if (id === "mitosis" && savedState.MIT_1) {
           mit1.value = savedState.MIT_1;
           mit2.value = savedState.MIT_2;
           validateMitosis();
         }
-        
+
         if (id === "safety" && savedState.hazards) {
           hazardsResolved = savedState.hazards;
-          if (hazardsResolved.flame) document.getElementById('flame-element').style.display = 'none';
-          if (hazardsResolved.food) document.getElementById('sandwich-element').style.display = 'none';
+          if (hazardsResolved.flame)
+            document.getElementById("flame-element").style.display = "none";
+          if (hazardsResolved.food)
+            document.getElementById("sandwich-element").style.display = "none";
           if (hazardsResolved.glass) {
-            document.getElementById('crack-element').style.display = 'none';
-            document.getElementById('drip-element').style.display = 'none';
+            document.getElementById("crack-element").style.display = "none";
+            document.getElementById("drip-element").style.display = "none";
           }
           if (hazardsResolved.label) {
-            document.getElementById('q-element').style.display = 'none';
-            document.getElementById('lbl-element').style.display = '';
-            document.getElementById('lbl-text-element').style.display = '';
+            document.getElementById("q-element").style.display = "none";
+            document.getElementById("lbl-element").style.display = "";
+            document.getElementById("lbl-text-element").style.display = "";
           }
           updateSafetyUI();
         }
-        
+
         if (id === "food-web" && savedState.OAK) {
           webOak.value = savedState.OAK;
           webFox.value = savedState.FOX;
           validateFoodWeb();
         }
-        
+
         if (id === "photosynthesis" && savedState.CO2) {
           photoCo2.value = savedState.CO2;
           photoO2.value = savedState.O2;
           validatePhoto();
         }
-        
+
         if (id === "cell-theory" && savedState.TENET) {
           cellT.value = savedState.TENET;
           validateCellTheory();
@@ -1267,108 +2268,137 @@
       };
 
       // Retrieve custom Interactive State to save
-      window.getInteractiveState = function(card) {
+      window.getInteractiveState = function (card) {
         var id = card.dataset.id;
-        
+
         if (id === "reaction-lab") {
           return {
-            SCORE: rlScore
+            SCORE: rlScore,
           };
         }
-        
+
         if (id === "variables") {
-          var ivItem = document.getElementById('bin-iv').querySelector('.drag-item');
-          var dvItem = document.getElementById('bin-dv').querySelector('.drag-item');
-          var cvItems = Array.from(document.getElementById('bin-cv').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
+          var ivItem = document
+            .getElementById("bin-iv")
+            .querySelector(".drag-item");
+          var dvItem = document
+            .getElementById("bin-dv")
+            .querySelector(".drag-item");
+          var cvItems = Array.from(
+            document.getElementById("bin-cv").querySelectorAll(".drag-item"),
+          ).map(function (item) {
+            return item.id;
+          });
           return {
             iv: ivItem ? ivItem.id : "",
             dv: dvItem ? dvItem.id : "",
-            cv: cvItems.join(',')
+            cv: cvItems.join(","),
           };
         }
-        
+
         if (id === "detective") {
           return {
             selectedOutlier: selectedOutlier,
-            cerText: document.getElementById('detective-cer').value
+            cerText: document.getElementById("detective-cer").value,
           };
         }
-        
+
         if (id === "procedure") {
-          var order = Array.from(document.querySelectorAll("[id^='proc-s']")).map(function(slot) {
-            var item = slot.querySelector('.drag-item');
-            return item ? item.dataset.val : "";
-          }).join(',');
+          var order = Array.from(document.querySelectorAll("[id^='proc-s']"))
+            .map(function (slot) {
+              var item = slot.querySelector(".drag-item");
+              return item ? item.dataset.val : "";
+            })
+            .join(",");
           return {
             order: order,
-            vUnit: document.getElementById('unit-vol').value,
-            mUnit: document.getElementById('unit-mass').value
+            vUnit: document.getElementById("unit-vol").value,
+            mUnit: document.getElementById("unit-mass").value,
           };
         }
-        
+
         if (id === "misconception") {
           return {
-            m1: document.getElementById('myth-1').value,
-            m2: document.getElementById('myth-2').value
+            m1: document.getElementById("myth-1").value,
+            m2: document.getElementById("myth-2").value,
           };
         }
-        
+
         if (id === "balancer") {
           return {
-            COEFFICIENTS: "COEFFICIENTS: " + [
-              document.getElementById('coef-a').value,
-              document.getElementById('coef-b').value,
-              document.getElementById('coef-c').value,
-              document.getElementById('coef-d').value
-            ].join(',')
+            COEFFICIENTS:
+              "COEFFICIENTS: " +
+              [
+                document.getElementById("coef-a").value,
+                document.getElementById("coef-b").value,
+                document.getElementById("coef-c").value,
+                document.getElementById("coef-d").value,
+              ].join(","),
           };
         }
-        
+
         if (id === "hypothesis") {
-          var steps = Array.from(document.querySelectorAll("[id^='hyp-s']")).map(function(slot) {
-            var item = slot.querySelector('.drag-item');
-            return item ? item.dataset.val : "";
-          }).join(',');
+          var steps = Array.from(document.querySelectorAll("[id^='hyp-s']"))
+            .map(function (slot) {
+              var item = slot.querySelector(".drag-item");
+              return item ? item.dataset.val : "";
+            })
+            .join(",");
           return {
-            steps: steps
+            steps: steps,
           };
         }
-        
+
         if (id === "mitosis") {
           return {
             MIT_1: mit1.value,
-            MIT_2: mit2.value
+            MIT_2: mit2.value,
           };
         }
-        
+
         if (id === "safety") {
           return {
-            hazards: hazardsResolved
+            hazards: hazardsResolved,
           };
         }
-        
+
         if (id === "food-web") {
           return {
             OAK: webOak.value,
-            FOX: webFox.value
+            FOX: webFox.value,
           };
         }
-        
+
         if (id === "photosynthesis") {
           return {
             CO2: photoCo2.value,
-            O2: photoO2.value
+            O2: photoO2.value,
           };
         }
-        
+
         if (id === "cell-theory") {
           return {
-            TENET: cellT.value
+            TENET: cellT.value,
           };
         }
-        
+
         return {};
       };
+
+      // Instant correct/incorrect feedback on every graded dropdown
+      if (window.EWL && EWL.registerAnswers) {
+        EWL.registerAnswers({
+          "myth-1": "correct",
+          "myth-2": "correct",
+          "mit-s1": "meta",
+          "mit-s2": "ana",
+          "web-oak": "producer",
+          "web-fox": "secondary",
+          "photo-co2": "input",
+          "photo-o2": "output",
+          "cell-tenet": "correct",
+        });
+      }
     </script>
   </body>
 </html>

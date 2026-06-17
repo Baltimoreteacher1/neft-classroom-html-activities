@@ -17,13 +17,14 @@
         border-radius: var(--radius-sm);
         padding: 10px;
       }
-      
+
       .proof-table {
         width: 100%;
         border-collapse: collapse;
         margin-top: 10px;
       }
-      .proof-table th, .proof-table td {
+      .proof-table th,
+      .proof-table td {
         border: 1px solid var(--border-color);
         padding: 10px;
         color: var(--text-white);
@@ -35,17 +36,21 @@
       .proof-table td {
         background: var(--bg-slate-900);
       }
-      
+
       /* Gladiator Boss graphics */
       .monster-boss {
         animation: float-boss 4s ease-in-out infinite alternate;
         transform-origin: 100px 50px;
       }
       @keyframes float-boss {
-        0% { transform: translateY(0px) rotate(0deg); }
-        100% { transform: translateY(-8px) rotate(2deg); }
+        0% {
+          transform: translateY(0px) rotate(0deg);
+        }
+        100% {
+          transform: translateY(-8px) rotate(2deg);
+        }
       }
-      
+
       .formula-box {
         background: var(--bg-slate-800);
         border: 1px solid var(--border-glow);
@@ -72,8 +77,12 @@
         <a class="back" href="/personal/aviad/">&larr; Aviad hub</a>
         <span class="badge">Math Readiness</span>
         <h1>Math Readiness Campaign</h1>
-        <p class="lead">Prepare for Algebra II &amp; Geometry. Solve equations, calculate slopes on piecewise charts, reorder proofs, and fight mathematical bosses.</p>
-        
+        <p class="lead">
+          Prepare for Algebra II &amp; Geometry. Solve equations, calculate
+          slopes on piecewise charts, reorder proofs, and fight mathematical
+          bosses.
+        </p>
+
         <div class="stats">
           <div class="stat"><b id="xp">0 XP</b><span>earned here</span></div>
           <div class="stat"><b>12</b><span>developed activities</span></div>
@@ -97,11 +106,13 @@
     <main class="wrap panel active">
       <div class="section-head">
         <h2>Math Readiness Challenges</h2>
-        <p class="muted">Complete interactive tasks, verify your solutions, and save your work to log XP.</p>
+        <p class="muted">
+          Complete interactive tasks, verify your solutions, and save your work
+          to log XP.
+        </p>
       </div>
 
       <div class="grid">
-        
         <!-- Activity 1: Equation Gladiator (Game) -->
         <article class="activity" data-id="equation-gladiator" data-type="Game">
           <div class="meta">
@@ -109,20 +120,63 @@
             <span class="pill">Boss Health: 100</span>
           </div>
           <h3>Equation Gladiator</h3>
-          <p>Solve equations to cast spells and defeat the Math Monster. Answer correctly to damage the boss!</p>
-          
+          <p>
+            Solve equations to cast spells and defeat the Math Monster. Answer
+            correctly to damage the boss!
+          </p>
+
           <div class="activity-interactive-area">
-            <div class="game-container" style="background:#0b0f19;">
+            <div class="game-container" style="background: #0b0f19">
               <!-- Boss Area SVG -->
-              <svg viewBox="0 0 320 180" width="100%" height="100%" id="gladiator-svg" style="display:block;">
+              <svg
+                viewBox="0 0 320 180"
+                width="100%"
+                height="100%"
+                id="gladiator-svg"
+                style="display: block"
+              >
                 <!-- Boss Health Bar -->
-                <rect x="60" y="15" width="200" height="12" rx="3" fill="#1e293b" />
-                <rect id="boss-hp-bar" x="60" y="15" width="200" height="12" rx="3" fill="#ef4444" style="transition: width 0.3s;" />
-                <text x="160" y="24" font-size="8" font-family="sans-serif" font-weight="700" fill="#ffffff" text-anchor="middle">MATH MONSTER</text>
-                
+                <rect
+                  x="60"
+                  y="15"
+                  width="200"
+                  height="12"
+                  rx="3"
+                  fill="#1e293b"
+                />
+                <rect
+                  id="boss-hp-bar"
+                  x="60"
+                  y="15"
+                  width="200"
+                  height="12"
+                  rx="3"
+                  fill="#ef4444"
+                  style="transition: width 0.3s"
+                />
+                <text
+                  x="160"
+                  y="24"
+                  font-size="8"
+                  font-family="sans-serif"
+                  font-weight="700"
+                  fill="#ffffff"
+                  text-anchor="middle"
+                >
+                  MATH MONSTER
+                </text>
+
                 <!-- Math Monster Drawing -->
                 <g class="monster-boss" id="boss-body">
-                  <ellipse cx="160" cy="80" rx="35" ry="25" fill="#06b6d4" stroke="#ffffff" stroke-width="2" />
+                  <ellipse
+                    cx="160"
+                    cy="80"
+                    rx="35"
+                    ry="25"
+                    fill="#06b6d4"
+                    stroke="#ffffff"
+                    stroke-width="2"
+                  />
                   <!-- Eyes -->
                   <circle cx="145" cy="75" r="5" fill="#ffffff" />
                   <circle cx="145" cy="75" r="2" fill="#000000" />
@@ -131,37 +185,85 @@
                   <circle cx="175" cy="75" r="5" fill="#ffffff" />
                   <circle cx="175" cy="75" r="2" fill="#000000" />
                   <!-- Mouth -->
-                  <path d="M 148 90 Q 160 100 172 90" fill="none" stroke="#ffffff" stroke-width="2" />
+                  <path
+                    d="M 148 90 Q 160 100 172 90"
+                    fill="none"
+                    stroke="#ffffff"
+                    stroke-width="2"
+                  />
                   <!-- Horns -->
                   <path d="M 135 60 L 125 45 L 140 55" fill="#2563eb" />
                   <path d="M 185 60 L 195 45 L 180 55" fill="#2563eb" />
                 </g>
-                
+
                 <!-- Spell effects groups -->
                 <g id="spell-layer"></g>
               </svg>
-              
+
               <div class="game-overlay" id="game-overlay-mg">
                 <h4>Equation Gladiator</h4>
                 <p>Cast algebraic spells to defeat the Math Monster.</p>
                 <button class="btn" id="game-btn-mg">Start Battle</button>
               </div>
             </div>
-            
-            <div class="step-row" style="background:var(--bg-slate-800); border-radius:4px; padding:12px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
-              <span id="glad-eq-text" style="font-family:var(--font-title); font-weight:700; font-size:1.15rem; color:var(--text-white);">2x + 5 = 15</span>
-              <div style="display:flex; gap:6px;">
-                <input type="text" id="glad-input" placeholder="x = ?" style="width:70px; padding:6px; text-align:center;" />
-                <button class="btn" id="glad-submit-btn" style="min-height:36px; padding:0 12px;">Cast</button>
+
+            <div
+              class="step-row"
+              style="
+                background: var(--bg-slate-800);
+                border-radius: 4px;
+                padding: 12px;
+                border: 1px solid var(--border-glow);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              "
+            >
+              <span
+                id="glad-eq-text"
+                style="
+                  font-family: var(--font-title);
+                  font-weight: 700;
+                  font-size: 1.15rem;
+                  color: var(--text-white);
+                "
+                >2x + 5 = 15</span
+              >
+              <div style="display: flex; gap: 6px">
+                <input
+                  type="text"
+                  id="glad-input"
+                  placeholder="x = ?"
+                  style="width: 70px; padding: 6px; text-align: center"
+                />
+                <button
+                  class="btn"
+                  id="glad-submit-btn"
+                  style="min-height: 36px; padding: 0 12px"
+                >
+                  Cast
+                </button>
               </div>
             </div>
-            
-            <div style="font-size:0.8rem; font-weight:700; color:var(--text-muted); text-align:center; margin-top:8px;">
-              Player Health: <span id="glad-hp-val" style="color:var(--success);">3 / 3</span>
+
+            <div
+              style="
+                font-size: 0.8rem;
+                font-weight: 700;
+                color: var(--text-muted);
+                text-align: center;
+                margin-top: 8px;
+              "
+            >
+              Player Health:
+              <span id="glad-hp-val" style="color: var(--success)">3 / 3</span>
             </div>
           </div>
 
-          <textarea style="display:none;" id="evidence-text-equation-gladiator"></textarea>
+          <textarea
+            style="display: none"
+            id="evidence-text-equation-gladiator"
+          ></textarea>
           <div class="actions">
             <button class="btn secondary" data-save>Save workspace</button>
             <button class="btn" data-complete>Complete with evidence</button>
@@ -175,36 +277,59 @@
             <span class="pill">20 min</span>
           </div>
           <h3>Algebra Combat</h3>
-          <p>Solve this linear equation step-by-step: <b>3(x - 2) + 4 = 19</b>. Fill in values for each step.</p>
-          
+          <p>
+            Solve this linear equation step-by-step: <b>3(x - 2) + 4 = 19</b>.
+            Fill in values for each step.
+          </p>
+
           <div class="activity-interactive-area">
-            <div style="display:flex; flex-direction:column; gap:8px;">
-              <div style="display:flex; align-items:center; gap:10px;">
-                <span class="step-label" style="width:120px;">1. Distribute:</span>
+            <div style="display: flex; flex-direction: column; gap: 8px">
+              <div style="display: flex; align-items: center; gap: 10px">
+                <span class="step-label" style="width: 120px"
+                  >1. Distribute:</span
+                >
                 <span>3x - </span>
-                <input type="text" id="al-step1" style="width:60px; padding:4px;" />
+                <input
+                  type="text"
+                  id="al-step1"
+                  style="width: 60px; padding: 4px"
+                />
                 <span> + 4 = 19</span>
               </div>
-              <div style="display:flex; align-items:center; gap:10px;">
-                <span class="step-label" style="width:120px;">2. Combine terms:</span>
+              <div style="display: flex; align-items: center; gap: 10px">
+                <span class="step-label" style="width: 120px"
+                  >2. Combine terms:</span
+                >
                 <span>3x - </span>
-                <input type="text" id="al-step2" style="width:60px; padding:4px;" />
+                <input
+                  type="text"
+                  id="al-step2"
+                  style="width: 60px; padding: 4px"
+                />
                 <span> = 19</span>
               </div>
-              <div style="display:flex; align-items:center; gap:10px;">
-                <span class="step-label" style="width:120px;">3. Isolate:</span>
+              <div style="display: flex; align-items: center; gap: 10px">
+                <span class="step-label" style="width: 120px">3. Isolate:</span>
                 <span>3x = </span>
-                <input type="text" id="al-step3" style="width:60px; padding:4px;" />
+                <input
+                  type="text"
+                  id="al-step3"
+                  style="width: 60px; padding: 4px"
+                />
               </div>
-              <div style="display:flex; align-items:center; gap:10px;">
-                <span class="step-label" style="width:120px;">4. Solve:</span>
+              <div style="display: flex; align-items: center; gap: 10px">
+                <span class="step-label" style="width: 120px">4. Solve:</span>
                 <span>x = </span>
-                <input type="text" id="al-step4" style="width:60px; padding:4px;" />
+                <input
+                  type="text"
+                  id="al-step4"
+                  style="width: 60px; padding: 4px"
+                />
               </div>
             </div>
           </div>
 
-          <textarea style="display:none;" id="evidence-text-algebra"></textarea>
+          <textarea style="display: none" id="evidence-text-algebra"></textarea>
           <div class="actions">
             <button class="btn secondary" data-save>Save workspace</button>
             <button class="btn" data-complete>Complete with evidence</button>
@@ -218,28 +343,114 @@
             <span class="pill">25 min</span>
           </div>
           <h3>Geometry Proof Dungeon</h3>
-          <p>Given lines intersect. Prove vertical angles are congruent. Drag statement/reason cards to build the proof table.</p>
-          
+          <p>
+            Given lines intersect. Prove vertical angles are congruent. Drag
+            statement/reason cards to build the proof table.
+          </p>
+
           <div class="activity-interactive-area">
-            <div style="text-align:center;">
-              <svg width="180" height="70" viewBox="0 0 180 70" style="background:#0b0f19; border:1px solid var(--border-glow); border-radius:4px;">
-                <line x1="10" y1="10" x2="170" y2="60" stroke="#06b6d4" stroke-width="2" />
-                <line x1="10" y1="60" x2="170" y2="10" stroke="#06b6d4" stroke-width="2" />
+            <div style="text-align: center">
+              <svg
+                width="180"
+                height="70"
+                viewBox="0 0 180 70"
+                style="
+                  background: #0b0f19;
+                  border: 1px solid var(--border-glow);
+                  border-radius: 4px;
+                "
+              >
+                <line
+                  x1="10"
+                  y1="10"
+                  x2="170"
+                  y2="60"
+                  stroke="#06b6d4"
+                  stroke-width="2"
+                />
+                <line
+                  x1="10"
+                  y1="60"
+                  x2="170"
+                  y2="10"
+                  stroke="#06b6d4"
+                  stroke-width="2"
+                />
                 <circle cx="90" cy="35" r="3" fill="#ffffff" />
-                <text x="35" y="38" font-size="8" fill="#ffffff" font-weight="700">&ang;1</text>
+                <text
+                  x="35"
+                  y="38"
+                  font-size="8"
+                  fill="#ffffff"
+                  font-weight="700"
+                >
+                  &ang;1
+                </text>
                 <text x="90" y="22" font-size="8" fill="#94a3b8">&ang;2</text>
-                <text x="145" y="38" font-size="8" fill="#ffffff" font-weight="700">&ang;3</text>
+                <text
+                  x="145"
+                  y="38"
+                  font-size="8"
+                  fill="#ffffff"
+                  font-weight="700"
+                >
+                  &ang;3
+                </text>
               </svg>
             </div>
-            
-            <div class="word-bank" id="proof-drawer" style="min-height: 45px; margin-top:8px;">
-              <div class="drag-item" draggable="true" id="pr-r1" data-drawer="proof-drawer" data-val="given">Given intersecting lines</div>
-              <div class="drag-item" draggable="true" id="pr-s2" data-drawer="proof-drawer" data-val="supp">&ang;1 and &ang;2 are supplementary</div>
-              <div class="drag-item" draggable="true" id="pr-r2" data-drawer="proof-drawer" data-val="linear">Linear Pair Postulate</div>
-              <div class="drag-item" draggable="true" id="pr-s3" data-drawer="proof-drawer" data-val="congr">&ang;1 &cong; &ang;3</div>
-              <div class="drag-item" draggable="true" id="pr-r3" data-drawer="proof-drawer" data-val="congthm">Congruent Supplements Theorem</div>
+
+            <div
+              class="word-bank"
+              id="proof-drawer"
+              style="min-height: 45px; margin-top: 8px"
+            >
+              <div
+                class="drag-item"
+                draggable="true"
+                id="pr-r1"
+                data-drawer="proof-drawer"
+                data-val="given"
+              >
+                Given intersecting lines
+              </div>
+              <div
+                class="drag-item"
+                draggable="true"
+                id="pr-s2"
+                data-drawer="proof-drawer"
+                data-val="supp"
+              >
+                &ang;1 and &ang;2 are supplementary
+              </div>
+              <div
+                class="drag-item"
+                draggable="true"
+                id="pr-r2"
+                data-drawer="proof-drawer"
+                data-val="linear"
+              >
+                Linear Pair Postulate
+              </div>
+              <div
+                class="drag-item"
+                draggable="true"
+                id="pr-s3"
+                data-drawer="proof-drawer"
+                data-val="congr"
+              >
+                &ang;1 &cong; &ang;3
+              </div>
+              <div
+                class="drag-item"
+                draggable="true"
+                id="pr-r3"
+                data-drawer="proof-drawer"
+                data-val="congthm"
+              >
+                Congruent Supplements Theorem
+              </div>
             </div>
-            
+
             <table class="proof-table">
               <thead>
                 <tr>
@@ -250,21 +461,56 @@
               <tbody>
                 <tr>
                   <td>Intersecting lines given</td>
-                  <td><div class="drop-container" id="proof-r1" data-max="1" style="min-height:35px; padding:2px;"></div></td>
+                  <td>
+                    <div
+                      class="drop-container"
+                      id="proof-r1"
+                      data-max="1"
+                      style="min-height: 35px; padding: 2px"
+                    ></div>
+                  </td>
                 </tr>
                 <tr>
-                  <td><div class="drop-container" id="proof-s2" data-max="1" style="min-height:35px; padding:2px;"></div></td>
-                  <td><div class="drop-container" id="proof-r2" data-max="1" style="min-height:35px; padding:2px;"></div></td>
+                  <td>
+                    <div
+                      class="drop-container"
+                      id="proof-s2"
+                      data-max="1"
+                      style="min-height: 35px; padding: 2px"
+                    ></div>
+                  </td>
+                  <td>
+                    <div
+                      class="drop-container"
+                      id="proof-r2"
+                      data-max="1"
+                      style="min-height: 35px; padding: 2px"
+                    ></div>
+                  </td>
                 </tr>
                 <tr>
-                  <td><div class="drop-container" id="proof-s3" data-max="1" style="min-height:35px; padding:2px;"></div></td>
-                  <td><div class="drop-container" id="proof-r3" data-max="1" style="min-height:35px; padding:2px;"></div></td>
+                  <td>
+                    <div
+                      class="drop-container"
+                      id="proof-s3"
+                      data-max="1"
+                      style="min-height: 35px; padding: 2px"
+                    ></div>
+                  </td>
+                  <td>
+                    <div
+                      class="drop-container"
+                      id="proof-r3"
+                      data-max="1"
+                      style="min-height: 35px; padding: 2px"
+                    ></div>
+                  </td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-          <textarea style="display:none;" id="evidence-text-proof"></textarea>
+          <textarea style="display: none" id="evidence-text-proof"></textarea>
           <div class="actions">
             <button class="btn secondary" data-save>Save workspace</button>
             <button class="btn" data-complete>Complete with evidence</button>
@@ -278,43 +524,99 @@
             <span class="pill">30 min</span>
           </div>
           <h3>Graph Story Designer</h3>
-          <p>Drag the orange handle on the SVG graph to match this story: <i>"Aviad travels at a constant speed of 3 units/sec, starting at an initial distance of 1 unit."</i></p>
-          
+          <p>
+            Drag the orange handle on the SVG graph to match this story:
+            <i
+              >"Aviad travels at a constant speed of 3 units/sec, starting at an
+              initial distance of 1 unit."</i
+            >
+          </p>
+
           <div class="activity-interactive-area">
-            <div class="coordinate-grid-box" style="background:#0b0f19;">
-              <svg viewBox="0 0 160 160" width="100%" height="150" id="piecewise-svg">
+            <div class="coordinate-grid-box" style="background: #0b0f19">
+              <svg
+                viewBox="0 0 160 160"
+                width="100%"
+                height="150"
+                id="piecewise-svg"
+              >
                 <!-- Grid -->
                 <line x1="20" y1="20" x2="140" y2="20" stroke="#1e293b" />
                 <line x1="20" y1="50" x2="140" y2="50" stroke="#1e293b" />
                 <line x1="20" y1="80" x2="140" y2="80" stroke="#1e293b" />
                 <line x1="20" y1="110" x2="140" y2="110" stroke="#1e293b" />
                 <line x1="20" y1="140" x2="140" y2="140" stroke="#1e293b" />
-                
+
                 <line x1="20" y1="20" x2="20" y2="140" stroke="#1e293b" />
                 <line x1="50" y1="20" x2="50" y2="140" stroke="#1e293b" />
                 <line x1="80" y1="20" x2="80" y2="140" stroke="#1e293b" />
                 <line x1="110" y1="20" x2="110" y2="140" stroke="#1e293b" />
                 <line x1="140" y1="20" x2="140" y2="140" stroke="#1e293b" />
-                
+
                 <!-- Axes -->
-                <line x1="20" y1="140" x2="150" y2="140" stroke="#94a3b8" stroke-width="2" />
-                <line x1="20" y1="10" x2="20" y2="140" stroke="#94a3b8" stroke-width="2" />
-                
+                <line
+                  x1="20"
+                  y1="140"
+                  x2="150"
+                  y2="140"
+                  stroke="#94a3b8"
+                  stroke-width="2"
+                />
+                <line
+                  x1="20"
+                  y1="10"
+                  x2="20"
+                  y2="140"
+                  stroke="#94a3b8"
+                  stroke-width="2"
+                />
+
                 <!-- Plot line -->
-                <line id="math-line" x1="20" y1="130" x2="140" y2="140" stroke="#06b6d4" stroke-width="3" />
-                
+                <line
+                  id="math-line"
+                  x1="20"
+                  y1="130"
+                  x2="140"
+                  y2="140"
+                  stroke="#06b6d4"
+                  stroke-width="3"
+                />
+
                 <!-- Draggable handle -->
-                <circle id="math-handle" cx="140" cy="140" r="8" fill="#fbbf24" style="cursor: ns-resize;" />
+                <circle
+                  id="math-handle"
+                  cx="140"
+                  cy="140"
+                  r="8"
+                  fill="#fbbf24"
+                  style="cursor: ns-resize"
+                />
               </svg>
             </div>
-            
-            <div style="display:flex; justify-content:space-between; font-weight:700; font-size:0.85rem; margin-top:8px;">
-              <span>Slope: <span id="math-slope" style="color:var(--accent);">0.0</span></span>
-              <span>Y-Intercept: <span id="math-yint" style="color:var(--accent);">1</span></span>
+
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                font-weight: 700;
+                font-size: 0.85rem;
+                margin-top: 8px;
+              "
+            >
+              <span
+                >Slope:
+                <span id="math-slope" style="color: var(--accent)"
+                  >0.0</span
+                ></span
+              >
+              <span
+                >Y-Intercept:
+                <span id="math-yint" style="color: var(--accent)">1</span></span
+              >
             </div>
           </div>
 
-          <textarea style="display:none;" id="evidence-text-graph"></textarea>
+          <textarea style="display: none" id="evidence-text-graph"></textarea>
           <div class="actions">
             <button class="btn secondary" data-save>Save workspace</button>
             <button class="btn" data-complete>Complete with evidence</button>
@@ -329,28 +631,75 @@
           </div>
           <h3>Linear vs. Exponential</h3>
           <p>Drag the algebraic models into their correct categorizations.</p>
-          
+
           <div class="activity-interactive-area">
-            <div class="word-bank" id="model-drawer" style="min-height: 45px;">
-              <div class="drag-item" draggable="true" id="mod-l1" data-drawer="model-drawer" data-val="lin">y = 3x - 7</div>
-              <div class="drag-item" draggable="true" id="mod-e1" data-drawer="model-drawer" data-val="exp">y = 2(3)<sup>x</sup></div>
-              <div class="drag-item" draggable="true" id="mod-l2" data-drawer="model-drawer" data-val="lin">f(x) = 5 - x</div>
-              <div class="drag-item" draggable="true" id="mod-e2" data-drawer="model-drawer" data-val="exp">f(x) = 5<sup>x</sup></div>
+            <div class="word-bank" id="model-drawer" style="min-height: 45px">
+              <div
+                class="drag-item"
+                draggable="true"
+                id="mod-l1"
+                data-drawer="model-drawer"
+                data-val="lin"
+              >
+                y = 3x - 7
+              </div>
+              <div
+                class="drag-item"
+                draggable="true"
+                id="mod-e1"
+                data-drawer="model-drawer"
+                data-val="exp"
+              >
+                y = 2(3)<sup>x</sup>
+              </div>
+              <div
+                class="drag-item"
+                draggable="true"
+                id="mod-l2"
+                data-drawer="model-drawer"
+                data-val="lin"
+              >
+                f(x) = 5 - x
+              </div>
+              <div
+                class="drag-item"
+                draggable="true"
+                id="mod-e2"
+                data-drawer="model-drawer"
+                data-val="exp"
+              >
+                f(x) = 5<sup>x</sup>
+              </div>
             </div>
-            
-            <div class="science-grid-2col" style="margin-top:14px;">
+
+            <div class="science-grid-2col" style="margin-top: 14px">
               <div class="bin-container">
-                <span class="bin-title" style="color:#06b6d4;">Linear Models</span>
-                <div class="drop-container" id="model-bin-lin" data-bin="lin"></div>
+                <span class="bin-title" style="color: #06b6d4"
+                  >Linear Models</span
+                >
+                <div
+                  class="drop-container"
+                  id="model-bin-lin"
+                  data-bin="lin"
+                ></div>
               </div>
               <div class="bin-container">
-                <span class="bin-title" style="color:#3b82f6;">Exponential Models</span>
-                <div class="drop-container" id="model-bin-exp" data-bin="exp"></div>
+                <span class="bin-title" style="color: #3b82f6"
+                  >Exponential Models</span
+                >
+                <div
+                  class="drop-container"
+                  id="model-bin-exp"
+                  data-bin="exp"
+                ></div>
               </div>
             </div>
           </div>
 
-          <textarea style="display:none;" id="evidence-text-lin-vs-exp"></textarea>
+          <textarea
+            style="display: none"
+            id="evidence-text-lin-vs-exp"
+          ></textarea>
           <div class="actions">
             <button class="btn secondary" data-save>Save workspace</button>
             <button class="btn" data-complete>Complete with evidence</button>
@@ -358,27 +707,54 @@
         </article>
 
         <!-- Activity 6: Quadratic Matcher (Practice) -->
-        <article class="activity" data-id="quadratic-match" data-type="Practice">
+        <article
+          class="activity"
+          data-id="quadratic-match"
+          data-type="Practice"
+        >
           <div class="meta">
             <span class="pill">Practice</span>
             <span class="pill">15 min</span>
           </div>
           <h3>Quadratic Factored Matcher</h3>
-          <p>Match the standard form quadratic expressions with their correct factored forms.</p>
-          
+          <p>
+            Match the standard form quadratic expressions with their correct
+            factored forms.
+          </p>
+
           <div class="activity-interactive-area">
-            <div style="display:flex; flex-direction:column; gap:10px;">
-              <div style="background:var(--bg-slate-900); padding:10px; border-radius:4px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
+            <div style="display: flex; flex-direction: column; gap: 10px">
+              <div
+                style="
+                  background: var(--bg-slate-900);
+                  padding: 10px;
+                  border-radius: 4px;
+                  border: 1px solid var(--border-glow);
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                "
+              >
                 <span>x² - 5x + 6</span>
-                <select id="quad-1" style="width:140px; padding:4px;">
+                <select id="quad-1" style="width: 140px; padding: 4px">
                   <option value="">Select factored...</option>
                   <option value="x3x2">(x - 3)(x - 2)</option>
                   <option value="x6x1">(x - 6)(x + 1)</option>
                 </select>
               </div>
-              <div style="background:var(--bg-slate-900); padding:10px; border-radius:4px; border:1px solid var(--border-glow); display:flex; justify-content:space-between; align-items:center;">
+              <div
+                style="
+                  background: var(--bg-slate-900);
+                  padding: 10px;
+                  border-radius: 4px;
+                  border: 1px solid var(--border-glow);
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                "
+              >
                 <span>x² - 5x - 6</span>
-                <select id="quad-2" style="width:140px; padding:4px;">
+                <select id="quad-2" style="width: 140px; padding: 4px">
                   <option value="">Select factored...</option>
                   <option value="x3x2">(x - 3)(x - 2)</option>
                   <option value="x6x1">(x - 6)(x + 1)</option>
@@ -387,7 +763,10 @@
             </div>
           </div>
 
-          <textarea style="display:none;" id="evidence-text-quadratic-match"></textarea>
+          <textarea
+            style="display: none"
+            id="evidence-text-quadratic-match"
+          ></textarea>
           <div class="actions">
             <button class="btn secondary" data-save>Save workspace</button>
             <button class="btn" data-complete>Complete with evidence</button>
@@ -401,43 +780,132 @@
             <span class="pill">20 min</span>
           </div>
           <h3>Triangle Lock Challenge</h3>
-          <p>Solve for missing angles sequentially. Interconnected triangle theorem rules apply.</p>
-          
+          <p>
+            Solve for missing angles sequentially. Interconnected triangle
+            theorem rules apply.
+          </p>
+
           <div class="activity-interactive-area">
-            <div style="text-align:center;">
-              <svg width="200" height="80" viewBox="0 0 200 80" style="background:#0b0f19; border:1px solid var(--border-glow); border-radius:4px;">
+            <div style="text-align: center">
+              <svg
+                width="200"
+                height="80"
+                viewBox="0 0 200 80"
+                style="
+                  background: #0b0f19;
+                  border: 1px solid var(--border-glow);
+                  border-radius: 4px;
+                "
+              >
                 <!-- Triangle 1 -->
-                <polygon points="20,70 90,70 55,20" fill="none" stroke="#94a3b8" stroke-width="1.5" />
+                <polygon
+                  points="20,70 90,70 55,20"
+                  fill="none"
+                  stroke="#94a3b8"
+                  stroke-width="1.5"
+                />
                 <text x="35" y="65" font-size="7" fill="#ffffff">50&deg;</text>
                 <text x="70" y="65" font-size="7" fill="#ffffff">60&deg;</text>
-                <text x="50" y="35" font-size="8" fill="#fbbf24" font-weight="700">A&deg;</text>
-                
+                <text
+                  x="50"
+                  y="35"
+                  font-size="8"
+                  fill="#fbbf24"
+                  font-weight="700"
+                >
+                  A&deg;
+                </text>
+
                 <!-- Triangle 2 sharing vertex -->
-                <polygon points="90,70 160,70 125,20" fill="none" stroke="#94a3b8" stroke-width="1.5" />
+                <polygon
+                  points="90,70 160,70 125,20"
+                  fill="none"
+                  stroke="#94a3b8"
+                  stroke-width="1.5"
+                />
                 <!-- Supplementary angle base shared -->
-                <text x="100" y="65" font-size="8" fill="#fbbf24" font-weight="700">B&deg;</text>
+                <text
+                  x="100"
+                  y="65"
+                  font-size="8"
+                  fill="#fbbf24"
+                  font-weight="700"
+                >
+                  B&deg;
+                </text>
                 <text x="140" y="65" font-size="7" fill="#ffffff">40&deg;</text>
-                <text x="120" y="35" font-size="8" fill="#fbbf24" font-weight="700">C&deg;</text>
+                <text
+                  x="120"
+                  y="35"
+                  font-size="8"
+                  fill="#fbbf24"
+                  font-weight="700"
+                >
+                  C&deg;
+                </text>
               </svg>
             </div>
-            
-            <div style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">
-              <label style="display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; font-weight:700;">
+
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                margin-top: 10px;
+              "
+            >
+              <label
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  font-size: 0.85rem;
+                  font-weight: 700;
+                "
+              >
                 Angle A:
-                <input type="text" id="angle-a" style="width:60px; padding:4px;" />
+                <input
+                  type="text"
+                  id="angle-a"
+                  style="width: 60px; padding: 4px"
+                />
               </label>
-              <label style="display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; font-weight:700;">
+              <label
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  font-size: 0.85rem;
+                  font-weight: 700;
+                "
+              >
                 Angle B (Supp to &ang;A + 60):
-                <input type="text" id="angle-b" style="width:60px; padding:4px;" />
+                <input
+                  type="text"
+                  id="angle-b"
+                  style="width: 60px; padding: 4px"
+                />
               </label>
-              <label style="display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; font-weight:700;">
+              <label
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  font-size: 0.85rem;
+                  font-weight: 700;
+                "
+              >
                 Angle C:
-                <input type="text" id="angle-c" style="width:60px; padding:4px;" />
+                <input
+                  type="text"
+                  id="angle-c"
+                  style="width: 60px; padding: 4px"
+                />
               </label>
             </div>
           </div>
 
-          <textarea style="display:none;" id="evidence-text-angles"></textarea>
+          <textarea style="display: none" id="evidence-text-angles"></textarea>
           <div class="actions">
             <button class="btn secondary" data-save>Save workspace</button>
             <button class="btn" data-complete>Complete with evidence</button>
@@ -451,23 +919,57 @@
             <span class="pill">20 min</span>
           </div>
           <h3>Formula Matching Cards</h3>
-          <p>Select a Formula Name card, then select its algebraic equivalent to pair them.</p>
-          
+          <p>
+            Select a Formula Name card, then select its algebraic equivalent to
+            pair them.
+          </p>
+
           <div class="activity-interactive-area">
-            <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px;" id="formula-grid">
-              <div class="formula-box" data-type="name" data-val="quad">Quadratic Formula</div>
-              <div class="formula-box" data-type="eq" data-val="slope">y = mx + b</div>
-              <div class="formula-box" data-type="name" data-val="slope">Slope-Intercept</div>
-              <div class="formula-box" data-type="eq" data-val="pyth">a² + b² = c²</div>
-              <div class="formula-box" data-type="name" data-val="pyth">Pythagorean Theorem</div>
-              <div class="formula-box" data-type="eq" data-val="quad">x = (-b&plusmn;&radic;(b²-4ac))/2a</div>
+            <div
+              style="
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+              "
+              id="formula-grid"
+            >
+              <div class="formula-box" data-type="name" data-val="quad">
+                Quadratic Formula
+              </div>
+              <div class="formula-box" data-type="eq" data-val="slope">
+                y = mx + b
+              </div>
+              <div class="formula-box" data-type="name" data-val="slope">
+                Slope-Intercept
+              </div>
+              <div class="formula-box" data-type="eq" data-val="pyth">
+                a² + b² = c²
+              </div>
+              <div class="formula-box" data-type="name" data-val="pyth">
+                Pythagorean Theorem
+              </div>
+              <div class="formula-box" data-type="eq" data-val="quad">
+                x = (-b&plusmn;&radic;(b²-4ac))/2a
+              </div>
             </div>
-            <div style="font-size:0.8rem; font-weight:700; color:var(--text-muted); text-align:center; margin-top:10px;">
-              Pairs matched: <span id="formula-matched-count" style="color:var(--success);">0</span> / 3
+            <div
+              style="
+                font-size: 0.8rem;
+                font-weight: 700;
+                color: var(--text-muted);
+                text-align: center;
+                margin-top: 10px;
+              "
+            >
+              Pairs matched:
+              <span id="formula-matched-count" style="color: var(--success)"
+                >0</span
+              >
+              / 3
             </div>
           </div>
 
-          <textarea style="display:none;" id="evidence-text-formula"></textarea>
+          <textarea style="display: none" id="evidence-text-formula"></textarea>
           <div class="actions">
             <button class="btn secondary" data-save>Save workspace</button>
             <button class="btn" data-complete>Complete with evidence</button>
@@ -481,21 +983,39 @@
             <span class="pill">15 min</span>
           </div>
           <h3>Inequality Solver</h3>
-          <p>Solve the inequality: <b>-2x + 7 < 15</b>. Select the correct sign and solve value.</p>
-          
+          <p>
+            Solve the inequality: <b>-2x + 7 < 15</b>. Select the correct sign
+            and solve value.
+          </p>
+
           <div class="activity-interactive-area">
-            <div style="display:flex; justify-content:center; align-items:center; gap:10px;">
+            <div
+              style="
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 10px;
+              "
+            >
               <span>x</span>
-              <select id="ineq-sign" style="width:70px; padding:4px;">
+              <select id="ineq-sign" style="width: 70px; padding: 4px">
                 <option value="">Sign...</option>
                 <option value="lt">&lt;</option>
                 <option value="gt">&gt;</option>
               </select>
-              <input type="text" id="ineq-val" placeholder="Value" style="width:70px; padding:4px;" />
+              <input
+                type="text"
+                id="ineq-val"
+                placeholder="Value"
+                style="width: 70px; padding: 4px"
+              />
             </div>
           </div>
 
-          <textarea style="display:none;" id="evidence-text-inequality"></textarea>
+          <textarea
+            style="display: none"
+            id="evidence-text-inequality"
+          ></textarea>
           <div class="actions">
             <button class="btn secondary" data-save>Save workspace</button>
             <button class="btn" data-complete>Complete with evidence</button>
@@ -509,18 +1029,28 @@
             <span class="pill">20 min</span>
           </div>
           <h3>Systems of Equations</h3>
-          <p>Solve this system of equations for (x, y):<br/><b>y = 2x - 1</b><br/><b>x + y = 5</b></p>
-          
+          <p>
+            Solve this system of equations for (x, y):<br /><b>y = 2x - 1</b
+            ><br /><b>x + y = 5</b>
+          </p>
+
           <div class="activity-interactive-area">
-            <div style="display:flex; justify-content:center; align-items:center; gap:8px;">
+            <div
+              style="
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 8px;
+              "
+            >
               <span>x =</span>
-              <input type="text" id="sys-x" style="width:50px; padding:4px;" />
+              <input type="text" id="sys-x" style="width: 50px; padding: 4px" />
               <span>, y =</span>
-              <input type="text" id="sys-y" style="width:50px; padding:4px;" />
+              <input type="text" id="sys-y" style="width: 50px; padding: 4px" />
             </div>
           </div>
 
-          <textarea style="display:none;" id="evidence-text-systems"></textarea>
+          <textarea style="display: none" id="evidence-text-systems"></textarea>
           <div class="actions">
             <button class="btn secondary" data-save>Save workspace</button>
             <button class="btn" data-complete>Complete with evidence</button>
@@ -534,21 +1064,40 @@
             <span class="pill">15 min</span>
           </div>
           <h3>Functions Domain &amp; Range</h3>
-          <p>Identify the domain and range of the function <b>y = &radic;(x - 3) + 2</b>.</p>
-          
+          <p>
+            Identify the domain and range of the function
+            <b>y = &radic;(x - 3) + 2</b>.
+          </p>
+
           <div class="activity-interactive-area">
-            <div style="display:flex; flex-direction:column; gap:8px;">
-              <label style="display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; font-weight:700;">
+            <div style="display: flex; flex-direction: column; gap: 8px">
+              <label
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  font-size: 0.85rem;
+                  font-weight: 700;
+                "
+              >
                 Domain:
-                <select id="fn-domain" style="width:120px; padding:4px;">
+                <select id="fn-domain" style="width: 120px; padding: 4px">
                   <option value="">Select...</option>
                   <option value="x3">x &ge; 3</option>
                   <option value="x2">x &ge; 2</option>
                 </select>
               </label>
-              <label style="display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; font-weight:700;">
+              <label
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  font-size: 0.85rem;
+                  font-weight: 700;
+                "
+              >
                 Range:
-                <select id="fn-range" style="width:120px; padding:4px;">
+                <select id="fn-range" style="width: 120px; padding: 4px">
                   <option value="">Select...</option>
                   <option value="y2">y &ge; 2</option>
                   <option value="y3">y &ge; 3</option>
@@ -557,7 +1106,10 @@
             </div>
           </div>
 
-          <textarea style="display:none;" id="evidence-text-domain-range"></textarea>
+          <textarea
+            style="display: none"
+            id="evidence-text-domain-range"
+          ></textarea>
           <div class="actions">
             <button class="btn secondary" data-save>Save workspace</button>
             <button class="btn" data-complete>Complete with evidence</button>
@@ -571,15 +1123,26 @@
             <span class="pill">20 min</span>
           </div>
           <h3>Error Audit Lab</h3>
-          <p>Identify the step containing an algebraic error: Solve <b>-4(x - 2) = 12</b>.<br/>
-          Step 1: -4x + 8 = 12<br/>
-          Step 2: -4x = 20<br/>
-          Step 3: x = -5
+          <p>
+            Identify the step containing an algebraic error: Solve
+            <b>-4(x - 2) = 12</b>.<br />
+            Step 1: -4x + 8 = 12<br />
+            Step 2: -4x = 20<br />
+            Step 3: x = -5
           </p>
-          
+
           <div class="activity-interactive-area">
-            <label style="font-size:0.85rem; font-weight:800; color:var(--accent); display:block; margin-bottom:4px;">Incorrect Step:</label>
-            <select id="err-step" style="margin-bottom:8px;">
+            <label
+              style="
+                font-size: 0.85rem;
+                font-weight: 800;
+                color: var(--accent);
+                display: block;
+                margin-bottom: 4px;
+              "
+              >Incorrect Step:</label
+            >
+            <select id="err-step" style="margin-bottom: 8px">
               <option value="">Select error...</option>
               <option value="s1">Step 1 (Distributive)</option>
               <option value="s2">Step 2 (Subtraction Property)</option>
@@ -587,15 +1150,128 @@
             </select>
           </div>
 
-          <textarea style="display:none;" id="evidence-text-error"></textarea>
+          <textarea style="display: none" id="evidence-text-error"></textarea>
           <div class="actions">
             <button class="btn secondary" data-save>Save workspace</button>
             <button class="btn" data-complete>Complete with evidence</button>
           </div>
         </article>
-
       </div>
     </main>
+
+    <section class="wrap resources" aria-label="Additional math resources">
+      <div class="section-head">
+        <h2>📚 Learn More — Extra Math Resources</h2>
+        <p class="muted">
+          Free websites, videos, and tools to keep practicing Algebra and
+          Geometry over the summer.
+        </p>
+      </div>
+      <div class="resources-grid">
+        <div class="res-card">
+          <h3>🎥 Video Lessons &amp; Practice</h3>
+          <p>Watch a short lesson, then practice the same skill right away.</p>
+          <ul>
+            <li>
+              <a
+                href="https://www.khanacademy.org/math/algebra2"
+                target="_blank"
+                rel="noopener"
+                >Khan Academy — Algebra 2<span class="res-desc"
+                  >Full free course with videos + auto-graded practice</span
+                ></a
+              >
+            </li>
+            <li>
+              <a
+                href="https://www.khanacademy.org/math/geometry"
+                target="_blank"
+                rel="noopener"
+                >Khan Academy — Geometry<span class="res-desc"
+                  >Proofs, angles, area, and transformations</span
+                ></a
+              >
+            </li>
+            <li>
+              <a
+                href="https://www.youtube.com/@TheOrganicChemistryTutor"
+                target="_blank"
+                rel="noopener"
+                >The Organic Chemistry Tutor<span class="res-desc"
+                  >Clear step-by-step math walkthroughs on YouTube</span
+                ></a
+              >
+            </li>
+          </ul>
+        </div>
+        <div class="res-card">
+          <h3>🧮 Interactive Tools</h3>
+          <p>Graph, explore, and check your own work visually.</p>
+          <ul>
+            <li>
+              <a
+                href="https://www.desmos.com/calculator"
+                target="_blank"
+                rel="noopener"
+                >Desmos Graphing Calculator<span class="res-desc"
+                  >Free online graphing for functions and equations</span
+                ></a
+              >
+            </li>
+            <li>
+              <a href="https://www.geogebra.org/" target="_blank" rel="noopener"
+                >GeoGebra<span class="res-desc"
+                  >Interactive geometry, algebra, and graphing</span
+                ></a
+              >
+            </li>
+            <li>
+              <a
+                href="https://www.mathsisfun.com/"
+                target="_blank"
+                rel="noopener"
+                >Math is Fun<span class="res-desc"
+                  >Plain-language explanations with examples</span
+                ></a
+              >
+            </li>
+          </ul>
+        </div>
+        <div class="res-card">
+          <h3>✍️ Daily Practice</h3>
+          <p>Build speed and confidence with a few problems a day.</p>
+          <ul>
+            <li>
+              <a
+                href="https://www.ixl.com/math/grade-10"
+                target="_blank"
+                rel="noopener"
+                >IXL — Grade 10 Math<span class="res-desc"
+                  >Targeted skill practice by topic</span
+                ></a
+              >
+            </li>
+            <li>
+              <a href="https://brilliant.org/" target="_blank" rel="noopener"
+                >Brilliant<span class="res-desc"
+                  >Hands-on problem solving and logic</span
+                ></a
+              >
+            </li>
+            <li>
+              <a
+                href="https://tutorial.math.lamar.edu/"
+                target="_blank"
+                rel="noopener"
+                >Paul's Online Math Notes<span class="res-desc"
+                  >Notes, examples, and practice with answers</span
+                ></a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
 
     <footer class="footer">EduWonderLab &bull; Aviad Math Summer Hub</footer>
 
@@ -605,25 +1281,25 @@
       var bossHp = 100;
       var playerHp = 3;
       var isMgPlaying = false;
-      
+
       var mgEquations = [
         { eq: "2x + 5 = 15", ans: "5" },
         { eq: "3x - 4 = 11", ans: "5" },
         { eq: "x² - 9 = 0 (positive)", ans: "3" },
         { eq: "5x - 7 = 18", ans: "5" },
-        { eq: "x / 2 + 1 = 6", ans: "10" }
+        { eq: "x / 2 + 1 = 6", ans: "10" },
       ];
       var mgRoundIdx = 0;
-      
-      var startBtnMg = document.getElementById('game-btn-mg');
-      var eqText = document.getElementById('glad-eq-text');
-      var inputMg = document.getElementById('glad-input');
-      var submitBtnMg = document.getElementById('glad-submit-btn');
-      var hpBar = document.getElementById('boss-hp-bar');
-      
-      startBtnMg.addEventListener('click', function() {
-        EWL.playAudio('game-start');
-        document.getElementById('game-overlay-mg').style.display = 'none';
+
+      var startBtnMg = document.getElementById("game-btn-mg");
+      var eqText = document.getElementById("glad-eq-text");
+      var inputMg = document.getElementById("glad-input");
+      var submitBtnMg = document.getElementById("glad-submit-btn");
+      var hpBar = document.getElementById("boss-hp-bar");
+
+      startBtnMg.addEventListener("click", function () {
+        EWL.playAudio("game-start");
+        document.getElementById("game-overlay-mg").style.display = "none";
         bossHp = 100;
         playerHp = 3;
         isMgPlaying = true;
@@ -631,28 +1307,28 @@
         updateGladHUD();
         setupGladRound();
       });
-      
+
       function updateGladHUD() {
-        hpBar.style.width = (bossHp * 2) + "px";
-        document.getElementById('glad-hp-val').textContent = playerHp + " / 3";
+        hpBar.style.width = bossHp * 2 + "px";
+        document.getElementById("glad-hp-val").textContent = playerHp + " / 3";
       }
-      
+
       function setupGladRound() {
         var r = mgEquations[mgRoundIdx];
         eqText.textContent = r.eq;
         inputMg.value = "";
         inputMg.focus();
       }
-      
-      submitBtnMg.addEventListener('click', function() {
+
+      submitBtnMg.addEventListener("click", function () {
         if (!isMgPlaying) return;
         var r = mgEquations[mgRoundIdx];
         var ans = inputMg.value.trim();
-        
+
         if (ans === r.ans) {
           // Hit boss!
           bossHp -= 25;
-          EWL.playAudio('powerup');
+          EWL.playAudio("powerup");
           triggerSpellAnim();
           updateGladHUD();
           if (bossHp <= 0) {
@@ -662,55 +1338,63 @@
         } else {
           // Hit player!
           playerHp--;
-          EWL.playAudio('hit');
+          EWL.playAudio("hit");
           updateGladHUD();
           if (playerHp <= 0) {
             endGladGame(false);
             return;
           }
         }
-        
+
         mgRoundIdx = (mgRoundIdx + 1) % mgEquations.length;
         setupGladRound();
       });
-      
+
       function triggerSpellAnim() {
-        var svg = document.getElementById('gladiator-svg');
-        var spellGroup = document.getElementById('spell-layer');
+        var svg = document.getElementById("gladiator-svg");
+        var spellGroup = document.getElementById("spell-layer");
         spellGroup.innerHTML = "";
-        
-        var circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+
+        var circle = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "circle",
+        );
         circle.setAttribute("cx", "160");
         circle.setAttribute("cy", "140");
         circle.setAttribute("r", "5");
         circle.setAttribute("fill", "#c084fc");
-        
+
         // CSS animation inside SVG
-        var anim = document.createElementNS("http://www.w3.org/2000/svg", "animate");
+        var anim = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "animate",
+        );
         anim.setAttribute("attributeName", "cy");
         anim.setAttribute("from", "140");
         anim.setAttribute("to", "80");
         anim.setAttribute("dur", "0.4s");
         anim.setAttribute("fill", "freeze");
-        
+
         circle.appendChild(anim);
         spellGroup.appendChild(circle);
-        
+
         // Shake boss
-        var boss = document.getElementById('boss-body');
+        var boss = document.getElementById("boss-body");
         boss.style.transform = "scale(0.9)";
-        setTimeout(function() { boss.style.transform = ""; }, 150);
+        setTimeout(function () {
+          boss.style.transform = "";
+        }, 150);
       }
-      
+
       function endGladGame(win) {
         isMgPlaying = false;
-        var high = EWL.saveHighScore('equation-gladiator', win ? 100 : 0);
-        
-        var overlay = document.getElementById('game-overlay-mg');
-        var title = overlay.querySelector('h4');
-        var desc = overlay.querySelector('p');
-        var btn = document.getElementById('game-btn-mg');
-        
+        var high = EWL.saveHighScore("equation-gladiator", win ? 100 : 0);
+
+        var overlay = document.getElementById("game-overlay-mg");
+        var title = overlay.querySelector("h4");
+        var desc = overlay.querySelector("p");
+        var btn = document.getElementById("game-btn-mg");
+
         if (win) {
           title.textContent = "Victory! 🏆";
           desc.textContent = "The Math Monster is slain!";
@@ -721,65 +1405,87 @@
           btn.textContent = "Try Again";
         }
         overlay.style.display = "flex";
-        
-        document.getElementById('evidence-text-equation-gladiator').value = "WIN:" + win + "\nHEALTH:" + playerHp;
+
+        document.getElementById("evidence-text-equation-gladiator").value =
+          "WIN:" + win + "\nHEALTH:" + playerHp;
       }
 
       // 2. Algebra Combat
-      var al1 = document.getElementById('al-step1');
-      var al2 = document.getElementById('al-step2');
-      var al3 = document.getElementById('al-step3');
-      var al4 = document.getElementById('al-step4');
+      var al1 = document.getElementById("al-step1");
+      var al2 = document.getElementById("al-step2");
+      var al3 = document.getElementById("al-step3");
+      var al4 = document.getElementById("al-step4");
       function validateAlgebra() {
-        document.getElementById('evidence-text-algebra').value = "STEP1:" + al1.value + "\nSTEP2:" + al2.value + "\nSTEP3:" + al3.value + "\nSTEP4:" + al4.value;
+        document.getElementById("evidence-text-algebra").value =
+          "STEP1:" +
+          al1.value +
+          "\nSTEP2:" +
+          al2.value +
+          "\nSTEP3:" +
+          al3.value +
+          "\nSTEP4:" +
+          al4.value;
       }
-      [al1, al2, al3, al4].forEach(function(el) { el.addEventListener('input', validateAlgebra); });
+      [al1, al2, al3, al4].forEach(function (el) {
+        el.addEventListener("input", validateAlgebra);
+      });
 
       // 3. Geometry Proof Dungeon
       function validateProof() {
         var details = [];
-        ['proof-r1', 'proof-s2', 'proof-r2', 'proof-s3', 'proof-r3'].forEach(function(cid) {
-          var item = document.getElementById(cid).querySelector('.drag-item');
-          details.push(cid + ":" + (item ? item.dataset.val : ""));
-        });
-        document.getElementById('evidence-text-proof').value = details.join('\n');
+        ["proof-r1", "proof-s2", "proof-r2", "proof-s3", "proof-r3"].forEach(
+          function (cid) {
+            var item = document.getElementById(cid).querySelector(".drag-item");
+            details.push(cid + ":" + (item ? item.dataset.val : ""));
+          },
+        );
+        document.getElementById("evidence-text-proof").value =
+          details.join("\n");
       }
 
       // 4. Graph Story Designer handle drag
-      var handle = document.getElementById('math-handle');
-      var line = document.getElementById('math-line');
-      var slopeText = document.getElementById('math-slope');
-      var yintText = document.getElementById('math-yint');
-      
+      var handle = document.getElementById("math-handle");
+      var line = document.getElementById("math-line");
+      var slopeText = document.getElementById("math-slope");
+      var yintText = document.getElementById("math-yint");
+
       var isDragging = false;
-      handle.addEventListener('mousedown', function() { isDragging = true; });
-      window.addEventListener('mouseup', function() { isDragging = false; });
-      
+      handle.addEventListener("mousedown", function () {
+        isDragging = true;
+      });
+      window.addEventListener("mouseup", function () {
+        isDragging = false;
+      });
+
       // Touch support
-      handle.addEventListener('touchstart', function() { isDragging = true; });
-      window.addEventListener('touchend', function() { isDragging = false; });
-      
-      window.addEventListener('mousemove', function(e) {
+      handle.addEventListener("touchstart", function () {
+        isDragging = true;
+      });
+      window.addEventListener("touchend", function () {
+        isDragging = false;
+      });
+
+      window.addEventListener("mousemove", function (e) {
         if (!isDragging) return;
         updateHandlePos(e.clientY);
       });
-      window.addEventListener('touchmove', function(e) {
+      window.addEventListener("touchmove", function (e) {
         if (!isDragging) return;
         updateHandlePos(e.touches[0].clientY);
       });
-      
+
       function updateHandlePos(clientY) {
-        var svg = document.getElementById('piecewise-svg');
+        var svg = document.getElementById("piecewise-svg");
         var rect = svg.getBoundingClientRect();
         var yVal = clientY - rect.top;
-        
+
         // Scale and constrain Y
         var scaleY = 160 / rect.height;
         var y = Math.max(20, Math.min(140, yVal * scaleY));
-        
-        handle.setAttribute('cy', y);
-        line.setAttribute('y2', y);
-        
+
+        handle.setAttribute("cy", y);
+        line.setAttribute("y2", y);
+
         // Calculate Slope: slope = (y1 - y2) / dx
         // x1=20, y1=130 (which represents height of 1 unit intercept). x2=140.
         // SVG coordinates: y increases downwards!
@@ -787,242 +1493,369 @@
         // Therefore, yInt = (140 - 130) / 10 = 1.
         var rightYVal = (140 - y) / 10;
         var slope = (rightYVal - 1) / 4; // dx is 120 pixels (representing 4 units)
-        
+
         slopeText.textContent = slope.toFixed(1);
         yintText.textContent = "1";
-        
-        document.getElementById('evidence-text-graph').value = "SLOPE:" + slope.toFixed(1) + "\nYINT:1";
+
+        document.getElementById("evidence-text-graph").value =
+          "SLOPE:" + slope.toFixed(1) + "\nYINT:1";
       }
 
       // 5. Lin vs Exp
       function validateLinExp() {
-        var lItems = Array.from(document.getElementById('model-bin-lin').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
-        var eItems = Array.from(document.getElementById('model-bin-exp').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
-        document.getElementById('evidence-text-lin-vs-exp').value = "LIN:" + lItems.join(',') + "\nEXP:" + eItems.join(',');
+        var lItems = Array.from(
+          document
+            .getElementById("model-bin-lin")
+            .querySelectorAll(".drag-item"),
+        ).map(function (item) {
+          return item.id;
+        });
+        var eItems = Array.from(
+          document
+            .getElementById("model-bin-exp")
+            .querySelectorAll(".drag-item"),
+        ).map(function (item) {
+          return item.id;
+        });
+        document.getElementById("evidence-text-lin-vs-exp").value =
+          "LIN:" + lItems.join(",") + "\nEXP:" + eItems.join(",");
       }
 
       // 6. Quadratic matcher
-      var q1 = document.getElementById('quad-1');
-      var q2 = document.getElementById('quad-2');
+      var q1 = document.getElementById("quad-1");
+      var q2 = document.getElementById("quad-2");
       function validateQuad() {
-        document.getElementById('evidence-text-quadratic-match').value = "Q1:" + q1.value + "\nQ2:" + q2.value;
+        document.getElementById("evidence-text-quadratic-match").value =
+          "Q1:" + q1.value + "\nQ2:" + q2.value;
       }
-      q1.addEventListener('change', validateQuad);
-      q2.addEventListener('change', validateQuad);
+      q1.addEventListener("change", validateQuad);
+      q2.addEventListener("change", validateQuad);
 
       // 7. Triangle lock
-      var aIn = document.getElementById('angle-a');
-      var bIn = document.getElementById('angle-b');
-      var cIn = document.getElementById('angle-c');
+      var aIn = document.getElementById("angle-a");
+      var bIn = document.getElementById("angle-b");
+      var cIn = document.getElementById("angle-c");
       function validateAngles() {
-        document.getElementById('evidence-text-angles').value = "A:" + aIn.value + "\nB:" + bIn.value + "\nC:" + cIn.value;
+        document.getElementById("evidence-text-angles").value =
+          "A:" + aIn.value + "\nB:" + bIn.value + "\nC:" + cIn.value;
       }
-      [aIn, bIn, cIn].forEach(function(el) { el.addEventListener('input', validateAngles); });
+      [aIn, bIn, cIn].forEach(function (el) {
+        el.addEventListener("input", validateAngles);
+      });
 
       // 8. Formula Matching Cards
       var selectedFormula = null;
       var formulaMatchedCount = 0;
       var matches = {
-        'quad': 'quad',
-        'slope': 'slope',
-        'pyth': 'pyth'
+        quad: "quad",
+        slope: "slope",
+        pyth: "pyth",
       };
       var matchedPairs = {};
-      
-      document.querySelectorAll('.formula-box').forEach(function(box) {
-        box.addEventListener('click', function() {
+
+      document.querySelectorAll(".formula-box").forEach(function (box) {
+        box.addEventListener("click", function () {
           if (matchedPairs[box.dataset.val]) return;
-          
+
           if (!selectedFormula) {
             selectedFormula = box;
-            box.classList.add('selected');
+            box.classList.add("selected");
           } else {
             // Check matching pair
-            var nameBox = selectedFormula.dataset.type === 'name' ? selectedFormula : (box.dataset.type === 'name' ? box : null);
-            var eqBox = selectedFormula.dataset.type === 'eq' ? selectedFormula : (box.dataset.type === 'eq' ? box : null);
-            
-            if (nameBox && eqBox && matches[nameBox.dataset.val] === eqBox.dataset.val) {
+            var nameBox =
+              selectedFormula.dataset.type === "name"
+                ? selectedFormula
+                : box.dataset.type === "name"
+                  ? box
+                  : null;
+            var eqBox =
+              selectedFormula.dataset.type === "eq"
+                ? selectedFormula
+                : box.dataset.type === "eq"
+                  ? box
+                  : null;
+
+            if (
+              nameBox &&
+              eqBox &&
+              matches[nameBox.dataset.val] === eqBox.dataset.val
+            ) {
               // Match!
               nameBox.style.background = "var(--success-glow)";
               nameBox.style.borderColor = "var(--success)";
               eqBox.style.background = "var(--success-glow)";
               eqBox.style.borderColor = "var(--success)";
-              
+
               matchedPairs[nameBox.dataset.val] = true;
               formulaMatchedCount++;
-              document.getElementById('formula-matched-count').textContent = formulaMatchedCount;
-              EWL.playAudio('powerup');
+              document.getElementById("formula-matched-count").textContent =
+                formulaMatchedCount;
+              EWL.playAudio("powerup");
             } else {
-              EWL.playAudio('fail');
+              EWL.playAudio("fail");
             }
-            
-            selectedFormula.classList.remove('selected');
+
+            selectedFormula.classList.remove("selected");
             selectedFormula = null;
-            
-            document.getElementById('evidence-text-formula').value = "MATCHED_PAIRS_COUNT:" + formulaMatchedCount;
+
+            document.getElementById("evidence-text-formula").value =
+              "MATCHED_PAIRS_COUNT:" + formulaMatchedCount;
           }
         });
       });
 
       // 9. Inequality Solver
-      var ineqSign = document.getElementById('ineq-sign');
-      var ineqVal = document.getElementById('ineq-val');
+      var ineqSign = document.getElementById("ineq-sign");
+      var ineqVal = document.getElementById("ineq-val");
       function validateIneq() {
-        document.getElementById('evidence-text-inequality').value = "SIGN:" + ineqSign.value + "\nVAL:" + ineqVal.value;
+        document.getElementById("evidence-text-inequality").value =
+          "SIGN:" + ineqSign.value + "\nVAL:" + ineqVal.value;
       }
-      ineqSign.addEventListener('change', validateIneq);
-      ineqVal.addEventListener('input', validateIneq);
+      ineqSign.addEventListener("change", validateIneq);
+      ineqVal.addEventListener("input", validateIneq);
 
       // 10. Systems
-      var sysX = document.getElementById('sys-x');
-      var sysY = document.getElementById('sys-y');
+      var sysX = document.getElementById("sys-x");
+      var sysY = document.getElementById("sys-y");
       function validateSystems() {
-        document.getElementById('evidence-text-systems').value = "X:" + sysX.value + "\nY:" + sysY.value;
+        document.getElementById("evidence-text-systems").value =
+          "X:" + sysX.value + "\nY:" + sysY.value;
       }
-      sysX.addEventListener('input', validateSystems);
-      sysY.addEventListener('input', validateSystems);
+      sysX.addEventListener("input", validateSystems);
+      sysY.addEventListener("input", validateSystems);
 
       // 11. Domain Range
-      var fnDom = document.getElementById('fn-domain');
-      var fnRan = document.getElementById('fn-range');
+      var fnDom = document.getElementById("fn-domain");
+      var fnRan = document.getElementById("fn-range");
       function validateDomainRange() {
-        document.getElementById('evidence-text-domain-range').value = "DOM:" + fnDom.value + "\nRAN:" + fnRan.value;
+        document.getElementById("evidence-text-domain-range").value =
+          "DOM:" + fnDom.value + "\nRAN:" + fnRan.value;
       }
-      fnDom.addEventListener('change', validateDomainRange);
-      fnRan.addEventListener('change', validateDomainRange);
+      fnDom.addEventListener("change", validateDomainRange);
+      fnRan.addEventListener("change", validateDomainRange);
 
       // 12. Error Audit
-      var errStep = document.getElementById('err-step');
+      var errStep = document.getElementById("err-step");
       function validateError() {
-        document.getElementById('evidence-text-error').value = "ERROR_STEP:" + errStep.value;
+        document.getElementById("evidence-text-error").value =
+          "ERROR_STEP:" + errStep.value;
       }
-      errStep.addEventListener('change', validateError);
+      errStep.addEventListener("change", validateError);
 
       // Drag and drop trigger validate callbacks
-      window.validateActivityState = function(card) {
+      window.validateActivityState = function (card) {
         var id = card.dataset.id;
         if (id === "proof") validateProof();
         if (id === "lin-vs-exp") validateLinExp();
       };
 
       // Integrate with EWL shared validation
-      window.checkInteractiveComplete = function(card) {
+      window.checkInteractiveComplete = function (card) {
         var id = card.dataset.id;
-        
+
         if (id === "equation-gladiator") {
           if (bossHp > 0) {
-            return { success: false, message: "Defeat the Math Monster in Gladiator Battle to unlock completion!" };
+            return {
+              success: false,
+              message:
+                "Defeat the Math Monster in Gladiator Battle to unlock completion!",
+            };
           }
         }
-        
+
         if (id === "algebra") {
           var s1 = al1.value.trim();
           var s2 = al2.value.trim();
           var s3 = al3.value.trim();
           var s4 = al4.value.trim();
-          if (s1 !== '6' || s2 !== '2' || s3 !== '21' || s4 !== '7') {
-            return { success: false, message: "Review your step-by-step solving algebra coefficients." };
+          if (s1 !== "6" || s2 !== "2" || s3 !== "21" || s4 !== "7") {
+            return {
+              success: false,
+              message: "Review your step-by-step solving algebra coefficients.",
+            };
           }
         }
-        
+
         if (id === "proof") {
-          var r1 = document.getElementById('proof-r1').querySelector('.drag-item');
-          var s2 = document.getElementById('proof-s2').querySelector('.drag-item');
-          var r2 = document.getElementById('proof-r2').querySelector('.drag-item');
-          var s3 = document.getElementById('proof-s3').querySelector('.drag-item');
-          var r3 = document.getElementById('proof-r3').querySelector('.drag-item');
-          
+          var r1 = document
+            .getElementById("proof-r1")
+            .querySelector(".drag-item");
+          var s2 = document
+            .getElementById("proof-s2")
+            .querySelector(".drag-item");
+          var r2 = document
+            .getElementById("proof-r2")
+            .querySelector(".drag-item");
+          var s3 = document
+            .getElementById("proof-s3")
+            .querySelector(".drag-item");
+          var r3 = document
+            .getElementById("proof-r3")
+            .querySelector(".drag-item");
+
           if (!r1 || !s2 || !r2 || !s3 || !r3) {
-            return { success: false, message: "Complete all slots of the vertical angles theorem proof." };
+            return {
+              success: false,
+              message:
+                "Complete all slots of the vertical angles theorem proof.",
+            };
           }
-          if (r1.id !== 'pr-r1' || s2.id !== 'pr-s2' || r2.id !== 'pr-r2' || s3.id !== 'pr-s3' || r3.id !== 'pr-r3') {
-            return { success: false, message: "Reorder your statement and reason cards correctly!" };
+          if (
+            r1.id !== "pr-r1" ||
+            s2.id !== "pr-s2" ||
+            r2.id !== "pr-r2" ||
+            s3.id !== "pr-s3" ||
+            r3.id !== "pr-r3"
+          ) {
+            return {
+              success: false,
+              message: "Reorder your statement and reason cards correctly!",
+            };
           }
         }
-        
+
         if (id === "graph") {
           var slope = parseFloat(slopeText.textContent);
           if (Math.abs(slope - 3.0) > 0.1) {
-            return { success: false, message: "Adjust the coordinate line handle to match the slope requirements of the story (slope = 3.0)." };
+            return {
+              success: false,
+              message:
+                "Adjust the coordinate line handle to match the slope requirements of the story (slope = 3.0).",
+            };
           }
         }
-        
+
         if (id === "lin-vs-exp") {
-          var lItems = Array.from(document.getElementById('model-bin-lin').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
-          var eItems = Array.from(document.getElementById('model-bin-exp').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
+          var lItems = Array.from(
+            document
+              .getElementById("model-bin-lin")
+              .querySelectorAll(".drag-item"),
+          ).map(function (item) {
+            return item.id;
+          });
+          var eItems = Array.from(
+            document
+              .getElementById("model-bin-exp")
+              .querySelectorAll(".drag-item"),
+          ).map(function (item) {
+            return item.id;
+          });
           if (lItems.length !== 2 || eItems.length !== 2) {
-            return { success: false, message: "Sort all 4 model equations into the correct bins." };
+            return {
+              success: false,
+              message: "Sort all 4 model equations into the correct bins.",
+            };
           }
-          var lOk = (lItems.indexOf('mod-l1') > -1) && (lItems.indexOf('mod-l2') > -1);
+          var lOk =
+            lItems.indexOf("mod-l1") > -1 && lItems.indexOf("mod-l2") > -1;
           if (!lOk) {
-            return { success: false, message: "Check your linear vs exponential function classifications." };
+            return {
+              success: false,
+              message:
+                "Check your linear vs exponential function classifications.",
+            };
           }
         }
-        
+
         if (id === "quadratic-match") {
-          if (q1.value !== 'x3x2' || q2.value !== 'x6x1') {
-            return { success: false, message: "Provide the correct factored equivalents for both quadratic equations." };
+          if (q1.value !== "x3x2" || q2.value !== "x6x1") {
+            return {
+              success: false,
+              message:
+                "Provide the correct factored equivalents for both quadratic equations.",
+            };
           }
         }
-        
+
         if (id === "angles") {
-          if (aIn.value.trim() !== '70' || bIn.value.trim() !== '50' || cIn.value.trim() !== '90') {
-            return { success: false, message: "Solve the sequential missing triangle angles correctly." };
+          if (
+            aIn.value.trim() !== "70" ||
+            bIn.value.trim() !== "50" ||
+            cIn.value.trim() !== "90"
+          ) {
+            return {
+              success: false,
+              message:
+                "Solve the sequential missing triangle angles correctly.",
+            };
           }
         }
-        
+
         if (id === "formula") {
           if (formulaMatchedCount < 3) {
-            return { success: false, message: "Click and match all 3 formulas to their correct mathematical names." };
+            return {
+              success: false,
+              message:
+                "Click and match all 3 formulas to their correct mathematical names.",
+            };
           }
         }
-        
+
         if (id === "inequality") {
-          if (ineqSign.value !== 'gt' || ineqVal.value.trim() !== '-4') {
-            return { success: false, message: "Solve the linear inequality correctly. Remember to reverse the sign when dividing by a negative!" };
+          if (ineqSign.value !== "gt" || ineqVal.value.trim() !== "-4") {
+            return {
+              success: false,
+              message:
+                "Solve the linear inequality correctly. Remember to reverse the sign when dividing by a negative!",
+            };
           }
         }
-        
+
         if (id === "systems") {
-          if (sysX.value.trim() !== '2' || sysY.value.trim() !== '3') {
-            return { success: false, message: "Provide the correct (x, y) coordinates solving the systems of equations." };
+          if (sysX.value.trim() !== "2" || sysY.value.trim() !== "3") {
+            return {
+              success: false,
+              message:
+                "Provide the correct (x, y) coordinates solving the systems of equations.",
+            };
           }
         }
-        
+
         if (id === "domain-range") {
-          if (fnDom.value !== 'x3' || fnRan.value !== 'y2') {
-            return { success: false, message: "State the correct domain and range boundaries based on the radical function." };
+          if (fnDom.value !== "x3" || fnRan.value !== "y2") {
+            return {
+              success: false,
+              message:
+                "State the correct domain and range boundaries based on the radical function.",
+            };
           }
         }
-        
+
         if (id === "error") {
           if (errStep.value !== "s2") {
-            return { success: false, message: "Audit the steps! Step 2 contains the mistake (12 - 8 is 4, not 20)." };
+            return {
+              success: false,
+              message:
+                "Audit the steps! Step 2 contains the mistake (12 - 8 is 4, not 20).",
+            };
           }
         }
-        
+
         // Bind actual data
-        var hiddenText = document.getElementById('evidence-text-' + id).value;
-        card.querySelector('textarea').value = hiddenText;
-        
+        var hiddenText = document.getElementById("evidence-text-" + id).value;
+        card.querySelector("textarea").value = hiddenText;
+
         return { success: true };
       };
 
       // Restore custom Interactive State
-      window.restoreInteractiveState = function(card, savedState) {
+      window.restoreInteractiveState = function (card, savedState) {
         var id = card.dataset.id;
-        
+
         if (id === "equation-gladiator" && savedState.WIN) {
           if (savedState.WIN === "true" || savedState.WIN === true) {
             bossHp = 0;
             playerHp = 3;
             updateGladHUD();
-            document.getElementById('game-overlay-mg').style.display = 'flex';
-            document.getElementById('game-overlay-mg').querySelector('h4').textContent = "Victory! 🏆";
+            document.getElementById("game-overlay-mg").style.display = "flex";
+            document
+              .getElementById("game-overlay-mg")
+              .querySelector("h4").textContent = "Victory! 🏆";
           }
-          document.getElementById('evidence-text-equation-gladiator').value = "WIN:" + savedState.WIN;
+          document.getElementById("evidence-text-equation-gladiator").value =
+            "WIN:" + savedState.WIN;
         }
-        
+
         if (id === "algebra" && savedState.STEP1) {
           al1.value = savedState.STEP1;
           al2.value = savedState.STEP2;
@@ -1030,88 +1863,99 @@
           al4.value = savedState.STEP4;
           validateAlgebra();
         }
-        
+
         if (id === "proof" && savedState.proof) {
           // Parse lines
-          var lines = savedState.proof.split('\n');
-          lines.forEach(function(line) {
-            var parts = line.split(':');
+          var lines = savedState.proof.split("\n");
+          lines.forEach(function (line) {
+            var parts = line.split(":");
             var cid = parts[0];
             var val = parts[1];
             if (val) {
-              var item = document.querySelector('.drag-item[data-val="' + val + '"][data-drawer="proof-drawer"]');
+              var item = document.querySelector(
+                '.drag-item[data-val="' +
+                  val +
+                  '"][data-drawer="proof-drawer"]',
+              );
               if (item) document.getElementById(cid).appendChild(item);
             }
           });
           validateProof();
         }
-        
+
         if (id === "graph" && savedState.SLOPE) {
           // Calculate and set cy coordinate of handle
           var slope = parseFloat(savedState.SLOPE);
           var rightY = slope * 4 + 1; // representing coordinates
-          var cyVal = 140 - (rightY * 10);
-          handle.setAttribute('cy', cyVal);
-          line.setAttribute('y2', cyVal);
+          var cyVal = 140 - rightY * 10;
+          handle.setAttribute("cy", cyVal);
+          line.setAttribute("y2", cyVal);
           slopeText.textContent = slope.toFixed(1);
-          document.getElementById('evidence-text-graph').value = "SLOPE:" + slope.toFixed(1) + "\nYINT:1";
+          document.getElementById("evidence-text-graph").value =
+            "SLOPE:" + slope.toFixed(1) + "\nYINT:1";
         }
-        
+
         if (id === "lin-vs-exp" && savedState.LIN) {
-          var linList = savedState.LIN.replace("LIN:", "").split(',');
-          var expList = savedState.EXP.replace("EXP:", "").split(',');
-          
-          document.querySelectorAll('.drag-item[data-drawer="model-drawer"]').forEach(function(item) {
-            if (linList.indexOf(item.id) > -1) document.getElementById('model-bin-lin').appendChild(item);
-            if (expList.indexOf(item.id) > -1) document.getElementById('model-bin-exp').appendChild(item);
-          });
+          var linList = savedState.LIN.replace("LIN:", "").split(",");
+          var expList = savedState.EXP.replace("EXP:", "").split(",");
+
+          document
+            .querySelectorAll('.drag-item[data-drawer="model-drawer"]')
+            .forEach(function (item) {
+              if (linList.indexOf(item.id) > -1)
+                document.getElementById("model-bin-lin").appendChild(item);
+              if (expList.indexOf(item.id) > -1)
+                document.getElementById("model-bin-exp").appendChild(item);
+            });
           validateLinExp();
         }
-        
+
         if (id === "quadratic-match" && savedState.Q1) {
           q1.value = savedState.Q1;
           q2.value = savedState.Q2;
           validateQuad();
         }
-        
+
         if (id === "angles" && savedState.A) {
           aIn.value = savedState.A;
           bIn.value = savedState.B;
           cIn.value = savedState.C;
           validateAngles();
         }
-        
+
         if (id === "formula" && savedState.MATCHED_PAIRS_COUNT) {
           formulaMatchedCount = parseInt(savedState.MATCHED_PAIRS_COUNT, 10);
-          document.getElementById('formula-matched-count').textContent = formulaMatchedCount;
+          document.getElementById("formula-matched-count").textContent =
+            formulaMatchedCount;
           if (formulaMatchedCount === 3) {
-            document.querySelectorAll('.formula-box').forEach(function(box) {
+            document.querySelectorAll(".formula-box").forEach(function (box) {
               box.style.background = "var(--success-glow)";
               box.style.borderColor = "var(--success)";
               matchedPairs[box.dataset.val] = true;
             });
           }
-          document.getElementById('evidence-text-formula').value = "MATCHED_PAIRS_COUNT:" + formulaMatchedCount;
+          document.getElementById("evidence-text-formula").value =
+            "MATCHED_PAIRS_COUNT:" + formulaMatchedCount;
         }
-        
+
         if (id === "inequality" && savedState.SIGN) {
           ineqSign.value = savedState.SIGN;
           ineqVal.value = savedState.VAL;
           validateIneq();
         }
-        
+
         if (id === "systems" && savedState.X) {
           sysX.value = savedState.X;
           sysY.value = savedState.Y;
           validateSystems();
         }
-        
+
         if (id === "domain-range" && savedState.DOM) {
           fnDom.value = savedState.DOM;
           fnRan.value = savedState.RAN;
           validateDomainRange();
         }
-        
+
         if (id === "error" && savedState.ERROR_STEP) {
           errStep.value = savedState.ERROR_STEP;
           validateError();
@@ -1119,100 +1963,128 @@
       };
 
       // Retrieve custom Interactive State to save
-      window.getInteractiveState = function(card) {
+      window.getInteractiveState = function (card) {
         var id = card.dataset.id;
-        
+
         if (id === "equation-gladiator") {
           return {
-            WIN: (bossHp <= 0)
+            WIN: bossHp <= 0,
           };
         }
-        
+
         if (id === "algebra") {
           return {
             STEP1: al1.value,
             STEP2: al2.value,
             STEP3: al3.value,
-            STEP4: al4.value
+            STEP4: al4.value,
           };
         }
-        
+
         if (id === "proof") {
           var details = [];
-          ['proof-r1', 'proof-s2', 'proof-r2', 'proof-s3', 'proof-r3'].forEach(function(cid) {
-            var item = document.getElementById(cid).querySelector('.drag-item');
-            details.push(cid + ":" + (item ? item.dataset.val : ""));
-          });
+          ["proof-r1", "proof-s2", "proof-r2", "proof-s3", "proof-r3"].forEach(
+            function (cid) {
+              var item = document
+                .getElementById(cid)
+                .querySelector(".drag-item");
+              details.push(cid + ":" + (item ? item.dataset.val : ""));
+            },
+          );
           return {
-            proof: details.join('\n')
+            proof: details.join("\n"),
           };
         }
-        
+
         if (id === "graph") {
           return {
-            SLOPE: slopeText.textContent
+            SLOPE: slopeText.textContent,
           };
         }
-        
+
         if (id === "lin-vs-exp") {
-          var lItems = Array.from(document.getElementById('model-bin-lin').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
-          var eItems = Array.from(document.getElementById('model-bin-exp').querySelectorAll('.drag-item')).map(function(item) { return item.id; });
+          var lItems = Array.from(
+            document
+              .getElementById("model-bin-lin")
+              .querySelectorAll(".drag-item"),
+          ).map(function (item) {
+            return item.id;
+          });
+          var eItems = Array.from(
+            document
+              .getElementById("model-bin-exp")
+              .querySelectorAll(".drag-item"),
+          ).map(function (item) {
+            return item.id;
+          });
           return {
-            LIN: "LIN:" + lItems.join(','),
-            EXP: "EXP:" + eItems.join(',')
+            LIN: "LIN:" + lItems.join(","),
+            EXP: "EXP:" + eItems.join(","),
           };
         }
-        
+
         if (id === "quadratic-match") {
           return {
             Q1: q1.value,
-            Q2: q2.value
+            Q2: q2.value,
           };
         }
-        
+
         if (id === "angles") {
           return {
             A: aIn.value,
             B: bIn.value,
-            C: cIn.value
+            C: cIn.value,
           };
         }
-        
+
         if (id === "formula") {
           return {
-            MATCHED_PAIRS_COUNT: formulaMatchedCount
+            MATCHED_PAIRS_COUNT: formulaMatchedCount,
           };
         }
-        
+
         if (id === "inequality") {
           return {
             SIGN: ineqSign.value,
-            VAL: ineqVal.value
+            VAL: ineqVal.value,
           };
         }
-        
+
         if (id === "systems") {
           return {
             X: sysX.value,
-            Y: sysY.value
+            Y: sysY.value,
           };
         }
-        
+
         if (id === "domain-range") {
           return {
             DOM: fnDom.value,
-            RAN: fnRan.value
+            RAN: fnRan.value,
           };
         }
-        
+
         if (id === "error") {
           return {
-            ERROR_STEP: errStep.value
+            ERROR_STEP: errStep.value,
           };
         }
-        
+
         return {};
       };
+
+      // Instant correct/incorrect feedback on every graded dropdown
+      if (window.EWL && EWL.registerAnswers) {
+        EWL.registerAnswers({
+          "quad-1": "x3x2",
+          "quad-2": "x6x1",
+          "ineq-sign": "gt",
+          "fn-domain": "x3",
+          "fn-range": "y2",
+          "err-step": "s2",
+        });
+      }
     </script>
   </body>
 </html>
