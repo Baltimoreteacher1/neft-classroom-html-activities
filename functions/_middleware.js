@@ -65,15 +65,13 @@ export async function onRequest(context) {
     "/personal/first-grade-hebrew/",
     "/personal/first-grade-hebrew/index.html",
   ]);
-  // Aviad's English 10 summer module is student-facing and may be opened without
-  // the class password. The whole module subtree plus the two shared assets it
-  // loads are public; the other aviad subjects stay gated.
+  // Aviad's summer hub (all subjects: English, Math, Science, Hebrew, Civics,
+  // Panther + shared assets) is student-facing and opens without the class
+  // password. The whole /personal/aviad/ subtree is public.
   if (
     PUBLIC_PATHS.has(url.pathname) ||
     url.pathname.startsWith("/personal/CW") ||
-    url.pathname.startsWith("/personal/aviad/english/") ||
-    url.pathname === "/personal/aviad/shared.css" ||
-    url.pathname === "/personal/aviad/shared.js"
+    url.pathname.startsWith("/personal/aviad/")
   )
     return next();
 
