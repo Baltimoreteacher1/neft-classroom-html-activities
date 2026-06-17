@@ -2088,6 +2088,48 @@
 
 
       /* ---- Phase 2: Google Enterprise Education CSS ---- */
+      /* ---- Phase 3: Google Enterprise Education CSS ---- */
+      .modal-overlay {
+        transition: opacity 0.2s ease-in-out;
+      }
+      .sync-spinner {
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      .interactive-btn {
+        cursor: pointer;
+        transition: fill 0.15s, opacity 0.15s, stroke-width 0.15s;
+      }
+      .interactive-btn:hover {
+        fill: rgba(251, 188, 5, 0.15);
+        stroke-width: 2px;
+      }
+      .speak-btn {
+        background: none;
+        border: none;
+        color: #8ab4f8;
+        cursor: pointer;
+        padding: 4px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.1s, color 0.15s;
+        margin-left: 8px;
+        vertical-align: middle;
+      }
+      .speak-btn:hover {
+        transform: scale(1.1);
+        color: #10b981;
+      }
+      .speak-btn.active svg {
+        fill: #10b981;
+        color: #10b981;
+        animation: pulseAudio 1s infinite alternate;
+      }
+
       #dashboard-drawer.open {
         left: 24px !important;
       }
@@ -2174,7 +2216,36 @@
         <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:12px;">
           <span style="font-size:0.75rem; color:var(--text-secondary); text-transform:uppercase; font-weight:800;">Google Classroom Sync</span>
           <h5 style="margin:6px 0 2px; font-size:1rem; font-weight:800; color:#10b981;">Student Profile: Math Explorer</h5>
-          <p style="margin:0; font-size:0.8rem; color:var(--text-secondary);">Active Session: Grade 6 Intervention</p>
+          <p style="margin:0 0 10px 0; font-size:0.8rem; color:var(--text-secondary);">Active Session: Grade 6 Intervention</p>
+          <div id="classroom-sync-status-container" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; font-size:0.8rem; border-top:1px dashed rgba(255,255,255,0.05); padding-top:8px;">
+            <span style="color:var(--text-secondary);">Sync Status:</span>
+            <strong id="classroom-sync-status-text" style="color:#ffb74d;">Not Submitted</strong>
+          </div>
+          <button id="classroom-sync-btn" onclick="openClassroomSyncModal()" class="nav-btn" style="width:100%; border-color:#34a853; color:#10b981; padding:6px; font-size:0.8rem; border-radius:6px; background:rgba(52,168,83,0.08); font-weight:bold; cursor:pointer;" aria-haspopup="dialog">
+            🟢 Turn In to Classroom
+          </button>
+        </div>
+        
+        <!-- Voice & Accessibility Settings -->
+        <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:12px;">
+          <span style="font-size:0.75rem; color:var(--text-secondary); text-transform:uppercase; font-weight:800; display:block; margin-bottom:10px;">Voice & Accessibility</span>
+          
+          <div style="display:flex; flex-direction:column; gap:12px; font-size:0.8rem;">
+            <!-- Auto-Speak Toggle -->
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <label for="accessibility-auto-speak" style="color:var(--text-secondary); cursor:pointer;">Auto-read tutor messages:</label>
+              <input type="checkbox" id="accessibility-auto-speak" onchange="toggleAutoSpeak(this.checked)" style="accent-color:#10b981; width:16px; height:16px; cursor:pointer;" />
+            </div>
+            
+            <!-- Speech Rate / Speed Slider -->
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <div style="display:flex; justify-content:space-between;">
+                <span style="color:var(--text-secondary);">Speech Speed:</span>
+                <strong id="speech-speed-val" style="color:#8ab4f8;">1.0x</strong>
+              </div>
+              <input type="range" id="speech-speed-slider" min="0.5" max="2.0" step="0.25" value="1.0" oninput="changeSpeechRate(this.value)" style="accent-color:#8ab4f8; cursor:pointer; width:100%;" />
+            </div>
+          </div>
         </div>
         
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
@@ -2215,6 +2286,112 @@
       <strong id="tooltip-term" style="color: #8ab4f8; display: block; margin-bottom: 4px; font-family: var(--font-heading); font-weight: 800;">Term</strong>
       <span id="tooltip-es" style="color: #a78bfa; font-style: italic; display: block; margin-bottom: 6px;">Spanish Translation</span>
       <p id="tooltip-def" style="margin: 0; color: #cbd5e1; font-size: 0.8rem;">Definition...</p>
+    </div>
+
+
+    <!-- Google Classroom Sync Modal -->
+    <div id="classroom-sync-modal" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); z-index:20000; align-items:center; justify-content:center; padding:16px;" role="dialog" aria-modal="true" aria-labelledby="sync-title">
+      <div style="background:#0b0f19; border:2.5px solid #34a853; border-radius:16px; max-width:480px; width:100%; box-shadow:0 8px 32px rgba(52,168,83,0.3); overflow:hidden; font-family:var(--font-body);">
+        <div style="background:linear-gradient(135deg, #137333 0%, #1e8e3e 100%); padding:20px; color:#fff; display:flex; align-items:center; gap:12px;">
+          <span style="font-size:2rem;" aria-hidden="true">🟢</span>
+          <div>
+            <h4 id="sync-title" style="margin:0; font-family:var(--font-heading); font-size:1.15rem; font-weight:800;">Google Classroom Sync</h4>
+            <span style="font-size:0.75rem; opacity:0.9;">Turn in assignment for Grade 6 Math intervention</span>
+          </div>
+        </div>
+        
+        <div id="classroom-modal-body" style="padding:20px; display:flex; flex-direction:column; gap:16px;">
+          <!-- Sync stats -->
+          <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:12px; font-size:0.85rem;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+              <span style="color:var(--text-secondary);">Mastered Challenges:</span>
+              <strong style="color:#10b981;" id="sync-challenges-count">0 / 50</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+              <span style="color:var(--text-secondary);">Time Invested:</span>
+              <strong style="color:#8ab4f8;" id="sync-time-spent">0m</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between;">
+              <span style="color:var(--text-secondary);">Avg. CCSS Proficiency:</span>
+              <strong style="color:#ffb74d;" id="sync-avg-proficiency">0%</strong>
+            </div>
+          </div>
+          
+          <!-- Reflection Box -->
+          <div>
+            <label for="sync-reflection" style="font-size:0.78rem; color:var(--text-secondary); font-weight:800; text-transform:uppercase; display:block; margin-bottom:6px;">Student Reflection Note</label>
+            <textarea id="sync-reflection" placeholder="Type a reflection note to your teacher (e.g. what you learned, what was challenging...)" style="width:100%; height:70px; background:rgba(7,9,19,0.8); border:1px solid var(--bg-panel-border); border-radius:8px; padding:10px; color:#fff; font-family:var(--font-body); font-size:0.85rem; outline:none; resize:none;"></textarea>
+          </div>
+          
+          <div style="display:flex; gap:10px; margin-top:8px;">
+            <button class="nav-btn" style="flex:1; padding:10px; cursor:pointer;" onclick="closeClassroomSyncModal()">Cancel</button>
+            <button class="calc-btn eq" style="flex:2; margin:0; padding:10px; cursor:pointer;" onclick="submitClassroomAssignment()">Confirm Turn In</button>
+          </div>
+        </div>
+        
+        <!-- Submission Animation Panel -->
+        <div id="classroom-modal-loading" style="display:none; padding:40px 20px; text-align:center; flex-direction:column; align-items:center; gap:20px;">
+          <div class="sync-spinner" style="border: 4px solid rgba(52, 168, 83, 0.1); border-left-color: #34a853; border-radius: 50%; width: 48px; height: 48px;"></div>
+          <div>
+            <h5 id="sync-status-step" style="margin:0 0 6px; font-family:var(--font-heading); font-size:1.05rem; font-weight:800; color:#8ab4f8;">Packaging lesson transcript...</h5>
+            <span style="font-size:0.75rem; color:var(--text-secondary);">Connecting to School Domain API</span>
+          </div>
+        </div>
+        
+        <!-- Submission Success Panel -->
+        <div id="classroom-modal-success" style="display:none; padding:30px 20px; text-align:center; flex-direction:column; align-items:center; gap:12px;">
+          <span style="font-size:3rem;" aria-hidden="true">🎉</span>
+          <h5 style="margin:0; font-family:var(--font-heading); font-size:1.2rem; font-weight:900; color:#10b981;">Assignment Sync Complete!</h5>
+          <p style="margin:0 0 10px; font-size:0.85rem; color:var(--text-secondary);">Your grades and prompt transcripts have been securely logged in the Google Classroom gradebook.</p>
+          <button class="calc-btn eq" style="width:100%; margin:0; cursor:pointer;" onclick="closeClassroomSyncModal()">Awesome!</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inspect Student Chat Log Modal -->
+    <div id="inspect-chat-modal" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); z-index:20000; align-items:center; justify-content:center; padding:16px;" role="dialog" aria-modal="true" aria-labelledby="inspect-modal-title">
+      <div style="background:#0b0f19; border:2px solid var(--bg-panel-border); border-radius:16px; max-width:540px; width:100%; box-shadow:0 8px 32px rgba(0,0,0,0.6); overflow:hidden; font-family:var(--font-body);">
+        <div style="background:rgba(255,255,255,0.02); border-bottom:1px solid var(--bg-panel-border); padding:16px; display:flex; justify-content:space-between; align-items:center;">
+          <h4 id="inspect-modal-title" style="margin:0; font-family:var(--font-heading); font-size:1.1rem; font-weight:800; color:#fff;">Inspect Chat Logs</h4>
+          <button class="close-drawer-btn" onclick="closeInspectChat()" style="margin:0; background:none; border:none; color:var(--text-secondary); cursor:pointer; font-size:1.2rem;" aria-label="Close">✕</button>
+        </div>
+        <div id="inspect-modal-body" style="padding:20px; max-height:360px; overflow-y:auto; display:flex; flex-direction:column; gap:12px; background:rgba(0,0,0,0.2);">
+          <!-- Populated by JS -->
+        </div>
+        <div style="padding:16px; background:rgba(255,255,255,0.01); border-top:1px solid var(--bg-panel-border); text-align:right;">
+          <button class="nav-btn" style="cursor:pointer;" onclick="closeInspectChat()">Close Transcript</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Teacher Intervention Modal -->
+    <div id="intervention-modal" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); z-index:20000; align-items:center; justify-content:center; padding:16px;" role="dialog" aria-modal="true" aria-labelledby="intervention-modal-title">
+      <div style="background:#0b0f19; border:2px solid var(--gemini-purple); border-radius:16px; max-width:440px; width:100%; box-shadow:0 8px 32px rgba(155,114,203,0.2); overflow:hidden; font-family:var(--font-body);">
+        <div style="background:linear-gradient(135deg, #4f378b 0%, #7c58d3 100%); padding:16px; color:#fff;">
+          <h4 id="intervention-modal-title" style="margin:0; font-family:var(--font-heading); font-size:1.1rem; font-weight:800;">Direct Teacher Feedback</h4>
+          <span style="font-size:0.75rem; opacity:0.9;">Send live guidance to the student's active screen</span>
+        </div>
+        <div style="padding:20px; display:flex; flex-direction:column; gap:14px;">
+          <div>
+            <label for="intervention-presets" style="font-size:0.78rem; color:var(--text-secondary); font-weight:800; text-transform:uppercase; display:block; margin-bottom:6px;">Choose a Preset Guide</label>
+            <select id="intervention-presets" onchange="applyInterventionPreset(this.value)" style="width: 100%; background: rgba(7, 9, 19, 0.8); border: 1px solid var(--bg-panel-border); color: #fff; padding: 8px; border-radius: 6px; font-family: var(--font-body); font-size: 0.85rem; outline: none; cursor:pointer;">
+              <option value="">-- Select template feedback --</option>
+              <option value="Check your decimal place calculation. Remember, count total decimal digits in the factor.">Check your decimal places</option>
+              <option value="Excellent work! Try using the mouse Scratchpad to sketch your fraction models.">Try using the Scratchpad</option>
+              <option value="You are super close! Think about reversing the operation on both sides of the scale.">Think about reversing operations</option>
+              <option value="Remember that reflecting across the y-axis flips the sign of the x-coordinate, but y stays the same.">Reflecting across y-axis tip</option>
+            </select>
+          </div>
+          <div>
+            <label for="intervention-text" style="font-size:0.78rem; color:var(--text-secondary); font-weight:800; text-transform:uppercase; display:block; margin-bottom:6px;">Custom Feedback</label>
+            <textarea id="intervention-text" placeholder="Type personalized instructions here..." style="width:100%; height:80px; background:rgba(7,9,19,0.8); border:1px solid var(--bg-panel-border); border-radius:8px; padding:10px; color:#fff; font-family:var(--font-body); font-size:0.85rem; outline:none; resize:none;"></textarea>
+          </div>
+          <div style="display:flex; gap:10px; margin-top:6px;">
+            <button class="nav-btn" style="flex:1; cursor:pointer;" onclick="closeInterventionModal()">Cancel</button>
+            <button class="calc-btn eq" style="flex:2; margin:0; cursor:pointer;" onclick="submitInterventionFeedback()">Send Feedback</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Math Tools Drawer (Google Education Overhaul) -->
@@ -2896,20 +3073,26 @@
         <h3 class="step-title">Who is learning today?</h3>
         <p class="step-subtitle">Select your path to open student practice, family tutoring prompts, or the AI 101 learning studio.</p>
         
-        <div class="role-grid">
-          <div class="role-card" onclick="selectRole('student')">
+        <div class="role-grid" style="grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); max-width: 1040px;">
+          <div class="role-card" onclick="selectRole('student')" style="padding: 24px 16px;">
             <span class="role-icon" aria-hidden="true">🎓</span>
             <h4>I am a Student</h4>
             <p>Assemble tutor prompts and solve step-by-step math problems using interactive visual models.</p>
             <button class="role-btn">Start Student Guide</button>
           </div>
-          <div class="role-card" onclick="selectRole('parent')">
+          <div class="role-card" onclick="selectRole('teacher')" style="padding: 24px 16px; border-color: rgba(52, 168, 83, 0.25);">
+            <span class="role-icon" aria-hidden="true">🍎</span>
+            <h4>I am a Teacher</h4>
+            <p>View publisher matrices, customize class guides, generate lesson sheets, and monitor student progress.</p>
+            <button class="role-btn" style="background: linear-gradient(90deg, #34a853, #10b981);">Start Teacher Guide</button>
+          </div>
+          <div class="role-card" onclick="selectRole('parent')" style="padding: 24px 16px;">
             <span class="role-icon" aria-hidden="true">👨‍👩‍👧</span>
             <h4>I am a Parent / Family</h4>
             <p>Get pre-made parent prompts to generate practice questions or analogies for home tutoring.</p>
             <button class="role-btn">Start Family Guide</button>
           </div>
-          <div class="role-card" onclick="selectRole('ai101')">
+          <div class="role-card" onclick="selectRole('ai101')" style="padding: 24px 16px;">
             <span class="role-icon" aria-hidden="true">AI</span>
             <h4>AI 101</h4>
             <p>Open bilingual mini-modules about safe, effective AI use for students and families.</p>
@@ -4232,6 +4415,88 @@
 
       let sessionDialogues = [];
 
+
+      // ---- Phase 3 Voice & Classroom state variables ----
+      let speechRate = 1.0;
+      let autoSpeakEnabled = false;
+      let activeStudentChatLog = [];
+      let teacherSimInterval = null;
+      let fractionDivisionPartitions = false;
+      let fractionSelectedSegmentsCount = 0;
+
+      let classroomRoster = [
+        {
+          id: "sofia",
+          name: "Sofia Martinez",
+          avatar: "👧",
+          status: "Working",
+          lesson: "Unit 7: Algebra balance scales",
+          progress: 3,
+          maxProgress: 5,
+          timeSpent: "14m",
+          syncStatus: "working",
+          reflection: "",
+          chatLog: [
+            { sender: "bot", text: "Welcome Sofia! Let's solve the equation 2x + 5 = 15. What operation should we do to both sides first?" },
+            { sender: "user", text: "Subtract 5 from both sides" },
+            { sender: "bot", text: "Great! That gives us 2x = 10. Now, how do we solve for x?" },
+            { sender: "user", text: "Divide both sides by 2" },
+            { sender: "bot", text: "Fantastic! x = 5 is correct! You've balanced the scale." }
+          ]
+        },
+        {
+          id: "liam",
+          name: "Liam Chen",
+          avatar: "👦",
+          status: "Working",
+          lesson: "Unit 1: Factors & Decimals",
+          progress: 1,
+          maxProgress: 5,
+          timeSpent: "8m",
+          syncStatus: "working",
+          reflection: "",
+          chatLog: [
+            { sender: "bot", text: "Hi Liam! Let's find the Greatest Common Factor of 24 and 36 using our Venn Diagram. Click a factor card below to sort it." },
+            { sender: "user", text: "Clicks factor 12 and places in center." },
+            { sender: "bot", text: "Spot on! 12 is in the overlap since it divides both 24 and 36. Is 12 the largest shared factor?" }
+          ]
+        },
+        {
+          id: "emily",
+          name: "Emily Watson",
+          avatar: "👧",
+          status: "Idle",
+          lesson: "Unit 2: Fraction Division",
+          progress: 2,
+          maxProgress: 5,
+          timeSpent: "22m",
+          syncStatus: "working",
+          reflection: "",
+          chatLog: [
+            { sender: "bot", text: "Emily, let's divide 1 1/2 by 1/4. Let's write 1 1/2 as an improper fraction first." },
+            { sender: "user", text: "3/2" },
+            { sender: "bot", text: "Exactly! Now how many 1/4s fit into 3/2? You can click to partition the bars in the Visualizer." }
+          ]
+        },
+        {
+          id: "jackson",
+          name: "Jackson Taylor",
+          avatar: "👦",
+          status: "Stuck",
+          lesson: "Unit 9: Coordinate Plane",
+          progress: 4,
+          maxProgress: 5,
+          timeSpent: "18m",
+          syncStatus: "working",
+          reflection: "",
+          chatLog: [
+            { sender: "bot", text: "Hey Jackson! Let's reflect the point (2, 3) across the x-axis. Which coordinate changes sign?" },
+            { sender: "user", text: "The x coordinate becomes negative?" },
+            { sender: "bot", text: "Not quite! Think about folding the grid over the horizontal x-axis. The vertical distance stays the same but flips direction." }
+          ]
+        }
+      ];
+
       // ---- Phase 2 state variables ----
       let sessionStartTime = Date.now();
       let activeGlossaryHover = false;
@@ -4415,6 +4680,7 @@
       let selectedExample = 0;
       let promptSelections = { role: "", topic: "", help: "", level: "" };
       let currentDialogueIndex = 0;
+        activeStudentChatLog = [];
       let parentLang = "en";
       let completedChallenges = {};
 
@@ -4704,7 +4970,7 @@
                 <div class="result-alert" id="result-feedback"></div>
 
                 <div class="chat-workspace" id="chat-console">
-                  <div class="chat-box" id="chat-log"></div>
+                  <div class="chat-box" id="chat-log" aria-live="polite" role="log"></div>
                   <div class="chat-input-bar">
                     <input type="text" id="chat-input" class="chat-text-input" placeholder="Type your math answer here..." onkeydown="handleChatKeyDown(event)" />
                     <button class="chat-send-btn" id="mic-btn" onclick="toggleSpeech()" style="background: rgba(255,255,255,0.05); border: 1px solid var(--bg-panel-border); color: #8ab4f8; padding: 0 14px;" aria-label="Start voice dictation">🎤</button>
@@ -4793,79 +5059,107 @@
         } else if (role === "teacher") {
           // Render Teacher Integration View
           container.innerHTML = `
-            <h4 class="visual-title" style="margin-bottom: 12px;">🍎 Publisher &amp; Standards Alignment Matrix</h4>
-            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0; margin-bottom: 16px;">
-              This matrix maps each of the three active student practice challenges to publisher lesson alignments and Common Core standards.
-            </p>
-            <table class="alignment-table" style="margin-bottom: 24px;">
-              <thead>
-                <tr>
-                  <th>Challenge</th>
-                  <th>Core Skill Math Target</th>
-                  <th>Pearson Envision Math</th>
-                  <th>HMH Into Math</th>
-                  <th>Common Core Standard</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${data.examples.map((ex, idx) => `
-                  <tr>
-                    <td><strong>Example ${String.fromCharCode(65 + idx)}</strong>:<br/>${ex.mathProblem}</td>
-                    <td>${ex.lessonId ? '<strong>Lesson ' + ex.lessonId.replace("-", ".") + '</strong>:<br/>' : ''}${ex.skill}</td>
-                    <td>${ex.pearson}</td>
-                    <td>${ex.hmh}</td>
-                    <td><strong style="color:#ffb74d;">${ex.ccss}</strong></td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
+            <!-- Teacher Tab Selector -->
+            <div style="display:flex; gap:12px; margin-bottom:20px; border-bottom:1px solid var(--bg-panel-border); padding-bottom:10px;">
+              <button class="nav-btn" id="teacher-tab-live" onclick="switchTeacherTab('live')" style="border-color:#10b981; color:#10b981; background:rgba(16,185,129,0.05); font-weight:bold; cursor:pointer;">📊 Live Classroom Feed</button>
+              <button class="nav-btn" id="teacher-tab-matrix" onclick="switchTeacherTab('matrix')" style="border-color:transparent; color:var(--text-secondary); cursor:pointer;">🍎 Publisher &amp; Standards Matrix</button>
+              <button class="nav-btn" id="teacher-tab-tools" onclick="switchTeacherTab('tools')" style="border-color:transparent; color:var(--text-secondary); cursor:pointer;">🛠️ Lesson Generator &amp; Workshop</button>
+            </div>
 
-            <div class="parent-workspace-grid" style="margin-bottom: 24px;">
-              <div class="parent-box">
-                <h4><span>📋</span> Guided Class Workshop Plan (45 Mins)</h4>
-                <p class="desc">Introduce AI prompt engineering in your daily math intervention or workshop block.</p>
-                <ul style="margin: 0; padding-left: 20px; font-size: 0.92rem; color: #cbd5e1; display:flex; flex-direction:column; gap:8px;">
-                  <li><strong>Warmup (5m):</strong> Present the math challenge on the board. Ask how we could get help from AI without cheating.</li>
-                  <li><strong>Prompt Lab (15m):</strong> Group students and have them build the gold-standard Tutor Prompt on this hub.</li>
-                  <li><strong>Chat Practice (15m):</strong> Students solve the 3 examples dynamically and verify G6 place values.</li>
-                  <li><strong>Reflect (10m):</strong> Discuss: What is the difference between a Calculator prompt and a Tutor prompt?</li>
-                </ul>
+            <!-- Tab 1: Live Classroom Feed -->
+            <div id="teacher-view-live" style="display:block;">
+              <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:16px; margin-bottom:20px;">
+                <h4 style="margin:0 0 6px; font-family:var(--font-heading); color:#10b981; font-weight:800; font-size:1.1rem;">Classroom Live Sync: Math Intervention Block A</h4>
+                <p style="margin:0; font-size:0.85rem; color:var(--text-secondary);">Roster of simulated students actively working on math challenges. Click on a student to inspect their prompt logs or send direct guidance.</p>
               </div>
 
-              <div class="parent-box">
-                <h4><span>🛠️</span> Teacher AI Lesson & Worksheet Generator</h4>
-                <p class="desc">Generate custom homework, differentiated lesson starters, or review sheets mapped to Common Core standards. Select parameters to dynamically compile your prompt for Google Gemini.</p>
-                
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0;">
-                  <div>
-                    <label style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-secondary); display: block; margin-bottom: 4px;">Target Student Tier</label>
-                    <select id="teacher-tier-select" onchange="updateTeacherPrompt()" style="width: 100%; background: rgba(7, 9, 19, 0.8); border: 1px solid var(--bg-panel-border); color: #fff; padding: 8px; border-radius: 6px; font-family: var(--font-body); font-size: 0.85rem; outline: none;">
-                      <option value="On-Level Support">Tier 1: On-Level Core practice</option>
-                      <option value="Differentiated Intervention">Tier 2: Direct Intervention (Scaffolding & visual aids)</option>
-                      <option value="Advanced Challenge & Extension">Tier 3: Enrichment & Depth of Knowledge (DOK 3)</option>
-                    </select>
-                  </div>
-                  
-                  <div>
-                    <label style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-secondary); display: block; margin-bottom: 4px;">Worksheet Structure</label>
-                    <select id="teacher-style-select" onchange="updateTeacherPrompt()" style="width: 100%; background: rgba(7, 9, 19, 0.8); border: 1px solid var(--bg-panel-border); color: #fff; padding: 8px; border-radius: 6px; font-family: var(--font-body); font-size: 0.85rem; outline: none;">
-                      <option value="Real-world Word Problems with Decomposing Visual Models">Real-world Word Problems with Visual Models</option>
-                      <option value="Conceptual Inquiry Tasks & Math Journal Prompts">Conceptual Inquiry Tasks & Math Journal Prompts</option>
-                      <option value="Differentiated Error Analysis challenges (Spot the Mistake)">Error Analysis challenges (Spot the Mistake)</option>
-                    </select>
-                  </div>
+              <div id="classroom-roster-container" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:16px;">
+                <!-- Roster cards drawn dynamically -->
+              </div>
+            </div>
+
+            <!-- Tab 2: Alignment Matrix -->
+            <div id="teacher-view-matrix" style="display:none;">
+              <h4 class="visual-title" style="margin-bottom: 12px;">🍎 Publisher &amp; Standards Alignment Matrix</h4>
+              <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0; margin-bottom: 16px;">
+                This matrix maps each of the three active student practice challenges to publisher lesson alignments and Common Core standards.
+              </p>
+              <table class="alignment-table" style="margin-bottom: 24px;">
+                <thead>
+                  <tr>
+                    <th>Challenge</th>
+                    <th>Core Skill Math Target</th>
+                    <th>Pearson Envision Math</th>
+                    <th>HMH Into Math</th>
+                    <th>Common Core Standard</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${data.examples.map((ex, idx) => `
+                    <tr>
+                      <td><strong>Example ${String.fromCharCode(65 + idx)}</strong>:<br/>${ex.mathProblem}</td>
+                      <td>${ex.lessonId ? '<strong>Lesson ' + ex.lessonId.replace("-", ".") + '</strong>:<br/>' : ''}${ex.skill}</td>
+                      <td>${ex.pearson}</td>
+                      <td>${ex.hmh}</td>
+                      <td><strong style="color:#ffb74d;">${ex.ccss}</strong></td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Tab 3: Lesson Generator -->
+            <div id="teacher-view-tools" style="display:none;">
+              <div class="parent-workspace-grid" style="margin-bottom: 24px;">
+                <div class="parent-box">
+                  <h4><span>📋</span> Guided Class Workshop Plan (45 Mins)</h4>
+                  <p class="desc">Introduce AI prompt engineering in your daily math intervention or workshop block.</p>
+                  <ul style="margin: 0; padding-left: 20px; font-size: 0.92rem; color: #cbd5e1; display:flex; flex-direction:column; gap:8px;">
+                    <li><strong>Warmup (5m):</strong> Present the math challenge on the board. Ask how we could get help from AI without cheating.</li>
+                    <li><strong>Prompt Lab (15m):</strong> Group students and have them build the gold-standard Tutor Prompt on this hub.</li>
+                    <li><strong>Chat Practice (15m):</strong> Students solve the 3 examples dynamically and verify G6 place values.</li>
+                    <li><strong>Reflect (10m):</strong> Discuss: What is the difference between a Calculator prompt and a Tutor prompt?</li>
+                  </ul>
                 </div>
 
-                <div class="prompt-display-block" id="prompt-txt-teacher" style="min-height: 80px; font-size: 0.85rem; line-height: 1.4; padding: 12px;"></div>
-                
-                <button class="copy-btn" id="copy-btn-teacher" onclick="copyPromptText('teacher')" style="margin-top: 10px;">
-                  📋 Copy Teacher Prompt
-                </button>
+                <div class="parent-box">
+                  <h4><span>🛠️</span> Teacher AI Lesson & Worksheet Generator</h4>
+                  <p class="desc">Generate custom homework, differentiated lesson starters, or review sheets mapped to Common Core standards. Select parameters to dynamically compile your prompt for Google Gemini.</p>
+                  
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0;">
+                    <div>
+                      <label style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-secondary); display: block; margin-bottom: 4px;">Target Student Tier</label>
+                      <select id="teacher-tier-select" onchange="updateTeacherPrompt()" style="width: 100%; background: rgba(7, 9, 19, 0.8); border: 1px solid var(--bg-panel-border); color: #fff; padding: 8px; border-radius: 6px; font-family: var(--font-body); font-size: 0.85rem; outline: none;">
+                        <option value="On-Level Support">Tier 1: On-Level Core practice</option>
+                        <option value="Differentiated Intervention">Tier 2: Direct Intervention (Scaffolding & visual aids)</option>
+                        <option value="Advanced Challenge & Extension">Tier 3: Enrichment & Depth of Knowledge (DOK 3)</option>
+                      </select>
+                    </div>
+                    
+                    <div>
+                      <label style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-secondary); display: block; margin-bottom: 4px;">Worksheet Structure</label>
+                      <select id="teacher-style-select" onchange="updateTeacherPrompt()" style="width: 100%; background: rgba(7, 9, 19, 0.8); border: 1px solid var(--bg-panel-border); color: #fff; padding: 8px; border-radius: 6px; font-family: var(--font-body); font-size: 0.85rem; outline: none;">
+                        <option value="Real-world Word Problems with Decomposing Visual Models">Real-world Word Problems with Visual Models</option>
+                        <option value="Conceptual Inquiry Tasks & Math Journal Prompts">Conceptual Inquiry Tasks & Math Journal Prompts</option>
+                        <option value="Differentiated Error Analysis challenges (Spot the Mistake)">Error Analysis challenges (Spot the Mistake)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="prompt-display-block" id="prompt-txt-teacher" style="min-height: 80px; font-size: 0.85rem; line-height: 1.4; padding: 12px;"></div>
+                  
+                  <button class="copy-btn" id="copy-btn-teacher" onclick="copyPromptText('teacher')" style="margin-top: 10px;">
+                    📋 Copy Teacher Prompt
+                  </button>
+                </div>
               </div>
             </div>
           `;
           
           updateTeacherPrompt(); // Initialize prompt content
+          switchTeacherTab('live');
+          renderClassroomRoster();
+          startTeacherLiveSimulation();
         }
       }
 
@@ -5182,11 +5476,12 @@
         challengesEl.textContent = `${totalMastered} / 50`;
 
         // 2. Badges Showcase
+        const isSynced = localStorage.getItem("ai-hub-classroom-sync") === "submitted";
         const badgeList = [
           { name: "Decimal Operator", desc: "Complete Unit 1 decimals", unlocked: (completedChallenges[1] || []).every(v => v) },
           { name: "Fraction Specialist", desc: "Complete Unit 2 division", unlocked: (completedChallenges[2] || []).every(v => v) },
           { name: "Ratio Engineer", desc: "Complete Unit 3 double number lines", unlocked: (completedChallenges[3] || []).every(v => v) },
-          { name: "Equation Solver", desc: "Complete Unit 7 equations", unlocked: (completedChallenges[7] || []).every(v => v) },
+          { name: "Classroom Sync", desc: "Turn in homework via Classroom", unlocked: isSynced },
           { name: "Intervention Master", desc: "Complete all 50 lessons", unlocked: totalMastered === 50 }
         ];
 
@@ -5235,6 +5530,55 @@
         const rect = canvasContainer.getBoundingClientRect();
         const localX = event.clientX - rect.left;
         const localY = event.clientY - rect.top;
+
+        // Interactive Fractions (Unit 2, Example 3)
+        if (selectedUnit === 2 && selectedExample === 3) {
+          // Partition button click (y=125-153, x=35-185)
+          if (!fractionDivisionPartitions && localY >= 125 && localY <= 153 && localX >= 35 && localX <= 185) {
+            fractionDivisionPartitions = true;
+            drawVisualModel(currentDialogueIndex);
+          }
+          // Segment click (y=40-80)
+          else if (fractionDivisionPartitions && localY >= 40 && localY <= 80) {
+            let clickedSeg = -1;
+            if (localX >= 20 && localX < 40) clickedSeg = 1;
+            else if (localX >= 40 && localX < 60) clickedSeg = 2;
+            else if (localX >= 60 && localX < 80) clickedSeg = 3;
+            else if (localX >= 80 && localX < 100) clickedSeg = 4;
+            else if (localX >= 110 && localX < 130) clickedSeg = 5;
+            else if (localX >= 130 && localX <= 150) clickedSeg = 6;
+            
+            if (clickedSeg !== -1) {
+              fractionSelectedSegmentsCount = clickedSeg;
+              drawVisualModel(currentDialogueIndex);
+              
+              if (fractionSelectedSegmentsCount === 6) {
+                const inputEl = document.getElementById("chat-input");
+                if (inputEl) {
+                  inputEl.value = "6";
+                  sendChatAnswer();
+                  // Reset interactive fraction division states
+                  fractionDivisionPartitions = false;
+                  fractionSelectedSegmentsCount = 0;
+                }
+              }
+            }
+          }
+          return;
+        }
+
+        // Interactive Double Number Line (Unit 3, Example 0)
+        if (selectedUnit === 3 && selectedExample === 0 && currentDialogueIndex === 2) {
+          // Click target tick (x=170, y=120-140)
+          if (localX >= 150 && localX <= 190 && localY >= 30 && localY <= 160) {
+            const inputEl = document.getElementById("chat-input");
+            if (inputEl) {
+              inputEl.value = "30";
+              sendChatAnswer();
+            }
+          }
+          return;
+        }
 
         // 1. Interactive GCF (Unit 1, Example 3)
         if (selectedUnit === 1 && selectedExample === 3 && currentDialogueIndex === 0) {
@@ -5330,6 +5674,362 @@
         }
       }
 
+
+      // ---- Phase 3 Voice, Sync & Teacher Functions ----
+      function toggleAutoSpeak(checked) {
+        autoSpeakEnabled = checked;
+        try {
+          localStorage.setItem("ai-hub-auto-speak", checked);
+        } catch (_) {}
+      }
+
+      function changeSpeechRate(value) {
+        speechRate = parseFloat(value);
+        document.getElementById("speech-speed-val").textContent = speechRate.toFixed(1) + "x";
+        try {
+          localStorage.setItem("ai-hub-speech-rate", speechRate);
+        } catch (_) {}
+      }
+
+      // Classroom Sync Dialog
+      function openClassroomSyncModal() {
+        let totalMastered = 0;
+        let sumPct = 0;
+        const standardCounts = {
+          "NS": { mastered: 0, total: 20 },
+          "RP": { mastered: 0, total: 15 },
+          "EE": { mastered: 0, total: 5 },
+          "G":  { mastered: 0, total: 10 }
+        };
+
+        Object.keys(UNIT_DATA).forEach(unitKey => {
+          const unitNum = parseInt(unitKey);
+          if (completedChallenges[unitNum]) {
+            completedChallenges[unitNum].forEach(val => {
+              if (val) {
+                totalMastered++;
+                if (unitNum === 1 || unitNum === 2 || unitNum === 9) standardCounts["NS"].mastered++;
+                else if (unitNum === 3 || unitNum === 4 || unitNum === 10) standardCounts["RP"].mastered++;
+                else if (unitNum === 7) standardCounts["EE"].mastered++;
+                else if (unitNum === 5 || unitNum === 6) standardCounts["G"].mastered++;
+              }
+            });
+          }
+        });
+
+        Object.keys(standardCounts).forEach(std => {
+          sumPct += (standardCounts[std].mastered / standardCounts[std].total);
+        });
+        const avgProficiency = Math.round((sumPct / 4) * 100);
+        const mins = Math.max(1, Math.floor((Date.now() - sessionStartTime) / 60000));
+
+        document.getElementById("sync-challenges-count").textContent = `${totalMastered} / 50`;
+        document.getElementById("sync-time-spent").textContent = `${mins}m`;
+        document.getElementById("sync-avg-proficiency").textContent = `${avgProficiency}%`;
+
+        // Trap focus accessibility
+        document.getElementById("classroom-sync-modal").style.display = "flex";
+        document.getElementById("classroom-modal-body").style.display = "flex";
+        document.getElementById("classroom-modal-loading").style.display = "none";
+        document.getElementById("classroom-modal-success").style.display = "none";
+        document.getElementById("sync-reflection").focus();
+      }
+
+      function closeClassroomSyncModal() {
+        document.getElementById("classroom-sync-modal").style.display = "none";
+      }
+
+      function submitClassroomAssignment() {
+        const body = document.getElementById("classroom-modal-body");
+        const loading = document.getElementById("classroom-modal-loading");
+        const success = document.getElementById("classroom-modal-success");
+        const reflection = document.getElementById("sync-reflection").value;
+
+        body.style.display = "none";
+        loading.style.display = "flex";
+
+        const steps = [
+          { text: "Packaging prompt lesson transcripts...", delay: 800 },
+          { text: "Connecting to School Domain API...", delay: 1600 },
+          { text: "Updating Teacher Gradebook database...", delay: 2400 }
+        ];
+
+        steps.forEach((step, idx) => {
+          setTimeout(() => {
+            document.getElementById("sync-status-step").textContent = step.text;
+            if (idx === steps.length - 1) {
+              setTimeout(() => {
+                loading.style.display = "none";
+                success.style.display = "flex";
+                
+                try {
+                  localStorage.setItem("ai-hub-classroom-sync", "submitted");
+                  localStorage.setItem("ai-hub-sync-reflection", reflection);
+                } catch (_) {}
+                
+                const syncText = document.getElementById("classroom-sync-status-text");
+                if (syncText) {
+                  syncText.textContent = "Turned In";
+                  syncText.style.color = "#10b981";
+                }
+                const syncBtn = document.getElementById("classroom-sync-btn");
+                if (syncBtn) {
+                  syncBtn.innerHTML = "✅ Re-Submit Assignment";
+                  syncBtn.style.color = "#8ab4f8";
+                  syncBtn.style.borderColor = "var(--bg-panel-border)";
+                }
+
+                triggerConfetti();
+                updateDashboardProgress();
+              }, 800);
+            }
+          }, step.delay);
+        });
+      }
+
+      // Teacher Tab selector swapper
+      function switchTeacherTab(tabId) {
+        document.getElementById("teacher-view-live").style.display = tabId === "live" ? "block" : "none";
+        document.getElementById("teacher-view-matrix").style.display = tabId === "matrix" ? "block" : "none";
+        document.getElementById("teacher-view-tools").style.display = tabId === "tools" ? "block" : "none";
+
+        document.getElementById("teacher-tab-live").classList.toggle("active", tabId === "live");
+        document.getElementById("teacher-tab-matrix").classList.toggle("active", tabId === "matrix");
+        document.getElementById("teacher-tab-tools").classList.toggle("active", tabId === "tools");
+        
+        const tabs = ["live", "matrix", "tools"];
+        tabs.forEach(t => {
+          const btn = document.getElementById("teacher-tab-" + t);
+          if (!btn) return;
+          if (t === tabId) {
+            btn.style.borderColor = "#10b981";
+            btn.style.color = "#10b981";
+            btn.style.background = "rgba(16,185,129,0.05)";
+            btn.style.fontWeight = "bold";
+          } else {
+            btn.style.borderColor = "transparent";
+            btn.style.color = "var(--text-secondary)";
+            btn.style.background = "none";
+            btn.style.fontWeight = "normal";
+          }
+        });
+      }
+
+      // Live classroom feed simulation & swapper
+      function startTeacherLiveSimulation() {
+        if (teacherSimInterval) clearInterval(teacherSimInterval);
+        teacherSimInterval = setInterval(() => {
+          // 1. Sofia turning in her work
+          const sofia = classroomRoster.find(s => s.id === "sofia");
+          if (sofia && sofia.status !== "Completed") {
+            sofia.progress = 5;
+            sofia.status = "Completed";
+            sofia.syncStatus = "submitted";
+            sofia.reflection = "I liked using the balance scale visual model. It helped me see why subtracting 5 from both sides keeps it equal.";
+            sofia.chatLog.push({ sender: "user", text: "Solved all challenges!" });
+            sofia.chatLog.push({ sender: "bot", text: "Syncing progress to Google Classroom..." });
+          }
+          
+          // 2. Liam Chen making progress
+          const liam = classroomRoster.find(s => s.id === "liam");
+          if (liam && liam.progress < 3) {
+            liam.progress++;
+            liam.status = "Working";
+            liam.chatLog.push({ sender: "user", text: "GCF of 24 and 36 is 12" });
+            liam.chatLog.push({ sender: "bot", text: "Spot on! 12 is correct. Let's try Example B." });
+          }
+
+          // 3. Jackson Taylor getting unstuck
+          const jackson = classroomRoster.find(s => s.id === "jackson");
+          if (jackson && jackson.status === "Stuck") {
+            jackson.status = "Working";
+            jackson.chatLog.push({ sender: "user", text: "Oh, it folds down. So y changes sign: (2, -3)." });
+            jackson.chatLog.push({ sender: "bot", text: "Exactly! Correct! (2, -3) is the reflection across the x-axis." });
+          }
+          
+          renderClassroomRoster();
+        }, 12000);
+      }
+
+      function renderClassroomRoster() {
+        const container = document.getElementById("classroom-roster-container");
+        if (!container) return;
+
+        const isSynced = localStorage.getItem("ai-hub-classroom-sync") === "submitted";
+        const currentStudentDemo = {
+          id: "student_demo",
+          name: "You (Student Demo)",
+          avatar: "🎓",
+          status: isSynced ? "Completed" : "Working",
+          lesson: `Unit ${selectedUnit}: ${UNIT_DATA[selectedUnit].name.split(': ')[1]}`,
+          progress: (completedChallenges[selectedUnit] || []).filter(Boolean).length,
+          maxProgress: 5,
+          timeSpent: `${Math.max(1, Math.floor((Date.now() - sessionStartTime) / 60000))}m`,
+          syncStatus: isSynced ? "submitted" : "working",
+          reflection: localStorage.getItem("ai-hub-sync-reflection") || "Active learning in progress...",
+          chatLog: activeStudentChatLog.length > 0 ? activeStudentChatLog : [
+            { sender: "bot", text: "Start a math challenge as a Student to build your real-time chat transcript!" }
+          ]
+        };
+
+        const list = [currentStudentDemo, ...classroomRoster];
+
+        container.innerHTML = list.map(student => {
+          let statusColor = "#10b981";
+          if (student.status === "Idle") statusColor = "#94a3b8";
+          if (student.status === "Stuck") statusColor = "#ef4444";
+          if (student.status === "Completed") statusColor = "#10b981";
+          
+          const pct = Math.round((student.progress / student.maxProgress) * 100);
+          
+          return `
+            <div style="background:var(--bg-panel); border:2px solid ${student.id === 'student_demo' ? 'var(--gemini-purple)' : 'var(--bg-panel-border)'}; border-radius:16px; padding:16px; display:flex; flex-direction:column; gap:12px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:1.5rem;" aria-hidden="true">${student.avatar}</span>
+                  <div>
+                    <h5 style="margin:0; font-family:var(--font-heading); font-size:0.95rem; font-weight:800; color:#fff;">${student.name}</h5>
+                    <span style="font-size:0.75rem; color:var(--text-secondary);">${student.lesson}</span>
+                  </div>
+                </div>
+                <span style="font-size:0.7rem; font-weight:800; text-transform:uppercase; padding:3px 8px; border-radius:4px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); color:${statusColor};">${student.status}</span>
+              </div>
+
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-bottom:4px; color:var(--text-secondary);">
+                  <span>Progress: ${student.progress}/${student.maxProgress} challenges</span>
+                  <strong>${pct}%</strong>
+                </div>
+                <div style="background:rgba(255,255,255,0.05); height:6px; border-radius:3px; overflow:hidden;">
+                  <div style="width:${pct}%; background:linear-gradient(90deg, #4285f4, #10b981); height:100%; border-radius:3px; transition:width 0.5s;"></div>
+                </div>
+              </div>
+
+              <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-secondary); border-top:1px dashed var(--bg-panel-border); padding-top:8px;">
+                <span>Session Time: <strong>${student.timeSpent}</strong></span>
+                <span>Classroom Sync: <strong style="color:${student.syncStatus === 'submitted' ? '#10b981' : '#ffb74d'};">${student.syncStatus === 'submitted' ? 'Submitted' : 'Pending'}</strong></span>
+              </div>
+
+              ${student.reflection ? `
+                <div style="background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.03); border-radius:8px; padding:8px; font-size:0.78rem; color:var(--text-secondary); font-style:italic;">
+                  "&nbsp;${student.reflection}&nbsp;"
+                </div>
+              ` : ''}
+
+              <div style="display:flex; gap:8px; margin-top:4px;">
+                <button class="nav-btn" style="flex:1; padding:6px; font-size:0.75rem; border-radius:6px; cursor:pointer;" onclick="inspectStudentChat('${student.id}')">🔍 Inspect Logs</button>
+                <button class="nav-btn" style="flex:1; padding:6px; font-size:0.75rem; border-radius:6px; border-color:#8ab4f8; color:#8ab4f8; cursor:pointer;" onclick="openInterventionDialog('${student.id}')">🍎 Intervene</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      let activeInterventionStudentId = null;
+
+      function inspectStudentChat(studentId) {
+        const modal = document.getElementById("inspect-chat-modal");
+        const body = document.getElementById("inspect-modal-body");
+        const title = document.getElementById("inspect-modal-title");
+
+        const isSynced = localStorage.getItem("ai-hub-classroom-sync") === "submitted";
+        const currentStudentDemo = {
+          id: "student_demo",
+          name: "You (Student Demo)",
+          chatLog: activeStudentChatLog.length > 0 ? activeStudentChatLog : [
+            { sender: "bot", text: "Start a math challenge as a Student to build your real-time chat transcript!" }
+          ]
+        };
+
+        const student = studentId === "student_demo" ? currentStudentDemo : classroomRoster.find(s => s.id === studentId);
+        if (!student) return;
+
+        title.textContent = `Inspect Chat Logs: ${student.name}`;
+        
+        body.innerHTML = student.chatLog.map(m => `
+          <div class="chat-row ${m.sender}" style="margin-bottom:8px; display:flex; justify-content:${m.sender === 'user' ? 'flex-end' : 'flex-start'};">
+            <div class="chat-bubble" style="font-size:0.82rem; padding:8px 12px; background:${m.sender === 'user' ? 'var(--gemini-purple)' : 'rgba(255,255,255,0.04)'}; color:${m.sender === 'user' ? '#fff' : 'var(--text-primary)'}; border-radius:8px; max-width:80%;">
+              <strong>${m.sender === 'user' ? 'Student' : 'Tutor'}:</strong><br/>
+              ${m.text}
+            </div>
+          </div>
+        `).join('');
+
+        modal.style.display = "flex";
+      }
+
+      function closeInspectChat() {
+        document.getElementById("inspect-chat-modal").style.display = "none";
+      }
+
+      function openInterventionDialog(studentId) {
+        activeInterventionStudentId = studentId;
+        const student = studentId === "student_demo" ? { name: "You (Student Demo)" } : classroomRoster.find(s => s.id === studentId);
+        if (!student) return;
+
+        document.getElementById("intervention-modal-title").textContent = `Feedback for ${student.name}`;
+        document.getElementById("intervention-presets").value = "";
+        document.getElementById("intervention-text").value = "";
+        document.getElementById("intervention-modal").style.display = "flex";
+        document.getElementById("intervention-text").focus();
+      }
+
+      function closeInterventionModal() {
+        document.getElementById("intervention-modal").style.display = "none";
+        activeInterventionStudentId = null;
+      }
+
+      function applyInterventionPreset(val) {
+        if (val) {
+          document.getElementById("intervention-text").value = val;
+        }
+      }
+
+      function submitInterventionFeedback() {
+        const text = document.getElementById("intervention-text").value;
+        if (!text.trim()) return;
+
+        if (activeInterventionStudentId === "student_demo") {
+          try {
+            localStorage.setItem("ai-hub-teacher-feedback", text);
+          } catch (_) {}
+          
+          const chatLog = document.getElementById("chat-log");
+          if (chatLog) {
+            appendTutorMessage("bot", `🍎 <strong>Teacher Feedback:</strong> "${text}"`);
+            try {
+              localStorage.removeItem("ai-hub-teacher-feedback");
+            } catch (_) {}
+          }
+        } else {
+          const student = classroomRoster.find(s => s.id === activeInterventionStudentId);
+          if (student) {
+            student.chatLog.push({ sender: "bot", text: `🍎 <strong>Teacher Feedback:</strong> "${text}"` });
+            student.status = "Working";
+          }
+        }
+
+        closeInterventionModal();
+        renderClassroomRoster();
+      }
+
+      // Escape key accessible close handler
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          const dashboard = document.getElementById("dashboard-drawer");
+          if (dashboard && dashboard.classList.contains("open")) {
+            toggleDashboard();
+          }
+          const mathTools = document.getElementById("math-tools-drawer");
+          if (mathTools && mathTools.classList.contains("open")) {
+            toggleMathTools();
+          }
+          closeClassroomSyncModal();
+          closeInspectChat();
+          closeInterventionModal();
+        }
+      });
+
       // Overhauled logic for Google Ed experts
       function submitPrompt() {
         const feedbackAlert = document.getElementById("result-feedback");
@@ -5385,6 +6085,17 @@
           const rawQ = sessionDialogues[0].q;
           const adaptedQ = adaptTutorMessage(rawQ, promptSelections.role, promptSelections.level);
           appendTutorMessage("bot", adaptedQ);
+          
+          // Check for reactive teacher live guidance popups
+          setTimeout(() => {
+            try {
+              const teacherNote = localStorage.getItem("ai-hub-teacher-feedback");
+              if (teacherNote) {
+                appendTutorMessage("bot", `🍎 <strong>Teacher Feedback:</strong> "${teacherNote}"`);
+                localStorage.removeItem("ai-hub-teacher-feedback");
+              }
+            } catch (_) {}
+          }, 2500);
         }, 1200);
       }
 
@@ -5405,6 +6116,16 @@
 
         row.appendChild(avatar);
         row.appendChild(bubble);
+        
+        // Log chat history for student demo sync in real-time
+        activeStudentChatLog.push({ sender, text });
+        
+        // Auto-Speak if enabled for bot responses
+        if (sender === "bot" && autoSpeakEnabled) {
+          setTimeout(() => {
+            speakText(text, speakBtn);
+          }, 150);
+        }
 
         if (sender === "bot") {
           const speakBtn = document.createElement("button");
@@ -5671,6 +6392,15 @@
 
           const cleanText = text.replace(/<[^>]*>/g, "");
           const utterance = new SpeechSynthesisUtterance(cleanText);
+          utterance.rate = speechRate;
+          
+          // Apply bilingual Spanish accent synthesis if required
+          if (/[\u00C0-\u00FF]/.test(cleanText) || text.toLowerCase().includes("español") || role === "spanish_support" || (promptSelections.role && promptSelections.role.toLowerCase().includes("spanish"))) {
+            utterance.lang = "es-ES";
+          } else {
+            utterance.lang = "en-US";
+          }
+
           utterance.onend = () => {
             btn.classList.remove("active");
             currentUtterance = null;
@@ -5700,6 +6430,35 @@
           const saved = localStorage.getItem("ai-hub-completed-challenges");
           if (saved) {
             completedChallenges = JSON.parse(saved);
+          
+          // Load Speech Synthesis preferences
+          try {
+            autoSpeakEnabled = localStorage.getItem("ai-hub-auto-speak") === "true";
+            const autoSpeakEl = document.getElementById("accessibility-auto-speak");
+            if (autoSpeakEl) autoSpeakEl.checked = autoSpeakEnabled;
+
+            speechRate = parseFloat(localStorage.getItem("ai-hub-speech-rate") || "1.0");
+            const sliderEl = document.getElementById("speech-speed-slider");
+            if (sliderEl) sliderEl.value = speechRate;
+            const valEl = document.getElementById("speech-speed-val");
+            if (valEl) valEl.textContent = speechRate.toFixed(1) + "x";
+            
+            // Sync status UI update
+            const syncStatus = localStorage.getItem("ai-hub-classroom-sync");
+            if (syncStatus === "submitted") {
+              const syncText = document.getElementById("classroom-sync-status-text");
+              if (syncText) {
+                syncText.textContent = "Turned In";
+                syncText.style.color = "#10b981";
+              }
+              const syncBtn = document.getElementById("classroom-sync-btn");
+              if (syncBtn) {
+                syncBtn.innerHTML = "✅ Re-Submit Assignment";
+                syncBtn.style.color = "#8ab4f8";
+                syncBtn.style.borderColor = "var(--bg-panel-border)";
+              }
+            }
+          } catch (_) {}
           }
         } catch (e) {}
       }
@@ -6190,19 +6949,51 @@ Instructions:
               `;
             } else if (ex === 3) { // 1 1/2 ÷ 1/4
               let showImproper = step >= 1;
-              let showFinal = step >= 2;
+              let showFinal = step >= 2 || fractionSelectedSegmentsCount === 6;
+              
               svgContent = `
                 <svg width="220" height="220" viewBox="0 0 220 220" style="background:white">
                   <rect width="100%" height="100%" fill="#060813" />
                   <text x="110" y="25" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">Represent 1 1/2</text>
+                  
+                  <!-- Left Bar (1 Whole) -->
                   <rect x="20" y="40" width="80" height="40" fill="rgba(66, 133, 244, 0.2)" stroke="#4285f4" stroke-width="2" />
+                  <text x="60" y="65" fill="#fff" font-size="10" text-anchor="middle" id="u2-whole-label">1 Whole</text>
+                  
+                  <!-- Right Bar (1/2) -->
                   <rect x="110" y="40" width="40" height="40" fill="rgba(66, 133, 244, 0.2)" stroke="#4285f4" stroke-width="2" />
-                  <text x="60" y="65" fill="#fff" font-size="10" text-anchor="middle">1 Whole</text>
-                  <text x="130" y="65" fill="#fff" font-size="10" text-anchor="middle">1/2</text>
-                  ${showImproper ? `
+                  <text x="130" y="65" fill="#fff" font-size="10" text-anchor="middle" id="u2-half-label">1/2</text>
+                  
+                  <!-- Grid Partitions -->
+                  ${fractionDivisionPartitions ? `
+                    <line x1="40" y1="40" x2="40" y2="80" stroke="rgba(255,255,255,0.4)" stroke-dasharray="2" />
+                    <line x1="60" y1="40" x2="60" y2="80" stroke="rgba(255,255,255,0.4)" stroke-dasharray="2" />
+                    <line x1="80" y1="40" x2="80" y2="80" stroke="rgba(255,255,255,0.4)" stroke-dasharray="2" />
+                    <line x1="130" y1="40" x2="130" y2="80" stroke="rgba(255,255,255,0.4)" stroke-dasharray="2" />
+                  ` : (showImproper ? `
                     <line x1="60" y1="40" x2="60" y2="80" stroke="#fff" stroke-dasharray="2" />
+                  ` : '')}
+
+                  ${showImproper && !fractionDivisionPartitions ? `
                     <text x="110" y="105" fill="#c58af9" font-size="11" text-anchor="middle">Improper fraction: 3/2</text>
                   ` : ''}
+                  
+                  ${fractionDivisionPartitions ? `
+                    <!-- Clickable Interactive segments -->
+                    ${[0, 1, 2, 3, 4, 5].map(i => {
+                      const isSel = fractionSelectedSegmentsCount > i;
+                      const xStart = i < 4 ? 20 + i*20 : 110 + (i-4)*20;
+                      const fill = isSel ? 'rgba(16, 185, 129, 0.4)' : 'transparent';
+                      const stroke = isSel ? '#10b981' : 'rgba(255,255,255,0.1)';
+                      return `
+                        <rect x="${xStart}" y="40" width="20" height="40" fill="${fill}" stroke="${stroke}" class="interactive-btn" data-segment-idx="${i}" />
+                        <text x="dots" y="65" fill="#fff" font-size="8" text-anchor="middle" pointer-events="none"></text>
+                      `;
+                    }).join('')}
+                    
+                    <text x="110" y="105" fill="#ffb74d" font-size="10" text-anchor="middle">Click segments to count 1/4s: ${fractionSelectedSegmentsCount} / 6</text>
+                  ` : ''}
+
                   ${showFinal ? `
                     <rect x="20" y="125" width="180" height="30" fill="rgba(16, 185, 129, 0.2)" stroke="#10b981" stroke-width="2" />
                     <line x1="50" y1="125" x2="50" y2="155" stroke="#fff" />
@@ -6211,7 +7002,13 @@ Instructions:
                     <line x1="140" y1="125" x2="140" y2="155" stroke="#fff" />
                     <line x1="170" y1="125" x2="170" y2="155" stroke="#fff" />
                     <text x="110" y="180" fill="#10b981" font-size="13" font-weight="bold" text-anchor="middle">6 Quarters fit inside! Answer = 6</text>
-                  ` : `<text x="110" y="180" fill="var(--text-secondary)" font-size="10" text-anchor="middle">How many 1/4s fit in 3/2?</text>`}
+                  ` : `
+                    ${!fractionDivisionPartitions ? `
+                      <rect x="35" y="125" width="150" height="28" fill="rgba(155, 114, 203, 0.15)" stroke="#c58af9" stroke-width="1.5" rx="5" class="interactive-btn" />
+                      <text x="110" y="142" fill="#c58af9" font-size="9" text-anchor="middle" font-weight="bold" pointer-events="none">Partition into 1/4s</text>
+                    ` : ''}
+                    <text x="110" y="180" fill="var(--text-secondary)" font-size="10" text-anchor="middle">How many 1/4s fit in 3/2?</text>
+                  `}
                 </svg>
               `;
             } else { // 4 ÷ 2/3
@@ -6288,6 +7085,12 @@ Instructions:
                   <circle cx="${markerX}" cy="60" r="5" fill="#10b981" />
                   <circle cx="${markerX}" cy="130" r="5" fill="#10b981" />
                   <line x1="${markerX}" y1="60" x2="${markerX}" y2="130" stroke="#10b981" stroke-dasharray="3" />
+                  
+                  <!-- Pulsing guide circle to prompt click in step 2 (core calculation) -->
+                  ${u === 3 && ex === 0 && step === 2 ? `
+                    <circle cx="170" cy="130" r="10" fill="none" stroke="#ffb74d" stroke-width="1.5" opacity="0.8" class="interactive-btn" />
+                    <text x="110" y="200" fill="var(--text-secondary)" font-size="8" text-anchor="middle">Click target tick under Cookies to find the missing ratio!</text>
+                  ` : ''}
                 </svg>
               `;
             } else { // Option cost comparison (3 for $6 vs 5 for $9)

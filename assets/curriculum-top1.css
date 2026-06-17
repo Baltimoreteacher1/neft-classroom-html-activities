@@ -1,0 +1,476 @@
+/* curriculum-top1.css — Start Here role panel + accessibility upgrades.
+   Scoped with the top1- prefix. Additive only; no overrides of existing hub styles. */
+
+:root {
+  --top1-navy: #0f2747;
+  --top1-blue: #1d6fb8;
+  --top1-ink: #1b2733;
+  --top1-line: #d7dee7;
+  --top1-bg: #f6f9fc;
+  --top1-card: #ffffff;
+}
+
+.top1 {
+  margin: 18px 0 26px;
+  padding: 22px;
+  border: 1px solid var(--top1-line);
+  border-radius: 16px;
+  background: linear-gradient(180deg, #ffffff 0%, var(--top1-bg) 100%);
+  font-family: "Outfit", system-ui, sans-serif;
+  color: var(--top1-ink);
+}
+
+.top1-hero {
+  margin-bottom: 14px;
+}
+.top1-eyebrow {
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--top1-blue);
+}
+.top1-hero h2 {
+  margin: 0 0 6px;
+  font-size: clamp(22px, 3vw, 30px);
+  color: var(--top1-navy);
+  line-height: 1.15;
+}
+.top1-lede {
+  margin: 0;
+  max-width: 60ch;
+  font-size: 15px;
+  color: #3a4654;
+}
+
+/* role cards */
+.top1-roles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  margin: 8px 0 14px;
+}
+.top1-role {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 76px;
+  padding: 12px 14px;
+  text-align: left;
+  border: 1px solid var(--top1-line);
+  border-radius: 12px;
+  background: var(--top1-card);
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s,
+    transform 0.05s;
+}
+.top1-role:hover {
+  border-color: var(--top1-blue);
+}
+.top1-role[aria-pressed="true"] {
+  border-color: var(--top1-blue);
+  box-shadow: 0 0 0 2px rgba(29, 111, 184, 0.25);
+  background: #f0f7ff;
+}
+.top1-role-icon {
+  font-size: 22px;
+}
+.top1-role-label {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--top1-navy);
+}
+.top1-role-sub {
+  font-size: 12.5px;
+  color: #51606f;
+}
+
+/* stage */
+.top1-stage {
+  border-top: 1px solid var(--top1-line);
+  padding-top: 16px;
+}
+.top1-intro-title {
+  margin: 0 0 4px;
+  font-size: 18px;
+  color: var(--top1-navy);
+}
+.top1-intro-sub {
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: #41506a;
+  max-width: 64ch;
+}
+
+/* picker */
+.top1-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.top1-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--top1-navy);
+}
+.top1-select {
+  min-height: 44px;
+  min-width: 180px;
+  padding: 8px 10px;
+  font-size: 15px;
+  border: 1px solid var(--top1-line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--top1-ink);
+}
+
+/* lesson card / output */
+.top1-lesson-card {
+  padding: 14px 16px;
+  border: 1px solid var(--top1-line);
+  border-left: 4px solid var(--top1-blue);
+  border-radius: 12px;
+  background: var(--top1-card);
+  margin-bottom: 12px;
+}
+.top1-lesson-head {
+  font-size: 17px;
+  color: var(--top1-navy);
+  margin-bottom: 6px;
+}
+.top1-obj {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: #2f3d4d;
+}
+.top1-why {
+  margin: 0 0 10px;
+  padding: 8px 10px;
+  background: #f0f7ff;
+  border-radius: 8px;
+  font-size: 13.5px;
+  color: #234;
+}
+.top1-kv {
+  margin: 0 0 8px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #2a3744;
+}
+.top1-note {
+  padding: 8px 10px;
+  background: #fff7e6;
+  border-radius: 8px;
+  border: 1px solid #f0dcae;
+  color: #5c4708;
+}
+
+/* links + badges */
+.top1-links {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+.top1-link-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 10px;
+  min-height: 44px;
+  border: 1px solid var(--top1-line);
+  border-radius: 9px;
+  background: #fbfdff;
+}
+.top1-link {
+  font-weight: 600;
+  font-size: 14.5px;
+  color: var(--top1-blue);
+  text-decoration: none;
+}
+.top1-link:hover,
+.top1-link:focus-visible {
+  text-decoration: underline;
+}
+.top1-meta {
+  font-size: 11.5px;
+  color: #5c6b7a;
+  margin-left: auto;
+}
+.top1-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.top1-badge-student {
+  background: #e7f1fb;
+  color: #114a7a;
+  border-color: #bcd9f2;
+}
+.top1-badge-teacher {
+  background: #fde8d4;
+  color: #7a3c00;
+  border-color: #f3c79a;
+}
+.top1-badge-download {
+  background: #e9edf2;
+  color: #36424f;
+  border-color: #c7d0da;
+}
+.top1-badge-assess {
+  background: #efe6fb;
+  color: #4a2a7a;
+  border-color: #d3bff0;
+}
+.top1-badge-game {
+  background: #e1f4ea;
+  color: #15603f;
+  border-color: #b6e3cc;
+}
+.top1-badge-family {
+  background: #def3f3;
+  color: #115a5a;
+  border-color: #b2e2e2;
+}
+.top1-badge-std {
+  background: var(--top1-navy);
+  color: #fff;
+}
+
+/* collapsibles */
+.top1-collapse {
+  border: 1px solid var(--top1-line);
+  border-radius: 10px;
+  background: #fff;
+  margin-bottom: 10px;
+}
+.top1-collapse > summary {
+  cursor: pointer;
+  padding: 12px 14px;
+  min-height: 44px;
+  font-weight: 700;
+  font-size: 14.5px;
+  color: var(--top1-navy);
+  list-style: none;
+}
+.top1-collapse > summary::-webkit-details-marker {
+  display: none;
+}
+.top1-collapse > summary::after {
+  content: "＋";
+  float: right;
+  color: var(--top1-blue);
+}
+.top1-collapse[open] > summary::after {
+  content: "－";
+}
+.top1-collapse-body {
+  padding: 4px 14px 14px;
+}
+.top1-checklist {
+  margin: 6px 0;
+  padding-left: 20px;
+}
+.top1-checklist li {
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #2a3744;
+}
+.top1-ladder {
+  margin: 6px 0;
+  padding-left: 22px;
+}
+.top1-ladder li {
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+/* uifr */
+.top1-uifr {
+  border: 1px solid #c9d6e6;
+  border-radius: 12px;
+  background: #fbfdff;
+  padding: 14px;
+}
+.top1-uifr-disc {
+  margin: 0 0 12px;
+  font-size: 12.5px;
+  color: #5c6b7a;
+  font-style: italic;
+}
+.top1-nextsteps {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: #f0f7ff;
+  border-radius: 8px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: #234;
+}
+.top1-plan {
+  white-space: pre-wrap;
+  font-family: "Outfit", system-ui, sans-serif;
+  font-size: 13.5px;
+  line-height: 1.55;
+  background: #f7fafd;
+  border: 1px solid var(--top1-line);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: #233;
+  margin: 0 0 12px;
+}
+
+/* buttons */
+.top1-btnrow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+.top1-copy,
+.top1-chip {
+  min-height: 44px;
+  padding: 9px 14px;
+  font-size: 13.5px;
+  font-weight: 600;
+  border: 1px solid var(--top1-blue);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--top1-blue);
+  cursor: pointer;
+}
+.top1-copy:hover,
+.top1-chip:hover {
+  background: #eef6ff;
+}
+.top1-chip {
+  min-height: 38px;
+  padding: 7px 12px;
+  border-color: var(--top1-line);
+  color: var(--top1-ink);
+}
+.top1-chip[aria-pressed="true"] {
+  background: var(--top1-blue);
+  border-color: var(--top1-blue);
+  color: #fff;
+}
+.top1-disp-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.top1-disp-label {
+  font-weight: 700;
+  font-size: 13px;
+  width: 92px;
+  color: var(--top1-navy);
+}
+
+/* Public/private safety: hide teacher-only hub chrome in the Student-Mode
+   default. The existing system adds body.teacher-mode in Teacher Mode. */
+body:not(.teacher-mode) .hub-teacher-only {
+  display: none !important;
+}
+
+/* ---------- global accessibility upgrades (WCAG 2.2 AA targets) ---------- */
+
+/* Progress check buttons must be >= 44x44 CSS px (was ~27px). */
+.progress-check {
+  min-width: 44px !important;
+  min-height: 44px !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Visible focus everywhere for keyboard users. */
+.top1 a:focus-visible,
+.top1 button:focus-visible,
+.top1 select:focus-visible,
+.progress-check:focus-visible,
+.hub-mode-toggle:focus-visible,
+.res:focus-visible {
+  outline: 3px solid #1d6fb8;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Display preference: text scaling within the start-here panel. */
+body.top1-text-lg .top1 {
+  font-size: 17px;
+}
+body.top1-text-xl .top1 {
+  font-size: 19px;
+}
+body.top1-text-lg .top1 .top1-kv,
+body.top1-text-lg .top1 .top1-link {
+  font-size: 16px;
+}
+body.top1-text-xl .top1 .top1-kv,
+body.top1-text-xl .top1 .top1-link {
+  font-size: 18px;
+}
+body.top1-space .top1 .top1-kv,
+body.top1-space .top1 .top1-checklist li {
+  line-height: 1.8;
+}
+body.top1-space .top1 .top1-link-row {
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+/* High contrast preference. */
+body.top1-contrast .top1 {
+  background: #fff;
+}
+body.top1-contrast .top1-role,
+body.top1-contrast .top1-link-row,
+body.top1-contrast .top1-lesson-card,
+body.top1-contrast .top1-collapse {
+  border-color: #1b2733;
+}
+body.top1-contrast .top1-role-sub,
+body.top1-contrast .top1-lede,
+body.top1-contrast .top1-intro-sub,
+body.top1-contrast .top1-meta {
+  color: #1b2733;
+}
+body.top1-contrast .top1-link {
+  color: #0b3a63;
+}
+
+/* Reduced motion preference. */
+body.top1-reduced * {
+  transition: none !important;
+  animation: none !important;
+  scroll-behavior: auto !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .top1 * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .top1 {
+    padding: 16px;
+  }
+  .top1-picker .top1-select {
+    min-width: 140px;
+  }
+}

@@ -16,6 +16,9 @@
     /\/downloads\/.*\.pdf$/i,
     /\/downloads\/.*\.docx$/i,
     /homework\.docx$/i,
+    // Slide decks (incl. emoji-labeled "🔗 Google Slides" / editable-slides.html)
+    // are teacher-facing; match by href so the visible label never matters.
+    /slides\.html$/i,
   ];
 
   var TEACHER_TEXT_PATTERNS = [
@@ -119,8 +122,10 @@
       if (saved === "0" || saved === "false") return false;
       if (saved === "1" || saved === "true") return true;
     } catch (e) {}
-    // Default ON so teachers see Slides, Forms, and printable packets without toggling.
-    return true;
+    // Public-safe default: Student Mode. /curriculum/ is a public page, so it must
+    // not expose teacher-only tools (Slides, Forms, dashboards, answer keys) by
+    // default. Teachers opt in via the toggle or ?teacher=1 (persisted thereafter).
+    return false;
   }
 
   function saveTeacherMode(on) {
@@ -409,9 +414,11 @@
 
     var dashLink = document.createElement("a");
     dashLink.href = "/teacher-tools/curriculum-dashboard/";
-    dashLink.className = "hub-mode-toggle";
+    // Teacher-only: hidden in the public Student-Mode default via CSS
+    // (body:not(.teacher-mode) .hub-teacher-only { display:none }).
+    dashLink.className = "hub-mode-toggle hub-teacher-only";
     dashLink.textContent = "📊 Teacher Dashboard";
-    dashLink.title = "View class progress summary";
+    dashLink.title = "Teacher only — class progress summary";
     bar.appendChild(dashLink);
 
     var hint = document.createElement("p");

@@ -1,0 +1,136 @@
+{
+  "_note": "Resource type detection + metadata for the curriculum top1 layer. Rules are matched in order against a link's visible text and href (case-insensitive). First match wins. visibility 'teacher' resources are badged Teacher Only and hidden from students by the existing mode system.",
+  "rules": [
+    {
+      "match": "interactive lesson|/lessons/[^/]+/?$",
+      "type": "Interactive Lesson",
+      "audience": "Student",
+      "visibility": "public",
+      "badges": ["Student"],
+      "time": "20–30 min",
+      "bestFor": "Whole class or independent practice",
+      "format": "Online",
+      "uifr": "Students engage with grade-level content and show their thinking."
+    },
+    {
+      "match": "guided notes|notes\\.html",
+      "type": "Guided Notes",
+      "audience": "Student",
+      "visibility": "public",
+      "badges": ["Student", "Printable"],
+      "time": "15 min",
+      "bestFor": "Classwork or absent students",
+      "format": "Printable or online",
+      "uifr": "Students organize and represent mathematical thinking."
+    },
+    {
+      "match": "editable slides|reveal math",
+      "type": "Editable Slides",
+      "audience": "Teacher",
+      "visibility": "teacher",
+      "badges": ["Teacher Only"],
+      "time": "Whole class",
+      "bestFor": "Direct instruction",
+      "format": "Online",
+      "uifr": "Teacher facilitates clear, standards-based content learning."
+    },
+    {
+      "match": "google slides|slides\\.html",
+      "type": "Slides",
+      "audience": "Teacher",
+      "visibility": "teacher",
+      "badges": ["Teacher Only"],
+      "time": "Whole class",
+      "bestFor": "Direct instruction",
+      "format": "Online",
+      "uifr": "Teacher facilitates clear, standards-based content learning."
+    },
+    {
+      "match": "notes pdf|\\.pdf$",
+      "type": "PDF Download",
+      "audience": "Student / Family",
+      "visibility": "public",
+      "badges": ["Download", "Printable"],
+      "time": "15 min",
+      "bestFor": "Print at home or in class",
+      "format": "PDF",
+      "uifr": "Students continue practice independently."
+    },
+    {
+      "match": "notes docx|homework|\\.docx$",
+      "type": "Editable Document",
+      "audience": "Student / Family",
+      "visibility": "public",
+      "badges": ["Download"],
+      "time": "15–20 min",
+      "bestFor": "Practice and homework",
+      "format": "Word document",
+      "uifr": "Students continue practice independently."
+    },
+    {
+      "match": "google forms|/post-forms|/teacher-tools",
+      "type": "Teacher Tool",
+      "audience": "Teacher",
+      "visibility": "teacher",
+      "badges": ["Teacher Only", "Google Login Required"],
+      "time": "Varies",
+      "bestFor": "Assessment and class management",
+      "format": "Google",
+      "uifr": "Teacher uses data to adjust instruction."
+    },
+    {
+      "match": "docs\\.google\\.com",
+      "type": "Google Doc",
+      "audience": "Teacher",
+      "visibility": "teacher",
+      "badges": ["Teacher Only", "Google Login Required"],
+      "time": "Varies",
+      "bestFor": "Teacher reference",
+      "format": "Google",
+      "uifr": "Teacher uses curricular resources to prepare."
+    },
+    {
+      "match": "pre-test|post-test|quiz|study guide|mcap|assessment",
+      "type": "Assessment",
+      "audience": "Assessment",
+      "visibility": "public",
+      "badges": ["Assessment"],
+      "time": "10–25 min",
+      "bestFor": "Check understanding",
+      "format": "Online or print",
+      "uifr": "Teacher uses data to adjust instruction."
+    },
+    {
+      "match": "graphic novel|game|3d|arcade|odyssey|netfold|project",
+      "type": "Game / Extension",
+      "audience": "Student",
+      "visibility": "public",
+      "badges": ["Game", "Extension"],
+      "time": "10–15 min",
+      "bestFor": "Review, early finishers, enrichment",
+      "format": "Online",
+      "uifr": "Students practice fluency and apply strategies."
+    },
+    {
+      "match": "family|home",
+      "type": "Family Support",
+      "audience": "Family",
+      "visibility": "public",
+      "badges": ["Family"],
+      "time": "10 min",
+      "bestFor": "Help at home",
+      "format": "Online or print",
+      "uifr": "Families support practice at home."
+    }
+  ],
+  "fallback": {
+    "type": "Resource",
+    "audience": "Student",
+    "visibility": "public",
+    "badges": ["Student"],
+    "time": "10–20 min",
+    "bestFor": "Practice",
+    "format": "Online",
+    "uifr": "Students engage with grade-level content."
+  }
+}
