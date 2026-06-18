@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
     <meta
       name="description"
@@ -284,7 +284,7 @@
         font-weight: 800;
         letter-spacing: 0.08em;
         text-transform: uppercase;
-        color: #9aa9bd;
+        color: #5e6e85;
         text-align: center;
         margin: 2px 0 0;
       }
@@ -315,6 +315,46 @@
           transform: translateX(-6px);
         }
       }
+      /* Spawn feedback */
+      @keyframes objPop {
+        0% {
+          transform: scale(0.7);
+          opacity: 0;
+        }
+        60% {
+          transform: scale(1.06);
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      .obj.spawning {
+        animation: objPop 0.22s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+      }
+      .wb-toast {
+        position: fixed;
+        left: 50%;
+        bottom: 22px;
+        transform: translateX(-50%) translateY(12px);
+        background: var(--ink);
+        color: #fff;
+        font-weight: 800;
+        font-size: 0.84rem;
+        padding: 9px 16px;
+        border-radius: 999px;
+        box-shadow: var(--shadow-lg);
+        opacity: 0;
+        pointer-events: none;
+        transition:
+          opacity 0.18s,
+          transform 0.18s;
+        z-index: 60;
+      }
+      .wb-toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
       .flyout h3 {
         margin: 0 0 3px;
         font-size: 0.98rem;
@@ -338,6 +378,9 @@
       }
       .pal-grid.n3 {
         grid-template-columns: repeat(3, 1fr);
+      }
+      .pal-grid.n2 {
+        grid-template-columns: repeat(2, 1fr);
       }
       .pal-item {
         aspect-ratio: 1 / 1;
@@ -429,7 +472,7 @@
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        color: #9aa9bd;
+        color: #5e6e85;
         margin: 0 0 6px;
       }
 
@@ -680,8 +723,8 @@
       /* resize handles (bigger / smaller / wider / taller) */
       .rs {
         position: absolute;
-        width: 16px;
-        height: 16px;
+        width: 18px;
+        height: 18px;
         border-radius: 50%;
         background: #fff;
         border: 2px solid var(--teal);
@@ -689,6 +732,13 @@
         display: none;
         z-index: 7;
         touch-action: none;
+      }
+      /* Larger invisible touch target so fingers can grab handles on tablets. */
+      .rs::before {
+        content: "";
+        position: absolute;
+        inset: -13px;
+        border-radius: 50%;
       }
       .obj.sel .rs {
         display: block;
@@ -759,7 +809,7 @@
       }
       .textobj:empty::before {
         content: "Type…";
-        color: #b3c0d2;
+        color: #6f7f96;
       }
 
       /* fraction composite */
@@ -1032,7 +1082,7 @@
         font-weight: 800;
         letter-spacing: 0.05em;
         text-transform: uppercase;
-        color: #9aa9bd;
+        color: #5e6e85;
       }
       .nl-presets {
         display: grid;
@@ -1085,12 +1135,12 @@
         display: flex;
       }
       .obj-tools button {
-        width: 30px;
-        height: 30px;
+        width: 36px;
+        height: 36px;
         border: none;
-        border-radius: 7px;
+        border-radius: 8px;
         background: #f3f7fc;
-        font-size: 0.95rem;
+        font-size: 1.02rem;
         display: grid;
         place-items: center;
         color: var(--ink);
@@ -1104,8 +1154,8 @@
         color: var(--rose);
       }
       .obj-tools .mini-sw {
-        width: 22px;
-        height: 22px;
+        width: 30px;
+        height: 30px;
         border-radius: 50%;
         border: 2px solid #fff;
         box-shadow: 0 0 0 1px var(--line);
@@ -1120,7 +1170,7 @@
         top: 46%;
         transform: translate(-50%, -50%);
         text-align: center;
-        color: #aebccf;
+        color: #6b7c93;
         pointer-events: none;
         z-index: 0;
         max-width: 420px;
@@ -1141,6 +1191,40 @@
         font-size: 0.95rem;
         line-height: 1.5;
       }
+      .empty-hint .starter-lbl {
+        margin: 16px 0 9px;
+        font-weight: 800;
+        color: var(--muted);
+        font-size: 0.84rem;
+      }
+      .starter-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+        pointer-events: auto;
+      }
+      .starter {
+        border: 1.5px solid var(--line);
+        background: #fff;
+        color: var(--ink);
+        border-radius: 999px;
+        padding: 9px 14px;
+        font-weight: 800;
+        font-size: 0.84rem;
+        box-shadow: var(--shadow-sm);
+        transition:
+          border-color 0.12s,
+          transform 0.08s,
+          background 0.12s;
+      }
+      .starter:hover {
+        border-color: var(--teal);
+        transform: translateY(-1px);
+      }
+      .starter:active {
+        transform: translateY(0);
+      }
 
       /* ============================ Formula dock (bottom) ============================ */
       .dock {
@@ -1148,6 +1232,8 @@
         border-top: 1px solid var(--line);
         box-shadow: 0 -3px 14px rgba(15, 23, 42, 0.05);
         z-index: 15;
+        min-width: 0;
+        overflow: hidden;
       }
       .dock-head {
         display: flex;
@@ -1235,13 +1321,13 @@
       }
       .dock.open .formula-panel {
         display: block;
-        max-height: 38vh;
+        max-height: min(38vh, 240px);
         overflow-y: auto;
       }
       .formula-list {
         padding: 4px 16px 16px;
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(255px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
         gap: 9px;
       }
       .formula-card {
@@ -1375,11 +1461,85 @@
         .flyout {
           width: min(280px, calc(100vw - var(--rail-w) - 14px));
         }
-        .tool .lbl {
-          display: none;
-        }
         .tool {
           max-height: 50px;
+        }
+        .tool .lbl {
+          font-size: 0.5rem;
+        }
+      }
+
+      /* Short viewports (Chromebooks, landscape tablets): compress the rail and
+         the collapsed dock so every tool fits without an invisible scroll fold. */
+      @media (max-height: 860px) {
+        .tool {
+          max-height: 46px;
+          gap: 0;
+        }
+        .tool .glyph {
+          font-size: 1.18rem;
+        }
+        .rail {
+          gap: 3px;
+          padding: 6px 7px 10px;
+        }
+        /* Slimmer collapsed dock => more vertical room for the rail. */
+        .dock-head {
+          padding: 4px 14px;
+        }
+        .dock-tabs {
+          padding: 0 14px 7px;
+        }
+        .topic-tab {
+          padding: 5px 11px;
+          font-size: 0.76rem;
+        }
+        .rail-cap {
+          margin: 2px 0 0;
+        }
+        .rail-sep {
+          margin: 3px 0;
+        }
+      }
+      @media (max-height: 780px) {
+        .tool {
+          max-height: 42px;
+        }
+        .tool .lbl {
+          font-size: 0.52rem;
+        }
+        .rail-cap {
+          font-size: 0.56rem;
+          margin: 1px 0 0;
+          line-height: 1.1;
+        }
+        .rail-sep {
+          margin: 2px 0;
+        }
+      }
+      @media (max-height: 730px) {
+        .tool {
+          max-height: 39px;
+        }
+        .tool .glyph {
+          font-size: 1.06rem;
+        }
+        .rail {
+          gap: 2px;
+        }
+        .rail-cap {
+          font-size: 0.52rem;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+          scroll-behavior: auto !important;
         }
       }
 
@@ -1522,29 +1682,12 @@
           <div class="rail-sep"></div>
           <span class="rail-cap">Set Up</span>
           <button
-            class="tool"
-            data-tool="fraction"
-            title="Fraction (number over number)"
+            class="tool has-flyout"
+            data-tool="setup"
+            data-flyout="setup"
+            title="Fraction, long division, separator &amp; cross-out lines"
           >
-            <span class="glyph">½</span><span class="lbl">Fraction</span>
-          </button>
-          <button class="tool" data-tool="division" title="Long division frame">
-            <span class="glyph">⟌</span><span class="lbl">Divide</span>
-          </button>
-          <button
-            class="tool"
-            data-tool="line"
-            title="Separator line — under add/subtract/multiply"
-          >
-            <span class="glyph">─</span><span class="lbl">Line</span>
-          </button>
-          <button
-            class="tool"
-            data-tool="cross"
-            title="Cross-out line (for regrouping &amp; canceling)"
-          >
-            <span class="glyph" style="color: #dc2626">╳</span
-            ><span class="lbl">Cross</span>
+            <span class="glyph">½</span><span class="lbl">Set Up</span>
           </button>
           <div class="rail-sep"></div>
           <span class="rail-cap">Shapes</span>
@@ -1577,7 +1720,7 @@
         </nav>
 
         <!-- Flyout palette -->
-        <section class="flyout" id="flyout" aria-live="polite"></section>
+        <section class="flyout" id="flyout" aria-label="Tool options"></section>
 
         <!-- Workspace -->
         <div class="workspace" id="workspace">
@@ -1589,9 +1732,23 @@
             <h2>Your math workspace</h2>
             <p>
               Pick a tool on the left to write, stamp numbers, set up problems,
-              and drop in shapes. Tap <b>Help</b> any time. Open a formula topic
-              below.
+              and drop in shapes. Tap <b>Help</b> any time.
             </p>
+            <p class="starter-lbl">Or start with one of these:</p>
+            <div class="starter-row" id="starterRow">
+              <button class="starter" data-starter="grid">
+                📈 Coordinate plane
+              </button>
+              <button class="starter" data-starter="numline">
+                📏 Number line
+              </button>
+              <button class="starter" data-starter="division">
+                ➗ Long division
+              </button>
+              <button class="starter" data-starter="fraction">
+                ½ Fraction
+              </button>
+            </div>
           </div>
         </div>
 
@@ -1750,6 +1907,16 @@
         "#7c3aed",
       ];
       const PEN_SIZES = [2, 4, 7, 12];
+      // Classic highlighter inks (bright, used at low alpha) — kept separate
+      // from pen colors so "Mark" behaves like a real highlighter.
+      const HI_COLORS = [
+        "#fde047",
+        "#86efac",
+        "#fca5e0",
+        "#7dd3fc",
+        "#fdba74",
+        "#c4b5fd",
+      ];
 
       const state = {
         strokes: [], // { tool, color, size, pts:[{x,y}] }
@@ -1758,6 +1925,7 @@
       };
       let tool = "move";
       let penColor = PEN_COLORS[0];
+      let hiColor = HI_COLORS[0];
       let penSize = PEN_SIZES[1];
       let selectedId = null;
       let uid = 1;
@@ -1790,7 +1958,18 @@
         state.bg = d.bg || "blank";
         renderAll();
       }
+      function flushPendingHistory() {
+        // A debounced erase snapshot may be queued; commit it before any
+        // history navigation so undo/redo operate on the true latest state.
+        if (eraseAt._t) {
+          clearTimeout(eraseAt._t);
+          eraseAt._t = null;
+          pushHistory();
+          updateEmpty();
+        }
+      }
       function undo() {
+        flushPendingHistory();
         if (hpos <= 0) return;
         hpos--;
         applySnap(history[hpos]);
@@ -1798,6 +1977,7 @@
         persist();
       }
       function redo() {
+        flushPendingHistory();
         if (hpos >= history.length - 1) return;
         hpos++;
         applySnap(history[hpos]);
@@ -1856,7 +2036,7 @@
       function drawStroke(st) {
         const pts = st.pts;
         if (!pts.length) return;
-        ctx.linejoin = "round";
+        ctx.lineJoin = "round";
         ctx.lineCap = "round";
         ctx.strokeStyle = st.color;
         ctx.lineWidth = st.size;
@@ -1888,7 +2068,7 @@
           drawing = { erase: true };
           return;
         }
-        const color = tool === "highlighter" ? penColor : penColor;
+        const color = tool === "highlighter" ? hiColor : penColor;
         const size =
           tool === "highlighter" ? Math.max(penSize * 3, 14) : penSize;
         drawing = { tool, color, size, pts: [p] };
@@ -1916,7 +2096,10 @@
       canvas.addEventListener("pointerup", endDraw);
       canvas.addEventListener("pointercancel", endDraw);
       canvas.addEventListener("pointerleave", (e) => {
-        if (drawing && !drawing.erase) endDraw();
+        // Pointer capture keeps events flowing past the canvas edge, so only
+        // end the stroke if capture was lost — otherwise long strokes chop.
+        if (drawing && !drawing.erase && !canvas.hasPointerCapture(e.pointerId))
+          endDraw();
       });
 
       function eraseAt(p) {
@@ -1959,7 +2142,37 @@
         renderAll();
         selectObject(o.id);
         pushHistory();
+        // Spawn feedback: a quick pop on the new object + a confirming toast,
+        // so students notice it landed even when looking at the rail.
+        const el = overlay.querySelector('[data-id="' + o.id + '"]');
+        if (el) {
+          el.classList.add("spawning");
+          el.addEventListener(
+            "animationend",
+            () => el.classList.remove("spawning"),
+            { once: true },
+          );
+        }
+        showToast("Added — drag it anywhere");
         return o;
+      }
+
+      let toastEl = null,
+        toastT = null;
+      function showToast(msg) {
+        if (!toastEl) {
+          toastEl = document.createElement("div");
+          toastEl.className = "wb-toast";
+          toastEl.setAttribute("role", "status");
+          toastEl.setAttribute("aria-live", "polite");
+          document.body.appendChild(toastEl);
+        }
+        toastEl.textContent = msg;
+        // reflow so re-triggering the transition works
+        void toastEl.offsetWidth;
+        toastEl.classList.add("show");
+        clearTimeout(toastT);
+        toastT = setTimeout(() => toastEl.classList.remove("show"), 1500);
       }
 
       function objById(id) {
@@ -2766,6 +2979,23 @@
           g += lab(ox + 5, oy - v * u + 4, v);
         }
         g += lab(ox + 5, oy + 13, "0");
+        // Quadrant labels (6.NS.6) when all four quadrants are visible.
+        if (min < 0 && max > 0) {
+          const qlab = (x, y, t) =>
+            '<text x="' +
+            x.toFixed(1) +
+            '" y="' +
+            y.toFixed(1) +
+            '" text-anchor="middle" font-family="Nunito,sans-serif" font-size="13" font-weight="900" fill="rgba(32,95,166,.28)">' +
+            t +
+            "</text>";
+          const hx = (max * u) / 2,
+            lx = (min * u) / 2;
+          g += qlab(ox + hx, oy - hx, "I");
+          g += qlab(ox + lx, oy - hx, "II");
+          g += qlab(ox + lx, oy - lx, "III");
+          g += qlab(ox + hx, oy - lx, "IV");
+        }
         return (
           '<svg viewBox="0 0 ' +
           w +
@@ -2860,7 +3090,10 @@
               const sy = (170 / r.height) * (ev.clientY - r.top);
               let deg = (Math.atan2(vy - sy, sx - vx) * 180) / Math.PI;
               if (deg < 0) deg += 360;
-              o.deg = Math.max(1, Math.min(359, Math.round(deg)));
+              // Grade 6 (6.G / 4.MD) measures 0–180°; clamp so the readout
+              // matches a standard protractor instead of drifting into reflex.
+              if (deg > 180) deg = deg > 270 ? 0 : 180;
+              o.deg = Math.max(1, Math.min(180, Math.round(deg)));
               render();
               persist();
             };
@@ -3274,9 +3507,11 @@
           return;
         }
         tool = t;
-        $$(".tool", $("#rail")).forEach((b) =>
-          b.classList.toggle("active", b.dataset.tool === t),
-        );
+        $$(".tool", $("#rail")).forEach((b) => {
+          const on = b.dataset.tool === t;
+          b.classList.toggle("active", on);
+          b.setAttribute("aria-pressed", on ? "true" : "false");
+        });
         document.body.dataset.draw = DRAW_TOOLS.has(t) ? "1" : "0";
         workspace.classList.remove("cursor-pen", "cursor-text", "cursor-erase");
         if (t === "pen" || t === "highlighter")
@@ -3306,7 +3541,7 @@
         flyout.classList.add("open");
         if (kind === "pen") {
           flyout.innerHTML = penFlyoutHTML(t);
-          wirePenFlyout();
+          wirePenFlyout(t);
         } else if (kind === "number") {
           flyout.innerHTML =
             '<h3>Number tiles</h3><p class="hint">Tap a number to drop a draggable tile. Build numbers by placing tiles side by side.</p>' +
@@ -3422,6 +3657,40 @@
           tipP.textContent =
             "After it drops in, type any From / to numbers to make your own range.";
           nlGroup.appendChild(tipP);
+        } else if (kind === "setup") {
+          flyout.innerHTML =
+            '<h3>Set up your work</h3><p class="hint">Tap to drop a frame, then type the numbers. Each one drags and resizes.</p>' +
+            '<div class="pal-grid n2" id="setupGrid"></div>';
+          const grid = $("#setupGrid");
+          const SETUP = [
+            {
+              svg: "<span style='font-size:1.9rem'>½</span>",
+              name: "Fraction",
+              go: SPAWN_TOOLS.fraction,
+            },
+            {
+              svg: "<span style='font-size:1.9rem'>⟌</span>",
+              name: "Long division",
+              go: SPAWN_TOOLS.division,
+            },
+            {
+              svg: "<span style='font-size:1.6rem'>─</span>",
+              name: "Separator line",
+              go: SPAWN_TOOLS.line,
+            },
+            {
+              svg: "<span style='font-size:1.6rem;color:#dc2626'>╳</span>",
+              name: "Cross out",
+              go: SPAWN_TOOLS.cross,
+            },
+          ];
+          SETUP.forEach((s) => {
+            const b = document.createElement("button");
+            b.className = "pal-item tall";
+            b.innerHTML = s.svg + "<small>" + s.name + "</small>";
+            b.addEventListener("click", s.go);
+            grid.appendChild(b);
+          });
         } else if (kind === "shape2d") {
           flyout.innerHTML =
             '<h3>2-D shapes</h3><p class="hint">Tap a shape to drop it. Then label it and write the measurements.</p>' +
@@ -3565,14 +3834,22 @@
           '<p class="field-lbl">Thickness</p><div class="size-dots" id="sizeRow"></div>'
         );
       }
-      function wirePenFlyout() {
+      function wirePenFlyout(t) {
+        const isHi = t === "highlighter";
+        const palette = isHi ? HI_COLORS : PEN_COLORS;
+        const current = isHi ? hiColor : penColor;
         const sr = $("#swatchRow");
-        PEN_COLORS.forEach((c) => {
+        palette.forEach((c) => {
           const s = document.createElement("button");
-          s.className = "swatch" + (c === penColor ? " sel" : "");
+          s.className = "swatch" + (c === current ? " sel" : "");
           s.style.background = c;
+          s.setAttribute(
+            "aria-label",
+            (isHi ? "Highlighter" : "Pen") + " color",
+          );
           s.addEventListener("click", () => {
-            penColor = c;
+            if (isHi) hiColor = c;
+            else penColor = c;
             $$(".swatch", sr).forEach((x) => x.classList.remove("sel"));
             s.classList.add("sel");
           });
@@ -3714,23 +3991,36 @@
             (long ? 1.6 : 0.8) +
             '"/>';
           if (d % 10 === 0) {
-            const rt = 70;
-            const tx = 110 - rt * Math.cos(a),
-              ty = 104 - rt * Math.sin(a);
-            marks +=
-              '<text x="' +
-              tx.toFixed(1) +
-              '" y="' +
-              (ty + 4).toFixed(1) +
-              '" text-anchor="middle" font-size="8" font-weight="700" font-family="Nunito,sans-serif" fill="#33485f">' +
-              d +
-              "</text>";
+            // Outer scale 0→180 (left to right) and inner scale 180→0, like a
+            // real classroom protractor so an angle can be read from either ray.
+            const txt = (rt, val, fill) => {
+              const tx = 110 - rt * Math.cos(a),
+                ty = 104 - rt * Math.sin(a);
+              return (
+                '<text x="' +
+                tx.toFixed(1) +
+                '" y="' +
+                (ty + 3).toFixed(1) +
+                '" text-anchor="middle" font-size="7.5" font-weight="700" font-family="Nunito,sans-serif" fill="' +
+                fill +
+                '">' +
+                val +
+                "</text>"
+              );
+            };
+            marks += txt(72, d, "#205fa6");
+            marks += txt(56, 180 - d, "#b45309");
           }
         }
         return (
           '<svg viewBox="0 0 220 116" width="220" height="116"><path d="M6 104 A104 104 0 0 1 214 104 Z" fill="rgba(32,95,166,.07)" stroke="#205fa6" stroke-width="2.5"/>' +
           marks +
-          '<circle cx="110" cy="104" r="3.5" fill="#14223a"/><line x1="6" y1="104" x2="214" y2="104" stroke="#14223a" stroke-width="1.5"/></svg>'
+          // baseline, origin endpoints, and a center cross-hair to line up the vertex
+          '<line x1="6" y1="104" x2="214" y2="104" stroke="#14223a" stroke-width="1.5"/>' +
+          '<circle cx="6" cy="104" r="2.4" fill="#205fa6"/><circle cx="214" cy="104" r="2.4" fill="#205fa6"/>' +
+          '<line x1="110" y1="96" x2="110" y2="112" stroke="#14223a" stroke-width="1"/>' +
+          '<line x1="102" y1="104" x2="118" y2="104" stroke="#14223a" stroke-width="1"/>' +
+          '<circle cx="110" cy="104" r="3" fill="none" stroke="#14223a" stroke-width="1.2"/></svg>'
         );
       }
       function rulerSVG() {
@@ -4300,6 +4590,12 @@
         const open = !dock.classList.contains("open");
         dock.classList.toggle("open", open);
         setDockToggle(open);
+        try {
+          localStorage.setItem("neft.mathWorkbench.dockOpen", open ? "1" : "0");
+        } catch (e) {}
+        // Recompute canvas size — the workspace just grew/shrank.
+        clearTimeout(rsz);
+        rsz = setTimeout(sizeCanvas, 210);
       });
 
       /* ----------------------- Top-bar actions ----------------------- */
@@ -4348,14 +4644,41 @@
         deselect();
         setTimeout(() => window.print(), 60);
       });
-      $("#helpBtn").addEventListener("click", () =>
-        $("#helpModal").classList.add("open"),
-      );
-      $("#helpClose").addEventListener("click", () =>
-        $("#helpModal").classList.remove("open"),
-      );
+      let helpReturnFocus = null;
+      function openHelp() {
+        helpReturnFocus = document.activeElement;
+        const m = $("#helpModal");
+        m.classList.add("open");
+        const close = $("#helpClose");
+        if (close) close.focus();
+      }
+      function closeHelp() {
+        $("#helpModal").classList.remove("open");
+        if (helpReturnFocus && helpReturnFocus.focus) helpReturnFocus.focus();
+        helpReturnFocus = null;
+      }
+      $("#helpBtn").addEventListener("click", openHelp);
+      $("#helpClose").addEventListener("click", closeHelp);
       $("#helpModal").addEventListener("click", (e) => {
-        if (e.target.id === "helpModal") e.target.classList.remove("open");
+        if (e.target.id === "helpModal") closeHelp();
+      });
+      // Trap Tab focus inside the open help dialog.
+      $("#helpModal").addEventListener("keydown", (e) => {
+        if (e.key !== "Tab") return;
+        const f = $$(
+          'button, [href], input, [tabindex]:not([tabindex="-1"])',
+          $("#helpModal"),
+        ).filter((el) => el.offsetParent !== null);
+        if (!f.length) return;
+        const first = f[0],
+          last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
       });
 
       /* ----------------------- Keyboard ----------------------- */
@@ -4386,7 +4709,8 @@
         if (k === "escape") {
           deselect();
           closeFlyout();
-          $("#helpModal").classList.remove("open");
+          $("#bgPanel").classList.remove("open");
+          if ($("#helpModal").classList.contains("open")) closeHelp();
           return;
         }
         const map = {
@@ -4409,11 +4733,57 @@
         rsz = setTimeout(sizeCanvas, 120);
       });
 
+      function setupAccessibility() {
+        // Icon-only controls collapse their text label on small screens, so the
+        // accessible name would fall back to a bare emoji. Mirror each control's
+        // title into an explicit aria-label and mark toggle state.
+        $$("#rail .tool").forEach((b) => {
+          if (!b.getAttribute("aria-label") && b.title)
+            b.setAttribute("aria-label", b.title);
+          b.setAttribute(
+            "aria-pressed",
+            b.classList.contains("active") ? "true" : "false",
+          );
+        });
+        $$(".topbar .tbtn").forEach((b) => {
+          if (!b.getAttribute("aria-label") && b.title)
+            b.setAttribute("aria-label", b.title);
+        });
+        const sp = $("#savePill");
+        if (sp) {
+          sp.setAttribute("role", "status");
+          sp.setAttribute("aria-live", "polite");
+        }
+        const board = $("#board");
+        if (board) board.setAttribute("aria-label", "Drawing area");
+        $("#rail").setAttribute("role", "toolbar");
+        // One-tap starter templates on the empty board.
+        const starters = {
+          grid: () => makeObject("coordgrid", { min: -5, max: 5 }),
+          numline: () => makeObject("numline", { min: -10, max: 10 }),
+          division: SPAWN_TOOLS.division,
+          fraction: SPAWN_TOOLS.fraction,
+        };
+        $$("#starterRow .starter").forEach((b) => {
+          b.addEventListener("click", () => {
+            const fn = starters[b.dataset.starter];
+            if (fn) fn();
+          });
+        });
+      }
       function init() {
         renderTabs();
         renderFormulas();
-        setDockToggle(true);
-        dock.classList.add("open");
+        setupAccessibility();
+        // Dock starts collapsed so the full left tool rail is reachable.
+        // On tall desktop screens, honor the student's last-remembered choice.
+        let dockOpen = false;
+        try {
+          const saved = localStorage.getItem("neft.mathWorkbench.dockOpen");
+          if (saved === "1" && window.innerHeight >= 760) dockOpen = true;
+        } catch (e) {}
+        dock.classList.toggle("open", dockOpen);
+        setDockToggle(dockOpen);
         const had = restore();
         sizeCanvas();
         if (!had) {
@@ -4431,7 +4801,7 @@
             location.hash === "#help" ||
             !localStorage.getItem("neft.mathWorkbench.seen")
           ) {
-            $("#helpModal").classList.add("open");
+            openHelp();
             localStorage.setItem("neft.mathWorkbench.seen", "1");
           }
         } catch (e) {}
