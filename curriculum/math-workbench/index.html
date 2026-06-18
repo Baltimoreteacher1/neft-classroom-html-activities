@@ -1031,6 +1031,181 @@
         display: block;
         overflow: visible;
       }
+      /* ---- Grade-6 data/ratio/integer tools ---- */
+      .pal-sub {
+        margin: 12px 0 5px;
+        font-size: 0.72rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+      }
+      .dnl-lab,
+      .rt-lab {
+        width: 78px;
+        font-family: inherit;
+        font-weight: 800;
+        font-size: 0.74rem;
+        color: var(--ink);
+        border: 1.5px solid var(--line);
+        border-radius: 7px;
+        padding: 3px 6px;
+      }
+      .dnl-lab:focus,
+      .rt-lab:focus,
+      .dnl-cell:focus,
+      .tape-cell:focus,
+      .rt-cell:focus,
+      .hist-lab:focus {
+        outline: none;
+        border-color: var(--teal);
+      }
+      .dnl-row {
+        display: flex;
+        gap: 0;
+      }
+      .dnl-cell {
+        font-family: inherit;
+        font-weight: 800;
+        font-size: 0.82rem;
+        text-align: center;
+        color: var(--ink);
+        border: none;
+        background: transparent;
+        padding: 2px 0;
+        min-width: 0;
+      }
+      .dnl-cell.top {
+        color: #205fa6;
+      }
+      .dnl-cell.bottom {
+        color: #2c7d6b;
+      }
+      /* integer chips */
+      .chip-btn {
+        border: 1.5px solid var(--line);
+        background: #fff;
+        border-radius: 8px;
+        padding: 4px 9px;
+        font-weight: 800;
+        font-size: 0.78rem;
+        color: var(--ink);
+      }
+      .chip-btn.pos {
+        border-color: #caa000;
+        background: #fef9c3;
+      }
+      .chip-btn.neg {
+        border-color: #dc2626;
+        background: #fee2e2;
+      }
+      .chip-sum {
+        font-weight: 900;
+        color: var(--ink);
+        margin-left: auto;
+      }
+      .chip-tray {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        min-height: 44px;
+        padding: 6px 4px;
+        max-width: 320px;
+      }
+      .chip {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        border: 2px solid;
+        font-size: 1.1rem;
+        font-weight: 900;
+        display: grid;
+        place-items: center;
+        line-height: 1;
+      }
+      .chip.pos {
+        background: #fde047;
+        border-color: #caa000;
+        color: #7a5b00;
+      }
+      .chip.neg {
+        background: #fca5a5;
+        border-color: #dc2626;
+        color: #9b1c1c;
+      }
+      /* ratio table */
+      .rttable {
+        border-collapse: collapse;
+      }
+      .rttable th {
+        padding: 2px;
+        background: rgba(32, 95, 166, 0.06);
+      }
+      .rttable td {
+        border: 1.5px solid var(--line);
+        padding: 0;
+      }
+      .rt-cell {
+        width: 52px;
+        height: 32px;
+        border: none;
+        text-align: center;
+        font-family: inherit;
+        font-weight: 800;
+        font-size: 0.84rem;
+        color: var(--ink);
+        background: transparent;
+      }
+      /* tape diagram */
+      .tape-strip {
+        display: flex;
+        gap: 0;
+      }
+      .tape-cell {
+        flex: 1;
+        min-width: 46px;
+        height: 40px;
+        border: 2px solid #205fa6;
+        border-left-width: 1px;
+        text-align: center;
+        font-family: inherit;
+        font-weight: 800;
+        font-size: 0.85rem;
+        color: var(--ink);
+        background: rgba(32, 95, 166, 0.08);
+      }
+      .tape-cell:first-child {
+        border-left-width: 2px;
+        border-radius: 7px 0 0 7px;
+      }
+      .tape-cell:last-child {
+        border-radius: 0 7px 7px 0;
+      }
+      /* histogram labels */
+      .hist-labels {
+        display: flex;
+        gap: 0;
+      }
+      .hist-lab {
+        border: none;
+        background: transparent;
+        text-align: center;
+        font-family: inherit;
+        font-weight: 700;
+        font-size: 0.68rem;
+        color: var(--muted);
+        padding: 1px 0;
+        min-width: 0;
+      }
+      .ineqobj select {
+        font-family: inherit;
+        font-weight: 800;
+        font-size: 0.74rem;
+        border: 1.5px solid var(--line);
+        border-radius: 7px;
+        padding: 3px 4px;
+        color: var(--ink);
+      }
       /* place-value chart */
       .pvchart {
         border-collapse: collapse;
@@ -1382,6 +1557,46 @@
       }
       .formula-card:hover .fc-add {
         opacity: 1;
+      }
+      /* On touch (no hover) keep the "tap to add" affordance visible. */
+      @media (hover: none) {
+        .formula-card .fc-add {
+          opacity: 0.75;
+        }
+      }
+      .formula-card.fc-vocab .fc-name {
+        color: var(--green-d);
+        text-transform: none;
+      }
+      /* Level 1/2 support switch (Math Talk + Vocabulary tabs) */
+      .level-switch {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin-bottom: 2px;
+      }
+      .level-switch .lv-lbl {
+        font-size: 0.74rem;
+        font-weight: 900;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+      }
+      .lv-btn {
+        border: 1.5px solid var(--line);
+        background: #fff;
+        border-radius: 999px;
+        padding: 5px 12px;
+        font-weight: 800;
+        font-size: 0.78rem;
+        color: var(--ink);
+      }
+      .lv-btn.on {
+        background: var(--teal);
+        border-color: var(--teal);
+        color: #fff;
       }
 
       /* ============================ Modal (help) ============================ */
@@ -2641,6 +2856,30 @@
         } else if (o.type === "fracbar") {
           inner.appendChild(buildFracBar(o));
           toolOpts = { resize: true };
+        } else if (o.type === "dblnumline") {
+          inner.appendChild(buildDblNumLine(o));
+          toolOpts = { resize: true, color: "#205fa6" };
+        } else if (o.type === "chips") {
+          inner.appendChild(buildChips(o));
+          toolOpts = { resize: true };
+        } else if (o.type === "dotplot") {
+          inner.appendChild(buildDotPlot(o));
+          toolOpts = { resize: true, color: "#205fa6" };
+        } else if (o.type === "boxplot") {
+          inner.appendChild(buildBoxPlot(o));
+          toolOpts = { resize: true, color: "#205fa6" };
+        } else if (o.type === "histogram") {
+          inner.appendChild(buildHistogram(o));
+          toolOpts = { resize: true, color: "#205fa6" };
+        } else if (o.type === "ratiotable") {
+          inner.appendChild(buildRatioTable(o));
+          toolOpts = { resize: true };
+        } else if (o.type === "tape") {
+          inner.appendChild(buildTape(o));
+          toolOpts = { resize: true };
+        } else if (o.type === "ineqline") {
+          inner.appendChild(buildIneqLine(o));
+          toolOpts = { resize: true, color: "#205fa6" };
         }
 
         el.appendChild(miniTools(o, toolOpts));
@@ -3329,6 +3568,925 @@
         return wrap;
       }
 
+      /* =====================================================================
+         Grade-6 data, ratio & integer tools (6.RP / 6.NS / 6.SP / 6.EE)
+         Each returns a DOM element; state lives on the object `o`.
+         ===================================================================== */
+      function wireToolInput(inp, commit) {
+        inp.addEventListener("pointerdown", (e) => e.stopPropagation());
+        inp.addEventListener("keydown", (e) => {
+          e.stopPropagation();
+          if (e.key === "Enter") {
+            commit();
+            inp.blur();
+          }
+        });
+        inp.addEventListener("change", commit);
+      }
+      function numInput(value, aria, w) {
+        const i = document.createElement("input");
+        i.type = "number";
+        i.value = value;
+        if (aria) i.setAttribute("aria-label", aria);
+        if (w) i.style.width = w + "px";
+        return i;
+      }
+
+      /* --- Double number line (6.RP.3) --- */
+      function buildDblNumLine(o) {
+        const STEP = 64,
+          PAD = 6;
+        if (typeof o.intervals !== "number") o.intervals = 4;
+        if (!Array.isArray(o.top)) o.top = [];
+        if (!Array.isArray(o.bottom)) o.bottom = [];
+        const wrap = document.createElement("div");
+        wrap.className = "toolobj dnlobj";
+        const head = document.createElement("div");
+        head.className = "tool-head";
+        const iIn = numInput(o.intervals, "Number of steps", 46);
+        const tLab = document.createElement("input");
+        tLab.className = "dnl-lab";
+        tLab.placeholder = "top label";
+        tLab.value = o.topLabel || "";
+        const bLab = document.createElement("input");
+        bLab.className = "dnl-lab";
+        bLab.placeholder = "bottom label";
+        bLab.value = o.bottomLabel || "";
+        const s1 = document.createElement("span");
+        s1.textContent = "steps";
+        head.append(iIn, s1, tLab, bLab);
+        const body = document.createElement("div");
+        function render() {
+          const n = o.intervals,
+            cols = n + 1;
+          const w = STEP * n + PAD * 2;
+          let svg =
+            '<svg viewBox="0 0 ' + w + ' 62" width="' + w + '" height="62">';
+          // two parallel lines
+          svg +=
+            '<line data-stroke x1="' +
+            PAD +
+            '" y1="16" x2="' +
+            (w - PAD) +
+            '" y2="16" stroke="#205fa6" stroke-width="2.5"/>';
+          svg +=
+            '<line data-stroke x1="' +
+            PAD +
+            '" y1="46" x2="' +
+            (w - PAD) +
+            '" y2="46" stroke="#2c7d6b" stroke-width="2.5"/>';
+          for (let i = 0; i < cols; i++) {
+            const x = PAD + i * STEP;
+            svg +=
+              '<line x1="' +
+              x +
+              '" y1="11" x2="' +
+              x +
+              '" y2="51" stroke="#90a4bd" stroke-width="1.4"/>';
+          }
+          svg += "</svg>";
+          const cell = (arr, idx, cls) => {
+            const c = document.createElement("input");
+            c.className = "dnl-cell " + cls;
+            c.value = arr[idx] || "";
+            c.setAttribute("aria-label", cls + " value " + (idx + 1));
+            wireToolInput(c, () => {
+              arr[idx] = c.value;
+              persist();
+            });
+            c.style.width = STEP - 8 + "px";
+            return c;
+          };
+          const topRow = document.createElement("div");
+          topRow.className = "dnl-row";
+          const botRow = document.createElement("div");
+          botRow.className = "dnl-row";
+          for (let i = 0; i < cols; i++) {
+            topRow.appendChild(cell(o.top, i, "top"));
+            botRow.appendChild(cell(o.bottom, i, "bottom"));
+          }
+          topRow.style.paddingLeft = botRow.style.paddingLeft = PAD - 4 + "px";
+          body.innerHTML = "";
+          const host = document.createElement("div");
+          host.innerHTML = svg;
+          body.append(topRow, host.firstChild, botRow);
+        }
+        function commit() {
+          o.intervals = Math.max(
+            1,
+            Math.min(10, Math.round(parseFloat(iIn.value) || 4)),
+          );
+          iIn.value = o.intervals;
+          render();
+          updateObjEl(o);
+          pushHistory();
+        }
+        wireToolInput(iIn, commit);
+        [tLab, bLab].forEach((l) => {
+          l.addEventListener("pointerdown", (e) => e.stopPropagation());
+          l.addEventListener("change", () => {
+            o.topLabel = tLab.value;
+            o.bottomLabel = bLab.value;
+            persist();
+          });
+        });
+        wrap.append(head, body);
+        render();
+        return wrap;
+      }
+
+      /* --- Integer two-color counters (6.NS.5–7) --- */
+      function buildChips(o) {
+        if (!Array.isArray(o.chips)) o.chips = [];
+        const wrap = document.createElement("div");
+        wrap.className = "toolobj chipsobj";
+        const head = document.createElement("div");
+        head.className = "tool-head";
+        const addP = document.createElement("button");
+        addP.className = "chip-btn pos";
+        addP.textContent = "+1";
+        const addN = document.createElement("button");
+        addN.className = "chip-btn neg";
+        addN.textContent = "−1";
+        const zero = document.createElement("button");
+        zero.className = "chip-btn";
+        zero.textContent = "Zero pair";
+        zero.title = "Add one +1 and one −1";
+        const clr = document.createElement("button");
+        clr.className = "chip-btn";
+        clr.textContent = "Clear";
+        const sum = document.createElement("span");
+        sum.className = "chip-sum";
+        head.append(addP, addN, zero, clr, sum);
+        const tray = document.createElement("div");
+        tray.className = "chip-tray";
+        function render() {
+          tray.innerHTML = "";
+          o.chips.forEach((v, i) => {
+            const c = document.createElement("button");
+            c.className = "chip " + (v > 0 ? "pos" : "neg");
+            c.textContent = v > 0 ? "+" : "−";
+            c.title = "Remove this counter";
+            c.addEventListener("pointerdown", (e) => e.stopPropagation());
+            c.addEventListener("click", (e) => {
+              e.stopPropagation();
+              o.chips.splice(i, 1);
+              render();
+              pushHistory();
+            });
+            tray.appendChild(c);
+          });
+          const total = o.chips.reduce((a, b) => a + b, 0);
+          sum.textContent = "Sum = " + (total > 0 ? "+" + total : total);
+          updateObjEl(o);
+        }
+        function add(v, push) {
+          o.chips.push(v);
+          render();
+          if (push) pushHistory();
+        }
+        addP.addEventListener("pointerdown", (e) => e.stopPropagation());
+        addN.addEventListener("pointerdown", (e) => e.stopPropagation());
+        zero.addEventListener("pointerdown", (e) => e.stopPropagation());
+        clr.addEventListener("pointerdown", (e) => e.stopPropagation());
+        addP.addEventListener("click", (e) => {
+          e.stopPropagation();
+          add(1, true);
+        });
+        addN.addEventListener("click", (e) => {
+          e.stopPropagation();
+          add(-1, true);
+        });
+        zero.addEventListener("click", (e) => {
+          e.stopPropagation();
+          o.chips.push(1, -1);
+          render();
+          pushHistory();
+        });
+        clr.addEventListener("click", (e) => {
+          e.stopPropagation();
+          o.chips = [];
+          render();
+          pushHistory();
+        });
+        wrap.append(head, tray);
+        render();
+        return wrap;
+      }
+
+      /* --- Dot plot (6.SP.4) --- */
+      function buildDotPlot(o) {
+        const U = 30,
+          PAD = 22,
+          DOT = 11,
+          BASE = 150;
+        if (typeof o.min !== "number") o.min = 0;
+        if (typeof o.max !== "number") o.max = 10;
+        if (!o.counts) o.counts = {};
+        const wrap = document.createElement("div");
+        wrap.className = "toolobj dotplotobj";
+        const head = document.createElement("div");
+        head.className = "tool-head";
+        const mn = numInput(o.min, "Smallest value", 46);
+        const mx = numInput(o.max, "Largest value", 46);
+        const s1 = document.createElement("span");
+        s1.textContent = "from";
+        const s2 = document.createElement("span");
+        s2.textContent = "to · tap above a number to add a dot";
+        head.append(s1, mn, mx, s2);
+        const host = document.createElement("div");
+        function render() {
+          const n = o.max - o.min;
+          const w = PAD * 2 + n * U;
+          let maxStack = 1;
+          for (const k in o.counts) maxStack = Math.max(maxStack, o.counts[k]);
+          const h = BASE;
+          const axisY = h - 24;
+          let g =
+            '<line data-stroke x1="' +
+            (PAD - 8) +
+            '" y1="' +
+            axisY +
+            '" x2="' +
+            (w - PAD + 8) +
+            '" y2="' +
+            axisY +
+            '" stroke="#14223a" stroke-width="2"/>';
+          for (let v = o.min; v <= o.max; v++) {
+            const x = PAD + (v - o.min) * U;
+            g +=
+              '<line x1="' +
+              x +
+              '" y1="' +
+              (axisY - 3) +
+              '" x2="' +
+              x +
+              '" y2="' +
+              (axisY + 3) +
+              '" stroke="#14223a" stroke-width="1.4"/>';
+            g +=
+              '<text x="' +
+              x +
+              '" y="' +
+              (axisY + 16) +
+              '" text-anchor="middle" font-size="11" font-weight="700" font-family="Nunito,sans-serif" fill="#33485f">' +
+              v +
+              "</text>";
+            const c = o.counts[v] || 0;
+            for (let s = 0; s < c; s++) {
+              const cy = axisY - 12 - s * (DOT + 3);
+              g +=
+                '<circle cx="' +
+                x +
+                '" cy="' +
+                cy +
+                '" r="' +
+                DOT / 2 +
+                '" fill="#205fa6"/>';
+            }
+            // invisible hit column to add a dot
+            g +=
+              '<rect class="dp-col" data-v="' +
+              v +
+              '" x="' +
+              (x - U / 2) +
+              '" y="0" width="' +
+              U +
+              '" height="' +
+              (axisY - 4) +
+              '" fill="transparent"/>';
+          }
+          host.innerHTML =
+            '<svg viewBox="0 0 ' +
+            w +
+            " " +
+            h +
+            '" width="' +
+            w +
+            '" height="' +
+            h +
+            '">' +
+            g +
+            "</svg>";
+          host.querySelectorAll(".dp-col").forEach((col) => {
+            col.style.cursor = "pointer";
+            col.addEventListener("pointerdown", (e) => e.stopPropagation());
+            col.addEventListener("click", (e) => {
+              e.stopPropagation();
+              const v = col.dataset.v;
+              o.counts[v] = (o.counts[v] || 0) + 1;
+              render();
+              updateObjEl(o);
+              pushHistory();
+            });
+            col.addEventListener("contextmenu", (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const v = col.dataset.v;
+              if (o.counts[v]) {
+                o.counts[v]--;
+                render();
+                updateObjEl(o);
+                pushHistory();
+              }
+            });
+          });
+        }
+        function commit() {
+          let a = Math.round(parseFloat(mn.value));
+          let b = Math.round(parseFloat(mx.value));
+          if (!isFinite(a)) a = 0;
+          if (!isFinite(b)) b = a + 10;
+          if (b <= a) b = a + 1;
+          if (b - a > 20) b = a + 20;
+          o.min = a;
+          o.max = b;
+          mn.value = a;
+          mx.value = b;
+          for (const k in o.counts) if (+k < a || +k > b) delete o.counts[k];
+          render();
+          updateObjEl(o);
+          pushHistory();
+        }
+        wireToolInput(mn, commit);
+        wireToolInput(mx, commit);
+        wrap.append(head, host);
+        render();
+        return wrap;
+      }
+
+      /* --- Box-and-whisker plot (6.SP.4) --- */
+      function buildBoxPlot(o) {
+        const d = { lo: 2, q1: 5, med: 8, q3: 12, hi: 16 };
+        ["lo", "q1", "med", "q3", "hi"].forEach((k) => {
+          if (typeof o[k] !== "number") o[k] = d[k];
+        });
+        const wrap = document.createElement("div");
+        wrap.className = "toolobj boxplotobj";
+        const head = document.createElement("div");
+        head.className = "tool-head";
+        const fields = [
+          ["lo", "Min"],
+          ["q1", "Q1"],
+          ["med", "Med"],
+          ["q3", "Q3"],
+          ["hi", "Max"],
+        ];
+        const inputs = {};
+        fields.forEach(([k, label]) => {
+          const s = document.createElement("span");
+          s.textContent = label;
+          const i = numInput(o[k], label, 44);
+          inputs[k] = i;
+          head.append(s, i);
+        });
+        const host = document.createElement("div");
+        function render() {
+          const W = 300,
+            PAD = 28,
+            axisY = 64,
+            boxT = 30,
+            boxB = 78;
+          const lo = o.lo,
+            hi = o.hi;
+          let span = hi - lo || 1;
+          const X = (v) => PAD + ((v - lo) / span) * (W - PAD * 2);
+          let g =
+            '<line data-stroke x1="' +
+            PAD +
+            '" y1="' +
+            (axisY + 38) +
+            '" x2="' +
+            (W - PAD) +
+            '" y2="' +
+            (axisY + 38) +
+            '" stroke="#14223a" stroke-width="1.5"/>';
+          [o.lo, o.q1, o.med, o.q3, o.hi].forEach((v) => {
+            const x = X(v);
+            g +=
+              '<line x1="' +
+              x +
+              '" y1="' +
+              (axisY + 35) +
+              '" x2="' +
+              x +
+              '" y2="' +
+              (axisY + 41) +
+              '" stroke="#14223a" stroke-width="1.4"/>';
+            g +=
+              '<text x="' +
+              x +
+              '" y="' +
+              (axisY + 56) +
+              '" text-anchor="middle" font-size="11" font-weight="700" font-family="Nunito,sans-serif" fill="#33485f">' +
+              v +
+              "</text>";
+          });
+          // whiskers
+          g +=
+            '<line x1="' +
+            X(o.lo) +
+            '" y1="' +
+            (boxT + boxB) / 2 +
+            '" x2="' +
+            X(o.q1) +
+            '" y2="' +
+            (boxT + boxB) / 2 +
+            '" stroke="#205fa6" stroke-width="2"/>';
+          g +=
+            '<line x1="' +
+            X(o.q3) +
+            '" y1="' +
+            (boxT + boxB) / 2 +
+            '" x2="' +
+            X(o.hi) +
+            '" y2="' +
+            (boxT + boxB) / 2 +
+            '" stroke="#205fa6" stroke-width="2"/>';
+          // caps
+          [o.lo, o.hi].forEach((v) => {
+            g +=
+              '<line x1="' +
+              X(v) +
+              '" y1="' +
+              boxT +
+              '" x2="' +
+              X(v) +
+              '" y2="' +
+              boxB +
+              '" stroke="#205fa6" stroke-width="2"/>';
+          });
+          // box
+          g +=
+            '<rect x="' +
+            X(o.q1) +
+            '" y="' +
+            boxT +
+            '" width="' +
+            (X(o.q3) - X(o.q1)) +
+            '" height="' +
+            (boxB - boxT) +
+            '" fill="rgba(32,95,166,.12)" stroke="#205fa6" stroke-width="2"/>';
+          // median
+          g +=
+            '<line x1="' +
+            X(o.med) +
+            '" y1="' +
+            boxT +
+            '" x2="' +
+            X(o.med) +
+            '" y2="' +
+            boxB +
+            '" stroke="#d97706" stroke-width="2.5"/>';
+          host.innerHTML =
+            '<svg viewBox="0 0 ' +
+            W +
+            ' 132" width="' +
+            W +
+            '" height="132">' +
+            g +
+            "</svg>";
+        }
+        function commit() {
+          ["lo", "q1", "med", "q3", "hi"].forEach((k) => {
+            const v = parseFloat(inputs[k].value);
+            if (isFinite(v)) o[k] = v;
+          });
+          // keep order non-decreasing
+          let prev = -Infinity;
+          ["lo", "q1", "med", "q3", "hi"].forEach((k) => {
+            if (o[k] < prev) o[k] = prev;
+            prev = o[k];
+            inputs[k].value = o[k];
+          });
+          render();
+          updateObjEl(o);
+          pushHistory();
+        }
+        Object.values(inputs).forEach((i) => wireToolInput(i, commit));
+        wrap.append(head, host);
+        render();
+        return wrap;
+      }
+
+      /* --- Histogram (6.SP.4) --- */
+      function buildHistogram(o) {
+        if (!Array.isArray(o.bins) || !o.bins.length)
+          o.bins = [
+            { label: "0–4", freq: 0 },
+            { label: "5–9", freq: 0 },
+            { label: "10–14", freq: 0 },
+            { label: "15–19", freq: 0 },
+          ];
+        const wrap = document.createElement("div");
+        wrap.className = "toolobj histobj";
+        const head = document.createElement("div");
+        head.className = "tool-head";
+        const cIn = numInput(o.bins.length, "Number of bars", 46);
+        const s1 = document.createElement("span");
+        s1.textContent = "bars · tap a bar to add 1";
+        head.append(cIn, s1);
+        const host = document.createElement("div");
+        const lblRow = document.createElement("div");
+        lblRow.className = "hist-labels";
+        function render() {
+          const U = 52,
+            PAD = 28,
+            H = 150,
+            base = H - 6;
+          const n = o.bins.length;
+          const w = PAD + n * U + 8;
+          let maxF = 1;
+          o.bins.forEach((b) => (maxF = Math.max(maxF, b.freq)));
+          const scale = (H - 30) / Math.max(maxF, 4);
+          let g =
+            '<line data-stroke x1="' +
+            (PAD - 4) +
+            '" y1="' +
+            base +
+            '" x2="' +
+            (w - 4) +
+            '" y2="' +
+            base +
+            '" stroke="#14223a" stroke-width="2"/>' +
+            '<line data-stroke x1="' +
+            (PAD - 4) +
+            '" y1="6" x2="' +
+            (PAD - 4) +
+            '" y2="' +
+            base +
+            '" stroke="#14223a" stroke-width="2"/>';
+          o.bins.forEach((b, i) => {
+            const bh = b.freq * scale;
+            const x = PAD + i * U;
+            g +=
+              '<rect class="hist-bar" data-i="' +
+              i +
+              '" x="' +
+              x +
+              '" y="' +
+              (base - bh) +
+              '" width="' +
+              (U - 4) +
+              '" height="' +
+              bh +
+              '" fill="rgba(32,95,166,.45)" stroke="#205fa6" stroke-width="1.5"/>';
+            if (b.freq)
+              g +=
+                '<text x="' +
+                (x + (U - 4) / 2) +
+                '" y="' +
+                (base - bh - 4) +
+                '" text-anchor="middle" font-size="11" font-weight="800" font-family="Nunito,sans-serif" fill="#205fa6">' +
+                b.freq +
+                "</text>";
+            // full-height hit area
+            g +=
+              '<rect class="hist-hit" data-i="' +
+              i +
+              '" x="' +
+              x +
+              '" y="6" width="' +
+              (U - 4) +
+              '" height="' +
+              (base - 6) +
+              '" fill="transparent"/>';
+          });
+          host.innerHTML =
+            '<svg viewBox="0 0 ' +
+            w +
+            " " +
+            H +
+            '" width="' +
+            w +
+            '" height="' +
+            H +
+            '">' +
+            g +
+            "</svg>";
+          host.querySelectorAll(".hist-hit").forEach((hit) => {
+            hit.style.cursor = "pointer";
+            hit.addEventListener("pointerdown", (e) => e.stopPropagation());
+            hit.addEventListener("click", (e) => {
+              e.stopPropagation();
+              o.bins[+hit.dataset.i].freq++;
+              render();
+              pushHistory();
+            });
+            hit.addEventListener("contextmenu", (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const b = o.bins[+hit.dataset.i];
+              if (b.freq) {
+                b.freq--;
+                render();
+                pushHistory();
+              }
+            });
+          });
+          // editable bin labels
+          lblRow.innerHTML = "";
+          lblRow.style.paddingLeft = PAD - 4 + "px";
+          o.bins.forEach((b, i) => {
+            const inp = document.createElement("input");
+            inp.className = "hist-lab";
+            inp.value = b.label;
+            inp.style.width = U - 6 + "px";
+            inp.setAttribute("aria-label", "Bar " + (i + 1) + " label");
+            wireToolInput(inp, () => {
+              b.label = inp.value;
+              persist();
+            });
+            lblRow.appendChild(inp);
+          });
+        }
+        function commit() {
+          let n = Math.max(
+            2,
+            Math.min(8, Math.round(parseFloat(cIn.value) || 4)),
+          );
+          cIn.value = n;
+          while (o.bins.length < n) o.bins.push({ label: "", freq: 0 });
+          o.bins.length = n;
+          render();
+          updateObjEl(o);
+          pushHistory();
+        }
+        wireToolInput(cIn, commit);
+        wrap.append(head, host, lblRow);
+        render();
+        return wrap;
+      }
+
+      /* --- Ratio table (6.RP.3a) --- */
+      function buildRatioTable(o) {
+        if (typeof o.cols !== "number") o.cols = 4;
+        if (!Array.isArray(o.top)) o.top = [];
+        if (!Array.isArray(o.bottom)) o.bottom = [];
+        const wrap = document.createElement("div");
+        wrap.className = "toolobj rttableobj";
+        const head = document.createElement("div");
+        head.className = "tool-head";
+        const cIn = numInput(o.cols, "Number of columns", 46);
+        const s1 = document.createElement("span");
+        s1.textContent = "columns";
+        head.append(cIn, s1);
+        const host = document.createElement("div");
+        function render() {
+          const table = document.createElement("table");
+          table.className = "rttable";
+          const labels = [
+            { arr: o.top, key: "topLabel", ph: "label" },
+            { arr: o.bottom, key: "botLabel", ph: "label" },
+          ];
+          labels.forEach((row) => {
+            const tr = document.createElement("tr");
+            const th = document.createElement("th");
+            const lab = document.createElement("input");
+            lab.className = "rt-lab";
+            lab.placeholder = row.ph;
+            lab.value = o[row.key] || "";
+            lab.addEventListener("pointerdown", (e) => e.stopPropagation());
+            lab.addEventListener("change", () => {
+              o[row.key] = lab.value;
+              persist();
+            });
+            th.appendChild(lab);
+            tr.appendChild(th);
+            for (let i = 0; i < o.cols; i++) {
+              const td = document.createElement("td");
+              const cell = document.createElement("input");
+              cell.className = "rt-cell";
+              cell.value = row.arr[i] || "";
+              cell.setAttribute("aria-label", "cell");
+              wireToolInput(cell, () => {
+                row.arr[i] = cell.value;
+                persist();
+              });
+              td.appendChild(cell);
+              tr.appendChild(td);
+            }
+            table.appendChild(tr);
+          });
+          host.innerHTML = "";
+          host.appendChild(table);
+        }
+        function commit() {
+          o.cols = Math.max(
+            1,
+            Math.min(10, Math.round(parseFloat(cIn.value) || 4)),
+          );
+          cIn.value = o.cols;
+          render();
+          updateObjEl(o);
+          pushHistory();
+        }
+        wireToolInput(cIn, commit);
+        wrap.append(head, host);
+        render();
+        return wrap;
+      }
+
+      /* --- Tape / strip diagram (6.RP, 6.EE) --- */
+      function buildTape(o) {
+        if (typeof o.parts !== "number") o.parts = 4;
+        if (!Array.isArray(o.labels)) o.labels = [];
+        const wrap = document.createElement("div");
+        wrap.className = "toolobj tapeobj";
+        const head = document.createElement("div");
+        head.className = "tool-head";
+        const pIn = numInput(o.parts, "Number of parts", 46);
+        const s1 = document.createElement("span");
+        s1.textContent = "equal parts";
+        const tot = document.createElement("input");
+        tot.className = "dnl-lab";
+        tot.placeholder = "total (whole)";
+        tot.value = o.total || "";
+        head.append(pIn, s1, tot);
+        const strip = document.createElement("div");
+        strip.className = "tape-strip";
+        function render() {
+          strip.innerHTML = "";
+          for (let i = 0; i < o.parts; i++) {
+            const cell = document.createElement("input");
+            cell.className = "tape-cell";
+            cell.value = o.labels[i] || "";
+            cell.setAttribute("aria-label", "Part " + (i + 1));
+            wireToolInput(cell, () => {
+              o.labels[i] = cell.value;
+              persist();
+            });
+            strip.appendChild(cell);
+          }
+        }
+        function commit() {
+          o.parts = Math.max(
+            1,
+            Math.min(12, Math.round(parseFloat(pIn.value) || 4)),
+          );
+          pIn.value = o.parts;
+          render();
+          updateObjEl(o);
+          pushHistory();
+        }
+        wireToolInput(pIn, commit);
+        tot.addEventListener("pointerdown", (e) => e.stopPropagation());
+        tot.addEventListener("change", () => {
+          o.total = tot.value;
+          persist();
+        });
+        wrap.append(head, strip);
+        render();
+        return wrap;
+      }
+
+      /* --- Inequality number line (6.EE.8) --- */
+      function buildIneqLine(o) {
+        if (typeof o.min !== "number") o.min = -5;
+        if (typeof o.max !== "number") o.max = 5;
+        if (typeof o.point !== "number") o.point = 2;
+        if (typeof o.closed !== "boolean") o.closed = false;
+        if (!o.dir) o.dir = "gt"; // gt, ge, lt, le
+        const wrap = document.createElement("div");
+        wrap.className = "toolobj ineqobj";
+        const head = document.createElement("div");
+        head.className = "tool-head";
+        const pIn = numInput(o.point, "Boundary value", 46);
+        const dirSel = document.createElement("select");
+        ["gt:> greater", "ge:≥ at least", "lt:< less", "le:≤ at most"].forEach(
+          (s) => {
+            const [v, t] = s.split(":");
+            const op = document.createElement("option");
+            op.value = v;
+            op.textContent = t;
+            if (v === o.dir) op.selected = true;
+            dirSel.appendChild(op);
+          },
+        );
+        const dot = document.createElement("button");
+        dot.className = "chip-btn";
+        function dotLabel() {
+          dot.textContent = o.closed ? "● closed" : "○ open";
+        }
+        dotLabel();
+        const s1 = document.createElement("span");
+        s1.textContent = "x is";
+        head.append(s1, dirSel, pIn, dot);
+        const host = document.createElement("div");
+        function render() {
+          const U = 30,
+            PAD = 22,
+            axisY = 30;
+          const n = o.max - o.min;
+          const w = PAD * 2 + n * U;
+          const X = (v) => PAD + (v - o.min) * U;
+          let g =
+            '<line data-stroke x1="' +
+            (PAD - 8) +
+            '" y1="' +
+            axisY +
+            '" x2="' +
+            (w - PAD + 8) +
+            '" y2="' +
+            axisY +
+            '" stroke="#14223a" stroke-width="2"/>';
+          for (let v = o.min; v <= o.max; v++) {
+            const x = X(v);
+            g +=
+              '<line x1="' +
+              x +
+              '" y1="' +
+              (axisY - 4) +
+              '" x2="' +
+              x +
+              '" y2="' +
+              (axisY + 4) +
+              '" stroke="#14223a" stroke-width="1.3"/>';
+            g +=
+              '<text x="' +
+              x +
+              '" y="' +
+              (axisY + 18) +
+              '" text-anchor="middle" font-size="10.5" font-weight="700" font-family="Nunito,sans-serif" fill="#33485f">' +
+              v +
+              "</text>";
+          }
+          const px = X(o.point);
+          const right = o.dir === "gt" || o.dir === "ge";
+          const endX = right ? w - PAD + 8 : PAD - 8;
+          g +=
+            '<line x1="' +
+            px +
+            '" y1="' +
+            axisY +
+            '" x2="' +
+            endX +
+            '" y2="' +
+            axisY +
+            '" stroke="#205fa6" stroke-width="4"/>';
+          g +=
+            '<polygon points="' +
+            endX +
+            "," +
+            axisY +
+            " " +
+            (endX + (right ? -9 : 9)) +
+            "," +
+            (axisY - 6) +
+            " " +
+            (endX + (right ? -9 : 9)) +
+            "," +
+            (axisY + 6) +
+            '" fill="#205fa6"/>';
+          g +=
+            '<circle cx="' +
+            px +
+            '" cy="' +
+            axisY +
+            '" r="6.5" fill="' +
+            (o.closed ? "#205fa6" : "#fff") +
+            '" stroke="#205fa6" stroke-width="2.5"/>';
+          host.innerHTML =
+            '<svg viewBox="0 0 ' +
+            w +
+            ' 52" width="' +
+            w +
+            '" height="52">' +
+            g +
+            "</svg>";
+        }
+        function commit() {
+          let p = Math.round(parseFloat(pIn.value));
+          if (!isFinite(p)) p = 0;
+          p = Math.max(o.min, Math.min(o.max, p));
+          o.point = p;
+          pIn.value = p;
+          render();
+          updateObjEl(o);
+          pushHistory();
+        }
+        wireToolInput(pIn, commit);
+        dirSel.addEventListener("pointerdown", (e) => e.stopPropagation());
+        dirSel.addEventListener("change", () => {
+          o.dir = dirSel.value;
+          o.closed = o.dir === "ge" || o.dir === "le";
+          dotLabel();
+          render();
+          pushHistory();
+        });
+        dot.addEventListener("pointerdown", (e) => e.stopPropagation());
+        dot.addEventListener("click", (e) => {
+          e.stopPropagation();
+          o.closed = !o.closed;
+          dotLabel();
+          render();
+          pushHistory();
+        });
+        wrap.append(head, host);
+        render();
+        return wrap;
+      }
+
       /* ----------------------- Editable helpers ----------------------- */
       function bindEditable(node, onChange) {
         node.addEventListener("pointerdown", (e) => {
@@ -3722,7 +4880,10 @@
         } else if (kind === "tools") {
           flyout.innerHTML =
             '<h3>Math tools</h3><p class="hint">Tap to drop a tool on the board. Each one drags, resizes, and many can be typed into.</p>' +
-            '<div class="pal-grid n3" id="toolGrid"></div>';
+            '<p class="pal-sub">Number &amp; geometry</p>' +
+            '<div class="pal-grid n3" id="toolGrid"></div>' +
+            '<p class="pal-sub">Data, ratios &amp; integers</p>' +
+            '<div class="pal-grid n3" id="toolGrid2"></div>';
           const grid = $("#toolGrid");
           const TOOLS = [
             {
@@ -3788,10 +4949,120 @@
             b.addEventListener("click", t.go);
             grid.appendChild(b);
           });
+          const grid2 = $("#toolGrid2");
+          const TOOLS2 = [
+            {
+              name: "Double number line",
+              svg: ICON_DBLNL,
+              go: () => makeObject("dblnumline", { intervals: 4 }),
+            },
+            {
+              name: "Ratio table",
+              svg: ICON_RATIO,
+              go: () => makeObject("ratiotable", { cols: 4 }),
+            },
+            {
+              name: "Tape diagram",
+              svg: ICON_TAPE,
+              go: () => makeObject("tape", { parts: 4 }),
+            },
+            {
+              name: "Integer chips",
+              svg: ICON_CHIPS,
+              go: () => makeObject("chips", { chips: [] }),
+            },
+            {
+              name: "Inequality line",
+              svg: ICON_INEQ,
+              go: () =>
+                makeObject("ineqline", {
+                  min: -5,
+                  max: 5,
+                  point: 2,
+                  dir: "gt",
+                }),
+            },
+            {
+              name: "Dot plot",
+              svg: ICON_DOT,
+              go: () => makeObject("dotplot", { min: 0, max: 10, counts: {} }),
+            },
+            {
+              name: "Box plot",
+              svg: ICON_BOX,
+              go: () => makeObject("boxplot", {}),
+            },
+            {
+              name: "Histogram",
+              svg: ICON_HIST,
+              go: () => makeObject("histogram", {}),
+            },
+          ];
+          TOOLS2.forEach((t) => {
+            const b = document.createElement("button");
+            b.className = "pal-item tall";
+            b.innerHTML = t.svg + "<small>" + t.name + "</small>";
+            b.addEventListener("click", t.go);
+            grid2.appendChild(b);
+          });
         }
       }
       const ANGLE_ICON =
         '<svg viewBox="0 0 90 70" width="84" height="64"><path d="M14 56 A40 40 0 0 1 40 24" fill="none" stroke="#d97706" stroke-width="2.5"/><line x1="14" y1="56" x2="82" y2="56" stroke="#205fa6" stroke-width="3"/><line x1="14" y1="56" x2="74" y2="22" stroke="#205fa6" stroke-width="3"/><circle cx="14" cy="56" r="3" fill="#14223a"/></svg>';
+      const ICON_DBLNL =
+        '<svg viewBox="0 0 90 56" width="84" height="52"><g stroke-width="2.5" fill="none"><line x1="8" y1="20" x2="82" y2="20" stroke="#205fa6"/><line x1="8" y1="40" x2="82" y2="40" stroke="#2c7d6b"/></g><g stroke="#90a4bd" stroke-width="1.4">' +
+        [8, 30, 52, 74]
+          .map((x) => '<line x1="' + x + '" y1="15" x2="' + x + '" y2="45"/>')
+          .join("") +
+        "</g></svg>";
+      const ICON_RATIO =
+        '<svg viewBox="0 0 90 56" width="84" height="52"><g fill="none" stroke="#205fa6" stroke-width="2"><rect x="8" y="12" width="74" height="32"/><line x1="8" y1="28" x2="82" y2="28"/><line x1="33" y1="12" x2="33" y2="44"/><line x1="57" y1="12" x2="57" y2="44"/></g></svg>';
+      const ICON_TAPE =
+        '<svg viewBox="0 0 90 44" width="84" height="42"><g fill="rgba(32,95,166,.12)" stroke="#205fa6" stroke-width="2">' +
+        [8, 27, 46, 65]
+          .map((x) => '<rect x="' + x + '" y="14" width="19" height="20"/>')
+          .join("") +
+        "</g></svg>";
+      const ICON_CHIPS =
+        '<svg viewBox="0 0 90 50" width="84" height="48"><circle cx="22" cy="25" r="13" fill="#fde047" stroke="#caa000" stroke-width="2"/><text x="22" y="30" text-anchor="middle" font-size="15" font-weight="900" fill="#7a5b00">+</text><circle cx="58" cy="25" r="13" fill="#fca5a5" stroke="#dc2626" stroke-width="2"/><text x="58" y="31" text-anchor="middle" font-size="17" font-weight="900" fill="#9b1c1c">−</text></svg>';
+      const ICON_INEQ =
+        '<svg viewBox="0 0 90 40" width="84" height="38"><line x1="8" y1="22" x2="82" y2="22" stroke="#14223a" stroke-width="2"/><line x1="40" y1="22" x2="80" y2="22" stroke="#205fa6" stroke-width="4"/><polygon points="82,22 73,17 73,27" fill="#205fa6"/><circle cx="40" cy="22" r="6" fill="#fff" stroke="#205fa6" stroke-width="2.5"/></svg>';
+      const ICON_DOT =
+        '<svg viewBox="0 0 90 56" width="84" height="52"><line x1="8" y1="44" x2="82" y2="44" stroke="#14223a" stroke-width="2"/><g fill="#205fa6">' +
+        [
+          [22, [38, 30, 22]],
+          [42, [38, 30]],
+          [62, [38, 30, 22, 14]],
+        ]
+          .map(([x, ys]) =>
+            ys
+              .map((y) => '<circle cx="' + x + '" cy="' + y + '" r="4.5"/>')
+              .join(""),
+          )
+          .join("") +
+        "</g></svg>";
+      const ICON_BOX =
+        '<svg viewBox="0 0 90 44" width="84" height="42"><line x1="10" y1="22" x2="78" y2="22" stroke="#205fa6" stroke-width="2"/><line x1="10" y1="14" x2="10" y2="30" stroke="#205fa6" stroke-width="2"/><line x1="78" y1="14" x2="78" y2="30" stroke="#205fa6" stroke-width="2"/><rect x="30" y="11" width="32" height="22" fill="rgba(32,95,166,.12)" stroke="#205fa6" stroke-width="2"/><line x1="46" y1="11" x2="46" y2="33" stroke="#d97706" stroke-width="2.5"/></svg>';
+      const ICON_HIST =
+        '<svg viewBox="0 0 90 50" width="84" height="48"><g fill="rgba(32,95,166,.45)" stroke="#205fa6" stroke-width="1.5">' +
+        [
+          [14, 18],
+          [33, 28],
+          [52, 22],
+          [71, 12],
+        ]
+          .map(
+            ([x, h]) =>
+              '<rect x="' +
+              x +
+              '" y="' +
+              (42 - h) +
+              '" width="15" height="' +
+              h +
+              '"/>',
+          )
+          .join("") +
+        '</g><line x1="10" y1="42" x2="82" y2="42" stroke="#14223a" stroke-width="2"/></svg>';
       const PV_ICON =
         '<svg viewBox="0 0 90 60" width="84" height="56"><g fill="none" stroke="#205fa6" stroke-width="2.5"><rect x="8" y="14" width="22" height="30"/><rect x="32" y="14" width="22" height="30"/><rect x="60" y="14" width="22" height="30"/></g><circle cx="57" cy="42" r="2.5" fill="#14223a"/></svg>';
       const ARRAY_ICON =
@@ -4536,6 +5807,140 @@
             },
           ],
         },
+        {
+          id: "talk",
+          em: "💬",
+          name: "Math Talk",
+          kind: "stem",
+          // Level-aware sentence stems; the active set is chosen at render time.
+          levels: {
+            1: [
+              { name: "Explain", eq: "I know ___ because ___." },
+              { name: "Strategy", eq: "First I ___, then I ___." },
+              { name: "Answer", eq: "My answer is ___. It means ___." },
+              { name: "Picture", eq: "My model shows ___." },
+              { name: "Unit rate", eq: "The rate is ___ for every 1 ___." },
+              {
+                name: "Agree / disagree",
+                eq: "I agree because ___. / I think differently because ___.",
+              },
+            ],
+            2: [
+              { name: "Justify", eq: "My reasoning is ___, which proves ___." },
+              {
+                name: "Compare",
+                eq: "___ and ___ are alike because ___, but different because ___.",
+              },
+              { name: "Generalize", eq: "This always works because ___." },
+              {
+                name: "Predict",
+                eq: "If ___ changes, then ___ will ___ because ___.",
+              },
+              {
+                name: "Critique",
+                eq: "This strategy works when ___, but breaks down when ___.",
+              },
+              { name: "Connect", eq: "This connects to ___ because both ___." },
+            ],
+          },
+        },
+        {
+          id: "vocab",
+          em: "📖",
+          name: "Vocabulary",
+          kind: "vocab",
+          levels: {
+            1: [
+              {
+                name: "ratio",
+                eq: "🍎🍎 : 🍊",
+                note: "A comparison of two amounts. 2 apples to 1 orange = 2 : 1.",
+              },
+              {
+                name: "rate",
+                eq: "60 mi / 1 hr",
+                note: "A ratio that compares two different units, like miles per hour.",
+              },
+              {
+                name: "unit rate",
+                eq: "$3 per 1 lb",
+                note: "How much for just ONE. The price or amount for 1 unit.",
+              },
+              {
+                name: "factor",
+                eq: "3 × 4",
+                note: "Numbers you multiply together. 3 and 4 are factors of 12.",
+              },
+              {
+                name: "quotient",
+                eq: "12 ÷ 4 = 3",
+                note: "The answer to a division problem.",
+              },
+              {
+                name: "absolute value",
+                eq: "|−5| = 5",
+                note: "How far a number is from 0. Always positive.",
+              },
+              {
+                name: "area",
+                eq: "▭ = l × w",
+                note: "The space inside a flat shape. Measured in square units.",
+              },
+              {
+                name: "perimeter",
+                eq: "▭ → all sides",
+                note: "The distance all the way around a shape.",
+              },
+              {
+                name: "mean",
+                eq: "average",
+                note: "Add all the numbers, then share equally (divide by how many).",
+              },
+            ],
+            2: [
+              {
+                name: "coefficient",
+                eq: "3x",
+                note: "The number multiplied by a variable. In 3x, the coefficient is 3.",
+              },
+              {
+                name: "reciprocal",
+                eq: "¾ → 4⁄3",
+                note: "Flip the fraction. A number times its reciprocal = 1.",
+              },
+              {
+                name: "distributive property",
+                eq: "a(b+c)=ab+ac",
+                note: "Multiply the outside number by each inside number.",
+              },
+              {
+                name: "equivalent",
+                eq: "½ = 2⁄4",
+                note: "Different forms with the same value.",
+              },
+              {
+                name: "median",
+                eq: "middle value",
+                note: "The middle number when data is ordered from least to greatest.",
+              },
+              {
+                name: "interquartile range",
+                eq: "Q3 − Q1",
+                note: "The spread of the middle half of the data (IQR).",
+              },
+              {
+                name: "mean absolute deviation",
+                eq: "MAD",
+                note: "The average distance each value is from the mean.",
+              },
+              {
+                name: "inequality",
+                eq: "x ≥ 3",
+                note: "A comparison using <, >, ≤, or ≥ instead of equals.",
+              },
+            ],
+          },
+        },
       ];
 
       // Build topic tabs + formula panel
@@ -4543,6 +5948,11 @@
       const dockTabs = $("#dockTabs");
       const formulaList = $("#formulaList");
       let activeTopic = TOPICS[7].id; // open on 2-D Geometry by default
+      let currentLevel = "1";
+      try {
+        const lv = localStorage.getItem("neft.mathWorkbench.level");
+        if (lv === "1" || lv === "2") currentLevel = lv;
+      } catch (e) {}
 
       function renderTabs() {
         dockTabs.innerHTML = "";
@@ -4563,9 +5973,38 @@
       function renderFormulas() {
         const t = TOPICS.find((x) => x.id === activeTopic);
         formulaList.innerHTML = "";
-        t.items.forEach((it) => {
+        // Level-aware support topics (Math Talk, Vocabulary) carry a 1/2 switch.
+        const leveled = t.levels && (t.kind === "stem" || t.kind === "vocab");
+        if (leveled) {
+          const sw = document.createElement("div");
+          sw.className = "level-switch";
+          sw.innerHTML =
+            '<span class="lv-lbl">Support level</span>' +
+            '<button class="lv-btn" data-lv="1">Level 1 · more support</button>' +
+            '<button class="lv-btn" data-lv="2">Level 2 · stretch</button>';
+          sw.querySelectorAll(".lv-btn").forEach((b) => {
+            b.classList.toggle("on", b.dataset.lv === currentLevel);
+            b.addEventListener("click", () => {
+              currentLevel = b.dataset.lv;
+              try {
+                localStorage.setItem("neft.mathWorkbench.level", currentLevel);
+              } catch (e) {}
+              document.body.dataset.level = currentLevel;
+              renderFormulas();
+            });
+          });
+          formulaList.appendChild(sw);
+        }
+        const items = leveled ? t.levels[currentLevel] : t.items;
+        items.forEach((it) => {
           const c = document.createElement("button");
-          c.className = "formula-card";
+          c.className = "formula-card" + (t.kind ? " fc-" + t.kind : "");
+          const addLbl =
+            t.kind === "stem"
+              ? "＋ tap to add a sentence to write in"
+              : t.kind === "vocab"
+                ? "＋ tap to add this word card"
+                : "＋ tap to add to board";
           c.innerHTML =
             '<span class="fc-name">' +
             it.name +
@@ -4573,11 +6012,29 @@
             it.eq +
             "</span>" +
             (it.note ? '<span class="fc-note">' + it.note + "</span>" : "") +
-            '<span class="fc-add">＋ tap to add to board</span>';
+            '<span class="fc-add">' +
+            addLbl +
+            "</span>";
           c.addEventListener("click", () => {
-            makeObject("formula", {
-              html: "<b>" + it.name + ":</b>&nbsp; " + it.eq,
-            });
+            if (t.kind === "stem") {
+              // Drop an editable sentence so students type into the blanks.
+              makeObject("text", { text: it.eq });
+            } else if (t.kind === "vocab") {
+              makeObject("formula", {
+                html:
+                  "<b>" +
+                  it.name +
+                  "</b> &nbsp;<span style='color:#205fa6'>" +
+                  it.eq +
+                  "</span><br><span style='font-size:.82em;color:#5b6b82'>" +
+                  (it.note || "") +
+                  "</span>",
+              });
+            } else {
+              makeObject("formula", {
+                html: "<b>" + it.name + ":</b>&nbsp; " + it.eq,
+              });
+            }
           });
           formulaList.appendChild(c);
         });
@@ -4772,6 +6229,7 @@
         });
       }
       function init() {
+        document.body.dataset.level = currentLevel;
         renderTabs();
         renderFormulas();
         setupAccessibility();
