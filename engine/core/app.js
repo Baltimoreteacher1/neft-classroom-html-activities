@@ -969,15 +969,13 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
   app.start();
 
   // Deep-link from curriculum hub: /lessons/3-1/?extra=activity
+  // Otherwise the lesson opens on the Launch phase (phase 1). Get Ready is an
+  // optional warm-up reachable from the "📚 Get Ready" tab — students are no
+  // longer auto-routed into it, so they land in the lesson itself by default.
   var pendingExtra = new URLSearchParams(window.location.search).get("extra");
   if (pendingExtra) {
     setTimeout(function () {
       app.openExtra(pendingExtra);
-    }, 0);
-  } else if (config.readiness) {
-    // Land students on Get Ready first (the warm-up) when there's no deep-link.
-    setTimeout(function () {
-      app.openExtra("readiness");
     }, 0);
   }
 

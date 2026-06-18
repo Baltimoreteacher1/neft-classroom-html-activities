@@ -58,14 +58,14 @@ function renderVocab(vocab) {
       <div class="tabpanel" id="panel-vocab" role="tabpanel" aria-labelledby="tab-vocab">
         <div class="sec">
           <div class="sec-head"><div class="badge b-vocab">A</div><div><div class="kicker">Words First · Know these before you start</div><h2>Vocabulary</h2></div></div>
-          <p>Read each word, its meaning, and the example. These are the words you'll use in the lesson — learn them first, then practice.</p>
+          <p>Read each word, its meaning, and the example. These are the words you'll hear in the lesson — preview them now so they feel familiar.</p>
           <div class="vgrid">${cards}
           </div>
         </div>
       </div>`;
 }
 
-function renderDiagnostic(data) {
+function renderDiagnostic(data, lessonId) {
   const qs = (data.diagnostic || [])
     .map((d, i) => {
       const key = "d" + (i + 1);
@@ -84,120 +84,28 @@ function renderDiagnostic(data) {
   return `
       <div class="tabpanel" id="panel-check" role="tabpanel" aria-labelledby="tab-check">
         <div class="sec">
-          <div class="sec-head"><div class="badge b-check">?</div><div><div class="kicker">Quick Check · 1 minute</div><h2>Where should you start?</h2></div></div>
-          <p>Answer these ${(data.diagnostic || []).length}, then press <strong>Show my path</strong>. No grade — this just points you to the right level.</p>
+          <div class="sec-head"><div class="badge b-check">?</div><div><div class="kicker">Quick Check · 1 minute</div><h2>Are the basics warm?</h2></div></div>
+          <p>These check the <strong>skills you'll need</strong> for this lesson — not the new lesson itself. Answer all ${(data.diagnostic || []).length}, then press <strong>Show my path</strong>. No grade — it just suggests where to start.</p>
           ${qs}
           <button class="btn" onclick="scorePath()">Show my path →</button>
-          <div class="result r-l0" id="res-l0">🧱 <strong>Start at Level 0.</strong> We'll build this from the ground up with small steps. That's totally fine — take your time on the Practice tab.</div>
-          <div class="result r-l1" id="res-l1">🛠️ <strong>Start at Level 1.</strong> You've got the idea — a little guided practice and you'll be ready.</div>
-          <div class="result r-l2" id="res-l2">🚀 <strong>Start at Level 2.</strong> Your basics are strong! Do the quick warm-up on the Practice tab and head into the lesson.</div>
+          <div class="result r-l0" id="res-l0">🧱 <strong>Start at Level 0.</strong> A few basics need warming up — that's totally fine. When you open the lesson, choose <strong>Level 0 · Most support</strong>.</div>
+          <div class="result r-l1" id="res-l1">🛠️ <strong>Start at Level 1.</strong> You've got the idea. Open the lesson at <strong>Level 1 · Support</strong>.</div>
+          <div class="result r-l2" id="res-l2">🚀 <strong>Start at Level 2.</strong> Your basics are strong — jump straight in at <strong>Level 2 · Stretch</strong>.</div>
           <div class="result r-l1" id="res-warn">⚠️ Answer all the questions first, then press <strong>Show my path</strong>.</div>
-          <button class="btn" style="background:var(--teal);margin-top:14px;" onclick="showTab('learn')">Next: Learn It →</button>
         </div>
-      </div>`;
-}
-
-function renderLearn(data) {
-  const L = data.learn || {};
-  const examples = (L.examples || [])
-    .map((e) => `<div class="example">${e}</div>`)
-    .join("\n        ");
-  return `
-      <div class="tabpanel" id="panel-learn" role="tabpanel" aria-labelledby="tab-learn">
-        <div class="sec">
-          <div class="sec-head"><div class="badge b-learn">1</div><div><div class="kicker">Learn It</div><h2>${L.heading || "Learn It"}</h2></div></div>
-          ${L.intro || ""}
-          ${examples}
-          <button class="btn" style="background:var(--teal);margin-top:16px;" onclick="showTab('practice')">Next: Practice →</button>
-        </div>
-      </div>`;
-}
-
-function renderItem(item, id) {
-  if (item.type === "mc") {
-    const opts = item.opts
-      .map((o) => `<button class="opt" data-v="${o.v}">${o.t}</button>`)
-      .join("\n            ");
-    return `
-          <div class="q">
-            <p class="prompt">${item.q}</p>
-            <div class="opts" data-mc="${id}" data-ans="${item.ans}">
-            ${opts}
-            </div>
-            <button class="btn" onclick="checkMC('${id}')">Check</button>
-            <div class="fb" id="fb-${id}"></div>
-            ${item.hint ? `<details><summary>Hint</summary><p>${item.hint}</p></details>` : ""}
-          </div>`;
-  }
-  // numeric
-  return `
-          <div class="q">
-            <p class="prompt">${item.q}</p>
-            <input type="number" id="${id}" placeholder="?" />
-            <button class="btn" onclick="checkNum('${id}', ${item.ans})">Check</button>
-            <div class="fb" id="fb-${id}"></div>
-            ${item.hint ? `<details><summary>Hint</summary><p>${item.hint}</p></details>` : ""}
-          </div>`;
-}
-
-function renderPractice(data, lessonId) {
-  const tiers = data.tiers || [];
-  const chip = { 0: "lc-0", 1: "lc-1", 2: "lc-2" };
-  const tracks = tiers
-    .map((t) => {
-      const items = (t.items || []).map((it, i) => renderItem(it, "t" + t.level + i)).join("");
-      return `
-        <div class="track" id="track-${t.level}">
-          <p><span class="level-chip ${chip[t.level]}">Level ${t.level}</span> ${t.intro || ""}</p>
-          ${items}
-        </div>`;
-    })
-    .join("");
-
-  const exit = (data.exit || []).map((it, i) => renderItem(it, "x" + (i + 1))).join("");
-
-  const maxTrack = Math.max(1, ...tiers.map((t) => (t.items || []).length));
-  const totalItems = maxTrack + (data.exit || []).length;
-
-  return `
-      <div class="tabpanel" id="panel-practice" role="tabpanel" aria-labelledby="tab-practice">
-        <div class="progress-wrap">
-          <div class="progress-label">Practice progress: <span id="pct">0</span>%</div>
-          <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
-        </div>
-
-        <section class="sec">
-          <div class="sec-head"><div class="badge b-try">2</div><div><div class="kicker">Practice · Your Level</div><h2>Worksheet — Try It</h2></div></div>
-          <p class="pill-note">Your Skills Check picks one for you, but you can switch any time:</p>
-          <div class="pills" id="pills">
-            <button class="pill" data-lvl="0" onclick="setTrack(0)">🧱 Level 0 · Most support</button>
-            <button class="pill" data-lvl="1" onclick="setTrack(1)">🛠️ Level 1 · Support</button>
-            <button class="pill" data-lvl="2" onclick="setTrack(2)">🚀 Level 2 · Stretch</button>
-          </div>
-          ${tracks}
-        </section>
-
-        <section class="sec">
-          <div class="sec-head"><div class="badge b-exit">★</div><div><div class="kicker">Exit Ticket</div><h2>Show You're Ready</h2></div></div>
-          ${exit}
-        </section>
 
         <div class="handoff">
-          <h2>🎉 You're warmed up!</h2>
-          <p>You've practiced exactly what Lesson ${lessonId} uses. Time to dive in.</p>
+          <h2>🎉 You're ready!</h2>
+          <p>Vocabulary previewed and basics checked. Time to start the lesson.</p>
           <a class="go" href="/lessons/${lessonId}/">Start Lesson ${lessonId} →</a>
-        </div>
-
-        <div style="text-align:center;">
-          <button class="btn" style="background:var(--navy);padding:12px 24px;" onclick="window.print()">🖨️ Print worksheet (all levels)</button>
-        </div>
-
-        <div class="nav-links">
-          <a href="/lessons/${lessonId}/">← Lesson ${lessonId}</a>
-          <a href="/lessons/${lessonId}/readiness/practice.docx" download>📄 Practice packet (Word) →</a>
         </div>
       </div>`;
 }
+
+// NOTE: "Learn It" and "Practice" panels were intentionally removed — Get Ready
+// is prep only (vocab preview + prerequisite skills check). Teaching and
+// practicing the new content belongs in the lesson itself, not the warm-up.
+
 
 /* ---------- page shell ---------- */
 
@@ -207,11 +115,13 @@ function renderPage(data) {
   const hasVocab = vocab.length > 0;
   const unit = id.split("-")[0];
 
+  // Get Ready is prep ONLY — a vocabulary preview and a prerequisite skills
+  // check. It deliberately does NOT teach or practice the new lesson content
+  // (that is the lesson's job); the old "Learn It" and "Practice" tabs were
+  // removed so this stays a short warm-up, not a second lesson.
   const tabs = [
     hasVocab ? { key: "vocab", label: "📖 Vocabulary" } : null,
     { key: "check", label: "🎯 Skills Check" },
-    { key: "learn", label: "💡 Learn It" },
-    { key: "practice", label: "✏️ Practice" },
   ].filter(Boolean);
 
   const firstTab = tabs[0].key;
@@ -228,7 +138,7 @@ function renderPage(data) {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Get Ready · Lesson ${id}: ${data.title} — Neft Teacher</title>
-    <meta name="description" content="Readiness pre-lesson for ${data.title} (${data.standard}): vocabulary, a quick check that routes you to the right level, then targeted practice so you walk into the lesson ready." />
+    <meta name="description" content="Readiness warm-up for ${data.title} (${data.standard}): a quick vocabulary preview and a prerequisite skills check that points you to the right starting level before you open the lesson." />
     <style>
       :root {
         --navy: #0f2b3c; --blue: #1a6fb5; --blue-light: #e8f2fc;
@@ -364,17 +274,13 @@ function renderPage(data) {
       </div>
 
       ${renderVocab(vocab)}
-      ${renderDiagnostic(data)}
-      ${renderLearn(data)}
-      ${renderPractice(data, id)}
+      ${renderDiagnostic(data, id)}
 
       <p class="footer">Neft Teacher · Readiness Pre-Lesson · Lesson ${id} · <span id="yr"></span></p>
     </div>
 
     <script>
       document.getElementById("yr").textContent = new Date().getFullYear();
-      var done = {};
-      var TOTAL_ITEMS = ${Math.max(1, Math.max(1, ...(data.tiers || []).map((t) => (t.items || []).length)) + (data.exit || []).length)};
 
       function showTab(key) {
         document.querySelectorAll(".tabpanel").forEach(function (p) {
@@ -397,36 +303,6 @@ function renderPage(data) {
         });
       });
 
-      function checkMC(key) {
-        var group = document.querySelector('[data-mc="' + key + '"]');
-        var fb = document.getElementById("fb-" + key);
-        if (!group.dataset.sel) { fb.textContent = "Pick an answer first."; fb.className = "fb no"; return; }
-        var correct = group.dataset.sel === group.dataset.ans;
-        group.querySelectorAll(".opt").forEach(function (b) {
-          b.classList.remove("sel"); b.classList.remove("right"); b.classList.remove("wrong");
-          if (b.dataset.v === group.dataset.ans) b.classList.add("right");
-          else if (b.dataset.v === group.dataset.sel) b.classList.add("wrong");
-        });
-        if (correct) { fb.textContent = "✅ Correct!"; fb.className = "fb ok"; group.dataset.locked = "1"; mark(key); }
-        else { fb.textContent = "❌ Not quite — check the hint and try the idea again."; fb.className = "fb no"; }
-      }
-
-      function checkNum(id, ans) {
-        var v = parseFloat(document.getElementById(id).value);
-        var fb = document.getElementById("fb-" + id);
-        if (isNaN(v)) { fb.textContent = "Type a number first."; fb.className = "fb no"; return; }
-        if (Math.abs(v - ans) < 1e-9) { fb.textContent = "✅ Correct!"; fb.className = "fb ok"; mark(id); }
-        else { fb.textContent = "❌ Not yet — try again or open the hint."; fb.className = "fb no"; }
-      }
-
-      function mark(key) {
-        if (done[key]) return;
-        done[key] = true;
-        var pct = Math.min(100, Math.round((Object.keys(done).length / TOTAL_ITEMS) * 100));
-        var pf = document.getElementById("pfill"); if (pf) pf.style.width = pct + "%";
-        var pc = document.getElementById("pct"); if (pc) pc.textContent = pct;
-      }
-
       function scorePath() {
         var groups = document.querySelectorAll('#panel-check .opts');
         var answered = 0, score = 0, total = groups.length;
@@ -440,21 +316,9 @@ function renderPage(data) {
         var ratio = score / total;
         var lvl = ratio >= 0.99 ? 2 : ratio >= 0.6 ? 1 : 0;
         document.getElementById("res-l" + lvl).classList.add("show");
-        setTrack(lvl);
-      }
-
-      function setTrack(lvl) {
-        for (var i = 0; i < 3; i++) {
-          var el = document.getElementById("track-" + i);
-          if (el) el.classList.toggle("active", i === lvl);
-        }
-        document.querySelectorAll("#pills .pill").forEach(function (p) {
-          p.classList.toggle("active", Number(p.dataset.lvl) === lvl);
-        });
       }
 
       showTab("${firstTab}");
-      setTrack(1);
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
