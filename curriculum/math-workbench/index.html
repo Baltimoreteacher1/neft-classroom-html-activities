@@ -288,6 +288,39 @@
         text-align: center;
         margin: 2px 0 0;
       }
+      /* Quick operation insert row at the top of the rail */
+      .op-quick {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 4px;
+        margin-bottom: 3px;
+      }
+      .opq {
+        aspect-ratio: 1 / 1;
+        max-height: 28px;
+        border: 1.5px solid var(--line);
+        background: #fff;
+        border-radius: 9px;
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: var(--teal);
+        box-shadow: var(--shadow-sm);
+        display: grid;
+        place-items: center;
+        line-height: 1;
+        transition:
+          transform 0.08s,
+          border-color 0.15s,
+          background 0.15s;
+      }
+      .opq:hover {
+        border-color: var(--teal);
+        background: var(--teal-light);
+        transform: translateY(-1px);
+      }
+      .opq:active {
+        transform: translateY(0);
+      }
 
       /* Flyout palette panel */
       .flyout {
@@ -1505,6 +1538,71 @@
         grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
         gap: 9px;
       }
+      /* Accordion: category cards that drop down to reveal formulas */
+      .formula-list.accordion {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        padding: 6px 16px 16px;
+      }
+      .cat-card {
+        border: 1.5px solid var(--line);
+        border-radius: 12px;
+        background: #fff;
+        overflow: hidden;
+      }
+      .cat-card.open {
+        border-color: var(--teal);
+        box-shadow: var(--shadow-sm);
+      }
+      .cat-head {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 13px;
+        background: #fff;
+        border: none;
+        font-weight: 800;
+        font-size: 0.92rem;
+        color: var(--ink);
+        text-align: left;
+      }
+      .cat-card.open .cat-head {
+        background: rgba(32, 95, 166, 0.06);
+      }
+      .cat-head .cat-em {
+        font-size: 1.15rem;
+        line-height: 1;
+      }
+      .cat-head .cat-name {
+        flex: 1;
+      }
+      .cat-head .cat-count {
+        font-size: 0.72rem;
+        font-weight: 800;
+        color: var(--muted);
+        background: var(--line-2);
+        border-radius: 999px;
+        padding: 2px 9px;
+      }
+      .cat-head .cat-chev {
+        color: var(--muted);
+        transition: transform 0.18s;
+        font-size: 0.9rem;
+      }
+      .cat-card.open .cat-head .cat-chev {
+        transform: rotate(180deg);
+        color: var(--teal);
+      }
+      .cat-body {
+        padding: 4px 11px 12px;
+      }
+      .cat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr));
+        gap: 8px;
+      }
       .formula-card {
         text-align: left;
         border: 1.5px solid var(--line);
@@ -1847,6 +1945,20 @@
       <div class="stage">
         <!-- Tool rail -->
         <nav class="rail" id="rail" aria-label="Tools">
+          <div class="op-quick" role="group" aria-label="Insert an operation">
+            <button class="opq" data-op="+" title="Insert a plus sign">
+              ＋
+            </button>
+            <button class="opq" data-op="−" title="Insert a minus sign">
+              −
+            </button>
+            <button class="opq" data-op="×" title="Insert a times sign">
+              ×
+            </button>
+            <button class="opq" data-op="÷" title="Insert a divide sign">
+              ÷
+            </button>
+          </div>
           <button
             class="tool active"
             data-tool="move"
@@ -1866,15 +1978,17 @@
             class="tool"
             data-tool="highlighter"
             data-flyout="pen"
-            title="Highlighter"
+            title="Highlighter (H)"
           >
             <span class="glyph">🖍️</span><span class="lbl">Mark</span>
           </button>
           <button class="tool" data-tool="eraser" title="Eraser (E)">
             <span class="glyph">🧽</span><span class="lbl">Erase</span>
           </button>
+          <button class="tool" data-tool="text" title="Type text (T)">
+            <span class="glyph">T</span><span class="lbl">Text</span>
+          </button>
           <div class="rail-sep"></div>
-          <span class="rail-cap">Build</span>
           <button
             class="tool has-flyout"
             data-tool="number"
@@ -1887,15 +2001,10 @@
             class="tool has-flyout"
             data-tool="operation"
             data-flyout="operation"
-            title="Operation symbols"
+            title="Symbols: + − × ÷ = &lt; &gt; ( )"
           >
             <span class="glyph">＋</span><span class="lbl">Symbols</span>
           </button>
-          <button class="tool" data-tool="text" title="Type text (T)">
-            <span class="glyph">T</span><span class="lbl">Text</span>
-          </button>
-          <div class="rail-sep"></div>
-          <span class="rail-cap">Set Up</span>
           <button
             class="tool has-flyout"
             data-tool="setup"
@@ -1904,31 +2013,19 @@
           >
             <span class="glyph">½</span><span class="lbl">Set Up</span>
           </button>
-          <div class="rail-sep"></div>
-          <span class="rail-cap">Shapes</span>
           <button
             class="tool has-flyout"
-            data-tool="shape2d"
-            data-flyout="shape2d"
-            title="2-D shapes"
+            data-tool="shapes"
+            data-flyout="shapes"
+            title="2-D shapes &amp; 3-D figures"
           >
-            <span class="glyph">⬡</span><span class="lbl">2-D</span>
+            <span class="glyph">⬡</span><span class="lbl">Shapes</span>
           </button>
-          <button
-            class="tool has-flyout"
-            data-tool="shape3d"
-            data-flyout="shape3d"
-            title="3-D figures"
-          >
-            <span class="glyph">🧊</span><span class="lbl">3-D</span>
-          </button>
-          <div class="rail-sep"></div>
-          <span class="rail-cap">Math Tools</span>
           <button
             class="tool has-flyout"
             data-tool="tools"
             data-flyout="tools"
-            title="Coordinate plane, number line, protractor, angle, ruler, charts &amp; more"
+            title="Coordinate plane, number line, protractor, charts, data &amp; more"
           >
             <span class="glyph">📐</span><span class="lbl">Tools</span>
           </button>
@@ -2008,7 +2105,7 @@
             ><span class="ic">📚</span> Formula &amp; Reference Bank</span
           >
           <span class="sub"
-            >PreK&nbsp;–&nbsp;Grade&nbsp;6 · tap a topic, then tap a formula to
+            >PreK&nbsp;–&nbsp;Grade&nbsp;6 · open a category, then tap a card to
             drop it on the board</span
           >
           <button class="dock-toggle" id="dockToggle">
@@ -4526,8 +4623,13 @@
           )
             return;
           selectObject(o.id);
-          el.setPointerCapture(e.pointerId);
+          // Set the drag origin BEFORE capturing the pointer: setPointerCapture
+          // can throw on some browsers/devices, and if it aborted the handler
+          // first the object would never move. Capture is best-effort.
           start = { mx: e.clientX, my: e.clientY, ox: o.x, oy: o.y };
+          try {
+            el.setPointerCapture(e.pointerId);
+          } catch (err) {}
           e.preventDefault();
         });
         el.addEventListener("pointermove", (e) => {
@@ -4680,11 +4782,19 @@
         // flyout
         const fb = btn && btn.dataset.flyout;
         if (fb) openFlyout(fb, t);
-        else if (!["number", "operation", "shape2d", "shape3d"].includes(t))
+        else if (
+          !["number", "operation", "setup", "shapes", "tools"].includes(t)
+        )
           closeFlyout();
       }
 
       $("#rail").addEventListener("click", (e) => {
+        // Quick operation insert (+ − × ÷) at the top of the rail.
+        const op = e.target.closest(".opq");
+        if (op) {
+          makeObject("tile", { value: op.dataset.op, kind: "op" });
+          return;
+        }
         const btn = e.target.closest(".tool");
         if (!btn) return;
         setTool(btn.dataset.tool, btn);
@@ -4849,11 +4959,14 @@
             b.addEventListener("click", s.go);
             grid.appendChild(b);
           });
-        } else if (kind === "shape2d") {
+        } else if (kind === "shapes") {
           flyout.innerHTML =
-            '<h3>2-D shapes</h3><p class="hint">Tap a shape to drop it. Then label it and write the measurements.</p>' +
-            '<div class="pal-grid n3" id="s2Grid"></div>';
-          const grid = $("#s2Grid");
+            '<h3>Shapes &amp; figures</h3><p class="hint">Tap a shape to drop it. Then label it and write the measurements.</p>' +
+            '<p class="pal-sub">2-D shapes</p>' +
+            '<div class="pal-grid n3" id="s2Grid"></div>' +
+            '<p class="pal-sub">3-D figures</p>' +
+            '<div class="pal-grid n3" id="s3Grid"></div>';
+          const grid2 = $("#s2Grid");
           SHAPES_2D.forEach((s) => {
             const b = document.createElement("button");
             b.className = "pal-item tall";
@@ -4861,13 +4974,9 @@
             b.addEventListener("click", () =>
               makeObject("shape2d", { shape: s.id, label: s.name }),
             );
-            grid.appendChild(b);
+            grid2.appendChild(b);
           });
-        } else if (kind === "shape3d") {
-          flyout.innerHTML =
-            '<h3>3-D figures</h3><p class="hint">Tap a figure to drop it. Then label it and write the measurements.</p>' +
-            '<div class="pal-grid n3" id="s3Grid"></div>';
-          const grid = $("#s3Grid");
+          const grid3 = $("#s3Grid");
           SHAPES_3D.forEach((s) => {
             const b = document.createElement("button");
             b.className = "pal-item tall";
@@ -4875,7 +4984,7 @@
             b.addEventListener("click", () =>
               makeObject("shape3d", { shape: s.id, label: s.name }),
             );
-            grid.appendChild(b);
+            grid3.appendChild(b);
           });
         } else if (kind === "tools") {
           flyout.innerHTML =
@@ -5954,89 +6063,117 @@
         if (lv === "1" || lv === "2") currentLevel = lv;
       } catch (e) {}
 
+      // The reference bank is an accordion: each category is a card that drops
+      // down to reveal its formulas. renderTabs is kept as a no-op hook so the
+      // existing call sites still work.
       function renderTabs() {
-        dockTabs.innerHTML = "";
-        TOPICS.forEach((t) => {
-          const b = document.createElement("button");
-          b.className = "topic-tab" + (t.id === activeTopic ? " active" : "");
-          b.innerHTML = '<span class="em">' + t.em + "</span> " + t.name;
-          b.addEventListener("click", () => {
-            activeTopic = t.id;
-            dock.classList.add("open");
-            setDockToggle(true);
-            renderTabs();
-            renderFormulas();
-          });
-          dockTabs.appendChild(b);
+        dockTabs.style.display = "none";
+      }
+      function buildFormulaCard(t, it) {
+        const c = document.createElement("button");
+        c.className = "formula-card" + (t.kind ? " fc-" + t.kind : "");
+        const addLbl =
+          t.kind === "stem"
+            ? "＋ add a sentence to write in"
+            : t.kind === "vocab"
+              ? "＋ add this word card"
+              : "＋ add to board";
+        c.innerHTML =
+          '<span class="fc-name">' +
+          it.name +
+          '</span><span class="fc-eq">' +
+          it.eq +
+          "</span>" +
+          (it.note ? '<span class="fc-note">' + it.note + "</span>" : "") +
+          '<span class="fc-add">' +
+          addLbl +
+          "</span>";
+        c.addEventListener("click", () => {
+          if (t.kind === "stem") {
+            makeObject("text", { text: it.eq });
+          } else if (t.kind === "vocab") {
+            makeObject("formula", {
+              html:
+                "<b>" +
+                it.name +
+                "</b> &nbsp;<span style='color:#205fa6'>" +
+                it.eq +
+                "</span><br><span style='font-size:.82em;color:#5b6b82'>" +
+                (it.note || "") +
+                "</span>",
+            });
+          } else {
+            makeObject("formula", {
+              html: "<b>" + it.name + ":</b>&nbsp; " + it.eq,
+            });
+          }
         });
+        return c;
       }
       function renderFormulas() {
-        const t = TOPICS.find((x) => x.id === activeTopic);
         formulaList.innerHTML = "";
-        // Level-aware support topics (Math Talk, Vocabulary) carry a 1/2 switch.
-        const leveled = t.levels && (t.kind === "stem" || t.kind === "vocab");
-        if (leveled) {
-          const sw = document.createElement("div");
-          sw.className = "level-switch";
-          sw.innerHTML =
-            '<span class="lv-lbl">Support level</span>' +
-            '<button class="lv-btn" data-lv="1">Level 1 · more support</button>' +
-            '<button class="lv-btn" data-lv="2">Level 2 · stretch</button>';
-          sw.querySelectorAll(".lv-btn").forEach((b) => {
-            b.classList.toggle("on", b.dataset.lv === currentLevel);
-            b.addEventListener("click", () => {
-              currentLevel = b.dataset.lv;
-              try {
-                localStorage.setItem("neft.mathWorkbench.level", currentLevel);
-              } catch (e) {}
-              document.body.dataset.level = currentLevel;
-              renderFormulas();
-            });
+        formulaList.classList.add("accordion");
+        TOPICS.forEach((t) => {
+          const card = document.createElement("div");
+          card.className = "cat-card" + (t.id === activeTopic ? " open" : "");
+          const head = document.createElement("button");
+          head.className = "cat-head";
+          head.setAttribute(
+            "aria-expanded",
+            t.id === activeTopic ? "true" : "false",
+          );
+          const count = t.levels
+            ? t.levels[currentLevel].length
+            : t.items.length;
+          head.innerHTML =
+            '<span class="cat-em">' +
+            t.em +
+            '</span><span class="cat-name">' +
+            t.name +
+            '</span><span class="cat-count">' +
+            count +
+            '</span><span class="cat-chev">▾</span>';
+          head.addEventListener("click", () => {
+            activeTopic = activeTopic === t.id ? null : t.id;
+            renderFormulas();
           });
-          formulaList.appendChild(sw);
-        }
-        const items = leveled ? t.levels[currentLevel] : t.items;
-        items.forEach((it) => {
-          const c = document.createElement("button");
-          c.className = "formula-card" + (t.kind ? " fc-" + t.kind : "");
-          const addLbl =
-            t.kind === "stem"
-              ? "＋ tap to add a sentence to write in"
-              : t.kind === "vocab"
-                ? "＋ tap to add this word card"
-                : "＋ tap to add to board";
-          c.innerHTML =
-            '<span class="fc-name">' +
-            it.name +
-            '</span><span class="fc-eq">' +
-            it.eq +
-            "</span>" +
-            (it.note ? '<span class="fc-note">' + it.note + "</span>" : "") +
-            '<span class="fc-add">' +
-            addLbl +
-            "</span>";
-          c.addEventListener("click", () => {
-            if (t.kind === "stem") {
-              // Drop an editable sentence so students type into the blanks.
-              makeObject("text", { text: it.eq });
-            } else if (t.kind === "vocab") {
-              makeObject("formula", {
-                html:
-                  "<b>" +
-                  it.name +
-                  "</b> &nbsp;<span style='color:#205fa6'>" +
-                  it.eq +
-                  "</span><br><span style='font-size:.82em;color:#5b6b82'>" +
-                  (it.note || "") +
-                  "</span>",
+          card.appendChild(head);
+          if (t.id === activeTopic) {
+            const body = document.createElement("div");
+            body.className = "cat-body";
+            const leveled =
+              t.levels && (t.kind === "stem" || t.kind === "vocab");
+            if (leveled) {
+              const sw = document.createElement("div");
+              sw.className = "level-switch";
+              sw.innerHTML =
+                '<span class="lv-lbl">Support level</span>' +
+                '<button class="lv-btn" data-lv="1">Level 1 · more support</button>' +
+                '<button class="lv-btn" data-lv="2">Level 2 · stretch</button>';
+              sw.querySelectorAll(".lv-btn").forEach((b) => {
+                b.classList.toggle("on", b.dataset.lv === currentLevel);
+                b.addEventListener("click", () => {
+                  currentLevel = b.dataset.lv;
+                  try {
+                    localStorage.setItem(
+                      "neft.mathWorkbench.level",
+                      currentLevel,
+                    );
+                  } catch (e) {}
+                  document.body.dataset.level = currentLevel;
+                  renderFormulas();
+                });
               });
-            } else {
-              makeObject("formula", {
-                html: "<b>" + it.name + ":</b>&nbsp; " + it.eq,
-              });
+              body.appendChild(sw);
             }
-          });
-          formulaList.appendChild(c);
+            const grid = document.createElement("div");
+            grid.className = "cat-grid";
+            const items = leveled ? t.levels[currentLevel] : t.items;
+            items.forEach((it) => grid.appendChild(buildFormulaCard(t, it)));
+            body.appendChild(grid);
+            card.appendChild(body);
+          }
+          formulaList.appendChild(card);
         });
       }
       function setDockToggle(open) {

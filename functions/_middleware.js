@@ -1,83 +1,53 @@
-// functions/_middleware.js — shared class-password gate for Cloudflare Pages.
+// functions/_middleware.js — teacher-only password gate for Cloudflare Pages.
 //
-// Protects every page behind one shared password using HTTP Basic Auth.
+// Policy (changed 2026-06-18): the site is STUDENT-FACING and open by default.
+// Students reach every activity, lesson, game, and tool WITHOUT a password.
+// Only teacher-facing surfaces (teacher notes, dashboards, answer keys, admin)
+// stay behind the shared class password via HTTP Basic Auth.
+//
 // The password is NOT stored in this (public) repo — it is read from the
-// Cloudflare environment variable SITE_PASSWORD. If that variable is not
-// set, the site stays fully open, so deploying this file changes nothing
-// until you switch it on in the Cloudflare dashboard.
+// Cloudflare environment variable SITE_PASSWORD. If that variable is not set,
+// the whole site is open (including teacher pages), so deploying this file
+// changes nothing until SITE_PASSWORD is configured in the dashboard.
 //
-// Turn the password ON:
 //   Cloudflare dashboard -> Workers & Pages -> your Pages project
-//   -> Settings -> Variables and Secrets -> add a variable for Production:
-//      Name = SITE_PASSWORD   Value = <the class password you choose>
-//   then redeploy (Deployments -> Retry deployment, or push a commit).
+//   -> Settings -> Variables and Secrets -> add for Production:
+//      Name = SITE_PASSWORD   Value = <the class/teacher password>
 //
-// Turn it OFF again: delete the SITE_PASSWORD variable and redeploy.
-//
-// Students sign in with ANY username (their name is fine) plus the shared
-// password. This is a casual gate to keep the public out, not strong
-// security — anyone who has the password can get in.
+// Teachers sign in with ANY username plus the shared password. This is a casual
+// gate to keep students/public out of teacher material, not strong security.
 
 export async function onRequest(context) {
   const { request, env, next } = context;
   const password = env.SITE_PASSWORD;
 
-  // No password configured -> leave the site open (no behavior change).
+  // No password configured -> leave the site fully open (no behavior change).
   if (!password) return next();
 
-  // Never gate the API endpoints or lesson config JSON files — they have their own auth
-  // or are fetched by external automation (like Google Apps Script slide generator).
   const url = new URL(request.url);
-  if (url.pathname.startsWith("/api/") || url.pathname.endsWith("/config.json")) return next();
+  const p = url.pathname.toLowerCase();
 
-  // Public, student-facing pages that must work WITHOUT the class password so
-  // they can be posted directly to students. Keep this list exact — the teacher
-  // setup page (.../teacher/) is intentionally NOT here and stays gated.
-  const PUBLIC_PATHS = new Set([
-    "/curriculum/student-digital-mailbox",
-    "/curriculum/student-digital-mailbox/",
-    "/curriculum/student-digital-mailbox/index.html",
-    "/curriculum/student-digital-mailbox/mailbox.css",
-    "/curriculum/student-digital-mailbox/mailbox-links.js",
-    "/curriculum/ai-hub",
-    "/curriculum/ai-hub/",
-    "/curriculum/ai-hub/index.html",
-    "/personal/operation-quest",
-    "/personal/operation-quest/",
-    "/personal/operation-quest/index.html",
-    "/personal/ai-study-guide",
-    "/personal/ai-study-guide/",
-    "/personal/ai-study-guide/index.html",
-    "/personal/first-grade",
-    "/personal/first-grade/",
-    "/personal/first-grade/index.html",
-    "/personal/first-grade-math",
-    "/personal/first-grade-math/",
-    "/personal/first-grade-math/index.html",
-    "/personal/first-grade-reading",
-    "/personal/first-grade-reading/",
-    "/personal/first-grade-reading/index.html",
-    "/personal/first-grade-writing",
-    "/personal/first-grade-writing/",
-    "/personal/first-grade-writing/index.html",
-    "/personal/first-grade-hebrew",
-    "/personal/first-grade-hebrew/",
-    "/personal/first-grade-hebrew/index.html",
-  ]);
-  // Aviad's summer hub (all subjects: English, Math, Science, Hebrew, Civics,
-  // Panther + shared assets) is student-facing and opens without the class
-  // password. The whole /personal/aviad/ subtree is public.
-  if (
-    PUBLIC_PATHS.has(url.pathname) ||
-    url.pathname.startsWith("/personal/CW") ||
-    url.pathname === "/personal/aviad" ||
-    url.pathname.startsWith("/personal/aviad/")
-  )
-    return next();
+  // APIs and lesson config JSON have their own auth / are fetched by external
+  // automation (e.g. the Apps Script slide generator). Never gate them here.
+  if (p.startsWith("/api/") || p.endsWith("/config.json")) return next();
 
+  // Teacher-only surfaces that STAY behind the password. These substrings cover
+  // every teacher directory in the repo:
+  //   .../teacher-notes, .../teacher, access-teacher, teacher-tools/*,
+  //   teacher-data-dashboard, dashboard, */dashboard (class/curriculum/games),
+  //   math/unit-N/projects/answer-key, and any /admin surface.
+  const isTeacherSurface =
+    p.includes("teacher") ||
+    p.includes("dashboard") ||
+    p.includes("answer-key") ||
+    p.startsWith("/admin");
+
+  // Everything else is student-facing -> open, no password.
+  if (!isTeacherSurface) return next();
+
+  // Teacher surface -> require the shared password.
   const header = request.headers.get("Authorization") || "";
   const [scheme, encoded] = header.split(" ");
-
   if (scheme === "Basic" && encoded) {
     const decoded = atob(encoded);
     const supplied = decoded.slice(decoded.indexOf(":") + 1);
