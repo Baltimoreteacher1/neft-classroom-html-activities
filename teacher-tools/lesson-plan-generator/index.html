@@ -31,10 +31,92 @@
         <section class="card" id="inputCard">
           <h2 class="card-title">1 · Give the generator your source</h2>
           <p class="muted">
-            The lesson plan is built <strong>only</strong> from what you provide
-            — your notes, slides, PDF, or doc are the source of truth. Nothing
-            is invented; only genuinely missing required details are marked
-            <span class="inferred-chip">[INFERRED — VERIFY]</span>.
+            Fill in the lesson details below and/or give the generator a source
+            (typed notes, slides, PDF, or doc). It builds a complete,
+            Ready-style Grade 6 lesson — Do Now, mini-lesson, guided +
+            independent practice, TWR writing, ESOL/SPED supports, exit ticket,
+            answer keys, and a printable student version — then exports a
+            polished Word document.
+          </p>
+
+          <div class="fields-grid" id="fieldsGrid">
+            <label class="field"
+              ><span class="field-label">Date</span>
+              <input type="date" id="fDate" />
+            </label>
+            <label class="field"
+              ><span class="field-label">Grade</span>
+              <input type="text" id="fGrade" value="6" />
+            </label>
+            <label class="field"
+              ><span class="field-label">Course</span>
+              <input type="text" id="fCourse" value="Mathematics" />
+            </label>
+            <label class="field"
+              ><span class="field-label">Unit / Topic</span>
+              <input type="text" id="fUnit" placeholder="e.g. Ratios & Rates" />
+            </label>
+            <label class="field big-2"
+              ><span class="field-label">Lesson Focus (what to teach)</span>
+              <input
+                type="text"
+                id="fFocus"
+                placeholder="e.g. Find unit rate from a ratio"
+              />
+            </label>
+            <label class="field"
+              ><span class="field-label">Standard(s)</span>
+              <input
+                type="text"
+                id="fStandards"
+                placeholder="e.g. 6.RP.A.2 — unit rate"
+              />
+            </label>
+            <label class="field"
+              ><span class="field-label">Lesson Length</span>
+              <input type="text" id="fLength" value="45–60 minutes" />
+            </label>
+            <label class="field"
+              ><span class="field-label">Student Skill Level</span>
+              <select id="fSkill">
+                <option value="">Mixed / typical</option>
+                <option>Below grade level</option>
+                <option>On grade level</option>
+                <option>Above grade level</option>
+              </select>
+            </label>
+            <label class="field"
+              ><span class="field-label">ESOL / WIDA Support Level</span>
+              <select id="fWida">
+                <option value="">Not specified</option>
+                <option>Level 1 (Entering)</option>
+                <option>Level 2 (Emerging)</option>
+                <option>Level 3 (Developing)</option>
+                <option>Level 4 (Expanding)</option>
+                <option>Newcomer</option>
+              </select>
+            </label>
+            <label class="field big-2"
+              ><span class="field-label">SPED Supports Needed</span>
+              <input
+                type="text"
+                id="fSped"
+                placeholder="e.g. extended time, read-aloud, chunked task"
+              />
+            </label>
+            <label class="field big-2"
+              ><span class="field-label">Optional Notes</span>
+              <input
+                type="text"
+                id="fNotes"
+                placeholder="anything else to weave into the plan"
+              />
+            </label>
+          </div>
+
+          <p class="muted small">
+            Optional but recommended: paste your slide text / notes below so the
+            lesson follows your exact objective, vocabulary, and activity flow.
           </p>
 
           <div class="input-grid">
@@ -117,14 +199,22 @@
           <div class="output-head">
             <h2 class="card-title">3 · Lesson plan</h2>
             <div class="output-actions">
+              <button
+                class="btn primary"
+                id="downloadDocxBtn"
+                type="button"
+                disabled
+              >
+                ⬇ Download DOCX
+              </button>
               <button class="btn" id="printBtn" type="button">
                 Print / PDF
               </button>
-              <button class="btn" id="downloadDocBtn" type="button">
-                Download Word (.doc)
+              <button class="btn ghost" id="downloadDocBtn" type="button">
+                Word (.doc)
               </button>
               <button class="btn ghost" id="downloadMdBtn" type="button">
-                Download .md
+                .md
               </button>
             </div>
           </div>
@@ -140,7 +230,11 @@
 
     <!-- Self-hosted libraries (no CDN at runtime). -->
     <script src="./vendor/jszip.min.js" defer></script>
+    <script src="./vendor/docx.umd.js" defer></script>
+    <script src="./content-library.js" defer></script>
+    <script src="./lesson-model.js" defer></script>
+    <script src="./docx-export.js" defer></script>
     <script src="./app.js" defer></script>
-      <script src="/assets/nt-page-enhance.js" defer></script>
+    <script src="/assets/nt-page-enhance.js" defer></script>
   </body>
 </html>
