@@ -77,7 +77,7 @@
       }
       textarea {
         width: 100%;
-        min-height: 150px;
+        min-height: 140px;
         font:
           13px ui-monospace,
           Menlo,
@@ -91,11 +91,15 @@
         font-size: 14px;
       }
       select,
-      input[type="text"] {
+      input[type="text"],
+      input[type="number"] {
         font: 14px system-ui;
         padding: 9px 11px;
         border: 1px solid var(--line);
         border-radius: 9px;
+      }
+      input[type="number"] {
+        width: 90px;
       }
       button {
         font: 700 15px system-ui;
@@ -109,6 +113,8 @@
       button.ghost {
         background: #e2e8f0;
         color: var(--ink);
+        padding: 9px 14px;
+        font-size: 14px;
       }
       button:disabled {
         opacity: 0.5;
@@ -129,10 +135,6 @@
       th {
         color: var(--muted);
         font-weight: 700;
-      }
-      .tag {
-        font-weight: 700;
-        font-size: 12px;
       }
       .t-ok {
         color: var(--ok);
@@ -179,6 +181,17 @@
         color: var(--muted);
         margin: 0 0 16px;
       }
+      .roster {
+        background: #ecfeff;
+        border: 1px solid #a5f3fc;
+        border-radius: 12px;
+        padding: 14px 18px;
+        margin-bottom: 18px;
+      }
+      .roster.empty {
+        background: #fffbeb;
+        border-color: #fde68a;
+      }
       code {
         background: #f1f5f9;
         padding: 1px 5px;
@@ -196,28 +209,20 @@
     </header>
     <main>
       <p class="note">
-        <strong>How it works:</strong> In Canvas, create the assignment, then
-        <em>Grades → Export → Current Gradebook</em>. Drop that CSV below, paste
-        the completion codes students submitted, pick the assignment column, and
-        download. Re-import the file in Canvas (<em>Grades → Import</em>).
-        Scores scale to the column's Points Possible automatically.
+        <strong>One-time setup:</strong> export your Canvas gradebook once (<em
+          >Grades → Export</em
+        >) and drop it below to save your class roster.
+        <strong>After that</strong>, each assignment is just: paste codes → name
+        the assignment → download → <em>Grades → Import</em>. No more exports.
       </p>
 
-      <section class="step">
-        <h2><span class="n">1</span>Canvas gradebook export (CSV)</h2>
-        <p class="hint">
-          Drop the file you exported from Canvas. Nothing is uploaded — it stays
-          in your browser.
-        </p>
-        <input id="csvFile" type="file" accept=".csv,text/csv" />
-        <div id="csvInfo" class="hint"></div>
-      </section>
+      <div id="rosterBar" class="roster empty"></div>
 
       <section class="step">
-        <h2><span class="n">2</span>Paste submitted completion codes</h2>
+        <h2><span class="n">1</span>Paste submitted completion codes</h2>
         <p class="hint">
-          One per line. You can paste straight from the Canvas SpeedGrader /
-          submission column — extra text is ignored.
+          One per line. Paste straight from the Canvas SpeedGrader / submission
+          column — extra text is ignored.
         </p>
         <textarea
           id="codes"
@@ -226,26 +231,56 @@
       </section>
 
       <section class="step">
-        <h2><span class="n">3</span>Match &amp; build</h2>
+        <h2><span class="n">2</span>Name the assignment &amp; points</h2>
+        <p class="hint">
+          Type the assignment name <strong>exactly</strong> as it appears in
+          Canvas, and its total points.
+        </p>
         <div class="row">
+          <input
+            id="assignName"
+            type="text"
+            placeholder="e.g. Ratios Lesson"
+            style="min-width: 260px"
+          />
           <label
-            >Assignment column:&nbsp;
-            <select id="colSelect">
-              <option value="">— load CSV first —</option>
-            </select>
-          </label>
+            >Points possible:
+            <input id="assignPts" type="number" value="100" min="1"
+          /></label>
           <button id="buildBtn" disabled>Match &amp; preview</button>
         </div>
         <div id="report"></div>
       </section>
 
       <section class="step" id="dlStep" style="display: none">
-        <h2><span class="n">4</span>Download for Canvas import</h2>
+        <h2><span class="n">3</span>Download for Canvas import</h2>
         <p class="hint">
-          Review the preview above, then download. Only the chosen column
-          changes; everything else is preserved exactly.
+          Review the preview above, then download and import in Canvas (<em
+            >Grades → Import</em
+          >).
         </p>
         <button id="dlBtn">⬇ Download Canvas CSV</button>
+      </section>
+
+      <section class="step">
+        <h2 style="font-size: 15px; color: var(--muted)">
+          Advanced: fill an existing export instead
+        </h2>
+        <p class="hint">
+          Prefer to fill a column inside this assignment's exact Canvas export?
+          Drop it here — it also (re)saves your roster.
+        </p>
+        <input id="csvFile" type="file" accept=".csv,text/csv" />
+        <div id="csvInfo" class="hint"></div>
+        <div class="row" id="csvColRow" style="display: none">
+          <label
+            >Assignment column:
+            <select id="colSelect"></select
+          ></label>
+          <button id="buildColBtn" class="ghost">
+            Match &amp; preview (from export)
+          </button>
+        </div>
       </section>
     </main>
 
@@ -254,11 +289,13 @@
       (function () {
         "use strict";
         const $ = (id) => document.getElementById(id);
-        let grid = null; // parsed CSV: array of rows (array of cells)
-        let header = []; // header row
-        let ppRow = -1; // index of "Points Possible" row
-        let studentRows = []; // indices of real student rows
-        let built = null; // last build result for download
+        const ROSTER_KEY = "nt_canvas_roster_v1";
+        let roster = loadRoster(); // [{name,id,sis,section}]
+        let grid = null,
+          header = [],
+          ppRow = -1,
+          studentRows = [];
+        let built = null;
 
         /* ---------- robust CSV parse / serialize ---------- */
         function parseCSV(text) {
@@ -348,19 +385,56 @@
           return [...keys];
         }
 
+        /* ---------- roster persistence ---------- */
+        function loadRoster() {
+          try {
+            return JSON.parse(localStorage.getItem(ROSTER_KEY) || "[]");
+          } catch {
+            return [];
+          }
+        }
+        function saveRoster(list) {
+          roster = list;
+          try {
+            localStorage.setItem(ROSTER_KEY, JSON.stringify(list));
+          } catch {}
+          renderRosterBar();
+          refreshBuildState();
+        }
+        function renderRosterBar() {
+          const bar = $("rosterBar");
+          if (roster.length) {
+            bar.className = "roster";
+            bar.innerHTML =
+              `<div class="row"><div><strong>Class roster saved:</strong> ${roster.length} students. ` +
+              `You can build grades without exporting again.</div>` +
+              `<button class="ghost" id="clearRoster">Clear roster</button></div>`;
+            $("clearRoster").addEventListener("click", () => {
+              if (confirm("Clear the saved roster?")) saveRoster([]);
+            });
+          } else {
+            bar.className = "roster empty";
+            bar.innerHTML =
+              "<strong>No roster saved yet.</strong> Drop a Canvas gradebook export in the " +
+              "<em>Advanced</em> box below once — it saves your students so future assignments " +
+              "need only codes + an assignment name.";
+          }
+        }
+
         const NON_ASSIGN =
           /^(student|id|sis user id|sis login id|integration id|section|current score|current points|final score|final points|unposted .*|root account)$/i;
+        function colIndex(re) {
+          return header.findIndex((h) => re.test((h || "").trim()));
+        }
 
         function ingestCSV(text) {
           grid = parseCSV(text);
           if (!grid.length) return;
           header = grid[0];
-          // locate Points Possible row (Canvas puts it as row 2, Student cell = "Points Possible")
           ppRow = -1;
           studentRows = [];
-          const studentCol = 0;
           for (let r = 1; r < grid.length; r++) {
-            const cell = (grid[r][studentCol] || "").trim();
+            const cell = (grid[r][0] || "").trim();
             if (/^points possible$/i.test(cell)) {
               ppRow = r;
               continue;
@@ -368,7 +442,7 @@
             if (!cell || /test student/i.test(cell)) continue;
             studentRows.push(r);
           }
-          // assignment column options
+          // assignment-column dropdown for the advanced (precise) path
           const sel = $("colSelect");
           sel.innerHTML = "";
           header.forEach((h, idx) => {
@@ -379,27 +453,22 @@
             o.textContent = h;
             sel.append(o);
           });
-          $("csvInfo").innerHTML =
-            `Loaded <strong>${studentRows.length}</strong> students, ` +
-            `<strong>${sel.options.length}</strong> assignment columns` +
-            (ppRow >= 0
-              ? ", Points Possible row detected."
-              : ", no Points Possible row found.");
-          $("buildBtn").disabled = sel.options.length === 0;
-          autoPickColumn();
-        }
+          $("csvColRow").style.display = sel.options.length ? "flex" : "none";
 
-        function autoPickColumn() {
-          const codes = decodeCodes().valid;
-          if (!codes.length) return;
-          const title = norm(codes[0].t || codes[0].a || "");
-          const sel = $("colSelect");
-          for (const o of sel.options) {
-            if (title && norm(o.textContent).includes(title.slice(0, 12))) {
-              o.selected = true;
-              break;
-            }
-          }
+          // save roster from identity columns
+          const idC = colIndex(/^id$/i);
+          const sisC = colIndex(/^sis login id$/i);
+          const secC = colIndex(/^section$/i);
+          const list = studentRows.map((r) => ({
+            name: grid[r][0].trim(),
+            id: idC >= 0 ? (grid[r][idC] || "").trim() : "",
+            sis: sisC >= 0 ? (grid[r][sisC] || "").trim() : "",
+            section: secC >= 0 ? (grid[r][secC] || "").trim() : "",
+          }));
+          saveRoster(list);
+          $("csvInfo").innerHTML =
+            `Loaded & saved <strong>${list.length}</strong> students` +
+            (ppRow >= 0 ? ", Points Possible row detected." : ".");
         }
 
         function decodeCodes() {
@@ -415,7 +484,7 @@
             const res = window.NeftCanvasCodec.decode(line);
             if (res.ok) {
               const key = norm(res.payload.n) + "|" + (res.payload.a || "");
-              if (seen.has(key)) continue; // keep first per student+activity
+              if (seen.has(key)) continue;
               seen.add(key);
               valid.push(res.payload);
             } else if (res.reason === "checksum") forged.push(res.code || line);
@@ -424,30 +493,101 @@
           return { valid, forged, junk };
         }
 
-        function build() {
+        function refreshBuildState() {
+          const hasCodes = $("codes").value.trim().length > 0;
+          const hasName = $("assignName").value.trim().length > 0;
+          $("buildBtn").disabled = !(roster.length && hasCodes && hasName);
+        }
+
+        /* ---------- quick build: roster + codes + assignment name ---------- */
+        function buildFromRoster() {
+          const name = $("assignName").value.trim();
+          const pp = Number($("assignPts").value) || null;
+          const { valid, forged, junk } = decodeCodes();
+
+          const lookup = new Map();
+          roster.forEach((stu, i) =>
+            nameKeys(stu.name).forEach((k) => {
+              if (!lookup.has(k)) lookup.set(k, i);
+            }),
+          );
+
+          const grades = new Array(roster.length).fill("");
+          const matched = [],
+            unmatched = [];
+          valid.forEach((p) => {
+            let idx = -1;
+            for (const k of nameKeys(p.n)) {
+              if (lookup.has(k)) {
+                idx = lookup.get(k);
+                break;
+              }
+            }
+            const raw = p.s == null ? 0 : p.s;
+            const grade =
+              pp != null && p.pc != null ? Math.round((p.pc / 100) * pp) : raw;
+            if (idx >= 0) {
+              grades[idx] = String(grade);
+              matched.push({
+                name: roster[idx].name,
+                code: `${p.s}/${p.m} (${p.pc}%)`,
+                grade,
+              });
+            } else
+              unmatched.push({
+                name: p.n || "(no name)",
+                code: `${p.s}/${p.m} (${p.pc}%)`,
+                grade,
+              });
+          });
+          const missing = roster
+            .filter((_, i) => grades[i] === "")
+            .map((s) => s.name);
+
+          // minimal Canvas import grid
+          const out = [
+            ["Student", "ID", "SIS Login ID", "Section", name],
+            ["    Points Possible", "", "", "", pp != null ? String(pp) : ""],
+          ];
+          roster.forEach((stu, i) =>
+            out.push([stu.name, stu.id, stu.sis, stu.section, grades[i]]),
+          );
+          built = { out };
+
+          renderReport({
+            matched,
+            unmatched,
+            forged,
+            junk,
+            missing,
+            pp,
+            col: name,
+          });
+          $("dlStep").style.display = matched.length ? "block" : "none";
+        }
+
+        /* ---------- precise build: fill a column in the uploaded export ---------- */
+        function buildFromExport() {
           const colIdx = Number($("colSelect").value);
           if (!grid || !colIdx) return;
           const { valid, forged, junk } = decodeCodes();
-
-          // points possible for this column
           let pp = null;
           if (ppRow >= 0) {
             const v = Number((grid[ppRow][colIdx] || "").trim());
             if (isFinite(v) && v > 0) pp = v;
           }
 
-          // roster lookup: key -> row index
           const lookup = new Map();
-          studentRows.forEach((r) => {
+          studentRows.forEach((r) =>
             nameKeys(grid[r][0]).forEach((k) => {
               if (!lookup.has(k)) lookup.set(k, r);
-            });
-          });
+            }),
+          );
 
-          const out = grid.map((r) => r.slice()); // deep-ish copy
+          const out = grid.map((r) => r.slice());
           const matched = [],
             unmatched = [];
-          const filledRows = new Set();
+          const filled = new Set();
           valid.forEach((p) => {
             let row = -1;
             for (const k of nameKeys(p.n)) {
@@ -461,24 +601,22 @@
               pp != null && p.pc != null ? Math.round((p.pc / 100) * pp) : raw;
             if (row >= 0) {
               out[row][colIdx] = String(grade);
-              filledRows.add(row);
+              filled.add(row);
               matched.push({
                 name: grid[row][0],
                 code: `${p.s}/${p.m} (${p.pc}%)`,
                 grade,
               });
-            } else {
+            } else
               unmatched.push({
                 name: p.n || "(no name)",
                 code: `${p.s}/${p.m} (${p.pc}%)`,
                 grade,
               });
-            }
           });
           const missing = studentRows
-            .filter((r) => !filledRows.has(r))
+            .filter((r) => !filled.has(r))
             .map((r) => grid[r][0]);
-
           built = { out };
           renderReport({
             matched,
@@ -505,17 +643,17 @@
             ${d.junk.length ? `<span class="pill warn">${d.junk.length} unreadable line</span>` : ""}
             ${d.missing.length ? `<span class="pill warn">${d.missing.length} no submission</span>` : ""}
           </div>`;
-          html += `<p class="hint">Column <code>${esc(d.col)}</code>${d.pp != null ? `, scaling to <strong>${d.pp}</strong> pts` : ", using raw points (no Points Possible row)"}.</p>`;
+          html += `<p class="hint">Column <code>${esc(d.col)}</code>${d.pp != null ? `, scaling to <strong>${d.pp}</strong> pts` : ", using raw points"}.</p>`;
           if (d.matched.length) {
             html +=
               "<table><thead><tr><th>Student</th><th>Activity score</th><th>Canvas grade</th></tr></thead><tbody>";
             d.matched.forEach((m) => {
-              html += `<tr><td>${esc(m.name)}</td><td>${esc(m.code)}</td><td class="tag t-ok">${m.grade}</td></tr>`;
+              html += `<tr><td>${esc(m.name)}</td><td>${esc(m.code)}</td><td class="t-ok">${m.grade}</td></tr>`;
             });
             html += "</tbody></table>";
           }
           if (d.unmatched.length) {
-            html += `<p class="hint t-warn" style="margin-top:14px;"><strong>Unmatched (name didn't match the roster — fix the student's name spelling or grade manually):</strong></p>`;
+            html += `<p class="hint t-warn" style="margin-top:14px;"><strong>Unmatched (name didn't match roster — fix spelling or grade manually):</strong></p>`;
             html += d.unmatched
               .map(
                 (u) =>
@@ -553,11 +691,14 @@
           reader.onload = () => ingestCSV(String(reader.result));
           reader.readAsText(f);
         });
-        $("codes").addEventListener("input", () => {
-          if (grid) autoPickColumn();
-        });
-        $("buildBtn").addEventListener("click", build);
+        $("codes").addEventListener("input", refreshBuildState);
+        $("assignName").addEventListener("input", refreshBuildState);
+        $("buildBtn").addEventListener("click", buildFromRoster);
+        $("buildColBtn").addEventListener("click", buildFromExport);
         $("dlBtn").addEventListener("click", download);
+
+        renderRosterBar();
+        refreshBuildState();
       })();
     </script>
   </body>

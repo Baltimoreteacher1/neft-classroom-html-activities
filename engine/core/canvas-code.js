@@ -81,7 +81,8 @@ function render(code, payload) {
       <div style="padding:22px;">
         ${nameNote}
         <p style="margin:0 0 14px;color:#334155;font-size:15px;line-height:1.5;">
-          Copy this code and paste it into the <strong>Canvas assignment</strong> for this lesson.
+          Your code is <strong>copied</strong> — just paste it into the
+          <strong>Canvas assignment</strong> for this lesson. (Tap Copy if you need it again.)
         </p>
         <div style="display:flex;gap:8px;align-items:stretch;">
           <input id="nt-cc-input" readonly value="${code}"
@@ -109,16 +110,24 @@ function render(code, payload) {
 
   const input = card.querySelector("#nt-cc-input");
   const copyBtn = card.querySelector("#nt-cc-copy");
-  copyBtn.addEventListener("click", async () => {
+  const flagCopied = () => {
+    copyBtn.textContent = "Copied ✓";
+    setTimeout(() => (copyBtn.textContent = "Copy"), 1600);
+  };
+  const doCopy = async () => {
     try {
       await navigator.clipboard.writeText(code);
     } catch {
       input.select();
       document.execCommand("copy");
     }
-    copyBtn.textContent = "Copied ✓";
-    setTimeout(() => (copyBtn.textContent = "Copy"), 1600);
-  });
+    flagCopied();
+  };
+  copyBtn.addEventListener("click", doCopy);
+  // Auto-copy on completion so the student only has to paste into Canvas.
+  // The lesson-finish event usually follows a click, so the clipboard gesture
+  // is honored; if the browser blocks it, the Copy button still works.
+  doCopy().catch(() => {});
   const close = () => card.remove();
   card.querySelector("#nt-cc-close").addEventListener("click", close);
   card.addEventListener("click", (e) => {
