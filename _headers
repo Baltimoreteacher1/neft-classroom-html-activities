@@ -9,12 +9,13 @@
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
-  # Framing policy: allow this site to be embedded by itself and by Canvas LMS
-  # (all *.instructure.com subdomains, incl. bcps.instructure.com) so lessons can
-  # be iframed inside Canvas assignments. CSP frame-ancestors replaces the old
-  # X-Frame-Options: SAMEORIGIN (which blocked all cross-origin framing and could
-  # not name an allowed external origin). Everyone else is still blocked.
-  Content-Security-Policy: frame-ancestors 'self' https://*.instructure.com
+  # Framing policy: allow this site to be embedded by itself, by Canvas LMS
+  # (all *.instructure.com subdomains, incl. bcps.instructure.com), and by SCORM
+  # players — SCORM Cloud (*.scorm.com) and Rustici-engine content hosts
+  # (*.scormcontent.com), which is how SCORM packages iframe the live lesson and
+  # report grades. CSP frame-ancestors replaces the old X-Frame-Options:
+  # SAMEORIGIN (which blocked all cross-origin framing). Everyone else is blocked.
+  Content-Security-Policy: frame-ancestors 'self' https://*.instructure.com https://*.scorm.com https://*.scormcontent.com
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
   Cache-Control: public, max-age=0, must-revalidate
 
