@@ -5,10 +5,11 @@
  * Reads one data file per lesson from scripts/readiness/data/<id>.json and emits
  * a tabbed "Get Ready" pre-lesson page at lessons/<id>/readiness/index.html.
  *
- * Tabs: Vocabulary -> Skills Check (routing diagnostic) -> Learn It -> Practice
- * (leveled worksheet + exit ticket). Vocabulary content is layered in from
+ * Tabs: Vocabulary (PREREQUISITE words — what students must already know to
+ * follow the lesson, NOT the new words the lesson teaches) -> Skills Check
+ * (routing diagnostic). Vocabulary content is layered in from
  * scripts/readiness/data/vocab/<baseId>.json (term + Level 1 definition + visual
- * + example) so every lesson opens with vocabulary BEFORE any activity.
+ * + example) so every lesson opens by reviewing the words it depends on.
  *
  * Single source of truth: edit the JSON, re-run `npm run generate-readiness`.
  * Never hand-edit the generated index.html files.
@@ -57,8 +58,8 @@ function renderVocab(vocab) {
   return `
       <div class="tabpanel" id="panel-vocab" role="tabpanel" aria-labelledby="tab-vocab">
         <div class="sec">
-          <div class="sec-head"><div class="badge b-vocab">A</div><div><div class="kicker">Words First · Know these before you start</div><h2>Vocabulary</h2></div></div>
-          <p>Read each word, its meaning, and the example. These are the words you'll hear in the lesson — preview them now so they feel familiar.</p>
+          <div class="sec-head"><div class="badge b-vocab">A</div><div><div class="kicker">Words First · Review before the lesson</div><h2>Words to Know First</h2></div></div>
+          <p>These are words you'll need to <strong>already know</strong> to follow this lesson — not the new words the lesson teaches. Review each one, its meaning, and the example so the new lesson makes sense from the start.</p>
           <div class="vgrid">${cards}
           </div>
         </div>
@@ -105,7 +106,6 @@ function renderDiagnostic(data, lessonId) {
 // NOTE: "Learn It" and "Practice" panels were intentionally removed — Get Ready
 // is prep only (vocab preview + prerequisite skills check). Teaching and
 // practicing the new content belongs in the lesson itself, not the warm-up.
-
 
 /* ---------- page shell ---------- */
 

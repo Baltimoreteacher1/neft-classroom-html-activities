@@ -1388,7 +1388,10 @@ export function resolveLanguageObjective(config) {
   return `I can talk and write about ${esc(config.title || "this topic")} using math words.`;
 }
 
-// Top-of-launch block: Name/Period fields, objectives, and Homework download.
+// Top-of-launch block: Name/Period fields and Homework download. The Content /
+// Language objectives are rendered separately by renderObjectives so the
+// "Be Curious" (Notice & Wonder) card can sit BETWEEN the identity fields and
+// the objectives — curiosity first, then the formal "I can…" goals.
 // Pre-lesson materials (Get Ready / Notes) now live as their own sidebar tabs
 // under "Before the lesson" — see app.js preLessonNavHtml / openExtra.
 function renderLaunchHeader(el, state, config) {
@@ -1422,16 +1425,6 @@ function renderLaunchHeader(el, state, config) {
       <a class="btn btn-secondary launch-homework-link" href="${homeworkHref}"
         download>📄 Homework (Word doc)</a>
     </div>
-    <div class="launch-objectives grid-2">
-      <div class="card card-teal launch-objective">
-        <h4 style="color:var(--teal); margin-bottom:var(--sp-2);">Content Objective</h4>
-        <p style="margin:0; font-weight:600;">${resolveContentObjective(config)}</p>
-      </div>
-      <div class="card card-coral launch-objective">
-        <h4 style="color:var(--coral); margin-bottom:var(--sp-2);">Language Objective</h4>
-        <p style="margin:0; font-weight:600;">${resolveLanguageObjective(config)}</p>
-      </div>
-    </div>
   `;
   el.append(block);
 
@@ -1446,6 +1439,25 @@ function renderLaunchHeader(el, state, config) {
   });
 }
 
+// Content / Language "I can…" objectives. Rendered AFTER the "Be Curious"
+// Notice & Wonder card so students get curious about the scenario before they
+// read the formal goals (see renderLaunchPhase ordering).
+function renderObjectives(el, config) {
+  const block = document.createElement("div");
+  block.className = "launch-objectives grid-2";
+  block.innerHTML = `
+    <div class="card card-teal launch-objective">
+      <h4 style="color:var(--teal); margin-bottom:var(--sp-2);">Content Objective</h4>
+      <p style="margin:0; font-weight:600;">${resolveContentObjective(config)}</p>
+    </div>
+    <div class="card card-coral launch-objective">
+      <h4 style="color:var(--coral); margin-bottom:var(--sp-2);">Language Objective</h4>
+      <p style="margin:0; font-weight:600;">${resolveLanguageObjective(config)}</p>
+    </div>
+  `;
+  el.append(block);
+}
+
 function renderLaunchPhase(el, state, ctx, config) {
   const cfg = config.launch;
 
@@ -1458,9 +1470,13 @@ function renderLaunchPhase(el, state, ctx, config) {
 
   renderLaunchHeader(el, state, config);
 
-  // Notice & Wonder (Reveal data-context) — rendered immediately AFTER the
-  // Objectives block. No-op when config.noticeAndWonder is absent.
+  // "Be Curious" (Notice & Wonder, Reveal data-context) now renders BEFORE the
+  // objectives so students explore the scenario first, then read the "I can…"
+  // goals. No-op when config.noticeAndWonder is absent.
   renderNoticeAndWonder(el, config, state);
+
+  // Content / Language objectives, immediately after the curiosity hook.
+  renderObjectives(el, config);
 
   phaseHeader(
     el,
