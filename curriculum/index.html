@@ -8191,5 +8191,39 @@
       defer
     ></script>
     <script src="/assets/curriculum-top1.js?v=20260617-top1" defer></script>
+
+    <!-- Tools bar: lift the featured tool cards out of the narrow left rail
+         into a full-width strip across the top so all stay visible and tidy.
+         Additive + fail-safe: if this script does not run, the cards simply
+         remain visible in their original place (never hidden). -->
+    <style>
+      .curriculum-tools-bar {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+        gap: 12px;
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 16px clamp(18px, 4vw, 36px) 0;
+        box-sizing: border-box;
+      }
+      .curriculum-tools-bar .mf-text {
+        display: none;
+      }
+      .curriculum-tools-bar .mailbox-feature,
+      .curriculum-tools-bar .ai-hub-feature {
+        padding: 14px;
+        gap: 8px;
+      }
+    </style>
+    <script>
+      (function () {
+        var wrap = document.querySelector(".wrap");
+        if (!wrap || !wrap.parentNode) return;
+        var fg = wrap.querySelector(".hub-side > .features-grid");
+        if (!fg) return;
+        fg.classList.add("curriculum-tools-bar");
+        wrap.parentNode.insertBefore(fg, wrap);
+      })();
+    </script>
   </body>
 </html>
