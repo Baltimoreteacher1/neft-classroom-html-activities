@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Build a Canvas-ready Unit Plan file from a simple form — set the course, add your lessons, and download a deploy file."
+    />
+    <title>Unit Plan Builder | Deploy to Canvas | Neft Teacher</title>
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <link rel="stylesheet" href="/teacher-tools/tools.css" />
+    <style>
+      .upb-shell {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: clamp(18px, 4vw, 36px);
+      }
+      .upb-card {
+        background: #fff;
+        border: 1px solid var(--tools-line, #e2e8f0);
+        border-radius: 14px;
+        box-shadow: 0 10px 26px rgba(23, 32, 42, 0.07);
+        padding: clamp(16px, 3vw, 24px);
+        margin: 0 0 18px;
+      }
+      .upb-card > h2 {
+        margin: 0 0 4px;
+        color: var(--navy, #15487f);
+        font-family: "Outfit", system-ui, sans-serif;
+      }
+      .upb-card > .upb-hint {
+        margin: 0 0 16px;
+        color: var(--tools-muted, #5a6a7a);
+        font-size: 0.92rem;
+      }
+      .upb-field {
+        display: grid;
+        gap: 6px;
+        margin: 0 0 14px;
+      }
+      .upb-grid2 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+      }
+      .upb-field label {
+        font-weight: 700;
+        color: var(--tools-ink, #1f2933);
+        font-size: 0.92rem;
+      }
+      .upb-field .upb-sub {
+        font-weight: 500;
+        color: var(--tools-muted, #5a6a7a);
+        font-size: 0.82rem;
+      }
+      .upb-field input,
+      .upb-field select,
+      .upb-field textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid var(--tools-line, #cbd5e1);
+        border-radius: 9px;
+        font: inherit;
+        background: #fff;
+        box-sizing: border-box;
+      }
+      .upb-field textarea {
+        min-height: 70px;
+        resize: vertical;
+      }
+      .upb-field input:focus-visible,
+      .upb-field select:focus-visible,
+      .upb-field textarea:focus-visible {
+        outline: 3px solid rgba(15, 118, 110, 0.35);
+        outline-offset: 2px;
+      }
+      .upb-lesson {
+        border: 1px solid var(--tools-line, #e2e8f0);
+        border-radius: 12px;
+        padding: 16px;
+        margin: 0 0 14px;
+        background: #f8fafc;
+      }
+      .upb-lesson-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin: 0 0 12px;
+      }
+      .upb-lesson-head h3 {
+        margin: 0;
+        font-size: 1rem;
+        color: var(--navy, #15487f);
+      }
+      .upb-btn {
+        appearance: none;
+        cursor: pointer;
+        border-radius: 10px;
+        font-weight: 800;
+        font-size: 0.95rem;
+        padding: 11px 18px;
+        border: 1px solid transparent;
+        min-height: 44px;
+      }
+      .upb-btn.solid {
+        background: var(--tools-teal, #0f766e);
+        color: #fff;
+      }
+      .upb-btn.solid:hover {
+        background: #0c5e57;
+      }
+      .upb-btn.outline {
+        background: #fff;
+        border-color: var(--tools-teal, #0f766e);
+        color: var(--tools-teal-dark, #0c5e57);
+      }
+      .upb-btn.ghost {
+        background: transparent;
+        color: var(--tools-muted, #5a6a7a);
+        border-color: var(--tools-line, #cbd5e1);
+        padding: 7px 12px;
+        min-height: 0;
+        font-size: 0.85rem;
+      }
+      .upb-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+      }
+      .upb-error {
+        color: #b42318;
+        font-weight: 600;
+        font-size: 0.85rem;
+      }
+      .upb-status {
+        margin: 12px 0 0;
+        font-weight: 700;
+        color: var(--tools-teal-dark, #0c5e57);
+      }
+      .upb-preview-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+      }
+      .upb-preview-table th,
+      .upb-preview-table td {
+        text-align: left;
+        padding: 7px 9px;
+        border-bottom: 1px solid var(--tools-line, #e2e8f0);
+        vertical-align: top;
+      }
+      .upb-preview-table th {
+        color: var(--tools-muted, #5a6a7a);
+        text-transform: uppercase;
+        font-size: 0.72rem;
+        letter-spacing: 0.03em;
+      }
+      .upb-pill {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 800;
+        background: #e0f2fe;
+        color: #075985;
+      }
+      .upb-pill.module {
+        background: #fef3c7;
+        color: #7c4a03;
+      }
+      .upb-pill.assignment {
+        background: #dcfce7;
+        color: #166534;
+      }
+      .upb-pill.announcement {
+        background: #ede9fe;
+        color: #5b21b6;
+      }
+      .upb-next {
+        background: #f0fdfa;
+        border: 1px solid rgba(15, 118, 110, 0.25);
+        border-radius: 12px;
+        padding: 16px 18px;
+      }
+      .upb-next ol {
+        margin: 8px 0 0;
+        padding-left: 20px;
+      }
+      .upb-next li {
+        margin: 6px 0;
+      }
+    </style>
+  </head>
+  <body class="tools-page">
+    <a class="skip-link" href="#upb-main">Skip to the builder</a>
+    <main id="upb-main" class="upb-shell">
+      <nav class="breadcrumb tools-breadcrumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="/">Neft Hub</a></li>
+          <li><a href="/teacher-tools/">Professional</a></li>
+          <li><span aria-current="page">Unit Plan Builder</span></li>
+        </ol>
+      </nav>
+
+      <header style="margin: 0 0 18px">
+        <p class="eyebrow" style="color: var(--tools-teal, #0f766e)">
+          Deploy to Canvas
+        </p>
+        <h1 style="margin: 4px 0; color: var(--tools-ink, #1f2933)">
+          Unit Plan Builder
+        </h1>
+        <p style="color: var(--tools-muted, #5a6a7a); max-width: 60ch">
+          Fill this out once per unit, then download a Canvas-ready file. The
+          file becomes dated pages, assignments, announcements, and a module in
+          your Canvas course — no Excel and no API token needed.
+        </p>
+      </header>
+
+      <form id="upb-form" novalidate>
+        <!-- Unit setup -->
+        <section class="upb-card" aria-labelledby="upb-setup-title">
+          <h2 id="upb-setup-title">1 · Unit setup</h2>
+          <p class="upb-hint">
+            Tells Canvas which course to deploy into and the default dates.
+          </p>
+
+          <div class="upb-field">
+            <label for="course_url"
+              >Canvas course URL
+              <span class="upb-sub"
+                >— open your course in Canvas and copy the web address (e.g.
+                https://bcpss.instructure.com/courses/37159)</span
+              ></label
+            >
+            <input
+              id="course_url"
+              name="course_url"
+              type="url"
+              inputmode="url"
+              placeholder="https://bcpss.instructure.com/courses/00000"
+              autocomplete="off"
+            />
+            <span class="upb-error" data-error-for="course_url" hidden></span>
+          </div>
+
+          <div class="upb-field">
+            <label for="module_name"
+              >Module / unit name
+              <span class="upb-sub"
+                >— e.g. "Unit 1 — Ratios &amp; Rates"</span
+              ></label
+            >
+            <input
+              id="module_name"
+              name="module_name"
+              type="text"
+              placeholder="Unit 1 — Ratios &amp; Rates"
+            />
+            <span class="upb-error" data-error-for="module_name" hidden></span>
+          </div>
+
+          <div class="upb-grid2">
+            <div class="upb-field">
+              <label for="module_unlock"
+                >Module unlock date
+                <span class="upb-sub">— when the unit opens</span></label
+              >
+              <input id="module_unlock" name="module_unlock" type="date" />
+            </div>
+            <div class="upb-field">
+              <label for="publish"
+                >Publish now?
+                <span class="upb-sub">— No = save as drafts</span></label
+              >
+              <select id="publish" name="publish">
+                <option value="Yes" selected>Yes — publish</option>
+                <option value="No">No — keep as drafts</option>
+              </select>
+            </div>
+            <div class="upb-field">
+              <label for="default_release_time"
+                >Default release time
+                <span class="upb-sub">— when items open each day</span></label
+              >
+              <input
+                id="default_release_time"
+                name="default_release_time"
+                type="text"
+                value="7:00 AM"
+              />
+            </div>
+            <div class="upb-field">
+              <label for="default_due_time"
+                >Default due time
+                <span class="upb-sub">— when assignments are due</span></label
+              >
+              <input
+                id="default_due_time"
+                name="default_due_time"
+                type="text"
+                value="11:59 PM"
+              />
+            </div>
+          </div>
+        </section>
+
+        <!-- Lessons -->
+        <section class="upb-card" aria-labelledby="upb-lessons-title">
+          <h2 id="upb-lessons-title">2 · Lessons</h2>
+          <p class="upb-hint">
+            Add one block per lesson day. Each block can create a page, an exit
+            ticket (assignment), and a morning announcement. Add as many as the
+            unit needs.
+          </p>
+          <div id="upb-lessons"></div>
+          <span class="upb-error" data-error-for="lessons" hidden></span>
+          <button type="button" class="upb-btn outline" id="upb-add-lesson">
+            + Add a lesson
+          </button>
+        </section>
+
+        <!-- Build -->
+        <section class="upb-card" aria-labelledby="upb-build-title">
+          <h2 id="upb-build-title">3 · Build your file</h2>
+          <p class="upb-hint">
+            Creates the Canvas-ready file and shows you exactly what will be
+            made before you deploy.
+          </p>
+          <div class="upb-actions">
+            <button type="submit" class="upb-btn solid" id="upb-build">
+              Build my Unit Plan file (.csv)
+            </button>
+            <a
+              class="upb-btn outline"
+              href="/teacher-tools/assets/Unit-Plan-Template.xlsx"
+              download
+              >Prefer Excel? Download the blank template</a
+            >
+            <button type="button" class="upb-btn ghost" id="upb-reset">
+              Clear form
+            </button>
+          </div>
+          <p
+            class="upb-status"
+            id="upb-status"
+            role="status"
+            aria-live="polite"
+          ></p>
+        </section>
+      </form>
+
+      <!-- Preview -->
+      <section
+        class="upb-card"
+        id="upb-preview-card"
+        aria-labelledby="upb-preview-title"
+        hidden
+      >
+        <h2 id="upb-preview-title">Preview — what Canvas will get</h2>
+        <p class="upb-hint" id="upb-preview-count"></p>
+        <div style="overflow-x: auto">
+          <table class="upb-preview-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Title</th>
+              </tr>
+            </thead>
+            <tbody id="upb-preview-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Next steps -->
+      <section class="upb-card upb-next" aria-labelledby="upb-next-title">
+        <h2 id="upb-next-title" style="font-size: 1.05rem">
+          What happens after you download
+        </h2>
+        <ol>
+          <li>
+            Open <strong>Canvas</strong> in Chrome and sign in to your course.
+          </li>
+          <li>
+            Open <strong>Claude in Chrome</strong> (the assistant that can act
+            in your browser).
+          </li>
+          <li>
+            Drop in the file you just downloaded and say:
+            <em>"Deploy this Unit Plan to Canvas."</em>
+          </li>
+          <li>
+            Claude shows you a summary, you confirm, and it creates everything
+            with the right dates. You never share a password — you stay signed
+            in yourself.
+          </li>
+        </ol>
+      </section>
+    </main>
+
+    <script src="/teacher-tools/unit-plan-builder/builder.js" defer></script>
+  </body>
+</html>
