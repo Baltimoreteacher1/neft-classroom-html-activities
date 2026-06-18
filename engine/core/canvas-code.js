@@ -140,12 +140,50 @@ function render(code, payload) {
   });
 }
 
+/** True when the lesson is launched inside a SCORM package (?lms=scorm). */
+function isScormLaunch() {
+  try {
+    return /(?:^|[?&])lms=scorm(?:&|$)/.test(window.location.search);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Report the score to a parent frame (SCORM package launcher or any embedder).
+ * The SCORM launcher relays this to Canvas's gradebook automatically — no codes.
+ */
+function reportToParent(payload) {
+  try {
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage(
+        {
+          source: "neft-lesson",
+          type: "score",
+          percent: payload.percent,
+          score: payload.score,
+          max: payload.maxScore,
+          lessonId: payload.activityId,
+          title: payload.activityTitle,
+        },
+        "*",
+      );
+    }
+  } catch {
+    /* never break the lesson */
+  }
+}
+
 /** Generate + show the completion code. Safe to call once on lesson completion. */
 export async function showCanvasCode(state, config) {
   try {
+    const payload = buildPayload(state, config);
+    // Always tell a parent frame the score (SCORM auto-grading / embeds).
+    reportToParent(payload);
+    // Inside a SCORM package the grade is automatic — skip the manual code UI.
+    if (isScormLaunch()) return;
     const codec = await ensureCodec();
     if (!codec) return;
-    const payload = buildPayload(state, config);
     const code = codec.encode(payload);
     // payload echoes the compact keys for the summary line
     render(code, codec.decode(code).payload || {});
