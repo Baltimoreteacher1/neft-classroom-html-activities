@@ -42,8 +42,7 @@ const LESSONS = join(REPO, "lessons");
 
 const SRC = {
   cbn: "/Users/joelneft/Desktop/Lessons Color by Number",
-  wordsearch:
-    "/Users/joelneft/Desktop/Grade_6_Math_Lesson_Wordsearches_DOCX_PDF",
+  wordsearch: "/Users/joelneft/Desktop/Grade_6_Math_Lesson_Wordsearches_DOCX_PDF",
   mcap: "/Users/joelneft/Desktop/G6_MCAP_Practice_Sheets_CCSS_MCAP_Final_Flawless",
   activities:
     "/Users/joelneft/Library/Application Support/Claude/local-agent-mode-sessions/816c95b6-4b86-4805-8bd7-6d7e41fd062c/55e5804e-fbd7-4fca-817e-58d78b74217b/local_99fb6ba1-3e98-4e72-aa75-8e6a1e959c34/outputs/EduWonderLab lesson activities docx and pdf",

@@ -71,8 +71,7 @@ export function computeGrade(state, config) {
     const phaseCount = s.phases.length || 0;
     const starsPossible = phaseCount * 3;
     const starsEarned = s.phases.reduce((sum, p) => sum + (p.stars || 0), 0);
-    pct =
-      starsPossible > 0 ? Math.round((starsEarned / starsPossible) * 100) : 100;
+    pct = starsPossible > 0 ? Math.round((starsEarned / starsPossible) * 100) : 100;
     basis = "completion";
   }
 
@@ -100,12 +99,7 @@ export function computeGrade(state, config) {
     studentName: s.studentName || "Student",
     studentPeriod: s.studentPeriod || "",
     studentId: studentIdFromName(s.studentName),
-    lessonId:
-      config.id ||
-      config.lessonId ||
-      config.title ||
-      config.standard ||
-      "lesson",
+    lessonId: config.id || config.lessonId || config.title || config.standard || "lesson",
     lessonTitle: config.title || "Lesson",
     standard: config.standard || "",
     correct,
@@ -149,8 +143,7 @@ export function saveGrade(grade) {
     date: grade.date,
   };
   const book = readGradebook();
-  const keyOf = (r) =>
-    `${r.lessonId}||${(r.studentName || "").trim().toLowerCase()}`;
+  const keyOf = (r) => `${r.lessonId}||${(r.studentName || "").trim().toLowerCase()}`;
   const target = keyOf(record);
   const idx = book.findIndex((r) => keyOf(r) === target);
   if (idx >= 0) book[idx] = record;
@@ -246,9 +239,7 @@ export function buildForecastCsv(grade) {
     grade.lessonTitle,
   ];
 
-  return [header, studentRow, evidenceRow]
-    .map((row) => row.map(csvCell).join(","))
-    .join("\r\n");
+  return [header, studentRow, evidenceRow].map((row) => row.map(csvCell).join(",")).join("\r\n");
 }
 
 export function exportCsv(grade) {

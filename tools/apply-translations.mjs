@@ -16,7 +16,7 @@ function main() {
   }
 
   const translations = JSON.parse(fs.readFileSync(TRANSLATIONS_FILE, "utf8"));
-  
+
   // Create a case-insensitive map for matching
   const tMap = new Map();
   for (let key in translations) {
@@ -25,9 +25,10 @@ function main() {
 
   console.log(`Loaded ${tMap.size} translation entries.`);
 
-  const lessonDirs = fs.readdirSync(LESSONS_DIR, { withFileTypes: true })
-    .filter(d => d.isDirectory() && !d.name.startsWith("_"))
-    .map(d => d.name);
+  const lessonDirs = fs
+    .readdirSync(LESSONS_DIR, { withFileTypes: true })
+    .filter((d) => d.isDirectory() && !d.name.startsWith("_"))
+    .map((d) => d.name);
 
   let updatedLessons = 0;
   let updatedVocabs = 0;
@@ -53,7 +54,7 @@ function main() {
       const key = v.term.toLowerCase().trim();
       if (tMap.has(key)) {
         const trans = tMap.get(key);
-        
+
         if (v.termVi !== trans.termVi) {
           v.termVi = trans.termVi;
           modified = true;
@@ -87,7 +88,10 @@ function main() {
 
   // Now build the vocab bank!
   console.log("Running vocab-hub/build-bank.mjs...");
-  const buildResult = spawnSync("node", ["vocab-hub/build-bank.mjs"], { cwd: REPO_ROOT, stdio: "inherit" });
+  const buildResult = spawnSync("node", ["vocab-hub/build-bank.mjs"], {
+    cwd: REPO_ROOT,
+    stdio: "inherit",
+  });
   if (buildResult.status !== 0) {
     console.error("Vocab bank build failed.");
     process.exit(1);

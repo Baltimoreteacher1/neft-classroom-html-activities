@@ -111,13 +111,14 @@ function page({ id, unit, lesson, title, standard, contentObjective, languageObj
   const lo = languageObjective
     ? `<p><span class="lbl">Language objective</span> ${esc(languageObjective)}</p>`
     : "";
-  const objBlock = co || lo
-    ? `<div class="obj">
+  const objBlock =
+    co || lo
+      ? `<div class="obj">
       <p style="margin:0 0 10px;font-weight:700;color:var(--navy);">Confirm this is the right deck</p>
       ${co}
       ${lo}
     </div>`
-    : "";
+      : "";
 
   return `<!doctype html>
 <html lang="en">
@@ -219,9 +220,7 @@ function main() {
   let skipped = [];
   for (const id of lessons) {
     try {
-      const cfg = JSON.parse(
-        fs.readFileSync(path.join(lessonsDir, id, "config.json"), "utf8")
-      );
+      const cfg = JSON.parse(fs.readFileSync(path.join(lessonsDir, id, "config.json"), "utf8"));
       const m = id.match(LESSON_DIR_RE);
       const unit = cfg.unit ?? (m ? Number(m[1]) : "");
       const lesson = cfg.lesson ?? (m ? Number(m[2]) : "");
@@ -234,11 +233,7 @@ function main() {
         contentObjective: cfg.contentObjective || "",
         languageObjective: cfg.languageObjective || "",
       });
-      fs.writeFileSync(
-        path.join(lessonsDir, id, "editable-slides.html"),
-        html,
-        "utf8"
-      );
+      fs.writeFileSync(path.join(lessonsDir, id, "editable-slides.html"), html, "utf8");
       count++;
     } catch (e) {
       skipped.push(id);

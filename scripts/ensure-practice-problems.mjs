@@ -33,7 +33,10 @@ function keyIdea(config) {
 }
 
 function vocabTerms(config, n = 4) {
-  return (config.vocabulary || []).slice(0, n).map((v) => v.term).filter(Boolean);
+  return (config.vocabulary || [])
+    .slice(0, n)
+    .map((v) => v.term)
+    .filter(Boolean);
 }
 
 function themeNoun(config) {
@@ -46,7 +49,9 @@ function hasType(tier, type) {
 }
 
 function stemExists(allProblems, stem) {
-  const norm = String(stem || "").trim().toLowerCase();
+  const norm = String(stem || "")
+    .trim()
+    .toLowerCase();
   return allProblems.some((p) => {
     const s = p.stem || p.instructions || p.label || p.title || "";
     return String(s).trim().toLowerCase() === norm;
@@ -88,11 +93,16 @@ function makeStretchError(config, tierName) {
     title: `${tierName} — Spot the Common Mistake`,
     workedExample: [
       { label: "Read", work: `A student is working on ${title}.` },
-      { label: "Attempt", work: idea ? `They ignored the rule: ${idea}` : "They skipped a key step." },
+      {
+        label: "Attempt",
+        work: idea ? `They ignored the rule: ${idea}` : "They skipped a key step.",
+      },
       { label: "Check", work: "The answer does not match the math rule from class." },
     ],
     errorStep: 1,
-    correctWork: idea ? `Follow the key idea: ${idea}` : "Re-read the problem and apply each step carefully.",
+    correctWork: idea
+      ? `Follow the key idea: ${idea}`
+      : "Re-read the problem and apply each step carefully.",
     hints: [
       "Which step breaks the rule you learned today?",
       idea ? `Remember: ${idea}` : "Check your work against today's objective.",
@@ -159,7 +169,7 @@ function generatorsFor(config) {
         ),
         makeMc(
           config,
-          "A reporter asks, \"How many goals did the team score in total?\" Why is this NOT the best statistical question for comparing players?",
+          'A reporter asks, "How many goals did the team score in total?" Why is this NOT the best statistical question for comparing players?',
           [
             "It gives one total number and hides variability among players",
             "It uses the word goals",
@@ -208,7 +218,12 @@ function generatorsFor(config) {
         makeMc(
           config,
           "Most values cluster at 40–60 with a few at 90–100. What shape and best center?",
-          ["Skewed right; use median", "Symmetric; use mean", "Skewed left; use median", "Uniform; use mean"],
+          [
+            "Skewed right; use median",
+            "Symmetric; use mean",
+            "Skewed left; use median",
+            "Uniform; use mean",
+          ],
           0,
           "High outliers on the right create a right skew; median resists the pull of extremes.",
         ),
@@ -242,7 +257,7 @@ function generatorsFor(config) {
           `${term} replaces every number in the problem`,
         ],
         0,
-        `Remember: ${(config.vocabulary?.[0]?.definition) || term}`,
+        `Remember: ${config.vocabulary?.[0]?.definition || term}`,
       ),
     ],
     onLevel: () => [
@@ -286,7 +301,7 @@ function ensureTier(config, tierName, items, allProblems, stats) {
 
   const gens = generatorsFor(config);
   const pool =
-    (gens[tierName === "extending" ? "optional" : tierName]?.() || gens.approaching?.() || []);
+    gens[tierName === "extending" ? "optional" : tierName]?.() || gens.approaching?.() || [];
 
   for (const candidate of pool) {
     if (items.length >= min) break;

@@ -41,22 +41,70 @@ const VERB_MAP = [
 ];
 
 const PHRASE_MAP = [
-  ["write inequalities to represent real-world situations", "escribir desigualdades para representar situaciones de la vida real"],
-  ["find the area of a trapezoid using the formula a = ½(b1 + b2) × h", "encontrar el área de un trapecio usando la fórmula A = ½(b1 + b2) × h"],
-  ["write a number as a product of its prime factors using a factor tree", "escribir un número como producto de sus factores primos usando un árbol de factores"],
-  ["describe the shape of a data distribution as symmetric, skewed, or having clusters and gaps", "describir la forma de una distribución de datos como simétrica, sesgada o con agrupamientos y huecos"],
-  ["as a product of its prime factors using a factor tree", "como producto de sus factores primos usando un árbol de factores"],
-  ["numbers in exponent form using a base and a power", "números en forma de exponente usando una base y una potencia"],
-  ["a ratio table to find equivalent ratios", "una tabla de razones para encontrar razones equivalentes"],
-  ["the volume of a rectangular prism with whole-number edges using length × width × height", "el volumen de un prisma rectangular con aristas enteras usando largo × ancho × alto"],
-  ["the volume of a rectangular prism, including ones with fractional edge lengths, using base area × height", "el volumen de un prisma rectangular, incluidos los de aristas fraccionarias, usando área de la base × altura"],
-  ["the surface area of rectangular and triangular prisms", "el área de superficie de prismas rectangulares y triangulares"],
-  ["the surface area of a solid by using its net", "el área de superficie de un sólido usando su red"],
-  ["the surface area of a pyramid by adding the base area and the lateral faces", "el área de superficie de una pirámide sumando el área de la base y las caras laterales"],
-  ["the mean, median, and mode of a data set", "la media, la mediana y la moda de un conjunto de datos"],
-  ["the mean absolute deviation (mad) to describe how spread out data is", "la desviación absoluta media (DAM) para describir qué tan dispersos están los datos"],
-  ["the distance between two points on the coordinate plane using absolute value", "la distancia entre dos puntos en el plano coordenado usando valor absoluto"],
-  ["as symmetric, skewed, or having clusters and gaps", "como simétrica, sesgada, o con agrupamientos y huecos"],
+  [
+    "write inequalities to represent real-world situations",
+    "escribir desigualdades para representar situaciones de la vida real",
+  ],
+  [
+    "find the area of a trapezoid using the formula a = ½(b1 + b2) × h",
+    "encontrar el área de un trapecio usando la fórmula A = ½(b1 + b2) × h",
+  ],
+  [
+    "write a number as a product of its prime factors using a factor tree",
+    "escribir un número como producto de sus factores primos usando un árbol de factores",
+  ],
+  [
+    "describe the shape of a data distribution as symmetric, skewed, or having clusters and gaps",
+    "describir la forma de una distribución de datos como simétrica, sesgada o con agrupamientos y huecos",
+  ],
+  [
+    "as a product of its prime factors using a factor tree",
+    "como producto de sus factores primos usando un árbol de factores",
+  ],
+  [
+    "numbers in exponent form using a base and a power",
+    "números en forma de exponente usando una base y una potencia",
+  ],
+  [
+    "a ratio table to find equivalent ratios",
+    "una tabla de razones para encontrar razones equivalentes",
+  ],
+  [
+    "the volume of a rectangular prism with whole-number edges using length × width × height",
+    "el volumen de un prisma rectangular con aristas enteras usando largo × ancho × alto",
+  ],
+  [
+    "the volume of a rectangular prism, including ones with fractional edge lengths, using base area × height",
+    "el volumen de un prisma rectangular, incluidos los de aristas fraccionarias, usando área de la base × altura",
+  ],
+  [
+    "the surface area of rectangular and triangular prisms",
+    "el área de superficie de prismas rectangulares y triangulares",
+  ],
+  [
+    "the surface area of a solid by using its net",
+    "el área de superficie de un sólido usando su red",
+  ],
+  [
+    "the surface area of a pyramid by adding the base area and the lateral faces",
+    "el área de superficie de una pirámide sumando el área de la base y las caras laterales",
+  ],
+  [
+    "the mean, median, and mode of a data set",
+    "la media, la mediana y la moda de un conjunto de datos",
+  ],
+  [
+    "the mean absolute deviation (mad) to describe how spread out data is",
+    "la desviación absoluta media (DAM) para describir qué tan dispersos están los datos",
+  ],
+  [
+    "the distance between two points on the coordinate plane using absolute value",
+    "la distancia entre dos puntos en el plano coordenado usando valor absoluto",
+  ],
+  [
+    "as symmetric, skewed, or having clusters and gaps",
+    "como simétrica, sesgada, o con agrupamientos y huecos",
+  ],
   ["using the words", "usando las palabras"],
   ["using my", "usando mi"],
   ["and evaluate", "y evaluar"],
@@ -153,15 +201,42 @@ const PHRASE_MAP = [
 ];
 
 const SENTENCE_MAP = [
-  ["To keep a ratio the same, multiply both numbers by the same scale factor.", "Para mantener la misma razón, multiplica ambos números por el mismo factor de escala."],
-  ["A power like 2³ is a short way to write repeated multiplication: 2 × 2 × 2.", "Una potencia como 2³ es una forma breve de escribir multiplicación repetida: 2 × 2 × 2."],
-  ["To find the volume of a box, multiply all three edges: V = length × width × height.", "Para encontrar el volumen de una caja, multiplica las tres aristas: V = largo × ancho × alto."],
-  ["Keep breaking a number apart until every factor is a prime number you cannot split anymore.", "Sigue dividiendo un número hasta que cada factor sea un número primo que ya no se puede dividir más."],
-  ["Symmetric data mirrors around the center; skewed data has a long tail, and the skew is named for the direction the tail points.", "Los datos simétricos se reflejan alrededor del centro; los datos sesgados tienen una cola larga, y el sesgo se nombra por la dirección de la cola."],
-  ["Area of a trapezoid = ½ × (base 1 + base 2) × height. We add the two bases first, then take half.", "Área de un trapecio = ½ × (base 1 + base 2) × altura. Primero sumamos las dos bases y luego tomamos la mitad."],
-  ["'At least' means ≥ and 'at most' means ≤; 'more than' means > and 'less than' means <.", "'Al menos' significa ≥ y 'como máximo' significa ≤; 'más que' significa > y 'menor que' significa <."],
-  ["Volume is how much space is inside a 3D shape. For a rectangular prism (a box), volume = length × width × height, measured in cubic units.", "El volumen es cuánto espacio hay dentro de una figura tridimensional. Para un prisma rectangular (una caja), volumen = largo × ancho × alto, medido en unidades cúbicas."],
-  ["A ratio table lists equal ratios in rows. To make a new row, you multiply BOTH numbers by the same amount, called the scale factor.", "Una tabla de razones muestra razones iguales en filas. Para hacer una fila nueva, multiplicas AMBOS números por la misma cantidad, llamada factor de escala."],
+  [
+    "To keep a ratio the same, multiply both numbers by the same scale factor.",
+    "Para mantener la misma razón, multiplica ambos números por el mismo factor de escala.",
+  ],
+  [
+    "A power like 2³ is a short way to write repeated multiplication: 2 × 2 × 2.",
+    "Una potencia como 2³ es una forma breve de escribir multiplicación repetida: 2 × 2 × 2.",
+  ],
+  [
+    "To find the volume of a box, multiply all three edges: V = length × width × height.",
+    "Para encontrar el volumen de una caja, multiplica las tres aristas: V = largo × ancho × alto.",
+  ],
+  [
+    "Keep breaking a number apart until every factor is a prime number you cannot split anymore.",
+    "Sigue dividiendo un número hasta que cada factor sea un número primo que ya no se puede dividir más.",
+  ],
+  [
+    "Symmetric data mirrors around the center; skewed data has a long tail, and the skew is named for the direction the tail points.",
+    "Los datos simétricos se reflejan alrededor del centro; los datos sesgados tienen una cola larga, y el sesgo se nombra por la dirección de la cola.",
+  ],
+  [
+    "Area of a trapezoid = ½ × (base 1 + base 2) × height. We add the two bases first, then take half.",
+    "Área de un trapecio = ½ × (base 1 + base 2) × altura. Primero sumamos las dos bases y luego tomamos la mitad.",
+  ],
+  [
+    "'At least' means ≥ and 'at most' means ≤; 'more than' means > and 'less than' means <.",
+    "'Al menos' significa ≥ y 'como máximo' significa ≤; 'más que' significa > y 'menor que' significa <.",
+  ],
+  [
+    "Volume is how much space is inside a 3D shape. For a rectangular prism (a box), volume = length × width × height, measured in cubic units.",
+    "El volumen es cuánto espacio hay dentro de una figura tridimensional. Para un prisma rectangular (una caja), volumen = largo × ancho × alto, medido en unidades cúbicas.",
+  ],
+  [
+    "A ratio table lists equal ratios in rows. To make a new row, you multiply BOTH numbers by the same amount, called the scale factor.",
+    "Una tabla de razones muestra razones iguales en filas. Para hacer una fila nueva, multiplicas AMBOS números por la misma cantidad, llamada factor de escala.",
+  ],
 ];
 
 function escapeRegExp(s) {
@@ -191,7 +266,8 @@ export function polishSpanish(text, config) {
   const objective = translateFamilyText(config.contentObjective, config.vocabulary || []);
   if (objective && englishWordRatio(objective) < 0.5) return objective;
   const kernel = spanishKernel(config);
-  if (kernel && englishWordRatio(kernel) < 0.55) return kernel.endsWith(".") ? kernel : `${kernel}.`;
+  if (kernel && englishWordRatio(kernel) < 0.55)
+    return kernel.endsWith(".") ? kernel : `${kernel}.`;
   const core = objective.replace(/^Puedo\s/i, "").replace(/\.$/, "");
   return `Esta noche practican: ${core}. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.`;
 }
@@ -202,10 +278,7 @@ function applyVocab(text, vocab = []) {
     .filter((v) => v.term && v.termEs)
     .sort((a, b) => b.term.length - a.term.length);
   for (const v of sorted) {
-    out = out.replace(
-      new RegExp(`\\b${escapeRegExp(v.term)}\\b`, "gi"),
-      v.termEs,
-    );
+    out = out.replace(new RegExp(`\\b${escapeRegExp(v.term)}\\b`, "gi"), v.termEs);
   }
   return out;
 }

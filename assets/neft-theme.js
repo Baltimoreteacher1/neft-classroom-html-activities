@@ -30,10 +30,7 @@
   var root = document.documentElement;
 
   function osPrefersDark() {
-    return (
-      window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches
-    );
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
   }
 
   function stored() {
@@ -58,9 +55,7 @@
       } catch (e) {}
     }
     syncButton(theme);
-    window.dispatchEvent(
-      new CustomEvent("neft-theme-change", { detail: { theme: theme } }),
-    );
+    window.dispatchEvent(new CustomEvent("neft-theme-change", { detail: { theme: theme } }));
     return theme;
   }
 

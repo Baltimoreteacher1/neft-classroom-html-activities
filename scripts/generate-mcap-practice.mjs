@@ -130,9 +130,21 @@ function titleBanner() {
               new Paragraph({
                 spacing: { after: 0 },
                 children: [
-                  new TextRun({ text: "Grade 6 Mathematics", bold: true, color: WHITE, size: 30, font: "Calibri" }),
+                  new TextRun({
+                    text: "Grade 6 Mathematics",
+                    bold: true,
+                    color: WHITE,
+                    size: 30,
+                    font: "Calibri",
+                  }),
                   new TextRun({ text: "  ·  ", color: TEAL, size: 30, font: "Calibri" }),
-                  new TextRun({ text: "MCAP-Style Practice", bold: true, color: TEAL, size: 30, font: "Calibri" }),
+                  new TextRun({
+                    text: "MCAP-Style Practice",
+                    bold: true,
+                    color: TEAL,
+                    size: 30,
+                    font: "Calibri",
+                  }),
                 ],
               }),
             ],
@@ -161,13 +173,23 @@ function headerRow(data) {
             children: [
               new Paragraph({
                 spacing: { after: 0 },
-                children: [new TextRun({ text: lessonText, bold: true, color: NAVY, size: 24, font: "Calibri" })],
+                children: [
+                  new TextRun({
+                    text: lessonText,
+                    bold: true,
+                    color: NAVY,
+                    size: 24,
+                    font: "Calibri",
+                  }),
+                ],
               }),
               ...(data.title
                 ? [
                     new Paragraph({
                       spacing: { before: 30, after: 0 },
-                      children: [new TextRun({ text: data.title, color: MUTED, size: 19, font: "Calibri" })],
+                      children: [
+                        new TextRun({ text: data.title, color: MUTED, size: 19, font: "Calibri" }),
+                      ],
                     }),
                   ]
                 : []),
@@ -182,8 +204,20 @@ function headerRow(data) {
                 alignment: AlignmentType.RIGHT,
                 spacing: { after: 0 },
                 children: [
-                  new TextRun({ text: "CCSS: ", bold: true, color: AMBER, size: 24, font: "Calibri" }),
-                  new TextRun({ text: data.ccss || "—", bold: true, color: NAVY, size: 24, font: "Calibri" }),
+                  new TextRun({
+                    text: "CCSS: ",
+                    bold: true,
+                    color: AMBER,
+                    size: 24,
+                    font: "Calibri",
+                  }),
+                  new TextRun({
+                    text: data.ccss || "—",
+                    bold: true,
+                    color: NAVY,
+                    size: 24,
+                    font: "Calibri",
+                  }),
                 ],
               }),
             ],
@@ -199,7 +233,12 @@ function nameDateLine() {
     spacing: { before: 200, after: 120 },
     children: [
       new TextRun({ text: "Name: ", bold: true, color: MUTED, size: 21, font: "Calibri" }),
-      new TextRun({ text: "______________________________________", color: MUTED, size: 21, font: "Calibri" }),
+      new TextRun({
+        text: "______________________________________",
+        color: MUTED,
+        size: 21,
+        font: "Calibri",
+      }),
       new TextRun({ text: "      Date: ", bold: true, color: MUTED, size: 21, font: "Calibri" }),
       new TextRun({ text: "____________________", color: MUTED, size: 21, font: "Calibri" }),
     ],
@@ -212,7 +251,13 @@ function directionsBox() {
       new Paragraph({
         spacing: { after: 0, line: 264 },
         children: [
-          new TextRun({ text: "Directions:  ", bold: true, color: AMBER, size: 21, font: "Calibri" }),
+          new TextRun({
+            text: "Directions:  ",
+            bold: true,
+            color: AMBER,
+            size: 21,
+            font: "Calibri",
+          }),
           new TextRun({
             text:
               "Read each item carefully. For selected-response items, choose the best answer. " +
@@ -234,9 +279,23 @@ function itemLabelParagraph(item) {
   return new Paragraph({
     spacing: { after: 100 },
     children: [
-      new TextRun({ text: `  Item ${item.n}  `, bold: true, color: WHITE, size: 21, font: "Calibri", shading: { type: ShadingType.CLEAR, color: "auto", fill: LABEL_BG } }),
+      new TextRun({
+        text: `  Item ${item.n}  `,
+        bold: true,
+        color: WHITE,
+        size: 21,
+        font: "Calibri",
+        shading: { type: ShadingType.CLEAR, color: "auto", fill: LABEL_BG },
+      }),
       new TextRun({ text: "   ", size: 21, font: "Calibri" }),
-      new TextRun({ text: (TYPE_LABELS[item.type] || "Item").toUpperCase(), bold: true, color: TEAL, size: 18, font: "Calibri", allCaps: false }),
+      new TextRun({
+        text: (TYPE_LABELS[item.type] || "Item").toUpperCase(),
+        bold: true,
+        color: TEAL,
+        size: 18,
+        font: "Calibri",
+        allCaps: false,
+      }),
     ],
   });
 }
@@ -254,7 +313,13 @@ function choiceParagraph(item, choice, i) {
     indent: { left: 240 },
     children: [
       new TextRun({ text: `${choiceBullet(item.type)}  `, color: NAVY, size: 24, font: "Calibri" }),
-      new TextRun({ text: `${choiceLetter(i)}. `, bold: true, color: NAVY, size: 22, font: "Calibri" }),
+      new TextRun({
+        text: `${choiceLetter(i)}. `,
+        bold: true,
+        color: NAVY,
+        size: 22,
+        font: "Calibri",
+      }),
       new TextRun({ text: choice, color: INK, size: 22, font: "Calibri" }),
     ],
   });
@@ -265,7 +330,16 @@ function answerLines(n = 7) {
   rows.push(
     new Paragraph({
       spacing: { before: 40, after: 60 },
-      children: [new TextRun({ text: "Answer Space", italics: true, bold: true, color: MUTED, size: 19, font: "Calibri" })],
+      children: [
+        new TextRun({
+          text: "Answer Space",
+          italics: true,
+          bold: true,
+          color: MUTED,
+          size: 19,
+          font: "Calibri",
+        }),
+      ],
     }),
   );
   for (let i = 0; i < n; i++) {
@@ -288,7 +362,12 @@ function itemCard(item) {
   if (item.type === "constructed" || item.type === "numeric") {
     children.push(...answerLines(item.answerSpaceLines || 7));
   }
-  return box(children, { fill: CARD_BG, border: CARD_BORDER, size: 6, margins: { top: 150, bottom: 150, left: 200, right: 200 } });
+  return box(children, {
+    fill: CARD_BG,
+    border: CARD_BORDER,
+    size: 6,
+    margins: { top: 150, bottom: 150, left: 200, right: 200 },
+  });
 }
 
 function footer(data) {
@@ -298,8 +377,22 @@ function footer(data) {
         alignment: AlignmentType.CENTER,
         spacing: { before: 60 },
         children: [
-          new TextRun({ text: "Neft Teacher · Grade 6 Mathematics · MCAP-Style Practice", color: MUTED, size: 16, font: "Calibri" }),
-          ...(data.ccss ? [new TextRun({ text: `  ·  CCSS ${data.ccss}`, color: MUTED, size: 16, font: "Calibri" })] : []),
+          new TextRun({
+            text: "Neft Teacher · Grade 6 Mathematics · MCAP-Style Practice",
+            color: MUTED,
+            size: 16,
+            font: "Calibri",
+          }),
+          ...(data.ccss
+            ? [
+                new TextRun({
+                  text: `  ·  CCSS ${data.ccss}`,
+                  color: MUTED,
+                  size: 16,
+                  font: "Calibri",
+                }),
+              ]
+            : []),
           new TextRun({ text: "   ·   Page ", color: MUTED, size: 16, font: "Calibri" }),
           new TextRun({ children: [PageNumber.CURRENT], color: MUTED, size: 16, font: "Calibri" }),
         ],
@@ -310,7 +403,14 @@ function footer(data) {
 
 // ── build one DOCX ─────────────────────────────────────────────────────────────
 function buildDoc(data) {
-  const body = [titleBanner(), spacer(120), headerRow(data), nameDateLine(), directionsBox(), spacer(160)];
+  const body = [
+    titleBanner(),
+    spacer(120),
+    headerRow(data),
+    nameDateLine(),
+    directionsBox(),
+    spacer(160),
+  ];
   data.items.forEach((item, idx) => {
     body.push(itemCard(item));
     if (idx < data.items.length - 1) body.push(spacer(160));
@@ -319,7 +419,9 @@ function buildDoc(data) {
   return new Document({
     creator: "Neft Teacher",
     title: `${data.revealLabel ? `Lesson ${data.revealLabel} ` : ""}MCAP-Style Practice`,
-    description: data.ccss ? `Grade 6 Mathematics · CCSS ${data.ccss}` : "Grade 6 Mathematics MCAP-Style Practice",
+    description: data.ccss
+      ? `Grade 6 Mathematics · CCSS ${data.ccss}`
+      : "Grade 6 Mathematics MCAP-Style Practice",
     styles: { default: { document: { run: { font: "Calibri", size: 22, color: INK } } } },
     sections: [
       {
@@ -365,10 +467,14 @@ async function main() {
     const doc = buildDoc(data);
     const buf = await Packer.toBuffer(doc);
     writeFileSync(outPath, buf);
-    console.log(`  ✓ ${id.padEnd(14)} ${(data.revealLabel || "?").padEnd(6)} ${(data.ccss || "—").padEnd(13)} ${data.items.length} items`);
+    console.log(
+      `  ✓ ${id.padEnd(14)} ${(data.revealLabel || "?").padEnd(6)} ${(data.ccss || "—").padEnd(13)} ${data.items.length} items`,
+    );
     ok++;
   }
-  console.log(`\nGenerated ${ok} MCAP-practice DOCX${skipped.length ? ` · skipped ${skipped.length}: ${skipped.join(", ")}` : ""}`);
+  console.log(
+    `\nGenerated ${ok} MCAP-practice DOCX${skipped.length ? ` · skipped ${skipped.length}: ${skipped.join(", ")}` : ""}`,
+  );
 }
 
 main().catch((e) => {

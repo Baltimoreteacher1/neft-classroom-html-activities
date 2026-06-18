@@ -36,7 +36,8 @@ const ADD = {
       term: "One-step equation",
       termEs: "Ecuación de un paso",
       definition: "An equation you can solve in a single step using one inverse operation.",
-      definitionEs: "Una ecuación que puedes resolver en un solo paso usando una operación inversa.",
+      definitionEs:
+        "Una ecuación que puedes resolver en un solo paso usando una operación inversa.",
       visual: "x + 4 = 9 is solved in one step: subtract 4 from both sides, so x = 5.",
       cloze: "An equation solved in a single step is a ___.",
     },
@@ -45,7 +46,8 @@ const ADD = {
       termEs: "Equilibrio",
       definition: "Keeping both sides of an equation equal by doing the same thing to each side.",
       definitionEs: "Mantener ambos lados de una ecuación iguales haciendo lo mismo a cada lado.",
-      visual: "If you subtract 4 from the left side, you must subtract 4 from the right to keep balance.",
+      visual:
+        "If you subtract 4 from the left side, you must subtract 4 from the right to keep balance.",
       cloze: "Doing the same thing to both sides to keep them equal keeps the equation in ___.",
     },
   ],
@@ -83,8 +85,9 @@ const ADD = {
       termEs: "No más de",
       definition: "A phrase meaning less than or equal to (≤).",
       definitionEs: "Una frase que significa menor o igual que (≤).",
-      visual: "\"No more than 8 people\" means people ≤ 8.",
-      cloze: "The phrase that means less than or equal to is \"no more than,\" written with the ___ symbol.",
+      visual: '"No more than 8 people" means people ≤ 8.',
+      cloze:
+        'The phrase that means less than or equal to is "no more than," written with the ___ symbol.',
     },
   ],
   // 7-5 — 6.EE.8 Graph Inequalities
@@ -94,7 +97,8 @@ const ADD = {
       termEs: "Desigualdad",
       definition: "A math sentence comparing two amounts with <, >, ≤, or ≥.",
       definitionEs: "Una oración matemática que compara dos cantidades con <, >, ≤ o ≥.",
-      visual: "x ≥ 3 is an inequality; it is graphed as a closed circle on 3 with an arrow to the right.",
+      visual:
+        "x ≥ 3 is an inequality; it is graphed as a closed circle on 3 with an arrow to the right.",
       cloze: "A math sentence comparing two amounts with <, >, ≤, or ≥ is an ___.",
     },
     {
@@ -132,7 +136,7 @@ const ADD = {
       termEs: "Variable",
       definition: "A letter that stands for the unknown amount in a word problem.",
       definitionEs: "Una letra que representa la cantidad desconocida en un problema verbal.",
-      visual: "\"5 less than a number is 12\" becomes x − 5 = 12, where x is the variable.",
+      visual: '"5 less than a number is 12" becomes x − 5 = 12, where x is the variable.',
       cloze: "A letter that stands for the unknown amount in a problem is a ___.",
     },
     {
@@ -140,7 +144,7 @@ const ADD = {
       termEs: "Restricción",
       definition: "A limit in a problem that tells what values are allowed.",
       definitionEs: "Un límite en un problema que indica qué valores se permiten.",
-      visual: "\"You can spend at most $20\" is a constraint: cost ≤ 20.",
+      visual: '"You can spend at most $20" is a constraint: cost ≤ 20.',
       cloze: "A limit that tells which values are allowed in a problem is a ___.",
     },
   ],
@@ -158,7 +162,8 @@ const ADD = {
       term: "Distributive property",
       termEs: "Propiedad distributiva",
       definition: "Multiplying a sum by a number means multiplying each part by that number.",
-      definitionEs: "Multiplicar una suma por un número significa multiplicar cada parte por ese número.",
+      definitionEs:
+        "Multiplicar una suma por un número significa multiplicar cada parte por ese número.",
       visual: "3(x + 4) = 3·x + 3·4 = 3x + 12.",
       cloze: "Multiplying each part of a sum by a number uses the ___ property.",
     },
@@ -170,9 +175,7 @@ for (const [lesson, terms] of Object.entries(ADD)) {
   const path = join(root, "lessons", lesson, "config.json");
   const cfg = JSON.parse(readFileSync(path, "utf8"));
   if (!Array.isArray(cfg.vocabulary)) cfg.vocabulary = [];
-  const existing = new Set(
-    cfg.vocabulary.map((v) => (v.term || "").trim().toLowerCase()),
-  );
+  const existing = new Set(cfg.vocabulary.map((v) => (v.term || "").trim().toLowerCase()));
   let added = 0;
   for (const t of terms) {
     if (existing.has(t.term.trim().toLowerCase())) continue;

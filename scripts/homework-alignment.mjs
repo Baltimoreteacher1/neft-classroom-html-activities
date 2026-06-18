@@ -3,9 +3,38 @@
  */
 
 const STOP_WORDS = new Set([
-  "a", "an", "the", "and", "or", "to", "of", "in", "on", "for", "with", "is", "are",
-  "can", "i", "we", "you", "it", "this", "that", "using", "use", "write", "find",
-  "solve", "graph", "show", "explain", "work", "number", "numbers", "math",
+  "a",
+  "an",
+  "the",
+  "and",
+  "or",
+  "to",
+  "of",
+  "in",
+  "on",
+  "for",
+  "with",
+  "is",
+  "are",
+  "can",
+  "i",
+  "we",
+  "you",
+  "it",
+  "this",
+  "that",
+  "using",
+  "use",
+  "write",
+  "find",
+  "solve",
+  "graph",
+  "show",
+  "explain",
+  "work",
+  "number",
+  "numbers",
+  "math",
 ]);
 
 function conceptIntro(config) {
@@ -24,9 +53,11 @@ export function detectVisualTopic(config) {
   const unit = Number(config.unit) || 0;
 
   if (standard === "6.EE.1" || /exponent|power/i.test(title)) return "exponents";
-  if (/inequal/i.test(title) || standard === "6.EE.5" || standard === "6.EE.8") return "inequalities";
+  if (/inequal/i.test(title) || standard === "6.EE.5" || standard === "6.EE.8")
+    return "inequalities";
   if (/equation/i.test(title) || standard === "6.EE.6" || standard === "6.EE.7") return "equations";
-  if (standard.startsWith("6.EE.2") || standard === "6.EE.3" || standard === "6.EE.4") return "expressions";
+  if (standard.startsWith("6.EE.2") || standard === "6.EE.3" || standard === "6.EE.4")
+    return "expressions";
   if (standard.startsWith("6.RP")) return "ratios";
   if (unit === 5 || standard === "6.G.1") return "area";
   if (standard === "6.G.2" || /volume/i.test(title)) return "volume";
@@ -45,13 +76,48 @@ const TOPIC_KEYWORDS = {
   exponents: ["exponent", "power", "base", "evaluate", "²", "³", "multiply", "repeated"],
   expressions: ["expression", "variable", "coefficient", "term", "evaluate", "algebraic"],
   equations: ["equation", "variable", "equal", "unknown", "represents", "write", "solve"],
-  inequalities: ["inequality", "inequal", "graph", "number line", "solution set", "shade", "circle"],
+  inequalities: [
+    "inequality",
+    "inequal",
+    "graph",
+    "number line",
+    "solution set",
+    "shade",
+    "circle",
+  ],
   ratios: ["ratio", "equivalent", "table", "compare", "batch", "rate"],
-  area: ["area", "parallelogram", "triangle", "trapezoid", "polygon", "composite", "base", "height"],
+  area: [
+    "area",
+    "parallelogram",
+    "triangle",
+    "trapezoid",
+    "polygon",
+    "composite",
+    "base",
+    "height",
+  ],
   volume: ["volume", "prism", "cubic", "length", "width", "height", "layer"],
   "surface-area": ["surface", "net", "face", "lateral", "pyramid", "prism"],
-  statistics: ["mean", "median", "mode", "data", "statistical", "plot", "histogram", "box", "deviation"],
-  "coordinate-plane": ["coordinate", "quadrant", "ordered pair", "plane", "axis", "reflect", "distance"],
+  statistics: [
+    "mean",
+    "median",
+    "mode",
+    "data",
+    "statistical",
+    "plot",
+    "histogram",
+    "box",
+    "deviation",
+  ],
+  "coordinate-plane": [
+    "coordinate",
+    "quadrant",
+    "ordered pair",
+    "plane",
+    "axis",
+    "reflect",
+    "distance",
+  ],
   "number-line": ["integer", "absolute", "compare", "order", "rational", "number line", "negative"],
   fractions: ["fraction", "divide", "mixed", "reciprocal", "numerator", "denominator"],
   decimals: ["decimal", "divide", "multiply", "add", "subtract", "place value"],
@@ -231,7 +297,9 @@ export function detectVisualMismatch(config, html) {
   const anti = ANTI_KEYWORDS[topic] || [];
   let wrongTopic = false;
   if (topic === "equations" || topic === "inequalities") {
-    wrongTopic = /Base = \d · Exponent|introduction-to-exponents|2³|Multiply 2 three times/i.test(html);
+    wrongTopic = /Base = \d · Exponent|introduction-to-exponents|2³|Multiply 2 three times/i.test(
+      html,
+    );
   } else if (topic !== "exponents") {
     wrongTopic = /Base = \d · Exponent = \d · Multiply/i.test(html);
   }
@@ -259,7 +327,9 @@ export function scoreHomeworkAlignment(config, html) {
     issues.push(`Visual explainer shows wrong topic (expected ${topic})`);
   }
 
-  const keywordHits = lessonMeta.keywords.filter((kw) => headerSlice.includes(kw.toLowerCase())).length;
+  const keywordHits = lessonMeta.keywords.filter((kw) =>
+    headerSlice.includes(kw.toLowerCase()),
+  ).length;
   if (keywordHits < 2) {
     score -= 15;
     issues.push("Few lesson keywords in intro section");

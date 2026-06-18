@@ -76,7 +76,11 @@ for (const id of lessonIds) {
     issues.push({ id, level: "HIGH", msg: "No quick check problems" });
   }
 
-  if (/\/curriculum\//i.test(html) || /Curriculum Hub/i.test(html) || /Back to curriculum/i.test(html)) {
+  if (
+    /\/curriculum\//i.test(html) ||
+    /Curriculum Hub/i.test(html) ||
+    /Back to curriculum/i.test(html)
+  ) {
     issues.push({ id, level: "CRITICAL", msg: "Contains curriculum/hub navigation link" });
   }
 

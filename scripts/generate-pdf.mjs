@@ -12,13 +12,7 @@
 // and exits 0 (so the build is never blocked); the HTML/DOCX downloads still
 // work and the PDF link will resolve once a binary is available.
 
-import {
-  readdirSync,
-  existsSync,
-  mkdirSync,
-  rmSync,
-  readFileSync,
-} from "node:fs";
+import { readdirSync, existsSync, mkdirSync, rmSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { spawn } from "node:child_process";
@@ -47,17 +41,10 @@ function findChrome() {
     if (existsSync(c)) return c;
   }
   // Look inside the Playwright cache (chromium-*/chrome-*).
-  const pwCache = join(
-    process.env.HOME || "",
-    "Library/Caches/ms-playwright",
-  );
+  const pwCache = join(process.env.HOME || "", "Library/Caches/ms-playwright");
   if (existsSync(pwCache)) {
     for (const d of readdirSync(pwCache)) {
-      const mac = join(
-        pwCache,
-        d,
-        "chrome-mac/Chromium.app/Contents/MacOS/Chromium",
-      );
+      const mac = join(pwCache, d, "chrome-mac/Chromium.app/Contents/MacOS/Chromium");
       if (existsSync(mac)) return mac;
       const lin = join(pwCache, d, "chrome-linux/chrome");
       if (existsSync(lin)) return lin;
@@ -87,10 +74,7 @@ function fileSize(p) {
 // process group — Chrome does not always self-exit when another instance is
 // running, so we never rely on it terminating on its own.
 async function renderPdf(chrome, htmlPath, outPath) {
-  const profile = join(
-    tmpdir(),
-    `neft-pdf-${process.pid}-${Math.random().toString(36).slice(2)}`,
-  );
+  const profile = join(tmpdir(), `neft-pdf-${process.pid}-${Math.random().toString(36).slice(2)}`);
   try {
     rmSync(outPath, { force: true });
   } catch {}

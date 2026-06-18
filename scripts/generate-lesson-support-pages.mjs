@@ -172,7 +172,9 @@ function familyPage(id, cfg, unit, lesson) {
         .map(
           (w) =>
             `<li><span class="kw">${esc(w.term)}</span> — ${esc(w.definition || "")}${
-              w.definitionEs ? `<br><span class="es-text">Español: ${esc(w.termEs || w.term)} — ${esc(w.definitionEs)}</span>` : ""
+              w.definitionEs
+                ? `<br><span class="es-text">Español: ${esc(w.termEs || w.term)} — ${esc(w.definitionEs)}</span>`
+                : ""
             }</li>`,
         )
         .join("")}</ul>`
@@ -247,7 +249,13 @@ function familyPage(id, cfg, unit, lesson) {
   ${SENTENCE_FRAMES.map((f) => `<p class="frame">${esc(f)}</p>`).join("")}
 </section>`;
 
-  return page({ title: `Family Support — Unit ${unit} Lesson ${lesson}: ${cfg.title || id}`, kind: "family", head, body, id });
+  return page({
+    title: `Family Support — Unit ${unit} Lesson ${lesson}: ${cfg.title || id}`,
+    kind: "family",
+    head,
+    body,
+    id,
+  });
 }
 
 function teacherNotesPage(id, cfg, unit, lesson) {
@@ -257,13 +265,19 @@ function teacherNotesPage(id, cfg, unit, lesson) {
   const stdBadge = cfg.standard ? `<span class="std">${esc(cfg.standard)}</span>` : "";
 
   const extension =
-    cfg.connect?.scenario || (Array.isArray(cfg.practice?.extending) ? "See the 'extending' practice tier in the lesson." : "");
+    cfg.connect?.scenario ||
+    (Array.isArray(cfg.practice?.extending)
+      ? "See the 'extending' practice tier in the lesson."
+      : "");
 
   const exitHtml = et?.stem
     ? `<p>${esc(et.stem)}</p>${
         Array.isArray(et.choices)
           ? `<ul>${et.choices
-              .map((c, i) => `<li>${esc(c)}${i === et.correctIndex ? ' <span class="answer">✓ correct</span>' : ""}</li>`)
+              .map(
+                (c, i) =>
+                  `<li>${esc(c)}${i === et.correctIndex ? ' <span class="answer">✓ correct</span>' : ""}</li>`,
+              )
               .join("")}</ul>`
           : ""
       }${et.explanation ? `<p class="es-text">${esc(et.explanation)}</p>` : ""}`
@@ -323,7 +337,13 @@ function teacherNotesPage(id, cfg, unit, lesson) {
   <p>${esc(extension || "Have early finishers create their own problem and trade with a partner to check.")}</p>
 </section>`;
 
-  return page({ title: `Teacher Notes — Unit ${unit} Lesson ${lesson}: ${cfg.title || id}`, kind: "teacher-notes", head, body, id });
+  return page({
+    title: `Teacher Notes — Unit ${unit} Lesson ${lesson}: ${cfg.title || id}`,
+    kind: "teacher-notes",
+    head,
+    body,
+    id,
+  });
 }
 
 function studentHelpPage(id, cfg, unit, lesson) {
@@ -336,7 +356,7 @@ function studentHelpPage(id, cfg, unit, lesson) {
     ? `<ul>${v.map((w) => `<li><span class="kw">${esc(w.term)}</span> — ${esc(w.definition || "")}</li>`).join("")}</ul>`
     : `<p>See the lesson for key words.</p>`;
 
-  const tryIt = et?.stem || (cfg.launch?.conceptIntro?.youDo?.lines?.[0] || "");
+  const tryIt = et?.stem || cfg.launch?.conceptIntro?.youDo?.lines?.[0] || "";
   const tryAns = et?.choices?.[et?.correctIndex];
 
   const head = `<p class="eyebrow">Student Help Card</p>
@@ -375,7 +395,13 @@ ${
   ${cfg.languageObjective ? `<p class="es-text">Goal: ${esc(cfg.languageObjective)}</p>` : ""}
 </section>`;
 
-  return page({ title: `Student Help — Lesson ${lesson}: ${cfg.title || id}`, kind: "student-help", head, body, id });
+  return page({
+    title: `Student Help — Lesson ${lesson}: ${cfg.title || id}`,
+    kind: "student-help",
+    head,
+    body,
+    id,
+  });
 }
 
 /* ---------- write ---------- */

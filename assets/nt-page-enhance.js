@@ -17,7 +17,7 @@
 
   (function loadProgressBridge() {
     if (window.CurriculumProgressBridge) return;
-    if (document.querySelector('script[data-nt-progress-bridge]')) return;
+    if (document.querySelector("script[data-nt-progress-bridge]")) return;
     var s = document.createElement("script");
     s.src = "/assets/curriculum-progress-bridge.js";
     s.defer = true;
@@ -122,13 +122,10 @@
     return (stu.name || "Student").replace(/[^A-Za-z0-9._-]+/g, "_");
   }
   function pageSlug() {
-    return (document.title || location.pathname)
-      .replace(/[^A-Za-z0-9._-]+/g, "-")
-      .slice(0, 60);
+    return (document.title || location.pathname).replace(/[^A-Za-z0-9._-]+/g, "-").slice(0, 60);
   }
   function maybeGrade() {
-    if (!Array.isArray(window.NT_GRADE_ITEMS) || !window.NT_GRADE_ITEMS.length)
-      return "";
+    if (!Array.isArray(window.NT_GRADE_ITEMS) || !window.NT_GRADE_ITEMS.length) return "";
     var items = window.NT_GRADE_ITEMS,
       earned = 0,
       possible = 0,
@@ -211,12 +208,9 @@
       return;
     }
     var clone = document.body.cloneNode(true);
-    Array.prototype.forEach.call(
-      clone.querySelectorAll(".nt-pe-bar"),
-      function (n) {
-        n.remove();
-      },
-    );
+    Array.prototype.forEach.call(clone.querySelectorAll(".nt-pe-bar"), function (n) {
+      n.remove();
+    });
     var html =
       "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>" +
       "<head><meta charset='utf-8'><title>" +
@@ -268,7 +262,6 @@
   function mount() {
     if (isActivityPage()) document.body.appendChild(bar);
   }
-  if (document.readyState === "loading")
-    document.addEventListener("DOMContentLoaded", mount);
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mount);
   else mount();
 })();

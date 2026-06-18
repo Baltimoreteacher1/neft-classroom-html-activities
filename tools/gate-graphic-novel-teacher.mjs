@@ -39,10 +39,7 @@ const BLOCK = `<!-- ${MARK}:begin (hide Teacher button from students — tools/g
 <script>(function(){try{if(new URLSearchParams(location.search).get("teacher")!=="1"){var b=document.getElementById("teacherBtn");if(b&&b.parentNode){b.parentNode.removeChild(b);}}}catch(e){}})();</script>
 <!-- ${MARK}:end -->
 `;
-const BLOCK_RE = new RegExp(
-  `\\n?<!-- ${MARK}:begin[\\s\\S]*?${MARK}:end -->\\n?`,
-  "g",
-);
+const BLOCK_RE = new RegExp(`\\n?<!-- ${MARK}:begin[\\s\\S]*?${MARK}:end -->\\n?`, "g");
 
 const mode = process.argv.includes("--revert")
   ? "revert"

@@ -178,13 +178,11 @@
   }
   function makeSuffix() {
     var s = "";
-    for (var i = 0; i < CODE_SUFFIX_LEN; i++)
-      s += CODE_ALPHABET[randInt(CODE_ALPHABET.length)];
+    for (var i = 0; i < CODE_SUFFIX_LEN; i++) s += CODE_ALPHABET[randInt(CODE_ALPHABET.length)];
     return s;
   }
   function derivePrefix(cfg) {
-    var raw =
-      cfg.activityPrefix || cfg.activityTitle || cfg.activityId || "WORK";
+    var raw = cfg.activityPrefix || cfg.activityTitle || cfg.activityId || "WORK";
     // Use leading alphabetic chunk of the title/prefix, upper-cased, max 6 chars.
     var letters = String(raw)
       .toUpperCase()
@@ -355,9 +353,7 @@
   };
   GoogleAppsScriptAdapter.prototype.load = function (code) {
     if (!this.endpoint) return Promise.resolve(null);
-    return fetch(
-      this.endpoint + "?action=load&code=" + encodeURIComponent(code),
-    )
+    return fetch(this.endpoint + "?action=load&code=" + encodeURIComponent(code))
       .then(function (r) {
         return r.ok ? r.json() : null;
       })
@@ -403,8 +399,7 @@
       var tag = cur.tagName.toLowerCase();
       var idx = 1;
       var sib = cur;
-      while ((sib = sib.previousElementSibling))
-        if (sib.tagName === cur.tagName) idx++;
+      while ((sib = sib.previousElementSibling)) if (sib.tagName === cur.tagName) idx++;
       parts.unshift(tag + ":" + idx);
       cur = cur.parentElement;
     }
@@ -458,8 +453,7 @@
   /* ---------------------------------------------------------------------------
    * State capture
    * ------------------------------------------------------------------------ */
-  var FIELD_SELECTOR =
-    'input, textarea, select, [contenteditable=""], [contenteditable="true"]';
+  var FIELD_SELECTOR = 'input, textarea, select, [contenteditable=""], [contenteditable="true"]';
 
   function captureFields() {
     var out = {};
@@ -475,16 +469,13 @@
         // Skip our own UI and password fields (never store secrets).
         if (node.closest && node.closest("#nsr-root")) return;
         if (node.type === "password") return;
-        if (node.getAttribute && node.getAttribute("data-nsr-ignore") != null)
-          return;
+        if (node.getAttribute && node.getAttribute("data-nsr-ignore") != null) return;
         var key = elementKey(node);
         var tag = node.tagName.toLowerCase();
         if (tag === "input") {
           var type = (node.type || "text").toLowerCase();
-          if (type === "checkbox")
-            out[key] = { t: "checkbox", v: !!node.checked };
-          else if (type === "radio")
-            out[key] = { t: "radio", v: !!node.checked };
+          if (type === "checkbox") out[key] = { t: "checkbox", v: !!node.checked };
+          else if (type === "radio") out[key] = { t: "radio", v: !!node.checked };
           else if (type === "file")
             return; // cannot persist file inputs
           else out[key] = { t: "input", v: node.value };
@@ -534,15 +525,12 @@
     nav.hiddenSections = safe(
       function () {
         var keys = [];
-        [].forEach.call(
-          document.querySelectorAll("[data-nsr-section]"),
-          function (s) {
-            keys.push({
-              k: elementKey(s),
-              hidden: !!s.hidden || s.hasAttribute("hidden"),
-            });
-          },
-        );
+        [].forEach.call(document.querySelectorAll("[data-nsr-section]"), function (s) {
+          keys.push({
+            k: elementKey(s),
+            hidden: !!s.hidden || s.hasAttribute("hidden"),
+          });
+        });
         return keys;
       },
       "capture-sections",
@@ -562,10 +550,8 @@
         var map = [];
         [].forEach.call(draggables, function (d) {
           var container =
-            d.closest("[data-nsr-dropzone]") ||
-            (d.parentElement ? d.parentElement : null);
-          if (container)
-            map.push({ item: elementKey(d), zone: elementKey(container) });
+            d.closest("[data-nsr-dropzone]") || (d.parentElement ? d.parentElement : null);
+          if (container) map.push({ item: elementKey(d), zone: elementKey(container) });
         });
         return map.length ? map : null;
       },
@@ -581,12 +567,9 @@
     data.marked = safe(
       function () {
         var out = {};
-        [].forEach.call(
-          document.querySelectorAll("[data-nsr-value]"),
-          function (n) {
-            out[elementKey(n)] = n.getAttribute("data-nsr-value");
-          },
-        );
+        [].forEach.call(document.querySelectorAll("[data-nsr-value]"), function (n) {
+          out[elementKey(n)] = n.getAttribute("data-nsr-value");
+        });
         return out;
       },
       "capture-marked",
@@ -602,12 +585,8 @@
           ),
           function (n) {
             out[elementKey(n)] = {
-              score:
-                n.getAttribute("data-score") ||
-                n.getAttribute("data-nsr-score"),
-              progress:
-                n.getAttribute("data-progress") ||
-                n.getAttribute("data-nsr-progress"),
+              score: n.getAttribute("data-score") || n.getAttribute("data-nsr-score"),
+              progress: n.getAttribute("data-progress") || n.getAttribute("data-nsr-progress"),
               text: (n.textContent || "").trim().slice(0, 120),
             };
           },
@@ -701,16 +680,10 @@
         if (t.getAttribute("aria-selected") != null) {
           var list = t.closest('[role="tablist"]');
           if (list)
-            [].forEach.call(
-              list.querySelectorAll('[role="tab"], .tab'),
-              function (sib) {
-                if (sib.getAttribute("aria-selected") != null)
-                  sib.setAttribute(
-                    "aria-selected",
-                    sib === t ? "true" : "false",
-                  );
-              },
-            );
+            [].forEach.call(list.querySelectorAll('[role="tab"], .tab'), function (sib) {
+              if (sib.getAttribute("aria-selected") != null)
+                sib.setAttribute("aria-selected", sib === t ? "true" : "false");
+            });
           t.setAttribute("aria-selected", "true");
         }
       });
@@ -792,13 +765,10 @@
     _resolveConfig: function (c) {
       var path = location.pathname || "/";
       var autoId =
-        slugify(
-          path.replace(/index\.html?$/i, "").replace(/\/+$/, "") || "home",
-        ) || "home";
+        slugify(path.replace(/index\.html?$/i, "").replace(/\/+$/, "") || "home") || "home";
       var autoTitle =
         (document.title && document.title.trim()) ||
-        (document.querySelector("h1") &&
-          document.querySelector("h1").textContent.trim()) ||
+        (document.querySelector("h1") && document.querySelector("h1").textContent.trim()) ||
         autoId;
       // Backend resolution order: explicit page config > CENTRAL_RECORD (if an
       // endpoint is pasted in) > localStorage. If CENTRAL_RECORD has no endpoint
@@ -834,9 +804,7 @@
       );
       var lastCode = safe(
         function () {
-          return localStorage.getItem(
-            LS_PREFIX + "activity:" + this.cfg.activityId + ":lastCode",
-          );
+          return localStorage.getItem(LS_PREFIX + "activity:" + this.cfg.activityId + ":lastCode");
         }.bind(this),
         "lastCode",
         null,
@@ -857,10 +825,7 @@
       safe(
         function () {
           localStorage.setItem(LS_PREFIX + "last", code);
-          localStorage.setItem(
-            LS_PREFIX + "activity:" + this.cfg.activityId + ":lastCode",
-            code,
-          );
+          localStorage.setItem(LS_PREFIX + "activity:" + this.cfg.activityId + ":lastCode", code);
         }.bind(this),
         "rememberLast",
       );
@@ -898,9 +863,7 @@
       var code = normalizeCode(rawCode);
       if (!code) return Promise.resolve({ ok: false, reason: "empty" });
       return this._loadAndRestore(code, false).then(function (ok) {
-        return ok
-          ? { ok: true, code: code }
-          : { ok: false, reason: "not-found" };
+        return ok ? { ok: true, code: code } : { ok: false, reason: "not-found" };
       });
     },
 
@@ -934,8 +897,7 @@
           // Restore after the page's own scripts have settled.
           setTimeout(function () {
             self._restoreState(rec.state || {});
-            if (!silent)
-              showToast(self, "Restored your work for code " + code + ".");
+            if (!silent) showToast(self, "Restored your work for code " + code + ".");
             setStatus(self, "saved");
           }, 60);
           return true;
@@ -1009,8 +971,7 @@
     },
 
     save: function (reason) {
-      if (!this.record)
-        return Promise.resolve({ ok: false, reason: "no-session" });
+      if (!this.record) return Promise.resolve({ ok: false, reason: "no-session" });
       this.record.state = this._captureState();
       this.record.progressPercent = this.record.state.progressPercent;
       this.record.updatedAt = now();
@@ -1032,9 +993,7 @@
             return { ok: true, local: true };
           }
           // Mirror to remote backend.
-          return self.adapter[reason === "create" ? "create" : "save"](
-            rec,
-          ).then(
+          return self.adapter[reason === "create" ? "create" : "save"](rec).then(
             function () {
               setStatus(self, "saved");
               return { ok: true, remote: true };
@@ -1062,8 +1021,7 @@
       document.addEventListener(
         "input",
         function (e) {
-          if (e.target && e.target.closest && e.target.closest("#nsr-root"))
-            return;
+          if (e.target && e.target.closest && e.target.closest("#nsr-root")) return;
           self._dirty = true;
           doSave();
         },
@@ -1072,8 +1030,7 @@
       document.addEventListener(
         "change",
         function (e) {
-          if (e.target && e.target.closest && e.target.closest("#nsr-root"))
-            return;
+          if (e.target && e.target.closest && e.target.closest("#nsr-root")) return;
           self._dirty = true;
           doSave();
         },
@@ -1104,8 +1061,7 @@
         }
       });
       document.addEventListener("visibilitychange", function () {
-        if (document.visibilityState === "hidden" && self.record)
-          self.save("hide");
+        if (document.visibilityState === "hidden" && self.record) self.save("hide");
       });
     },
 
@@ -1120,9 +1076,7 @@
       // Clears THIS browser's pointer to the activity session (not the record).
       safe(
         function () {
-          localStorage.removeItem(
-            LS_PREFIX + "activity:" + this.cfg.activityId + ":lastCode",
-          );
+          localStorage.removeItem(LS_PREFIX + "activity:" + this.cfg.activityId + ":lastCode");
         }.bind(this),
         "reset",
       );
@@ -1205,8 +1159,7 @@
   }
 
   function onReady(fn) {
-    if (document.readyState === "loading")
-      document.addEventListener("DOMContentLoaded", fn);
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", fn);
     else fn();
   }
 
@@ -1410,8 +1363,7 @@
     if (q("#nsr-code")) q("#nsr-code").textContent = r.saveCode;
     if (q("#nsr-m-name")) q("#nsr-m-name").textContent = r.studentName || "—";
     if (q("#nsr-m-section")) q("#nsr-m-section").textContent = r.section || "—";
-    if (q("#nsr-m-progress"))
-      q("#nsr-m-progress").textContent = (r.progressPercent || 0) + "%";
+    if (q("#nsr-m-progress")) q("#nsr-m-progress").textContent = (r.progressPercent || 0) + "%";
     if (q("#nsr-m-saved"))
       q("#nsr-m-saved").textContent = safe(
         function () {

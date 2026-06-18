@@ -41,7 +41,9 @@ function p(text, opts = {}) {
 function blankWork(n = 1) {
   const out = [];
   for (let i = 0; i < n; i++) {
-    out.push(p("____________________________________________________", { color: "BBBBBB", after: 80 }));
+    out.push(
+      p("____________________________________________________", { color: "BBBBBB", after: 80 }),
+    );
   }
   return out;
 }
@@ -63,48 +65,106 @@ function buildDoc(d) {
   const kids = [];
 
   kids.push(p(`Get Ready: ${plain(d.title)}`, { bold: true, size: 36, color: NAVY, after: 60 }));
-  kids.push(p(`Readiness practice for Lesson ${id}  ·  Builds toward ${d.standard}`, { italics: true, color: BLUE, size: 20, after: 120 }));
-  kids.push(p("Name: ______________________________      Period: ______      Date: __________", { size: 22, after: 160 }));
+  kids.push(
+    p(`Readiness practice for Lesson ${id}  ·  Builds toward ${d.standard}`, {
+      italics: true,
+      color: BLUE,
+      size: 20,
+      after: 120,
+    }),
+  );
+  kids.push(
+    p("Name: ______________________________      Period: ______      Date: __________", {
+      size: 22,
+      after: 160,
+    }),
+  );
 
   kids.push(p("Why this matters", { bold: true, size: 24, color: GOLD, after: 60 }));
   kids.push(p(plain(d.why), { size: 22, after: 100 }));
   if (Array.isArray(d.skills) && d.skills.length) {
-    kids.push(p(`Skills you'll warm up: ${d.skills.join("  ·  ")}`, { size: 20, color: "5E6E7E", after: 160 }));
+    kids.push(
+      p(`Skills you'll warm up: ${d.skills.join("  ·  ")}`, {
+        size: 20,
+        color: "5E6E7E",
+        after: 160,
+      }),
+    );
   }
 
-  kids.push(p("Pick your level (your teacher or the online check will point you to one):", { bold: true, size: 22, after: 120 }));
+  kids.push(
+    p("Pick your level (your teacher or the online check will point you to one):", {
+      bold: true,
+      size: 22,
+      after: 120,
+    }),
+  );
 
   for (const tier of tiers) {
-    kids.push(p(TIER_LABEL[tier.level], { bold: true, size: 24, color: NAVY, before: 160, after: 40 }));
+    kids.push(
+      p(TIER_LABEL[tier.level], { bold: true, size: 24, color: NAVY, before: 160, after: 40 }),
+    );
     if (tier.intro) kids.push(p(plain(tier.intro), { italics: true, size: 20, after: 100 }));
     tier.items.forEach((it, i) => {
       const q = plain(it.q).replace(/^[A-Z]\.\s*/, "");
       kids.push(p(`${i + 1}.  ${q}`, { size: 22, after: 40 }));
       if (it.type === "mc") {
-        kids.push(p(`     choices: ${(it.opts || []).map((o) => plain(o.t)).join("   /   ")}`, { size: 20, color: "5E6E7E", after: 40 }));
+        kids.push(
+          p(`     choices: ${(it.opts || []).map((o) => plain(o.t)).join("   /   ")}`, {
+            size: 20,
+            color: "5E6E7E",
+            after: 40,
+          }),
+        );
       }
       kids.push(...blankWork(1));
     });
   }
 
-  kids.push(p("Exit Ticket — show you're ready", { bold: true, size: 24, color: CORAL, before: 200, after: 60 }));
+  kids.push(
+    p("Exit Ticket — show you're ready", {
+      bold: true,
+      size: 24,
+      color: CORAL,
+      before: 200,
+      after: 60,
+    }),
+  );
   d.exit.forEach((it, i) => {
     const q = plain(it.q).replace(/^\d+\.\s*/, "");
     kids.push(p(`${i + 1}.  ${q}`, { size: 22, after: 40 }));
     if (it.type === "mc") {
-      kids.push(p(`     choices: ${(it.opts || []).map((o) => plain(o.t)).join("   /   ")}`, { size: 20, color: "5E6E7E", after: 40 }));
+      kids.push(
+        p(`     choices: ${(it.opts || []).map((o) => plain(o.t)).join("   /   ")}`, {
+          size: 20,
+          color: "5E6E7E",
+          after: 40,
+        }),
+      );
     }
     kids.push(...blankWork(1));
   });
 
-  kids.push(p(`When you've finished, open Lesson ${id} and dive in!`, { italics: true, size: 20, color: BLUE, before: 120, after: 60 }));
+  kids.push(
+    p(`When you've finished, open Lesson ${id} and dive in!`, {
+      italics: true,
+      size: 20,
+      color: BLUE,
+      before: 120,
+      after: 60,
+    }),
+  );
 
   // Answer key on its own page
   kids.push(new Paragraph({ children: [new PageBreak()] }));
   kids.push(p("Answer Key (teacher)", { bold: true, size: 28, color: NAVY, after: 100 }));
   for (const tier of tiers) {
-    kids.push(p(TIER_LABEL[tier.level], { bold: true, size: 22, color: BLUE, before: 100, after: 40 }));
-    tier.items.forEach((it, i) => kids.push(p(`${i + 1}. ${answerText(it)}`, { size: 20, after: 30 })));
+    kids.push(
+      p(TIER_LABEL[tier.level], { bold: true, size: 22, color: BLUE, before: 100, after: 40 }),
+    );
+    tier.items.forEach((it, i) =>
+      kids.push(p(`${i + 1}. ${answerText(it)}`, { size: 20, after: 30 })),
+    );
   }
   kids.push(p("Exit Ticket", { bold: true, size: 22, color: CORAL, before: 100, after: 40 }));
   d.exit.forEach((it, i) => kids.push(p(`${i + 1}. ${answerText(it)}`, { size: 20, after: 30 })));

@@ -39,9 +39,7 @@ const entries = readdirSync(lessonsDir)
   .filter((d) => LESSON_DIR_RE.test(d))
   .filter((d) => existsSync(join(lessonsDir, d, "config.json")))
   .map((id) => {
-    const cfg = JSON.parse(
-      readFileSync(join(lessonsDir, id, "config.json"), "utf8"),
-    );
+    const cfg = JSON.parse(readFileSync(join(lessonsDir, id, "config.json"), "utf8"));
     const entry = familyHomeworkEntry(id, cfg);
     return entry ? [id, entry] : null;
   })

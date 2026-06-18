@@ -96,9 +96,7 @@ footer{color:var(--muted);font-size:14px;text-align:center;margin-top:40px;}
 
 function card({ id, unit, lesson, title, standard }) {
   const lnum = `Unit ${esc(unit)} · Lesson ${esc(lesson)}`;
-  const std = standard
-    ? `<span class="std">${esc(standard)}</span>`
-    : "";
+  const std = standard ? `<span class="std">${esc(standard)}</span>` : "";
   return `      <div class="activity-card">
         <p class="lnum">${lnum}</p>
         <h3>${esc(title)}</h3>
@@ -125,9 +123,7 @@ ${cards}
 }
 
 function page(unitsSorted, total) {
-  const sections = unitsSorted
-    .map(([unit, lessons]) => unitSection(unit, lessons))
-    .join("\n");
+  const sections = unitsSorted.map(([unit, lessons]) => unitSection(unit, lessons)).join("\n");
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -176,9 +172,7 @@ function main() {
   for (const id of ids) {
     let cfg;
     try {
-      cfg = JSON.parse(
-        fs.readFileSync(path.join(lessonsDir, id, "config.json"), "utf8")
-      );
+      cfg = JSON.parse(fs.readFileSync(path.join(lessonsDir, id, "config.json"), "utf8"));
     } catch (e) {
       console.error(`Skipping ${id}: bad config.json (${e.message})`);
       continue;
@@ -202,15 +196,13 @@ function main() {
   for (const lessons of byUnit.values()) {
     lessons.sort((a, b) => a.lesson - b.lesson || a.id.localeCompare(b.id));
   }
-  const unitsSorted = [...byUnit.entries()].sort(
-    (a, b) => Number(a[0]) - Number(b[0])
-  );
+  const unitsSorted = [...byUnit.entries()].sort((a, b) => Number(a[0]) - Number(b[0]));
 
   fs.mkdirSync(outDir, { recursive: true });
   fs.writeFileSync(path.join(outDir, "index.html"), page(unitsSorted, total), "utf8");
 
   console.log(
-    `Generated reveal-math/index.html — ${total} lessons across ${unitsSorted.length} units.`
+    `Generated reveal-math/index.html — ${total} lessons across ${unitsSorted.length} units.`,
   );
 }
 

@@ -51,12 +51,14 @@ function listLessonIds() {
 function resolveLesson(input) {
   const ids = listLessonIds();
   if (ids.includes(input)) return input;
-  const near = ids.filter((id) => id === input || id.startsWith(`${input}-`) || id.startsWith(input));
+  const near = ids.filter(
+    (id) => id === input || id.startsWith(`${input}-`) || id.startsWith(input),
+  );
   if (near.length === 1) return near[0];
   if (near.length > 1) {
     die(
       `Lesson "${input}" is ambiguous. Did you mean one of:\n   ${near.join("   ")}\n` +
-        `Re-run with the exact name, e.g. npm run add-reveal -- ${near[0]} <file>`
+        `Re-run with the exact name, e.g. npm run add-reveal -- ${near[0]} <file>`,
     );
   }
   die(`No lesson folder named "${input}" under lessons/. Check the lesson number.`);
@@ -109,7 +111,7 @@ function convertPdf(pdfPath, outDir) {
     execFileSync("pdftoppm", ["-png", "-r", "150", pdfPath, prefix], { stdio: "pipe" });
   } catch (e) {
     die(
-      `PDF conversion failed (pdftoppm). Is it installed? (brew install poppler)\n   ${e.message || e}`
+      `PDF conversion failed (pdftoppm). Is it installed? (brew install poppler)\n   ${e.message || e}`,
     );
   }
   const produced = fs
@@ -153,7 +155,7 @@ function main() {
         "  npm run add-reveal -- 8-5 ~/Desktop/reveal-8-5-images/",
         "  npm run add-reveal -- 1-1 slide1.png slide2.png slide3.png",
         "",
-      ].join("\n")
+      ].join("\n"),
     );
     process.exit(args.length < 2 ? 1 : 0);
   }
@@ -179,7 +181,7 @@ function main() {
       execFileSync(
         process.execPath,
         [path.join(__dirname, "reveal-lesson.mjs"), lessonId, first, ...passthroughFlags],
-        { stdio: "inherit" }
+        { stdio: "inherit" },
       );
     } catch (e) {
       die(`Curated Reveal integration failed: ${e.message || e}`);
@@ -187,7 +189,10 @@ function main() {
     return;
   }
 
-  const isPdf = inputs.length === 1 && fs.statSync(first).isFile() && path.extname(first).toLowerCase() === ".pdf";
+  const isPdf =
+    inputs.length === 1 &&
+    fs.statSync(first).isFile() &&
+    path.extname(first).toLowerCase() === ".pdf";
 
   console.log(`\n📚 Lesson: ${lessonId}`);
   const outDir = freshRevealDir(lessonId);
@@ -207,7 +212,7 @@ function main() {
     execFileSync(
       process.execPath,
       [path.join(__dirname, "integrate-reveal-slides.mjs"), "--lesson", lessonId],
-      { stdio: "inherit" }
+      { stdio: "inherit" },
     );
   } catch (e) {
     die(`Injection step failed: ${e.message || e}`);
@@ -216,7 +221,9 @@ function main() {
   console.log(
     [
       "",
-      "🎉 Done. Reveal slides are now in BOTH decks AND the HTML lesson page for lesson " + lessonId + ".",
+      "🎉 Done. Reveal slides are now in BOTH decks AND the HTML lesson page for lesson " +
+        lessonId +
+        ".",
       "   • slides.html + slides.pptx — Reveal slides injected into the decks.",
       "   • config.json (revealSlides) — the lesson app shows each slide in its matching section.",
       "",
@@ -229,7 +236,7 @@ function main() {
       "",
       "Re-run this command anytime to replace the slides for this lesson.",
       "",
-    ].join("\n")
+    ].join("\n"),
   );
 }
 

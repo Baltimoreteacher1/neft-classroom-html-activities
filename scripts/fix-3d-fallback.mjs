@@ -28,8 +28,7 @@ const ACCURATE_P = `<p>
 
 // Matches both the "CDN" wording and the already-accurate "bundled" wording so
 // every fallback ends up with one consistent, correct message.
-const P_RE =
-  /<p>\s*Please use an up-to-date browser with WebGL[\s\S]*?<\/p>/;
+const P_RE = /<p>\s*Please use an up-to-date browser with WebGL[\s\S]*?<\/p>/;
 
 let edited = 0;
 let linked = 0;

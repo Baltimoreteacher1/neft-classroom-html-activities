@@ -83,8 +83,7 @@ function flagshipFamilyNotes(config) {
   return {
     learningTonight: {
       en: mission?.objective || plainObjective(config.contentObjective) || config.title,
-      es: config.contentObjectiveEs ||
-        `Practicar: ${config.title || "la lección de hoy"}`,
+      es: config.contentObjectiveEs || `Practicar: ${config.title || "la lección de hoy"}`,
     },
     conceptSteps: [
       {
@@ -114,7 +113,9 @@ function flagshipFamilyNotes(config) {
           hintEs: "Hablen de cada paso en voz alta.",
         },
         {
-          en: idea ? `Check: does your answer follow — ${idea}?` : "Check: does your answer match today's objective?",
+          en: idea
+            ? `Check: does your answer follow — ${idea}?`
+            : "Check: does your answer match today's objective?",
           es: idea
             ? `Verifiquen: ¿su respuesta sigue — ${idea}?`
             : "Verifiquen: ¿su respuesta coincide con el objetivo de hoy?",
@@ -125,11 +126,17 @@ function flagshipFamilyNotes(config) {
     },
     stuckTips: {
       say: [
-        { en: "What part of the mission story helps here?", es: "¿Qué parte de la historia de la misión ayuda aquí?" },
+        {
+          en: "What part of the mission story helps here?",
+          es: "¿Qué parte de la historia de la misión ayuda aquí?",
+        },
         { en: "Let's re-read the key idea together.", es: "Releamos juntos la idea clave." },
       ],
       dontSay: [
-        { en: "This flagship lesson is too hard — skip it.", es: "Esta lección estrella es muy difícil — sáltenla." },
+        {
+          en: "This flagship lesson is too hard — skip it.",
+          es: "Esta lección estrella es muy difícil — sáltenla.",
+        },
       ],
     },
   };
@@ -160,7 +167,10 @@ function makeStretchProblem(config, tierName) {
     title: `${tierName} — Spot the Common Mistake`,
     workedExample: [
       { label: "Read", work: `A student is working on ${title}.` },
-      { label: "Attempt", work: idea ? `They ignored the rule: ${idea}` : "They skipped a step in their work." },
+      {
+        label: "Attempt",
+        work: idea ? `They ignored the rule: ${idea}` : "They skipped a step in their work.",
+      },
       { label: "Check", work: "The answer does not match the math rule from class." },
     ],
     errorStep: 1,

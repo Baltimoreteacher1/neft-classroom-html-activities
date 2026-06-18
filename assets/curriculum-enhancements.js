@@ -30,8 +30,7 @@
   ];
 
   var FILTER_RULES = {
-    lessons:
-      /interactive lesson|slides\.html|handout\.html|\/lessons\/[^/]+\/?$/i,
+    lessons: /interactive lesson|slides\.html|handout\.html|\/lessons\/[^/]+\/?$/i,
     homework: /homework|family homework/i,
     games: /game|graphic novel|3d|project|bonus|arcade|lab|odyssey|netfold/i,
     notes: /guided notes|notes\.html|notes pdf|notes docx/i,
@@ -88,29 +87,22 @@
   }
 
   function syncProgressToggle(lessonId, href, completed) {
-    if (
-      window.CurriculumProgressBridge &&
-      window.CurriculumProgressBridge.syncToggle
-    ) {
+    if (window.CurriculumProgressBridge && window.CurriculumProgressBridge.syncToggle) {
       window.CurriculumProgressBridge.syncToggle(lessonId, href, completed);
     }
   }
 
   function hydrateProgressFromServer(callback) {
-    if (
-      !window.CurriculumProgressBridge ||
-      !window.CurriculumProgressBridge.hydrateFromServer
-    ) {
+    if (!window.CurriculumProgressBridge || !window.CurriculumProgressBridge.hydrateFromServer) {
       if (callback) callback(false);
       return;
     }
-    window.CurriculumProgressBridge.hydrateFromServer(
-      progress,
-      progressKey,
-    ).then(function (changed) {
-      if (changed) saveProgress();
-      if (callback) callback(changed);
-    });
+    window.CurriculumProgressBridge.hydrateFromServer(progress, progressKey).then(
+      function (changed) {
+        if (changed) saveProgress();
+        if (callback) callback(changed);
+      },
+    );
   }
 
   function loadTeacherMode() {
@@ -273,8 +265,7 @@
       return unitsData
         .map(function (u) {
           var lessons = (u.lessons || []).filter(function (l) {
-            var text =
-              (l.dataSearch || "") + " " + (l.title || "").toLowerCase();
+            var text = (l.dataSearch || "") + " " + (l.title || "").toLowerCase();
             return text.indexOf(token) > -1 && lessonMatchesFilter(l, filter);
           });
           if (!lessons.length) return null;
@@ -322,19 +313,8 @@
       if (!data || !data.index) return;
       if (typeof MiniSearch === "undefined") return;
       searchIndex = MiniSearch.loadJSON(data.index, {
-        fields: data.index.fields || [
-          "title",
-          "standard",
-          "objective",
-          "searchText",
-        ],
-        storeFields: data.index.storeFields || [
-          "id",
-          "title",
-          "standard",
-          "unit",
-          "lessonPath",
-        ],
+        fields: data.index.fields || ["title", "standard", "objective", "searchText"],
+        storeFields: data.index.storeFields || ["id", "title", "standard", "unit", "lessonPath"],
         searchOptions: {
           boost: { title: 3, standard: 2 },
           fuzzy: 0.2,
@@ -356,11 +336,7 @@
 
   function standardForLesson(lessonId) {
     if (!lessonId) return "";
-    return (
-      lessonStandards[lessonId] ||
-      lessonStandards[lessonId.replace("-flagship", "")] ||
-      ""
-    );
+    return lessonStandards[lessonId] || lessonStandards[lessonId.replace("-flagship", "")] || "";
   }
 
   function injectStandardBadge(infoBlock, lessonId) {
@@ -373,14 +349,12 @@
     }
     if (existing) {
       existing.textContent = code;
-      existing.href =
-        "http://corestandards.org/Math/Content/" + code.replace(".", "/");
+      existing.href = "http://corestandards.org/Math/Content/" + code.replace(".", "/");
       return;
     }
     var badge = document.createElement("a");
     badge.className = "lesson-standard-badge badge badge-cluster";
-    badge.href =
-      "http://corestandards.org/Math/Content/" + code.replace(".", "/");
+    badge.href = "http://corestandards.org/Math/Content/" + code.replace(".", "/");
     badge.target = "_blank";
     badge.rel = "noopener noreferrer";
     badge.title = "Common Core State Standard";
@@ -429,14 +403,12 @@
       "Student view hides teacher-only links (Google Slides, Forms, printable packets). " +
       '<button type="button" class="hub-hint-link" id="hub-hint-teacher">Switch to Teacher Mode</button> ' +
       "to restore them.";
-    hint
-      .querySelector("#hub-hint-teacher")
-      .addEventListener("click", function () {
-        teacherMode = true;
-        saveTeacherMode(true);
-        applyTeacherMode();
-        updateProgressSummary();
-      });
+    hint.querySelector("#hub-hint-teacher").addEventListener("click", function () {
+      teacherMode = true;
+      saveTeacherMode(true);
+      applyTeacherMode();
+      updateProgressSummary();
+    });
     controls.parentNode.insertBefore(hint, controls);
 
     controls.parentNode.insertBefore(bar, controls.nextSibling);
@@ -458,17 +430,11 @@
       btn.className = "hub-filter-chip";
       btn.dataset.filter = chip.id;
       btn.textContent = chip.label;
-      btn.setAttribute(
-        "aria-pressed",
-        chip.id === FILTER_ALL ? "true" : "false",
-      );
+      btn.setAttribute("aria-pressed", chip.id === FILTER_ALL ? "true" : "false");
       btn.addEventListener("click", function () {
         activeFilter = chip.id;
         chips.querySelectorAll(".hub-filter-chip").forEach(function (c) {
-          c.setAttribute(
-            "aria-pressed",
-            c.dataset.filter === activeFilter ? "true" : "false",
-          );
+          c.setAttribute("aria-pressed", c.dataset.filter === activeFilter ? "true" : "false");
         });
         runSearch();
       });
@@ -491,17 +457,13 @@
       var anchor = document.getElementById("hub-student-hint") || controls;
       anchor.parentNode.insertBefore(sticky, anchor);
     }
-    [
-      document.getElementById("hub-student-hint"),
-      controls,
-      bar,
-      chips,
-      summary,
-    ].forEach(function (el) {
-      if (el && el.parentNode !== sticky) {
-        sticky.appendChild(el);
-      }
-    });
+    [document.getElementById("hub-student-hint"), controls, bar, chips, summary].forEach(
+      function (el) {
+        if (el && el.parentNode !== sticky) {
+          sticky.appendChild(el);
+        }
+      },
+    );
   }
 
   function updateProgressSummary() {
@@ -523,8 +485,7 @@
         alignmentType: "educationalSubject",
         educationalFramework: "Common Core State Standards for Mathematics",
         targetName: code,
-        targetUrl:
-          "http://corestandards.org/Math/Content/" + code.replace(".", "/"),
+        targetUrl: "http://corestandards.org/Math/Content/" + code.replace(".", "/"),
       },
     ];
   }
@@ -574,16 +535,14 @@
   }
 
   function enhancePrintFallbackAria() {
-    document
-      .querySelectorAll("details.unit, details.lesson")
-      .forEach(function (el) {
-        if (!el.hasAttribute("aria-expanded")) {
-          el.setAttribute("aria-expanded", el.open ? "true" : "false");
-        }
-        el.addEventListener("toggle", function () {
-          el.setAttribute("aria-expanded", el.open ? "true" : "false");
-        });
+    document.querySelectorAll("details.unit, details.lesson").forEach(function (el) {
+      if (!el.hasAttribute("aria-expanded")) {
+        el.setAttribute("aria-expanded", el.open ? "true" : "false");
+      }
+      el.addEventListener("toggle", function () {
+        el.setAttribute("aria-expanded", el.open ? "true" : "false");
       });
+    });
   }
 
   function markTeacherLinksInSource() {
@@ -624,19 +583,14 @@
             ? " in <strong>" + escapeHtml(activeFilter) + "</strong>"
             : "") +
           '.</p><button type="button" class="hub-clear-filters">Clear search &amp; filters</button>';
-        panel
-          .querySelector(".hub-clear-filters")
-          .addEventListener("click", function () {
-            if (hubApi.searchBox) hubApi.searchBox.value = "";
-            activeFilter = FILTER_ALL;
-            document.querySelectorAll(".hub-filter-chip").forEach(function (c) {
-              c.setAttribute(
-                "aria-pressed",
-                c.dataset.filter === FILTER_ALL ? "true" : "false",
-              );
-            });
-            runSearch();
+        panel.querySelector(".hub-clear-filters").addEventListener("click", function () {
+          if (hubApi.searchBox) hubApi.searchBox.value = "";
+          activeFilter = FILTER_ALL;
+          document.querySelectorAll(".hub-filter-chip").forEach(function (c) {
+            c.setAttribute("aria-pressed", c.dataset.filter === FILTER_ALL ? "true" : "false");
           });
+          runSearch();
+        });
         hubApi.hubEl.appendChild(panel);
         return;
       }
@@ -682,15 +636,12 @@
               "</a>";
             item.appendChild(stdEl);
           }
-          var rw =
-            realWorldMap[lessonId] ||
-            realWorldMap[lessonId.replace("-flagship", "")];
+          var rw = realWorldMap[lessonId] || realWorldMap[lessonId.replace("-flagship", "")];
           if (rw) {
             var rwEl = document.createElement("p");
             rwEl.className = "lesson-real-world";
             rwEl.innerHTML =
-              '<span class="lesson-real-world-label">Real-World Connection</span>' +
-              escapeHtml(rw);
+              '<span class="lesson-real-world-label">Real-World Connection</span>' + escapeHtml(rw);
             item.appendChild(rwEl);
           }
 
@@ -726,10 +677,7 @@
               if (!progress[key]) delete progress[key];
               saveProgress();
               syncProgressToggle(lessonId, act.href, !!progress[key]);
-              check.setAttribute(
-                "aria-pressed",
-                progress[key] ? "true" : "false",
-              );
+              check.setAttribute("aria-pressed", progress[key] ? "true" : "false");
               check.textContent = progress[key] ? "✓" : "○";
               updateProgressSummary();
               enhanceUnitCards();
@@ -765,15 +713,9 @@
     var lesson = unit.lessons[lessonIdx];
     if (!lesson || !lesson.lessonId) return null;
     var qs =
-      "?u=" +
-      encodeURIComponent(unit.unitIndex) +
-      "&l=" +
-      encodeURIComponent(lesson.lessonId);
+      "?u=" + encodeURIComponent(unit.unitIndex) + "&l=" + encodeURIComponent(lesson.lessonId);
     var launch = card.querySelector(".btn-launch");
-    var aHref =
-      launch && launch.style.display !== "none"
-        ? launch.getAttribute("href")
-        : "";
+    var aHref = launch && launch.style.display !== "none" ? launch.getAttribute("href") : "";
     if (aHref && aHref !== "#") qs += "&a=" + encodeURIComponent(aHref);
     return CANONICAL_ORIGIN + "/curriculum/" + qs;
   }
@@ -942,16 +884,13 @@
       var lessonId = lessonIdFromTitle(lesson.title);
       injectStandardBadge(infoBlock, lesson.lessonId || lessonId);
       injectCopyLink(card, u);
-      var rw =
-        realWorldMap[lessonId] ||
-        realWorldMap[lessonId.replace("-flagship", "")];
+      var rw = realWorldMap[lessonId] || realWorldMap[lessonId.replace("-flagship", "")];
       var existingRw = infoBlock.querySelector(".lesson-real-world");
       if (rw && !existingRw) {
         var rwEl = document.createElement("p");
         rwEl.className = "lesson-real-world";
         rwEl.innerHTML =
-          '<span class="lesson-real-world-label">Real-World Connection</span>' +
-          escapeHtml(rw);
+          '<span class="lesson-real-world-label">Real-World Connection</span>' + escapeHtml(rw);
         var obj = infoBlock.querySelector(".lesson-info-obj");
         if (obj) infoBlock.insertBefore(rwEl, obj);
         else infoBlock.insertBefore(rwEl, infoBlock.firstChild);
@@ -962,60 +901,54 @@
       var outlineList = card.querySelector(".lesson-outline-list");
       if (!outlineList) return;
 
-      outlineList
-        .querySelectorAll(".lesson-outline-item")
-        .forEach(function (li) {
-          if (li.querySelector(".progress-check")) return;
-          var link = li.querySelector("a");
-          if (!link) return;
-          var href = link.getAttribute("href");
-          var text = link.textContent.trim();
+      outlineList.querySelectorAll(".lesson-outline-item").forEach(function (li) {
+        if (li.querySelector(".progress-check")) return;
+        var link = li.querySelector("a");
+        if (!link) return;
+        var href = link.getAttribute("href");
+        var text = link.textContent.trim();
 
-          if (!teacherMode && isTeacherResource({ text: text, href: href })) {
-            li.style.display = "none";
-            return;
-          }
-          if (
-            activeFilter !== FILTER_ALL &&
-            !activityMatchesFilter({ text: text, href: href }, activeFilter)
-          ) {
-            li.style.display = "none";
-            return;
-          }
-          li.style.display = "";
+        if (!teacherMode && isTeacherResource({ text: text, href: href })) {
+          li.style.display = "none";
+          return;
+        }
+        if (
+          activeFilter !== FILTER_ALL &&
+          !activityMatchesFilter({ text: text, href: href }, activeFilter)
+        ) {
+          li.style.display = "none";
+          return;
+        }
+        li.style.display = "";
 
-          var check = document.createElement("button");
-          check.type = "button";
-          check.className = "progress-check";
-          check.setAttribute("aria-label", "Mark complete: " + text);
-          var key = progressKey(lessonId, href);
-          var isDone = !!progress[key];
-          check.setAttribute("aria-pressed", isDone ? "true" : "false");
-          check.textContent = isDone ? "✓" : "○";
-          check.addEventListener("click", function (e) {
-            e.preventDefault();
-            progress[key] = !progress[key];
-            if (!progress[key]) delete progress[key];
-            saveProgress();
-            syncProgressToggle(lessonId, href, !!progress[key]);
-            check.setAttribute(
-              "aria-pressed",
-              progress[key] ? "true" : "false",
-            );
-            check.textContent = progress[key] ? "✓" : "○";
-            updateProgressSummary();
-            enhanceUnitCards();
-          });
-          li.insertBefore(check, link);
+        var check = document.createElement("button");
+        check.type = "button";
+        check.className = "progress-check";
+        check.setAttribute("aria-label", "Mark complete: " + text);
+        var key = progressKey(lessonId, href);
+        var isDone = !!progress[key];
+        check.setAttribute("aria-pressed", isDone ? "true" : "false");
+        check.textContent = isDone ? "✓" : "○";
+        check.addEventListener("click", function (e) {
+          e.preventDefault();
+          progress[key] = !progress[key];
+          if (!progress[key]) delete progress[key];
+          saveProgress();
+          syncProgressToggle(lessonId, href, !!progress[key]);
+          check.setAttribute("aria-pressed", progress[key] ? "true" : "false");
+          check.textContent = progress[key] ? "✓" : "○";
+          updateProgressSummary();
+          enhanceUnitCards();
         });
+        li.insertBefore(check, link);
+      });
 
       card.querySelectorAll(".activity-select").forEach(function (actSelect) {
         Array.prototype.forEach.call(actSelect.options, function (opt) {
           if (!opt.value) return;
           var text = opt.textContent.trim();
           var href = opt.value;
-          opt.hidden =
-            !teacherMode && isTeacherResource({ text: text, href: href });
+          opt.hidden = !teacherMode && isTeacherResource({ text: text, href: href });
         });
       });
     });
@@ -1063,8 +996,7 @@
       return n + (u.lessons ? u.lessons.length : 0);
     }, 0);
     if (!q.trim() && activeFilter === FILTER_ALL) {
-      el.textContent =
-        total + " lessons across " + hubApi.unitsData.length + " units";
+      el.textContent = total + " lessons across " + hubApi.unitsData.length + " units";
       return;
     }
     var filtered = filterUnitsData(hubApi.unitsData, q, activeFilter);
@@ -1138,9 +1070,7 @@
   }
 
   function isGoogleSlidesActivity(act) {
-    return /^google slides$/i.test(
-      (act.text || "").replace(/\s+/g, " ").trim(),
-    );
+    return /^google slides$/i.test((act.text || "").replace(/\s+/g, " ").trim());
   }
 
   function legacyDriveUrlForLesson(lessonId) {
@@ -1182,9 +1112,7 @@
 
         legacyInserts.reverse().forEach(function (entry) {
           var dup = activities.some(function (a) {
-            return (
-              a.href === entry.href && /legacy|drive copy/i.test(a.text || "")
-            );
+            return a.href === entry.href && /legacy|drive copy/i.test(a.text || "");
           });
           if (dup) return;
           activities.splice(entry.index, 0, {
@@ -1217,16 +1145,12 @@
         }
         a.setAttribute("href", slidesHref);
 
-        if (!/docs\.google\.com/i.test(legacyUrl) || legacyUrl === slidesHref)
-          return;
+        if (!/docs\.google\.com/i.test(legacyUrl) || legacyUrl === slidesHref) return;
         var row = a.parentNode;
         if (!row) return;
-        var already = Array.prototype.some.call(
-          row.querySelectorAll(".res"),
-          function (link) {
-            return link !== a && link.getAttribute("href") === legacyUrl;
-          },
-        );
+        var already = Array.prototype.some.call(row.querySelectorAll(".res"), function (link) {
+          return link !== a && link.getAttribute("href") === legacyUrl;
+        });
         if (already) return;
 
         var legacy = document.createElement("a");
@@ -1256,12 +1180,9 @@
       var row = lessonEl.querySelector(".lesson-body .res-row");
       if (!row) return;
 
-      var already = Array.prototype.some.call(
-        row.querySelectorAll(".res"),
-        function (a) {
-          return a.getAttribute("href") === href;
-        },
-      );
+      var already = Array.prototype.some.call(row.querySelectorAll(".res"), function (a) {
+        return a.getAttribute("href") === href;
+      });
       if (already) return;
 
       var link = document.createElement("a");
@@ -1291,8 +1212,7 @@
             text: "🚀 Get Ready (Pre-Lesson)",
             href: readyHref,
           });
-          lesson.dataSearch =
-            (lesson.dataSearch || "") + " get ready pre-lesson readiness";
+          lesson.dataSearch = (lesson.dataSearch || "") + " get ready pre-lesson readiness";
         }
 
         var slidesHref = "/lessons/" + lessonId + "/slides.html";
@@ -1412,8 +1332,7 @@
     btn.innerHTML = "↑";
     btn.addEventListener("click", function () {
       var reduce =
-        window.matchMedia &&
-        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
       var box = hubApi && hubApi.searchBox;
       if (box) box.focus({ preventScroll: true });
@@ -1466,8 +1385,7 @@
   // "open at the top" behaviour of the rest of the hub).
   function scrollHubTop() {
     var smooth = !(
-      window.matchMedia &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
     );
     window.scrollTo({ top: 0, behavior: smooth ? "smooth" : "auto" });
   }
@@ -1475,12 +1393,9 @@
   // Format a raw standard token (e.g. "6.rp.3a") for display ("6.RP.3a").
   // Only the domain letters are upper-cased; the CCSS sub-letter stays lower.
   function displayStd(code) {
-    return code.replace(
-      /^(6\.)(rp|ns|ee|g|sp)(\..*)$/i,
-      function (_, p1, p2, p3) {
-        return p1 + p2.toUpperCase() + p3;
-      },
-    );
+    return code.replace(/^(6\.)(rp|ns|ee|g|sp)(\..*)$/i, function (_, p1, p2, p3) {
+      return p1 + p2.toUpperCase() + p3;
+    });
   }
 
   // Natural-sort standard codes: 6.rp.1 < 6.rp.2 < 6.rp.3 < 6.rp.3a < 6.rp.3b.
@@ -1574,10 +1489,7 @@
       if (codes.length) {
         var sel = document.createElement("select");
         sel.className = "hub-substd-select";
-        sel.setAttribute(
-          "aria-label",
-          "Jump to a specific " + d.code + " standard",
-        );
+        sel.setAttribute("aria-label", "Jump to a specific " + d.code + " standard");
 
         var ph = document.createElement("option");
         ph.value = d.token;
@@ -1621,8 +1533,7 @@
       chip.setAttribute("aria-pressed", on ? "true" : "false");
     });
     var allChip = wrap.querySelector('.hub-standard-chip[data-token=""]');
-    if (allChip)
-      allChip.setAttribute("aria-pressed", matched ? "false" : "true");
+    if (allChip) allChip.setAttribute("aria-pressed", matched ? "false" : "true");
 
     // Reflect the current value in the per-domain dropdowns.
     wrap.querySelectorAll(".hub-substd-select").forEach(function (sel) {
@@ -1734,8 +1645,7 @@
     list.forEach(function (e) {
       var chip = document.createElement("a");
       chip.className = "hub-recent-chip";
-      var qs =
-        "?u=" + encodeURIComponent(e.u) + "&l=" + encodeURIComponent(e.l);
+      var qs = "?u=" + encodeURIComponent(e.u) + "&l=" + encodeURIComponent(e.l);
       if (e.a) qs += "&a=" + encodeURIComponent(e.a);
       chip.href = "/curriculum/" + qs;
       chip.title = e.unitNum + " · " + e.title;
@@ -1772,11 +1682,11 @@
     if (!document.getElementById("hub-print-header")) {
       var header = document.createElement("div");
       header.id = "hub-print-header";
-      var unitCount =
-        (hubApi && hubApi.unitsData && hubApi.unitsData.length) || 0;
-      var lessonCount = (
-        hubApi && hubApi.unitsData ? hubApi.unitsData : []
-      ).reduce(function (n, u) {
+      var unitCount = (hubApi && hubApi.unitsData && hubApi.unitsData.length) || 0;
+      var lessonCount = (hubApi && hubApi.unitsData ? hubApi.unitsData : []).reduce(function (
+        n,
+        u,
+      ) {
         return n + (u.lessons ? u.lessons.length : 0);
       }, 0);
       header.innerHTML =

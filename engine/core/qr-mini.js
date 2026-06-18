@@ -14,11 +14,7 @@ const EXP_TABLE = new Array(256);
 const LOG_TABLE = new Array(256);
 for (let i = 0; i < 8; i++) EXP_TABLE[i] = 1 << i;
 for (let i = 8; i < 256; i++)
-  EXP_TABLE[i] =
-    EXP_TABLE[i - 4] ^
-    EXP_TABLE[i - 5] ^
-    EXP_TABLE[i - 6] ^
-    EXP_TABLE[i - 8];
+  EXP_TABLE[i] = EXP_TABLE[i - 4] ^ EXP_TABLE[i - 5] ^ EXP_TABLE[i - 6] ^ EXP_TABLE[i - 8];
 for (let i = 0; i < 255; i++) LOG_TABLE[EXP_TABLE[i]] = i;
 
 function gexp(n) {
@@ -167,11 +163,7 @@ function createMatrix(version, dataList) {
     for (let i = 0; i < 7; i++) {
       for (let j = 0; j < 7; j++) {
         const on =
-          i === 0 ||
-          i === 6 ||
-          j === 0 ||
-          j === 6 ||
-          (i >= 2 && i <= 4 && j >= 2 && j <= 4);
+          i === 0 || i === 6 || j === 0 || j === 6 || (i >= 2 && i <= 4 && j >= 2 && j <= 4);
         setModule(r + i, c + j, on);
       }
     }

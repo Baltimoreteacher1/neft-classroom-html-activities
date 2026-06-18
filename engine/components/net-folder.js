@@ -89,8 +89,7 @@ export function renderNetFolder(
 
   if (instructions) {
     const p = document.createElement("p");
-    p.style.cssText =
-      "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
+    p.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
     p.textContent = instructions;
     wrapper.append(p);
   }
@@ -138,8 +137,7 @@ export function renderNetFolder(
   stage.append(sceneWrap);
 
   const { w, h, d } = dims;
-  const faceBg = (c) =>
-    `background:${c}; border:2px solid var(--navy); box-sizing:border-box;`;
+  const faceBg = (c) => `background:${c}; border:2px solid var(--navy); box-sizing:border-box;`;
 
   // Six faces. Each has: flat (unfolded) transform and folded transform.
   // Unfolded layout is a cross net; folded is a closed box centered on origin.
@@ -243,10 +241,7 @@ export function renderNetFolder(
   function fireBurst() {
     if (burstFired) return;
     burstFired = true;
-    if (
-      window.matchMedia &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    ) {
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       return;
     }
     const colors = [
@@ -262,14 +257,8 @@ export function renderNetFolder(
       const angle = (Math.PI * 2 * i) / count + Math.random() * 0.4;
       const dist = 46 + Math.random() * 40;
       p.style.background = colors[i % colors.length];
-      p.style.setProperty(
-        "--nf-bx",
-        `${(Math.cos(angle) * dist).toFixed(1)}px`,
-      );
-      p.style.setProperty(
-        "--nf-by",
-        `${(Math.sin(angle) * dist).toFixed(1)}px`,
-      );
+      p.style.setProperty("--nf-bx", `${(Math.cos(angle) * dist).toFixed(1)}px`);
+      p.style.setProperty("--nf-by", `${(Math.sin(angle) * dist).toFixed(1)}px`);
       p.style.animationDelay = `${(Math.random() * 0.05).toFixed(3)}s`;
       sceneWrap.append(p);
       p.addEventListener("animationend", () => p.remove());
@@ -327,11 +316,7 @@ export function renderNetFolder(
   function finishOk() {
     if (done) return;
     done = true;
-    showFb(
-      feedbackSlot,
-      "success",
-      `Nice fold! The net closes into a ${solid.replace("-", " ")}.`,
-    );
+    showFb(feedbackSlot, "success", `Nice fold! The net closes into a ${solid.replace("-", " ")}.`);
     onComplete?.(1, 1);
   }
 
@@ -342,8 +327,7 @@ export function renderNetFolder(
     wrapper.append(q);
 
     const opts = document.createElement("div");
-    opts.style.cssText =
-      "display:flex; flex-direction:column; gap:var(--sp-2);";
+    opts.style.cssText = "display:flex; flex-direction:column; gap:var(--sp-2);";
     let selected = null;
     question.choices.forEach((c, i) => {
       const b = document.createElement("button");

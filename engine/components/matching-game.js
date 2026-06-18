@@ -35,10 +35,7 @@ function injectStyle() {
   document.head.append(style);
 }
 
-export function renderMatchingGame(
-  container,
-  { pairs, columns, label, onComplete },
-) {
+export function renderMatchingGame(container, { pairs, columns, label, onComplete }) {
   injectStyle();
 
   const wrapper = document.createElement("div");
@@ -46,15 +43,13 @@ export function renderMatchingGame(
 
   if (label) {
     const lbl = document.createElement("p");
-    lbl.style.cssText =
-      "font-size:1rem; font-weight:600; margin:0 0 var(--sp-3); line-height:1.5;";
+    lbl.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-3); line-height:1.5;";
     lbl.textContent = label;
     wrapper.append(lbl);
   }
 
   const hint = document.createElement("p");
-  hint.style.cssText =
-    "font-size:0.85rem; color:var(--muted); margin:0 0 var(--sp-3);";
+  hint.style.cssText = "font-size:0.85rem; color:var(--muted); margin:0 0 var(--sp-3);";
   hint.textContent = "Tap an item on the left, then its match on the right.";
   wrapper.append(hint);
 
@@ -130,8 +125,7 @@ export function renderMatchingGame(
     // the tiles are interchangeable and either pairing is correct. Track the
     // unique left-side (term) id so duplicates can't under-count completion.
     const isMatch =
-      a.card.pairId === b.card.pairId ||
-      pairs[a.card.pairId].match === pairs[b.card.pairId].match;
+      a.card.pairId === b.card.pairId || pairs[a.card.pairId].match === pairs[b.card.pairId].match;
     const leftCard = a.card.side === "L" ? a.card : b.card;
 
     if (isMatch) {
@@ -150,10 +144,7 @@ export function renderMatchingGame(
     }
   }
 
-  board.append(
-    makeColumn(left, "Match these…"),
-    makeColumn(right, "…with these"),
-  );
+  board.append(makeColumn(left, "Match these…"), makeColumn(right, "…with these"));
   wrapper.append(board);
 
   const feedbackSlot = document.createElement("div");
@@ -167,11 +158,7 @@ export function renderMatchingGame(
       feedbackSlot,
       "success",
       `All matched in ${attemptCount} attempt${attemptCount === 1 ? "" : "s"}! ${
-        stars === 3
-          ? "Flawless!"
-          : stars === 2
-            ? "Nice work!"
-            : "Keep practicing!"
+        stars === 3 ? "Flawless!" : stars === 2 ? "Nice work!" : "Keep practicing!"
       }`,
     );
     if (onComplete) onComplete(pairs.length, attemptCount);

@@ -112,11 +112,7 @@ for (const lessonId of lessonIds) {
   if (count !== 1) fail(`Lesson ${lessonId} is covered ${count} time(s) by clusters.`);
 }
 
-const toolHrefs = [
-  "/reveal-evidence-studio/",
-  "/math-lab-missions/",
-  "/misconception-museum/",
-];
+const toolHrefs = ["/reveal-evidence-studio/", "/math-lab-missions/", "/misconception-museum/"];
 for (const dashboard of ["index.html", "math/index.html"]) {
   const html = fs.existsSync(path.join(root, dashboard)) ? read(dashboard) : "";
   for (const href of toolHrefs) {

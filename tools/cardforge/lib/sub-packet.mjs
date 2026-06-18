@@ -52,7 +52,7 @@ export function renderSubPacket(job) {
   const dayPages = days
     .map((dp, i) => {
       const ex = modeled[i % Math.max(modeled.length, 1)];
-      const warm = i === 0 ? (L.warmUp || "") : "Look back at yesterday's example before you start.";
+      const warm = i === 0 ? L.warmUp || "" : "Look back at yesterday's example before you start.";
       return `<section class="page">
         <h2>Day ${i + 1}</h2>
         <p class="meta">${esc(title)}${std ? ` &middot; ${esc(std)}` : ""}</p>
@@ -72,7 +72,9 @@ export function renderSubPacket(job) {
   const keyItems = [];
   const allKey = L.answerKey && L.answerKey.length ? L.answerKey : practice;
   allKey.forEach((k) => {
-    keyItems.push(`<li><strong>${k.n != null ? k.n + "." : ""}</strong> ${esc(k.answer)}${k.work ? ` <span class="small">(${esc(k.work)})</span>` : ""}</li>`);
+    keyItems.push(
+      `<li><strong>${k.n != null ? k.n + "." : ""}</strong> ${esc(k.answer)}${k.work ? ` <span class="small">(${esc(k.work)})</span>` : ""}</li>`,
+    );
   });
   const keyPage = `<section class="page">
     <h2>Answer Key — Teacher Only</h2>

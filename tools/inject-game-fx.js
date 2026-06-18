@@ -11,13 +11,7 @@
  *   node tools/inject-game-fx.js --dry-run  # report only
  *   node tools/inject-game-fx.js --revert   # remove the injected blocks
  */
-import {
-  readdirSync,
-  statSync,
-  readFileSync,
-  writeFileSync,
-  existsSync,
-} from "fs";
+import { readdirSync, statSync, readFileSync, writeFileSync, existsSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
@@ -53,13 +47,7 @@ const ROOTS = [
   "surface-area-review",
 ];
 
-const SKIP_DIRS = new Set([
-  "node_modules",
-  "dist",
-  "vendor",
-  "engine3d",
-  ".git",
-]);
+const SKIP_DIRS = new Set(["node_modules", "dist", "vendor", "engine3d", ".git"]);
 
 const args = new Set(process.argv.slice(2));
 const DRY = args.has("--dry-run");
@@ -118,14 +106,8 @@ function processFile(file) {
     return;
   }
 
-  html = html.replace(
-    /<\/head>/i,
-    `  ${BEGIN}\n  ${LINK_TAG}\n  ${END}\n</head>`,
-  );
-  html = html.replace(
-    /<\/body>/i,
-    `  ${BEGIN}\n  ${SCRIPT_TAG}\n  ${END}\n</body>`,
-  );
+  html = html.replace(/<\/head>/i, `  ${BEGIN}\n  ${LINK_TAG}\n  ${END}\n</head>`);
+  html = html.replace(/<\/body>/i, `  ${BEGIN}\n  ${SCRIPT_TAG}\n  ${END}\n</body>`);
   if (!DRY) writeFileSync(file, html);
   report.injected++;
 }
@@ -137,9 +119,7 @@ for (const r of ROOTS) {
 }
 files.forEach(processFile);
 
-console.log(
-  `Game FX injection ${DRY ? "(dry-run)" : ""}${REVERT ? " — revert" : ""}`,
-);
+console.log(`Game FX injection ${DRY ? "(dry-run)" : ""}${REVERT ? " — revert" : ""}`);
 console.log("  HTML scanned     :", report.scanned);
 if (REVERT) {
   console.log("  reverted         :", report.reverted);

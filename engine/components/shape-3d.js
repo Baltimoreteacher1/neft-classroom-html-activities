@@ -277,10 +277,7 @@ function squarePyramid(b, ph) {
   };
 }
 
-export function renderShape3D(
-  container,
-  { shape = "cube", label, taskDriven = false } = {},
-) {
+export function renderShape3D(container, { shape = "cube", label, taskDriven = false } = {}) {
   const def = shapeDef(shape);
   const prefersReduced = reduceMotion();
   if (!prefersReduced) injectPolishStyles();
@@ -329,12 +326,7 @@ export function renderShape3D(
   // ── Celebration particle burst ──
   // Fired on a correct task answer. Pure decoration: short-lived, aria-hidden,
   // self-cleaning, and a no-op when reduced motion is requested.
-  const BURST_COLORS = [
-    PALETTE.teal,
-    PALETTE.amber,
-    PALETTE.coral,
-    PALETTE.navy,
-  ];
+  const BURST_COLORS = [PALETTE.teal, PALETTE.amber, PALETTE.coral, PALETTE.navy];
   function celebrateBurst() {
     if (prefersReduced) return;
     const count = 14;
@@ -360,10 +352,7 @@ export function renderShape3D(
     el.type = "button";
     el.className = "shape3d-face";
     el.dataset.index = String(i);
-    el.setAttribute(
-      "aria-label",
-      `Face ${i + 1} of ${def.name}. Select to label it.`,
-    );
+    el.setAttribute("aria-label", `Face ${i + 1} of ${def.name}. Select to label it.`);
     el.style.cssText = `
       position:absolute; left:50%; top:50%;
       width:${f.w}px; height:${f.h}px;
@@ -519,11 +508,7 @@ export function renderShape3D(
     try {
       stage.releasePointerCapture(e.pointerId);
     } catch (_) {}
-    if (
-      !prefersReduced &&
-      netT < 0.5 &&
-      (Math.abs(velX) > 0.3 || Math.abs(velY) > 0.3)
-    ) {
+    if (!prefersReduced && netT < 0.5 && (Math.abs(velX) > 0.3 || Math.abs(velY) > 0.3)) {
       runInertia();
     }
   }
@@ -614,13 +599,11 @@ export function renderShape3D(
     clearSelection();
     selectedEl = el;
     el.style.background = hexToRgba(PALETTE.amber, 0.95);
-    el.style.boxShadow =
-      "inset 0 0 0 3px var(--navy), 0 0 0 3px rgba(31,166,162,0.5)";
+    el.style.boxShadow = "inset 0 0 0 3px var(--navy), 0 0 0 3px rgba(31,166,162,0.5)";
     el.classList.add("is-selected"); // CSS pulse (reduced-motion: no-op)
     chipFace.style.borderColor = "var(--navy)";
     const msg = `Selected a face. A face is a flat surface of the solid. This ${def.name.toLowerCase()} has ${def.counts.faces} faces, ${def.counts.edges} edges, and ${def.counts.vertices} vertices.`;
-    labelBar.textContent =
-      "🟨 face — a flat surface where you could place a sticker.";
+    labelBar.textContent = "🟨 face — a flat surface where you could place a sticker.";
     live.textContent = msg;
   }
   // Distinct faces the student has tapped (for the "count the faces" task).
@@ -797,21 +780,14 @@ function buildTaskPanel({
   wrap.append(live);
 
   // Task 1: tap every face and count them.
-  const t1 = taskBox(
-    "1",
-    "Tap each face of the shape. How many faces are there?",
-  );
+  const t1 = taskBox("1", "Tap each face of the shape. How many faces are there?");
   const t1status = statusLine();
   const t1progress = document.createElement("p");
   t1progress.style.cssText = "margin:0; font-size:0.85rem; color:var(--muted);";
   t1progress.textContent = `Faces tapped: 0 / ${def.counts.faces}`;
   const t1answer = numberAnswer(def.counts.faces, (ok) => {
     if (ok) {
-      setStatus(
-        t1status,
-        true,
-        `Yes! A ${def.name.toLowerCase()} has ${def.counts.faces} faces.`,
-      );
+      setStatus(t1status, true, `Yes! A ${def.name.toLowerCase()} has ${def.counts.faces} faces.`);
       live.textContent = `Correct: ${def.counts.faces} faces.`;
       celebrate();
     } else {
@@ -829,10 +805,7 @@ function buildTaskPanel({
   wrap.append(t1);
 
   // Task 2: how many edges?
-  const t2 = taskBox(
-    "2",
-    "An edge is where two faces meet. How many edges does it have?",
-  );
+  const t2 = taskBox("2", "An edge is where two faces meet. How many edges does it have?");
   const t2status = statusLine();
   const t2answer = numberAnswer(def.counts.edges, (ok) => {
     if (ok) {
@@ -867,10 +840,7 @@ function buildTaskPanel({
 
   // Task 4: unfold the net — which net matches?
   if (hasNet) {
-    const t4 = taskBox(
-      "4",
-      "Unfold the net, then pick the solid this net folds into.",
-    );
+    const t4 = taskBox("4", "Unfold the net, then pick the solid this net folds into.");
     const t4status = statusLine();
     const unfoldTaskBtn = document.createElement("button");
     unfoldTaskBtn.type = "button";
@@ -885,10 +855,7 @@ function buildTaskPanel({
     const choiceGroup = document.createElement("div");
     choiceGroup.hidden = true;
     choiceGroup.setAttribute("role", "group");
-    choiceGroup.setAttribute(
-      "aria-label",
-      "Which solid does this net fold into?",
-    );
+    choiceGroup.setAttribute("aria-label", "Which solid does this net fold into?");
     choiceGroup.style.cssText =
       "display:flex; flex-direction:column; gap:var(--sp-2); margin-top:var(--sp-2);";
     let answered = false;
@@ -901,17 +868,11 @@ function buildTaskPanel({
       b.addEventListener("click", () => {
         if (answered) return;
         answered = true;
-        choiceGroup
-          .querySelectorAll("button")
-          .forEach((x) => (x.disabled = true));
+        choiceGroup.querySelectorAll("button").forEach((x) => (x.disabled = true));
         const ok = name === def.name;
         b.style.borderColor = ok ? "var(--teal)" : "var(--coral, #d9795d)";
         if (ok) {
-          setStatus(
-            t4status,
-            true,
-            `Yes — this net folds into a ${def.name.toLowerCase()}.`,
-          );
+          setStatus(t4status, true, `Yes — this net folds into a ${def.name.toLowerCase()}.`);
           celebrate();
         } else {
           setStatus(
@@ -936,8 +897,7 @@ function taskBox(badge, prompt) {
     padding:var(--sp-3); border:1px solid var(--line); border-radius:var(--radius-md);
     background:#fff; display:flex; flex-direction:column; gap:var(--sp-2);`;
   const p = document.createElement("p");
-  p.style.cssText =
-    "margin:0; font-size:0.92rem; font-weight:600; color:var(--ink);";
+  p.style.cssText = "margin:0; font-size:0.92rem; font-weight:600; color:var(--ink);";
   p.textContent = `${badge}. ${prompt}`;
   box.append(p);
   return box;
@@ -959,8 +919,7 @@ function setStatus(el, ok, msg) {
 // Small numeric stepper + check button. Returns { el }.
 function numberAnswer(correct, onCheck) {
   const el = document.createElement("div");
-  el.style.cssText =
-    "display:flex; align-items:center; gap:var(--sp-2); flex-wrap:wrap;";
+  el.style.cssText = "display:flex; align-items:center; gap:var(--sp-2); flex-wrap:wrap;";
   const input = document.createElement("input");
   input.type = "number";
   input.min = "0";
@@ -991,12 +950,7 @@ function numberAnswer(correct, onCheck) {
 
 // Distractor solid names for the net-match question (correct included).
 function netChoices(correctName) {
-  const all = [
-    "Cube",
-    "Rectangular prism",
-    "Triangular prism",
-    "Square pyramid",
-  ];
+  const all = ["Cube", "Rectangular prism", "Triangular prism", "Square pyramid"];
   const others = all.filter((n) => n !== correctName).slice(0, 2);
   const list = [correctName, ...others];
   for (let i = list.length - 1; i > 0; i--) {

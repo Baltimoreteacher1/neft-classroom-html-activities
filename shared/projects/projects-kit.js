@@ -43,10 +43,7 @@
     if (level === "level-1") document.body.classList.add("pk-level-1");
     if (level === "level-2") document.body.classList.add("pk-level-2");
     document.querySelectorAll("[data-level-btn]").forEach((b) => {
-      b.setAttribute(
-        "aria-pressed",
-        b.getAttribute("data-level-btn") === level ? "true" : "false",
-      );
+      b.setAttribute("aria-pressed", b.getAttribute("data-level-btn") === level ? "true" : "false");
     });
     if (storageKey) {
       try {
@@ -88,8 +85,7 @@
       const v = parseFloat(raw);
       ok = !Number.isNaN(v) && Math.abs(v - correctValue) <= (tolerance || 0);
     } else {
-      const norm = (s) =>
-        String(s).toLowerCase().replace(/\s+/g, "").replace(/,/g, ",");
+      const norm = (s) => String(s).toLowerCase().replace(/\s+/g, "").replace(/,/g, ",");
       ok = norm(raw) === norm(correctValue);
     }
     const fb = $(inputId + "Fb");
@@ -108,10 +104,7 @@
     const box = typeof container === "string" ? $(container) : container;
     if (!box) return;
     box.innerHTML = pairs
-      .map(
-        (p) =>
-          `<div class="pk-stat"><small>${p[0]}</small><b>${p[1]}</b></div>`,
-      )
+      .map((p) => `<div class="pk-stat"><small>${p[0]}</small><b>${p[1]}</b></div>`)
       .join("");
   };
 
@@ -134,12 +127,9 @@
     const box = typeof container === "string" ? $(container) : container;
     if (!box) return;
     labels = labels || {};
-    const clean = sampleArray
-      .filter((v) => !Number.isNaN(Number(v)))
-      .map(Number);
+    const clean = sampleArray.filter((v) => !Number.isNaN(Number(v))).map(Number);
     if (!clean.length || Number.isNaN(Number(myValue))) {
-      box.innerHTML =
-        '<p class="pk-fb">Type your number to compare to the world sample.</p>';
+      box.innerHTML = '<p class="pk-fb">Type your number to compare to the world sample.</p>';
       return;
     }
     const my = Number(myValue);
@@ -274,9 +264,7 @@
   }
 
   function arcBannerText(section) {
-    return (section.querySelector(".arc-banner")?.textContent || "")
-      .replace(/\s+/g, " ")
-      .trim();
+    return (section.querySelector(".arc-banner")?.textContent || "").replace(/\s+/g, " ").trim();
   }
 
   function isVocabPhase(section) {
@@ -287,11 +275,7 @@
     const num = section.querySelector(".phase-num");
     const t = num ? num.textContent.trim() : "";
     const h2 = phaseH2(section);
-    return (
-      t === "★" ||
-      t === "✓" ||
-      /Rubric|Answer Key|How You Are Scored/i.test(h2)
-    );
+    return t === "★" || t === "✓" || /Rubric|Answer Key|How You Are Scored/i.test(h2);
   }
 
   function isSetupPhase(section) {
@@ -319,7 +303,12 @@
     max = max || 24;
     const clean = text.replace(/\s+/g, " ").trim();
     if (clean.length <= max) return clean;
-    return clean.slice(0, max - 1).replace(/\s+\S*$/, "").trim() + "…";
+    return (
+      clean
+        .slice(0, max - 1)
+        .replace(/\s+\S*$/, "")
+        .trim() + "…"
+    );
   }
 
   function part1PairLabel(a, b) {
@@ -330,8 +319,7 @@
     if (/e/.test(letters)) return "Part 1: Go Deeper";
     const h2 = phaseH2(a);
     if (/plan|setup|start|choose|pick/i.test(h2)) return "Part 1: Your Plan";
-    if (/calc|compute|solve|budget|cost|number/i.test(h2))
-      return "Part 1: Run the Numbers";
+    if (/calc|compute|solve|budget|cost|number/i.test(h2)) return "Part 1: Run the Numbers";
     if (h2) return "Part 1: " + shortLabel(h2, 18);
     return "Part 1: Your Idea";
   }
@@ -348,10 +336,8 @@
 
   function statsPairLabel(a, b) {
     const text = (phaseH2(a) + " " + phaseH2(b)).toLowerCase();
-    if (/collect|statistical question|your data/.test(text))
-      return "Part 1: Gather Data";
-    if (/mean|median|mode|range|mad|deviation/.test(text))
-      return "Part 1: Analyze It";
+    if (/collect|statistical question|your data/.test(text)) return "Part 1: Gather Data";
+    if (/mean|median|mode|range|mad|deviation/.test(text)) return "Part 1: Analyze It";
     if (/display|describe|distribution/.test(text)) return "Part 1: Show It";
     return pairLabelGeneric(a, b);
   }
@@ -541,8 +527,7 @@
         if (lbl) return shortLabel(lbl.textContent.trim(), 52);
       }
       if (el.tagName === "H3") return shortLabel(el.textContent.trim(), 52);
-      if (el.classList.contains("pk-vocab"))
-        return "Learn the vocabulary";
+      if (el.classList.contains("pk-vocab")) return "Learn the vocabulary";
       if (el.classList.contains("pk-callout")) {
         const h = el.querySelector("h3");
         if (h) return shortLabel(h.textContent.trim(), 52);
@@ -765,8 +750,7 @@
     opts = opts || {};
     if (document.body.hasAttribute("data-pk-no-tabs")) return;
     const wrap =
-      (opts.wrap && document.querySelector(opts.wrap)) ||
-      document.querySelector(".wrap");
+      (opts.wrap && document.querySelector(opts.wrap)) || document.querySelector(".wrap");
     if (!wrap) return;
     const allPhases = collectWrapPhases(wrap);
     if (allPhases.length < 3) return;
@@ -848,12 +832,7 @@
 
     function updateChrome(index) {
       stepCount.innerHTML =
-        'Step <b>' +
-        (index + 1) +
-        "</b> of " +
-        total +
-        " · " +
-        groups[index].label;
+        "Step <b>" + (index + 1) + "</b> of " + total + " · " + groups[index].label;
       stepFill.style.width = ((index + 1) / total) * 100 + "%";
       prevBtn.disabled = index === 0;
       nextBtn.disabled = index === total - 1;
@@ -917,10 +896,8 @@
       tab.addEventListener("click", () => selectTab(idx, null));
       tab.addEventListener("keydown", (ev) => {
         let next = null;
-        if (ev.key === "ArrowRight" || ev.key === "ArrowDown")
-          next = (idx + 1) % total;
-        else if (ev.key === "ArrowLeft" || ev.key === "ArrowUp")
-          next = (idx - 1 + total) % total;
+        if (ev.key === "ArrowRight" || ev.key === "ArrowDown") next = (idx + 1) % total;
+        else if (ev.key === "ArrowLeft" || ev.key === "ArrowUp") next = (idx - 1 + total) % total;
         else if (ev.key === "Home") next = 0;
         else if (ev.key === "End") next = total - 1;
         if (next !== null) {

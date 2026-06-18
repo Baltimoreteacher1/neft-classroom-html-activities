@@ -188,10 +188,7 @@ export function getPreferredLang() {
     const htmlLang = document.documentElement.lang || "";
     if (htmlLang.startsWith("es")) return "es";
   }
-  if (
-    typeof navigator !== "undefined" &&
-    navigator.language?.startsWith("es")
-  ) {
+  if (typeof navigator !== "undefined" && navigator.language?.startsWith("es")) {
     return "es";
   }
   return "en";

@@ -15,10 +15,7 @@ import {
   spanishKeyIdea,
   polishSpanish,
 } from "./homework-spanish.mjs";
-import {
-  detectVisualTopic,
-  selectAlignedQuickCheckProblems,
-} from "./homework-alignment.mjs";
+import { detectVisualTopic, selectAlignedQuickCheckProblems } from "./homework-alignment.mjs";
 import { getExternalResources } from "./homework-external-resources.mjs";
 import { renderPlayTab } from "./homework-games.mjs";
 
@@ -133,8 +130,8 @@ function watchForCues(config) {
   if (cues.length < 2) {
     cues.push({
       icon: "✋",
-      en: "Let your student try first. Ask \"What do you notice?\" before giving hints.",
-      es: "Deja que tu estudiante intente primero. Pregunta \"¿Qué observas?\" antes de dar pistas.",
+      en: 'Let your student try first. Ask "What do you notice?" before giving hints.',
+      es: 'Deja que tu estudiante intente primero. Pregunta "¿Qué observas?" antes de dar pistas.',
     });
   }
   return cues.slice(0, 3);
@@ -144,29 +141,53 @@ function togetherStepHints(config, isLast) {
   const topic = detectVisualTopic(config);
   const byTopic = {
     exponents: {
-      en: isLast ? "Count how many times the base is multiplied — that is the exponent." : "Write the repeated multiplication first, then the power.",
-      es: isLast ? "Cuenten cuántas veces se multiplica la base — eso es el exponente." : "Escriban primero la multiplicación repetida, luego la potencia.",
+      en: isLast
+        ? "Count how many times the base is multiplied — that is the exponent."
+        : "Write the repeated multiplication first, then the power.",
+      es: isLast
+        ? "Cuenten cuántas veces se multiplica la base — eso es el exponente."
+        : "Escriban primero la multiplicación repetida, luego la potencia.",
     },
     equations: {
-      en: isLast ? "Check: does your equation match every word in the clue?" : "Name the unknown with a letter before you write symbols.",
-      es: isLast ? "Verifiquen: ¿su ecuación coincide con cada palabra de la pista?" : "Nombren la incógnita con una letra antes de escribir símbolos.",
+      en: isLast
+        ? "Check: does your equation match every word in the clue?"
+        : "Name the unknown with a letter before you write symbols.",
+      es: isLast
+        ? "Verifiquen: ¿su ecuación coincide con cada palabra de la pista?"
+        : "Nombren la incógnita con una letra antes de escribir símbolos.",
     },
     inequalities: {
-      en: isLast ? "Test one value from your shaded region to verify it works." : "Open circle for < or >; closed circle for ≤ or ≥.",
-      es: isLast ? "Prueben un valor de la región sombreada para verificar." : "Círculo abierto para < o >; cerrado para ≤ o ≥.",
+      en: isLast
+        ? "Test one value from your shaded region to verify it works."
+        : "Open circle for < or >; closed circle for ≤ or ≥.",
+      es: isLast
+        ? "Prueben un valor de la región sombreada para verificar."
+        : "Círculo abierto para < o >; cerrado para ≤ o ≥.",
     },
     ratios: {
-      en: isLast ? "Both columns must change by the same multiplier." : "Point to each row as you compare the two quantities.",
-      es: isLast ? "Ambas columnas deben cambiar con el mismo multiplicador." : "Señalen cada fila mientras comparan las dos cantidades.",
+      en: isLast
+        ? "Both columns must change by the same multiplier."
+        : "Point to each row as you compare the two quantities.",
+      es: isLast
+        ? "Ambas columnas deben cambiar con el mismo multiplicador."
+        : "Señalen cada fila mientras comparan las dos cantidades.",
     },
     fractions: {
-      en: isLast ? "Draw a picture or use a number line to justify your answer." : "Say the units out loud — what does each number represent?",
-      es: isLast ? "Dibujen o usen una recta numérica para justificar." : "Digan las unidades en voz alta — ¿qué representa cada número?",
+      en: isLast
+        ? "Draw a picture or use a number line to justify your answer."
+        : "Say the units out loud — what does each number represent?",
+      es: isLast
+        ? "Dibujen o usen una recta numérica para justificar."
+        : "Digan las unidades en voz alta — ¿qué representa cada número?",
     },
   };
   const pick = byTopic[topic] || {
-    en: isLast ? "Ask your student to explain why each step makes sense." : "Point to each number or symbol as you talk.",
-    es: isLast ? "Pídele que explique por qué tiene sentido cada paso." : "Señalen cada número o símbolo mientras hablan.",
+    en: isLast
+      ? "Ask your student to explain why each step makes sense."
+      : "Point to each number or symbol as you talk.",
+    es: isLast
+      ? "Pídele que explique por qué tiene sentido cada paso."
+      : "Señalen cada número o símbolo mientras hablan.",
   };
   return pick;
 }
@@ -197,7 +218,8 @@ function tryTogetherActivity(config) {
   } else if (explore?.instructions) {
     steps.push({
       en: explore.instructions,
-      es: translateConceptLine(explore.instructions, vocab) ||
+      es:
+        translateConceptLine(explore.instructions, vocab) ||
         "Completen la tabla o el diagrama juntos, una fila a la vez.",
       hint: "Use pencil and paper if the screen feels crowded.",
       hintEs: "Usen lápiz y papel si la pantalla se siente llena.",
@@ -476,9 +498,7 @@ function conceptVisualSvg(config) {
 }
 
 function helpButton(label, payload) {
-  const data = String(JSON.stringify(payload))
-    .replace(/&/g, "&amp;")
-    .replace(/'/g, "&#39;");
+  const data = String(JSON.stringify(payload)).replace(/&/g, "&amp;").replace(/'/g, "&#39;");
   return `<button type="button" class="help-pop-btn" data-help='${data}' onclick="openHelpModalFromBtn(this)" aria-label="${esc(label)}">${label}</button>`;
 }
 
@@ -628,7 +648,8 @@ export function renderStuckSection(config) {
           <ul>
             ${tips.say
               .map(
-                (t) => `<li><p class="lang-en">${esc(t.en)}</p><p class="lang-es" lang="es">${esc(t.es)}</p></li>`,
+                (t) =>
+                  `<li><p class="lang-en">${esc(t.en)}</p><p class="lang-es" lang="es">${esc(t.es)}</p></li>`,
               )
               .join("")}
           </ul>
@@ -638,7 +659,8 @@ export function renderStuckSection(config) {
           <ul>
             ${tips.dontSay
               .map(
-                (t) => `<li><p class="lang-en">${esc(t.en)}</p><p class="lang-es" lang="es">${esc(t.es)}</p></li>`,
+                (t) =>
+                  `<li><p class="lang-en">${esc(t.en)}</p><p class="lang-es" lang="es">${esc(t.es)}</p></li>`,
               )
               .join("")}
           </ul>

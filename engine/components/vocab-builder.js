@@ -73,8 +73,7 @@ function ensureVocabStyles() {
 function spawnBurst(anchor) {
   if (!anchor || typeof document === "undefined") return;
   const layer = document.createElement("div");
-  layer.style.cssText =
-    "position:absolute; inset:0; overflow:visible; pointer-events:none;";
+  layer.style.cssText = "position:absolute; inset:0; overflow:visible; pointer-events:none;";
   const prev = getComputedStyle(anchor).position;
   if (prev === "static") anchor.style.position = "relative";
   anchor.append(layer);
@@ -191,21 +190,17 @@ export function renderVocabBuilder(container, { terms, onComplete }) {
     card.append(termDisplay);
 
     const prompt = document.createElement("p");
-    prompt.style.cssText =
-      "font-weight:700; text-align:center; margin:var(--sp-3) 0;";
+    prompt.style.cssText = "font-weight:700; text-align:center; margin:var(--sp-3) 0;";
     prompt.textContent = "Choose the correct definition:";
     card.append(prompt);
 
     const allDefs = terms.map((t) => t.definition);
     const wrongDefs = allDefs.filter((d) => d !== term.definition);
     const shuffledWrong = wrongDefs.sort(() => Math.random() - 0.5).slice(0, 2);
-    const options = [term.definition, ...shuffledWrong].sort(
-      () => Math.random() - 0.5,
-    );
+    const options = [term.definition, ...shuffledWrong].sort(() => Math.random() - 0.5);
 
     const optionsWrap = document.createElement("div");
-    optionsWrap.style.cssText =
-      "display:flex; flex-direction:column; gap:var(--sp-2);";
+    optionsWrap.style.cssText = "display:flex; flex-direction:column; gap:var(--sp-2);";
 
     let answered = false;
 

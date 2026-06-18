@@ -156,11 +156,7 @@ function celebrate(el) {
   // Force reflow so re-adding the class restarts the animation.
   void el.offsetWidth;
   el.classList.add("vet-celebrate");
-  el.addEventListener(
-    "animationend",
-    () => el.classList.remove("vet-celebrate"),
-    { once: true },
-  );
+  el.addEventListener("animationend", () => el.classList.remove("vet-celebrate"), { once: true });
 }
 
 // ── Escaping (XSS guard) ────────────────────────────────────────────────────
@@ -218,9 +214,7 @@ export function pickVoice(lang) {
     }
   }
   // 3) any voice sharing the primary language subtag (es-*, en-*, …)
-  v = _voices.find(
-    (vo) => vo.lang && vo.lang.toLowerCase().split("-")[0] === base,
-  );
+  v = _voices.find((vo) => vo.lang && vo.lang.toLowerCase().split("-")[0] === base);
   return v || null;
 }
 
@@ -243,8 +237,7 @@ export function speak(text, lang) {
 // string is provided. Returns the row element.
 export function buildSayItRow({ en, enLang = "en-US", es, esLang = "es-US" }) {
   const row = document.createElement("div");
-  row.style.cssText =
-    "display:flex; gap:var(--sp-2); flex-wrap:wrap; align-items:center;";
+  row.style.cssText = "display:flex; gap:var(--sp-2); flex-wrap:wrap; align-items:center;";
   const supported = speechSupported();
 
   const mk = (label, ariaWord, text, lang, klass) => {
@@ -264,25 +257,9 @@ export function buildSayItRow({ en, enLang = "en-US", es, esLang = "es-US" }) {
     return b;
   };
 
-  row.append(
-    mk(
-      `🔊 Say it (EN)`,
-      `Hear "${en}" in English`,
-      en,
-      enLang,
-      "btn btn-amber",
-    ),
-  );
+  row.append(mk(`🔊 Say it (EN)`, `Hear "${en}" in English`, en, enLang, "btn btn-amber"));
   if (es) {
-    row.append(
-      mk(
-        `🔊 Dilo (ES)`,
-        `Hear "${es}" in Spanish`,
-        es,
-        esLang,
-        "btn btn-secondary",
-      ),
-    );
+    row.append(mk(`🔊 Dilo (ES)`, `Hear "${es}" in Spanish`, es, esLang, "btn btn-secondary"));
   }
   return row;
 }
@@ -312,8 +289,7 @@ export function bilingualTermEl(term) {
 
 export function bilingualDefinitionEl(term) {
   const wrap = document.createElement("div");
-  wrap.style.cssText =
-    "font-size:0.95rem; line-height:1.6; color:var(--ink); text-align:left;";
+  wrap.style.cssText = "font-size:0.95rem; line-height:1.6; color:var(--ink); text-align:left;";
   const en = document.createElement("p");
   en.style.cssText = "margin:0;";
   en.textContent = term.definition;
@@ -441,15 +417,13 @@ export function buildPredictReveal(term, { imageEl, onAdvance }) {
     const list = document.createElement("div");
     list.setAttribute("role", "group");
     list.setAttribute("aria-label", `What do you think "${term.term}" means?`);
-    list.style.cssText =
-      "display:flex; flex-direction:column; gap:var(--sp-2);";
+    list.style.cssText = "display:flex; flex-direction:column; gap:var(--sp-2);";
     let answered = false;
     choices.forEach((c) => {
       const b = document.createElement("button");
       b.type = "button";
       b.className = "btn btn-secondary";
-      b.style.cssText =
-        "text-align:left; min-height:44px; line-height:1.4; white-space:normal;";
+      b.style.cssText = "text-align:left; min-height:44px; line-height:1.4; white-space:normal;";
       b.textContent = c.text;
       b.addEventListener("click", () => {
         if (answered) return;
@@ -507,8 +481,7 @@ function buildPredictChoices(term) {
     if (d && d !== correct && pool.length < 2) pool.push(d);
   }
   while (pool.length < 2) {
-    const generic =
-      GENERIC_DISTRACTORS[pool.length % GENERIC_DISTRACTORS.length];
+    const generic = GENERIC_DISTRACTORS[pool.length % GENERIC_DISTRACTORS.length];
     if (!pool.includes(generic) && generic !== correct) pool.push(generic);
     else break;
   }
@@ -580,16 +553,8 @@ export function buildExampleSort(term, { onAdvance }) {
       }
     };
 
-    const yes = mkYesNo(
-      "Yes",
-      () => answer(true),
-      `Yes, this is a ${term.term}`,
-    );
-    const no = mkYesNo(
-      "No",
-      () => answer(false),
-      `No, this is not a ${term.term}`,
-    );
+    const yes = mkYesNo("Yes", () => answer(true), `Yes, this is a ${term.term}`);
+    const no = mkYesNo("No", () => answer(false), `No, this is not a ${term.term}`);
     // Mobile layout aid: keep the Yes/No pair together so it can reflow to a
     // full-width, side-by-side big-tap pair on narrow screens (see CSS).
     const pair = document.createElement("div");
@@ -627,9 +592,7 @@ function buildExampleItems(term) {
         isExample: !!e.isExample,
         why: String(
           e.why ||
-            (e.isExample
-              ? "Yes — this fits the meaning."
-              : "No — this does not fit the meaning."),
+            (e.isExample ? "Yes — this fits the meaning." : "No — this does not fit the meaning."),
         ),
       }));
   }
@@ -649,19 +612,14 @@ export function buildUseInContext(term, { onAdvance }) {
     const fb = feedbackLine();
     const list = document.createElement("div");
     list.setAttribute("role", "group");
-    list.setAttribute(
-      "aria-label",
-      `Pick the sentence that uses "${term.term}" correctly`,
-    );
-    list.style.cssText =
-      "display:flex; flex-direction:column; gap:var(--sp-2);";
+    list.setAttribute("aria-label", `Pick the sentence that uses "${term.term}" correctly`);
+    list.style.cssText = "display:flex; flex-direction:column; gap:var(--sp-2);";
     let answered = false;
     shuffle(usable.slice()).forEach((s) => {
       const b = document.createElement("button");
       b.type = "button";
       b.className = "btn btn-secondary";
-      b.style.cssText =
-        "text-align:left; min-height:44px; line-height:1.4; white-space:normal;";
+      b.style.cssText = "text-align:left; min-height:44px; line-height:1.4; white-space:normal;";
       b.textContent = s.text;
       b.addEventListener("click", () => {
         if (answered) return;
@@ -674,11 +632,7 @@ export function buildUseInContext(term, { onAdvance }) {
           celebrate(b);
         } else {
           b.style.borderColor = "var(--coral, #d9795d)";
-          setFeedback(
-            fb,
-            false,
-            "Not quite — that one doesn't use it correctly.",
-          );
+          setFeedback(fb, false, "Not quite — that one doesn't use it correctly.");
         }
         if (onAdvance) onAdvance();
       });
@@ -702,17 +656,13 @@ function buildClozeFill(term, clozeText, onAdvance) {
   const [before, after = ""] = clozeText.split("___");
 
   const sentence = document.createElement("p");
-  sentence.style.cssText =
-    "margin:0; font-size:1rem; line-height:1.7; color:var(--ink);";
+  sentence.style.cssText = "margin:0; font-size:1rem; line-height:1.7; color:var(--ink);";
   sentence.append(document.createTextNode(before));
   const blank = document.createElement("span");
   blank.setAttribute("role", "button");
   blank.tabIndex = 0;
   blank.className = "vet-blank";
-  blank.setAttribute(
-    "aria-label",
-    "Empty blank. Tap the word below to fill it.",
-  );
+  blank.setAttribute("aria-label", "Empty blank. Tap the word below to fill it.");
   blank.style.cssText = `
     display:inline-block; min-width:70px; padding:2px 10px; margin:0 2px;
     border-bottom:2px dashed var(--teal); color:var(--muted); text-align:center;`;
@@ -725,10 +675,7 @@ function buildClozeFill(term, clozeText, onAdvance) {
   chip.className = "btn btn-amber";
   chip.style.cssText = "min-height:40px; align-self:flex-start;";
   chip.textContent = term.term;
-  chip.setAttribute(
-    "aria-label",
-    `Place the word ${term.term} into the sentence`,
-  );
+  chip.setAttribute("aria-label", `Place the word ${term.term} into the sentence`);
 
   let filled = false;
   const fill = () => {
@@ -773,8 +720,7 @@ export function buildConfirmation(term) {
   if (term.termEs) {
     const es = document.createElement("div");
     es.lang = "es";
-    es.style.cssText =
-      "font-style:italic; color:var(--teal); font-weight:600; margin-top:2px;";
+    es.style.cssText = "font-style:italic; color:var(--teal); font-weight:600; margin-top:2px;";
     es.textContent = `¡Exploraste: ${term.termEs}!`;
     box.append(es);
   }

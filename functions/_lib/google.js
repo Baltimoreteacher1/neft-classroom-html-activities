@@ -1,32 +1,32 @@
-const GOOGLE_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
-const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
-const GOOGLE_USERINFO_URL = 'https://www.googleapis.com/oauth2/v3/userinfo';
+const GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
+const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
+const GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v3/userinfo";
 
 export const GOOGLE_SCOPES = [
-  'openid',
-  'email',
-  'profile',
-  'https://www.googleapis.com/auth/calendar.readonly',
-  'https://www.googleapis.com/auth/classroom.courses.readonly',
-  'https://www.googleapis.com/auth/classroom.coursework.students.readonly'
+  "openid",
+  "email",
+  "profile",
+  "https://www.googleapis.com/auth/calendar.readonly",
+  "https://www.googleapis.com/auth/classroom.courses.readonly",
+  "https://www.googleapis.com/auth/classroom.coursework.students.readonly",
 ];
 
 export function json(data, init = {}) {
   return new Response(JSON.stringify(data, null, 2), {
     ...init,
     headers: {
-      'content-type': 'application/json; charset=utf-8',
-      'cache-control': 'no-store',
-      ...(init.headers || {})
-    }
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "no-store",
+      ...(init.headers || {}),
+    },
   });
 }
 
 export function getConfig(env) {
   return {
-    clientId: env.GOOGLE_CLIENT_ID || '',
-    clientSecret: env.GOOGLE_CLIENT_SECRET || '',
-    appBaseUrl: (env.APP_BASE_URL || '').replace(/\/$/, '')
+    clientId: env.GOOGLE_CLIENT_ID || "",
+    clientSecret: env.GOOGLE_CLIENT_SECRET || "",
+    appBaseUrl: (env.APP_BASE_URL || "").replace(/\/$/, ""),
   };
 }
 
@@ -40,15 +40,15 @@ export function redirectUri(env) {
 }
 
 export function sessionIdFromCookie(request) {
-  const cookie = request.headers.get('cookie') || '';
+  const cookie = request.headers.get("cookie") || "";
   const match = cookie.match(/(?:^|;\s*)noam_school_session=([^;]+)/);
-  return match ? decodeURIComponent(match[1]) : '';
+  return match ? decodeURIComponent(match[1]) : "";
 }
 
 export function newSessionId() {
   const bytes = new Uint8Array(24);
   crypto.getRandomValues(bytes);
-  return [...bytes].map(b => b.toString(16).padStart(2, '0')).join('');
+  return [...bytes].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 export function sessionCookie(id, maxAge = 60 * 60 * 24 * 30) {
@@ -56,20 +56,20 @@ export function sessionCookie(id, maxAge = 60 * 60 * 24 * 30) {
 }
 
 export function clearSessionCookie() {
-  return 'noam_school_session=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0';
+  return "noam_school_session=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0";
 }
 
 export function buildAuthUrl(env, state) {
   const cfg = getConfig(env);
   const url = new URL(GOOGLE_AUTH_URL);
-  url.searchParams.set('client_id', cfg.clientId);
-  url.searchParams.set('redirect_uri', redirectUri(env));
-  url.searchParams.set('response_type', 'code');
-  url.searchParams.set('scope', GOOGLE_SCOPES.join(' '));
-  url.searchParams.set('access_type', 'offline');
-  url.searchParams.set('prompt', 'consent');
-  url.searchParams.set('include_granted_scopes', 'true');
-  url.searchParams.set('state', state);
+  url.searchParams.set("client_id", cfg.clientId);
+  url.searchParams.set("redirect_uri", redirectUri(env));
+  url.searchParams.set("response_type", "code");
+  url.searchParams.set("scope", GOOGLE_SCOPES.join(" "));
+  url.searchParams.set("access_type", "offline");
+  url.searchParams.set("prompt", "consent");
+  url.searchParams.set("include_granted_scopes", "true");
+  url.searchParams.set("state", state);
   return url.toString();
 }
 
@@ -80,11 +80,16 @@ export async function exchangeCode(env, code) {
     client_id: cfg.clientId,
     client_secret: cfg.clientSecret,
     redirect_uri: redirectUri(env),
-    grant_type: 'authorization_code'
+    grant_type: "authorization_code",
   });
-  const response = await fetch(GOOGLE_TOKEN_URL, { method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body });
+  const response = await fetch(GOOGLE_TOKEN_URL, {
+    method: "POST",
+    headers: { "content-type": "application/x-www-form-urlencoded" },
+    body,
+  });
   const data = await response.json();
-  if (!response.ok) throw new Error(data.error_description || data.error || 'Google token exchange failed');
+  if (!response.ok)
+    throw new Error(data.error_description || data.error || "Google token exchange failed");
   return data;
 }
 
@@ -94,18 +99,24 @@ export async function refreshToken(env, refresh_token) {
     client_id: cfg.clientId,
     client_secret: cfg.clientSecret,
     refresh_token,
-    grant_type: 'refresh_token'
+    grant_type: "refresh_token",
   });
-  const response = await fetch(GOOGLE_TOKEN_URL, { method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body });
+  const response = await fetch(GOOGLE_TOKEN_URL, {
+    method: "POST",
+    headers: { "content-type": "application/x-www-form-urlencoded" },
+    body,
+  });
   const data = await response.json();
-  if (!response.ok) throw new Error(data.error_description || data.error || 'Google token refresh failed');
+  if (!response.ok)
+    throw new Error(data.error_description || data.error || "Google token refresh failed");
   return data;
 }
 
 export async function googleJson(url, accessToken) {
   const response = await fetch(url, { headers: { authorization: `Bearer ${accessToken}` } });
   const data = await response.json();
-  if (!response.ok) throw new Error(data.error?.message || data.error || 'Google API request failed');
+  if (!response.ok)
+    throw new Error(data.error?.message || data.error || "Google API request failed");
   return data;
 }
 
@@ -121,7 +132,9 @@ export async function loadSession(request, env) {
 }
 
 export async function saveSession(env, id, data) {
-  await env.NOAM_SCHOOL_KV.put(`session:${id}`, JSON.stringify(data), { expirationTtl: 60 * 60 * 24 * 30 });
+  await env.NOAM_SCHOOL_KV.put(`session:${id}`, JSON.stringify(data), {
+    expirationTtl: 60 * 60 * 24 * 30,
+  });
 }
 
 export async function deleteSession(request, env) {

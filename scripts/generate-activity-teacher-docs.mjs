@@ -13,13 +13,7 @@
 //   node scripts/generate-activity-teacher-docs.mjs            # all lessons
 //   node scripts/generate-activity-teacher-docs.mjs 1-1 5-1    # specific lessons
 
-import {
-  readFileSync,
-  writeFileSync,
-  readdirSync,
-  existsSync,
-  mkdirSync,
-} from "node:fs";
+import { readFileSync, writeFileSync, readdirSync, existsSync, mkdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import {
@@ -66,9 +60,7 @@ function shadedLabel(text, fill) {
   return new Paragraph({
     spacing: { after: 80, before: 160 },
     shading: { type: ShadingType.CLEAR, color: "auto", fill },
-    children: [
-      new TextRun({ text, bold: true, color: "FFFFFF", size: 22, font: "Calibri" }),
-    ],
+    children: [new TextRun({ text, bold: true, color: "FFFFFF", size: 22, font: "Calibri" })],
   });
 }
 
@@ -89,13 +81,22 @@ function renderItem(item, idx, stepWord) {
             new TextRun({ text: `${LETTERS[i]}. `, bold: true, size: 22, font: "Calibri" }),
             new TextRun({ text: String(c), size: 22, font: "Calibri" }),
             ...(correct
-              ? [new TextRun({ text: "   ✓ correct", bold: true, color: GREEN, size: 22, font: "Calibri" })]
+              ? [
+                  new TextRun({
+                    text: "   ✓ correct",
+                    bold: true,
+                    color: GREEN,
+                    size: 22,
+                    font: "Calibri",
+                  }),
+                ]
               : []),
           ],
         }),
       );
     });
-    if (item.explanation) out.push(p(`Why: ${item.explanation}`, { italics: true, color: "555555", before: 40 }));
+    if (item.explanation)
+      out.push(p(`Why: ${item.explanation}`, { italics: true, color: "555555", before: 40 }));
   } else if (type === "drag-sort") {
     out.push(shadedLabel(`${label} · Sort`, TEAL));
     if (item.instructions) out.push(p(item.instructions, { bold: true }));
@@ -109,9 +110,7 @@ function renderItem(item, idx, stepWord) {
   } else if (type === "matching-game") {
     out.push(shadedLabel(`${label} · Matching`, TEAL));
     if (item.label) out.push(p(item.label, { bold: true }));
-    (item.pairs || []).forEach((pr) =>
-      out.push(p(`${pr.term}   →   ${pr.match}`, { after: 30 })),
-    );
+    (item.pairs || []).forEach((pr) => out.push(p(`${pr.term}   →   ${pr.match}`, { after: 30 })));
   } else if (type === "error-analysis") {
     out.push(shadedLabel(`${item.title || label} · Error Analysis`, AMBER));
     (item.workedExample || []).forEach((step, i) => {
@@ -123,14 +122,25 @@ function renderItem(item, idx, stepWord) {
             new TextRun({ text: `${step.label}: `, bold: true, size: 22, font: "Calibri" }),
             new TextRun({ text: String(step.work), size: 22, font: "Calibri" }),
             ...(isErr
-              ? [new TextRun({ text: "   ⟵ mistake here", bold: true, color: AMBER, size: 22, font: "Calibri" })]
+              ? [
+                  new TextRun({
+                    text: "   ⟵ mistake here",
+                    bold: true,
+                    color: AMBER,
+                    size: 22,
+                    font: "Calibri",
+                  }),
+                ]
               : []),
           ],
         }),
       );
     });
-    if (item.correctWork) out.push(p(`Correct: ${item.correctWork}`, { bold: true, color: GREEN, before: 60 }));
-    (item.hints || []).forEach((h) => out.push(p(`Hint: ${h}`, { italics: true, color: "555555", after: 30 })));
+    if (item.correctWork)
+      out.push(p(`Correct: ${item.correctWork}`, { bold: true, color: GREEN, before: 60 }));
+    (item.hints || []).forEach((h) =>
+      out.push(p(`Hint: ${h}`, { italics: true, color: "555555", after: 30 })),
+    );
   } else {
     out.push(shadedLabel(`${label} · ${type}`, TEAL));
     out.push(p(item.instructions || item.stem || item.label || JSON.stringify(item), {}));
@@ -149,7 +159,13 @@ function buildDoc(id, cfg) {
     new Paragraph({
       spacing: { after: 40 },
       children: [
-        new TextRun({ text: "TEACHER VERSION · ANSWER KEY", bold: true, color: AMBER, size: 18, font: "Calibri" }),
+        new TextRun({
+          text: "TEACHER VERSION · ANSWER KEY",
+          bold: true,
+          color: AMBER,
+          size: 18,
+          font: "Calibri",
+        }),
       ],
     }),
   );
@@ -267,7 +283,12 @@ ${rows}
 writeFileSync(join(OUT_DIR, "index.html"), html);
 
 function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  return String(s).replace(
+    /[&<>"']/g,
+    (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c],
+  );
 }
 
-console.log(`Generated ${made.length} teacher activity DOCX + index.html in teacher-tools/activity-guides/`);
+console.log(
+  `Generated ${made.length} teacher activity DOCX + index.html in teacher-tools/activity-guides/`,
+);

@@ -201,8 +201,7 @@
       };
     });
 
-    var scorePercent =
-      possible > 0 ? Math.round((earned / possible) * 1000) / 10 : 0;
+    var scorePercent = possible > 0 ? Math.round((earned / possible) * 1000) / 10 : 0;
 
     var result = {
       activityId: opts.activityId || "activity",
@@ -301,8 +300,7 @@
     var skillRows = Object.keys(result.skills)
       .map(function (k) {
         var sk = result.skills[k];
-        var p =
-          sk.possible > 0 ? Math.round((sk.earned / sk.possible) * 100) : 0;
+        var p = sk.possible > 0 ? Math.round((sk.earned / sk.possible) * 100) : 0;
         return (
           '<li><span class="ntkit-skillname">' +
           esc(k) +
@@ -330,9 +328,7 @@
       esc(result.activityTitle) +
       "</div>" +
       (result.standard
-        ? '<div class="ntkit-standard">Standard: ' +
-          esc(result.standard) +
-          "</div>"
+        ? '<div class="ntkit-standard">Standard: ' + esc(result.standard) + "</div>"
         : "") +
       '<div class="ntkit-studentline">' +
       esc(s.alias || "Unnamed student") +
@@ -363,13 +359,11 @@
     if (tone === "good") {
       variant = "challenge";
       title = "Next step";
-      msg =
-        "Strong work — you have this skill. Try the challenge or enrichment task next.";
+      msg = "Strong work — you have this skill. Try the challenge or enrichment task next.";
     } else if (tone === "ok") {
       variant = "selfcheck";
       title = "Next step";
-      msg =
-        "Almost there. Review the items marked ✗ above, then retry just those questions.";
+      msg = "Almost there. Review the items marked ✗ above, then retry just those questions.";
     } else {
       variant = "mistake";
       title = "Next step";
@@ -390,9 +384,7 @@
       '<h1 style="margin:0 0 4px;font-size:20px;">' +
       esc(a.activityTitle || "Neft Teacher Activity") +
       "</h1>" +
-      (a.standard
-        ? '<div style="color:#555;">Standard: ' + esc(a.standard) + "</div>"
-        : "") +
+      (a.standard ? '<div style="color:#555;">Standard: ' + esc(a.standard) + "</div>" : "") +
       '<table style="margin:10px 0;border-collapse:collapse;font-size:14px;">' +
       '<tr><td style="padding:2px 12px 2px 0;"><strong>Student</strong></td><td>' +
       esc(s.alias || "Unnamed student") +
@@ -431,31 +423,18 @@
           "/" +
           it.points +
           "]</div>" +
-          (it.correct
-            ? ""
-            : "<div>Correct answer: " + esc(it.correctAnswer) + "</div>") +
+          (it.correct ? "" : "<div>Correct answer: " + esc(it.correctAnswer) + "</div>") +
           "</li>";
       });
       body += "</ol>";
 
       var skillKeys = Object.keys(r.skills);
       if (skillKeys.length) {
-        body +=
-          '<h3 style="font-size:15px;">Skill breakdown</h3><ul style="font-size:14px;">';
+        body += '<h3 style="font-size:15px;">Skill breakdown</h3><ul style="font-size:14px;">';
         skillKeys.forEach(function (k) {
           var sk = r.skills[k];
-          var p =
-            sk.possible > 0 ? Math.round((sk.earned / sk.possible) * 100) : 0;
-          body +=
-            "<li>" +
-            esc(k) +
-            ": " +
-            p +
-            "% (" +
-            sk.earned +
-            "/" +
-            sk.possible +
-            ")</li>";
+          var p = sk.possible > 0 ? Math.round((sk.earned / sk.possible) * 100) : 0;
+          body += "<li>" + esc(k) + ": " + p + "% (" + sk.earned + "/" + sk.possible + ")</li>";
         });
         body += "</ul>";
       }
@@ -579,9 +558,7 @@
        el.innerHTML = NTKit.ui.vocab({word, def, img});
      All inputs are escaped. Pairs with the `.nt-*` CSS classes.        */
   function callout(variant, title, bodyHTML) {
-    var t = title
-      ? '<div class="nt-callout-title">' + esc(title) + "</div>"
-      : "";
+    var t = title ? '<div class="nt-callout-title">' + esc(title) + "</div>" : "";
     return (
       '<div class="nt-callout nt-' +
       esc(variant || "info") +
@@ -598,11 +575,7 @@
       .map(function (v) {
         v = v || {};
         var img = v.img
-          ? '<img class="nt-vocab-img" src="' +
-            esc(v.img) +
-            '" alt="' +
-            esc(v.word || "") +
-            '">'
+          ? '<img class="nt-vocab-img" src="' + esc(v.img) + '" alt="' + esc(v.word || "") + '">'
           : '<span class="nt-vocab-img" aria-hidden="true"></span>';
         return (
           '<div class="nt-vocab-card">' +
@@ -653,11 +626,7 @@
     var blocks = (arr || [])
       .map(function (h, i) {
         return (
-          "<details><summary>Hint " +
-          (i + 1) +
-          "</summary><div>" +
-          esc(h) +
-          "</div></details>"
+          "<details><summary>Hint " + (i + 1) + "</summary><div>" + esc(h) + "</div></details>"
         );
       })
       .join("");
@@ -723,10 +692,4 @@
 
   if (typeof module !== "undefined" && module.exports) module.exports = NTKit;
   if (global) global.NTKit = NTKit;
-})(
-  typeof window !== "undefined"
-    ? window
-    : typeof globalThis !== "undefined"
-      ? globalThis
-      : this,
-);
+})(typeof window !== "undefined" ? window : typeof globalThis !== "undefined" ? globalThis : this);

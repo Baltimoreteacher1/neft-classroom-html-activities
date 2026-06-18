@@ -136,10 +136,7 @@ function fireConfetti(anchorEl) {
     const dist = 30 + Math.random() * 45;
     piece.style.setProperty("--orp-dx", `${Math.cos(angle) * dist}px`);
     piece.style.setProperty("--orp-dy", `${Math.sin(angle) * dist - 20}px`);
-    piece.style.setProperty(
-      "--orp-rot",
-      `${Math.round(Math.random() * 360 - 180)}deg`,
-    );
+    piece.style.setProperty("--orp-rot", `${Math.round(Math.random() * 360 - 180)}deg`);
     piece.style.background = colors[i % colors.length];
     piece.style.animationDelay = `${Math.random() * 0.12}s`;
     burst.append(piece);
@@ -168,10 +165,7 @@ export function renderOpenResponse(
   if (sentenceFrame) {
     const frame = document.createElement("div");
     frame.className = "sentence-frame";
-    frame.innerHTML = sentenceFrame.replace(
-      /___/g,
-      '<span class="blank">&nbsp;</span>',
-    );
+    frame.innerHTML = sentenceFrame.replace(/___/g, '<span class="blank">&nbsp;</span>');
     wrapper.append(frame);
   }
 
@@ -287,11 +281,7 @@ export function renderOpenResponse(
     submitted = true;
     textarea.readOnly = true;
     submitBtn.style.display = "none";
-    showFeedback(
-      feedbackSlot,
-      "success",
-      "Great response! Your thinking is recorded.",
-    );
+    showFeedback(feedbackSlot, "success", "Great response! Your thinking is recorded.");
     fireConfetti(wrapper);
     if (onSubmit) onSubmit(text, true);
   });

@@ -59,8 +59,7 @@ export function renderErrorAnalysis(
   wrapper.append(instruction);
 
   const explainLabel = document.createElement("p");
-  explainLabel.style.cssText =
-    "font-weight:600; margin:var(--sp-4) 0 var(--sp-2);";
+  explainLabel.style.cssText = "font-weight:600; margin:var(--sp-4) 0 var(--sp-2);";
   explainLabel.textContent = "Explain what went wrong and how to fix it:";
   explainLabel.style.display = "none";
   wrapper.append(explainLabel);

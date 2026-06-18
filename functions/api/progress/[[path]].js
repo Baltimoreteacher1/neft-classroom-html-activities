@@ -35,9 +35,7 @@ function json(obj, status = 200) {
 
 // Loose validation of a resume code: PREFIX-SUFFIX, safe characters only.
 function validCode(code) {
-  return (
-    typeof code === "string" && /^[A-Z0-9]{1,12}-[A-Z0-9]{3,8}$/.test(code)
-  );
+  return typeof code === "string" && /^[A-Z0-9]{1,12}-[A-Z0-9]{3,8}$/.test(code);
 }
 
 function clamp(s, n) {
@@ -124,14 +122,7 @@ async function upsert(db, body, isCreate) {
                 section = COALESCE(NULLIF(?, ''), section)
           WHERE save_code = ?`,
       )
-      .bind(
-        stateJson,
-        progress,
-        nowIso,
-        clamp(body.studentName, 60),
-        clamp(body.section, 40),
-        code,
-      )
+      .bind(stateJson, progress, nowIso, clamp(body.studentName, 60), clamp(body.section, 40), code)
       .run();
     if (!res.meta || res.meta.changes === 0) {
       await upsert(db, body, true);
@@ -173,13 +164,9 @@ export async function onRequest(context) {
     await ensureSchema(env.DB);
 
     if (seg === "load" && method === "GET") {
-      const code = (
-        new URL(request.url).searchParams.get("code") || ""
-      ).toUpperCase();
+      const code = (new URL(request.url).searchParams.get("code") || "").toUpperCase();
       if (!validCode(code)) return json({ ok: false, error: "bad-code" }, 400);
-      const row = await env.DB.prepare(
-        "SELECT * FROM student_progress WHERE save_code = ?",
-      )
+      const row = await env.DB.prepare("SELECT * FROM student_progress WHERE save_code = ?")
         .bind(code)
         .first();
       if (!row) return json({ ok: false, error: "not-found" }, 404);
@@ -188,17 +175,13 @@ export async function onRequest(context) {
 
     if ((seg === "create" || seg === "save") && method === "POST") {
       const body = await request.json().catch(() => null);
-      if (!body || !validCode(body.saveCode))
-        return json({ ok: false, error: "bad-payload" }, 400);
+      if (!body || !validCode(body.saveCode)) return json({ ok: false, error: "bad-payload" }, 400);
       const updatedAt = await upsert(env.DB, body, seg === "create");
       return json({ ok: true, saveCode: body.saveCode, updatedAt });
     }
 
     return json({ ok: false, error: "not-found", route: seg }, 404);
   } catch (err) {
-    return json(
-      { ok: false, error: "server-error", message: String(err) },
-      500,
-    );
+    return json({ ok: false, error: "server-error", message: String(err) }, 500);
   }
 }

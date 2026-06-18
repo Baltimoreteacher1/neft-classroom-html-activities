@@ -11,8 +11,7 @@ export async function loadFromServer(_lessonId, _studentName) {
 }
 
 export function syncToServer(lessonId, state, studentName, studentPeriod) {
-  if (typeof globalThis === "undefined" || !globalThis.CurriculumProgressBridge)
-    return;
+  if (typeof globalThis === "undefined" || !globalThis.CurriculumProgressBridge) return;
   const bridge = globalThis.CurriculumProgressBridge;
   if (!bridge.canSync || !bridge.canSync()) return;
   const phases = state.phases || [];
@@ -47,9 +46,7 @@ export function findSavedStudents(lessonId) {
       try {
         const saved = JSON.parse(localStorage.getItem(k));
         if (saved.studentName) {
-          const phaseDone = (saved.phases || []).filter(
-            (p) => p.status === "completed",
-          ).length;
+          const phaseDone = (saved.phases || []).filter((p) => p.status === "completed").length;
           students.push({
             name: saved.studentName,
             period: saved.studentPeriod || "",
@@ -123,9 +120,7 @@ export function createState(lessonId, studentId) {
   // rest down by one so their completion, stars, and typed answers stay aligned.
   function migrateVocabPhaseRemoval(s) {
     if (!Array.isArray(s.phases) || s.phases.length !== 6) return s;
-    s.phases = s.phases
-      .filter((_, i) => i !== 1)
-      .map((p, i) => ({ ...p, id: i }));
+    s.phases = s.phases.filter((_, i) => i !== 1).map((p, i) => ({ ...p, id: i }));
     const remapped = {};
     for (const k in s.responses || {}) {
       const m = /^(\d+)_([\s\S]*)$/.exec(k);
@@ -275,8 +270,7 @@ export function createState(lessonId, studentId) {
     awardPhaseParticipation(phaseIndex, amount = 2) {
       state.coins = (state.coins || 0) + amount;
       const phase = state.phases[phaseIndex];
-      if (phase)
-        phase.participationCoins = (phase.participationCoins || 0) + amount;
+      if (phase) phase.participationCoins = (phase.participationCoins || 0) + amount;
       save();
       notify();
     },

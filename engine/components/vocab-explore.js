@@ -107,21 +107,14 @@ const SHAPE_KEYWORDS = [
   [/\bvolume\b|three-dimensional|3d\b/, "rectangular-prism"],
 ];
 
-const VALID_SHAPES = new Set([
-  "cube",
-  "rectangular-prism",
-  "triangular-prism",
-  "square-pyramid",
-]);
+const VALID_SHAPES = new Set(["cube", "rectangular-prism", "triangular-prism", "square-pyramid"]);
 
 export function resolveExplorer(term) {
   // 1) Explicit per-term override: term.explore
   //    "sensemaking" | "flip" (legacy alias) | "shape3d:rectangular-prism" | "shape3d"
-  const override =
-    term && typeof term.explore === "string" ? term.explore.trim() : "";
+  const override = term && typeof term.explore === "string" ? term.explore.trim() : "";
   if (override) {
-    if (override === "flip" || override === "sensemaking")
-      return { kind: "sensemaking" };
+    if (override === "flip" || override === "sensemaking") return { kind: "sensemaking" };
     if (override.startsWith("shape3d")) {
       const shape = override.split(":")[1]?.trim();
       return {
@@ -149,9 +142,7 @@ export function exploreLabel(term) {
   btn.type = "button";
   btn.className = "vocab-explore-trigger";
   const verb =
-    route.kind === "shape3d"
-      ? "Build & count the 3D shape"
-      : "Predict, sort, and use the word";
+    route.kind === "shape3d" ? "Build & count the 3D shape" : "Predict, sort, and use the word";
   btn.setAttribute("aria-label", `Explore ${term.term}: ${verb}`);
   btn.innerHTML = `
     <span aria-hidden="true" class="vocab-explore-icon">${route.kind === "shape3d" ? "🧊" : "🧠"}</span>
@@ -235,10 +226,7 @@ export function openExplorer(host, term, { onClose, siblings } = {}) {
   function focusableEls() {
     return Array.prototype.filter.call(
       panel.querySelectorAll(FOCUSABLE),
-      (el) =>
-        el.offsetWidth > 0 ||
-        el.offsetHeight > 0 ||
-        el === document.activeElement,
+      (el) => el.offsetWidth > 0 || el.offsetHeight > 0 || el === document.activeElement,
     );
   }
   function onKeydown(e) {
@@ -291,8 +279,7 @@ function makeRevealCard(term) {
   h.textContent = "What it means";
   card.append(h);
   const en = document.createElement("p");
-  en.style.cssText =
-    "margin:0; font-size:0.95rem; line-height:1.6; color:var(--ink);";
+  en.style.cssText = "margin:0; font-size:0.95rem; line-height:1.6; color:var(--ink);";
   en.textContent = term.definition || "";
   card.append(en);
   if (term.definitionEs) {

@@ -39,17 +39,12 @@ function mainConcept(config) {
   if (vocab.length) {
     // The lesson's central term is usually the one that echoes the title.
     const title = String(config.title || "").toLowerCase();
-    const byTitle = vocab.find(
-      (v) => title && v.term && title.includes(v.term.toLowerCase()),
-    );
+    const byTitle = vocab.find((v) => title && v.term && title.includes(v.term.toLowerCase()));
     if (byTitle) return byTitle;
     // Otherwise pick the term with the longest definition (most load-bearing).
     return vocab
       .slice()
-      .sort(
-        (a, b) =>
-          String(b.definition || "").length - String(a.definition || "").length,
-      )[0];
+      .sort((a, b) => String(b.definition || "").length - String(a.definition || "").length)[0];
   }
   return null;
 }
@@ -71,10 +66,7 @@ export function deriveKernel(config) {
     const def = String(concept.definition || "").replace(/[.]+$/, "");
     const defEs = String(concept.definitionEs || "").replace(/[.]+$/, "");
     en = `${capitalize(concept.term)} is ${lowerFirst(def)}.`;
-    es =
-      concept.termEs && defEs
-        ? `${capitalize(concept.termEs)} es ${lowerFirst(defEs)}.`
-        : "";
+    es = concept.termEs && defEs ? `${capitalize(concept.termEs)} es ${lowerFirst(defEs)}.` : "";
   } else if (topic) {
     en = `Today I can ${lowerFirst(topic)}.`;
     es = "";
@@ -95,12 +87,8 @@ export function deriveKernel(config) {
 // ── 2. Sentence expansion (because / but / so) ───────────────────────────────
 export function deriveExpansion(config) {
   const concept = mainConcept(config);
-  const subject =
-    concept && concept.term
-      ? capitalize(concept.term)
-      : config.title || "This idea";
-  const subjectEs =
-    concept && concept.termEs ? capitalize(concept.termEs) : null;
+  const subject = concept && concept.term ? capitalize(concept.term) : config.title || "This idea";
+  const subjectEs = concept && concept.termEs ? capitalize(concept.termEs) : null;
 
   const kernelEn = `${subject} matters in math`;
   const kernelEs = subjectEs ? `${subjectEs} importa en matemáticas` : null;
@@ -136,11 +124,7 @@ export function deriveExpansion(config) {
 export function deriveSentenceTypes(config) {
   const concept = mainConcept(config);
   const term = concept && concept.term ? concept.term.toLowerCase() : null;
-  const topic =
-    term ||
-    cleanObjective(config.contentObjective) ||
-    config.title ||
-    "this idea";
+  const topic = term || cleanObjective(config.contentObjective) || config.title || "this idea";
 
   return [
     {

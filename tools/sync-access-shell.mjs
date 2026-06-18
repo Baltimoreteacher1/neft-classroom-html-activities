@@ -17,7 +17,9 @@ const index = readFileSync(join(dir, "index.html"), "utf8");
 const shellPath = join(dir, "app-shell");
 
 let current = "";
-try { current = readFileSync(shellPath, "utf8"); } catch {}
+try {
+  current = readFileSync(shellPath, "utf8");
+} catch {}
 
 if (current === index) {
   console.log("sync-access-shell: app-shell already matches index.html.");

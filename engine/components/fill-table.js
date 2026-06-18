@@ -104,8 +104,7 @@ export function renderFillTable(container, config) {
   // { columns:[...], items|rows:[{key:value,...}] } where each row is an
   // object whose values map positionally to `columns`. Without this adapter
   // those tables render blank (missing headers/rows/editableCells).
-  const { headers, rows, editableCells, onComplete } =
-    normalizeFillTable(config);
+  const { headers, rows, editableCells, onComplete } = normalizeFillTable(config);
 
   const wrapper = document.createElement("div");
   wrapper.className = "card ft-root";
@@ -151,8 +150,7 @@ export function renderFillTable(container, config) {
         const input = document.createElement("input");
         input.type = "text";
         input.className = "text-input ft-input";
-        input.style.cssText =
-          "padding:6px 8px; font-size:0.9rem; width:100%; min-width:60px;";
+        input.style.cssText = "padding:6px 8px; font-size:0.9rem; width:100%; min-width:60px;";
         input.placeholder = "?";
         input.setAttribute("aria-label", `${headers[ci]} for row ${ri + 1}`);
         input.dataset.key = cellKey;
@@ -193,9 +191,7 @@ export function renderFillTable(container, config) {
       const isMatch = answersMatch(userVal, expected);
 
       input.style.borderColor = isMatch ? "var(--success)" : "var(--error)";
-      input.style.background = isMatch
-        ? "var(--success-bg)"
-        : "var(--error-bg)";
+      input.style.background = isMatch ? "var(--success-bg)" : "var(--error-bg)";
 
       if (isMatch) {
         correct++;
@@ -212,11 +208,7 @@ export function renderFillTable(container, config) {
     if (correct === total) {
       completed = true;
       checkBtn.style.display = "none";
-      showFb(
-        feedbackSlot,
-        "success",
-        `All ${total} values correct! Table complete.`,
-      );
+      showFb(feedbackSlot, "success", `All ${total} values correct! Table complete.`);
       if (onComplete) onComplete(correct, total);
     } else {
       showFb(
@@ -260,13 +252,9 @@ function renderFillTableFallback(wrapper, config = {}) {
     const li = document.createElement("li");
     if (row && typeof row === "object" && !Array.isArray(row)) {
       const keys = Object.keys(row);
-      li.textContent = keys
-        .map((k, i) => `${cols[i] || k}: ${row[k]}`)
-        .join("  ·  ");
+      li.textContent = keys.map((k, i) => `${cols[i] || k}: ${row[k]}`).join("  ·  ");
     } else if (Array.isArray(row)) {
-      li.textContent = row
-        .map((v, i) => `${cols[i] ? cols[i] + ": " : ""}${v}`)
-        .join("  ·  ");
+      li.textContent = row.map((v, i) => `${cols[i] ? cols[i] + ": " : ""}${v}`).join("  ·  ");
     } else {
       li.textContent = String(row);
     }
@@ -291,9 +279,7 @@ function normalizeFillTable(config = {}) {
     return {
       headers: config.headers,
       rows: config.rows,
-      editableCells: Array.isArray(config.editableCells)
-        ? config.editableCells
-        : [],
+      editableCells: Array.isArray(config.editableCells) ? config.editableCells : [],
       onComplete,
     };
   }
@@ -311,9 +297,7 @@ function normalizeFillTable(config = {}) {
       ? config.rows
       : [];
 
-  const objectRows = source.filter(
-    (r) => r && typeof r === "object" && !Array.isArray(r),
-  );
+  const objectRows = source.filter((r) => r && typeof r === "object" && !Array.isArray(r));
 
   if (!headers.length || !objectRows.length) {
     // Could not interpret — return what we have so the caller can fall back.

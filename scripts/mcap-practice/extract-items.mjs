@@ -78,9 +78,7 @@ function serializeParagraph(pXml) {
         out += fracs.map(renderOmmlFraction).join(" ");
       } else {
         // plain math runs (no fraction) — recover their <m:t> text
-        out += (tok.match(/<m:t\b[^>]*>[\s\S]*?<\/m:t>/g) || [])
-          .map((t) => decodeXml(t))
-          .join("");
+        out += (tok.match(/<m:t\b[^>]*>[\s\S]*?<\/m:t>/g) || []).map((t) => decodeXml(t)).join("");
       }
     } else {
       out += decodeXml(tok);
@@ -236,12 +234,16 @@ function listLessonIds() {
   const ids = [];
   for (const e of readdirSync(lessonsDir, { withFileTypes: true })) {
     if (!e.isDirectory()) continue;
-    const docx = join(lessonsDir, e.name, "downloads", "printables", `${e.name}-mcap-practice.docx`);
+    const docx = join(
+      lessonsDir,
+      e.name,
+      "downloads",
+      "printables",
+      `${e.name}-mcap-practice.docx`,
+    );
     if (existsSync(docx)) ids.push(e.name);
   }
-  return ids.sort((a, b) =>
-    a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }),
-  );
+  return ids.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }));
 }
 
 async function main() {
@@ -292,7 +294,8 @@ async function main() {
   console.log("─".repeat(50));
   console.log(`${report.length} lessons | ${total} items | ${dataDir}`);
   if (noCcss.length) console.log(`⚠ missing CCSS: ${noCcss.map((r) => r.id).join(", ")}`);
-  if (low.length) console.log(`⚠ fewer than 3 items: ${low.map((r) => `${r.id}(${r.items})`).join(", ")}`);
+  if (low.length)
+    console.log(`⚠ fewer than 3 items: ${low.map((r) => `${r.id}(${r.items})`).join(", ")}`);
 }
 
 main().catch((e) => {

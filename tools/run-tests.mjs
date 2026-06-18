@@ -14,13 +14,7 @@ import { readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 
 const ROOT = process.cwd();
-const IGNORE_DIRS = new Set([
-  "node_modules",
-  "dist",
-  ".git",
-  ".qa-logs",
-  "coverage",
-]);
+const IGNORE_DIRS = new Set(["node_modules", "dist", ".git", ".qa-logs", "coverage"]);
 const TEST_RE = /\.test\.(mjs|cjs|js)$/;
 
 function findTests(dir, out = []) {
@@ -60,7 +54,5 @@ for (const file of tests) {
   }
 }
 
-console.log(
-  `\n${tests.length - failed}/${tests.length} test scripts passed.`,
-);
+console.log(`\n${tests.length - failed}/${tests.length} test scripts passed.`);
 process.exit(failed > 0 ? 1 : 0);

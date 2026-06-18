@@ -273,11 +273,8 @@ function buildNovel(group, novel, lessons) {
     .map((act, i) => {
       const sceneId = act.kind === "final" ? "final" : "act" + (i + 1);
       const hasB = !!act.challenges[1];
-      const next = i < acts.length - 1
-        ? acts[i + 1].kind === "final"
-          ? "final"
-          : "act" + (i + 2)
-        : null;
+      const next =
+        i < acts.length - 1 ? (acts[i + 1].kind === "final" ? "final" : "act" + (i + 2)) : null;
       return `          { scene: ${JSON.stringify(sceneId)}, hasB: ${hasB}, last: ${
         i === acts.length - 1
       }, next: ${next ? JSON.stringify(next) : "null"} }`;

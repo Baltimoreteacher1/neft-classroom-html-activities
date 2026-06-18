@@ -17,18 +17,76 @@ const TEAL = "#0e8a7d";
 
 // ── remediation map (strand → lessons), from math/remediation/unit-rN ──
 const REMEDIATION = [
-  { id: "r1", name: "Whole Numbers & Operations", lessons: ["Place Value, Compare & Round","Add & Subtract Multi-Digit Numbers","Multiply Multi-Digit Numbers","Long Division","Order of Operations (PEMDAS)"] },
-  { id: "r2", name: "Fraction Foundations", lessons: ["Understand Fractions","Equivalent Fractions & Simplifying","Compare & Order Fractions","Add & Subtract Fractions","Multiply Fractions & Mixed Numbers"] },
-  { id: "r3", name: "Decimals & Money", lessons: ["Decimal Place Value, Compare & Round","Add & Subtract Decimals","Multiply Decimals","Divide Decimals","Fractions ↔ Decimals ↔ Percents"] },
-  { id: "r4", name: "Factors, Multiples & Patterns", lessons: ["Factors & Divisibility","Prime & Composite · Prime Factorization","Greatest Common Factor (GCF)","Least Common Multiple (LCM)","Number Patterns & Sequences"] },
-  { id: "r5", name: "Pre-Algebra & Geometry Readiness", lessons: ["Introduction to Ratios","Rates & Unit Rates","Perimeter & Area of Rectangles","Area of Triangles & Composite Shapes","Coordinate Plane & Intro to Integers"] },
+  {
+    id: "r1",
+    name: "Whole Numbers & Operations",
+    lessons: [
+      "Place Value, Compare & Round",
+      "Add & Subtract Multi-Digit Numbers",
+      "Multiply Multi-Digit Numbers",
+      "Long Division",
+      "Order of Operations (PEMDAS)",
+    ],
+  },
+  {
+    id: "r2",
+    name: "Fraction Foundations",
+    lessons: [
+      "Understand Fractions",
+      "Equivalent Fractions & Simplifying",
+      "Compare & Order Fractions",
+      "Add & Subtract Fractions",
+      "Multiply Fractions & Mixed Numbers",
+    ],
+  },
+  {
+    id: "r3",
+    name: "Decimals & Money",
+    lessons: [
+      "Decimal Place Value, Compare & Round",
+      "Add & Subtract Decimals",
+      "Multiply Decimals",
+      "Divide Decimals",
+      "Fractions ↔ Decimals ↔ Percents",
+    ],
+  },
+  {
+    id: "r4",
+    name: "Factors, Multiples & Patterns",
+    lessons: [
+      "Factors & Divisibility",
+      "Prime & Composite · Prime Factorization",
+      "Greatest Common Factor (GCF)",
+      "Least Common Multiple (LCM)",
+      "Number Patterns & Sequences",
+    ],
+  },
+  {
+    id: "r5",
+    name: "Pre-Algebra & Geometry Readiness",
+    lessons: [
+      "Introduction to Ratios",
+      "Rates & Unit Rates",
+      "Perimeter & Area of Rectangles",
+      "Area of Triangles & Composite Shapes",
+      "Coordinate Plane & Intro to Integers",
+    ],
+  },
 ];
 const RNAME = Object.fromEntries(REMEDIATION.map((r) => [r.id, r.name]));
 
 // Reveal unit → which remediation strands feed it
 const UNIT_TO_R = {
-  1: ["r1", "r3", "r4"], 2: ["r2"], 3: ["r5"], 4: ["r3", "r5"], 5: ["r5"],
-  6: ["r1"], 7: ["r1", "r5"], 8: ["r1"], 9: ["r5"], 10: ["r5", "r1"],
+  1: ["r1", "r3", "r4"],
+  2: ["r2"],
+  3: ["r5"],
+  4: ["r3", "r5"],
+  5: ["r5"],
+  6: ["r1"],
+  7: ["r1", "r5"],
+  8: ["r1"],
+  9: ["r5"],
+  10: ["r5", "r1"],
 };
 
 const BRIDGE = [
@@ -50,7 +108,10 @@ const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replac
 function buildHub() {
   const strandGroups = REMEDIATION.map((r) => {
     const links = r.lessons
-      .map((t, i) => `            <a href="/math/remediation/unit-${r.id}/lesson-${i + 1}/">${esc(t)}</a>`)
+      .map(
+        (t, i) =>
+          `            <a href="/math/remediation/unit-${r.id}/lesson-${i + 1}/">${esc(t)}</a>`,
+      )
       .join("\n");
     return `          <div class="folder-index-group">
             <h3>${esc(r.name)}</h3>
@@ -60,7 +121,8 @@ ${links}
           </div>`;
   }).join("\n");
 
-  const linkList = (arr) => arr.map(([u, t]) => `            <a href="${u}">${esc(t)}</a>`).join("\n");
+  const linkList = (arr) =>
+    arr.map(([u, t]) => `            <a href="${u}">${esc(t)}</a>`).join("\n");
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -145,7 +207,10 @@ for (const dir of readdirSync(join(root, "math"), { withFileTypes: true })) {
   if (html.includes("/math/catch-up/")) continue; // idempotent
   const strands = (UNIT_TO_R[u] || []).map((r) => RNAME[r]).join(", ");
   const rLinks = (UNIT_TO_R[u] || [])
-    .map((r) => `<a href="/math/remediation/unit-${r}/" style="font-weight:700;color:${TEAL};text-decoration:none">${esc(RNAME[r])}</a>`)
+    .map(
+      (r) =>
+        `<a href="/math/remediation/unit-${r}/" style="font-weight:700;color:${TEAL};text-decoration:none">${esc(RNAME[r])}</a>`,
+    )
     .join(" · ");
   const banner = `
       <div class="notice" style="border-color:#EAD0BF;background:var(--clay-tint,#F7EADF);margin:16px 0">

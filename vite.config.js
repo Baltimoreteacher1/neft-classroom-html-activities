@@ -30,13 +30,7 @@ function copyStandaloneHtml() {
     "tools",
     "docs",
   ]);
-  const ROOT_FILES = [
-    "_headers",
-    "_redirects",
-    "404.html",
-    "robots.txt",
-    "sitemap.xml",
-  ];
+  const ROOT_FILES = ["_headers", "_redirects", "404.html", "robots.txt", "sitemap.xml"];
   // Keep dev artifacts out of the published site: nested .claude/.git/node_modules
   // folders and loose markdown docs (QA reports, READMEs) should never ship.
   const SKIP_COPY_RE =
@@ -47,11 +41,7 @@ function copyStandaloneHtml() {
     name: "copy-standalone-html",
     closeBundle() {
       for (const entry of readdirSync(__dirname, { withFileTypes: true })) {
-        if (
-          !entry.isDirectory() ||
-          entry.name.startsWith(".") ||
-          SKIP_DIRS.has(entry.name)
-        )
+        if (!entry.isDirectory() || entry.name.startsWith(".") || SKIP_DIRS.has(entry.name))
           continue;
         const src = resolve(__dirname, entry.name);
         const dest = resolve(__dirname, "dist", entry.name);
@@ -70,10 +60,7 @@ function copyStandaloneHtml() {
         const idx = resolve(lessonsDir, "notes-index.html");
         if (existsSync(idx)) {
           mkdirSync(resolve(__dirname, "dist", "lessons"), { recursive: true });
-          cpSync(
-            idx,
-            resolve(__dirname, "dist", "lessons", "notes-index.html"),
-          );
+          cpSync(idx, resolve(__dirname, "dist", "lessons", "notes-index.html"));
         }
         for (const dir of readdirSync(lessonsDir, { withFileTypes: true })) {
           if (!dir.isDirectory()) continue;
@@ -102,11 +89,7 @@ function copyStandaloneHtml() {
           // Teacher copy of the guided notes (includes the Answer Key &
           // Teacher Guide). Linked from the teacher notes index, not the
           // student-facing curriculum hub.
-          const notesTeacher = resolve(
-            lessonsDir,
-            dir.name,
-            "notes-teacher.html",
-          );
+          const notesTeacher = resolve(lessonsDir, dir.name, "notes-teacher.html");
           if (existsSync(notesTeacher)) {
             const destDir = resolve(__dirname, "dist", "lessons", dir.name);
             mkdirSync(destDir, { recursive: true });
@@ -127,11 +110,7 @@ function copyStandaloneHtml() {
           // Generated "Editable Slides" launcher page (PPTX download +
           // Google Slides upload path + browser present) — npm run
           // generate-editable-slides. Linked from the curriculum hub.
-          const editableSlides = resolve(
-            lessonsDir,
-            dir.name,
-            "editable-slides.html",
-          );
+          const editableSlides = resolve(lessonsDir, dir.name, "editable-slides.html");
           if (existsSync(editableSlides)) {
             const destDir = resolve(__dirname, "dist", "lessons", dir.name);
             mkdirSync(destDir, { recursive: true });
@@ -173,13 +152,7 @@ function copyStandaloneHtml() {
           // lessons/<id>/downloads/ and are linked from each notes.html.
           const downloads = resolve(lessonsDir, dir.name, "downloads");
           if (existsSync(downloads)) {
-            const destDir = resolve(
-              __dirname,
-              "dist",
-              "lessons",
-              dir.name,
-              "downloads",
-            );
+            const destDir = resolve(__dirname, "dist", "lessons", dir.name, "downloads");
             mkdirSync(destDir, { recursive: true });
             cpSync(downloads, destDir, { recursive: true });
           }
@@ -187,13 +160,7 @@ function copyStandaloneHtml() {
           // lives in lessons/<id>/readiness/ and is linked from the lesson.
           const readiness = resolve(lessonsDir, dir.name, "readiness");
           if (existsSync(readiness)) {
-            const destDir = resolve(
-              __dirname,
-              "dist",
-              "lessons",
-              dir.name,
-              "readiness",
-            );
+            const destDir = resolve(__dirname, "dist", "lessons", dir.name, "readiness");
             mkdirSync(destDir, { recursive: true });
             cpSync(readiness, destDir, { recursive: true });
           }
@@ -201,13 +168,7 @@ function copyStandaloneHtml() {
           // config.noticeAndWonder / config.revealWordProblem image fields.
           const revealAssets = resolve(lessonsDir, dir.name, "reveal-assets");
           if (existsSync(revealAssets)) {
-            const destDir = resolve(
-              __dirname,
-              "dist",
-              "lessons",
-              dir.name,
-              "reveal-assets",
-            );
+            const destDir = resolve(__dirname, "dist", "lessons", dir.name, "reveal-assets");
             mkdirSync(destDir, { recursive: true });
             cpSync(revealAssets, destDir, { recursive: true });
           }
@@ -216,13 +177,7 @@ function copyStandaloneHtml() {
           for (const sub of ["family", "teacher-notes", "student-help"]) {
             const supportDir = resolve(lessonsDir, dir.name, sub);
             if (existsSync(supportDir)) {
-              const destDir = resolve(
-                __dirname,
-                "dist",
-                "lessons",
-                dir.name,
-                sub,
-              );
+              const destDir = resolve(__dirname, "dist", "lessons", dir.name, sub);
               mkdirSync(destDir, { recursive: true });
               cpSync(supportDir, destDir, { recursive: true });
             }
@@ -230,13 +185,7 @@ function copyStandaloneHtml() {
           // CardForge lesson bundles (interactive.html, activity-pack.html, sub-packet.html)
           const bundleDir = resolve(lessonsDir, dir.name, "bundle");
           if (existsSync(bundleDir)) {
-            const destDir = resolve(
-              __dirname,
-              "dist",
-              "lessons",
-              dir.name,
-              "bundle",
-            );
+            const destDir = resolve(__dirname, "dist", "lessons", dir.name, "bundle");
             mkdirSync(destDir, { recursive: true });
             cpSync(bundleDir, destDir, { recursive: true });
           }

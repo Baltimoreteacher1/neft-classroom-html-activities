@@ -19,9 +19,14 @@ import { updateCard } from "../lib/card-updater.mjs";
 
 const [cmd, arg] = process.argv.slice(2);
 const log = (...a) => console.log(...a);
-const fail = (m) => { console.error(`✖ ${m}`); process.exit(1); };
+const fail = (m) => {
+  console.error(`✖ ${m}`);
+  process.exit(1);
+};
 
-function rel(p) { return p.replace(CF_ROOT, "tools/cardforge"); }
+function rel(p) {
+  return p.replace(CF_ROOT, "tools/cardforge");
+}
 
 function cmdAudit() {
   const r = auditCards();
@@ -31,7 +36,8 @@ function cmdAudit() {
   for (const row of r.weak.slice(0, 25)) {
     const bits = [];
     if (row.missingFields.length) bits.push(`fields: ${row.missingFields.join(",")}`);
-    if (row.missingResources) bits.push(`${row.missingResources}/${row.resourceTotal} resources missing`);
+    if (row.missingResources)
+      bits.push(`${row.missingResources}/${row.resourceTotal} resources missing`);
     log(`  • ${row.id} ${row.title} — ${bits.join("; ")}`);
   }
   if (r.weak.length > 25) log(`  …and ${r.weak.length - 25} more.`);
@@ -62,7 +68,8 @@ function loadJob(jobPath) {
   // Optional: attach source analysis (does not override authored content).
   if (job.source?.file) {
     const sp = resolve(process.cwd(), job.source.file);
-    if (existsSync(sp)) job.__analysis = analyzeLesson(runAdapter(sp, job.source.type || detectType(sp)));
+    if (existsSync(sp))
+      job.__analysis = analyzeLesson(runAdapter(sp, job.source.type || detectType(sp)));
   }
   return job;
 }
@@ -79,7 +86,9 @@ function cmdBuild(jobPath) {
 function cmdQa(pkgDir) {
   if (!pkgDir) return fail("Usage: cardforge qa <package-dir>");
   const r = runQa(resolve(process.cwd(), pkgDir));
-  log(`QA: ${r.status.toUpperCase()} · ${r.blocked.length} blocking · ${r.warns.length} warnings → ${rel(r.dir)}/qa-report.md`);
+  log(
+    `QA: ${r.status.toUpperCase()} · ${r.blocked.length} blocking · ${r.warns.length} warnings → ${rel(r.dir)}/qa-report.md`,
+  );
   for (const c of r.blocked) log(`  ⛔ ${c.id} — ${c.detail}`);
   for (const c of r.warns) log(`  ⚠️  ${c.id}${c.detail ? ` — ${c.detail}` : ""}`);
   if (r.status === "blocked") process.exitCode = 2;
@@ -112,11 +121,21 @@ function cmdUpdateCard(pkgDir) {
   const r = updateCard(resolve(process.cwd(), pkgDir));
   if (!r.ok) return fail(r.message);
   log(`Card update report → ${rel(r.dir)}/card-update-report.md`);
-  log(`  matched live lesson: ${r.liveMatch || "none (staged-only)"}${r.demo ? " · demo (no live card modified)" : ""}`);
+  log(
+    `  matched live lesson: ${r.liveMatch || "none (staged-only)"}${r.demo ? " · demo (no live card modified)" : ""}`,
+  );
   for (const b of r.buttons) log(`  ${b.present ? "•" : "+"} ${b.label} → ${b.file}`);
 }
 
-const ROUTES = { audit: cmdAudit, analyze: cmdAnalyze, build: cmdBuild, qa: cmdQa, stage: cmdStage, publish: cmdPublish, "update-card": cmdUpdateCard };
+const ROUTES = {
+  audit: cmdAudit,
+  analyze: cmdAnalyze,
+  build: cmdBuild,
+  qa: cmdQa,
+  stage: cmdStage,
+  publish: cmdPublish,
+  "update-card": cmdUpdateCard,
+};
 
 if (!ROUTES[cmd]) {
   log("CardForge — Lesson-to-EduWonderLab Math Card Engine");

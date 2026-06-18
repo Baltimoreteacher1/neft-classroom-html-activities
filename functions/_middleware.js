@@ -28,8 +28,7 @@ export async function onRequest(context) {
   // Never gate the API endpoints or lesson config JSON files — they have their own auth
   // or are fetched by external automation (like Google Apps Script slide generator).
   const url = new URL(request.url);
-  if (url.pathname.startsWith("/api/") || url.pathname.endsWith("/config.json"))
-    return next();
+  if (url.pathname.startsWith("/api/") || url.pathname.endsWith("/config.json")) return next();
 
   // Public, student-facing pages that must work WITHOUT the class password so
   // they can be posted directly to students. Keep this list exact — the teacher

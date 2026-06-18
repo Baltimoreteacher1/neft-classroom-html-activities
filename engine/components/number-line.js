@@ -19,8 +19,7 @@ export function renderNumberLine(
 
   if (label) {
     const lbl = document.createElement("p");
-    lbl.style.cssText =
-      "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
+    lbl.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
     lbl.textContent = label;
     wrapper.append(lbl);
   }
@@ -33,8 +32,7 @@ export function renderNumberLine(
 
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svg.setAttribute("viewBox", `0 0 600 ${HEIGHT}`);
-  svg.style.cssText =
-    "width:100%; height:auto; user-select:none; touch-action:none;";
+  svg.style.cssText = "width:100%; height:auto; user-select:none; touch-action:none;";
   svg.setAttribute("role", "application");
   svg.setAttribute("aria-label", `Number line from ${min} to ${max}`);
 
@@ -47,15 +45,7 @@ export function renderNumberLine(
   };
 
   // Main axis line
-  const axis = line(
-    svg,
-    PAD_LEFT,
-    TICK_Y,
-    600 - PAD_RIGHT,
-    TICK_Y,
-    "#1fa6a2",
-    3,
-  );
+  const axis = line(svg, PAD_LEFT, TICK_Y, 600 - PAD_RIGHT, TICK_Y, "#1fa6a2", 3);
 
   // Arrow heads
   const arrowL = poly(
@@ -164,10 +154,7 @@ export function renderNumberLine(
       valLabel.textContent = formatNum(currentVal);
 
       setAria(currentVal);
-      if (
-        prefersReducedMotion() ||
-        typeof requestAnimationFrame !== "function"
-      ) {
+      if (prefersReducedMotion() || typeof requestAnimationFrame !== "function") {
         // No tween: paint immediately (original behavior, exactly preserved).
         renderX = state.x;
         paint(renderX);
@@ -274,11 +261,7 @@ export function renderNumberLine(
       completed = true;
       checkBtn.style.display = "none";
       burstConfetti(svg);
-      showFb(
-        feedbackSlot,
-        "success",
-        `All ${targets.length} points placed correctly!`,
-      );
+      showFb(feedbackSlot, "success", `All ${targets.length} points placed correctly!`);
       if (onComplete) onComplete(correct, targets.length);
     } else {
       showFb(
@@ -385,10 +368,7 @@ function triggerTargetMarker(marker) {
 function vibrate(pattern) {
   if (prefersReducedMotion()) return;
   try {
-    if (
-      typeof navigator !== "undefined" &&
-      typeof navigator.vibrate === "function"
-    ) {
+    if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
       navigator.vibrate(pattern);
     }
   } catch (_) {

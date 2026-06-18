@@ -7,13 +7,13 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 // chapters live in <repo>/blood-on-the-river relative to this script
-const dir = path.resolve(
-  path.dirname(fileURLToPath(import.meta.url)),
-  "../../blood-on-the-river",
-);
+const dir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../blood-on-the-river");
 const V = "20260615b";
 
-const template = (n, dataLiteral) => `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Blood on the River — Chapter ${n}</title>
+const template = (
+  n,
+  dataLiteral,
+) => `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Blood on the River — Chapter ${n}</title>
 <link rel="stylesheet" href="/blood-on-the-river/chapter.css?v=${V}">
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
 <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">

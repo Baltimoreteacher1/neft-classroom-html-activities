@@ -9,8 +9,7 @@
   var API_BASE =
     (window.CURRICULUM_SYNC && window.CURRICULUM_SYNC.apiBase) ||
     "https://neft-school-hub-api.neftjd.workers.dev";
-  var TENANT_ID =
-    (window.CURRICULUM_SYNC && window.CURRICULUM_SYNC.tenantId) || "harbor-view";
+  var TENANT_ID = (window.CURRICULUM_SYNC && window.CURRICULUM_SYNC.tenantId) || "harbor-view";
   var REF_KEY = "nt_student_ref";
   var STUDENT_KEY = "nt_student";
 
@@ -103,9 +102,7 @@
     });
     var sec = section();
     if (sec) params.set("section", sec);
-    return fetch(
-      API_BASE.replace(/\/$/, "") + "/api/curriculum/progress?" + params.toString(),
-    )
+    return fetch(API_BASE.replace(/\/$/, "") + "/api/curriculum/progress?" + params.toString())
       .then(function (r) {
         return r.ok ? r.json() : null;
       })

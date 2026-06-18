@@ -36,7 +36,9 @@ const WRITE = !argv.has("--no-write");
 
 const manifestPath = join(root, "data", "curriculum-manifest.json");
 if (!existsSync(manifestPath)) {
-  console.error("✗ data/curriculum-manifest.json not found. Run: node scripts/generate-curriculum-manifest.mjs");
+  console.error(
+    "✗ data/curriculum-manifest.json not found. Run: node scripts/generate-curriculum-manifest.mjs",
+  );
   process.exit(2);
 }
 const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
@@ -123,7 +125,10 @@ const report = {
 if (WRITE) {
   const reportsDir = join(root, "reports");
   if (!existsSync(reportsDir)) mkdirSync(reportsDir, { recursive: true });
-  writeFileSync(join(reportsDir, "curriculum-audit-resources.json"), JSON.stringify(report, null, 2) + "\n");
+  writeFileSync(
+    join(reportsDir, "curriculum-audit-resources.json"),
+    JSON.stringify(report, null, 2) + "\n",
+  );
   writeFileSync(join(reportsDir, "curriculum-audit-resources.md"), toMarkdown(report));
 }
 
@@ -135,11 +140,14 @@ console.log(`Resources checked:      ${report.resourcesChecked}`);
 console.log(`Complete lessons:       ${completeCount}`);
 console.log(`Lessons w/ missing:     ${withMissing}`);
 console.log(`Lessons needing review: ${needsReviewCount}`);
-console.log(`  exists ${totals.exists} · missing ${totals.missing} · empty ${totals.empty} · inline ${totals.inline} · protected ${totals.protected || 0}`);
+console.log(
+  `  exists ${totals.exists} · missing ${totals.missing} · empty ${totals.empty} · inline ${totals.inline} · protected ${totals.protected || 0}`,
+);
 if (!QUIET && totals.missing) {
   console.log("\nMissing by lesson:");
   for (const l of perLesson) {
-    if (l.missing.length) console.log(`  ${l.id.padEnd(14)} ${l.missing.map((k) => LABELS[k] || k).join(", ")}`);
+    if (l.missing.length)
+      console.log(`  ${l.id.padEnd(14)} ${l.missing.map((k) => LABELS[k] || k).join(", ")}`);
   }
 }
 if (WRITE) console.log("\n✓ reports/curriculum-audit-resources.{json,md}");
@@ -168,8 +176,14 @@ function toMarkdown(rep) {
   lines.push("| ------ | ----- | -------- | ------ | ------- |");
   for (const l of rep.lessons) {
     const status = l.complete ? "✅ Ready" : l.needsReview ? "🟡 Needs Review" : "⚠️ Missing";
-    const miss = [...l.missing.map((k) => LABELS[k] || k), ...l.empty.map((k) => `${LABELS[k] || k} (empty)`)].join(", ") || "—";
-    lines.push(`| ${l.id} | ${l.title.replace(/\|/g, "/")} | ${l.standard} | ${status} | ${miss} |`);
+    const miss =
+      [
+        ...l.missing.map((k) => LABELS[k] || k),
+        ...l.empty.map((k) => `${LABELS[k] || k} (empty)`),
+      ].join(", ") || "—";
+    lines.push(
+      `| ${l.id} | ${l.title.replace(/\|/g, "/")} | ${l.standard} | ${status} | ${miss} |`,
+    );
   }
   lines.push("");
   return lines.join("\n") + "\n";

@@ -50,19 +50,14 @@
     });
 
     function getCards() {
-      return Array.prototype.slice.call(
-        grid.querySelectorAll(":scope > .unit-card"),
-      );
+      return Array.prototype.slice.call(grid.querySelectorAll(":scope > .unit-card"));
     }
     function activate(num, scroll) {
       getCards().forEach(function (c) {
         c.classList.toggle("curr-active", cardNum(c) === num);
       });
       rail.querySelectorAll(".curr-rail-item").forEach(function (b) {
-        b.setAttribute(
-          "aria-current",
-          b.dataset.num === num ? "true" : "false",
-        );
+        b.setAttribute("aria-current", b.dataset.num === num ? "true" : "false");
       });
       if (scroll) {
         try {
@@ -74,9 +69,7 @@
     var search = document.getElementById("curr-search");
     function syncMode() {
       var searching = search && search.value.trim().length > 0;
-      var chip = document.querySelector(
-        ".hub-filter-chip[aria-pressed='true']",
-      );
+      var chip = document.querySelector(".hub-filter-chip[aria-pressed='true']");
       var filtering = chip && !/all/i.test(chip.textContent || "");
       var browse = !!(searching || filtering);
       shell.classList.toggle("curr-detail-mode", !browse);
@@ -84,8 +77,7 @@
     }
     if (search) search.addEventListener("input", syncMode);
     document.addEventListener("click", function (e) {
-      if (e.target.closest && e.target.closest(".hub-filter-chip"))
-        setTimeout(syncMode, 0);
+      if (e.target.closest && e.target.closest(".hub-filter-chip")) setTimeout(syncMode, 0);
     });
 
     var u = new URLSearchParams(location.search).get("u");
@@ -104,9 +96,7 @@
     var grid = document.querySelector("#interactive-hub .units-grid");
     if (!grid) return false;
     if (grid.dataset.sidebar) return true;
-    var cards = Array.prototype.slice.call(
-      grid.querySelectorAll(":scope > .unit-card"),
-    );
+    var cards = Array.prototype.slice.call(grid.querySelectorAll(":scope > .unit-card"));
     if (cards.length < 2) return false;
     grid.dataset.sidebar = "1";
     build(grid, cards);
@@ -130,7 +120,6 @@
     obs.observe(document.body, { childList: true, subtree: true });
   }
 
-  if (document.readyState === "loading")
-    document.addEventListener("DOMContentLoaded", boot);
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
 })();

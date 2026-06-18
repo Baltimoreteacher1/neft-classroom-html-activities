@@ -31,10 +31,7 @@ export function renderMathText(text) {
   );
 
   // Subscripts for chemical-style or index notation: x_1
-  s = s.replace(
-    /([a-zA-Z])_(\d+)/g,
-    '$1<span class="math-sub">$2</span>',
-  );
+  s = s.replace(/([a-zA-Z])_(\d+)/g, '$1<span class="math-sub">$2</span>');
 
   // Equations with equals highlighted
   s = s.replace(/(\s=\s)/g, '<span class="math-eq"> = </span>');

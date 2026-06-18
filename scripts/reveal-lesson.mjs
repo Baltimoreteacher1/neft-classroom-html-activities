@@ -41,11 +41,7 @@ const EXTRACTOR = path.join(__dirname, "lib", "extract_reveal.py");
 // Generic, reusable sentence starters. The Reveal decks rarely supply explicit
 // I-notice / I-wonder stems, so we provide classroom-friendly defaults that
 // work for any data-analysis Notice & Wonder.
-const DEFAULT_NOTICE_STARTERS = [
-  "I notice that…",
-  "I notice ___, so…",
-  "I see…",
-];
+const DEFAULT_NOTICE_STARTERS = ["I notice that…", "I notice ___, so…", "I see…"];
 const DEFAULT_WONDER_STARTERS = [
   "I wonder why…",
   "I wonder what would happen if…",
@@ -101,14 +97,7 @@ function findPython() {
 }
 
 function runExtractor({ python, pptx, nwOut, wpOut, write }) {
-  const args = [
-    EXTRACTOR,
-    pptx,
-    "--notice-wonder-out",
-    nwOut,
-    "--word-problem-out",
-    wpOut,
-  ];
+  const args = [EXTRACTOR, pptx, "--notice-wonder-out", nwOut, "--word-problem-out", wpOut];
   if (!write) args.push("--no-write");
   let stdout = "";
   try {
@@ -167,9 +156,7 @@ function applyManagedFields(parsed, { noticeAndWonder, revealWordProblem }) {
   const hasWP = keys.includes("revealWordProblem");
 
   // Decide the anchor for inserting NEW managed keys.
-  const anchor = keys.includes("languageObjective")
-    ? "languageObjective"
-    : keys[0];
+  const anchor = keys.includes("languageObjective") ? "languageObjective" : keys[0];
 
   for (const k of keys) {
     if (k === "noticeAndWonder") {
@@ -198,9 +185,7 @@ function buildNoticeAndWonder(lessonId, nw) {
   if (!nw) return null;
   const imgName = nw.image && nw.image.filename;
   const field = {
-    image: imgName
-      ? `/lessons/${lessonId}/${REVEAL_ASSETS_DIRNAME}/${imgName}`
-      : undefined,
+    image: imgName ? `/lessons/${lessonId}/${REVEAL_ASSETS_DIRNAME}/${imgName}` : undefined,
     context: nw.context || "",
     noticeStarters: DEFAULT_NOTICE_STARTERS,
     wonderStarters: DEFAULT_WONDER_STARTERS,
@@ -382,13 +367,18 @@ function main() {
   const wpField = buildWordProblem(
     lessonId,
     data.wordProblem
-      ? { title: data.wordProblem.title, text: data.wordProblem.text, image: data.wordProblem.image }
+      ? {
+          title: data.wordProblem.title,
+          text: data.wordProblem.text,
+          image: data.wordProblem.image,
+        }
       : null,
   );
 
   summarize(data, nwField, wpField);
 
-  if (!nwField && !wpField) die("Nothing extractable from this deck — check that it is a Reveal lesson deck.");
+  if (!nwField && !wpField)
+    die("Nothing extractable from this deck — check that it is a Reveal lesson deck.");
 
   const { file, parsed } = readConfig(lessonId);
   const next = applyManagedFields(parsed, {
@@ -399,7 +389,13 @@ function main() {
 
   if (dryRun) {
     console.log("📝 Would write these managed fields to config.json:");
-    console.log(JSON.stringify({ noticeAndWonder: next.noticeAndWonder, revealWordProblem: next.revealWordProblem }, null, 2));
+    console.log(
+      JSON.stringify(
+        { noticeAndWonder: next.noticeAndWonder, revealWordProblem: next.revealWordProblem },
+        null,
+        2,
+      ),
+    );
     console.log("\n✅ Dry run complete. Re-run without --dry-run to apply.\n");
     return;
   }
@@ -417,7 +413,9 @@ function main() {
   for (const f of [nwField, wpField]) {
     if (f && f.image) writtenFiles.push(f.image.replace(/^\//, ""));
   }
-  console.log(`🖼️  Assets → ${writtenFiles.filter((p) => p.includes(REVEAL_ASSETS_DIRNAME)).join(", ") || "(none)"}`);
+  console.log(
+    `🖼️  Assets → ${writtenFiles.filter((p) => p.includes(REVEAL_ASSETS_DIRNAME)).join(", ") || "(none)"}`,
+  );
 
   if (wantDeploy) {
     deploy(lessonId, writtenFiles);

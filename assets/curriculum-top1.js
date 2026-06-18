@@ -83,21 +83,15 @@
   // Detect the support/skill family from standard + title keywords.
   function skillFamily(lesson) {
     var std = lessonStandard(lesson);
-    var t = (
-      (lesson && lesson.title + " " + (lesson.dataSearch || "")) ||
-      ""
-    ).toLowerCase();
-    if (/decimal|multi-digit|gcf|lcm|factor|multiple/.test(t))
-      return "decimals";
+    var t = ((lesson && lesson.title + " " + (lesson.dataSearch || "")) || "").toLowerCase();
+    if (/decimal|multi-digit|gcf|lcm|factor|multiple/.test(t)) return "decimals";
     if (/fraction/.test(t)) return "fractions";
     if (/ratio|tape diagram|equivalent ratio/.test(t)) return "ratios";
     if (/percent|unit rate|\brate\b/.test(t)) return "percents";
     if (/exponent|expression|evaluate|variable\b/.test(t)) return "expressions";
     if (/equation|inequalit|solve for/.test(t)) return "equations";
-    if (/statistic|data|mean|median|histogram|dot plot|distribution/.test(t))
-      return "statistics";
-    if (/integer|negative|absolute value|coordinate|quadrant/.test(t))
-      return "integers";
+    if (/statistic|data|mean|median|histogram|dot plot|distribution/.test(t)) return "statistics";
+    if (/integer|negative|absolute value|coordinate|quadrant/.test(t)) return "integers";
     if (/area|polygon|triangle|parallelogram/.test(t)) return "geometry";
     if (/volume|surface area|net|prism/.test(t)) return "volume";
     if (std.indexOf("6.NS") === 0) return "decimals";
@@ -140,8 +134,7 @@
     var acts = allActs(lesson);
     for (var i = 0; i < acts.length; i++) {
       var a = acts[i];
-      if (re.test(((a.text || "") + " " + (a.href || "")).toLowerCase()))
-        return a;
+      if (re.test(((a.text || "") + " " + (a.href || "")).toLowerCase())) return a;
     }
     return null;
   }
@@ -158,11 +151,7 @@
     var sup = supportFor(lesson);
     var frame = sup ? sup.sentenceFrame : "My answer is ______ because ______.";
     var lines = [
-      "Today you will complete Lesson " +
-        lessonNumber(lesson) +
-        ": " +
-        lessonName(lesson) +
-        ".",
+      "Today you will complete Lesson " + lessonNumber(lesson) + ": " + lessonName(lesson) + ".",
       "",
       "1. Open the Interactive Lesson and work through the guided practice.",
       "2. Complete the Guided Notes (or the practice / homework).",
@@ -231,9 +220,7 @@
         ? "Open the Interactive Lesson together or individually."
         : "Use the Guided Notes as the lesson.") +
       "\n3) Guided practice (10 min): " +
-      (notes
-        ? "Complete the Guided Notes."
-        : "Work the practice problems on the lesson page.") +
+      (notes ? "Complete the Guided Notes." : "Work the practice problems on the lesson page.") +
       "\n4) Independent practice (10 min): " +
       (hw ? "Start the Homework." : "Finish remaining practice problems.") +
       "\n5) Early finishers (5 min): Play the unit Game or write one sentence explaining their thinking.\n\n" +
@@ -247,8 +234,7 @@
     return [
       "Lesson: " + lessonNumber(lesson) + " — " + lessonName(lesson),
       "Standard: " + (std || "Grade 6 Math"),
-      "Objective: " +
-        (lesson.objective || "I can " + lessonName(lesson).toLowerCase() + "."),
+      "Objective: " + (lesson.objective || "I can " + lessonName(lesson).toLowerCase() + "."),
       "",
       "Level 4 Evidence Planned:",
       "- Students engage with a grade-level standard through the interactive lesson and aligned practice.",
@@ -304,11 +290,7 @@
   }
 
   function badge(text, kind) {
-    return el(
-      "span",
-      "top1-badge top1-badge-" + (kind || "student"),
-      esc(text),
-    );
+    return el("span", "top1-badge top1-badge-" + (kind || "student"), esc(text));
   }
 
   function collapsible(summary, buildBody) {
@@ -455,13 +437,10 @@
         "<strong>" +
           esc(lessonName(l)) +
           "</strong> " +
-          (std
-            ? '<span class="top1-badge top1-badge-std">' + esc(std) + "</span>"
-            : ""),
+          (std ? '<span class="top1-badge top1-badge-std">' + esc(std) + "</span>" : ""),
       ),
     );
-    if (l.objective)
-      card.appendChild(el("p", "top1-obj", "🎯 " + esc(l.objective)));
+    if (l.objective) card.appendChild(el("p", "top1-obj", "🎯 " + esc(l.objective)));
 
     if (opts.directions) {
       card.appendChild(
@@ -485,18 +464,10 @@
     if (!sup) return null;
     return collapsible("🧩 Supports (ESOL · SPED · UDL)", function (body) {
       body.appendChild(
-        el(
-          "p",
-          "top1-kv",
-          "<strong>Vocabulary:</strong> " + esc(sup.vocabulary.join(", ")),
-        ),
+        el("p", "top1-kv", "<strong>Vocabulary:</strong> " + esc(sup.vocabulary.join(", "))),
       );
       body.appendChild(
-        el(
-          "p",
-          "top1-kv",
-          "<strong>Sentence frame:</strong> " + esc(sup.sentenceFrame),
-        ),
+        el("p", "top1-kv", "<strong>Sentence frame:</strong> " + esc(sup.sentenceFrame)),
       );
       body.appendChild(
         el(
@@ -511,33 +482,17 @@
         ),
       );
       body.appendChild(
-        el(
-          "p",
-          "top1-kv",
-          "<strong>Visual model:</strong> " + esc(sup.visualModel),
-        ),
+        el("p", "top1-kv", "<strong>Visual model:</strong> " + esc(sup.visualModel)),
       );
       if (isTeacherMode()) {
+        body.appendChild(el("p", "top1-kv", "<strong>WIDA 1–2:</strong> " + esc(sup.wida12)));
+        body.appendChild(el("p", "top1-kv", "<strong>WIDA 3–4:</strong> " + esc(sup.wida34)));
+        body.appendChild(el("p", "top1-kv", "<strong>SPED:</strong> " + esc(sup.sped)));
         body.appendChild(
-          el("p", "top1-kv", "<strong>WIDA 1–2:</strong> " + esc(sup.wida12)),
-        );
-        body.appendChild(
-          el("p", "top1-kv", "<strong>WIDA 3–4:</strong> " + esc(sup.wida34)),
-        );
-        body.appendChild(
-          el("p", "top1-kv", "<strong>SPED:</strong> " + esc(sup.sped)),
-        );
-        body.appendChild(
-          el(
-            "p",
-            "top1-kv top1-note",
-            "<strong>Teacher note:</strong> " + esc(sup.teacherNote),
-          ),
+          el("p", "top1-kv top1-note", "<strong>Teacher note:</strong> " + esc(sup.teacherNote)),
         );
       }
-      body.appendChild(
-        el("p", "top1-kv", "<strong>Extension:</strong> " + esc(sup.extension)),
-      );
+      body.appendChild(el("p", "top1-kv", "<strong>Extension:</strong> " + esc(sup.extension)));
     });
   }
 
@@ -647,9 +602,7 @@
 
   function uifrCard(u, l) {
     var card = el("div", "top1-uifr");
-    card.appendChild(
-      el("p", "top1-uifr-disc", esc((DATA.uifr && DATA.uifr.disclaimer) || "")),
-    );
+    card.appendChild(el("p", "top1-uifr-disc", esc((DATA.uifr && DATA.uifr.disclaimer) || "")));
     card.appendChild(lessonCard(u, l, { teacher: true }));
 
     var sp = supportsPanel(l);
@@ -661,13 +614,7 @@
         collapsible("❓ Questioning Ladder", function (b) {
           var ol = el("ol", "top1-ladder");
           DATA.uifr.questioningLadder.forEach(function (q) {
-            ol.appendChild(
-              el(
-                "li",
-                null,
-                "<strong>" + esc(q.rung) + ":</strong> " + esc(q.q),
-              ),
-            );
+            ol.appendChild(el("li", null, "<strong>" + esc(q.rung) + ":</strong> " + esc(q.q)));
           });
           b.appendChild(ol);
         }),
@@ -680,8 +627,7 @@
           el(
             "p",
             "top1-kv",
-            "<strong>Partner roles:</strong> " +
-              esc((DATA.uifr.partnerRoles || []).join(", ")),
+            "<strong>Partner roles:</strong> " + esc((DATA.uifr.partnerRoles || []).join(", ")),
           ),
         );
         var ul = el("ul", "top1-checklist");
@@ -695,13 +641,7 @@
     card.appendChild(
       collapsible("📍 Formative Checkpoints", function (b) {
         (DATA.uifr.formativeCheckpoints || []).forEach(function (c) {
-          b.appendChild(
-            el(
-              "p",
-              "top1-kv",
-              "<strong>" + esc(c.when) + ":</strong> " + esc(c.move),
-            ),
-          );
+          b.appendChild(el("p", "top1-kv", "<strong>" + esc(c.when) + ":</strong> " + esc(c.move)));
         });
         b.appendChild(el("p", "top1-kv", "<strong>Feedback stems:</strong>"));
         var ul = el("ul", "top1-checklist");
@@ -721,11 +661,7 @@
         b.appendChild(ul);
         (DATA.uifr.dataNextSteps || []).forEach(function (n) {
           b.appendChild(
-            el(
-              "p",
-              "top1-kv",
-              "<strong>If " + esc(n.if) + " →</strong> " + esc(n.then),
-            ),
+            el("p", "top1-kv", "<strong>If " + esc(n.if) + " →</strong> " + esc(n.then)),
           );
         });
       }),
@@ -735,11 +671,7 @@
       collapsible("📋 UIFR Domains (Prepare · Teach · Reflect)", function (b) {
         (DATA.uifr.components || []).forEach(function (c) {
           b.appendChild(
-            el(
-              "p",
-              "top1-kv",
-              "<strong>" + esc(c.title) + ":</strong> " + esc(c.prompt),
-            ),
+            el("p", "top1-kv", "<strong>" + esc(c.title) + ":</strong> " + esc(c.prompt)),
           );
         });
       }),
@@ -797,11 +729,7 @@
         null;
       var card = el("div", "top1-lesson-card");
       card.appendChild(
-        el(
-          "div",
-          "top1-lesson-head",
-          "<strong>" + esc(lessonName(l)) + "</strong>",
-        ),
+        el("div", "top1-lesson-head", "<strong>" + esc(lessonName(l)) + "</strong>"),
       );
       card.appendChild(
         el(
@@ -818,21 +746,13 @@
         el(
           "p",
           "top1-kv",
-          "<strong>En español:</strong> " +
-            esc(lessonName(l)) +
-            " (" +
-            esc(u.name) +
-            ").",
+          "<strong>En español:</strong> " + esc(lessonName(l)) + " (" + esc(u.name) + ").",
         ),
       );
       var sup = supportFor(l);
       if (sup) {
         card.appendChild(
-          el(
-            "p",
-            "top1-kv",
-            "<strong>Words to know:</strong> " + esc(sup.vocabulary.join(", ")),
-          ),
+          el("p", "top1-kv", "<strong>Words to know:</strong> " + esc(sup.vocabulary.join(", "))),
         );
         card.appendChild(
           el(
@@ -844,13 +764,9 @@
         );
       }
       if (ident)
-        card.appendChild(
-          el("p", "top1-kv top1-note", esc(ident.icon + " " + ident.mission)),
-        );
+        card.appendChild(el("p", "top1-kv top1-note", esc(ident.icon + " " + ident.mission)));
       var fam = studentActs(l).filter(function (a) {
-        return /homework|family|notes|practice|review|interactive/i.test(
-          a.text,
-        );
+        return /homework|family|notes|practice|review|interactive/i.test(a.text);
       });
       if (fam.length) card.appendChild(linkList(fam));
       out.appendChild(card);
@@ -867,10 +783,7 @@
 
   function renderSubstitute(stage) {
     stage.appendChild(
-      intro(
-        "Substitute Mode",
-        "A 45-minute, no-setup plan. Private teacher tools are hidden.",
-      ),
+      intro("Substitute Mode", "A 45-minute, no-setup plan. Private teacher tools are hidden."),
     );
     var picker = buildLessonPicker(function (u, l) {
       paint(u, l);
@@ -929,25 +842,13 @@
         ),
       );
       card.appendChild(
-        el(
-          "p",
-          "top1-kv",
-          "<strong>1. Vocabulary:</strong> " + esc(sup.vocabulary.join(", ")),
-        ),
+        el("p", "top1-kv", "<strong>1. Vocabulary:</strong> " + esc(sup.vocabulary.join(", "))),
       );
       card.appendChild(
-        el(
-          "p",
-          "top1-kv",
-          "<strong>2. Visual model:</strong> " + esc(sup.visualModel),
-        ),
+        el("p", "top1-kv", "<strong>2. Visual model:</strong> " + esc(sup.visualModel)),
       );
       card.appendChild(
-        el(
-          "p",
-          "top1-kv",
-          "<strong>3. Sentence frame:</strong> " + esc(sup.sentenceFrame),
-        ),
+        el("p", "top1-kv", "<strong>3. Sentence frame:</strong> " + esc(sup.sentenceFrame)),
       );
       card.appendChild(
         el(
@@ -964,14 +865,10 @@
         });
       });
       if (matches.length) {
-        card.appendChild(
-          el("p", "top1-kv top1-note", "Reteach-friendly lessons:"),
-        );
+        card.appendChild(el("p", "top1-kv top1-note", "Reteach-friendly lessons:"));
         var acts = [];
         matches.slice(0, 6).forEach(function (m) {
-          var inter =
-            findAct(m.l, /interactive lesson|\/lessons\//) ||
-            studentActs(m.l)[0];
+          var inter = findAct(m.l, /interactive lesson|\/lessons\//) || studentActs(m.l)[0];
           if (inter)
             acts.push({
               text: "Lesson " + lessonNumber(m.l) + " · " + lessonName(m.l),
@@ -1003,11 +900,7 @@
       out.innerHTML = "";
       var card = el("div", "top1-lesson-card");
       card.appendChild(
-        el(
-          "div",
-          "top1-lesson-head",
-          "<strong>" + esc(u.num + " · " + u.name) + "</strong>",
-        ),
+        el("div", "top1-lesson-head", "<strong>" + esc(u.num + " · " + u.name) + "</strong>"),
       );
       // unit-level assessments
       var ures = (u.resources || []).filter(function (a) {
@@ -1022,11 +915,7 @@
       if (combined.length) card.appendChild(linkList(combined));
       else
         card.appendChild(
-          el(
-            "p",
-            "top1-kv",
-            "Open the unit above for its pre-test, post-test, and study guide.",
-          ),
+          el("p", "top1-kv", "Open the unit above for its pre-test, post-test, and study guide."),
         );
       card.appendChild(
         el(
@@ -1063,10 +952,7 @@
   function selectRole(view, roleEls, stage) {
     stageView = view;
     roleEls.forEach(function (r) {
-      r.setAttribute(
-        "aria-pressed",
-        r.dataset.view === view ? "true" : "false",
-      );
+      r.setAttribute("aria-pressed", r.dataset.view === view ? "true" : "false");
     });
     // Page mode follows explicit role choices only. Teacher → Teacher Mode;
     // student-facing roles → Student Mode. Neutral views (today/intervention/
@@ -1256,9 +1142,7 @@
       b.addEventListener("click", function () {
         selectRole(r.view, roleEls, stage);
         stage.scrollIntoView({
-          behavior: document.body.classList.contains("top1-reduced")
-            ? "auto"
-            : "smooth",
+          behavior: document.body.classList.contains("top1-reduced") ? "auto" : "smooth",
           block: "nearest",
         });
       });
@@ -1273,10 +1157,7 @@
     // initial: match current page mode
     stageView = isTeacherMode() ? "teacher" : "student";
     roleEls.forEach(function (r) {
-      r.setAttribute(
-        "aria-pressed",
-        r.dataset.view === stageView ? "true" : "false",
-      );
+      r.setAttribute("aria-pressed", r.dataset.view === stageView ? "true" : "false");
     });
     renderStage(stage);
 
@@ -1298,8 +1179,7 @@
     if (document.getElementById("top1-start-here")) return;
     var header = document.querySelector("header.hub");
     var controls =
-      document.querySelector(".controls#hub-content") ||
-      document.querySelector(".controls");
+      document.querySelector(".controls#hub-content") || document.querySelector(".controls");
     var panel = buildPanel();
     if (controls && controls.parentNode) {
       controls.parentNode.insertBefore(panel, controls);

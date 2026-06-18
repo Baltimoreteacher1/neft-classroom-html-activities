@@ -46,52 +46,78 @@
  *
  * npm:  npm run generate-reveal-slides -- --lesson <id>
  */
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import pptxgen from 'pptxgenjs';
-import { buildPptxDeck } from './lib/pptx-deck.mjs';
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import pptxgen from "pptxgenjs";
+import { buildPptxDeck } from "./lib/pptx-deck.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const root = path.resolve(__dirname, '..');
-const lessonsDir = path.join(root, 'lessons');
+const root = path.resolve(__dirname, "..");
+const lessonsDir = path.join(root, "lessons");
 
-const REVEAL_DIRNAME = 'reveal-slides';
-const MANIFEST_NAME = 'reveal-slides.json';
+const REVEAL_DIRNAME = "reveal-slides";
+const MANIFEST_NAME = "reveal-slides.json";
 // Managed field written into each lesson's config.json so the client-rendered
 // HTML lesson page (engine renderer) shows Reveal slides inside their section.
-const CONFIG_FIELD = 'revealSlides';
+const CONFIG_FIELD = "revealSlides";
 const IMAGE_EXT = /\.(png|jpe?g|webp|gif)$/i;
 
 // ── Placement model ──────────────────────────────────────────────────────────
 // Canonical deck sections a Reveal slide may be interleaved into.
-const SECTIONS = ['launch', 'explore', 'vocabulary', 'instruction', 'practice', 'connect', 'closure'];
+const SECTIONS = [
+  "launch",
+  "explore",
+  "vocabulary",
+  "instruction",
+  "practice",
+  "connect",
+  "closure",
+];
 // Friendly ROLE aliases → canonical section. Section names map to themselves.
 const PLACEMENT_ALIASES = {
   // launch
-  'notice-wonder': 'launch', noticewonder: 'launch', warmup: 'launch', 'warm-up': 'launch', hook: 'launch', launch: 'launch',
+  "notice-wonder": "launch",
+  noticewonder: "launch",
+  warmup: "launch",
+  "warm-up": "launch",
+  hook: "launch",
+  launch: "launch",
   // practice
-  problem: 'practice', problems: 'practice', practice: 'practice', independent: 'practice',
+  problem: "practice",
+  problems: "practice",
+  practice: "practice",
+  independent: "practice",
   // instruction
-  example: 'instruction', 'i-do': 'instruction', instruction: 'instruction', modeled: 'instruction',
+  example: "instruction",
+  "i-do": "instruction",
+  instruction: "instruction",
+  modeled: "instruction",
   // explore
-  explore: 'explore', investigate: 'explore',
+  explore: "explore",
+  investigate: "explore",
   // vocabulary
-  vocab: 'vocabulary', vocabulary: 'vocabulary',
+  vocab: "vocabulary",
+  vocabulary: "vocabulary",
   // connect
-  discuss: 'connect', connect: 'connect', 'real-world': 'connect',
+  discuss: "connect",
+  connect: "connect",
+  "real-world": "connect",
   // closure
-  exit: 'closure', closure: 'closure', reflect: 'closure', 'wrap-up': 'closure',
+  exit: "closure",
+  closure: "closure",
+  reflect: "closure",
+  "wrap-up": "closure",
   // explicit end (legacy: keep at very end of deck)
-  end: 'end',
+  end: "end",
 };
 // Section-absent fallback order: practice → explore → launch → end.
-const FALLBACK_ORDER = ['practice', 'explore', 'launch', 'end'];
-const DEFAULT_PLACEMENT = 'launch';
+const FALLBACK_ORDER = ["practice", "explore", "launch", "end"];
+const DEFAULT_PLACEMENT = "launch";
 
 /** Normalize a raw placement/role string to a canonical section (or 'end'). */
 function resolvePlacement(raw) {
-  if (raw == null || raw === '') return null;
+  if (raw == null || raw === "") return null;
   const key = String(raw).trim().toLowerCase();
   if (PLACEMENT_ALIASES[key]) return PLACEMENT_ALIASES[key];
   if (SECTIONS.includes(key)) return key;
@@ -99,39 +125,39 @@ function resolvePlacement(raw) {
 }
 
 // HTML idempotency markers.
-const HTML_BEGIN = '<!-- reveal-slides:begin -->';
-const HTML_END = '<!-- reveal-slides:end -->';
+const HTML_BEGIN = "<!-- reveal-slides:begin -->";
+const HTML_END = "<!-- reveal-slides:end -->";
 // Sidebar (thumbnail) markers — kept distinct so each region is replaced cleanly.
-const THUMB_BEGIN = '<!-- reveal-slides-thumbs:begin -->';
-const THUMB_END = '<!-- reveal-slides-thumbs:end -->';
+const THUMB_BEGIN = "<!-- reveal-slides-thumbs:begin -->";
+const THUMB_END = "<!-- reveal-slides-thumbs:end -->";
 // Marker storing the deck's ORIGINAL totalSlides/slideTitles so re-runs restore
 // the base before re-injecting (so the patched constants never compound).
-const STATE_BEGIN = '<!-- reveal-slides-state:begin ';
-const STATE_END = ' reveal-slides-state:end -->';
+const STATE_BEGIN = "<!-- reveal-slides-state:begin ";
+const STATE_END = " reveal-slides-state:end -->";
 
 // ── small utils ──
 function esc(str) {
-  return String(str == null ? '' : str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+  return String(str == null ? "" : str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 const MIME = {
-  '.png': 'image/png',
-  '.jpg': 'image/jpeg',
-  '.jpeg': 'image/jpeg',
-  '.webp': 'image/webp',
-  '.gif': 'image/gif',
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".webp": "image/webp",
+  ".gif": "image/gif",
 };
 
 function listLessons() {
   return fs
     .readdirSync(lessonsDir)
     .filter((d) => /^(\d+)-(\d+)(-flagship)?$/.test(d))
-    .filter((d) => fs.existsSync(path.join(lessonsDir, d, 'config.json')));
+    .filter((d) => fs.existsSync(path.join(lessonsDir, d, "config.json")));
 }
 
 /**
@@ -147,9 +173,11 @@ function resolveRevealSlides(id) {
   const manifestPath = path.join(dir, MANIFEST_NAME);
   if (fs.existsSync(manifestPath)) {
     try {
-      manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
     } catch (e) {
-      console.warn(`  ! ${id}: ${MANIFEST_NAME} is invalid JSON — falling back to directory order (${e.message})`);
+      console.warn(
+        `  ! ${id}: ${MANIFEST_NAME} is invalid JSON — falling back to directory order (${e.message})`,
+      );
     }
   }
 
@@ -163,7 +191,7 @@ function resolveRevealSlides(id) {
       .filter((s) => s && s.file)
       .map((s, i) => ({
         file: s.file,
-        caption: s.caption || '',
+        caption: s.caption || "",
         order: i + 1,
         // Per-slide placement → fall back to manifest default.
         placement: resolvePlacement(s.placement) || defaultPlacement,
@@ -178,12 +206,12 @@ function resolveRevealSlides(id) {
     records = fs
       .readdirSync(dir)
       .filter((f) => IMAGE_EXT.test(f))
-      .sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }))
-      .map((file, i) => ({ file, caption: '', order: i + 1, placement: defaultPlacement }));
+      .sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }))
+      .map((file, i) => ({ file, caption: "", order: i + 1, placement: defaultPlacement }));
   }
 
-  const title = (manifest && manifest.title) || 'Reveal Math Slides';
-  const source = (manifest && manifest.source) || '';
+  const title = (manifest && manifest.title) || "Reveal Math Slides";
+  const source = (manifest && manifest.source) || "";
   return { dir, records, title, source, defaultPlacement };
 }
 
@@ -196,7 +224,7 @@ function resolveRevealSlides(id) {
 // totalSlides, teacherNotesMap, and the thumbnail sidebar so all order-sensitive
 // structures stay consistent.
 
-const reEscape = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const reEscape = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 /**
  * Restore the deck to its clean, Reveal-free base. The state comment stores the
@@ -208,25 +236,34 @@ const reEscape = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 function stripExistingHtmlInjection(html) {
   // Match the state comment AND the trailing whitespace we inserted after it, so
   // re-runs don't accumulate blank lines before the watermark.
-  const stateRe = new RegExp(reEscape(STATE_BEGIN) + '([\\s\\S]*?)' + reEscape(STATE_END) + '\\s*');
+  const stateRe = new RegExp(reEscape(STATE_BEGIN) + "([\\s\\S]*?)" + reEscape(STATE_END) + "\\s*");
   const m = html.match(stateRe);
   if (!m) return html; // never injected → already base
   let saved;
   try {
     saved = JSON.parse(decodeURIComponent(m[1]));
   } catch {
-    return html.replace(stateRe, ''); // unreadable → drop only the comment
+    return html.replace(stateRe, ""); // unreadable → drop only the comment
   }
   // 1. Drop the state comment (+ trailing whitespace).
-  let out = html.replace(stateRe, '');
+  let out = html.replace(stateRe, "");
   // 2. Remove injected reveal slide bodies (marker-wrapped) + scoped CSS.
-  out = out.replace(new RegExp('\\s*' + reEscape(HTML_BEGIN) + '[\\s\\S]*?' + reEscape(HTML_END), 'g'), '');
-  out = out.replace(/\s*<style data-reveal-slides="1">[\s\S]*?<\/style>/g, '');
+  out = out.replace(
+    new RegExp("\\s*" + reEscape(HTML_BEGIN) + "[\\s\\S]*?" + reEscape(HTML_END), "g"),
+    "",
+  );
+  out = out.replace(/\s*<style data-reveal-slides="1">[\s\S]*?<\/style>/g, "");
   // 3. Restore base JS constants (function replacers → `$` in JSON is literal).
   out = out.replace(/const totalSlides = \d+;/, () => `const totalSlides = ${saved.totalSlides};`);
-  out = out.replace(/const slideTitles = \[[\s\S]*?\];/, () => `const slideTitles = ${saved.slideTitlesRaw};`);
+  out = out.replace(
+    /const slideTitles = \[[\s\S]*?\];/,
+    () => `const slideTitles = ${saved.slideTitlesRaw};`,
+  );
   if (saved.teacherNotesRaw != null) {
-    out = out.replace(/const teacherNotesMap = \{[\s\S]*?\};/, () => `const teacherNotesMap = ${saved.teacherNotesRaw};`);
+    out = out.replace(
+      /const teacherNotesMap = \{[\s\S]*?\};/,
+      () => `const teacherNotesMap = ${saved.teacherNotesRaw};`,
+    );
   }
   // 4. Restore the base sidebar (full nav inner HTML) verbatim. Use a function
   //    replacer so any `$` sequences inside navInner are treated literally.
@@ -288,14 +325,14 @@ function revealTitle(rec, section) {
  */
 function groupRecordsByPlacement(records, availableSections) {
   const resolveTarget = (placement) => {
-    if (placement === 'end') return 'end';
+    if (placement === "end") return "end";
     if (availableSections.has(placement)) return placement;
     // Section absent → fall back: practice → explore → launch → end.
     for (const fb of FALLBACK_ORDER) {
-      if (fb === 'end') return 'end';
+      if (fb === "end") return "end";
       if (availableSections.has(fb)) return fb;
     }
-    return 'end';
+    return "end";
   };
   const groups = [];
   for (const rec of records) {
@@ -335,7 +372,9 @@ function injectIntoHtml(html, reveal, id) {
   const titlesMatch = out.match(/const slideTitles = (\[[\s\S]*?\]);/);
   const notesMatch = out.match(/const teacherNotesMap = (\{[\s\S]*?\});/);
   if (!totalMatch || !titlesMatch) {
-    console.warn(`  ! ${id}: could not locate totalSlides/slideTitles in slides.html — skipping HTML injection`);
+    console.warn(
+      `  ! ${id}: could not locate totalSlides/slideTitles in slides.html — skipping HTML injection`,
+    );
     return out;
   }
   const baseTotal = parseInt(totalMatch[1], 10);
@@ -374,7 +413,7 @@ function injectIntoHtml(html, reveal, id) {
   const insertAfter = new Map(); // baseIndex (0-based) → array of groups
   const endGroups = [];
   for (const g of groups) {
-    if (g.section === 'end') {
+    if (g.section === "end") {
       endGroups.push(g);
       continue;
     }
@@ -393,7 +432,17 @@ function injectIntoHtml(html, reveal, id) {
   // 6. Single-pass rebuild: splice reveal slide bodies into the base HTML at the
   //    resolved section anchors, renumber every id, and rebuild the
   //    slideTitles / totalSlides / teacherNotesMap / thumbnail structures.
-  return interleaveRebuild(out, baseSlides, baseTitles, notesMatch, insertAfter, endGroups, reveal, id, baseNavInner);
+  return interleaveRebuild(
+    out,
+    baseSlides,
+    baseTitles,
+    notesMatch,
+    insertAfter,
+    endGroups,
+    reveal,
+    id,
+    baseNavInner,
+  );
 }
 
 /**
@@ -401,7 +450,17 @@ function injectIntoHtml(html, reveal, id) {
  * resolved section anchors, renumber all ids, and rebuild slideTitles /
  * totalSlides / teacherNotesMap / thumbnails. Returns the new HTML string.
  */
-function interleaveRebuild(out, baseSlides, baseTitles, notesMatch, insertAfter, endGroups, reveal, id, baseNavInner) {
+function interleaveRebuild(
+  out,
+  baseSlides,
+  baseTitles,
+  notesMatch,
+  insertAfter,
+  endGroups,
+  reveal,
+  id,
+  baseNavInner,
+) {
   // Parse base teacher notes map (keyed by original 1-based slide number).
   let baseNotes = {};
   if (notesMatch) {
@@ -416,7 +475,9 @@ function interleaveRebuild(out, baseSlides, baseTitles, notesMatch, insertAfter,
   //    base slide opening tags, injecting reveal fragments after the right ones.
   // We locate each base slide's opening-tag index, plus the next boundary.
   const watermarkIdx = out.search(/<div class="slide-watermark">/);
-  const boundaries = baseSlides.map((s) => s.openIdx).concat([watermarkIdx >= 0 ? watermarkIdx : out.length]);
+  const boundaries = baseSlides
+    .map((s) => s.openIdx)
+    .concat([watermarkIdx >= 0 ? watermarkIdx : out.length]);
 
   const newTitles = [];
   const newNotes = {};
@@ -434,7 +495,7 @@ function interleaveRebuild(out, baseSlides, baseTitles, notesMatch, insertAfter,
     // slide is inserted AFTER the slide body but BEFORE that whitespace,
     // keeping insertion + strip perfectly symmetric (idempotent).
     const wsMatch = segment.match(/\s*$/);
-    const trailing = wsMatch ? wsMatch[0] : '';
+    const trailing = wsMatch ? wsMatch[0] : "";
     let body = trailing ? segment.slice(0, segment.length - trailing.length) : segment;
 
     // Renumber this base slide's id in the body.
@@ -444,7 +505,7 @@ function interleaveRebuild(out, baseSlides, baseTitles, notesMatch, insertAfter,
     html += body;
 
     // Title + note carry over (remap note key by new number).
-    newTitles.push(baseTitles[i] != null ? baseTitles[i] : '');
+    newTitles.push(baseTitles[i] != null ? baseTitles[i] : "");
     const origKey = String(i + 1);
     if (baseNotes[origKey] != null) newNotes[String(thisNum)] = baseNotes[origKey];
 
@@ -456,9 +517,10 @@ function interleaveRebuild(out, baseSlides, baseTitles, notesMatch, insertAfter,
         globalReveal += 1;
         const rec = g.records[r];
         const num = runningNum;
-        html += '\n        ' + revealSlideBodyNumbered(rec, g.section, globalReveal - 1, num);
+        html += "\n        " + revealSlideBodyNumbered(rec, g.section, globalReveal - 1, num);
         newTitles.push(revealTitle(rec, g.section));
-        newNotes[String(num)] = rec.caption || `Official Reveal Math slide for the ${g.section} part of this lesson.`;
+        newNotes[String(num)] =
+          rec.caption || `Official Reveal Math slide for the ${g.section} part of this lesson.`;
       }
     }
     // Re-attach the base segment's trailing whitespace last.
@@ -468,15 +530,22 @@ function interleaveRebuild(out, baseSlides, baseTitles, notesMatch, insertAfter,
   // Append any end-placed groups just before the watermark.
   let tail = out.slice(boundaries[boundaries.length - 1]);
   for (const g of endGroups) {
-    let frag = '';
+    let frag = "";
     for (let r = 0; r < g.records.length; r++) {
       runningNum += 1;
       globalReveal += 1;
       const rec = g.records[r];
       const num = runningNum;
-      frag += '\n        ' + revealSlideBodyNumbered(rec, g.section === 'end' ? 'closure' : g.section, globalReveal - 1, num);
-      newTitles.push(revealTitle(rec, g.section === 'end' ? 'closure' : g.section));
-      newNotes[String(num)] = rec.caption || 'Official Reveal Math slide (end of lesson).';
+      frag +=
+        "\n        " +
+        revealSlideBodyNumbered(
+          rec,
+          g.section === "end" ? "closure" : g.section,
+          globalReveal - 1,
+          num,
+        );
+      newTitles.push(revealTitle(rec, g.section === "end" ? "closure" : g.section));
+      newNotes[String(num)] = rec.caption || "Official Reveal Math slide (end of lesson).";
     }
     html += frag;
   }
@@ -485,7 +554,10 @@ function interleaveRebuild(out, baseSlides, baseTitles, notesMatch, insertAfter,
   const newTotal = runningNum;
 
   // ── Inject scoped CSS once (before the first slide-body, inside the canvas).
-  html = html.replace(/<article class="slide-canvas"[^>]*>/, (tag) => `${tag}\n        ${REVEAL_CSS}`);
+  html = html.replace(
+    /<article class="slide-canvas"[^>]*>/,
+    (tag) => `${tag}\n        ${REVEAL_CSS}`,
+  );
 
   // ── Rebuild the thumbnail sidebar entirely (base thumbs renumbered + reveal
   //    thumbs spliced at the right ordinal positions).
@@ -496,9 +568,15 @@ function interleaveRebuild(out, baseSlides, baseTitles, notesMatch, insertAfter,
   const titlesJson = JSON.stringify(newTitles);
   const notesJson = JSON.stringify(newNotes);
   html = html.replace(/const totalSlides = \d+;/, () => `const totalSlides = ${newTotal};`);
-  html = html.replace(/const slideTitles = \[[\s\S]*?\];/, () => `const slideTitles = ${titlesJson};`);
+  html = html.replace(
+    /const slideTitles = \[[\s\S]*?\];/,
+    () => `const slideTitles = ${titlesJson};`,
+  );
   if (notesMatch) {
-    html = html.replace(/const teacherNotesMap = \{[\s\S]*?\};/, () => `const teacherNotesMap = ${notesJson};`);
+    html = html.replace(
+      /const teacherNotesMap = \{[\s\S]*?\};/,
+      () => `const teacherNotesMap = ${notesJson};`,
+    );
   }
 
   // ── Write the state comment storing the BASE values for clean re-runs.
@@ -525,7 +603,7 @@ function revealSlideBodyNumbered(rec, section, globalIndex, num) {
           <div class="reveal-image-frame">
             <span class="reveal-page-badge">📘 Reveal Math</span>
             <img class="reveal-image" src="${esc(rel)}" alt="${esc(alt)}" loading="lazy" decoding="async" />
-            ${rec.caption ? `<p class="reveal-image-caption">${esc(rec.caption)}</p>` : ''}
+            ${rec.caption ? `<p class="reveal-image-caption">${esc(rec.caption)}</p>` : ""}
           </div>
         </div>
         ${HTML_END}`;
@@ -555,7 +633,10 @@ function rebuildThumbnails(html, baseSlides, insertAfter, endGroups) {
       .replace(/class="thumb-card active"/, 'class="thumb-card"')
       .replace(/data-slide="\d+"/, `data-slide="${slideNum}"`)
       .replace(/onclick="goToSlide\(\d+\)"/, `onclick="goToSlide(${slideNum})"`)
-      .replace(/<span class="thumb-label">[^<]*<\/span>/, `<span class="thumb-label">Slide ${slideNum}</span>`);
+      .replace(
+        /<span class="thumb-label">[^<]*<\/span>/,
+        `<span class="thumb-label">Slide ${slideNum}</span>`,
+      );
 
   const revealCard = (slideNum, label) =>
     `<div class="thumb-card reveal-thumb" data-slide="${slideNum}" onclick="goToSlide(${slideNum})">
@@ -581,25 +662,25 @@ function rebuildThumbnails(html, baseSlides, insertAfter, endGroups) {
   }
   endGroups.forEach(emitGroup);
 
-  const newInner = '\n\n      ' + cards.join('\n\n      ') + '\n\n    ';
+  const newInner = "\n\n      " + cards.join("\n\n      ") + "\n\n    ";
   return html.replace(navRe, () => `<nav class="sidebar-slides">${newInner}</nav>`);
 }
 
 // ── PPTX injection ──
 
 const PT = {
-  navy: '17324D',
-  sand: 'F7F4EC',
-  white: 'FFFFFF',
-  gray: '8A96A3',
+  navy: "17324D",
+  sand: "F7F4EC",
+  white: "FFFFFF",
+  gray: "8A96A3",
 };
 const W = 10;
 const H = 5.625;
 
 function imageDataUri(absPath) {
   const ext = path.extname(absPath).toLowerCase();
-  const mime = MIME[ext] || 'image/png';
-  const b64 = fs.readFileSync(absPath).toString('base64');
+  const mime = MIME[ext] || "image/png";
+  const b64 = fs.readFileSync(absPath).toString("base64");
   return `data:${mime};base64,${b64}`;
 }
 
@@ -614,12 +695,12 @@ function extractPptxContent(id, data) {
     ...(data.practice?.approaching || []),
     ...(data.practice?.optional || []),
   ];
-  const err = pools.find((p) => p.type === 'error-analysis') || {};
+  const err = pools.find((p) => p.type === "error-analysis") || {};
   const exit = data.reflect?.exitTicket || {};
   const discussions = (data.turnAndTalk || [])
     .filter((t) => t && t.question)
     .map((t) => ({
-      phase: t.phase || '',
+      phase: t.phase || "",
       question: t.question,
       wordBank: Array.isArray(t.wordBank) ? t.wordBank : [],
       sentenceStems: Array.isArray(t.sentenceStems) ? t.sentenceStems : [],
@@ -627,9 +708,11 @@ function extractPptxContent(id, data) {
   const talks = discussions.map((t) => t.question);
   const explore = data.explore || {};
   const sortCats = (explore.categories || []).map((c) =>
-    typeof c === 'string' ? { label: c } : { label: c.label || String(c) },
+    typeof c === "string" ? { label: c } : { label: c.label || String(c) },
   );
-  const sortItems = (explore.items || explore.cards || []).map((it) => ({ text: it.text || String(it) }));
+  const sortItems = (explore.items || explore.cards || []).map((it) => ({
+    text: it.text || String(it),
+  }));
   const indep = (() => {
     const p2 = [
       ...(data.practice?.onLevel || []),
@@ -637,46 +720,53 @@ function extractPptxContent(id, data) {
       ...(data.practice?.optional || []),
       ...(data.practice?.extending || []),
     ];
-    const stems = p2.filter((p) => p.type !== 'error-analysis' && (p.stem || p.prompt)).map((p) => p.stem || p.prompt);
+    const stems = p2
+      .filter((p) => p.type !== "error-analysis" && (p.stem || p.prompt))
+      .map((p) => p.stem || p.prompt);
     return [...new Set(stems)].slice(0, 3);
   })();
 
   return {
     lessonId: id,
     unit: data.unit || 1,
-    standard: data.standard || '6th Grade',
-    topic: data.title || 'Math Lesson',
-    themeEmoji: data.themeEmoji || '📘',
-    contentObj: data.contentObjective || 'Understand the key math idea in this lesson.',
+    standard: data.standard || "6th Grade",
+    topic: data.title || "Math Lesson",
+    themeEmoji: data.themeEmoji || "📘",
+    contentObj: data.contentObjective || "Understand the key math idea in this lesson.",
     langObj: data.languageObjective || "Explain my thinking using today's math vocabulary.",
-    launchBadge: data.launch?.badge || 'Scenario',
-    launchNarrative: data.launch?.narrative || 'Look closely at the prompt and record what you observe.',
+    launchBadge: data.launch?.badge || "Scenario",
+    launchNarrative:
+      data.launch?.narrative || "Look closely at the prompt and record what you observe.",
     noticeStems: data.launch?.noticePrompts || [],
     wonderStems: data.launch?.wonderPrompts || [],
     conceptHeading: ci.heading || "Today's Big Idea",
-    conceptText: ci.intro || 'Review the core concept of this lesson.',
-    keyIdea: ci.keyIdea || '',
+    conceptText: ci.intro || "Review the core concept of this lesson.",
+    keyIdea: ci.keyIdea || "",
     iDoLines: ci.iDo?.lines || [],
     weDoLines: ci.weDo?.lines || [],
     vocab: data.vocabulary || [],
-    sortInstructions: explore.instructions || explore.label || 'Sort each card into the correct group.',
+    sortInstructions:
+      explore.instructions || explore.label || "Sort each card into the correct group.",
     sortItems,
     sortCats,
     error: {
-      title: err.title || 'Find the Mistake',
+      title: err.title || "Find the Mistake",
       steps: err.workedExample || [],
       errorStep: err.errorStep || 0,
-      correctWork: err.correctWork || '',
+      correctWork: err.correctWork || "",
     },
     practice: indep,
     discussions,
-    talk1: talks[0] || '',
-    talk2: talks[1] || '',
-    talk3: talks[2] || '',
+    talk1: talks[0] || "",
+    talk2: talks[1] || "",
+    talk3: talks[2] || "",
     exit: {
-      tier1: exit.stem || 'Solve the problem and choose the correct answer.',
+      tier1: exit.stem || "Solve the problem and choose the correct answer.",
       choices: exit.choices || [],
-      tier2: data.reflect?.exitTicketOpen || data.reflect?.openPrompt || 'Explain how you know your answer is correct. Use at least one vocabulary word.',
+      tier2:
+        data.reflect?.exitTicketOpen ||
+        data.reflect?.openPrompt ||
+        "Explain how you know your answer is correct. Use at least one vocabulary word.",
     },
   };
 }
@@ -686,9 +776,10 @@ function extractPptxContent(id, data) {
 //   practice / connect / closure                 → right after independent practice
 //   end                                          → very end of the deck
 function pptxHookForSection(section) {
-  if (section === 'end') return 'end';
-  if (['launch', 'instruction', 'explore', 'vocabulary'].includes(section)) return 'afterObjectives';
-  return 'afterPractice'; // practice, connect, closure
+  if (section === "end") return "end";
+  if (["launch", "instruction", "explore", "vocabulary"].includes(section))
+    return "afterObjectives";
+  return "afterPractice"; // practice, connect, closure
 }
 
 /** Add one full-bleed, editable Reveal picture slide to the deck. */
@@ -697,28 +788,55 @@ function addRevealPictureSlide(pptx, reveal, rec, globalIndex, total) {
   slide.background = { color: PT.sand };
   const abs = path.join(reveal.dir, rec.file);
   const dataUri = imageDataUri(abs);
-  slide.addText(`📘 Reveal ${globalIndex + 1} / ${total}`, { x: 0.2, y: 0.08, w: 3, h: 0.3, fontFace: 'Outfit', fontSize: 10, bold: true, color: PT.navy, valign: 'middle' });
-  slide.addImage({ data: dataUri, x: 0.25, y: 0.45, w: W - 0.5, h: H - 0.9, sizing: { type: 'contain', w: W - 0.5, h: H - 0.9 } });
+  slide.addText(`📘 Reveal ${globalIndex + 1} / ${total}`, {
+    x: 0.2,
+    y: 0.08,
+    w: 3,
+    h: 0.3,
+    fontFace: "Outfit",
+    fontSize: 10,
+    bold: true,
+    color: PT.navy,
+    valign: "middle",
+  });
+  slide.addImage({
+    data: dataUri,
+    x: 0.25,
+    y: 0.45,
+    w: W - 0.5,
+    h: H - 0.9,
+    sizing: { type: "contain", w: W - 0.5, h: H - 0.9 },
+  });
   if (rec.caption) {
-    slide.addText(rec.caption, { x: 0.5, y: H - 0.4, w: W - 1, h: 0.32, fontFace: 'Hanken Grotesk', fontSize: 10, color: PT.navy, align: 'center', valign: 'middle' });
+    slide.addText(rec.caption, {
+      x: 0.5,
+      y: H - 0.4,
+      w: W - 1,
+      h: 0.32,
+      fontFace: "Hanken Grotesk",
+      fontSize: 10,
+      color: PT.navy,
+      align: "center",
+      valign: "middle",
+    });
     slide.addNotes(rec.caption);
   }
 }
 
 async function rebuildPptxWithReveal(id, data, reveal) {
   const pptx = new pptxgen();
-  pptx.defineLayout({ name: 'NEFT_169', width: W, height: H });
-  pptx.layout = 'NEFT_169';
-  pptx.author = 'Neft Teacher';
-  pptx.company = 'Neft Teacher';
-  pptx.title = `Lesson ${id}: ${data.title || 'Math Lesson'}`;
-  pptx.subject = data.standard || '';
+  pptx.defineLayout({ name: "NEFT_169", width: W, height: H });
+  pptx.layout = "NEFT_169";
+  pptx.author = "Neft Teacher";
+  pptx.company = "Neft Teacher";
+  pptx.title = `Lesson ${id}: ${data.title || "Math Lesson"}`;
+  pptx.subject = data.standard || "";
 
   // Resolve each record's placement to a section, then to a PPTX hook point so
   // Reveal picture slides land NEAR their lesson phase rather than all at the end.
   // (pptxgenjs builds in a fixed order, so we use named boundaries in
   // buildPptxDeck — afterObjectives / afterPractice / end — to interleave.)
-  const sectionFor = (placement) => (placement === 'end' ? 'end' : placement);
+  const sectionFor = (placement) => (placement === "end" ? "end" : placement);
   const buckets = { afterObjectives: [], afterPractice: [], end: [] };
   reveal.records.forEach((rec, i) => {
     const hook = pptxHookForSection(sectionFor(rec.placement));
@@ -734,12 +852,12 @@ async function rebuildPptxWithReveal(id, data, reveal) {
 
   // Base notebook deck + interleaved Reveal picture slides at the hook points.
   buildPptxDeck(pptx, extractPptxContent(id, data), {
-    afterObjectives: emitBucket('afterObjectives'),
-    afterPractice: emitBucket('afterPractice'),
-    end: emitBucket('end'),
+    afterObjectives: emitBucket("afterObjectives"),
+    afterPractice: emitBucket("afterPractice"),
+    end: emitBucket("end"),
   });
 
-  const outPath = path.join(lessonsDir, id, 'slides.pptx');
+  const outPath = path.join(lessonsDir, id, "slides.pptx");
   await pptx.writeFile({ fileName: outPath });
   return outPath;
 }
@@ -750,8 +868,8 @@ async function rebuildPptxWithReveal(id, data, reveal) {
 function buildRevealConfig(id, records) {
   return records.map((rec, i) => ({
     src: `/lessons/${id}/${REVEAL_DIRNAME}/${rec.file}`,
-    caption: rec.caption || '',
-    placement: rec.placement || 'launch',
+    caption: rec.caption || "",
+    placement: rec.placement || "launch",
     page: Number.isFinite(rec.order) ? rec.order : i + 1,
   }));
 }
@@ -769,30 +887,30 @@ function configsEqual(a, b) {
  * (suffixed ' (dry)' when dryRun).
  */
 function syncRevealConfig(configPath, entries, { dryRun }) {
-  if (!fs.existsSync(configPath)) return 'config-missing';
-  const raw = fs.readFileSync(configPath, 'utf8');
+  if (!fs.existsSync(configPath)) return "config-missing";
+  const raw = fs.readFileSync(configPath, "utf8");
   const data = JSON.parse(raw);
   const had = Object.prototype.hasOwnProperty.call(data, CONFIG_FIELD);
   const want = Array.isArray(entries) && entries.length ? entries : null;
 
   let action;
   if (!want) {
-    if (!had) return 'noop';
-    action = 'removed';
+    if (!had) return "noop";
+    action = "removed";
     delete data[CONFIG_FIELD];
   } else if (!had) {
-    action = 'added';
+    action = "added";
     data[CONFIG_FIELD] = want;
   } else if (!configsEqual(data[CONFIG_FIELD], want)) {
-    action = 'updated';
+    action = "updated";
     data[CONFIG_FIELD] = want;
   } else {
-    return 'noop';
+    return "noop";
   }
 
-  const next = JSON.stringify(data, null, 2) + '\n';
-  if (next === raw) return 'noop';
-  if (!dryRun) fs.writeFileSync(configPath, next, 'utf8');
+  const next = JSON.stringify(data, null, 2) + "\n";
+  if (next === raw) return "noop";
+  if (!dryRun) fs.writeFileSync(configPath, next, "utf8");
   return dryRun ? `${action} (dry)` : action;
 }
 
@@ -800,61 +918,69 @@ function syncRevealConfig(configPath, entries, { dryRun }) {
 
 async function processLesson(id, { dryRun }) {
   const reveal = resolveRevealSlides(id);
-  const configPath = path.join(lessonsDir, id, 'config.json');
+  const configPath = path.join(lessonsDir, id, "config.json");
 
   // No reveal-slides/ folder (or no usable images): decks stay untouched, but
   // config.revealSlides must be REMOVED if a prior run set it, so the lesson
   // page reverts cleanly.
   if (reveal === null || !reveal.records.length) {
-    const reason = reveal === null ? 'no reveal-slides/ folder' : 'reveal-slides/ folder has no usable images';
+    const reason =
+      reveal === null ? "no reveal-slides/ folder" : "reveal-slides/ folder has no usable images";
     const cfg = syncRevealConfig(configPath, null, { dryRun });
-    if (cfg === 'removed' || cfg === 'removed (dry)') {
-      return { id, status: dryRun ? 'would-change' : 'config-cleared', reason, changes: [`config.json ← removed config.${CONFIG_FIELD}`] };
+    if (cfg === "removed" || cfg === "removed (dry)") {
+      return {
+        id,
+        status: dryRun ? "would-change" : "config-cleared",
+        reason,
+        changes: [`config.json ← removed config.${CONFIG_FIELD}`],
+      };
     }
-    return { id, status: 'skipped', reason };
+    return { id, status: "skipped", reason };
   }
 
-  const htmlPath = path.join(lessonsDir, id, 'slides.html');
-  const pptxPath = path.join(lessonsDir, id, 'slides.pptx');
+  const htmlPath = path.join(lessonsDir, id, "slides.html");
+  const pptxPath = path.join(lessonsDir, id, "slides.pptx");
 
   const n = reveal.records.length;
   const revealConfig = buildRevealConfig(id, reveal.records);
   const changes = [];
   if (!fs.existsSync(htmlPath)) {
-    changes.push('slides.html MISSING — run `node scripts/generate-slides.mjs ' + id + '` first');
+    changes.push("slides.html MISSING — run `node scripts/generate-slides.mjs " + id + "` first");
   } else {
-    changes.push(`slides.html ← +${n} Reveal slide${n === 1 ? '' : 's'} interleaved by placement`);
+    changes.push(`slides.html ← +${n} Reveal slide${n === 1 ? "" : "s"} interleaved by placement`);
   }
   if (!fs.existsSync(configPath)) {
-    changes.push('config.json MISSING — cannot rebuild slides.pptx or set config.' + CONFIG_FIELD);
+    changes.push("config.json MISSING — cannot rebuild slides.pptx or set config." + CONFIG_FIELD);
   } else {
-    changes.push(`slides.pptx ← +${n} Reveal picture slide${n === 1 ? '' : 's'} interleaved by placement`);
+    changes.push(
+      `slides.pptx ← +${n} Reveal picture slide${n === 1 ? "" : "s"} interleaved by placement`,
+    );
     const cfgAction = syncRevealConfig(configPath, revealConfig, { dryRun });
     changes.push(
-      cfgAction === 'noop'
+      cfgAction === "noop"
         ? `config.${CONFIG_FIELD} ← already up to date (${revealConfig.length})`
-        : `config.${CONFIG_FIELD} ← ${cfgAction} (${revealConfig.length} slide${revealConfig.length === 1 ? '' : 's'} → HTML lesson)`,
+        : `config.${CONFIG_FIELD} ← ${cfgAction} (${revealConfig.length} slide${revealConfig.length === 1 ? "" : "s"} → HTML lesson)`,
     );
   }
 
   if (dryRun) {
-    return { id, status: 'would-change', reveal, changes };
+    return { id, status: "would-change", reveal, changes };
   }
 
   // HTML deck (interleaved)
   if (fs.existsSync(htmlPath)) {
-    const html = fs.readFileSync(htmlPath, 'utf8');
+    const html = fs.readFileSync(htmlPath, "utf8");
     const next = injectIntoHtml(html, reveal, id);
-    if (next !== html) fs.writeFileSync(htmlPath, next, 'utf8');
+    if (next !== html) fs.writeFileSync(htmlPath, next, "utf8");
   }
 
   // PPTX deck (interleaved). config.revealSlides already written above.
   if (fs.existsSync(configPath)) {
-    const data = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    const data = JSON.parse(fs.readFileSync(configPath, "utf8"));
     await rebuildPptxWithReveal(id, data, reveal);
   }
 
-  return { id, status: 'integrated', reveal, changes, pptxPath };
+  return { id, status: "integrated", reveal, changes, pptxPath };
 }
 
 // ── CLI ──
@@ -863,10 +989,10 @@ function parseArgs(argv) {
   const opts = { dryRun: false, lesson: null };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
-    if (a === '--dry-run') opts.dryRun = true;
-    else if (a === '--lesson') opts.lesson = argv[++i];
-    else if (a.startsWith('--lesson=')) opts.lesson = a.split('=')[1];
-    else if (!a.startsWith('--')) opts.lesson = a; // positional lesson id
+    if (a === "--dry-run") opts.dryRun = true;
+    else if (a === "--lesson") opts.lesson = argv[++i];
+    else if (a.startsWith("--lesson=")) opts.lesson = a.split("=")[1];
+    else if (!a.startsWith("--")) opts.lesson = a; // positional lesson id
   }
   return opts;
 }
@@ -875,13 +1001,13 @@ async function main() {
   const opts = parseArgs(process.argv.slice(2));
   const lessons = opts.lesson ? [opts.lesson] : listLessons();
 
-  if (opts.lesson && !fs.existsSync(path.join(lessonsDir, opts.lesson, 'config.json'))) {
+  if (opts.lesson && !fs.existsSync(path.join(lessonsDir, opts.lesson, "config.json"))) {
     console.error(`Lesson "${opts.lesson}" not found (no lessons/${opts.lesson}/config.json).`);
     process.exit(1);
   }
 
   console.log(
-    `Integrate Reveal Math slides${opts.dryRun ? ' (DRY RUN — no writes)' : ''} · ${lessons.length} lesson(s)`,
+    `Integrate Reveal Math slides${opts.dryRun ? " (DRY RUN — no writes)" : ""} · ${lessons.length} lesson(s)`,
   );
 
   let integrated = 0;
@@ -892,15 +1018,15 @@ async function main() {
   for (const id of lessons) {
     try {
       const res = await processLesson(id, opts);
-      if (res.status === 'skipped') {
+      if (res.status === "skipped") {
         skipped++;
         // Keep skip output quiet for full-repo runs unless a single lesson was targeted.
         if (opts.lesson) console.log(`  - ${id}: skipped (${res.reason})`);
-      } else if (res.status === 'config-cleared') {
+      } else if (res.status === "config-cleared") {
         cleared++;
         console.log(`  ✓ ${id}: cleared (${res.reason})`);
         res.changes.forEach((c) => console.log(`      • ${c}`));
-      } else if (res.status === 'would-change') {
+      } else if (res.status === "would-change") {
         wouldChange++;
         console.log(`  ~ ${id}: WOULD CHANGE`);
         res.changes.forEach((c) => console.log(`      • ${c}`));

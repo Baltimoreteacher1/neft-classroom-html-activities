@@ -30,12 +30,7 @@
     return new Uint8Array([n & 0xff, (n >>> 8) & 0xff]);
   }
   function u32(n) {
-    return new Uint8Array([
-      n & 0xff,
-      (n >>> 8) & 0xff,
-      (n >>> 16) & 0xff,
-      (n >>> 24) & 0xff,
-    ]);
+    return new Uint8Array([n & 0xff, (n >>> 8) & 0xff, (n >>> 16) & 0xff, (n >>> 24) & 0xff]);
   }
   function zipStore(files) {
     const parts = [];
@@ -187,10 +182,8 @@
         node.classList.contains("tab-bar")
       )
         continue;
-      if (tag === "H2" || tag === "H3")
-        blocks.push({ t: "h2", text: txt(node) });
-      else if (tag === "H4" || tag === "H5")
-        blocks.push({ t: "h3", text: txt(node) });
+      if (tag === "H2" || tag === "H3") blocks.push({ t: "h2", text: txt(node) });
+      else if (tag === "H4" || tag === "H5") blocks.push({ t: "h3", text: txt(node) });
       else if (tag === "P") {
         const t = txt(node);
         if (t) blocks.push({ t: "p", text: t });
@@ -215,9 +208,7 @@
     const blocks = [];
     const h1 = document.querySelector("h1");
     if (h1) blocks.push({ t: "title", text: txt(h1) });
-    const intro = document.querySelector(
-      ".hero-copy, .page-intro, header p, .hero p",
-    );
+    const intro = document.querySelector(".hero-copy, .page-intro, header p, .hero p");
     if (intro && txt(intro)) blocks.push({ t: "p", text: txt(intro) });
     const panels = document.querySelectorAll(".tab-panel");
     if (panels.length) {
@@ -261,8 +252,7 @@
       }
       const base = sanitize(
         filename ||
-          (document.querySelector("h1") &&
-            document.querySelector("h1").textContent) ||
+          (document.querySelector("h1") && document.querySelector("h1").textContent) ||
           document.title,
       );
       download(buildDocx(blocks), base + ".docx");

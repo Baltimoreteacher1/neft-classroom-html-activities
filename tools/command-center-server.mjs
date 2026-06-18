@@ -42,7 +42,7 @@ const server = http.createServer(async (req, res) => {
     try {
       const gitBranch = await runCommandSync("git branch --show-current", rootDir);
       const gitDirty = await runCommandSync("git status --porcelain", rootDir);
-      
+
       const pkgPath = path.join(rootDir, "package.json");
       let scripts = [];
       if (fs.existsSync(pkgPath)) {
@@ -51,12 +51,14 @@ const server = http.createServer(async (req, res) => {
       }
 
       res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({
-        status: "online",
-        branch: gitBranch.output || "unknown",
-        isDirty: gitDirty.output.length > 0,
-        scripts: scripts
-      }));
+      res.end(
+        JSON.stringify({
+          status: "online",
+          branch: gitBranch.output || "unknown",
+          isDirty: gitDirty.output.length > 0,
+          scripts: scripts,
+        }),
+      );
     } catch (e) {
       res.writeHead(500, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ error: e.message }));
@@ -92,16 +94,16 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(200, {
       "Content-Type": "text/event-stream",
       "Cache-Control": "no-cache",
-      "Connection": "keep-alive"
+      Connection: "keep-alive",
     });
 
     console.log(`[Command Server] Running npm run ${scriptName}`);
-    
+
     // Spawn script execution (note: we use shell:true on Mac to handle npm resolution easily)
-    const proc = spawn("npm", ["run", scriptName], { 
+    const proc = spawn("npm", ["run", scriptName], {
       cwd: rootDir,
       shell: true,
-      env: { ...process.env, FORCE_COLOR: "1" } // preserve color outputs
+      env: { ...process.env, FORCE_COLOR: "1" }, // preserve color outputs
     });
 
     proc.stdout.on("data", (data) => {
@@ -160,9 +162,10 @@ const server = http.createServer(async (req, res) => {
       const logsDir = path.join(rootDir, ".qa-logs");
       let files = [];
       if (fs.existsSync(logsDir)) {
-        files = fs.readdirSync(logsDir)
-          .filter(f => f.endsWith(".log"))
-          .map(f => {
+        files = fs
+          .readdirSync(logsDir)
+          .filter((f) => f.endsWith(".log"))
+          .map((f) => {
             const stat = fs.statSync(path.join(logsDir, f));
             return { name: f, time: stat.mtimeMs, size: stat.size };
           })
@@ -180,7 +183,12 @@ const server = http.createServer(async (req, res) => {
   // Endpoint: GET /api/view-log?file=...
   if (pathname === "/api/view-log" && req.method === "GET") {
     const fileName = reqUrl.searchParams.get("file");
-    if (!fileName || !fileName.endsWith(".log") || fileName.includes("/") || fileName.includes("\\")) {
+    if (
+      !fileName ||
+      !fileName.endsWith(".log") ||
+      fileName.includes("/") ||
+      fileName.includes("\\")
+    ) {
       res.writeHead(400, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ error: "Invalid log filename." }));
       return;
@@ -213,7 +221,8 @@ const server = http.createServer(async (req, res) => {
           if (!fs.existsSync(d)) return;
           const files = fs.readdirSync(d);
           for (const f of files) {
-            if (f === "node_modules" || f === ".git" || f === ".wrangler" || f === ".claude") continue;
+            if (f === "node_modules" || f === ".git" || f === ".wrangler" || f === ".claude")
+              continue;
             const full = path.join(d, f);
             const stat = fs.statSync(full);
             if (stat.isDirectory()) {
@@ -228,15 +237,17 @@ const server = http.createServer(async (req, res) => {
         return { size, count };
       };
 
-      const topDirs = fs.readdirSync(rootDir).filter(f => {
+      const topDirs = fs.readdirSync(rootDir).filter((f) => {
         const full = path.join(rootDir, f);
         return fs.statSync(full).isDirectory() && !f.startsWith(".") && f !== "node_modules";
       });
 
-      const report = topDirs.map(d => {
-        const info = getDirInfo(path.join(rootDir, d));
-        return { name: d, ...info };
-      }).sort((a, b) => b.size - a.size);
+      const report = topDirs
+        .map((d) => {
+          const info = getDirInfo(path.join(rootDir, d));
+          return { name: d, ...info };
+        })
+        .sort((a, b) => b.size - a.size);
 
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ directories: report }));
@@ -259,7 +270,9 @@ const server = http.createServer(async (req, res) => {
         const enginePath = path.join(rootDir, "shared/save-resume/save-resume-engine.js");
         if (fs.existsSync(enginePath)) {
           const content = fs.readFileSync(enginePath, "utf8");
-          const match = content.match(/endpoint:\s*["'](https:\/\/script\.google\.com\/macros\/s\/[^"']+\/exec)["']/);
+          const match = content.match(
+            /endpoint:\s*["'](https:\/\/script\.google\.com\/macros\/s\/[^"']+\/exec)["']/,
+          );
           if (match) {
             return match[1];
           }
@@ -268,12 +281,48 @@ const server = http.createServer(async (req, res) => {
       };
 
       const mockData = [
-        { code: "MATH-7KQ2", name: "J.D.", section: "Period 1 Math", progress: 85, lastSaved: Date.now() - 50000 },
-        { code: "DATA-M9P4", name: "M.A.", section: "Period 1 Math", progress: 60, lastSaved: Date.now() - 3600000 },
-        { code: "GEOM-H3B5", name: "K.L.", section: "Period 3 ESOL", progress: 95, lastSaved: Date.now() - 86400000 },
-        { code: "RATIO-A1X9", name: "S.V.", section: "Period 3 ESOL", progress: 40, lastSaved: Date.now() - 600000 },
-        { code: "ALGE-P6K3", name: "R.T.", section: "Period 1 Math", progress: 100, lastSaved: Date.now() - 10000 },
-        { code: "MCAP-D4F2", name: "A.N.", section: "Period 5 Math", progress: 20, lastSaved: Date.now() - 1800000 }
+        {
+          code: "MATH-7KQ2",
+          name: "J.D.",
+          section: "Period 1 Math",
+          progress: 85,
+          lastSaved: Date.now() - 50000,
+        },
+        {
+          code: "DATA-M9P4",
+          name: "M.A.",
+          section: "Period 1 Math",
+          progress: 60,
+          lastSaved: Date.now() - 3600000,
+        },
+        {
+          code: "GEOM-H3B5",
+          name: "K.L.",
+          section: "Period 3 ESOL",
+          progress: 95,
+          lastSaved: Date.now() - 86400000,
+        },
+        {
+          code: "RATIO-A1X9",
+          name: "S.V.",
+          section: "Period 3 ESOL",
+          progress: 40,
+          lastSaved: Date.now() - 600000,
+        },
+        {
+          code: "ALGE-P6K3",
+          name: "R.T.",
+          section: "Period 1 Math",
+          progress: 100,
+          lastSaved: Date.now() - 10000,
+        },
+        {
+          code: "MCAP-D4F2",
+          name: "A.N.",
+          section: "Period 5 Math",
+          progress: 20,
+          lastSaved: Date.now() - 1800000,
+        },
       ];
 
       const endpoint = getCentralRecordEndpoint();
@@ -285,12 +334,12 @@ const server = http.createServer(async (req, res) => {
             const data = await response.json();
             if (data && data.ok && Array.isArray(data.records)) {
               // Map records to expected client schema
-              const students = data.records.map(rec => ({
+              const students = data.records.map((rec) => ({
                 code: rec.saveCode,
                 name: rec.studentName || "Anonymous",
                 section: rec.section || "General",
                 progress: rec.progressPercent || 0,
-                lastSaved: rec.updatedAt ? new Date(rec.updatedAt).getTime() : Date.now()
+                lastSaved: rec.updatedAt ? new Date(rec.updatedAt).getTime() : Date.now(),
               }));
               res.writeHead(200, { "Content-Type": "application/json" });
               res.end(JSON.stringify({ students }));
@@ -298,10 +347,13 @@ const server = http.createServer(async (req, res) => {
             }
           }
         } catch (fetchErr) {
-          console.warn("[Command Server] Failed to fetch live telemetry, falling back to mock data:", fetchErr.message);
+          console.warn(
+            "[Command Server] Failed to fetch live telemetry, falling back to mock data:",
+            fetchErr.message,
+          );
         }
       }
-      
+
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ students: mockData }));
     } catch (e) {

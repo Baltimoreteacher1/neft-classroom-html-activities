@@ -91,10 +91,7 @@
       range: "Range",
       mixed: "Choosing the right measure",
     };
-    return (
-      map[skill] ||
-      (skill ? skill.charAt(0).toUpperCase() + skill.slice(1) : "General")
-    );
+    return map[skill] || (skill ? skill.charAt(0).toUpperCase() + skill.slice(1) : "General");
   }
 
   // Teacher reteach moves derived from session data (spec section 9).
@@ -105,29 +102,19 @@
       bySkill[sk.skill] = sk;
     });
     if (bySkill.median && bySkill.median.accuracy < 70) {
-      moves.push(
-        "Reteach median: order the numbers before finding the middle.",
-      );
+      moves.push("Reteach median: order the numbers before finding the middle.");
     }
     if (bySkill.range && bySkill.range.accuracy < 70) {
-      moves.push(
-        "Reteach range with the frame: biggest number minus smallest number.",
-      );
+      moves.push("Reteach range with the frame: biggest number minus smallest number.");
     }
     if (bySkill.mode && bySkill.mode.accuracy < 70) {
-      moves.push(
-        "Reteach mode: tally each value; the most frequent wins (not the biggest).",
-      );
+      moves.push("Reteach mode: tally each value; the most frequent wins (not the biggest).");
     }
     if (bySkill.mean && bySkill.mean.accuracy < 70) {
-      moves.push(
-        "Reteach mean: add all values, then divide by how many there are.",
-      );
+      moves.push("Reteach mean: add all values, then divide by how many there are.");
     }
     if (s.hintRate >= 50) {
-      moves.push(
-        "High hint use — practice one more supported set before independent work.",
-      );
+      moves.push("High hint use — practice one more supported set before independent work.");
     }
     if (s.solvedNotExplained > 0) {
       moves.push(
@@ -136,14 +123,10 @@
       );
     }
     if (s.scorePct >= 85 && s.hintRate <= 20) {
-      moves.push(
-        "Strong + independent — ready for challenge/application problems.",
-      );
+      moves.push("Strong + independent — ready for challenge/application problems.");
     }
     if (!moves.length) {
-      moves.push(
-        "Solid session — continue with mixed practice and short written explanations.",
-      );
+      moves.push("Solid session — continue with mixed practice and short written explanations.");
     }
     return moves;
   }
@@ -245,14 +228,9 @@
       "/" +
       s.totalProblems +
       ")</span></div>";
+    html += '<div class="tt-stat"><b>' + s.hintCount + "</b><span>Hints used</span></div>";
     html +=
-      '<div class="tt-stat"><b>' +
-      s.hintCount +
-      "</b><span>Hints used</span></div>";
-    html +=
-      '<div class="tt-stat"><b>' +
-      s.skills.length +
-      "</b><span>Skills practiced</span></div>";
+      '<div class="tt-stat"><b>' + s.skills.length + "</b><span>Skills practiced</span></div>";
     html += "</div>";
     html += "<h3>My strengths</h3>";
     html += ins.good.length
@@ -314,8 +292,7 @@
       });
       html += "</ul>";
     } else {
-      html +=
-        '<p class="tt-meta">No recurring misconceptions detected this session.</p>';
+      html += '<p class="tt-meta">No recurring misconceptions detected this session.</p>';
     }
 
     html += "<h3>Suggested small groups</h3>";
@@ -323,19 +300,12 @@
       html += "<p>";
       html += groups
         .map(function (g) {
-          return (
-            '<span class="tt-pill">' +
-            esc(g.focus) +
-            " (" +
-            g.count +
-            ")</span>"
-          );
+          return '<span class="tt-pill">' + esc(g.focus) + " (" + g.count + ")</span>";
         })
         .join("");
       html += "</p>";
     } else {
-      html +=
-        '<p class="tt-meta">Whole-class mixed practice is appropriate.</p>';
+      html += '<p class="tt-meta">Whole-class mixed practice is appropriate.</p>';
     }
 
     html += "<h3>Suggested reteach moves</h3>";
@@ -376,14 +346,11 @@
 
     /* Actions + privacy */
     html += '<div class="tt-actions">';
-    html +=
-      '<button type="button" class="tt-btn" data-tt="print">Print / Save PDF</button>';
-    html +=
-      '<button type="button" class="tt-btn secondary" data-tt="csv">Export CSV</button>';
+    html += '<button type="button" class="tt-btn" data-tt="print">Print / Save PDF</button>';
+    html += '<button type="button" class="tt-btn secondary" data-tt="csv">Export CSV</button>';
     html +=
       '<button type="button" class="tt-btn secondary" data-tt="save">Save Report (HTML)</button>';
-    html +=
-      '<button type="button" class="tt-btn danger" data-tt="clear">Clear Data</button>';
+    html += '<button type="button" class="tt-btn danger" data-tt="clear">Clear Data</button>';
     html += "</div>";
     html +=
       '<p class="tt-privacy">Privacy: this report was built entirely in your browser. No student data is sent to any website, server, or company. It is gone when you clear data unless you export or print it yourself.</p>';
@@ -414,11 +381,7 @@
     var clearBtn = container.querySelector('[data-tt="clear"]');
     if (clearBtn)
       clearBtn.addEventListener("click", function () {
-        if (
-          !global.confirm(
-            "Clear this report and all saved thinking data for this session?",
-          )
-        )
+        if (!global.confirm("Clear this report and all saved thinking data for this session?"))
           return;
         if (opts.onClear) opts.onClear();
         container.innerHTML =

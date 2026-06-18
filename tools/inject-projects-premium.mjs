@@ -16,12 +16,9 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
-const LINK =
-  '<link rel="stylesheet" href="/shared/projects/projects-premium.css" />';
-const TABS_CSS =
-  '<link rel="stylesheet" href="/shared/projects/projects-tabs.css" />';
-const TABS_JS =
-  '<script src="/shared/projects/projects-tabs.js" defer></script>';
+const LINK = '<link rel="stylesheet" href="/shared/projects/projects-premium.css" />';
+const TABS_CSS = '<link rel="stylesheet" href="/shared/projects/projects-tabs.css" />';
+const TABS_JS = '<script src="/shared/projects/projects-tabs.js" defer></script>';
 
 const UNITS = Array.from({ length: 10 }, (_, i) => i + 1);
 let changed = 0;
@@ -69,10 +66,7 @@ function process(rel, { hub, tabs } = {}) {
   }
 }
 
-const DIRS = [
-  ...UNITS.map((u) => `math/unit-${u}/projects`),
-  "math/statistics/projects",
-];
+const DIRS = [...UNITS.map((u) => `math/unit-${u}/projects`), "math/statistics/projects"];
 
 for (const dir of DIRS) {
   process(`${dir}/index.html`, { hub: true });

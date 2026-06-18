@@ -41,7 +41,10 @@ const lessonLinks = (html.match(/\/lessons\//g) || []).length;
 check(bytes >= MIN_BYTES, `hub too small: ${bytes} bytes (< ${MIN_BYTES}) — possible clobber/stub`);
 check(/Curriculum Hub/.test(html), 'missing the "Curriculum Hub" title');
 check(units >= MIN_UNITS, `only ${units} unit sections (expected >= ${MIN_UNITS})`);
-check(lessonLinks >= MIN_LESSON_LINKS, `only ${lessonLinks} /lessons/ links (expected >= ${MIN_LESSON_LINKS})`);
+check(
+  lessonLinks >= MIN_LESSON_LINKS,
+  `only ${lessonLinks} /lessons/ links (expected >= ${MIN_LESSON_LINKS})`,
+);
 check(/id="curr-search"/.test(html), "missing the lesson search control (#curr-search)");
 check(/mailbox-feature/.test(html), "missing the Student Digital Mailbox featured card");
 
@@ -50,11 +53,11 @@ if (failures.length) {
   failures.forEach((f) => console.error("   • " + f));
   console.error(
     "\nIf this change is intentional, update tools/validate-curriculum-hub.mjs.\n" +
-      "Otherwise restore the hub (good baseline: tag stable-baseline-2026-06-04)."
+      "Otherwise restore the hub (good baseline: tag stable-baseline-2026-06-04).",
   );
   process.exit(1);
 }
 
 console.log(
-  `✓ Curriculum Hub lock passed (${bytes} bytes · ${units} units · ${lessonLinks} lesson links).`
+  `✓ Curriculum Hub lock passed (${bytes} bytes · ${units} units · ${lessonLinks} lesson links).`,
 );

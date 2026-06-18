@@ -115,9 +115,7 @@ function check(file) {
   const hasCss = html.includes(CSS_REF);
   const hasJs = html.includes(JS_REF);
   if (!hasCss || !hasJs) {
-    stats.missingRefs.push(
-      rel + (hasCss ? "" : " [css]") + (hasJs ? "" : " [js]"),
-    );
+    stats.missingRefs.push(rel + (hasCss ? "" : " [css]") + (hasJs ? "" : " [js]"));
     return;
   }
   // Duplicate detection: each ref should appear exactly once.
@@ -157,22 +155,14 @@ console.log("Active HTML scanned:", stats.scanned);
 console.log("Fully integrated   :", stats.ok);
 console.log("Skipped            :", stats.skipped);
 console.log("Missing refs       :", stats.missingRefs.length);
-if (stats.missingRefs.length)
-  console.log("   →", stats.missingRefs.slice(0, 20));
+if (stats.missingRefs.length) console.log("   →", stats.missingRefs.slice(0, 20));
 console.log("Duplicate refs     :", stats.duplicates.length);
 if (stats.duplicates.length) console.log("   →", stats.duplicates.slice(0, 20));
 console.log("Structure warnings :", stats.brokenStructure.length);
-if (stats.brokenStructure.length)
-  console.log("   →", stats.brokenStructure.slice(0, 20));
+if (stats.brokenStructure.length) console.log("   →", stats.brokenStructure.slice(0, 20));
 
 const problems =
-  issues.length +
-  stats.missingRefs.length +
-  stats.duplicates.length +
-  stats.brokenStructure.length;
+  issues.length + stats.missingRefs.length + stats.duplicates.length + stats.brokenStructure.length;
 if (issues.length) console.log("\nIssues:\n  " + issues.join("\n  "));
-console.log(
-  "\nRESULT:",
-  problems === 0 ? "PASS ✅" : `FAIL ❌ (${problems} problem group(s))`,
-);
+console.log("\nRESULT:", problems === 0 ? "PASS ✅" : `FAIL ❌ (${problems} problem group(s))`);
 process.exit(problems === 0 ? 0 : 1);

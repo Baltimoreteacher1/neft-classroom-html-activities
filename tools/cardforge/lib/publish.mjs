@@ -16,8 +16,12 @@ export function publishGuard(pkgDir) {
   const card = readJSON(resolve(dir, "card.json"));
   const files = readdirSync(dir);
 
-  if (card.demo) blockers.push("Card is marked demo:true — demo cards are never published to live curriculum.");
-  if (card.qaStatus !== "pass") blockers.push(`QA status is "${card.qaStatus}". Publish requires a clean QA pass (npm run cardforge:qa).`);
+  if (card.demo)
+    blockers.push("Card is marked demo:true — demo cards are never published to live curriculum.");
+  if (card.qaStatus !== "pass")
+    blockers.push(
+      `QA status is "${card.qaStatus}". Publish requires a clean QA pass (npm run cardforge:qa).`,
+    );
   if (!files.includes("qa-report.md")) blockers.push("No qa-report.md — run QA first.");
 
   // Duplicate / route-collision check against the live manifest.
@@ -26,16 +30,27 @@ export function publishGuard(pkgDir) {
     const ids = (readJSON(manifestPath).lessons || []).map((l) => l.id);
     if (card.lesson != null && card.unit != null) {
       const liveId = `${card.unit}-${card.lesson}`;
-      if (ids.includes(liveId)) blockers.push(`Live lesson "${liveId}" already exists in the manifest — publishing would risk a duplicate card. Resolve first.`);
+      if (ids.includes(liveId))
+        blockers.push(
+          `Live lesson "${liveId}" already exists in the manifest — publishing would risk a duplicate card. Resolve first.`,
+        );
     }
   }
 
-  lines.push("CardForge publish (v1) is a guarded MANUAL procedure. Nothing was written to live data.");
+  lines.push(
+    "CardForge publish (v1) is a guarded MANUAL procedure. Nothing was written to live data.",
+  );
   lines.push("");
   lines.push("To publish this card safely:");
-  lines.push("  1. Move/author the lesson under lessons/<unit>-<lesson>/ (config.json + resources).");
-  lines.push("  2. Run: npm run generate-curriculum-manifest   (regenerates data/curriculum-manifest.json)");
-  lines.push("  3. Run: npm run validate && npm run audit       (link/structure + curriculum audit)");
+  lines.push(
+    "  1. Move/author the lesson under lessons/<unit>-<lesson>/ (config.json + resources).",
+  );
+  lines.push(
+    "  2. Run: npm run generate-curriculum-manifest   (regenerates data/curriculum-manifest.json)",
+  );
+  lines.push(
+    "  3. Run: npm run validate && npm run audit       (link/structure + curriculum audit)",
+  );
   lines.push("  4. Add the hub card anchor to math/index.html if it should be surfaced there.");
   lines.push("  5. Review the diff, commit, push to main (Cloudflare Git deploy).");
 

@@ -4,27 +4,27 @@
  */
 
 export const REFERENCE_TOKENS = {
-  navy: '#1C2E42',
-  teal: '#387F84',
-  sand: '#E8E4D8',
-  sage: '#EDF2E8',
-  sagePanel: '#E0F0F1',
-  mist: '#EAF2F7',
-  warmCream: '#FCF5E0',
-  coral: '#F5EAE7',
-  amber: '#F2C15B',
-  amberDark: '#C8A050',
-  red: '#D9534F',
-  redLight: '#FFF5F5',
-  slate: '#5C656E',
-  gray: '#A8B2BC',
-  grayMid: '#D6DBDF',
-  white: '#FFFFFF',
-  bodyText: '#24323F',
-  accentGreen: '#5C8A5A',
-  accentCoral: '#C07070',
-  cardBank: '#E8EDF3',
-  ruledLine: 'rgba(56, 127, 132, 0.08)',
+  navy: "#1C2E42",
+  teal: "#387F84",
+  sand: "#E8E4D8",
+  sage: "#EDF2E8",
+  sagePanel: "#E0F0F1",
+  mist: "#EAF2F7",
+  warmCream: "#FCF5E0",
+  coral: "#F5EAE7",
+  amber: "#F2C15B",
+  amberDark: "#C8A050",
+  red: "#D9534F",
+  redLight: "#FFF5F5",
+  slate: "#5C656E",
+  gray: "#A8B2BC",
+  grayMid: "#D6DBDF",
+  white: "#FFFFFF",
+  bodyText: "#24323F",
+  accentGreen: "#5C8A5A",
+  accentCoral: "#C07070",
+  cardBank: "#E8EDF3",
+  ruledLine: "rgba(56, 127, 132, 0.08)",
 };
 
 export function tokensToCssVars(palette, themeColor) {
@@ -71,16 +71,16 @@ export function tokensToCssVars(palette, themeColor) {
 }
 
 function esc(str) {
-  return String(str || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+  return String(str || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 /** Navy header bar — every content slide */
-export function refHeaderBar(slideTitle, standard, brand = 'Reveal Math Grade 6') {
+export function refHeaderBar(slideTitle, standard, brand = "Reveal Math Grade 6") {
   return `
     <header class="ref-header-bar">
       <span class="ref-brand">${esc(brand)}</span>
@@ -90,7 +90,7 @@ export function refHeaderBar(slideTitle, standard, brand = 'Reveal Math Grade 6'
 }
 
 /** White main + sage Talk It Over side panel (reference 65/32 split) */
-export function refTwoColumn(mainHtml, sideHtml, sideTitle = '💬 Talk It Over') {
+export function refTwoColumn(mainHtml, sideHtml, sideTitle = "💬 Talk It Over") {
   return `
     <div class="ref-two-col">
       <div class="ref-main-panel">${mainHtml}</div>
@@ -103,12 +103,12 @@ export function refTwoColumn(mainHtml, sideHtml, sideTitle = '💬 Talk It Over'
 
 /** Wrap slide inner content with reference chrome */
 export function refSlideFrame(slideTitle, standard, innerHtml, opts = {}) {
-  const { variant = 'content', hideHeader = false } = opts;
-  if (variant === 'title') return innerHtml;
-  if (variant === 'section') return innerHtml;
+  const { variant = "content", hideHeader = false } = opts;
+  if (variant === "title") return innerHtml;
+  if (variant === "section") return innerHtml;
   return `
     <div class="ref-slide-frame ref-variant-${variant}">
-      ${hideHeader ? '' : refHeaderBar(slideTitle, standard)}
+      ${hideHeader ? "" : refHeaderBar(slideTitle, standard)}
       <div class="ref-slide-content">${innerHtml}</div>
     </div>`;
 }
@@ -121,7 +121,7 @@ export function refTitleOpener(ctx) {
     unit,
     lessonId,
     title,
-    subject = 'Mathematics',
+    subject = "Mathematics",
     contentObj,
     themeEmoji,
     timeEstimate,
@@ -129,7 +129,7 @@ export function refTitleOpener(ctx) {
   } = ctx;
 
   // Extract lesson number cleanly from lessonId (e.g. "8-1-flagship" → "1")
-  const lessonNum = String(lessonId).split('-')[1] || sessionNum;
+  const lessonNum = String(lessonId).split("-")[1] || sessionNum;
 
   return `
     <div class="ref-title-opener-v2">
@@ -158,18 +158,18 @@ export function refTitleOpener(ctx) {
         </div>
         <div class="ref-title-footer-row">
           <span>${esc(subject)}</span>
-          <span>⏱ ${esc(timeEstimate || '~45 min')}</span>
+          <span>⏱ ${esc(timeEstimate || "~45 min")}</span>
         </div>
       </div>
     </div>`;
 }
 
 /** Full-bleed navy section divider — premium horizontal rule + teal accent line */
-export function refSectionOpener(section, minutes, emoji = '') {
+export function refSectionOpener(section, minutes, emoji = "") {
   return `
     <div class="ref-section-opener-v2">
       <div class="ref-section-inner">
-        ${emoji ? `<div class="ref-section-emoji-v2">${emoji}</div>` : ''}
+        ${emoji ? `<div class="ref-section-emoji-v2">${emoji}</div>` : ""}
         <div class="ref-section-text-block">
           <div class="ref-section-eyebrow">Lesson Phase</div>
           <h2 class="ref-section-title-v2">${section}</h2>
@@ -182,14 +182,19 @@ export function refSectionOpener(section, minutes, emoji = '') {
 
 /** Choice board — 2×2 pastel cards with navy headers */
 export function refChoiceBoardGrid(choices) {
-  const palettes = ['ref-choice-mist', 'ref-choice-sage', 'ref-choice-cream', 'ref-choice-panel'];
-  const cards = (choices || []).slice(0, 4).map((c, i) => `
+  const palettes = ["ref-choice-mist", "ref-choice-sage", "ref-choice-cream", "ref-choice-panel"];
+  const cards = (choices || [])
+    .slice(0, 4)
+    .map(
+      (c, i) => `
     <button type="button" class="ref-choice-card ${palettes[i]}" onclick="selectChoiceBoard(${i})" id="choice-card-${i}">
       <div class="ref-choice-card-header"><span class="ref-choice-num">${i + 1}</span><span class="ref-choice-title">${esc(c.title)}</span></div>
-      <span class="ref-choice-icon">${c.icon || '✓'}</span>
+      <span class="ref-choice-icon">${c.icon || "✓"}</span>
       <p>${esc(c.desc)}</p>
       <span class="choice-check" id="choice-check-${i}">✓</span>
-    </button>`).join('');
+    </button>`,
+    )
+    .join("");
   return `
     <p class="ref-instruction">Choose ONE option to show what you know — then do it in the workspace below.</p>
     <div class="ref-choice-grid">${cards}</div>
@@ -201,7 +206,9 @@ export function refChoiceBoardGrid(choices) {
 
 /** Think-Write-Respond — sage frames with teal label column */
 export function refThinkWriteFrames(frames, instruction) {
-  const frameHtml = (frames || []).map((f, i) => `
+  const frameHtml = (frames || [])
+    .map(
+      (f, i) => `
     <div class="ref-twr-frame">
       <div class="ref-twr-label">
         <span class="ref-twr-num">Frame ${i + 1}</span>
@@ -211,7 +218,9 @@ export function refThinkWriteFrames(frames, instruction) {
         <p class="ref-twr-prompt">${esc(f.prompt)}</p>
         <textarea class="ref-lined-input twr-input" rows="2" placeholder="Write your response..."></textarea>
       </div>
-    </div>`).join('');
+    </div>`,
+    )
+    .join("");
   return `
     <p class="ref-instruction">${esc(instruction || "Use evidence from today's lesson to complete each frame.")}</p>
     <div class="ref-twr-stack">${frameHtml}</div>`;
@@ -219,12 +228,15 @@ export function refThinkWriteFrames(frames, instruction) {
 
 /** Sort It Out — card bank + colored bucket headers */
 export function refSortLayout(instruction, bucketsHtml, cardBankHtml, sidePrompt) {
-  return refTwoColumn(`
+  return refTwoColumn(
+    `
     <p class="ref-instruction">${esc(instruction)}</p>
     <div class="ref-card-bank-label">Card Bank — cut or drag these cards:</div>
     <div class="ref-card-bank">${cardBankHtml}</div>
     <div class="ref-sort-buckets">${bucketsHtml}</div>
-  `, sidePrompt ? `<p class="ref-side-prompt">${esc(sidePrompt)}</p>` : '');
+  `,
+    sidePrompt ? `<p class="ref-side-prompt">${esc(sidePrompt)}</p>` : "",
+  );
 }
 
 export function refSortBucket(label, colorClass, id) {
@@ -237,7 +249,8 @@ export function refSortBucket(label, colorClass, id) {
 
 /** Error Analysis — red badge + white/red zones */
 export function refErrorLayout(scenarioHtml, studentWorkHtml, sidePrompt) {
-  return refTwoColumn(`
+  return refTwoColumn(
+    `
     <span class="ref-error-badge">⚠ Find the Error</span>
     <div class="ref-error-scenario">${scenarioHtml}</div>
     <div class="ref-student-work-box">
@@ -248,19 +261,26 @@ export function refErrorLayout(scenarioHtml, studentWorkHtml, sidePrompt) {
       <strong>What went wrong?</strong>
       <textarea class="ref-lined-input" rows="3" placeholder="Explain the mistake and how to fix it..."></textarea>
     </div>
-  `, sidePrompt ? `<p class="ref-side-prompt">${esc(sidePrompt)}</p>` : '');
+  `,
+    sidePrompt ? `<p class="ref-side-prompt">${esc(sidePrompt)}</p>` : "",
+  );
 }
 
 /** Goal tracker — 4 pastel level columns */
 export function refGoalTrackerLayout(goal, levels) {
-  const palettes = ['ref-goal-coral', 'ref-goal-cream', 'ref-goal-sage', 'ref-goal-panel'];
-  const levelHtml = (levels || []).slice(0, 4).map((l, i) => `
+  const palettes = ["ref-goal-coral", "ref-goal-cream", "ref-goal-sage", "ref-goal-panel"];
+  const levelHtml = (levels || [])
+    .slice(0, 4)
+    .map(
+      (l, i) => `
     <button type="button" class="ref-goal-card ${palettes[i]}" onclick="selectGoalLevel(${l.num})" id="goal-level-${l.num}">
       <span class="ref-goal-num">${l.num}</span>
       <strong>${esc(l.label)}</strong>
       <p>${esc(l.desc)}</p>
       <span class="goal-circle" id="goal-circle-${l.num}">○</span>
-    </button>`).join('');
+    </button>`,
+    )
+    .join("");
   return `
     <div class="ref-goal-banner"><strong>My Goal:</strong> ${esc(goal)}</div>
     <div class="ref-goal-grid">${levelHtml}</div>`;
@@ -283,13 +303,17 @@ export function refExitSplit(reflectionFields, ticketHtml) {
 
 /** Vocabulary table — navy header row */
 export function refVocabTable(rows) {
-  const body = (rows || []).map((r) => `
+  const body = (rows || [])
+    .map(
+      (r) => `
     <tr>
-      <td class="ref-vocab-term">${esc(r.term)}${r.termEs ? `<br/><em>${esc(r.termEs)}</em>` : ''}</td>
-      <td>${esc(r.definition)}${r.definitionEs ? `<br/><em>${esc(r.definitionEs)}</em>` : ''}</td>
-      <td>${esc(r.example || '')}</td>
-      <td class="ref-vocab-visual">${r.visual || '📐'}</td>
-    </tr>`).join('');
+      <td class="ref-vocab-term">${esc(r.term)}${r.termEs ? `<br/><em>${esc(r.termEs)}</em>` : ""}</td>
+      <td>${esc(r.definition)}${r.definitionEs ? `<br/><em>${esc(r.definitionEs)}</em>` : ""}</td>
+      <td>${esc(r.example || "")}</td>
+      <td class="ref-vocab-visual">${r.visual || "📐"}</td>
+    </tr>`,
+    )
+    .join("");
   return `
     <table class="ref-vocab-table">
       <thead>
@@ -329,17 +353,17 @@ export function refNoticeWonder(visualHtml, noticeStems, wonderStems) {
 
 /** Teacher cue — compact, matches reference (not blue boxes) */
 export function refTeacherNote(type, text) {
-  const icons = { say: '👩‍🏫', ask: '❓', time: '⏱️', students: '👨‍🎓', materials: '📦' };
-  return `<p class="ref-teacher-note ref-note-${type}"><span>${icons[type] || '•'}</span> ${esc(text)}</p>`;
+  const icons = { say: "👩‍🏫", ask: "❓", time: "⏱️", students: "👨‍🎓", materials: "📦" };
+  return `<p class="ref-teacher-note ref-note-${type}"><span>${icons[type] || "•"}</span> ${esc(text)}</p>`;
 }
 
 /** Footer progress dots */
 export function refFooterDots(current, total) {
   const dots = Array.from({ length: Math.min(total, 12) }, (_, i) => {
     const n = i + 1;
-    const active = n === current ? ' ref-dot-active' : n < current ? ' ref-dot-done' : '';
+    const active = n === current ? " ref-dot-active" : n < current ? " ref-dot-done" : "";
     return `<span class="ref-dot${active}" data-slide="${n}"></span>`;
-  }).join('');
+  }).join("");
   return `<div class="ref-progress-dots">${dots}</div>`;
 }
 

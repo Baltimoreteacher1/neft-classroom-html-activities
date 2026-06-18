@@ -13,7 +13,7 @@ const GAME_MAPPING = {
   "/games/unit7-equation-escape.html": "/math/unit-8/games/unit7-equation-escape.html",
   "/games/unit8-stats-slam.html": "/math/statistics/games/unit8-stats-slam.html",
   "/games/unit9-coordinate-quest.html": "/math/unit-7/games/unit9-coordinate-quest.html",
-  "/games/unit10-volume-vault.html": "/math/unit-10/games/unit10-volume-vault.html"
+  "/games/unit10-volume-vault.html": "/math/unit-10/games/unit10-volume-vault.html",
 };
 
 function walk(dir) {
@@ -36,7 +36,7 @@ function runMigration() {
   console.log("=== Unit Games Reference Migration Script ===");
 
   // 1. Replace references in all source files
-  const files = walk(root).filter(f => {
+  const files = walk(root).filter((f) => {
     const ext = extname(f);
     // Target configs, lessons, 3d games, hubs
     return ext === ".html" || ext === ".js" || ext === ".json" || ext === ".mjs";
@@ -83,14 +83,14 @@ function runMigration() {
     const routesObj = JSON.parse(readFileSync(routesPath, "utf8"));
     const existingRedirects = routesObj.redirects || [];
 
-    const existingSources = new Set(existingRedirects.map(r => r.source));
+    const existingSources = new Set(existingRedirects.map((r) => r.source));
 
     for (const [oldPath, newPath] of Object.entries(GAME_MAPPING)) {
       if (!existingSources.has(oldPath)) {
         existingRedirects.push({
           source: oldPath,
           destination: newPath,
-          status: 301
+          status: 301,
         });
         console.log(`Added redirect: ${oldPath} -> ${newPath}`);
       }

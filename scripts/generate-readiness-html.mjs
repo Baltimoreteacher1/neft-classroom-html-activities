@@ -93,11 +93,7 @@ function renderDiagnostic(diag) {
 }
 
 function tierLabel(level) {
-  return [
-    "🧱 Level 0 · Most support",
-    "🛠️ Level 1 · Support",
-    "🚀 Level 2 · Stretch",
-  ][level];
+  return ["🧱 Level 0 · Most support", "🛠️ Level 1 · Support", "🚀 Level 2 · Stretch"][level];
 }
 function tierChip(level) {
   return [

@@ -16,8 +16,16 @@ const IDX = join(ROOT, "graphic-novels", "index.html");
 // unit -> [ {label, lessons, file} ] (order = dropdown order)
 const EPS = {
   1: [
-    ["E1 · Benchmark &amp; Brass", "Review · Fractions &amp; Decimals", "axiom-city-u1-e1-benchmark-and-brass.html"],
-    ["E2 · Sequences &amp; Cubes", "Patterns &amp; Volume", "axiom-city-u1-e2-sequences-and-cubes.html"],
+    [
+      "E1 · Benchmark &amp; Brass",
+      "Review · Fractions &amp; Decimals",
+      "axiom-city-u1-e1-benchmark-and-brass.html",
+    ],
+    [
+      "E2 · Sequences &amp; Cubes",
+      "Patterns &amp; Volume",
+      "axiom-city-u1-e2-sequences-and-cubes.html",
+    ],
   ],
   7: [
     ["E1 · Lights Out", "Lessons 7-1, 7-2", "axiom-city-u7-e1-lights-out.html"],
@@ -31,11 +39,23 @@ const EPS = {
   ],
   9: [
     ["E1 · Lines That Talk", "Lessons 9-1, 9-2", "axiom-city-u9-e1-lines-that-talk.html"],
-    ["E2 · The Rule in the Table", "Lessons 9-3, 9-4, 9-5", "axiom-city-u9-e2-the-rule-in-the-table.html"],
+    [
+      "E2 · The Rule in the Table",
+      "Lessons 9-3, 9-4, 9-5",
+      "axiom-city-u9-e2-the-rule-in-the-table.html",
+    ],
   ],
   10: [
-    ["E1 · Festival to Night Market", "Capstone Remix · Pt 1", "axiom-city-u10-e1-festival-to-night-market.html"],
-    ["E2 · Brightside to Boundless", "Capstone Remix · Pt 2", "axiom-city-u10-e2-brightside-to-boundless.html"],
+    [
+      "E1 · Festival to Night Market",
+      "Capstone Remix · Pt 1",
+      "axiom-city-u10-e1-festival-to-night-market.html",
+    ],
+    [
+      "E2 · Brightside to Boundless",
+      "Capstone Remix · Pt 2",
+      "axiom-city-u10-e2-brightside-to-boundless.html",
+    ],
   ],
 };
 
@@ -56,7 +76,10 @@ if (!html.includes(".axiom-eps .ep.ep-l")) {
         letter-spacing: 0.02em;
       }
 `;
-  html = html.replace("      .axiom-eps .ep:focus-visible {", css + "      .axiom-eps .ep:focus-visible {");
+  html = html.replace(
+    "      .axiom-eps .ep:focus-visible {",
+    css + "      .axiom-eps .ep:focus-visible {",
+  );
   changed++;
 }
 
@@ -74,7 +97,7 @@ for (let i = 0; i < cards.length; i++) {
     eps
       .map(
         ([label, lessons, file]) =>
-          `                <a\n                  class="ep ep-l"\n                  href="axiom-city/episodes/${file}"\n                  >${label}<small>${lessons}</small></a\n                >`
+          `                <a\n                  class="ep ep-l"\n                  href="axiom-city/episodes/${file}"\n                  >${label}<small>${lessons}</small></a\n                >`,
       )
       .join("\n") +
     `\n              </div>`;

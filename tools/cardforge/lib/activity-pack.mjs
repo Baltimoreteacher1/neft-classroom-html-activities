@@ -15,7 +15,10 @@ function buildWordSearch(terms, size = 12) {
     .slice(0, 8);
   const grid = Array.from({ length: size }, () => Array(size).fill(""));
   const dirs = [
-    [0, 1], [1, 0], [1, 1], [1, -1],
+    [0, 1],
+    [1, 0],
+    [1, 1],
+    [1, -1],
   ];
   const placed = [];
   for (const w of words) {
@@ -30,7 +33,10 @@ function buildWordSearch(terms, size = 12) {
       let fits = true;
       for (let i = 0; i < w.length; i++) {
         const ch = grid[r + dr * i][cc + dc * i];
-        if (ch && ch !== w[i]) { fits = false; break; }
+        if (ch && ch !== w[i]) {
+          fits = false;
+          break;
+        }
       }
       if (!fits) continue;
       for (let i = 0; i < w.length; i++) grid[r + dr * i][cc + dc * i] = w[i];
@@ -57,10 +63,7 @@ function buildWordSearch(terms, size = 12) {
 // ---- Matching cards -------------------------------------------------------
 function buildMatching(vocab) {
   const rows = (vocab || [])
-    .map(
-      (v) =>
-        `<tr><td><strong>${esc(v.term)}</strong></td><td>${esc(v.definition)}</td></tr>`,
-    )
+    .map((v) => `<tr><td><strong>${esc(v.term)}</strong></td><td>${esc(v.definition)}</td></tr>`)
     .join("");
   return `<section class="page">
     <h2>Vocabulary Match</h2>${nameBar()}
@@ -90,7 +93,9 @@ function buildErrorAnalysis(L) {
 
 // ---- Exit ticket + challenge ---------------------------------------------
 function buildExit(L) {
-  const items = (L.exitTicket || []).map((e, i) => `<p><strong>${i + 1}.</strong> ${esc(e.prompt)}<span class="work"></span></p>`).join("");
+  const items = (L.exitTicket || [])
+    .map((e, i) => `<p><strong>${i + 1}.</strong> ${esc(e.prompt)}<span class="work"></span></p>`)
+    .join("");
   return `<section class="page"><h2>Exit Ticket</h2>${nameBar()}${items || "<p>Solve one problem from today and explain your thinking.</p>"}</section>`;
 }
 function buildChallenge(L) {
@@ -101,7 +106,9 @@ function buildChallenge(L) {
 // ---- Answer key -----------------------------------------------------------
 function buildKey(L) {
   const k = L.answerKey && L.answerKey.length ? L.answerKey : L.practice || [];
-  const ex = (L.exitTicket || []).map((e, i) => `<li>Exit ${i + 1}: ${esc(e.answer || "see rubric")}</li>`).join("");
+  const ex = (L.exitTicket || [])
+    .map((e, i) => `<li>Exit ${i + 1}: ${esc(e.answer || "see rubric")}</li>`)
+    .join("");
   return `<section class="page"><h2>Answer Key — Teacher Only</h2>
     <p class="small">Keep separate from students.</p>
     <ol class="key">${k.map((x) => `<li>${esc(x.answer)}${x.work ? ` <span class="small">(${esc(x.work)})</span>` : ""}</li>`).join("")}</ol>

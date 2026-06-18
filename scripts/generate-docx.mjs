@@ -16,13 +16,7 @@
 //
 // Output: lessons/<id>/downloads/<id>-notes.docx
 
-import {
-  readFileSync,
-  writeFileSync,
-  readdirSync,
-  existsSync,
-  mkdirSync,
-} from "node:fs";
+import { readFileSync, writeFileSync, readdirSync, existsSync, mkdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import {
@@ -148,10 +142,7 @@ function sectionHeading(text, opts = {}) {
 // Sub-heading (Heading 2) with optional italic tag (e.g. an "I Do" cue).
 function subHeading(text, tag, tagColor = TEAL) {
   const runs = [new TextRun({ text, bold: true, color: NAVY, size: 24 })];
-  if (tag)
-    runs.push(
-      new TextRun({ text: `   ${tag}`, italics: true, color: tagColor, size: 19 }),
-    );
+  if (tag) runs.push(new TextRun({ text: `   ${tag}`, italics: true, color: tagColor, size: 19 }));
   return new Paragraph({
     heading: HeadingLevel.HEADING_2,
     spacing: { before: 180, after: 80 },
@@ -160,10 +151,9 @@ function subHeading(text, tag, tagColor = TEAL) {
 }
 
 function muted(text, opts = {}) {
-  return para(
-    new TextRun({ text, color: MUTED, italics: true, size: 19 }),
-    { spacing: { after: 100, ...(opts.spacing || {}) } },
-  );
+  return para(new TextRun({ text, color: MUTED, italics: true, size: 19 }), {
+    spacing: { after: 100, ...(opts.spacing || {}) },
+  });
 }
 
 function bilingual(en, es) {
@@ -400,9 +390,7 @@ function vocabBlock(vocab = []) {
       : [
           new Paragraph({
             alignment: AlignmentType.CENTER,
-            children: [
-              new TextRun({ text: "📐", size: 40, color: MUTED }),
-            ],
+            children: [new TextRun({ text: "📐", size: 40, color: MUTED })],
           }),
         ];
 
@@ -538,10 +526,10 @@ function weDoBlankBlock(weDo, stepCount) {
   const n = Math.min(Math.max(stepCount || 2, 2), 3);
   for (let i = 0; i < n; i++) {
     out.push(
-      para(
-        new TextRun({ text: `Step ${i + 1}:`, bold: true, color: PURPLE, size: 21 }),
-        { spacing: { before: 50, after: 0 }, keepNext: true },
-      ),
+      para(new TextRun({ text: `Step ${i + 1}:`, bold: true, color: PURPLE, size: 21 }), {
+        spacing: { before: 50, after: 0 },
+        keepNext: true,
+      }),
     );
     out.push(...writeline(1));
   }
@@ -564,17 +552,14 @@ function workedExampleBlock(cfg, worked) {
   if (!hasLaunch && !hasExplore && !hasWorked) return [];
 
   const out = [sectionHeading("Worked Example", { pageBreak: true })];
-  out.push(
-    subHeading("Watch & Read", "I Do — follow along with your teacher", TEAL),
-  );
+  out.push(subHeading("Watch & Read", "I Do — follow along with your teacher", TEAL));
 
   const inner = [];
   if (launch.badge) {
     inner.push(
-      para(
-        new TextRun({ text: launch.badge, bold: true, color: NAVY, size: 22 }),
-        { spacing: { after: 60 } },
-      ),
+      para(new TextRun({ text: launch.badge, bold: true, color: NAVY, size: 22 }), {
+        spacing: { after: 60 },
+      }),
     );
   }
   if (launch.narrative) {
@@ -590,10 +575,9 @@ function workedExampleBlock(cfg, worked) {
   const wonder = Array.isArray(launch.wonderPrompts) ? launch.wonderPrompts : [];
   if (notice.length || wonder.length) {
     out.push(
-      para(
-        new TextRun({ text: "Think about:", bold: true, color: NAVY, size: 21 }),
-        { spacing: { before: 60, after: 50 } },
-      ),
+      para(new TextRun({ text: "Think about:", bold: true, color: NAVY, size: 21 }), {
+        spacing: { before: 60, after: 50 },
+      }),
     );
     [...notice, ...wonder].forEach((p) =>
       out.push(
@@ -681,9 +665,7 @@ function guidedPracticeBlock(cfg, worked) {
     out.push(subHeading("Turn & Talk", "discuss with a partner"));
     tt.forEach((it, idx) => {
       const phase = String(it.phase || "").trim();
-      const phaseLabel = phase
-        ? phase.charAt(0).toUpperCase() + phase.slice(1)
-        : "Discuss";
+      const phaseLabel = phase ? phase.charAt(0).toUpperCase() + phase.slice(1) : "Discuss";
       out.push(
         para(
           [
@@ -738,9 +720,7 @@ function gatherPractice(practice = {}) {
 
 // ── INDEPENDENT PRACTICE / "You Do" (numbered problems + work space) ─────────
 function independentPracticeBlock(cfg, excludeStems = new Set()) {
-  const items = gatherPractice(cfg.practice).filter(
-    (it) => it.stem && !excludeStems.has(it.stem),
-  );
+  const items = gatherPractice(cfg.practice).filter((it) => it.stem && !excludeStems.has(it.stem));
   // Up to 4 problems for a clean, one-section packet.
   const picks = items.slice(0, 4);
   if (!picks.length) return [];
@@ -767,10 +747,10 @@ function independentPracticeBlock(cfg, excludeStems = new Set()) {
     if (Array.isArray(it.choices)) {
       it.choices.forEach((c, j) =>
         out.push(
-          para(
-            new TextRun({ text: `${choiceLetter(j)})  ${c}`, size: 20 }),
-            { indent: { left: 420 }, spacing: { after: 40 } },
-          ),
+          para(new TextRun({ text: `${choiceLetter(j)})  ${c}`, size: 20 }), {
+            indent: { left: 420 },
+            spacing: { after: 40 },
+          }),
         ),
       );
       out.push(spacer(20));
@@ -788,9 +768,7 @@ function reflectBlock(cfg) {
   const et = (cfg.reflect || {}).exitTicket || {};
   if (!et.stem) return [];
   const out = [sectionHeading("Exit Ticket", { pageBreak: true })];
-  out.push(
-    muted("Answer on your own. This shows what you learned today."),
-  );
+  out.push(muted("Answer on your own. This shows what you learned today."));
   out.push(
     para(
       [
@@ -821,9 +799,7 @@ function answerKeyBlock(cfg, worked, excludeStems = new Set()) {
   const practice = cfg.practice || {};
   const reflect = cfg.reflect || {};
   const out = [sectionHeading("Answer Key & Teacher Guide", { pageBreak: true })];
-  out.push(
-    muted("Teacher reference — remove or fold back before distributing to students."),
-  );
+  out.push(muted("Teacher reference — remove or fold back before distributing to students."));
 
   // Fill-in-the-blank guided notes answers, listed first so a teacher can check
   // the notes line by line.
@@ -862,9 +838,7 @@ function answerKeyBlock(cfg, worked, excludeStems = new Set()) {
     }
   }
 
-  const items = gatherPractice(practice).filter(
-    (it) => it.stem && !excludeStems.has(it.stem),
-  );
+  const items = gatherPractice(practice).filter((it) => it.stem && !excludeStems.has(it.stem));
   const picks = items.slice(0, 4);
   if (picks.length) {
     out.push(subHeading("Independent Practice"));
@@ -910,9 +884,7 @@ function answerKeyBlock(cfg, worked, excludeStems = new Set()) {
 // is the term. Rendered as a numbered fill-in list with a Word Bank, exactly
 // like a TPT-style guided-notes page.
 function guidedNotesBlock(cfg) {
-  const vocab = Array.isArray(cfg.vocabulary)
-    ? cfg.vocabulary.filter((v) => v && v.term)
-    : [];
+  const vocab = Array.isArray(cfg.vocabulary) ? cfg.vocabulary.filter((v) => v && v.term) : [];
   if (!vocab.length) return [];
   const out = [sectionHeading("Guided Notes")];
   out.push(muted("Fill in each blank as we go. Use the Word Bank to help you."));
@@ -950,9 +922,7 @@ function guidedNotesBlock(cfg) {
 }
 
 function guidedNotesAnswerRows(cfg) {
-  const vocab = Array.isArray(cfg.vocabulary)
-    ? cfg.vocabulary.filter((v) => v && v.term)
-    : [];
+  const vocab = Array.isArray(cfg.vocabulary) ? cfg.vocabulary.filter((v) => v && v.term) : [];
   return vocab.map((v, i) => ({ label: `Notes ${i + 1}`, answer: v.term }));
 }
 
@@ -963,9 +933,7 @@ function buildDoc(id, cfg, teacher = false) {
   // the independent "On Your Own" set so answers are not duplicated or leaked.
   // You-Do remains in the pool and leads the independent practice.
   const excludeStems = new Set(
-    [worked.iDo && worked.iDo.problem, worked.weDo && worked.weDo.problem].filter(
-      Boolean,
-    ),
+    [worked.iDo && worked.iDo.problem, worked.weDo && worked.weDo.problem].filter(Boolean),
   );
   const body = [
     ...coverBlock(id, cfg),
@@ -1038,9 +1006,7 @@ function buildDoc(id, cfg, teacher = false) {
                 border: {
                   bottom: { style: BorderStyle.SINGLE, size: 4, space: 4, color: RULE },
                 },
-                children: [
-                  new TextRun({ text: headerLabel, color: MUTED, size: 16 }),
-                ],
+                children: [new TextRun({ text: headerLabel, color: MUTED, size: 16 })],
               }),
             ],
           }),
@@ -1057,7 +1023,12 @@ function buildDoc(id, cfg, teacher = false) {
                   top: { style: BorderStyle.SINGLE, size: 4, space: 4, color: RULE },
                 },
                 children: [
-                  new TextRun({ text: "Neft Teacher  ·  Grade 6 Math", bold: true, color: NAVY, size: 16 }),
+                  new TextRun({
+                    text: "Neft Teacher  ·  Grade 6 Math",
+                    bold: true,
+                    color: NAVY,
+                    size: 16,
+                  }),
                   new TextRun({ text: "\tPage ", color: MUTED, size: 16 }),
                   new TextRun({ children: [PageNumber.CURRENT], color: MUTED, size: 16 }),
                   new TextRun({ text: " of ", color: MUTED, size: 16 }),

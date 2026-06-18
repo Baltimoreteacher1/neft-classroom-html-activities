@@ -68,9 +68,6 @@ export function nameBar() {
 // Render a numbered problem list with a work line under each.
 export function problemList(items, { work = true } = {}) {
   return `<ol class="problems">${(items || [])
-    .map(
-      (p) =>
-        `<li>${esc(p.prompt || p)}${work ? '<span class="work"></span>' : ""}</li>`,
-    )
+    .map((p) => `<li>${esc(p.prompt || p)}${work ? '<span class="work"></span>' : ""}</li>`)
     .join("")}</ol>`;
 }

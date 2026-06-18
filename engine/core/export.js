@@ -3,8 +3,7 @@
  * No external libraries required; uses browser Blob API.
  */
 
-const DOCX_MIME =
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+const DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
 
 function escHtml(str) {
   const d = document.createElement("div");
@@ -32,19 +31,10 @@ function buildExportHtml(state, config) {
   const studentName = s.studentName || "Student";
   const studentPeriod = s.studentPeriod ? `Period ${s.studentPeriod}` : "";
   const totalStars = s.phases.reduce((sum, p) => sum + (p.stars || 0), 0);
-  const accuracy =
-    s.totalAttempts > 0
-      ? Math.round((s.totalCorrect / s.totalAttempts) * 100)
-      : 100;
+  const accuracy = s.totalAttempts > 0 ? Math.round((s.totalCorrect / s.totalAttempts) * 100) : 100;
 
   // Collect responses by phase
-  const phaseNames = [
-    "Launch",
-    "Explore",
-    "Practice",
-    "Connect",
-    "Reflect",
-  ];
+  const phaseNames = ["Launch", "Explore", "Practice", "Connect", "Reflect"];
 
   let responseSections = "";
 
@@ -146,9 +136,7 @@ function buildExportHtml(state, config) {
     "4_reflect_1",
     "4_self-assess",
   ]);
-  const extraResponses = Object.entries(s.responses).filter(
-    ([k]) => !coveredKeys.has(k),
-  );
+  const extraResponses = Object.entries(s.responses).filter(([k]) => !coveredKeys.has(k));
   if (extraResponses.length) {
     responseSections += `
       <h2 style="color:#12355B; border-bottom:2px solid #12355B; padding-bottom:4px;">
@@ -261,10 +249,7 @@ function buildPlainText(state, config) {
   const dateStr = now.toLocaleDateString();
   const studentName = s.studentName || "Student";
   const totalStars = s.phases.reduce((sum, p) => sum + (p.stars || 0), 0);
-  const accuracy =
-    s.totalAttempts > 0
-      ? Math.round((s.totalCorrect / s.totalAttempts) * 100)
-      : 100;
+  const accuracy = s.totalAttempts > 0 ? Math.round((s.totalCorrect / s.totalAttempts) * 100) : 100;
 
   let text = `${config.title}\n`;
   text += `${config.standard} · Unit ${config.unit || ""}\n`;

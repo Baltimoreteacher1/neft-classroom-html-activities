@@ -46,7 +46,8 @@ function renderProblems(items, { showAnswer = false } = {}) {
 export function renderTeacherGuide(job) {
   const { card, lesson } = job;
   const pacing = (lesson.pacing || [])
-    .map((p) => `| ${p.phase} | ${p.minutes} min | ${p.what} |`).join("\n");
+    .map((p) => `| ${p.phase} | ${p.minutes} min | ${p.what} |`)
+    .join("\n");
   return `# Teacher Guide — ${card.title}
 
 > CardForge package · ${card.demo ? "**DEMO / sample** · " : ""}status: **${card.status}**
@@ -79,7 +80,10 @@ ${mdList(lesson.formulas)}
 ${renderExamples(lesson.modeledExamples)}
 
 ## Guided Practice (We do)
-${renderProblems((lesson.guidedPractice || []).map((g, i) => ({ n: i + 1, ...g })), { showAnswer: true })}
+${renderProblems(
+  (lesson.guidedPractice || []).map((g, i) => ({ n: i + 1, ...g })),
+  { showAnswer: true },
+)}
 
 ## Independent Practice (You do)
 ${renderProblems(lesson.practice)}
@@ -135,19 +139,29 @@ ${lesson.reflection || "Explain how you solved one problem above. Use a vocabula
 
 export function renderAnswerKey(job) {
   const { card, lesson } = job;
-  const key = lesson.answerKey && lesson.answerKey.length
-    ? lesson.answerKey
-    : lesson.practice.map((p) => ({ n: p.n, answer: p.answer, work: p.work, teacherJudgment: p.teacherJudgment }));
+  const key =
+    lesson.answerKey && lesson.answerKey.length
+      ? lesson.answerKey
+      : lesson.practice.map((p) => ({
+          n: p.n,
+          answer: p.answer,
+          work: p.work,
+          teacherJudgment: p.teacherJudgment,
+        }));
   return `# Answer Key — ${card.title}
 
 > Every problem is listed. Work shown for teacher use. Items needing teacher
 > judgment are flagged with a rubric, not left as a vague "answers may vary."
 
-${key.map((k) => {
+${key
+  .map((k) => {
     const work = k.work ? `\n   - _Work:_ ${k.work}` : "";
-    const flag = k.teacherJudgment ? `\n   - ⚖️ _Teacher judgment — score with the rubric in the practice item._` : "";
+    const flag = k.teacherJudgment
+      ? `\n   - ⚖️ _Teacher judgment — score with the rubric in the practice item._`
+      : "";
     return `**${k.n}.** ${k.answer}${work}${flag}`;
-  }).join("\n\n")}
+  })
+  .join("\n\n")}
 `;
 }
 
@@ -174,10 +188,25 @@ export function buildCard(job) {
     objective: card.objective || lesson.objective,
     languageObjective: card.languageObjective || lesson.languageObjective || "",
     resources: {
-      teacherGuide: { label: "Teacher Guide", file: "teacher-guide.md", applicable: true, exists: true },
-      studentPractice: { label: "Student Practice", file: "student-practice.md", applicable: true, exists: true },
+      teacherGuide: {
+        label: "Teacher Guide",
+        file: "teacher-guide.md",
+        applicable: true,
+        exists: true,
+      },
+      studentPractice: {
+        label: "Student Practice",
+        file: "student-practice.md",
+        applicable: true,
+        exists: true,
+      },
       answerKey: { label: "Answer Key", file: "answer-key.md", applicable: true, exists: true },
-      exitTicket: { label: "Exit Ticket", file: "exit-ticket.md", applicable: !!(lesson.exitTicket || []).length, exists: !!(lesson.exitTicket || []).length },
+      exitTicket: {
+        label: "Exit Ticket",
+        file: "exit-ticket.md",
+        applicable: !!(lesson.exitTicket || []).length,
+        exists: !!(lesson.exitTicket || []).length,
+      },
       qaReport: { label: "QA Report", file: "qa-report.md", applicable: true, exists: false },
     },
   };
@@ -186,7 +215,9 @@ export function buildCard(job) {
 export function packageDir(job) {
   const { card } = job;
   const unitSeg = card.unit != null ? `unit-${card.unit}` : "unit-unknown";
-  const slug = slugify(`${card.lesson != null ? "lesson-" + card.lesson + "-" : ""}${card.title}${card.demo ? "-demo" : ""}`);
+  const slug = slugify(
+    `${card.lesson != null ? "lesson-" + card.lesson + "-" : ""}${card.title}${card.demo ? "-demo" : ""}`,
+  );
   return resolve(CF_ROOT, "staged", unitSeg, slug);
 }
 
@@ -196,7 +227,10 @@ export function buildPackage(job) {
   const card = buildCard(job);
   const files = [];
 
-  const write = (name, content) => { writeFile(resolve(dir, name), content); files.push(name); };
+  const write = (name, content) => {
+    writeFile(resolve(dir, name), content);
+    files.push(name);
+  };
 
   write("teacher-guide.md", renderTeacherGuide(job));
   write("student-practice.md", renderStudentPractice(job));
@@ -207,32 +241,59 @@ export function buildPackage(job) {
   write("sub-packet.html", renderSubPacket(job));
   write("activity-pack.html", renderActivityPack(job));
   write("interactive.html", renderInteractive(job));
-  card.resources.subPacket = { label: "Emergency Sub Plan", file: "sub-packet.html", applicable: true, exists: true };
-  card.resources.activityPack = { label: "Activity Pack", file: "activity-pack.html", applicable: true, exists: true };
-  card.resources.interactive = { label: "Interactive Practice", file: "interactive.html", applicable: true, exists: true };
+  card.resources.subPacket = {
+    label: "Emergency Sub Plan",
+    file: "sub-packet.html",
+    applicable: true,
+    exists: true,
+  };
+  card.resources.activityPack = {
+    label: "Activity Pack",
+    file: "activity-pack.html",
+    applicable: true,
+    exists: true,
+  };
+  card.resources.interactive = {
+    label: "Interactive Practice",
+    file: "interactive.html",
+    applicable: true,
+    exists: true,
+  };
 
   const manifest = {
-    card: card.id, title: card.title, demo: !!card.demo, status: card.status,
-    generated: files.slice(), enhancements: job.enhancements || [],
+    card: card.id,
+    title: card.title,
+    demo: !!card.demo,
+    status: card.status,
+    generated: files.slice(),
+    enhancements: job.enhancements || [],
     source: job.source || null,
   };
-  writeJSON(resolve(dir, "card.json"), card); files.push("card.json");
-  writeJSON(resolve(dir, "resource-manifest.json"), manifest); files.push("resource-manifest.json");
+  writeJSON(resolve(dir, "card.json"), card);
+  files.push("card.json");
+  writeJSON(resolve(dir, "resource-manifest.json"), manifest);
+  files.push("resource-manifest.json");
 
-  write("README.md", `# ${card.title} — CardForge package
+  write(
+    "README.md",
+    `# ${card.title} — CardForge package
 
 ${card.demo ? "**This is a DEMO / sample package.** It is staged only and is NOT added to the live curriculum manifest.\n\n" : ""}- **Status:** ${card.status}
 - **Standard:** ${card.standard || "uncertain"}
 - **Objective:** ${card.objective}
 
-Artifacts: ${files.filter((f) => f !== "README.md").map((f) => `\`${f}\``).join(", ")}.
+Artifacts: ${files
+      .filter((f) => f !== "README.md")
+      .map((f) => `\`${f}\``)
+      .join(", ")}.
 
 Regenerate with:
 \`\`\`
 npm run cardforge:build -- ${job.__jobPath || "<job.json>"}
 npm run cardforge:qa -- ${dir.replace(CF_ROOT + "/", "tools/cardforge/")}
 \`\`\`
-`);
+`,
+  );
 
   return { dir, files, card };
 }

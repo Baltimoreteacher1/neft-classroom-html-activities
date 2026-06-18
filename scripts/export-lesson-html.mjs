@@ -31,8 +31,7 @@ const slug = (s) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 
-const esc = (s) =>
-  String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 // Inline /assets/... references (currently only vocab-image SVGs) as data URIs.
 const svgCache = new Map();
@@ -101,7 +100,7 @@ function main() {
   }
 
   const lessons = [...byKey.values()].sort(
-    (a, b) => a.cfg.unit - b.cfg.unit || a.cfg.lesson - b.cfg.lesson
+    (a, b) => a.cfg.unit - b.cfg.unit || a.cfg.lesson - b.cfg.lesson,
   );
 
   let totalMissing = 0;
@@ -112,7 +111,14 @@ function main() {
     totalMissing += missing;
     const file = `${cfg.unit}-${cfg.lesson}-${slug(cfg.title)}.html`;
     writeFileSync(join(OUT_DIR, file), html);
-    entries.push({ file, html, unit: cfg.unit, lesson: cfg.lesson, title: cfg.title, standard: cfg.standard });
+    entries.push({
+      file,
+      html,
+      unit: cfg.unit,
+      lesson: cfg.lesson,
+      title: cfg.title,
+      standard: cfg.standard,
+    });
   }
 
   // Index page with download links.
@@ -120,7 +126,7 @@ function main() {
     .map(
       (e) =>
         `      <li><a href="./${e.file}" download>Unit ${e.unit}.${e.lesson} — ${esc(e.title)}</a>` +
-        `${e.standard ? ` <span class="std">${esc(e.standard)}</span>` : ""}</li>`
+        `${e.standard ? ` <span class="std">${esc(e.standard)}</span>` : ""}</li>`,
     )
     .join("\n");
   const index = `<!doctype html>
@@ -148,16 +154,19 @@ ${rows}
   // Combined single-file build: shared styles once, every lesson body concatenated.
   const sharedStyles = entries.length ? extractStyles(entries[0].html) : "";
   const toc = entries
-    .map((e) => `      <li><a href="#lesson-${e.unit}-${e.lesson}">Unit ${e.unit}.${e.lesson} — ${esc(e.title)}</a></li>`)
+    .map(
+      (e) =>
+        `      <li><a href="#lesson-${e.unit}-${e.lesson}">Unit ${e.unit}.${e.lesson} — ${esc(e.title)}</a></li>`,
+    )
     .join("\n");
   const sections = entries
     .map(
       (e) =>
         `<article id="lesson-${e.unit}-${e.lesson}" class="lesson-section">\n` +
         extractBodyContent(e.html) +
-        `\n</article>`
+        `\n</article>`,
     )
-    .join("\n<hr class=\"lesson-divider\" />\n");
+    .join('\n<hr class="lesson-divider" />\n');
   const combined = `<!doctype html>
 <html lang="en"><head><meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />

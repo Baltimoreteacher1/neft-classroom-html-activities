@@ -70,10 +70,15 @@ const itemDirections = (type) =>
     : "Enter your answer in the space provided. Show your work.";
 
 // ── DOCX helpers ──────────────────────────────────────────────────────────────
-const run = (text, opts = {}) => new TextRun({ text, size: 21, color: INK, font: "Calibri", ...opts });
+const run = (text, opts = {}) =>
+  new TextRun({ text, size: 21, color: INK, font: "Calibri", ...opts });
 
 const para = (children, opts = {}) =>
-  new Paragraph({ children: Array.isArray(children) ? children : [children], spacing: { after: 120, line: 264 }, ...opts });
+  new Paragraph({
+    children: Array.isArray(children) ? children : [children],
+    spacing: { after: 120, line: 264 },
+    ...opts,
+  });
 
 function sectionHeading(text, color = NAVY) {
   return new Paragraph({
@@ -136,7 +141,7 @@ function workLines(n = 3) {
         spacing: { before: i === 0 ? 60 : 0, after: 0, line: 360 },
         border: { bottom: { style: BorderStyle.SINGLE, size: 4, space: 2, color: "AFBECC" } },
         children: [run("")],
-      })
+      }),
     );
   }
   return rows;
@@ -154,7 +159,13 @@ function itemLabel(n, type, code, color) {
     children: [
       new TextRun({ text: `Item ${n}`, bold: true, color: WHITE, size: 18, font: "Calibri" }),
       new TextRun({ text: "   |   ", color: WHITE, size: 18, font: "Calibri" }),
-      new TextRun({ text: itemTypeLabel(type).toUpperCase(), color: WHITE, size: 16, font: "Calibri", characterSpacing: 14 }),
+      new TextRun({
+        text: itemTypeLabel(type).toUpperCase(),
+        color: WHITE,
+        size: 16,
+        font: "Calibri",
+        characterSpacing: 14,
+      }),
       new TextRun({ text: "\t", font: "Calibri" }),
       new TextRun({ text: code, bold: true, color: WHITE, size: 17, font: "Calibri" }),
     ],
@@ -173,14 +184,22 @@ function mcapItemCard(it, n, code, color) {
       spacing: { before: 90, after: 30 },
       indent: { left: 140, right: 120 },
       children: [run(it.prompt, { bold: true })],
-    })
+    }),
   );
   body.push(
     new Paragraph({
       spacing: { after: 60 },
       indent: { left: 140, right: 120 },
-      children: [new TextRun({ text: itemDirections(it.type), italics: true, color: MUTED, size: 18, font: "Calibri" })],
-    })
+      children: [
+        new TextRun({
+          text: itemDirections(it.type),
+          italics: true,
+          color: MUTED,
+          size: 18,
+          font: "Calibri",
+        }),
+      ],
+    }),
   );
   if (it.type === "multiple-choice") {
     it.choices.forEach((c, ci) =>
@@ -190,11 +209,17 @@ function mcapItemCard(it, n, code, color) {
           indent: { left: 380 },
           children: [
             new TextRun({ text: "○  ", color: color, size: 22, font: "Calibri" }),
-            new TextRun({ text: `${choiceLetter(ci)}.  `, bold: true, color: INK, size: 21, font: "Calibri" }),
+            new TextRun({
+              text: `${choiceLetter(ci)}.  `,
+              bold: true,
+              color: INK,
+              size: 21,
+              font: "Calibri",
+            }),
             new TextRun({ text: c, size: 21, color: INK, font: "Calibri" }),
           ],
-        })
-      )
+        }),
+      ),
     );
   } else {
     body.push(
@@ -203,7 +228,7 @@ function mcapItemCard(it, n, code, color) {
         indent: { left: 140, right: 120 },
         border: { bottom: { style: BorderStyle.SINGLE, size: 4, space: 2, color: "AFBECC" } },
         children: [run("")],
-      })
+      }),
     );
     body.push(
       new Paragraph({
@@ -211,7 +236,7 @@ function mcapItemCard(it, n, code, color) {
         indent: { left: 140, right: 120 },
         border: { bottom: { style: BorderStyle.SINGLE, size: 4, space: 2, color: "AFBECC" } },
         children: [run("")],
-      })
+      }),
     );
   }
   return new Table({
@@ -245,8 +270,15 @@ function vocabTable(vocab) {
       shading: { type: ShadingType.CLEAR, color: "auto", fill: TEAL_BG },
       margins: { top: 100, bottom: 100, left: 140, right: 140 },
       children: [
-        new Paragraph({ spacing: { after: 40 }, children: [new TextRun({ text: v.term, bold: true, color: NAVY, size: 21, font: "Calibri" })] }),
-        new Paragraph({ children: [new TextRun({ text: v.def, size: 19, color: INK, font: "Calibri" })] }),
+        new Paragraph({
+          spacing: { after: 40 },
+          children: [
+            new TextRun({ text: v.term, bold: true, color: NAVY, size: 21, font: "Calibri" }),
+          ],
+        }),
+        new Paragraph({
+          children: [new TextRun({ text: v.def, size: 19, color: INK, font: "Calibri" })],
+        }),
       ],
     });
   const rows = [];
@@ -255,7 +287,11 @@ function vocabTable(vocab) {
     if (vocab[i + 1]) cells.push(cellFor(vocab[i + 1]));
     else
       cells.push(
-        new TableCell({ width: { size: 50, type: WidthType.PERCENTAGE }, borders: noBorders(), children: [new Paragraph({ children: [run("")] })] })
+        new TableCell({
+          width: { size: 50, type: WidthType.PERCENTAGE },
+          borders: noBorders(),
+          children: [new Paragraph({ children: [run("")] })],
+        }),
       );
     rows.push(new TableRow({ children: cells }));
   }
@@ -284,26 +320,46 @@ function coverBlock(skill) {
       spacing: { after: 40 },
       children: [
         new TextRun({ text: "NEFT TEACHER", bold: true, color: TEAL, size: 18, font: "Calibri" }),
-        new TextRun({ text: "   ·   MCAP GRADE 6 REVIEW", color: MUTED, size: 18, font: "Calibri" }),
+        new TextRun({
+          text: "   ·   MCAP GRADE 6 REVIEW",
+          color: MUTED,
+          size: 18,
+          font: "Calibri",
+        }),
       ],
     }),
     new Paragraph({
       spacing: { after: 30 },
-      children: [new TextRun({ text: skill.title, bold: true, color: NAVY, size: 40, font: "Calibri" })],
+      children: [
+        new TextRun({ text: skill.title, bold: true, color: NAVY, size: 40, font: "Calibri" }),
+      ],
     }),
     new Paragraph({
       spacing: { after: 160 },
-      border: { bottom: { style: BorderStyle.SINGLE, size: 18, space: 8, color: skill.domainColor } },
+      border: {
+        bottom: { style: BorderStyle.SINGLE, size: 18, space: 8, color: skill.domainColor },
+      },
       children: [
         new TextRun({ text: `${skill.domainTitle}`, color: INK, size: 22, font: "Calibri" }),
-        new TextRun({ text: `   ·   Standard ${skill.code}`, bold: true, color: skill.domainColor, size: 22, font: "Calibri" }),
+        new TextRun({
+          text: `   ·   Standard ${skill.code}`,
+          bold: true,
+          color: skill.domainColor,
+          size: 22,
+          font: "Calibri",
+        }),
       ],
     }),
     new Paragraph({
       spacing: { after: 40 },
       children: [
         new TextRun({ text: "Name: ", bold: true, color: MUTED, size: 20, font: "Calibri" }),
-        new TextRun({ text: "______________________________      ", size: 20, color: MUTED, font: "Calibri" }),
+        new TextRun({
+          text: "______________________________      ",
+          size: 20,
+          color: MUTED,
+          font: "Calibri",
+        }),
         new TextRun({ text: "Date: ", bold: true, color: MUTED, size: 20, font: "Calibri" }),
         new TextRun({ text: "________________", size: 20, color: MUTED, font: "Calibri" }),
       ],
@@ -319,11 +375,22 @@ function skillBody(skill, { includeWorkLines = true } = {}) {
   out.push(
     calloutBox(
       [
-        new Paragraph({ spacing: { after: 30 }, children: [new TextRun({ text: "🎯 Learning Goal", bold: true, color: NAVY, size: 20, font: "Calibri" })] }),
+        new Paragraph({
+          spacing: { after: 30 },
+          children: [
+            new TextRun({
+              text: "🎯 Learning Goal",
+              bold: true,
+              color: NAVY,
+              size: 20,
+              font: "Calibri",
+            }),
+          ],
+        }),
         new Paragraph({ children: [run(skill.summary)] }),
       ],
-      { fill: BOX_BG, border: BOX_BORDER }
-    )
+      { fill: BOX_BG, border: BOX_BORDER },
+    ),
   );
   out.push(spacer());
 
@@ -341,21 +408,50 @@ function skillBody(skill, { includeWorkLines = true } = {}) {
   out.push(
     calloutBox(
       [
-        new Paragraph({ spacing: { after: 60 }, children: [new TextRun({ text: skill.workedExample.problem, bold: true, color: INK, size: 21, font: "Calibri" })] }),
+        new Paragraph({
+          spacing: { after: 60 },
+          children: [
+            new TextRun({
+              text: skill.workedExample.problem,
+              bold: true,
+              color: INK,
+              size: 21,
+              font: "Calibri",
+            }),
+          ],
+        }),
         ...skill.workedExample.steps.map(
           (s, i) =>
             new Paragraph({
               spacing: { after: 40, line: 260 },
-              children: [new TextRun({ text: `Step ${i + 1}.  `, bold: true, color: TEAL, size: 20, font: "Calibri" }), run(s)],
-            })
+              children: [
+                new TextRun({
+                  text: `Step ${i + 1}.  `,
+                  bold: true,
+                  color: TEAL,
+                  size: 20,
+                  font: "Calibri",
+                }),
+                run(s),
+              ],
+            }),
         ),
         new Paragraph({
           spacing: { before: 40 },
-          children: [new TextRun({ text: "Answer:  ", bold: true, color: NAVY, size: 21, font: "Calibri" }), new TextRun({ text: skill.workedExample.answer, bold: true, color: INK, size: 21, font: "Calibri" })],
+          children: [
+            new TextRun({ text: "Answer:  ", bold: true, color: NAVY, size: 21, font: "Calibri" }),
+            new TextRun({
+              text: skill.workedExample.answer,
+              bold: true,
+              color: INK,
+              size: 21,
+              font: "Calibri",
+            }),
+          ],
         }),
       ],
-      { fill: TEAL_BG, border: TEAL }
-    )
+      { fill: TEAL_BG, border: TEAL },
+    ),
   );
   out.push(spacer());
 
@@ -365,10 +461,32 @@ function skillBody(skill, { includeWorkLines = true } = {}) {
     out.push(
       new Paragraph({
         spacing: { before: 100, after: 30 },
-        children: [new TextRun({ text: `${i + 1}.  `, bold: true, color: PURPLE, size: 21, font: "Calibri" }), run(g.problem)],
-      })
+        children: [
+          new TextRun({
+            text: `${i + 1}.  `,
+            bold: true,
+            color: PURPLE,
+            size: 21,
+            font: "Calibri",
+          }),
+          run(g.problem),
+        ],
+      }),
     );
-    out.push(new Paragraph({ spacing: { after: 30 }, children: [new TextRun({ text: `💡 Hint: ${g.hint}`, italics: true, color: MUTED, size: 19, font: "Calibri" })] }));
+    out.push(
+      new Paragraph({
+        spacing: { after: 30 },
+        children: [
+          new TextRun({
+            text: `💡 Hint: ${g.hint}`,
+            italics: true,
+            color: MUTED,
+            size: 19,
+            font: "Calibri",
+          }),
+        ],
+      }),
+    );
     if (includeWorkLines) out.push(...workLines(2));
   });
   out.push(spacer());
@@ -379,8 +497,11 @@ function skillBody(skill, { includeWorkLines = true } = {}) {
     out.push(
       new Paragraph({
         spacing: { before: 100, after: 30 },
-        children: [new TextRun({ text: `${i + 1}.  `, bold: true, color: AMBER, size: 21, font: "Calibri" }), run(p.problem)],
-      })
+        children: [
+          new TextRun({ text: `${i + 1}.  `, bold: true, color: AMBER, size: 21, font: "Calibri" }),
+          run(p.problem),
+        ],
+      }),
     );
     if (includeWorkLines) out.push(...workLines(2));
   });
@@ -391,7 +512,12 @@ function skillBody(skill, { includeWorkLines = true } = {}) {
   out.push(
     calloutBox(
       [
-        new Paragraph({ spacing: { after: 30 }, children: [new TextRun({ text: "Directions", bold: true, color: NAVY, size: 19, font: "Calibri" })] }),
+        new Paragraph({
+          spacing: { after: 30 },
+          children: [
+            new TextRun({ text: "Directions", bold: true, color: NAVY, size: 19, font: "Calibri" }),
+          ],
+        }),
         new Paragraph({
           children: [
             new TextRun({
@@ -403,8 +529,8 @@ function skillBody(skill, { includeWorkLines = true } = {}) {
           ],
         }),
       ],
-      { fill: BOX_BG, border: BOX_BORDER }
-    )
+      { fill: BOX_BG, border: BOX_BORDER },
+    ),
   );
   out.push(spacer(120));
   skill.mcapItems.forEach((it, i) => {
@@ -417,33 +543,128 @@ function skillBody(skill, { includeWorkLines = true } = {}) {
 
 function answerKey(skills, label) {
   const out = [];
-  out.push(new Paragraph({ pageBreakBefore: true, spacing: { after: 60 }, children: [new TextRun({ text: "🔑 Teacher Answer Key", bold: true, color: NAVY, size: 30, font: "Calibri" })] }));
-  out.push(new Paragraph({ spacing: { after: 120 }, children: [new TextRun({ text: `${label} — for teacher use. Remove before copying for students.`, italics: true, color: MUTED, size: 19, font: "Calibri" })] }));
+  out.push(
+    new Paragraph({
+      pageBreakBefore: true,
+      spacing: { after: 60 },
+      children: [
+        new TextRun({
+          text: "🔑 Teacher Answer Key",
+          bold: true,
+          color: NAVY,
+          size: 30,
+          font: "Calibri",
+        }),
+      ],
+    }),
+  );
+  out.push(
+    new Paragraph({
+      spacing: { after: 120 },
+      children: [
+        new TextRun({
+          text: `${label} — for teacher use. Remove before copying for students.`,
+          italics: true,
+          color: MUTED,
+          size: 19,
+          font: "Calibri",
+        }),
+      ],
+    }),
+  );
 
   skills.forEach((skill) => {
     out.push(sectionHeading(`${skill.code} — ${skill.title}`, skill.domainColor));
-    out.push(new Paragraph({ spacing: { after: 30 }, children: [new TextRun({ text: "Independent Practice: ", bold: true, color: AMBER, size: 20, font: "Calibri" })] }));
-    skill.independent.forEach((p, i) =>
-      out.push(new Paragraph({ spacing: { after: 20 }, indent: { left: 200 }, children: [new TextRun({ text: `${i + 1}. `, bold: true, size: 19, color: INK, font: "Calibri" }), new TextRun({ text: p.answer, size: 19, color: INK, font: "Calibri" })] }))
+    out.push(
+      new Paragraph({
+        spacing: { after: 30 },
+        children: [
+          new TextRun({
+            text: "Independent Practice: ",
+            bold: true,
+            color: AMBER,
+            size: 20,
+            font: "Calibri",
+          }),
+        ],
+      }),
     );
-    out.push(new Paragraph({ spacing: { before: 60, after: 30 }, children: [new TextRun({ text: `MCAP-Style Practice (${skill.code}): `, bold: true, color: NAVY, size: 20, font: "Calibri" })] }));
+    skill.independent.forEach((p, i) =>
+      out.push(
+        new Paragraph({
+          spacing: { after: 20 },
+          indent: { left: 200 },
+          children: [
+            new TextRun({ text: `${i + 1}. `, bold: true, size: 19, color: INK, font: "Calibri" }),
+            new TextRun({ text: p.answer, size: 19, color: INK, font: "Calibri" }),
+          ],
+        }),
+      ),
+    );
+    out.push(
+      new Paragraph({
+        spacing: { before: 60, after: 30 },
+        children: [
+          new TextRun({
+            text: `MCAP-Style Practice (${skill.code}): `,
+            bold: true,
+            color: NAVY,
+            size: 20,
+            font: "Calibri",
+          }),
+        ],
+      }),
+    );
     skill.mcapItems.forEach((it, i) =>
       out.push(
         new Paragraph({
           spacing: { after: 20 },
           indent: { left: 200 },
           children: [
-            new TextRun({ text: `Item ${i + 1} `, bold: true, size: 19, color: INK, font: "Calibri" }),
-            new TextRun({ text: `(${itemTypeLabel(it.type)}): `, size: 17, color: MUTED, font: "Calibri" }),
+            new TextRun({
+              text: `Item ${i + 1} `,
+              bold: true,
+              size: 19,
+              color: INK,
+              font: "Calibri",
+            }),
+            new TextRun({
+              text: `(${itemTypeLabel(it.type)}): `,
+              size: 17,
+              color: MUTED,
+              font: "Calibri",
+            }),
             new TextRun({ text: it.answer, bold: true, size: 19, color: NAVY, font: "Calibri" }),
             new TextRun({ text: `  — ${it.why}`, size: 19, color: MUTED, font: "Calibri" }),
           ],
-        })
-      )
+        }),
+      ),
     );
-    out.push(new Paragraph({ spacing: { before: 50, after: 30 }, children: [new TextRun({ text: "Guided Practice: ", bold: true, color: PURPLE, size: 20, font: "Calibri" })] }));
+    out.push(
+      new Paragraph({
+        spacing: { before: 50, after: 30 },
+        children: [
+          new TextRun({
+            text: "Guided Practice: ",
+            bold: true,
+            color: PURPLE,
+            size: 20,
+            font: "Calibri",
+          }),
+        ],
+      }),
+    );
     skill.guided.forEach((g, i) =>
-      out.push(new Paragraph({ spacing: { after: 20 }, indent: { left: 200 }, children: [new TextRun({ text: `${i + 1}. `, bold: true, size: 19, color: INK, font: "Calibri" }), new TextRun({ text: g.answer, size: 19, color: INK, font: "Calibri" })] }))
+      out.push(
+        new Paragraph({
+          spacing: { after: 20 },
+          indent: { left: 200 },
+          children: [
+            new TextRun({ text: `${i + 1}. `, bold: true, size: 19, color: INK, font: "Calibri" }),
+            new TextRun({ text: g.answer, size: 19, color: INK, font: "Calibri" }),
+          ],
+        }),
+      ),
     );
   });
   return out;
@@ -465,7 +686,12 @@ function docFor(sections, title) {
                 tabStops: [{ type: "right", position: 9360 }],
                 border: { bottom: { style: BorderStyle.SINGLE, size: 4, space: 4, color: RULE } },
                 children: [
-                  new TextRun({ text: "Neft Teacher · MCAP Grade 6 Review", color: MUTED, size: 16, font: "Calibri" }),
+                  new TextRun({
+                    text: "Neft Teacher · MCAP Grade 6 Review",
+                    color: MUTED,
+                    size: 16,
+                    font: "Calibri",
+                  }),
                   new TextRun({ text: "\t" + title, color: MUTED, size: 16, font: "Calibri" }),
                 ],
               }),
@@ -477,7 +703,14 @@ function docFor(sections, title) {
             children: [
               new Paragraph({
                 alignment: AlignmentType.CENTER,
-                children: [new TextRun({ children: ["Page ", PageNumber.CURRENT, " of ", PageNumber.TOTAL_PAGES], color: MUTED, size: 16, font: "Calibri" })],
+                children: [
+                  new TextRun({
+                    children: ["Page ", PageNumber.CURRENT, " of ", PageNumber.TOTAL_PAGES],
+                    color: MUTED,
+                    size: 16,
+                    font: "Calibri",
+                  }),
+                ],
               }),
             ],
           }),
@@ -494,15 +727,25 @@ const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replac
 function htmlPacket(skill) {
   const docName = `${skillFileSlug(skill.code)}.docx`;
   const vocab = skill.vocab
-    .map((v) => `<div class="vcard"><strong>${esc(v.term)}</strong><span>${esc(v.def)}</span></div>`)
+    .map(
+      (v) => `<div class="vcard"><strong>${esc(v.term)}</strong><span>${esc(v.def)}</span></div>`,
+    )
     .join("");
   const ntk = skill.needToKnow.map((b) => `<li>${esc(b)}</li>`).join("");
-  const steps = skill.workedExample.steps.map((s, i) => `<li><b>Step ${i + 1}.</b> ${esc(s)}</li>`).join("");
+  const steps = skill.workedExample.steps
+    .map((s, i) => `<li><b>Step ${i + 1}.</b> ${esc(s)}</li>`)
+    .join("");
   const guided = skill.guided
-    .map((g, i) => `<li><span class="qn">${i + 1}.</span> ${esc(g.problem)}<div class="hint">💡 Hint: ${esc(g.hint)}</div><div class="rule"></div><div class="rule"></div></li>`)
+    .map(
+      (g, i) =>
+        `<li><span class="qn">${i + 1}.</span> ${esc(g.problem)}<div class="hint">💡 Hint: ${esc(g.hint)}</div><div class="rule"></div><div class="rule"></div></li>`,
+    )
     .join("");
   const indep = skill.independent
-    .map((p, i) => `<li><span class="qn">${i + 1}.</span> ${esc(p.problem)}<div class="rule"></div><div class="rule"></div></li>`)
+    .map(
+      (p, i) =>
+        `<li><span class="qn">${i + 1}.</span> ${esc(p.problem)}<div class="rule"></div><div class="rule"></div></li>`,
+    )
     .join("");
   const mcap = skill.mcapItems
     .map((it, i) => {
@@ -517,10 +760,12 @@ function htmlPacket(skill) {
     })
     .join("");
   const keyRows = [
-    ...skill.independent.map((p, i) => `<tr><td>Independent ${i + 1}</td><td>${esc(p.answer)}</td></tr>`),
+    ...skill.independent.map(
+      (p, i) => `<tr><td>Independent ${i + 1}</td><td>${esc(p.answer)}</td></tr>`,
+    ),
     ...skill.mcapItems.map(
       (it, i) =>
-        `<tr><td>Item ${i + 1} · ${esc(skill.code)}</td><td><b>${esc(it.answer)}</b> — ${esc(it.why)}</td></tr>`
+        `<tr><td>Item ${i + 1} · ${esc(skill.code)}</td><td><b>${esc(it.answer)}</b> — ${esc(it.why)}</td></tr>`,
     ),
   ].join("");
 
@@ -666,7 +911,7 @@ function hubIndex() {
             <a href="./${d.slug}/${skillFileSlug(s.code)}.html">Study&nbsp;online</a>
             <a class="dl" href="./${d.slug}/${skillFileSlug(s.code)}.docx" download>Word ⬇</a>
           </div>
-        </li>`
+        </li>`,
       )
       .join("");
     return `
@@ -755,7 +1000,11 @@ async function main() {
       const slug = skillFileSlug(s.code);
 
       // per-skill DOCX
-      const sections = [...coverBlock(skill), ...skillBody(skill), ...answerKey([skill], `${skill.code} — ${skill.title}`)];
+      const sections = [
+        ...coverBlock(skill),
+        ...skillBody(skill),
+        ...answerKey([skill], `${skill.code} — ${skill.title}`),
+      ];
       const buf = await Packer.toBuffer(docFor(sections, `${skill.code} ${skill.title}`));
       writeFileSync(join(dir, `${slug}.docx`), buf);
       docs++;
@@ -766,14 +1015,48 @@ async function main() {
     }
 
     // combined domain review packet
-    const skillsWithMeta = d.skills.map((s) => ({ ...s, domainTitle: d.domainTitle, domainColor: d.color, domainSlug: d.slug }));
+    const skillsWithMeta = d.skills.map((s) => ({
+      ...s,
+      domainTitle: d.domainTitle,
+      domainColor: d.color,
+      domainSlug: d.slug,
+    }));
     const combined = [
-      new Paragraph({ spacing: { after: 40 }, children: [new TextRun({ text: "NEFT TEACHER · MCAP GRADE 6 REVIEW", bold: true, color: TEAL, size: 18, font: "Calibri" })] }),
-      new Paragraph({ spacing: { after: 30 }, children: [new TextRun({ text: `${d.domainTitle}`, bold: true, color: NAVY, size: 40, font: "Calibri" })] }),
+      new Paragraph({
+        spacing: { after: 40 },
+        children: [
+          new TextRun({
+            text: "NEFT TEACHER · MCAP GRADE 6 REVIEW",
+            bold: true,
+            color: TEAL,
+            size: 18,
+            font: "Calibri",
+          }),
+        ],
+      }),
+      new Paragraph({
+        spacing: { after: 30 },
+        children: [
+          new TextRun({
+            text: `${d.domainTitle}`,
+            bold: true,
+            color: NAVY,
+            size: 40,
+            font: "Calibri",
+          }),
+        ],
+      }),
       new Paragraph({
         spacing: { after: 200 },
         border: { bottom: { style: BorderStyle.SINGLE, size: 18, space: 8, color: d.color } },
-        children: [new TextRun({ text: `Complete Review Packet · ${d.skills.length} skills`, color: INK, size: 22, font: "Calibri" })],
+        children: [
+          new TextRun({
+            text: `Complete Review Packet · ${d.skills.length} skills`,
+            color: INK,
+            size: 22,
+            font: "Calibri",
+          }),
+        ],
       }),
     ];
     skillsWithMeta.forEach((skill, idx) => {
@@ -781,8 +1064,16 @@ async function main() {
         new Paragraph({
           pageBreakBefore: idx > 0,
           spacing: { after: 10 },
-          children: [new TextRun({ text: `${skill.code} · ${skill.title}`, bold: true, color: skill.domainColor, size: 30, font: "Calibri" })],
-        })
+          children: [
+            new TextRun({
+              text: `${skill.code} · ${skill.title}`,
+              bold: true,
+              color: skill.domainColor,
+              size: 30,
+              font: "Calibri",
+            }),
+          ],
+        }),
       );
       combined.push(...skillBody(skill));
     });

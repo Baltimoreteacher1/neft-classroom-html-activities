@@ -24,15 +24,11 @@ function comment(text) {
 function url(p) {
   if (!p || emitted.has(p)) return;
   emitted.add(p);
-  lines.push(
-    `  <url><loc>${BASE}${p}</loc><changefreq>monthly</changefreq></url>`,
-  );
+  lines.push(`  <url><loc>${BASE}${p}</loc><changefreq>monthly</changefreq></url>`);
 }
 function byCat(cats, filter) {
   return entries
-    .filter(
-      (e) => e.path && cats.includes(e.category) && (!filter || filter(e)),
-    )
+    .filter((e) => e.path && cats.includes(e.category) && (!filter || filter(e)))
     .map((e) => e.path);
 }
 
@@ -45,9 +41,7 @@ function lessonKey(p) {
 /* ---------------------------------------------------- 1. Home + hubs */
 comment("Home & hubs");
 ["/", "/math/", "/directory/"].forEach(url);
-byCat(["Hub"])
-  .sort()
-  .forEach(url);
+byCat(["Hub"]).sort().forEach(url);
 
 /* ------------------------------------------------- 2. Per-unit blocks */
 for (let u = 1; u <= 10; u++) {
@@ -59,8 +53,7 @@ for (let u = 1; u <= 10; u++) {
   );
   const projects = byCat(["Project"], (e) => e.unit === u).sort();
   const hub = byCat(["Unit Hub"], (e) => e.unit === u).sort();
-  if (!lessons.length && !readiness.length && !projects.length && !hub.length)
-    continue;
+  if (!lessons.length && !readiness.length && !projects.length && !hub.length) continue;
   comment(`Unit ${u} — lessons, readiness, projects, hub`);
   hub.forEach(url);
   lessons.forEach(url);
@@ -82,9 +75,7 @@ byCat(["Tool"], (e) => e.audience === "teacher")
 
 /* ------------------------------------------------- 5. Practice & games */
 comment("Practice & games");
-byCat(["Practice", "Game"])
-  .sort()
-  .forEach(url);
+byCat(["Practice", "Game"]).sort().forEach(url);
 
 /* --------------------------------------------------- 6. Family / personal */
 comment("Family / personal");

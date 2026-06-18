@@ -67,12 +67,10 @@
   function badgeStrip(entry, status) {
     var wrap = el("div", "audit-badges");
     wrap.setAttribute("data-audit-strip", "1");
-    if (status === "ready")
-      wrap.appendChild(el("span", "audit-badge ok", "Ready"));
+    if (status === "ready") wrap.appendChild(el("span", "audit-badge ok", "Ready"));
     else if (status === "review")
       wrap.appendChild(el("span", "audit-badge review", "Needs Review"));
-    else
-      wrap.appendChild(el("span", "audit-badge missing", "Missing Resource"));
+    else wrap.appendChild(el("span", "audit-badge missing", "Missing Resource"));
     if (entry.supports && entry.supports.esol)
       wrap.appendChild(el("span", "audit-badge info", "ESOL Support"));
     var r = entry.resources || {};
@@ -99,11 +97,7 @@
     );
 
     var head = card.querySelector(".lesson-head");
-    if (
-      head &&
-      head.parentNode &&
-      !head.parentNode.querySelector("[data-audit-strip]")
-    ) {
+    if (head && head.parentNode && !head.parentNode.querySelector("[data-audit-strip]")) {
       head.parentNode.insertBefore(badgeStrip(entry, status), head.nextSibling);
     }
 
@@ -111,17 +105,11 @@
     if (row && !row.querySelector("[data-audit-pill]")) {
       var r = entry.resources || {};
       if (r.familyPage && r.familyPage.exists)
-        row.appendChild(
-          supportPill("👪 Family Page", r.familyPage.path, false),
-        );
+        row.appendChild(supportPill("👪 Family Page", r.familyPage.path, false));
       if (r.studentHelp && r.studentHelp.exists)
-        row.appendChild(
-          supportPill("🙋 Student Help", r.studentHelp.path, false),
-        );
+        row.appendChild(supportPill("🙋 Student Help", r.studentHelp.path, false));
       if (r.teacherNotes && r.teacherNotes.exists)
-        row.appendChild(
-          supportPill("🧑‍🏫 Teacher Notes", r.teacherNotes.path, true),
-        );
+        row.appendChild(supportPill("🧑‍🏫 Teacher Notes", r.teacherNotes.path, true));
     }
   }
 
@@ -154,11 +142,7 @@
     });
     sel.addEventListener("change", function () {
       var b = document.body;
-      b.classList.remove(
-        "audit-filter-ready",
-        "audit-filter-review",
-        "audit-filter-missing",
-      );
+      b.classList.remove("audit-filter-ready", "audit-filter-review", "audit-filter-missing");
       if (sel.value !== "all") b.classList.add("audit-filter-" + sel.value);
     });
     selLabel.appendChild(sel);

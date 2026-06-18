@@ -11,11 +11,7 @@ import { META, TOPICS } from "./data.mjs";
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const OUT = resolve(ROOT, "math/intervention");
 
-const esc = (s) =>
-  String(s)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 const head = (title, desc, depth, canonical) => {
   const url = "https://eduwonderlab.com" + (canonical || "/math/intervention/");
@@ -115,7 +111,10 @@ function hub() {
   const filterChips =
     `<button class="filter-chip" data-domain="all" aria-pressed="true">All topics</button>` +
     domains
-      .map((d) => `<button class="filter-chip" data-domain="${esc(d)}" aria-pressed="false">${esc(d)}</button>`)
+      .map(
+        (d) =>
+          `<button class="filter-chip" data-domain="${esc(d)}" aria-pressed="false">${esc(d)}</button>`,
+      )
       .join("");
 
   const sosRows = TOPICS.map(
@@ -273,8 +272,7 @@ function topicPage(t) {
   const norm = (i) => ({
     prompt: i.prompt,
     answer: i.answer,
-    options:
-      i.options && i.options.length ? i.options : [i.answer, ...(i.distractors || [])],
+    options: i.options && i.options.length ? i.options : [i.answer, ...(i.distractors || [])],
     explain: i.explain || "",
   });
 
@@ -293,7 +291,9 @@ function topicPage(t) {
                 <div class="ws-name">Name: ____________________  Date: __________</div>
               </div>
               <div class="ws-problems">${ws.items
-                .map(([q]) => `<div class="ws-problem">${esc(q)}<span class="ws-answer"></span></div>`)
+                .map(
+                  ([q]) => `<div class="ws-problem">${esc(q)}<span class="ws-answer"></span></div>`,
+                )
                 .join("")}</div>
               <div class="answer-key">
                 <h3>Answer Key (teacher)</h3>
@@ -345,9 +345,7 @@ function topicPage(t) {
   // Exit ticket — 4 short items from the post-quiz
   const exit = t.postQuiz.slice(0, 4);
   const exitHtml = exit
-    .map(
-      (q, i) => `<div class="ws-problem">${esc(q.prompt)}<span class="ws-answer"></span></div>`,
-    )
+    .map((q, i) => `<div class="ws-problem">${esc(q.prompt)}<span class="ws-answer"></span></div>`)
     .join("");
   const exitKey = exit.map((q) => `<li>${esc(q.answer)}</li>`).join("");
 

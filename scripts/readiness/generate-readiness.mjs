@@ -51,7 +51,7 @@ function renderVocab(vocab) {
             <p class="vdef"><span class="lvl-tag">Level 1</span> ${v.def}</p>
             ${v.example ? `<p class="vex"><strong>Example:</strong> ${v.example}</p>` : ""}
           </div>
-        </div>`
+        </div>`,
     )
     .join("");
   return `
@@ -145,9 +145,7 @@ function renderPractice(data, lessonId) {
   const chip = { 0: "lc-0", 1: "lc-1", 2: "lc-2" };
   const tracks = tiers
     .map((t) => {
-      const items = (t.items || [])
-        .map((it, i) => renderItem(it, "t" + t.level + i))
-        .join("");
+      const items = (t.items || []).map((it, i) => renderItem(it, "t" + t.level + i)).join("");
       return `
         <div class="track" id="track-${t.level}">
           <p><span class="level-chip ${chip[t.level]}">Level ${t.level}</span> ${t.intro || ""}</p>
@@ -156,9 +154,7 @@ function renderPractice(data, lessonId) {
     })
     .join("");
 
-  const exit = (data.exit || [])
-    .map((it, i) => renderItem(it, "x" + (i + 1)))
-    .join("");
+  const exit = (data.exit || []).map((it, i) => renderItem(it, "x" + (i + 1))).join("");
 
   const maxTrack = Math.max(1, ...tiers.map((t) => (t.items || []).length));
   const totalItems = maxTrack + (data.exit || []).length;
@@ -222,7 +218,7 @@ function renderPage(data) {
   const tabBtns = tabs
     .map(
       (t) =>
-        `<button class="tabbtn" id="tab-${t.key}" role="tab" aria-controls="panel-${t.key}" aria-selected="${t.key === firstTab}" onclick="showTab('${t.key}')">${t.label}</button>`
+        `<button class="tabbtn" id="tab-${t.key}" role="tab" aria-controls="panel-${t.key}" aria-selected="${t.key === firstTab}" onclick="showTab('${t.key}')">${t.label}</button>`,
     )
     .join("\n          ");
 

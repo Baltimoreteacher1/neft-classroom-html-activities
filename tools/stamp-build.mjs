@@ -17,7 +17,8 @@ try {
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
   // Content proof: read the DEPLOYED index.html to confirm the new app + data
   // modules actually shipped (not just that the build ran).
-  let appVersion = "", dataModules = 0;
+  let appVersion = "",
+    dataModules = 0;
   try {
     const idx = readFileSync(join(dir, "index.html"), "utf8");
     appVersion = (idx.match(/app\.js\?v=([a-z0-9-]+)/i) || [])[1] || "";

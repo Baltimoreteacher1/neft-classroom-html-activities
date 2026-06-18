@@ -16,8 +16,7 @@ function corsFor(request) {
   const origin = request.headers.get("Origin");
   let allow = "null";
   try {
-    if (origin && new URL(origin).host === new URL(request.url).host)
-      allow = origin;
+    if (origin && new URL(origin).host === new URL(request.url).host) allow = origin;
   } catch {}
   return {
     "access-control-allow-origin": allow,
@@ -53,8 +52,7 @@ export async function onRequestOptions({ request }) {
 }
 
 export async function onRequestGet({ request, env }) {
-  if (!env.NOAM_SCHOOL_KV)
-    return json({ error: "cloud sync not configured" }, 503, request);
+  if (!env.NOAM_SCHOOL_KV) return json({ error: "cloud sync not configured" }, 503, request);
   const code = new URL(request.url).searchParams.get("code");
   const key = keyFor(code);
   if (!key) return json({ error: "invalid code" }, 400, request);
@@ -70,8 +68,7 @@ export async function onRequestGet({ request, env }) {
 }
 
 export async function onRequestPut({ request, env }) {
-  if (!env.NOAM_SCHOOL_KV)
-    return json({ error: "cloud sync not configured" }, 503, request);
+  if (!env.NOAM_SCHOOL_KV) return json({ error: "cloud sync not configured" }, 503, request);
   const code = new URL(request.url).searchParams.get("code");
   const key = keyFor(code);
   if (!key) return json({ error: "invalid code" }, 400, request);
@@ -92,8 +89,7 @@ export async function onRequestPut({ request, env }) {
 
   // Reject absurd payloads (KV value cap is 25MB; we keep planners small).
   const serialized = JSON.stringify({ updatedAt, state: body.state });
-  if (serialized.length > 2_000_000)
-    return json({ error: "payload too large" }, 413, request);
+  if (serialized.length > 2_000_000) return json({ error: "payload too large" }, 413, request);
 
   // Last-write-wins: only overwrite if the incoming copy is newer.
   const existing = await env.NOAM_SCHOOL_KV.get(key);
@@ -101,11 +97,7 @@ export async function onRequestPut({ request, env }) {
     try {
       const prev = JSON.parse(existing);
       if ((prev.updatedAt || 0) > updatedAt) {
-        return json(
-          { ok: true, kept: "server", updatedAt: prev.updatedAt },
-          200,
-          request,
-        );
+        return json({ ok: true, kept: "server", updatedAt: prev.updatedAt }, 200, request);
       }
     } catch {}
   }

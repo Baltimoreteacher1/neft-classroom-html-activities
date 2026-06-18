@@ -20,12 +20,7 @@
  * byte-identical JSON when the repo is unchanged.
  */
 
-import {
-  readdirSync,
-  existsSync,
-  readFileSync,
-  writeFileSync,
-} from "node:fs";
+import { readdirSync, existsSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -150,13 +145,7 @@ if (existsSync(lessonsDir)) {
 /* --------------------------------------------------------- 2. math tools */
 
 // math subdirs that are hubs/routers rather than single tools.
-const MATH_HUBS = new Set([
-  "get-ready",
-  "catch-up",
-  "my-path",
-  "number-talks",
-  "unit-map",
-]);
+const MATH_HUBS = new Set(["get-ready", "catch-up", "my-path", "number-talks", "unit-map"]);
 
 // Best-guess unit number from a "unit-N" math subdir name.
 function unitFromName(name) {

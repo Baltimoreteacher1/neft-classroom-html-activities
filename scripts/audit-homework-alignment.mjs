@@ -11,13 +11,37 @@ const lessonsDir = join(root, "lessons");
 const LESSON_DIR_RE = /^(\d+)-(\d+)(-flagship)?$/;
 
 const REQUIRED_MARKERS = [
-  { id: "tab-bar", test: (h) => h.includes('class="homework-tab-bar"') && h.includes("switchHomeworkTab") },
-  { id: "all-tabs", test: (h) => ["learn", "words", "together", "check", "help", "more", "play", "done"].every((t) => h.includes(`data-tab-panel="${t}"`)) },
-  { id: "play-game", test: (h) => h.includes('data-tab-panel="play"') && (h.includes("hw-game") || h.includes("initHomeworkGame")) },
-  { id: "external-links", test: (h) => h.includes("external-resource-list") && h.includes("external-resource-link") },
-  { id: "help-modal", test: (h) => h.includes("help_modal_overlay") && h.includes("openHelpModalFromBtn") },
+  {
+    id: "tab-bar",
+    test: (h) => h.includes('class="homework-tab-bar"') && h.includes("switchHomeworkTab"),
+  },
+  {
+    id: "all-tabs",
+    test: (h) =>
+      ["learn", "words", "together", "check", "help", "more", "play", "done"].every((t) =>
+        h.includes(`data-tab-panel="${t}"`),
+      ),
+  },
+  {
+    id: "play-game",
+    test: (h) =>
+      h.includes('data-tab-panel="play"') &&
+      (h.includes("hw-game") || h.includes("initHomeworkGame")),
+  },
+  {
+    id: "external-links",
+    test: (h) => h.includes("external-resource-list") && h.includes("external-resource-link"),
+  },
+  {
+    id: "help-modal",
+    test: (h) => h.includes("help_modal_overlay") && h.includes("openHelpModalFromBtn"),
+  },
   { id: "bilingual", test: (h) => h.includes('lang="es"') && h.includes("Ayuda a tu estudiante") },
-  { id: "no-curriculum", test: (h) => !/\/curriculum\//i.test(h) && !/Back to curriculum/i.test(h) && !/Curriculum Hub/i.test(h) },
+  {
+    id: "no-curriculum",
+    test: (h) =>
+      !/\/curriculum\//i.test(h) && !/Back to curriculum/i.test(h) && !/Curriculum Hub/i.test(h),
+  },
 ];
 
 function loadLessons() {
@@ -79,7 +103,9 @@ for (const marker of REQUIRED_MARKERS) {
   console.log(`  ${ok === lessons.length ? "✓" : "✗"} ${marker.id}: ${ok}/${lessons.length}`);
 }
 
-console.log(`\nTopic alignment: ${alignedCount}/${lessons.length} aligned (score ≥70, no wrong-topic visual)`);
+console.log(
+  `\nTopic alignment: ${alignedCount}/${lessons.length} aligned (score ≥70, no wrong-topic visual)`,
+);
 
 if (failures.length) {
   console.log(`\n❌ FAIL — ${passCount}/${lessons.length} pass\n`);

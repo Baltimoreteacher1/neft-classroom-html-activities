@@ -102,8 +102,7 @@ export function renderVocabCloze(container, { terms, onComplete }) {
   let activeDragChip = null;
 
   const sentenceList = document.createElement("div");
-  sentenceList.style.cssText =
-    "display:flex; flex-direction:column; gap:var(--sp-3);";
+  sentenceList.style.cssText = "display:flex; flex-direction:column; gap:var(--sp-3);";
 
   // Which term fills each blank, kept in a closure (never in the DOM) so the
   // answers can't be read off data-* attributes.
@@ -112,8 +111,7 @@ export function renderVocabCloze(container, { terms, onComplete }) {
   shuffled.forEach((s, idx) => {
     const row = document.createElement("div");
     row.className = "card card-compact";
-    row.style.cssText =
-      "padding:var(--sp-4); line-height:1.8; font-size:0.95rem;";
+    row.style.cssText = "padding:var(--sp-4); line-height:1.8; font-size:0.95rem;";
 
     const parts = s.sentence.split("___");
     const span1 = document.createTextNode(parts[0] || "");
@@ -181,11 +179,9 @@ export function renderVocabCloze(container, { terms, onComplete }) {
       blank.style.color = "var(--success)";
 
       blank.classList.add("vocab-cloze-pop");
-      blank.addEventListener(
-        "animationend",
-        () => blank.classList.remove("vocab-cloze-pop"),
-        { once: true },
-      );
+      blank.addEventListener("animationend", () => blank.classList.remove("vocab-cloze-pop"), {
+        once: true,
+      });
       burstParticles(blank);
 
       if (chipEl) {
@@ -210,11 +206,9 @@ export function renderVocabCloze(container, { terms, onComplete }) {
       blank.style.borderColor = "var(--error)";
       blank.style.background = "var(--error-bg)";
       blank.classList.add("vocab-cloze-shake");
-      blank.addEventListener(
-        "animationend",
-        () => blank.classList.remove("vocab-cloze-shake"),
-        { once: true },
-      );
+      blank.addEventListener("animationend", () => blank.classList.remove("vocab-cloze-shake"), {
+        once: true,
+      });
       setTimeout(() => {
         if (blank.classList.contains("filled")) return;
         blank.style.borderColor = "var(--teal)";
@@ -270,19 +264,14 @@ function cascadeComplete(sentenceList) {
     const row = rows[i];
     row.style.setProperty("--cascade-delay", `${i * 70}ms`);
     row.classList.add("vocab-cloze-cascade");
-    row.addEventListener(
-      "animationend",
-      () => row.classList.remove("vocab-cloze-cascade"),
-      { once: true },
-    );
+    row.addEventListener("animationend", () => row.classList.remove("vocab-cloze-cascade"), {
+      once: true,
+    });
   }
 }
 
 function injectClozeStyles() {
-  if (
-    typeof document === "undefined" ||
-    document.getElementById("vocab-cloze-styles")
-  ) {
+  if (typeof document === "undefined" || document.getElementById("vocab-cloze-styles")) {
     return;
   }
   const style = document.createElement("style");

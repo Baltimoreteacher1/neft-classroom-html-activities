@@ -38,8 +38,7 @@ export function renderBalanceScale(
 
   if (label) {
     const lbl = document.createElement("p");
-    lbl.style.cssText =
-      "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
+    lbl.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
     lbl.textContent = label;
     wrapper.append(lbl);
   }
@@ -48,8 +47,7 @@ export function renderBalanceScale(
     H = 280;
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
-  svg.style.cssText =
-    "width:100%; max-width:480px; height:auto; display:block; margin:0 auto;";
+  svg.style.cssText = "width:100%; max-width:480px; height:auto; display:block; margin:0 auto;";
   svg.setAttribute("role", "img");
   svg.setAttribute("aria-label", `Balance scale showing: ${equation}`);
 
@@ -89,26 +87,8 @@ export function renderBalanceScale(
     "#5f6f80",
     1.5,
   );
-  const leftPan = svgRect(
-    leftPanG,
-    MID - 150 - PAN_W / 2,
-    BEAM_Y + 30,
-    PAN_W,
-    40,
-    10,
-    "#dff2ee",
-  );
-  svgRect(
-    leftPanG,
-    MID - 150 - PAN_W / 2,
-    BEAM_Y + 30,
-    PAN_W,
-    40,
-    10,
-    "none",
-    "#1fa6a2",
-    1.5,
-  );
+  const leftPan = svgRect(leftPanG, MID - 150 - PAN_W / 2, BEAM_Y + 30, PAN_W, 40, 10, "#dff2ee");
+  svgRect(leftPanG, MID - 150 - PAN_W / 2, BEAM_Y + 30, PAN_W, 40, 10, "none", "#1fa6a2", 1.5);
   svg.append(leftPanG);
 
   // Right pan
@@ -123,26 +103,8 @@ export function renderBalanceScale(
     "#5f6f80",
     1.5,
   );
-  const rightPan = svgRect(
-    rightPanG,
-    MID + 150 - PAN_W / 2,
-    BEAM_Y + 30,
-    PAN_W,
-    40,
-    10,
-    "#fef7e0",
-  );
-  svgRect(
-    rightPanG,
-    MID + 150 - PAN_W / 2,
-    BEAM_Y + 30,
-    PAN_W,
-    40,
-    10,
-    "none",
-    "#f2c15b",
-    1.5,
-  );
+  const rightPan = svgRect(rightPanG, MID + 150 - PAN_W / 2, BEAM_Y + 30, PAN_W, 40, 10, "#fef7e0");
+  svgRect(rightPanG, MID + 150 - PAN_W / 2, BEAM_Y + 30, PAN_W, 40, 10, "none", "#f2c15b", 1.5);
   svg.append(rightPanG);
 
   // Labels on pans
@@ -176,14 +138,7 @@ export function renderBalanceScale(
   eqText.setAttribute("font-family", "var(--font-mono), monospace");
 
   // "Solve for x" badge
-  const solveText = svgText(
-    svg,
-    MID,
-    70,
-    `Solve for ${variable || "x"}`,
-    "12px",
-    "#5f6f80",
-  );
+  const solveText = svgText(svg, MID, 70, `Solve for ${variable || "x"}`, "12px", "#5f6f80");
   solveText.setAttribute("text-anchor", "middle");
   solveText.setAttribute("font-weight", "700");
 
@@ -229,8 +184,7 @@ export function renderBalanceScale(
       pressFeedback(btn);
       const raw = opInput.value.trim();
       if (raw === "" || isNaN(Number(raw))) {
-        history.textContent =
-          "Type a number in the box, then choose an operation.";
+        history.textContent = "Type a number in the box, then choose an operation.";
         opInput.focus();
         return;
       }
@@ -250,8 +204,7 @@ export function renderBalanceScale(
 
   function applyTilt(angle) {
     tilt = angle;
-    const t =
-      Math.abs(angle) < 0.001 ? "" : `rotate(${angle}, ${MID}, ${BEAM_Y})`;
+    const t = Math.abs(angle) < 0.001 ? "" : `rotate(${angle}, ${MID}, ${BEAM_Y})`;
     tiltParts.forEach((el) => el.setAttribute("transform", t));
   }
 
@@ -272,8 +225,7 @@ export function renderBalanceScale(
     const hold = 160; // ms paused at the tilt
     const toLevel = 520; // ms easing back to balanced
     const total = settle ? toTarget + hold + toLevel : toTarget;
-    const t0 =
-      typeof performance !== "undefined" ? performance.now() : Date.now();
+    const t0 = typeof performance !== "undefined" ? performance.now() : Date.now();
 
     function frame(now) {
       const elapsed = now - t0;
@@ -317,8 +269,7 @@ export function renderBalanceScale(
     const easeOut = (p) => 1 - Math.pow(1 - p, 3);
     const start = tilt;
     const dur = 600;
-    const t0 =
-      typeof performance !== "undefined" ? performance.now() : Date.now();
+    const t0 = typeof performance !== "undefined" ? performance.now() : Date.now();
     function frame(now) {
       const p = Math.min(1, (now - t0) / dur);
       applyTilt(start * (1 - easeOut(p)));
@@ -338,15 +289,13 @@ export function renderBalanceScale(
     "display:flex; gap:var(--sp-3); align-items:center; justify-content:center; margin-top:var(--sp-3);";
 
   const ansLabel = document.createElement("span");
-  ansLabel.style.cssText =
-    "font-weight:800; font-size:1rem; color:var(--navy);";
+  ansLabel.style.cssText = "font-weight:800; font-size:1rem; color:var(--navy);";
   ansLabel.textContent = `${variable || "x"} = `;
 
   const ansInput = document.createElement("input");
   ansInput.type = "text";
   ansInput.className = "text-input bs-input";
-  ansInput.style.cssText =
-    "max-width:100px; text-align:center; font-weight:800; font-size:1.1rem;";
+  ansInput.style.cssText = "max-width:100px; text-align:center; font-weight:800; font-size:1.1rem;";
   ansInput.placeholder = "?";
   ansInput.setAttribute("aria-label", `Value of ${variable || "x"}`);
 
@@ -375,8 +324,7 @@ export function renderBalanceScale(
     const numVal = parseFloat(val.replace(/[,$]/g, ""));
     const numAns = parseFloat(String(answer).replace(/[,$]/g, ""));
     const tol = tolerance || 0.01;
-    const isCorrect =
-      !isNaN(numVal) && !isNaN(numAns) && Math.abs(numVal - numAns) <= tol;
+    const isCorrect = !isNaN(numVal) && !isNaN(numAns) && Math.abs(numVal - numAns) <= tol;
 
     if (isCorrect) {
       done = true;

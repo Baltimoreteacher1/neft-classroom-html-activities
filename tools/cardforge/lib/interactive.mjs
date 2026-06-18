@@ -15,7 +15,11 @@ export function renderInteractive(job) {
     .map((p) => ({
       prompt: p.prompt,
       answer: String(p.answer),
-      hint1: "Re-read the problem. " + (L.formulas && L.formulas[0] ? "Remember: " + L.formulas[0] : "Take it one step at a time."),
+      hint1:
+        "Re-read the problem. " +
+        (L.formulas && L.formulas[0]
+          ? "Remember: " + L.formulas[0]
+          : "Take it one step at a time."),
       hint2: p.work ? "Work it out: " + p.work : "The answer is " + p.answer + ".",
     }));
   const data = JSON.stringify({ title, objective: L.objective || "", items });

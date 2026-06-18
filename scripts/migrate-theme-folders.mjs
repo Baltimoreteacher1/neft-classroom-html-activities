@@ -37,7 +37,8 @@ const MAPPING = {
   "ratios-proportions/ratio-lab": "math/unit-3/ratio-lab",
   "ratios-proportions/ratio-fuel-mixer": "math/unit-3/ratio-fuel-mixer",
   "ratios-proportions/6-rp-a-3study": "math/unit-4/6-rp-a-3study",
-  "ratios-proportions/6-rp-a-2-interactive-study-guide": "math/unit-4/6-rp-a-2-interactive-study-guide",
+  "ratios-proportions/6-rp-a-2-interactive-study-guide":
+    "math/unit-4/6-rp-a-2-interactive-study-guide",
   "ratios-proportions/unit-rate-duel": "math/unit-4/unit-rate-duel",
   "ratios-proportions/6-rp-a-2game": "math/unit-4/6-rp-a-2game",
   "ratios-proportions/percent-shadow-caster": "math/unit-4/percent-shadow-caster",
@@ -49,11 +50,13 @@ const MAPPING = {
   "expressions-equations/one-step-solver-arena": "math/unit-8/one-step-solver-arena",
   "expressions-equations/neon-inequality": "math/unit-8/neon-inequality",
   "expressions-equations/9-1-9-2studyforquiz": "math/unit-9/9-1-9-2studyforquiz",
-  "expressions-equations/6-ee-c-9googleversiongifted-talentedversion": "math/unit-9/6-ee-c-9googleversiongifted-talentedversion",
+  "expressions-equations/6-ee-c-9googleversiongifted-talentedversion":
+    "math/unit-9/6-ee-c-9googleversiongifted-talentedversion",
   "expressions-equations/6-ee-c-9projectroblox": "math/unit-9/6-ee-c-9projectroblox",
   "expressions-equations/martian-fuel-pod": "math/unit-9/martian-fuel-pod",
   "expressions-equations/6-ee-c-9martiangame": "math/unit-9/6-ee-c-9martiangame",
-  "expressions-equations/proportional-relationships-mission": "math/unit-9/proportional-relationships-mission",
+  "expressions-equations/proportional-relationships-mission":
+    "math/unit-9/proportional-relationships-mission",
   "expressions-equations/ind-dep-variables": "math/unit-9/ind-dep-variables",
   "expressions-equations/6-ee-9notespracti-e": "math/unit-9/6-ee-9notespracti-e",
   "expressions-equations/9-3reviewpractice": "math/unit-9/9-3reviewpractice",
@@ -62,7 +65,8 @@ const MAPPING = {
   "expressions-equations/unit-9-1-6-ee-9": "math/unit-9/unit-9-1-6-ee-9",
   "expressions-equations/6-ee-c-9googleversion": "math/unit-9/6-ee-c-9googleversion",
   "expressions-equations/6-ee-c-9variablevelocitygame": "math/unit-9/6-ee-c-9variablevelocitygame",
-  "expressions-equations/cloudflare-pages-game-for-6-ee-9": "math/unit-9/cloudflare-pages-game-for-6-ee-9",
+  "expressions-equations/cloudflare-pages-game-for-6-ee-9":
+    "math/unit-9/cloudflare-pages-game-for-6-ee-9",
   "expressions-equations/6-ee-c-9aftertest": "math/unit-9/6-ee-c-9aftertest",
   "expressions-equations/6-ee-c-9study": "math/unit-9/6-ee-c-9study",
   "expressions-equations/functionforge6-ee-9": "math/unit-9/functionforge6-ee-9",
@@ -70,28 +74,34 @@ const MAPPING = {
   "expressions-equations/variableexploreresol": "math/unit-9/variableexploreresol",
   "expressions-equations/variablechartpractice": "math/unit-9/variablechartpractice",
   "expressions-equations/variableexplorer1": "math/unit-9/variableexplorer1",
-  "expressions-equations/6-ee-c-9function-forge-the-relationship-reactor": "math/unit-9/6-ee-c-9function-forge-the-relationship-reactor",
-  "expressions-equations/6-ee-c-9proportional-reasoning-lab": "math/unit-9/6-ee-c-9proportional-reasoning-lab",
+  "expressions-equations/6-ee-c-9function-forge-the-relationship-reactor":
+    "math/unit-9/6-ee-c-9function-forge-the-relationship-reactor",
+  "expressions-equations/6-ee-c-9proportional-reasoning-lab":
+    "math/unit-9/6-ee-c-9proportional-reasoning-lab",
   "expressions-equations/6-ee-9gamereview": "math/unit-9/6-ee-9gamereview",
   "expressions-equations/variablecomparisongame": "math/unit-9/variablecomparisongame",
   "expressions-equations/6-ee-c-9reviewactivities": "math/unit-9/6-ee-c-9reviewactivities",
-  "expressions-equations/proportional-relationships-gallery": "math/unit-9/proportional-relationships-gallery",
+  "expressions-equations/proportional-relationships-gallery":
+    "math/unit-9/proportional-relationships-gallery",
 
   // statistics-data
-  "statistics-data/6-sp-a-1data-lab-6-sp-a-1-flagship": "math/statistics/6-sp-a-1data-lab-6-sp-a-1-flagship",
+  "statistics-data/6-sp-a-1data-lab-6-sp-a-1-flagship":
+    "math/statistics/6-sp-a-1data-lab-6-sp-a-1-flagship",
   "statistics-data/6-sp-a-1game-2": "math/statistics/6-sp-a-1game-2",
   "statistics-data/6-sp-b-5-data-detective-game": "math/statistics/6-sp-b-5-data-detective-game",
   "statistics-data/6-sp-a-1reviewactivities": "math/statistics/6-sp-a-1reviewactivities",
   "statistics-data/6-sp-b-5-interactive-review": "math/statistics/6-sp-b-5-interactive-review",
   "statistics-data/gemini-data-quest": "math/statistics/gemini-data-quest",
   "statistics-data/box-plot-builder": "math/statistics/box-plot-builder",
-  "statistics-data/bar-graph-world-comparison-lab": "math/statistics/bar-graph-world-comparison-lab",
+  "statistics-data/bar-graph-world-comparison-lab":
+    "math/statistics/bar-graph-world-comparison-lab",
   "statistics-data/histogram-hero": "math/statistics/histogram-hero",
   "statistics-data/world-cup-goals-data-quest": "math/statistics/world-cup-goals-data-quest",
   "statistics-data/mean-median-mode-game": "math/statistics/mean-median-mode-game",
   "statistics-data/histogram-master-lab": "math/statistics/histogram-master-lab",
   "statistics-data/6-sp-a-1review2": "math/statistics/6-sp-a-1review2",
-  "statistics-data/meanmedianmodesoccerandbracelets": "math/statistics/meanmedianmodesoccerandbracelets",
+  "statistics-data/meanmedianmodesoccerandbracelets":
+    "math/statistics/meanmedianmodesoccerandbracelets",
   "statistics-data/statistics-of-my-life": "math/statistics/statistics-of-my-life",
   "statistics-data/6-sp-a-1game": "math/statistics/6-sp-a-1game",
   "statistics-data/distribution-detective": "math/statistics/distribution-detective",
@@ -99,7 +109,7 @@ const MAPPING = {
   "statistics-data/histogram-graphic-novel": "math/statistics/histogram-graphic-novel",
   "statistics-data/mean-median-mode-intro": "math/statistics/mean-median-mode-intro",
   "statistics-data/box-plot-detective": "math/statistics/box-plot-detective",
-  "statistics-data/mean-median-modegallerywalk": "math/statistics/mean-median-modegallerywalk"
+  "statistics-data/mean-median-modegallerywalk": "math/statistics/mean-median-modegallerywalk",
 };
 
 function walk(dir) {
@@ -146,7 +156,7 @@ function runMigration() {
 
   // 2. Perform global URL replacements in files
   console.log("Replacing link references in HTML/JS/JSON files...");
-  const files = walk(root).filter(f => {
+  const files = walk(root).filter((f) => {
     const ext = extname(f);
     return ext === ".html" || ext === ".js" || ext === ".json" || ext === ".mjs";
   });
@@ -173,13 +183,13 @@ function runMigration() {
       const srcNoTrail = "/" + srcRel;
       const destNoTrail = "/" + destRel;
       // Use boundary-like checks (e.g. quote, space, or end-of-string)
-      const quoteRegex1 = new RegExp('"' + srcNoTrail + '"', 'g');
+      const quoteRegex1 = new RegExp('"' + srcNoTrail + '"', "g");
       if (quoteRegex1.test(content)) {
         content = content.replace(quoteRegex1, '"' + destNoTrail + '"');
         modified = true;
         replacementCount++;
       }
-      const quoteRegex2 = new RegExp("'" + srcNoTrail + "'", 'g');
+      const quoteRegex2 = new RegExp("'" + srcNoTrail + "'", "g");
       if (quoteRegex2.test(content)) {
         content = content.replace(quoteRegex2, "'" + destNoTrail + "'");
         modified = true;
@@ -202,7 +212,7 @@ function runMigration() {
     const existingRedirects = routesObj.redirects || [];
 
     // Track existing redirect sources to prevent duplicates
-    const existingSources = new Set(existingRedirects.map(r => r.source));
+    const existingSources = new Set(existingRedirects.map((r) => r.source));
 
     for (const [srcRel, destRel] of Object.entries(MAPPING)) {
       const srcWithTrail = "/" + srcRel + "/";
@@ -214,14 +224,14 @@ function runMigration() {
         existingRedirects.push({
           source: srcWithTrail,
           destination: destWithTrail,
-          status: 301
+          status: 301,
         });
       }
       if (!existingSources.has(srcNoTrail)) {
         existingRedirects.push({
           source: srcNoTrail,
           destination: destWithTrail, // Redirect to destination with trailing slash for canonicalization
-          status: 301
+          status: 301,
         });
       }
     }

@@ -12,8 +12,15 @@ import { join, dirname, resolve, extname } from "node:path";
 
 const ROOT = process.cwd();
 const SKIP_DIRS = new Set([
-  "node_modules", "dist", ".git", ".github", ".claude", ".wrangler",
-  ".qa-logs", ".playwright-mcp", "reports",
+  "node_modules",
+  "dist",
+  ".git",
+  ".github",
+  ".claude",
+  ".wrangler",
+  ".qa-logs",
+  ".playwright-mcp",
+  "reports",
 ]);
 
 // ---- gather source HTML files ----
@@ -48,8 +55,10 @@ function redirectCovers(pathname) {
     if (src.endsWith("/*")) {
       if (pathname.startsWith(src.slice(0, -1))) return true;
     } else if (src.includes(":")) {
-      const a = src.split("/"), b = pathname.split("/");
-      if (a.length === b.length && a.every((seg, i) => seg.startsWith(":") || seg === b[i])) return true;
+      const a = src.split("/"),
+        b = pathname.split("/");
+      if (a.length === b.length && a.every((seg, i) => seg.startsWith(":") || seg === b[i]))
+        return true;
     } else if (src === pathname || src === bare) {
       return true;
     }
@@ -59,8 +68,11 @@ function redirectCovers(pathname) {
 
 function existsTarget(fsPath) {
   if (existsSync(fsPath)) {
-    try { return statSync(fsPath).isDirectory() ? existsSync(join(fsPath, "index.html")) : true; }
-    catch { return false; }
+    try {
+      return statSync(fsPath).isDirectory() ? existsSync(join(fsPath, "index.html")) : true;
+    } catch {
+      return false;
+    }
   }
   if (!extname(fsPath) && existsSync(fsPath + ".html")) return true;
   return false;
@@ -82,15 +94,26 @@ for (const file of htmlFiles) {
     if (url.includes("${") || url.includes("{{")) continue; // template literal
     // JS string-concatenation fragment, e.g. '<a href="/x/" + id + "/">' —
     // the captured value is a partial URL; the next non-space char is `+`.
-    if (html.slice(m.index + m[0].length).trimStart().startsWith("+")) continue;
+    if (
+      html
+        .slice(m.index + m[0].length)
+        .trimStart()
+        .startsWith("+")
+    )
+      continue;
     url = url.split("#")[0].split("?")[0];
     if (!url || seen.has(url)) continue;
     seen.add(url);
     linkCount++;
 
     let pathname, fsPath;
-    if (url.startsWith("/")) { pathname = url; fsPath = join(ROOT, url); }
-    else { fsPath = resolve(fileDir, url); pathname = "/" + fsPath.slice(ROOT.length + 1); }
+    if (url.startsWith("/")) {
+      pathname = url;
+      fsPath = join(ROOT, url);
+    } else {
+      fsPath = resolve(fileDir, url);
+      pathname = "/" + fsPath.slice(ROOT.length + 1);
+    }
 
     if (existsTarget(fsPath)) continue;
     if (url.startsWith("/") && redirectCovers(pathname)) continue;
@@ -98,7 +121,9 @@ for (const file of htmlFiles) {
   }
 }
 
-console.log(`audit:links — scanned ${htmlFiles.length} HTML files, ${linkCount} unique internal links.`);
+console.log(
+  `audit:links — scanned ${htmlFiles.length} HTML files, ${linkCount} unique internal links.`,
+);
 if (!problems.length) {
   console.log("✓ All internal links resolve.");
   process.exit(0);

@@ -8,16 +8,8 @@ import {
   resolveContentObjective,
   resolveLanguageObjective,
 } from "./lesson-renderer.js";
-import {
-  buildLessonCoverExtras,
-  mountCoverArt,
-  applyPhaseAccent,
-} from "./premium.js";
-import {
-  mountTeacherPanel,
-  buildWelcomeTeacherNotes,
-  isTeacherMode,
-} from "./teacher-mode.js";
+import { buildLessonCoverExtras, mountCoverArt, applyPhaseAccent } from "./premium.js";
+import { mountTeacherPanel, buildWelcomeTeacherNotes, isTeacherMode } from "./teacher-mode.js";
 import { t, stackHtml, phaseName } from "./i18n.js";
 import "@engine/styles/design-system.css";
 import "@engine/styles/themes.css";
@@ -45,8 +37,7 @@ export function createApp(config) {
   window.AudioSynth = {
     ctx: null,
     init() {
-      if (!this.ctx)
-        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
     },
     playTone(freq, type, duration, vol = 0.1) {
       if (!this.ctx) return;
@@ -55,10 +46,7 @@ export function createApp(config) {
       osc.type = type;
       osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
       gain.gain.setValueAtTime(vol, this.ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(
-        0.01,
-        this.ctx.currentTime + duration,
-      );
+      gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
       osc.connect(gain);
       gain.connect(this.ctx.destination);
       osc.start();
@@ -102,9 +90,7 @@ export function createApp(config) {
       y: Math.random() * canvas.height - canvas.height,
       vx: (Math.random() - 0.5) * 10,
       vy: Math.random() * 5 + 5,
-      color: ["#F2A93B", "#387F84", "#C85A3A", "#4A7C6F"][
-        Math.floor(Math.random() * 4)
-      ],
+      color: ["#F2A93B", "#387F84", "#C85A3A", "#4A7C6F"][Math.floor(Math.random() * 4)],
       size: Math.random() * 8 + 4,
       rot: Math.random() * Math.PI * 2,
       rotSpeed: (Math.random() - 0.5) * 0.2,
@@ -133,9 +119,7 @@ export function createApp(config) {
 
   document.addEventListener("click", (e) => {
     if (
-      e.target.closest(
-        'button, a, select, input[type="radio"], input[type="checkbox"], .phase-btn',
-      )
+      e.target.closest('button, a, select, input[type="radio"], input[type="checkbox"], .phase-btn')
     ) {
       if (window.AudioSynth) window.AudioSynth.click();
     }
@@ -335,9 +319,7 @@ function showIdentityScreen(root, config) {
     coverExtras.innerHTML = buildLessonCoverExtras(config, savedMatch);
     const artSlot = coverExtras.querySelector(".lesson-cover-art");
     if (artSlot) mountCoverArt(artSlot, config);
-    const stdBtn = coverExtras.querySelector(
-      '[data-action="standards-explainer"]',
-    );
+    const stdBtn = coverExtras.querySelector('[data-action="standards-explainer"]');
     if (stdBtn) {
       stdBtn.addEventListener("click", () => {
         const open = stdBtn.getAttribute("aria-expanded") === "true";
@@ -387,9 +369,7 @@ function showIdentityScreen(root, config) {
       const btn = document.createElement("button");
       btn.className = "identity-saved-btn";
       btn.dataset.studentId = s.id;
-      const when = s.lastSaved
-        ? new Date(s.lastSaved).toLocaleDateString()
-        : "";
+      const when = s.lastSaved ? new Date(s.lastSaved).toLocaleDateString() : "";
       btn.innerHTML = `<strong>${escHtml(s.name)}</strong> ${s.period ? `· P${escHtml(s.period)}` : ""} · ${s.phasesCompleted}/6 phases ${when ? `· ${when}` : ""}`;
       btn.addEventListener("click", () => {
         nameInput.value = s.name;
@@ -512,17 +492,10 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       const el = document.createElement("div");
       el.className = "phase active phase-enter";
       el.setAttribute("role", "region");
-      el.setAttribute(
-        "aria-label",
-        phaseConfigs[index]?.name || `Phase ${index + 1}`,
-      );
+      el.setAttribute("aria-label", phaseConfigs[index]?.name || `Phase ${index + 1}`);
       phaseContainer.append(el);
       renderFn(el, state, this);
-      el.addEventListener(
-        "animationend",
-        () => el.classList.remove("phase-enter"),
-        { once: true },
-      );
+      el.addEventListener("animationend", () => el.classList.remove("phase-enter"), { once: true });
     },
 
     navigateTo(index) {
@@ -657,33 +630,19 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       // Underline + bold the lesson's key math words wherever they appear in an
       // objective, so English learners can spot the academic vocabulary.
       const highlightKeyWords = (text) => {
-        const terms = (
-          Array.isArray(config.vocabulary) ? config.vocabulary : []
-        )
+        const terms = (Array.isArray(config.vocabulary) ? config.vocabulary : [])
           .map((v) => v && v.term)
           .filter(Boolean)
           .sort((a, b) => b.length - a.length);
         let out = String(text);
         terms.forEach((term) => {
           const e = escHtml(term).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-          out = out.replace(
-            new RegExp("\\b(" + e + ")\\b", "gi"),
-            '<u class="obj-key">$1</u>',
-          );
+          out = out.replace(new RegExp("\\b(" + e + ")\\b", "gi"), '<u class="obj-key">$1</u>');
         });
         return out;
       };
 
-      const objectiveCard = ({
-        accent,
-        color,
-        icon,
-        label,
-        text,
-        key,
-        prompt,
-        starter,
-      }) =>
+      const objectiveCard = ({ accent, color, icon, label, text, key, prompt, starter }) =>
         `<div class="card ${accent} obj-card" style="margin-bottom:var(--sp-4, 18px); padding:var(--sp-5, 22px);">
           <div style="font-size:1.15rem; font-weight:800; color:var(${color}); margin-bottom:var(--sp-2, 8px);">${icon} ${label}</div>
           <p style="margin:0 0 var(--sp-4, 18px); font-size:1.45rem; line-height:1.6; font-weight:600; color:var(--navy, #264653);">${highlightKeyWords(text)}</p>
@@ -727,8 +686,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
           key: "language",
           prompt:
             "Turn and talk: Which math words will you use today, and what do you think they mean?",
-          starter:
-            "One math word I will use is ______. I think it means ______.",
+          starter: "One math word I will use is ______. I think it means ______.",
         })}
       `;
       phaseContainer.append(el);
@@ -761,9 +719,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     openActivity() {
       const act = config.practice && config.practice.optionalActivity;
       const items =
-        config.practice && Array.isArray(config.practice.optional)
-          ? config.practice.optional
-          : [];
+        config.practice && Array.isArray(config.practice.optional) ? config.practice.optional : [];
       if (!act || !items.length) return;
 
       this.setExtraActive("activity");
@@ -799,9 +755,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     // links out to a standalone activity/game; shows a friendly empty state when
     // a lesson has no projects yet. Never touches phase state, XP, or stars.
     openProjects() {
-      const projects = Array.isArray(config.projects)
-        ? [...config.projects]
-        : [];
+      const projects = Array.isArray(config.projects) ? [...config.projects] : [];
       // Auto-append this unit's culminating project (mapped by verified subject)
       // after any lesson-specific projects, unless it is already listed.
       const unitHref = UNIT_CULMINATING_PROJECT[config.unit];
@@ -810,8 +764,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
         !projects.some(
           (p) =>
             p.href === unitHref ||
-            (Array.isArray(p.links) &&
-              p.links.some((l) => l.href === unitHref)),
+            (Array.isArray(p.links) && p.links.some((l) => l.href === unitHref)),
         )
       ) {
         projects.push({
@@ -947,9 +900,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     },
   };
 
-  document.addEventListener("rma:navigate", (e) =>
-    app.navigateTo(e.detail.phase),
-  );
+  document.addEventListener("rma:navigate", (e) => app.navigateTo(e.detail.phase));
 
   // Pre-lesson tabs (Get Ready / Notes) open inline without disturbing the
   // graded phase flow.
@@ -1049,8 +1000,7 @@ function preLessonNavHtml(config) {
   // read as distinct from the numbered 1–6 lesson phases below — one clean
   // left nav, no two lists both restarting at 1.
   const tabs = [];
-  if (config.readiness)
-    tabs.push({ extra: "readiness", icon: "📚", label: "Get Ready" });
+  if (config.readiness) tabs.push({ extra: "readiness", icon: "📚", label: "Get Ready" });
   tabs.push({ extra: "objectives", icon: "🎯", label: "Objectives" });
   tabs.push({ extra: "vocab", icon: "🔑", label: "Vocab" });
   tabs.push({ extra: "notes", icon: "📝", label: "Notes" });
@@ -1142,14 +1092,10 @@ function updateLessonHero(hero, state, phaseConfigs) {
   const current = phaseConfigs[s.currentPhase] || phaseConfigs[0];
 
   const phaseBadge = hero.querySelector('[data-bind="hero-phase"]');
-  if (phaseBadge)
-    phaseBadge.textContent = `Phase ${(s.currentPhase ?? 0) + 1} of ${total}`;
+  if (phaseBadge) phaseBadge.textContent = `Phase ${(s.currentPhase ?? 0) + 1} of ${total}`;
 
   const stars = hero.querySelector('[data-bind="hero-stars"]');
-  if (stars)
-    stars.textContent = String(
-      s.phases.reduce((sum, p) => sum + (p.stars || 0), 0),
-    );
+  if (stars) stars.textContent = String(s.phases.reduce((sum, p) => sum + (p.stars || 0), 0));
 
   const coins = hero.querySelector('[data-bind="hero-coins"]');
   if (coins) coins.textContent = String(s.coins || 0);
@@ -1164,8 +1110,7 @@ function updateLessonHero(hero, state, phaseConfigs) {
   }
 
   const phaseName = hero.querySelector('[data-bind="hero-phase-name"]');
-  if (phaseName)
-    phaseName.textContent = current?.name || `Phase ${s.currentPhase + 1}`;
+  if (phaseName) phaseName.textContent = current?.name || `Phase ${s.currentPhase + 1}`;
 
   const phaseCount = hero.querySelector('[data-bind="hero-phase-count"]');
   if (phaseCount) phaseCount.textContent = `${completed} of ${total} complete`;
@@ -1188,8 +1133,7 @@ function updateSidebar(sidebar, state, phaseConfigs) {
   const phaseCount = sidebar.querySelector('[data-bind="phase-count"]');
   if (phaseCount) phaseCount.textContent = `${completed} / ${total}`;
   const phaseBar = sidebar.querySelector('[data-bind="phase-bar"]');
-  if (phaseBar)
-    phaseBar.style.width = `${total ? Math.round((completed / total) * 100) : 0}%`;
+  if (phaseBar) phaseBar.style.width = `${total ? Math.round((completed / total) * 100) : 0}%`;
 
   const nav = sidebar.querySelector('[data-bind="phases"]');
   if (!nav) return;
@@ -1207,8 +1151,7 @@ function updateSidebar(sidebar, state, phaseConfigs) {
 
       const stars = Array.from(
         { length: 3 },
-        (_, si) =>
-          `<span class="star ${si < phase.stars ? "earned" : ""}">★</span>`,
+        (_, si) => `<span class="star ${si < phase.stars ? "earned" : ""}">★</span>`,
       ).join("");
 
       return `
@@ -1224,9 +1167,7 @@ function updateSidebar(sidebar, state, phaseConfigs) {
   nav.querySelectorAll(".phase-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       const idx = parseInt(btn.dataset.phase, 10);
-      document.dispatchEvent(
-        new CustomEvent("rma:navigate", { detail: { phase: idx } }),
-      );
+      document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: idx } }));
     });
   });
 }

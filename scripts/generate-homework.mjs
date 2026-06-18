@@ -126,9 +126,7 @@ function sectionHeading(text) {
 function selectProblems(practice = {}) {
   const onLevel = Array.isArray(practice.onLevel) ? practice.onLevel : [];
   const optional = Array.isArray(practice.optional) ? practice.optional : [];
-  const approaching = Array.isArray(practice.approaching)
-    ? practice.approaching
-    : [];
+  const approaching = Array.isArray(practice.approaching) ? practice.approaching : [];
 
   const picked = [];
   // A couple of approaching (warm-up) problems first.
@@ -161,9 +159,7 @@ function renderProblem(it, num) {
   const out = [];
   switch (it.type) {
     case "multiple-choice":
-      out.push(
-        p(`${num}. ${it.stem || ""}`, { bold: true, after: 80 }),
-      );
+      out.push(p(`${num}. ${it.stem || ""}`, { bold: true, after: 80 }));
       (it.choices || []).forEach((c, i) => {
         out.push(p(`     ${LETTERS[i] || i}. ${c}`, { after: 40 }));
       });
@@ -171,7 +167,12 @@ function renderProblem(it, num) {
       break;
 
     case "fill-table": {
-      out.push(p(`${num}. ${it.instructions || it.label || "Complete the table."}`, { bold: true, after: 80 }));
+      out.push(
+        p(`${num}. ${it.instructions || it.label || "Complete the table."}`, {
+          bold: true,
+          after: 80,
+        }),
+      );
       out.push(buildWorksheetTable(it));
       out.push(...blankLines(1));
       break;
@@ -179,7 +180,10 @@ function renderProblem(it, num) {
 
     case "matching-game": {
       out.push(
-        p(`${num}. ${it.label || "Match each item on the left to its answer on the right."}`, { bold: true, after: 80 }),
+        p(`${num}. ${it.label || "Match each item on the left to its answer on the right."}`, {
+          bold: true,
+          after: 80,
+        }),
       );
       out.push(buildMatchingTable(it));
       out.push(...blankLines(1));
@@ -187,7 +191,12 @@ function renderProblem(it, num) {
     }
 
     case "drag-sort": {
-      out.push(p(`${num}. ${it.instructions || "Sort each item into the correct group."}`, { bold: true, after: 80 }));
+      out.push(
+        p(`${num}. ${it.instructions || "Sort each item into the correct group."}`, {
+          bold: true,
+          after: 80,
+        }),
+      );
       const cats = (it.categories || []).map((c) => c.label).join("   |   ");
       if (cats) out.push(p(`Groups: ${cats}`, { italics: true, after: 80 }));
       (it.items || []).forEach((item) => {
@@ -232,7 +241,9 @@ function buildWorksheetTable(it) {
   if (Array.isArray(it.headers) && Array.isArray(it.rows) && Array.isArray(it.rows[0])) {
     // Shape B
     headers = it.headers;
-    bodyRows = it.rows.map((row) => row.map((cell) => (cell == null || cell === "" ? "" : String(cell))));
+    bodyRows = it.rows.map((row) =>
+      row.map((cell) => (cell == null || cell === "" ? "" : String(cell))),
+    );
   } else if (Array.isArray(it.columns) && Array.isArray(it.rows)) {
     // Shape A — derive cell values from object keys, blanking out the "answer".
     headers = it.columns;
@@ -248,7 +259,9 @@ function buildWorksheetTable(it) {
     new TableCell({
       children: [
         new Paragraph({
-          children: [new TextRun({ text: String(text || (isHeader ? "" : " ")), bold: !!isHeader })],
+          children: [
+            new TextRun({ text: String(text || (isHeader ? "" : " ")), bold: !!isHeader }),
+          ],
         }),
       ],
       width: { size: Math.floor(100 / Math.max(headers.length, 1)), type: WidthType.PERCENTAGE },
@@ -281,9 +294,7 @@ function headerKeysFor(columns, sampleRow) {
     else {
       // pick the next unused middle key
       const used = new Set(guesses);
-      const candidate = rowKeys.find(
-        (k) => !used.has(k) && k !== "given" && k !== "answer",
-      );
+      const candidate = rowKeys.find((k) => !used.has(k) && k !== "given" && k !== "answer");
       guesses.push(candidate || rowKeys[i] || "answer");
     }
   }
@@ -368,7 +379,9 @@ function renderAnswer(it, num) {
       const catLabel = {};
       (it.categories || []).forEach((c) => (catLabel[c.id] = c.label));
       (it.items || []).forEach((item) => {
-        out.push(p(`     ${item.text} → ${catLabel[item.category] || item.category}`, { after: 20 }));
+        out.push(
+          p(`     ${item.text} → ${catLabel[item.category] || item.category}`, { after: 20 }),
+        );
       });
       out.push(p("", { after: 40 }));
       break;
@@ -428,7 +441,12 @@ function buildDoc(id, config) {
     }),
   );
   if (config.standard) {
-    children.push(p(`Lesson ${config.lessonId || id}  •  Standard ${config.standard}`, { italics: true, after: 160 }));
+    children.push(
+      p(`Lesson ${config.lessonId || id}  •  Standard ${config.standard}`, {
+        italics: true,
+        after: 160,
+      }),
+    );
   }
 
   // Name / Period / Date line
@@ -497,7 +515,9 @@ function buildDoc(id, config) {
   // Practice
   const problems = selectProblems(config.practice || {});
   children.push(sectionHeading("Practice"));
-  children.push(p("Show your work. Use the blank space under each problem.", { italics: true, after: 160 }));
+  children.push(
+    p("Show your work. Use the blank space under each problem.", { italics: true, after: 160 }),
+  );
 
   if (!problems.length) {
     children.push(p("No printable practice problems for this lesson.", { italics: true }));

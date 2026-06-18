@@ -70,10 +70,26 @@ function buildRatioGame(config, { title }) {
 
 function buildEquationGame(config, { title }) {
   const rounds = [
-    { q: "'A number plus 5 equals 12' →", choices: ["n + 5 = 12", "5n = 12", "n − 5 = 12", "n + 12 = 5"], correct: 0 },
-    { q: "'Twice a number is 10' →", choices: ["2n = 10", "n + 2 = 10", "n² = 10", "2 + n = 10"], correct: 0 },
-    { q: "'Seven less than n is 3' →", choices: ["n − 7 = 3", "7 − n = 3", "n + 7 = 3", "n / 7 = 3"], correct: 0 },
-    { q: "Variable stands for…", choices: ["Unknown number", "Always 1", "The answer only", "Addition sign"], correct: 0 },
+    {
+      q: "'A number plus 5 equals 12' →",
+      choices: ["n + 5 = 12", "5n = 12", "n − 5 = 12", "n + 12 = 5"],
+      correct: 0,
+    },
+    {
+      q: "'Twice a number is 10' →",
+      choices: ["2n = 10", "n + 2 = 10", "n² = 10", "2 + n = 10"],
+      correct: 0,
+    },
+    {
+      q: "'Seven less than n is 3' →",
+      choices: ["n − 7 = 3", "7 − n = 3", "n + 7 = 3", "n / 7 = 3"],
+      correct: 0,
+    },
+    {
+      q: "Variable stands for…",
+      choices: ["Unknown number", "Always 1", "The answer only", "Addition sign"],
+      correct: 0,
+    },
   ];
   return mcSpeedGame("equation", title, "Equation Builder!", "¡Ecuaciones!", rounds, {
     en: "Match words to symbols: plus → +, equals → =, unknown → letter.",
@@ -97,7 +113,11 @@ function buildInequalityGame(config, { title }) {
 function buildExpressionGame(config, { title }) {
   const rounds = [
     { q: "Evaluate 2x when x = 4", choices: ["8", "6", "24", "2"], correct: 0 },
-    { q: "Which is an expression (no =)?", choices: ["3n + 2", "3n + 2 = 8", "n = 5", "8 = 8"], correct: 0 },
+    {
+      q: "Which is an expression (no =)?",
+      choices: ["3n + 2", "3n + 2 = 8", "n = 5", "8 = 8"],
+      correct: 0,
+    },
     { q: "Coefficient in 5y?", choices: ["5", "y", "5y", "None"], correct: 0 },
     { q: "Evaluate 3 + 2²", choices: ["7", "25", "5", "12"], correct: 0 },
   ];
@@ -116,20 +136,36 @@ function buildStatsSortGame(config, { title }) {
     { text: "Spell the word cat", bucket: "not" },
     { text: "Minutes spent on homework", bucket: "stat" },
   ];
-  return dragBucketGame("stats", title, "Stat Sort!", "¡Estadística!", items, {
-    stat: { en: "Statistical question", es: "Pregunta estadística" },
-    not: { en: "NOT statistical", es: "NO estadística" },
-  }, {
-    en: "Statistical questions expect many different answers from a group.",
-    es: "Las preguntas estadísticas esperan muchas respuestas diferentes de un grupo.",
-  });
+  return dragBucketGame(
+    "stats",
+    title,
+    "Stat Sort!",
+    "¡Estadística!",
+    items,
+    {
+      stat: { en: "Statistical question", es: "Pregunta estadística" },
+      not: { en: "NOT statistical", es: "NO estadística" },
+    },
+    {
+      en: "Statistical questions expect many different answers from a group.",
+      es: "Las preguntas estadísticas esperan muchas respuestas diferentes de un grupo.",
+    },
+  );
 }
 
 function buildCoordinateGame(config, { title }) {
   const rounds = [
-    { q: "Point at (3, 2) — which quadrant?", choices: ["Quadrant I", "Quadrant II", "Quadrant III", "Quadrant IV"], correct: 0 },
+    {
+      q: "Point at (3, 2) — which quadrant?",
+      choices: ["Quadrant I", "Quadrant II", "Quadrant III", "Quadrant IV"],
+      correct: 0,
+    },
     { q: "Origin coordinates?", choices: ["(0, 0)", "(1, 1)", "(0, 1)", "(1, 0)"], correct: 0 },
-    { q: "Move right 4, up 1 from (1,2) →", choices: ["(5, 3)", "(5, 2)", "(1, 6)", "(−3, 3)"], correct: 0 },
+    {
+      q: "Move right 4, up 1 from (1,2) →",
+      choices: ["(5, 3)", "(5, 2)", "(1, 6)", "(−3, 3)"],
+      correct: 0,
+    },
     { q: "x-axis is…", choices: ["Horizontal", "Vertical", "Diagonal", "A point"], correct: 0 },
   ];
   return mcSpeedGame("coordinate", title, "Grid Treasure!", "¡Coordenadas!", rounds, {
@@ -168,7 +204,11 @@ function buildAreaGame(config, { title }) {
   const rounds = [
     { q: "Rectangle 5 × 3 area?", choices: ["15", "8", "16", "53"], correct: 0 },
     { q: "Triangle: base 6, height 4", choices: ["12", "24", "10", "6"], correct: 0 },
-    { q: "Area units are…", choices: ["Square units", "Cubic units", "Lines", "Degrees"], correct: 0 },
+    {
+      q: "Area units are…",
+      choices: ["Square units", "Cubic units", "Lines", "Degrees"],
+      correct: 0,
+    },
     { q: "Parallelogram: base 8, height 5", choices: ["40", "13", "80", "45"], correct: 0 },
   ];
   return mcSpeedGame("area", title, "Area Builder!", "¡Área!", rounds, {
@@ -182,7 +222,11 @@ function buildVolumeGame(config, { title }) {
     { q: "Prism 3×4×2 volume?", choices: ["24", "9", "12", "14"], correct: 0 },
     { q: "Volume units are…", choices: ["Cubic", "Square", "Linear", "Flat"], correct: 0 },
     { q: "Layers: 5×2 base, 3 layers high", choices: ["30", "10", "15", "25"], correct: 0 },
-    { q: "V = l × w × h uses…", choices: ["3 dimensions", "2 dimensions", "1 dimension", "Angles"], correct: 0 },
+    {
+      q: "V = l × w × h uses…",
+      choices: ["3 dimensions", "2 dimensions", "1 dimension", "Angles"],
+      correct: 0,
+    },
   ];
   return mcSpeedGame("volume", title, "Volume Fill!", "¡Volumen!", rounds, {
     en: "Imagine filling the prism with unit cubes layer by layer.",
@@ -192,10 +236,26 @@ function buildVolumeGame(config, { title }) {
 
 function buildSurfaceAreaGame(config, { title }) {
   const rounds = [
-    { q: "Surface area measures…", choices: ["All faces", "Inside only", "One edge", "Volume"], correct: 0 },
-    { q: "A net shows…", choices: ["Unfolded faces", "Hidden volume", "Angles only", "Graph"], correct: 0 },
-    { q: "Units for SA?", choices: ["Square units", "Cubic units", "Degrees", "Ratios"], correct: 0 },
-    { q: "Find SA by…", choices: ["Add face areas", "Multiply l×w×h", "Subtract bases", "Divide edges"], correct: 0 },
+    {
+      q: "Surface area measures…",
+      choices: ["All faces", "Inside only", "One edge", "Volume"],
+      correct: 0,
+    },
+    {
+      q: "A net shows…",
+      choices: ["Unfolded faces", "Hidden volume", "Angles only", "Graph"],
+      correct: 0,
+    },
+    {
+      q: "Units for SA?",
+      choices: ["Square units", "Cubic units", "Degrees", "Ratios"],
+      correct: 0,
+    },
+    {
+      q: "Find SA by…",
+      choices: ["Add face areas", "Multiply l×w×h", "Subtract bases", "Divide edges"],
+      correct: 0,
+    },
   ];
   return mcSpeedGame("surface", title, "Net Match!", "¡Área de superficie!", rounds, {
     en: "Add up every face you see on the net.",
@@ -207,7 +267,11 @@ function buildDecimalGame(config, { title }) {
   const rounds = [
     { q: "1.5 + 2.3 = ?", choices: ["3.8", "3.5", "4.8", "2.8"], correct: 0 },
     { q: "0.6 × 10 = ?", choices: ["6", "0.06", "60", "1.6"], correct: 0 },
-    { q: "Line up…", choices: ["Decimal points", "Ones digits only", "Random columns", "Nothing"], correct: 0 },
+    {
+      q: "Line up…",
+      choices: ["Decimal points", "Ones digits only", "Random columns", "Nothing"],
+      correct: 0,
+    },
     { q: "4.2 − 1.8 = ?", choices: ["2.4", "6.0", "3.4", "1.4"], correct: 0 },
   ];
   return mcSpeedGame("decimal", title, "Decimal Dash!", "¡Decimales!", rounds, {
@@ -243,9 +307,21 @@ function buildVocabMatchGame(config, { vocab, title }) {
           };
         })
       : [
-          { q: "What are we learning tonight?", choices: [title, "Addition only", "Spelling", "History"], correct: 0 },
-          { q: "Math vocabulary helps us…", choices: ["Explain thinking", "Skip work", "Avoid numbers", "Guess"], correct: 0 },
-          { q: "Work together means…", choices: ["Student thinks first", "Parent does all", "Copy answers", "Skip steps"], correct: 0 },
+          {
+            q: "What are we learning tonight?",
+            choices: [title, "Addition only", "Spelling", "History"],
+            correct: 0,
+          },
+          {
+            q: "Math vocabulary helps us…",
+            choices: ["Explain thinking", "Skip work", "Avoid numbers", "Guess"],
+            correct: 0,
+          },
+          {
+            q: "Work together means…",
+            choices: ["Student thinks first", "Parent does all", "Copy answers", "Skip steps"],
+            correct: 0,
+          },
         ];
   return mcSpeedGame("vocab", title, "Word Match!", "¡Palabras!", rounds, {
     en: "Use tonight's vocabulary words as you play!",
@@ -262,7 +338,11 @@ function shuffleChoices(correct, pool) {
 function mcSpeedGame(id, title, nameEn, nameEs, rounds, coach) {
   const normalized = rounds.map((r) => {
     if (Array.isArray(r.choices) && typeof r.choices[0] === "string") {
-      return { q: r.q, choices: r.choices.map((t, i) => ({ text: t, isCorrect: i === r.correct })), hint: r.hint || "" };
+      return {
+        q: r.q,
+        choices: r.choices.map((t, i) => ({ text: t, isCorrect: i === r.correct })),
+        hint: r.hint || "",
+      };
     }
     return r;
   });

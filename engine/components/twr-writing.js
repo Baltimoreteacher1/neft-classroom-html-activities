@@ -134,10 +134,7 @@ function fireConfetti(anchorEl) {
     const dist = 30 + Math.random() * 45;
     piece.style.setProperty("--twr-dx", `${Math.cos(angle) * dist}px`);
     piece.style.setProperty("--twr-dy", `${Math.sin(angle) * dist - 20}px`);
-    piece.style.setProperty(
-      "--twr-rot",
-      `${Math.round(Math.random() * 360 - 180)}deg`,
-    );
+    piece.style.setProperty("--twr-rot", `${Math.round(Math.random() * 360 - 180)}deg`);
     piece.style.background = colors[i % colors.length];
     piece.style.animationDelay = `${Math.random() * 0.12}s`;
     burst.append(piece);
@@ -154,22 +151,15 @@ function esc(s) {
 }
 
 // One labelled writing row: a frame line (bilingual) + a textarea that auto-saves.
-function writeRow(
-  parent,
-  { key, frameEn, frameEs, rows = 2, getResponse, saveResponse },
-) {
+function writeRow(parent, { key, frameEn, frameEs, rows = 2, getResponse, saveResponse }) {
   if (frameEn) {
     const frame = document.createElement("p");
     frame.className = "sentence-frame";
     frame.style.cssText = "margin:0 0 var(--sp-1); font-weight:600;";
-    frame.innerHTML = esc(frameEn).replace(
-      /___/g,
-      '<span class="blank">&nbsp;</span>',
-    );
+    frame.innerHTML = esc(frameEn).replace(/___/g, '<span class="blank">&nbsp;</span>');
     if (frameEs) {
       const es = document.createElement("span");
-      es.style.cssText =
-        "display:block; color:var(--muted); font-style:italic; font-weight:600;";
+      es.style.cssText = "display:block; color:var(--muted); font-style:italic; font-weight:600;";
       es.textContent = frameEs;
       frame.append(es);
     }
@@ -208,18 +198,12 @@ function subhead(text, tag) {
   const h = document.createElement("h4");
   h.style.cssText = "margin:var(--sp-4) 0 var(--sp-2); color:var(--navy);";
   h.innerHTML = `${esc(text)}${
-    tag
-      ? ` <span class="badge badge-amber" style="vertical-align:middle;">${esc(tag)}</span>`
-      : ""
+    tag ? ` <span class="badge badge-amber" style="vertical-align:middle;">${esc(tag)}</span>` : ""
   }`;
   return h;
 }
 
-export function renderTwrWriting(
-  container,
-  config,
-  { getResponse, saveResponse, onSubmit } = {},
-) {
+export function renderTwrWriting(container, config, { getResponse, saveResponse, onSubmit } = {}) {
   ensureTwrStyles();
 
   const twr = deriveTWR(config);
@@ -243,8 +227,7 @@ export function renderTwrWriting(
   const lead = document.createElement("p");
   lead.style.cssText = "margin:0 0 var(--sp-3); color:var(--muted);";
   lead.textContent =
-    twr.languageObjective ||
-    "Build strong math sentences. Write each one, then read it out loud.";
+    twr.languageObjective || "Build strong math sentences. Write each one, then read it out loud.";
   card.append(lead);
 
   // 1. Kernel sentence
@@ -364,8 +347,7 @@ export function renderTwrWriting(
 
   return {
     getValues: () => inputs.map((ta) => ta.value.trim()),
-    countWritten: () =>
-      inputs.filter((ta) => ta.value.trim().length > 0).length,
+    countWritten: () => inputs.filter((ta) => ta.value.trim().length > 0).length,
   };
 }
 

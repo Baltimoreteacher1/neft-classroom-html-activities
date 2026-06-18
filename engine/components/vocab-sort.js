@@ -138,8 +138,7 @@ export function renderVocabSort(container, { terms, onComplete }) {
 
   const bank = document.createElement("div");
   bank.className = "drag-zone vs-bank";
-  bank.style.cssText +=
-    "margin-bottom:var(--sp-5); min-height:60px; flex-wrap:wrap;";
+  bank.style.cssText += "margin-bottom:var(--sp-5); min-height:60px; flex-wrap:wrap;";
 
   let selectedItem = null;
 
@@ -186,8 +185,7 @@ export function renderVocabSort(container, { terms, onComplete }) {
     const bucket = document.createElement("div");
     bucket.className = "card card-compact";
     bucket.dataset.termName = t.term;
-    bucket.style.cssText +=
-      "min-height:120px; transition:all var(--duration-fast) ease;";
+    bucket.style.cssText += "min-height:120px; transition:all var(--duration-fast) ease;";
 
     const labelRow = document.createElement("div");
     labelRow.style.cssText = `
@@ -197,8 +195,7 @@ export function renderVocabSort(container, { terms, onComplete }) {
     labelRow.append(vocabImageEl(t.term, t.definition));
 
     const bucketLabel = document.createElement("div");
-    bucketLabel.style.cssText =
-      "font-weight:800; font-size:0.95rem; color:var(--navy);";
+    bucketLabel.style.cssText = "font-weight:800; font-size:0.95rem; color:var(--navy);";
     bucketLabel.textContent = t.term;
     if (t.termEs) {
       const es = document.createElement("span");
@@ -227,8 +224,7 @@ export function renderVocabSort(container, { terms, onComplete }) {
     const dropZone = document.createElement("div");
     dropZone.className = "drag-zone vocab-sort-zone";
     dropZone.dataset.termName = t.term;
-    dropZone.style.cssText +=
-      "min-height:50px; border-style:dashed; flex-wrap:wrap;";
+    dropZone.style.cssText += "min-height:50px; border-style:dashed; flex-wrap:wrap;";
 
     dropZone.addEventListener("dragover", (e) => {
       e.preventDefault();
@@ -271,9 +267,7 @@ export function renderVocabSort(container, { terms, onComplete }) {
     const ex = shuffledExamples[data.idx];
     if (!ex) return;
     const correct = ex.termName === bucketTerm;
-    const chipEl = bank.querySelector(
-      `.vocab-sort-item[data-idx="${data.idx}"]:not(.sorted)`,
-    );
+    const chipEl = bank.querySelector(`.vocab-sort-item[data-idx="${data.idx}"]:not(.sorted)`);
 
     if (!chipEl) return;
 

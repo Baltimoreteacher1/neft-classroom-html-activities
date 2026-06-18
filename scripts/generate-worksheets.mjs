@@ -13,12 +13,7 @@
  * Source of truth: each lessons/<id>/config.json (practice tiers + vocabulary).
  * Re-run after editing configs:  npm run generate-worksheets
  */
-import {
-  readFileSync,
-  writeFileSync,
-  readdirSync,
-  existsSync,
-} from "node:fs";
+import { readFileSync, writeFileSync, readdirSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -115,7 +110,8 @@ function renderFillTable(it, n, key) {
 }
 
 function renderOpen(it, n, key, supported) {
-  const frame = supported && it.sentenceFrame ? `<p class="ws-frame">${esc(it.sentenceFrame)}</p>` : "";
+  const frame =
+    supported && it.sentenceFrame ? `<p class="ws-frame">${esc(it.sentenceFrame)}</p>` : "";
   return `<p class="ws-stem">${esc(it.prompt)}</p>${frame}${key ? `<p class="ws-keynote">Answers vary — look for correct reasoning.</p>` : blankLines(4)}`;
 }
 
@@ -141,14 +137,27 @@ function renderProblem(it, n, { key = false, supported = false } = {}) {
   if (!it || !it.type) return renderGeneric(it || {}, n, key);
   let body;
   switch (it.type) {
-    case "multiple-choice": body = renderMC(it, n, key); break;
+    case "multiple-choice":
+      body = renderMC(it, n, key);
+      break;
     case "matching-game":
-    case "matching": body = renderMatching(it, n, key); break;
-    case "error-analysis": body = renderErrorAnalysis(it, n, key); break;
-    case "fill-table": body = renderFillTable(it, n, key); break;
-    case "open-response": body = renderOpen(it, n, key, supported); break;
-    case "drag-sort": body = renderSort(it, n, key); break;
-    default: body = renderGeneric(it, n, key);
+    case "matching":
+      body = renderMatching(it, n, key);
+      break;
+    case "error-analysis":
+      body = renderErrorAnalysis(it, n, key);
+      break;
+    case "fill-table":
+      body = renderFillTable(it, n, key);
+      break;
+    case "open-response":
+      body = renderOpen(it, n, key, supported);
+      break;
+    case "drag-sort":
+      body = renderSort(it, n, key);
+      break;
+    default:
+      body = renderGeneric(it, n, key);
   }
   return `<li class="ws-problem"><span class="ws-pnum">${n}</span><div class="ws-pbody">${body}</div></li>`;
 }
@@ -178,7 +187,9 @@ function wordBank(vocab = []) {
 
 function workedExample(cfg) {
   // Prefer a commonMistake/extending error-analysis as a worked model.
-  const pools = [cfg.practice?.extending, cfg.practice?.onLevel, cfg.practice?.optional].filter(Boolean);
+  const pools = [cfg.practice?.extending, cfg.practice?.onLevel, cfg.practice?.optional].filter(
+    Boolean,
+  );
   let ex = null;
   for (const pool of pools) {
     ex = pool.find((p) => p.type === "error-analysis" && (p.workedExample || []).length);
@@ -207,9 +218,7 @@ function pageHeader(cfg, versionLabel, sub) {
 }
 
 function versionPage(cfg, problems, { label, sub, supported, key }) {
-  const items = problems
-    .map((p, i) => renderProblem(p, i + 1, { supported, key }))
-    .join("");
+  const items = problems.map((p, i) => renderProblem(p, i + 1, { supported, key })).join("");
   const scaffolds = supported && !key ? wordBank(cfg.vocabulary) + workedExample(cfg) : "";
   return `<section class="ws-page">
     ${pageHeader(cfg, key ? label + " — Answer Key" : label, sub)}

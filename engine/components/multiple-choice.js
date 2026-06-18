@@ -165,18 +165,9 @@ function fireChoiceConfetti(wrapper) {
     piece.style.setProperty("--mc-y", `${20 + Math.random() * 20}%`);
     piece.style.setProperty("--mc-dx", `${dx.toFixed(1)}px`);
     piece.style.setProperty("--mc-dy", `${dy.toFixed(1)}px`);
-    piece.style.setProperty(
-      "--mc-rot",
-      `${(Math.random() * 540 - 270).toFixed(0)}deg`,
-    );
-    piece.style.setProperty(
-      "--mc-delay",
-      `${Math.floor(Math.random() * 90)}ms`,
-    );
-    piece.style.setProperty(
-      "--mc-color",
-      MC_CONFETTI_COLORS[i % MC_CONFETTI_COLORS.length],
-    );
+    piece.style.setProperty("--mc-rot", `${(Math.random() * 540 - 270).toFixed(0)}deg`);
+    piece.style.setProperty("--mc-delay", `${Math.floor(Math.random() * 90)}ms`);
+    piece.style.setProperty("--mc-color", MC_CONFETTI_COLORS[i % MC_CONFETTI_COLORS.length]);
     layer.append(piece);
   }
 
@@ -199,11 +190,7 @@ export function renderMultipleChoice(
     container.append(warn);
     return;
   }
-  if (
-    typeof correctIndex !== "number" ||
-    correctIndex < 0 ||
-    correctIndex >= choices.length
-  ) {
+  if (typeof correctIndex !== "number" || correctIndex < 0 || correctIndex >= choices.length) {
     correctIndex = 0;
   }
 
@@ -303,9 +290,7 @@ export function renderMultipleChoice(
     const isCorrect = selected === correctIndex;
     const labels = optionsWrap.querySelectorAll(".mc-option-label");
 
-    labels.forEach((l) =>
-      l.classList.remove("is-correct", "is-incorrect", "is-selected"),
-    );
+    labels.forEach((l) => l.classList.remove("is-correct", "is-incorrect", "is-selected"));
 
     let fbMsg;
     // Only reveal the correct choice once the student has had a retry — naming
@@ -323,18 +308,15 @@ export function renderMultipleChoice(
       wrongAttempts += 1;
       labels[selected].classList.add("is-incorrect");
       wrapper.classList.add("shake-once");
-      wrapper.addEventListener(
-        "animationend",
-        () => wrapper.classList.remove("shake-once"),
-        { once: true },
-      );
+      wrapper.addEventListener("animationend", () => wrapper.classList.remove("shake-once"), {
+        once: true,
+      });
       revealAnswer = wrongAttempts >= 2;
       checkBtn.style.display = "none";
       if (revealAnswer) {
         // Out of retries — show the answer so the student isn't stuck.
         labels[correctIndex].classList.add("is-correct");
-        fbMsg =
-          `The answer is ${LETTERS[correctIndex]}. ${explanation || ""}`.trim();
+        fbMsg = `The answer is ${LETTERS[correctIndex]}. ${explanation || ""}`.trim();
       } else {
         fbMsg = "Not quite — take another look and try again.";
         tryAgainBtn.style.display = "inline-flex";
@@ -352,9 +334,7 @@ export function renderMultipleChoice(
     answered = false;
     selected = null;
     wrapper.classList.remove("success-glow", "shake-once");
-    wrapper
-      .querySelectorAll(".mc-celebrate-layer")
-      .forEach((layer) => layer.remove());
+    wrapper.querySelectorAll(".mc-celebrate-layer").forEach((layer) => layer.remove());
     optionsWrap.querySelectorAll(".mc-option-label").forEach((l) => {
       l.classList.remove("is-correct", "is-incorrect", "is-selected");
       const inp = l.querySelector('input[type="radio"]');

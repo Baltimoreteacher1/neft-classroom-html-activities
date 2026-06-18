@@ -34,11 +34,31 @@ export { existsSync, readFileSync, readdirSync, resolve };
 
 // Generic AI-slop phrases CardForge flags in any teacher/student-facing prose.
 export const AI_SLOP_PHRASES = [
-  "robust", "seamless", "seamlessly", "unlock", "delve", "leverage", "leveraging",
-  "elevate", "supercharge", "game-changer", "game changer", "cutting-edge",
-  "in today's fast-paced", "in the realm of", "navigate the", "tapestry",
-  "embark on a journey", "unleash", "harness the power", "revolutionize",
-  "dive deep", "look no further", "best-in-class", "world-class", "synergy",
+  "robust",
+  "seamless",
+  "seamlessly",
+  "unlock",
+  "delve",
+  "leverage",
+  "leveraging",
+  "elevate",
+  "supercharge",
+  "game-changer",
+  "game changer",
+  "cutting-edge",
+  "in today's fast-paced",
+  "in the realm of",
+  "navigate the",
+  "tapestry",
+  "embark on a journey",
+  "unleash",
+  "harness the power",
+  "revolutionize",
+  "dive deep",
+  "look no further",
+  "best-in-class",
+  "world-class",
+  "synergy",
 ];
 
 // CCSS Grade 6 code pattern, e.g. 6.SP.3, 6.RP.3a, 6.NS.6b
@@ -67,7 +87,10 @@ export function checkStatClaim(text) {
   );
   if (!m) return null;
   const kind = m[1].toLowerCase();
-  const nums = m[2].split(/[,\s]+/).map(Number).filter((n) => !Number.isNaN(n));
+  const nums = m[2]
+    .split(/[,\s]+/)
+    .map(Number)
+    .filter((n) => !Number.isNaN(n));
   if (nums.length < 2) return null;
   const claimed = Number(m[3]);
   let actual;

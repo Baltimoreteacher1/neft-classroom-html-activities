@@ -53,10 +53,7 @@ export async function downloadCertificatePng(certEl, config, state) {
   ctx.fillStyle = "#264653";
   ctx.fillText(config.title || "Lesson", W / 2, 200);
 
-  const totalStars = (s.phases || []).reduce(
-    (sum, p) => sum + (p.stars || 0),
-    0,
-  );
+  const totalStars = (s.phases || []).reduce((sum, p) => sum + (p.stars || 0), 0);
   ctx.font = "24px Hanken Grotesk, system-ui, sans-serif";
   ctx.fillStyle = "#C85A3A";
   ctx.fillText(`${totalStars}/18 ★`, W / 2, 245);
@@ -81,9 +78,7 @@ export async function downloadCertificatePng(certEl, config, state) {
     [`${totalStars}/18`, t("stars")],
     [`${s.coins || 0}`, t("coins")],
     [
-      s.totalAttempts > 0
-        ? `${Math.round((s.totalCorrect / s.totalAttempts) * 100)}%`
-        : "100%",
+      s.totalAttempts > 0 ? `${Math.round((s.totalCorrect / s.totalAttempts) * 100)}%` : "100%",
       t("accuracy"),
     ],
   ];
@@ -107,11 +102,7 @@ export async function downloadCertificatePng(certEl, config, state) {
     ctx.fillStyle = "#264653";
     ctx.fillText(p.name || "", 80, py);
     ctx.fillStyle = "#F2A93B";
-    ctx.fillText(
-      "★".repeat(p.stars || 0) + "☆".repeat(3 - (p.stars || 0)),
-      320,
-      py,
-    );
+    ctx.fillText("★".repeat(p.stars || 0) + "☆".repeat(3 - (p.stars || 0)), 320, py);
     py += 28;
   });
 

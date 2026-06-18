@@ -36,7 +36,8 @@ const MAPPING = {
   "ratios-proportions/ratio-lab": "math/unit-3/ratio-lab",
   "ratios-proportions/ratio-fuel-mixer": "math/unit-3/ratio-fuel-mixer",
   "ratios-proportions/6-rp-a-3study": "math/unit-4/6-rp-a-3study",
-  "ratios-proportions/6-rp-a-2-interactive-study-guide": "math/unit-4/6-rp-a-2-interactive-study-guide",
+  "ratios-proportions/6-rp-a-2-interactive-study-guide":
+    "math/unit-4/6-rp-a-2-interactive-study-guide",
   "ratios-proportions/unit-rate-duel": "math/unit-4/unit-rate-duel",
   "ratios-proportions/6-rp-a-2game": "math/unit-4/6-rp-a-2game",
   "ratios-proportions/percent-shadow-caster": "math/unit-4/percent-shadow-caster",
@@ -48,11 +49,13 @@ const MAPPING = {
   "expressions-equations/one-step-solver-arena": "math/unit-8/one-step-solver-arena",
   "expressions-equations/neon-inequality": "math/unit-8/neon-inequality",
   "expressions-equations/9-1-9-2studyforquiz": "math/unit-9/9-1-9-2studyforquiz",
-  "expressions-equations/6-ee-c-9googleversiongifted-talentedversion": "math/unit-9/6-ee-c-9googleversiongifted-talentedversion",
+  "expressions-equations/6-ee-c-9googleversiongifted-talentedversion":
+    "math/unit-9/6-ee-c-9googleversiongifted-talentedversion",
   "expressions-equations/6-ee-c-9projectroblox": "math/unit-9/6-ee-c-9projectroblox",
   "expressions-equations/martian-fuel-pod": "math/unit-9/martian-fuel-pod",
   "expressions-equations/6-ee-c-9martiangame": "math/unit-9/6-ee-c-9martiangame",
-  "expressions-equations/proportional-relationships-mission": "math/unit-9/proportional-relationships-mission",
+  "expressions-equations/proportional-relationships-mission":
+    "math/unit-9/proportional-relationships-mission",
   "expressions-equations/ind-dep-variables": "math/unit-9/ind-dep-variables",
   "expressions-equations/6-ee-9notespracti-e": "math/unit-9/6-ee-9notespracti-e",
   "expressions-equations/9-3reviewpractice": "math/unit-9/9-3reviewpractice",
@@ -61,7 +64,8 @@ const MAPPING = {
   "expressions-equations/unit-9-1-6-ee-9": "math/unit-9/unit-9-1-6-ee-9",
   "expressions-equations/6-ee-c-9googleversion": "math/unit-9/6-ee-c-9googleversion",
   "expressions-equations/6-ee-c-9variablevelocitygame": "math/unit-9/6-ee-c-9variablevelocitygame",
-  "expressions-equations/cloudflare-pages-game-for-6-ee-9": "math/unit-9/cloudflare-pages-game-for-6-ee-9",
+  "expressions-equations/cloudflare-pages-game-for-6-ee-9":
+    "math/unit-9/cloudflare-pages-game-for-6-ee-9",
   "expressions-equations/6-ee-c-9aftertest": "math/unit-9/6-ee-c-9aftertest",
   "expressions-equations/6-ee-c-9study": "math/unit-9/6-ee-c-9study",
   "expressions-equations/functionforge6-ee-9": "math/unit-9/functionforge6-ee-9",
@@ -69,28 +73,34 @@ const MAPPING = {
   "expressions-equations/variableexploreresol": "math/unit-9/variableexploreresol",
   "expressions-equations/variablechartpractice": "math/unit-9/variablechartpractice",
   "expressions-equations/variableexplorer1": "math/unit-9/variableexplorer1",
-  "expressions-equations/6-ee-c-9function-forge-the-relationship-reactor": "math/unit-9/6-ee-c-9function-forge-the-relationship-reactor",
-  "expressions-equations/6-ee-c-9proportional-reasoning-lab": "math/unit-9/6-ee-c-9proportional-reasoning-lab",
+  "expressions-equations/6-ee-c-9function-forge-the-relationship-reactor":
+    "math/unit-9/6-ee-c-9function-forge-the-relationship-reactor",
+  "expressions-equations/6-ee-c-9proportional-reasoning-lab":
+    "math/unit-9/6-ee-c-9proportional-reasoning-lab",
   "expressions-equations/6-ee-9gamereview": "math/unit-9/6-ee-9gamereview",
   "expressions-equations/variablecomparisongame": "math/unit-9/variablecomparisongame",
   "expressions-equations/6-ee-c-9reviewactivities": "math/unit-9/6-ee-c-9reviewactivities",
-  "expressions-equations/proportional-relationships-gallery": "math/unit-9/proportional-relationships-gallery",
+  "expressions-equations/proportional-relationships-gallery":
+    "math/unit-9/proportional-relationships-gallery",
 
   // statistics-data
-  "statistics-data/6-sp-a-1data-lab-6-sp-a-1-flagship": "math/statistics/6-sp-a-1data-lab-6-sp-a-1-flagship",
+  "statistics-data/6-sp-a-1data-lab-6-sp-a-1-flagship":
+    "math/statistics/6-sp-a-1data-lab-6-sp-a-1-flagship",
   "statistics-data/6-sp-a-1game-2": "math/statistics/6-sp-a-1game-2",
   "statistics-data/6-sp-b-5-data-detective-game": "math/statistics/6-sp-b-5-data-detective-game",
   "statistics-data/6-sp-a-1reviewactivities": "math/statistics/6-sp-a-1reviewactivities",
   "statistics-data/6-sp-b-5-interactive-review": "math/statistics/6-sp-b-5-interactive-review",
   "statistics-data/gemini-data-quest": "math/statistics/gemini-data-quest",
   "statistics-data/box-plot-builder": "math/statistics/box-plot-builder",
-  "statistics-data/bar-graph-world-comparison-lab": "math/statistics/bar-graph-world-comparison-lab",
+  "statistics-data/bar-graph-world-comparison-lab":
+    "math/statistics/bar-graph-world-comparison-lab",
   "statistics-data/histogram-hero": "math/statistics/histogram-hero",
   "statistics-data/world-cup-goals-data-quest": "math/statistics/world-cup-goals-data-quest",
   "statistics-data/mean-median-mode-game": "math/statistics/mean-median-mode-game",
   "statistics-data/histogram-master-lab": "math/statistics/histogram-master-lab",
   "statistics-data/6-sp-a-1review2": "math/statistics/6-sp-a-1review2",
-  "statistics-data/meanmedianmodesoccerandbracelets": "math/statistics/meanmedianmodesoccerandbracelets",
+  "statistics-data/meanmedianmodesoccerandbracelets":
+    "math/statistics/meanmedianmodesoccerandbracelets",
   "statistics-data/statistics-of-my-life": "math/statistics/statistics-of-my-life",
   "statistics-data/6-sp-a-1game": "math/statistics/6-sp-a-1game",
   "statistics-data/distribution-detective": "math/statistics/distribution-detective",
@@ -98,7 +108,7 @@ const MAPPING = {
   "statistics-data/histogram-graphic-novel": "math/statistics/histogram-graphic-novel",
   "statistics-data/mean-median-mode-intro": "math/statistics/mean-median-mode-intro",
   "statistics-data/box-plot-detective": "math/statistics/box-plot-detective",
-  "statistics-data/mean-median-modegallerywalk": "math/statistics/mean-median-modegallerywalk"
+  "statistics-data/mean-median-modegallerywalk": "math/statistics/mean-median-modegallerywalk",
 };
 
 const GAME_MAPPING = {
@@ -111,13 +121,13 @@ const GAME_MAPPING = {
   "games/unit7-equation-escape.html": "math/unit-8/games/unit7-equation-escape.html",
   "games/unit8-stats-slam.html": "math/statistics/games/unit8-stats-slam.html",
   "games/unit9-coordinate-quest.html": "math/unit-7/games/unit9-coordinate-quest.html",
-  "games/unit10-volume-vault.html": "math/unit-10/games/unit10-volume-vault.html"
+  "games/unit10-volume-vault.html": "math/unit-10/games/unit10-volume-vault.html",
 };
 
 function run() {
   const routesPath = join(root, "data", "routes.json");
   const routesObj = JSON.parse(readFileSync(routesPath, "utf8"));
-  
+
   let routeUpdates = 0;
   let redirectUpdates = 0;
 
@@ -125,7 +135,7 @@ function run() {
   if (Array.isArray(routesObj.routes)) {
     for (const route of routesObj.routes) {
       if (!route.path) continue;
-      
+
       // Try mapping standard directories
       for (const [srcRel, destRel] of Object.entries(MAPPING)) {
         const srcPath = "/" + srcRel + "/";
@@ -178,7 +188,9 @@ function run() {
   }
 
   writeFileSync(routesPath, JSON.stringify(routesObj, null, 2) + "\n", "utf8");
-  console.log(`Finished updating routes.json. Route updates: ${routeUpdates}, Redirect destination updates: ${redirectUpdates}`);
+  console.log(
+    `Finished updating routes.json. Route updates: ${routeUpdates}, Redirect destination updates: ${redirectUpdates}`,
+  );
 }
 
 run();

@@ -19,10 +19,7 @@ function isEduPulseReady() {
 export async function reportScore(state, config) {
   const s = state.get();
   const totalStars = (s.phases || []).reduce((sum, p) => sum + (p.stars || 0), 0);
-  const percent =
-    s.totalAttempts > 0
-      ? Math.round((s.totalCorrect / s.totalAttempts) * 100)
-      : 0;
+  const percent = s.totalAttempts > 0 ? Math.round((s.totalCorrect / s.totalAttempts) * 100) : 0;
 
   // Prefer EduPulse gradebook when bridge is loaded and configured
   if (isEduPulseReady()) {

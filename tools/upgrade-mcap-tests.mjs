@@ -435,7 +435,7 @@ function upgradeTest(testId) {
     console.error(`Could not find q-domain tag injection line in ${filePath}`);
     return;
   }
-  
+
   const injectButtonCode = `\n          h += '<button type="button" class="cbt-flag-btn no-print" id="flag-' + q.id + '" onclick="toggleFlag(' + q.id + ')" aria-label="Flag question ' + q.id + '">⚑</button>';`;
   const insertPos = domainTagIndex + domainTag.length;
   content = content.slice(0, insertPos) + injectButtonCode + content.slice(insertPos);

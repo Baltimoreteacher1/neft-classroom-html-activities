@@ -34,33 +34,61 @@ const EP = {
 // classroom lesson -> focused episode (by standard/topic)
 const MAP = {
   // 6.NS.1 dividing fractions  -> Split the Glitch
-  "2-1": "u6e1", "2-2": "u6e1", "2-4": "u6e1", "2-5": "u6e1",
+  "2-1": "u6e1",
+  "2-2": "u6e1",
+  "2-4": "u6e1",
+  "2-5": "u6e1",
   // 6.RP ratios / rates / conversions
-  "3-2": "u3e1", "3-3": "u3e1",
-  "3-5": "u3e2", "3-6": "u3e2", "3-7": "u3e3",
-  "4-1": "u3e2", "4-7": "u3e3",
+  "3-2": "u3e1",
+  "3-3": "u3e1",
+  "3-5": "u3e2",
+  "3-6": "u3e2",
+  "3-7": "u3e3",
+  "4-1": "u3e2",
+  "4-7": "u3e3",
   // 6.RP.3c percents -> Find the Whole
-  "4-3": "u4e2", "4-5": "u4e2",
+  "4-3": "u4e2",
+  "4-5": "u4e2",
   // 6.G.1 area -> Floor Plans
-  "5-2": "u5e1", "5-3": "u5e1", "5-4": "u5e1", "5-5": "u5e1",
+  "5-2": "u5e1",
+  "5-3": "u5e1",
+  "5-4": "u5e1",
+  "5-5": "u5e1",
   // 6.EE expressions -> The Twin Doors
-  "6-2": "u6e3", "6-3": "u6e3", "6-4": "u6e3", "6-5": "u6e3", "6-7": "u6e3",
+  "6-2": "u6e3",
+  "6-3": "u6e3",
+  "6-4": "u6e3",
+  "6-5": "u6e3",
+  "6-7": "u6e3",
   // 6.SP statistics
-  "8-4": "u2e4", "8-6": "u2e1", "8-7": "u2e3",
+  "8-4": "u2e4",
+  "8-6": "u2e1",
+  "8-7": "u2e3",
   // 6.G volume / surface area
-  "10-2": "u5e2", "10-4": "u5e3", "10-5": "u5e3",
+  "10-2": "u5e2",
+  "10-4": "u5e3",
+  "10-5": "u5e3",
 };
 
-const DESC = "Interactive Axiom City episode — read straight through; gates coach but never block. Not graded.";
+const DESC =
+  "Interactive Axiom City episode — read straight through; gates coach but never block. Not graded.";
 
-let wired = 0, skipped = 0;
+let wired = 0,
+  skipped = 0;
 for (const [lesson, epKey] of Object.entries(MAP)) {
   const cfgPath = join(ROOT, "lessons", lesson, "config.json");
-  if (!existsSync(cfgPath)) { console.log(`· missing config: ${lesson}`); continue; }
+  if (!existsSync(cfgPath)) {
+    console.log(`· missing config: ${lesson}`);
+    continue;
+  }
   let raw = readFileSync(cfgPath, "utf8");
-  if (raw.includes('"graphicNovel"')) { skipped++; continue; }
+  if (raw.includes('"graphicNovel"')) {
+    skipped++;
+    continue;
+  }
   const cfg = JSON.parse(raw);
-  const standard = cfg.standard || (Array.isArray(cfg.standards) ? cfg.standards[0] : cfg.standards) || "";
+  const standard =
+    cfg.standard || (Array.isArray(cfg.standards) ? cfg.standards[0] : cfg.standards) || "";
   const [file, menuTitle] = EP[epKey];
   const block =
     `,\n  "graphicNovel": {\n` +

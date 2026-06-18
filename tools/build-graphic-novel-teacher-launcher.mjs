@@ -44,9 +44,7 @@ function titleOf(html, fallback) {
 }
 
 // Only novels that actually have a teacher guide button are relevant here.
-const files = walk(NOVELS_DIR).filter((f) =>
-  /id="teacherBtn"/.test(readFileSync(f, "utf8")),
-);
+const files = walk(NOVELS_DIR).filter((f) => /id="teacherBtn"/.test(readFileSync(f, "utf8")));
 
 // Dedupe shared stories that exist at two paths: prefer unitN/ for volumes and
 // axiom-city/episodes/ for episodes; drop the axiom-city/ vol mirror and the
@@ -88,13 +86,7 @@ const entries = [...byBase.values()].map(({ rel, file }) => {
 });
 
 entries.sort((a, b) =>
-  a.unit !== b.unit
-    ? a.unit - b.unit
-    : a.isVol !== b.isVol
-      ? a.isVol
-        ? -1
-        : 1
-      : a.ep - b.ep,
+  a.unit !== b.unit ? a.unit - b.unit : a.isVol !== b.isVol ? (a.isVol ? -1 : 1) : a.ep - b.ep,
 );
 
 // Group by unit

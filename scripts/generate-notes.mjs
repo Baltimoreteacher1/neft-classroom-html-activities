@@ -1,10 +1,7 @@
 import { readFileSync, writeFileSync, readdirSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import {
-  resolveVocabImage,
-  vocabImageAlt,
-} from "../engine/core/vocab-images.js";
+import { resolveVocabImage, vocabImageAlt } from "../engine/core/vocab-images.js";
 import { deriveWorkedSteps } from "../engine/core/worked-steps.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -30,7 +27,10 @@ const blankLines = (n) =>
 const clozeText = (text) => {
   return esc(text)
     .replace(/\b\d+(\.\d+)?\b/g, "_____")
-    .replace(/\b(ratio|fraction|percent|rate|unit rate|variable|equation|coordinate|coordinates|probability|median|mean|mode|range|integer|integers|negative|positive)\b/gi, "_____");
+    .replace(
+      /\b(ratio|fraction|percent|rate|unit rate|variable|equation|coordinate|coordinates|probability|median|mean|mode|range|integer|integers|negative|positive)\b/gi,
+      "_____",
+    );
 };
 
 const choiceLetter = (i) => String.fromCharCode(65 + i);
@@ -195,9 +195,7 @@ function aliasesFor(term) {
 // term from matching inside another term's attributes; each term pops at most
 // once per text, and longer aliases win so phrases beat their adjective forms.
 function popoverize(text, vocab) {
-  const items = (Array.isArray(vocab) ? vocab : []).filter(
-    (v) => v && v.term && v.definition,
-  );
+  const items = (Array.isArray(vocab) ? vocab : []).filter((v) => v && v.term && v.definition);
   const pairs = [];
   items.forEach((v) => {
     aliasesFor(v.term).forEach((alias) => pairs.push({ alias, item: v }));
@@ -272,9 +270,7 @@ function lessonConfigs() {
     .filter((d) => LESSON_DIR_RE.test(d))
     .filter((d) => existsSync(join(lessonsDir, d, "config.json")))
     .map((id) => {
-      const cfg = JSON.parse(
-        readFileSync(join(lessonsDir, id, "config.json"), "utf8")
-      );
+      const cfg = JSON.parse(readFileSync(join(lessonsDir, id, "config.json"), "utf8"));
       // A lesson is "flagship" if the dir is suffixed OR the config carries a
       // flagship block (mission/scenes/finale). Both are handled gracefully.
       const isFlagship = id.endsWith("-flagship") || cfg.flagship != null;
@@ -665,9 +661,7 @@ function learnVisual(cfg) {
   const title = v.title ? `<div class="li-visual-title">${esc(v.title)}</div>` : "";
   const unit = v.unit ? `<div class="li-visual-unit">${esc(v.unit)}</div>` : "";
   if (v.kind === "data-chips" && Array.isArray(v.values)) {
-    const chips = v.values
-      .map((x) => `<span class="li-chip">${esc(x)}</span>`)
-      .join("");
+    const chips = v.values.map((x) => `<span class="li-chip">${esc(x)}</span>`).join("");
     return `${title}<div class="li-chips">${chips}</div>${unit}`;
   }
   // Non-chip chart: surface the authored title/unit so the data is still seen.
@@ -716,9 +710,27 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
         <${numbered ? "ol" : "ul"} class="learnit-lines">${items}</${numbered ? "ol" : "ul"}>
       </div>`;
     };
-    const watch = stage(iLines, "👀 Watch — see it solved", "learnit-watch", true, intro.iDo && intro.iDo.title);
-    const we = stage(weLines, "🤝 We try it together", "learnit-we", false, intro.weDo && intro.weDo.title);
-    const you = stage(youLines, "✏️ Now you try", "learnit-you", false, intro.youDo && intro.youDo.title);
+    const watch = stage(
+      iLines,
+      "👀 Watch — see it solved",
+      "learnit-watch",
+      true,
+      intro.iDo && intro.iDo.title,
+    );
+    const we = stage(
+      weLines,
+      "🤝 We try it together",
+      "learnit-we",
+      false,
+      intro.weDo && intro.weDo.title,
+    );
+    const you = stage(
+      youLines,
+      "✏️ Now you try",
+      "learnit-you",
+      false,
+      intro.youDo && intro.youDo.title,
+    );
     if (!watch && !we && !you && !introP && !keyIdea) return "";
     return `<div class="learnit" role="group" aria-label="Learn It — how the math works">
       <p class="learnit-eyebrow">📖 Learn It — read this first</p>
@@ -802,9 +814,7 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
         it &&
         it.stem &&
         (Array.isArray(it.choices) || it.sampleAnswer || it.answer) &&
-        (it.type === "multiple-choice" ||
-          it.type === "open-response" ||
-          !it.type),
+        (it.type === "multiple-choice" || it.type === "open-response" || !it.type),
     );
   const ownGuidance = youLines.length
     ? `<ul class="li-list">${youLines.map((l) => `<li>${popoverize(l, vocab)}</li>`).join("")}</ul>`
@@ -812,8 +822,7 @@ function conceptLearnBlock(cfg = {}, opts = {}) {
   let onOwn = "";
   if (ownProblem) {
     const ownAns =
-      Array.isArray(ownProblem.choices) &&
-      typeof ownProblem.correctIndex === "number"
+      Array.isArray(ownProblem.choices) && typeof ownProblem.correctIndex === "number"
         ? ownProblem.choices[ownProblem.correctIndex]
         : ownProblem.sampleAnswer || ownProblem.answer || "";
     onOwn = `<section class="li-block">
@@ -909,9 +918,7 @@ function tryItProblem(it, i) {
 }
 
 function tryItSection(practice = {}, usedStems = new Set()) {
-  const items = gatherPractice(practice).filter(
-    (it) => it.stem && !usedStems.has(it.stem),
-  );
+  const items = gatherPractice(practice).filter((it) => it.stem && !usedStems.has(it.stem));
   // Pick a couple that were not used in the guided notes frame.
   const picks = items.slice(-2).length ? items.slice(-2) : items.slice(0, 2);
   if (!picks.length) return "";
@@ -1016,9 +1023,7 @@ function answerKeySection(
     });
   }
   // Try It picks mirrored from tryItSection logic (same exclusion).
-  const items = gatherPractice(practice).filter(
-    (it) => it.stem && !usedStems.has(it.stem),
-  );
+  const items = gatherPractice(practice).filter((it) => it.stem && !usedStems.has(it.stem));
   const tryPicks = items.slice(-2).length ? items.slice(-2) : items.slice(0, 2);
   tryPicks.forEach((it) => {
     let ans = "";
@@ -1030,7 +1035,7 @@ function answerKeySection(
     rows.push(
       `<li><strong>Try It ${n++}:</strong> ${esc(ans)}${
         it.explanation ? ` <span class="ak-why">— ${esc(it.explanation)}</span>` : ""
-      }</li>`
+      }</li>`,
     );
   });
 
@@ -1043,7 +1048,7 @@ function answerKeySection(
     rows.push(
       `<li><strong>Exit Ticket:</strong> ${esc(ans)}${
         et.explanation ? ` <span class="ak-why">— ${esc(et.explanation)}</span>` : ""
-      }</li>`
+      }</li>`,
     );
   }
   if (!rows.length) return "";
@@ -1767,9 +1772,7 @@ function buildPacket(id, cfg, isFlagship, teacher = false) {
   const standard = cfg.standard ? `Standard ${esc(cfg.standard)}` : "";
   const standardPlain = cfg.standard ? `Standard ${cfg.standard}` : "";
   const unit = cfg.unit != null ? `Unit ${esc(cfg.unit)}` : "";
-  const flagBadge = isFlagship
-    ? `<span class="flagship-badge">Flagship</span>`
-    : "";
+  const flagBadge = isFlagship ? `<span class="flagship-badge">Flagship</span>` : "";
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -2119,9 +2122,7 @@ function buildLearnPage(id, cfg, isFlagship) {
   const standard = cfg.standard ? `Standard ${esc(cfg.standard)}` : "";
   const standardPlain = cfg.standard ? `Standard ${cfg.standard}` : "";
   const unit = cfg.unit != null ? `Unit ${esc(cfg.unit)}` : "";
-  const flagBadge = isFlagship
-    ? `<span class="flagship-badge">Flagship</span>`
-    : "";
+  const flagBadge = isFlagship ? `<span class="flagship-badge">Flagship</span>` : "";
 
   const learnBlock = conceptLearnBlock(cfg, { expanded: true });
   const objective = cfg.contentObjective || cfg.languageObjective || "";
@@ -2194,9 +2195,7 @@ ${readAloudScript()}
 // real sentence) → Use it (productive sentence). All authored from the lesson's
 // single source of truth, config.vocabulary [{term, definition, image, cloze}].
 function vocabExplorer(cfg = {}) {
-  const items = (Array.isArray(cfg.vocabulary) ? cfg.vocabulary : []).filter(
-    (v) => v && v.term,
-  );
+  const items = (Array.isArray(cfg.vocabulary) ? cfg.vocabulary : []).filter((v) => v && v.term);
   if (!items.length)
     return `<p class="level-note">No vocabulary is listed for this lesson yet.</p>`;
 
@@ -2208,10 +2207,8 @@ function vocabExplorer(cfg = {}) {
       const imgSrc = resolveVocabImage(v.term, v.image).replace(/^\//, "../../");
       const say = esc(`${v.term}. ${v.definition || ""}`);
       const langs = [];
-      if (v.termEs)
-        langs.push(`<span class="vx-lang" lang="es"><b>ES</b> ${esc(v.termEs)}</span>`);
-      if (v.termVi)
-        langs.push(`<span class="vx-lang" lang="vi"><b>VI</b> ${esc(v.termVi)}</span>`);
+      if (v.termEs) langs.push(`<span class="vx-lang" lang="es"><b>ES</b> ${esc(v.termEs)}</span>`);
+      if (v.termVi) langs.push(`<span class="vx-lang" lang="vi"><b>VI</b> ${esc(v.termVi)}</span>`);
       if (v.termAr)
         langs.push(`<span class="vx-lang" lang="ar" dir="rtl"><b>AR</b> ${esc(v.termAr)}</span>`);
       const transLine = langs.length
@@ -2255,7 +2252,10 @@ function vocabExplorer(cfg = {}) {
           (v, i) =>
             `<li class="vx-clozeline"><span class="vx-num">${i + 1}</span><span class="vx-clozetext">${esc(
               v.cloze,
-            ).replace(/_{2,}/g, `<input class="vx-blank" type="text" data-nt-field aria-label="fill in the blank" />`)}</span></li>`,
+            ).replace(
+              /_{2,}/g,
+              `<input class="vx-blank" type="text" data-nt-field aria-label="fill in the blank" />`,
+            )}</span></li>`,
         )
         .join("")}</ol>`
     : "";
@@ -2382,7 +2382,7 @@ function buildIndex(lessons) {
                 : ` <span class="tag tag-core">Core</span>`
             }${
               cfg.standard ? ` <span class="std">${esc(cfg.standard)}</span>` : ""
-            } <a class="teacher-link" href="/lessons/${id}/notes-teacher.html">Teacher copy (Answer Key)</a></li>`
+            } <a class="teacher-link" href="/lessons/${id}/notes-teacher.html">Teacher copy (Answer Key)</a></li>`,
         )
         .join("");
       return `<section class="unit-group">
@@ -2436,31 +2436,22 @@ function main() {
   let flagshipCount = 0;
   for (const { id, cfg, isFlagship } of lessons) {
     // Student copy — no answer key.
-    writeFileSync(
-      join(lessonsDir, id, "notes.html"),
-      buildPacket(id, cfg, isFlagship, false)
-    );
+    writeFileSync(join(lessonsDir, id, "notes.html"), buildPacket(id, cfg, isFlagship, false));
     // Teacher copy — same packet + Answer Key & Teacher Guide.
     writeFileSync(
       join(lessonsDir, id, "notes-teacher.html"),
-      buildPacket(id, cfg, isFlagship, true)
+      buildPacket(id, cfg, isFlagship, true),
     );
     // Standalone "Learn It" teaching page (surfaced as the 📖 Learn It tab).
-    writeFileSync(
-      join(lessonsDir, id, "learn.html"),
-      buildLearnPage(id, cfg, isFlagship)
-    );
+    writeFileSync(join(lessonsDir, id, "learn.html"), buildLearnPage(id, cfg, isFlagship));
     // Standalone "Vocab" page (surfaced as the 🔑 Vocab tab).
-    writeFileSync(
-      join(lessonsDir, id, "vocab.html"),
-      buildVocabPage(id, cfg, isFlagship)
-    );
+    writeFileSync(join(lessonsDir, id, "vocab.html"), buildVocabPage(id, cfg, isFlagship));
     count++;
     if (isFlagship) flagshipCount++;
   }
   writeFileSync(join(lessonsDir, "notes-index.html"), buildIndex(lessons));
   console.log(
-    `Generated ${count} notes packets (${count - flagshipCount} core + ${flagshipCount} flagship) + notes-index.html`
+    `Generated ${count} notes packets (${count - flagshipCount} core + ${flagshipCount} flagship) + notes-index.html`,
   );
 }
 

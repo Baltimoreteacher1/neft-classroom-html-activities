@@ -62,7 +62,15 @@ const docs = lessons.map((l) => {
 });
 
 const miniSearch = new MiniSearch({
-  fields: ["title", "standard", "objective", "languageObjective", "topic", "resources", "searchText"],
+  fields: [
+    "title",
+    "standard",
+    "objective",
+    "languageObjective",
+    "topic",
+    "resources",
+    "searchText",
+  ],
   storeFields: [
     "id",
     "unit",

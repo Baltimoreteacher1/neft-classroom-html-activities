@@ -34,17 +34,16 @@ html = html.replace(
     // Legacy Drive copies are intentionally NOT linked — the upgraded HTML deck
     // (slides.html) plus the editable .pptx are the canonical decks.
     void legacyUrl;
-    let replacement =
-      `${prefix}<a class="res" href="${slidesHref}">Google Slides</a>`;
+    let replacement = `${prefix}<a class="res" href="${slidesHref}">Google Slides</a>`;
     if (existsSync(join(root, "lessons", lessonId, "slides.pptx"))) {
       replacement += `<a class="res" href="/lessons/${lessonId}/slides.pptx">📝 Editable Slides</a>`;
     }
 
     return replacement;
-  }
+  },
 );
 
 writeFileSync(curriculumPath, html);
 console.log(
-  `Patched curriculum/index.html — ${primaryPatched} Google Slides links, ${legacyAdded} legacy copies added.`
+  `Patched curriculum/index.html — ${primaryPatched} Google Slides links, ${legacyAdded} legacy copies added.`,
 );

@@ -35,16 +35,12 @@
   var flushing = false;
 
   function uuid() {
-    if (global.crypto && global.crypto.randomUUID)
-      return global.crypto.randomUUID();
-    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
-      /[xy]/g,
-      function (c) {
-        var r = (Math.random() * 16) | 0,
-          v = c === "x" ? r : (r & 0x3) | 0x8;
-        return v.toString(16);
-      },
-    );
+    if (global.crypto && global.crypto.randomUUID) return global.crypto.randomUUID();
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+      var r = (Math.random() * 16) | 0,
+        v = c === "x" ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
   }
 
   function readQueue() {
@@ -68,12 +64,7 @@
       r = localStorage.getItem(REF_KEY) || "";
     } catch (e) {}
     if (!r) {
-      r = (
-        global.prompt(
-          "Enter your class number or handle (NOT your name):",
-          "",
-        ) || ""
-      ).trim();
+      r = (global.prompt("Enter your class number or handle (NOT your name):", "") || "").trim();
       if (r) {
         try {
           localStorage.setItem(REF_KEY, r);
@@ -90,14 +81,11 @@
       teacher_id: cfg.teacher_id,
       class_code: cfg.class_code,
       student_ref: studentRef(),
-      activity_slug:
-        cfg.activity_slug || (result && result.activity_slug) || "unknown",
+      activity_slug: cfg.activity_slug || (result && result.activity_slug) || "unknown",
       standard: cfg.standard || (result && result.standard) || null,
       score: result.score,
       total: result.total,
-      misconception_tags: Array.isArray(result.misconception_tags)
-        ? result.misconception_tags
-        : [],
+      misconception_tags: Array.isArray(result.misconception_tags) ? result.misconception_tags : [],
       attempt_timestamp: new Date().toISOString(),
     };
     if (!item.teacher_id || !item.class_code) {
@@ -204,10 +192,7 @@
         // Derive score/total from opts (never reads opts.student — that's PII).
         var correct = opts.correct,
           total = opts.total;
-        if (
-          (correct == null || total == null) &&
-          Array.isArray(opts.sections)
-        ) {
+        if ((correct == null || total == null) && Array.isArray(opts.sections)) {
           correct = opts.sections.reduce(function (a, s) {
             return a + (s.correct || 0);
           }, 0);

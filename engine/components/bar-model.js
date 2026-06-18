@@ -48,8 +48,7 @@ export function renderBarModel(
 
   if (label) {
     const lbl = document.createElement("p");
-    lbl.style.cssText =
-      "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
+    lbl.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
     lbl.textContent = label;
     wrapper.append(lbl);
   }
@@ -78,14 +77,7 @@ export function renderBarModel(
   const segBar = document.createElement("div");
   segBar.style.cssText = `display:flex; gap:${GAP}px; height:${BAR_H}px;`;
 
-  const colors = [
-    "#1fa6a2",
-    "#f2c15b",
-    "#d9795d",
-    "#2f80d1",
-    "#0fa958",
-    "#875f00",
-  ];
+  const colors = ["#1fa6a2", "#f2c15b", "#d9795d", "#2f80d1", "#0fa958", "#875f00"];
 
   bars.forEach((bar, i) => {
     const pct = (bar.value / totalValue) * 100;
@@ -152,8 +144,7 @@ export function renderBarModel(
     qCard.append(qText);
 
     const inputRow = document.createElement("div");
-    inputRow.style.cssText =
-      "display:flex; gap:var(--sp-3); align-items:center;";
+    inputRow.style.cssText = "display:flex; gap:var(--sp-3); align-items:center;";
 
     const input = document.createElement("input");
     input.type = "text";

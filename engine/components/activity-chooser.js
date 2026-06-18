@@ -110,10 +110,7 @@ function ensureChooserStyles() {
   (document.head || document.documentElement).append(style);
 }
 
-export function renderOptionalPracticeOptIn(
-  container,
-  { onTry, onSkip, activity } = {},
-) {
+export function renderOptionalPracticeOptIn(container, { onTry, onSkip, activity } = {}) {
   const card = document.createElement("div");
   card.className = "card card-teal";
   card.style.cssText =
@@ -166,9 +163,7 @@ export function renderActivityChooser(container, { config, renderComponent }) {
   ensureChooserStyles();
   const terms = Array.isArray(config.vocabulary) ? config.vocabulary : [];
   const hasVocab = terms.length > 0;
-  const optional = Array.isArray(config.practice?.optional)
-    ? config.practice.optional
-    : [];
+  const optional = Array.isArray(config.practice?.optional) ? config.practice.optional : [];
   const hasOptional = optional.length > 0;
 
   const tiles = [];
@@ -179,29 +174,25 @@ export function renderActivityChooser(container, { config, renderComponent }) {
         icon: "📖",
         title: "Word Wall",
         desc: "Study every word, definition, and example.",
-        run: (host, done) =>
-          renderVocabIntro(host, { terms, onComplete: () => done() }),
+        run: (host, done) => renderVocabIntro(host, { terms, onComplete: () => done() }),
       },
       {
         icon: "🔗",
         title: "Term Match",
         desc: "Match each term to its meaning.",
-        run: (host, done) =>
-          renderVocabDragMatch(host, { terms, onComplete: () => done() }),
+        run: (host, done) => renderVocabDragMatch(host, { terms, onComplete: () => done() }),
       },
       {
         icon: "✍️",
         title: "Fill-the-Blanks",
         desc: "Complete sentences with the right word.",
-        run: (host, done) =>
-          renderVocabCloze(host, { terms, onComplete: () => done() }),
+        run: (host, done) => renderVocabCloze(host, { terms, onComplete: () => done() }),
       },
       {
         icon: "🗂️",
         title: "Example Sort",
         desc: "Sort examples and non-examples.",
-        run: (host, done) =>
-          renderVocabSort(host, { terms, onComplete: () => done() }),
+        run: (host, done) => renderVocabSort(host, { terms, onComplete: () => done() }),
       },
       {
         icon: "🃏",
@@ -236,8 +227,7 @@ export function renderActivityChooser(container, { config, renderComponent }) {
       icon: (act && act.emoji) || "✏️",
       title: (act && act.name) || "Extra Practice",
       desc: (act && act.intro) || "Bonus problems for extra reps.",
-      run: (host, done) =>
-        runComponentList(host, optional, renderComponent, done),
+      run: (host, done) => runComponentList(host, optional, renderComponent, done),
     });
   }
 

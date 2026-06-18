@@ -8,13 +8,18 @@ import { extname, basename } from "node:path";
 import { CCSS_RE } from "./util.mjs";
 
 const EXT_MAP = {
-  ".txt": "text", ".text": "text",
-  ".md": "markdown", ".markdown": "markdown",
-  ".html": "html", ".htm": "html",
+  ".txt": "text",
+  ".text": "text",
+  ".md": "markdown",
+  ".markdown": "markdown",
+  ".html": "html",
+  ".htm": "html",
   ".json": "json",
-  ".pptx": "pptx", ".ppt": "pptx",
+  ".pptx": "pptx",
+  ".ppt": "pptx",
   ".pdf": "pdf",
-  ".docx": "docx", ".doc": "docx",
+  ".docx": "docx",
+  ".doc": "docx",
 };
 
 export const IMPLEMENTED = ["text", "markdown", "html", "json"];
@@ -40,7 +45,10 @@ function stripHtml(html) {
 function firstHeading(text, fallback) {
   const md = text.match(/^#{1,3}\s+(.+)$/m);
   if (md) return md[1].trim();
-  const line = text.split(/\n/).map((l) => l.trim()).find(Boolean);
+  const line = text
+    .split(/\n/)
+    .map((l) => l.trim())
+    .find(Boolean);
   return (line && line.slice(0, 120)) || fallback;
 }
 
@@ -69,7 +77,15 @@ export function runAdapter(file, explicitType) {
   if (SCAFFOLDED.includes(type)) return scaffolded(type, file);
 
   if (!existsSync(file)) {
-    return { sourceType: type, sourceFile: file, supported: false, message: `File not found: ${file}`, title: "", rawText: "", confidence: 0 };
+    return {
+      sourceType: type,
+      sourceFile: file,
+      supported: false,
+      message: `File not found: ${file}`,
+      title: "",
+      rawText: "",
+      confidence: 0,
+    };
   }
   const raw = readFileSync(file, "utf8");
   let text = raw;
@@ -79,16 +95,43 @@ export function runAdapter(file, explicitType) {
     try {
       const obj = JSON.parse(raw);
       title = obj.title || obj.lessonId || basename(file);
-      text = [obj.title, obj.contentObjective, obj.objective, obj.topic,
-        JSON.stringify(obj.vocabulary || ""), JSON.stringify(obj.practice || "")]
-        .filter(Boolean).join("\n");
+      text = [
+        obj.title,
+        obj.contentObjective,
+        obj.objective,
+        obj.topic,
+        JSON.stringify(obj.vocabulary || ""),
+        JSON.stringify(obj.practice || ""),
+      ]
+        .filter(Boolean)
+        .join("\n");
       const std = obj.standard || (raw.match(CCSS_RE) || [])[0] || null;
-      return { sourceType: "json", sourceFile: file, supported: true, message: null,
-        title, rawText: text, standard: std, unit: obj.unit ?? null, lesson: obj.lesson ?? null,
+      return {
+        sourceType: "json",
+        sourceFile: file,
+        supported: true,
+        message: null,
+        title,
+        rawText: text,
+        standard: std,
+        unit: obj.unit ?? null,
+        lesson: obj.lesson ?? null,
         objective: obj.contentObjective || obj.objective || null,
-        languageObjective: obj.languageObjective || null, confidence: 0.8, missing: [], uncertain: [] };
+        languageObjective: obj.languageObjective || null,
+        confidence: 0.8,
+        missing: [],
+        uncertain: [],
+      };
     } catch {
-      return { sourceType: "json", sourceFile: file, supported: false, message: "Invalid JSON.", title: basename(file), rawText: "", confidence: 0 };
+      return {
+        sourceType: "json",
+        sourceFile: file,
+        supported: false,
+        message: "Invalid JSON.",
+        title: basename(file),
+        rawText: "",
+        confidence: 0,
+      };
     }
   }
 
@@ -96,8 +139,14 @@ export function runAdapter(file, explicitType) {
   title = firstHeading(text, basename(file).replace(/\.[^.]+$/, ""));
 
   return {
-    sourceType: type, sourceFile: file, supported: true, message: null,
-    title, rawText: text, confidence: type === "markdown" ? 0.7 : 0.6,
-    missing: [], uncertain: [],
+    sourceType: type,
+    sourceFile: file,
+    supported: true,
+    message: null,
+    title,
+    rawText: text,
+    confidence: type === "markdown" ? 0.7 : 0.6,
+    missing: [],
+    uncertain: [],
   };
 }

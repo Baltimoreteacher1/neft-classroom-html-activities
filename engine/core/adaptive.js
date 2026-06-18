@@ -102,8 +102,7 @@ export function createAdaptiveSequence(config, state, opts = {}) {
   const cursors = { level1: 0, core: 0, level2: 0 };
   // Cap total served items so a struggling student isn't trapped forever.
   const maxItems =
-    opts.maxItems ||
-    buckets.level1.length + buckets.core.length + buckets.level2.length;
+    opts.maxItems || buckets.level1.length + buckets.core.length + buckets.level2.length;
   let served = 0;
 
   function pickFrom(tier) {

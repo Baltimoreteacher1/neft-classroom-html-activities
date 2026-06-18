@@ -15,8 +15,7 @@
     if (document.getElementById("nt-chrome-style")) return;
 
     var prefersReduced =
-      window.matchMedia &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     // --- Inject minimal scoped CSS -------------------------------------
     var css =
@@ -37,9 +36,7 @@
       "color:#1e293b;background:rgba(255,255,255,.92);text-decoration:none;" +
       "border:1px solid rgba(15,23,42,.12);box-shadow:0 1px 3px rgba(15,23,42,.12);" +
       "backdrop-filter:saturate(140%) blur(4px)" +
-      (prefersReduced
-        ? ""
-        : ";transition:transform .15s ease,box-shadow .15s ease") +
+      (prefersReduced ? "" : ";transition:transform .15s ease,box-shadow .15s ease") +
       "}" +
       ".nt-chrome-home:hover,.nt-chrome-home:focus-visible{box-shadow:0 2px 8px rgba(15,23,42,.2)" +
       (prefersReduced ? "" : ";transform:translateY(-1px)") +
@@ -82,12 +79,7 @@
       if (a.closest(".nt-chrome-footer")) continue;
       var raw = a.getAttribute("href");
       if (!raw) continue;
-      if (
-        raw === "/" ||
-        raw === "/index.html" ||
-        raw === "./" ||
-        raw === "../"
-      ) {
+      if (raw === "/" || raw === "/index.html" || raw === "./" || raw === "../") {
         return true;
       }
     }

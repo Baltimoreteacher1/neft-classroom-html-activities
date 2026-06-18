@@ -12,34 +12,37 @@
  * Source of truth: the skill .html files already in each folder (their <title>
  * gives the skill name + standard). Idempotent — safe to re-run.
  */
-import { readdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
-import { join } from 'node:path';
+import { readdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
+import { join } from "node:path";
 
 const root = process.cwd();
-const packetsDir = join(root, 'mcap-review', 'packets');
+const packetsDir = join(root, "mcap-review", "packets");
 
 // Domain metadata mirrors the parent packets/index.html (icon + accent colour).
 const DOMAINS = {
-  'ratios-proportional-relationships': { icon: '⚖️', name: 'Ratios & Proportional Relationships', color: '#1FA6A2' },
-  'the-number-system': { icon: '🔢', name: 'The Number System', color: '#6B4FA0' },
-  'expressions-equations': { icon: '✖️', name: 'Expressions & Equations', color: '#12355B' },
-  geometry: { icon: '📐', name: 'Geometry', color: '#B97A12' },
-  statistics: { icon: '📊', name: 'Statistics & Probability', color: '#C0392B' },
+  "ratios-proportional-relationships": {
+    icon: "⚖️",
+    name: "Ratios & Proportional Relationships",
+    color: "#1FA6A2",
+  },
+  "the-number-system": { icon: "🔢", name: "The Number System", color: "#6B4FA0" },
+  "expressions-equations": { icon: "✖️", name: "Expressions & Equations", color: "#12355B" },
+  geometry: { icon: "📐", name: "Geometry", color: "#B97A12" },
+  statistics: { icon: "📊", name: "Statistics & Probability", color: "#C0392B" },
 };
 
-const esc = (s) =>
-  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 /** Pull "<emoji> Title" and standard code out of a skill page's <title>. */
 function readSkill(htmlPath) {
-  const html = readFileSync(htmlPath, 'utf8');
+  const html = readFileSync(htmlPath, "utf8");
   const m = html.match(/<title>([^<]*)<\/title>/i);
   // e.g. "Area of Triangles &amp; Quadrilaterals · MCAP 6.G.A.1 · Neft Teacher"
-  const raw = (m ? m[1] : '').replace(/&amp;/g, '&');
-  const parts = raw.split('·').map((s) => s.trim());
+  const raw = (m ? m[1] : "").replace(/&amp;/g, "&");
+  const parts = raw.split("·").map((s) => s.trim());
   const title = parts[0] || raw;
   const codeMatch = raw.match(/MCAP\s+([0-9A-Za-z.\-]+)/);
-  const code = codeMatch ? codeMatch[1] : '';
+  const code = codeMatch ? codeMatch[1] : "";
   return { title, code };
 }
 
@@ -53,11 +56,11 @@ function buildPage(slug, meta, skills, packetHref) {
           </div>
           <div class="sdl">
             <a href="./${s.file}.html">Study&nbsp;online</a>
-            ${existsSync(join(packetsDir, slug, `${s.file}.docx`)) ? `<a class="dl" href="./${s.file}.docx" download>Word ⬇</a>` : ''}
+            ${existsSync(join(packetsDir, slug, `${s.file}.docx`)) ? `<a class="dl" href="./${s.file}.docx" download>Word ⬇</a>` : ""}
           </div>
-        </li>`
+        </li>`,
     )
-    .join('\n');
+    .join("\n");
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -108,7 +111,7 @@ function buildPage(slug, meta, skills, packetHref) {
   <section class="domain" style="--domain:${meta.color}">
     <header class="dhead">
       <div><span class="dicon">${meta.icon}</span><h2>${esc(meta.name)}</h2><span class="dcount">${skills.length} skills</span></div>
-      ${packetHref ? `<a class="bundle" href="${packetHref}" download>⬇ Full domain packet (Word)</a>` : ''}
+      ${packetHref ? `<a class="bundle" href="${packetHref}" download>⬇ Full domain packet (Word)</a>` : ""}
     </header>
     <ul class="skills">
 ${rows}
@@ -131,12 +134,12 @@ for (const slug of Object.keys(DOMAINS)) {
   }
   const skills = readdirSync(dir)
     .filter((f) => /^6-.*\.html$/.test(f))
-    .map((f) => f.replace(/\.html$/, ''))
+    .map((f) => f.replace(/\.html$/, ""))
     .sort()
     .map((file) => ({ file, ...readSkill(join(dir, `${file}.html`)) }));
   const packetFile = `${slug}-review-packet.docx`;
-  const packetHref = existsSync(join(dir, packetFile)) ? `./${packetFile}` : '';
-  writeFileSync(join(dir, 'index.html'), buildPage(slug, DOMAINS[slug], skills, packetHref));
+  const packetHref = existsSync(join(dir, packetFile)) ? `./${packetFile}` : "";
+  writeFileSync(join(dir, "index.html"), buildPage(slug, DOMAINS[slug], skills, packetHref));
   console.log(`✓ ${slug}/index.html (${skills.length} skills)`);
   built++;
 }

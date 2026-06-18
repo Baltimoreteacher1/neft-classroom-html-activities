@@ -2,14 +2,7 @@
 // No fabricated metadata: structured fields come from lessons/<id>/config.json;
 // every other activity contributes its real page <title> and derived URL.
 // Output: data/registry.json  (run: npm run generate-registry)
-import {
-  readFileSync,
-  writeFileSync,
-  readdirSync,
-  existsSync,
-  statSync,
-  mkdirSync,
-} from "node:fs";
+import { readFileSync, writeFileSync, readdirSync, existsSync, statSync, mkdirSync } from "node:fs";
 import { join, relative } from "node:path";
 
 const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
@@ -39,14 +32,9 @@ function typeFor(topDir, urlPath) {
   if (topDir.startsWith("mcap")) return "Assessment";
   if (topDir === "spiral-review" || topDir.includes("review")) return "Review";
   if (topDir === "teacher-tools" || topDir === "dashboard") return "Tool";
-  if (topDir === "summer-bridge" || topDir === "bridge-to-grade-6")
-    return "Bridge";
+  if (topDir === "summer-bridge" || topDir === "bridge-to-grade-6") return "Bridge";
   if (topDir === "end-of-year") return "Hub";
-  if (
-    /project|world-architect|statistics-of-my-life|webquests|hyperdocs/.test(
-      topDir + urlPath,
-    )
-  )
+  if (/project|world-architect|statistics-of-my-life|webquests|hyperdocs/.test(topDir + urlPath))
     return "Project";
   return "Activity";
 }
@@ -151,9 +139,7 @@ for (const name of readdirSync(join(ROOT, "games"))) {
 const byUrl = new Map();
 for (const e of entries) if (!byUrl.has(e.url)) byUrl.set(e.url, e);
 const list = [...byUrl.values()].sort(
-  (a, b) =>
-    a.activityType.localeCompare(b.activityType) ||
-    a.title.localeCompare(b.title),
+  (a, b) => a.activityType.localeCompare(b.activityType) || a.title.localeCompare(b.title),
 );
 
 const counts = {};

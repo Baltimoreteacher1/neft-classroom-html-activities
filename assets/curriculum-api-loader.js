@@ -8,11 +8,9 @@
   var API_BASE =
     (window.CURRICULUM_SYNC && window.CURRICULUM_SYNC.apiBase) ||
     "https://neft-school-hub-api.neftjd.workers.dev";
-  var TENANT_ID =
-    (window.CURRICULUM_SYNC && window.CURRICULUM_SYNC.tenantId) || "harbor-view";
+  var TENANT_ID = (window.CURRICULUM_SYNC && window.CURRICULUM_SYNC.tenantId) || "harbor-view";
   var COURSE = (window.CURRICULUM_SYNC && window.CURRICULUM_SYNC.course) || "grade6-math";
-  var ENABLED =
-    window.CURRICULUM_SYNC && window.CURRICULUM_SYNC.useApiContent === true;
+  var ENABLED = window.CURRICULUM_SYNC && window.CURRICULUM_SYNC.useApiContent === true;
 
   function tryLoadFromApi() {
     if (!ENABLED) return Promise.resolve(false);
@@ -22,9 +20,7 @@
       tenant_id: TENANT_ID,
       course: COURSE,
     });
-    return fetch(
-      API_BASE.replace(/\/$/, "") + "/api/curriculum/content?" + params.toString(),
-    )
+    return fetch(API_BASE.replace(/\/$/, "") + "/api/curriculum/content?" + params.toString())
       .then(function (r) {
         return r.ok ? r.json() : null;
       })

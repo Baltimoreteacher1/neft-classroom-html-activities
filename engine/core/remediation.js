@@ -65,9 +65,7 @@ export function buildWorkedExample(question) {
       .split(/(?<=[.!?])\s+/)
       .filter((s) => s.trim().length)
       .slice(0, 4)
-      .forEach((sentence, i) =>
-        steps.push({ label: `Step ${i + 1}`, work: sentence.trim() }),
-      );
+      .forEach((sentence, i) => steps.push({ label: `Step ${i + 1}`, work: sentence.trim() }));
   }
 
   if (

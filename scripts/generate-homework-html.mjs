@@ -39,7 +39,9 @@ function esc(s) {
 }
 
 function escAttr(s) {
-  return String(s ?? "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+  return String(s ?? "")
+    .replace(/\\/g, "\\\\")
+    .replace(/'/g, "\\'");
 }
 
 function slugId(label, idx) {
@@ -174,10 +176,7 @@ function shuffleSteps(steps, correctOrder) {
     const j = Math.floor(Math.random() * (i + 1));
     [out[i], out[j]] = [out[j], out[i]];
   }
-  if (
-    correctOrder.length > 1 &&
-    out.every((s, i) => s === correctOrder[i])
-  ) {
+  if (correctOrder.length > 1 && out.every((s, i) => s === correctOrder[i])) {
     return [out[out.length - 1], ...out.slice(0, -1)];
   }
   return out;
@@ -208,9 +207,7 @@ function headerKeysFor(columns, sampleRow) {
     else if (i === columns.length - 1 && rowKeys.includes("answer")) guesses.push("answer");
     else {
       const used = new Set(guesses);
-      const candidate = rowKeys.find(
-        (k) => !used.has(k) && k !== "given" && k !== "answer"
-      );
+      const candidate = rowKeys.find((k) => !used.has(k) && k !== "given" && k !== "answer");
       guesses.push(candidate || rowKeys[i] || "answer");
     }
   }
@@ -242,7 +239,6 @@ function lessonConfigs() {
   return out;
 }
 
-
 function renderProblem(it, pIdx) {
   const type = it.type;
   let problemSubtype = "";
@@ -254,47 +250,55 @@ function renderProblem(it, pIdx) {
     const choices = it.choices || [];
     const correctIdx = it.correctIndex !== undefined ? it.correctIndex : 0;
     const explanation = it.explanation || "";
-    
+
     content = `
       <div class="problem-body">
         <p class="problem-stem">${esc(stem)}</p>
         ${renderFamilyTip("multiple-choice")}
         <div class="mc-options" data-correct="${correctIdx}" data-explanation="${esc(explanation)}">
-          ${choices.map((choice, cIdx) => `
+          ${choices
+            .map(
+              (choice, cIdx) => `
             <label class="mc-option-label" id="label_q_${pIdx}_${cIdx}">
               <input type="radio" name="q_${pIdx}" value="${cIdx}" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
               <span class="choice-text">${esc(choice)}</span>
             </label>
-          `).join("")}
+          `,
+            )
+            .join("")}
         </div>
       </div>
     `;
   } else if (type === "matching-game") {
     const label = it.label || it.instructions || "Match each item to its correct partner.";
     const pairs = it.pairs || [];
-    
+
     // Get unique sorted matches for dropdown options
-    const allMatches = pairs.map(p => p.match);
+    const allMatches = pairs.map((p) => p.match);
     const sortedMatches = [...new Set(allMatches)].sort();
-    
+
     content = `
       <div class="problem-body">
         <p class="problem-stem">${esc(label)}</p>
         ${renderFamilyTip("matching-game")}
         <div class="matching-pairs">
-          ${pairs.map((p, pairIdx) => `
+          ${pairs
+            .map(
+              (p, pairIdx) => `
             <div class="matching-row" data-term="${esc(p.term)}" data-correct="${esc(p.match)}">
               <div class="matching-term">${esc(p.term)}</div>
               <div class="matching-select-container">
                 <select name="q_${pIdx}_pair_${pairIdx}" class="custom-select matching-select" onchange="saveState(); updateProgress();">
                   <option value="">-- Choose Match --</option>
-                  ${sortedMatches.map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join("")}
+                  ${sortedMatches.map((m) => `<option value="${esc(m)}">${esc(m)}</option>`).join("")}
                 </select>
                 <span class="feedback-badge"></span>
               </div>
             </div>
-          `).join("")}
+          `,
+            )
+            .join("")}
         </div>
       </div>
     `;
@@ -391,10 +395,10 @@ function renderProblem(it, pIdx) {
     }
   } else if (type === "fill-table") {
     const label = it.label || it.instructions || "Complete the table.";
-    
+
     let headers = [];
     let rowsData = [];
-    
+
     if (Array.isArray(it.headers) && Array.isArray(it.rows) && Array.isArray(it.rows[0])) {
       // Shape B: 2D array + editableCells
       headers = it.headers;
@@ -426,7 +430,7 @@ function renderProblem(it, pIdx) {
         });
       });
     }
-    
+
     content = `
       <div class="problem-body">
         <p class="problem-stem">${esc(label)}</p>
@@ -435,15 +439,18 @@ function renderProblem(it, pIdx) {
           <table class="fill-table">
             <thead>
               <tr>
-                ${headers.map(h => `<th>${esc(h)}</th>`).join("")}
+                ${headers.map((h) => `<th>${esc(h)}</th>`).join("")}
               </tr>
             </thead>
             <tbody>
-              ${rowsData.map((row, rIdx) => `
+              ${rowsData
+                .map(
+                  (row, rIdx) => `
                 <tr>
-                  ${row.map((cell, cIdx) => {
-                    if (cell.isEditable) {
-                      return `
+                  ${row
+                    .map((cell, cIdx) => {
+                      if (cell.isEditable) {
+                        return `
                         <td>
                           <div class="table-input-wrapper">
                             <input type="text" 
@@ -456,12 +463,15 @@ function renderProblem(it, pIdx) {
                           </div>
                         </td>
                       `;
-                    } else {
-                      return `<td>${esc(cell.val)}</td>`;
-                    }
-                  }).join("")}
+                      } else {
+                        return `<td>${esc(cell.val)}</td>`;
+                      }
+                    })
+                    .join("")}
                 </tr>
-              `).join("")}
+              `,
+                )
+                .join("")}
             </tbody>
           </table>
         </div>
@@ -472,7 +482,7 @@ function renderProblem(it, pIdx) {
     const workedExample = it.workedExample || [];
     const errorStep = it.errorStep !== undefined ? it.errorStep : 0;
     const correctWork = it.correctWork || "";
-    
+
     content = `
       <div class="problem-body">
         <h3 class="error-analysis-title">⚠️ ${esc(title)}</h3>
@@ -482,13 +492,17 @@ function renderProblem(it, pIdx) {
         <div class="clipboard-box">
           <div class="clipboard-top"></div>
           <div class="clipboard-paper">
-            ${workedExample.map((step, sIdx) => `
+            ${workedExample
+              .map(
+                (step, sIdx) => `
               <div class="worked-step" id="step_q_${pIdx}_${sIdx + 1}">
                 <span class="step-badge">Step ${sIdx + 1}</span>
                 <span class="step-label">${esc(step.label)}:</span>
                 <span class="step-work">${esc(step.work)}</span>
               </div>
-            `).join("")}
+            `,
+              )
+              .join("")}
           </div>
         </div>
         
@@ -519,19 +533,23 @@ function renderProblem(it, pIdx) {
     const sentenceFrame = it.sentenceFrame || "";
     const keywords = it.keywords || [];
     const minLength = it.minLength || 15;
-    
+
     content = `
       <div class="problem-body">
         <p class="problem-stem">${esc(prompt)}</p>
         ${renderFamilyTip("open-response")}
         
-        ${sentenceFrame ? `
+        ${
+          sentenceFrame
+            ? `
           <div class="sentence-frame-card">
             <span class="sentence-frame-tag">💡 Sentence Starter:</span>
             <span class="sentence-frame-text" onclick="insertSentenceStarter(${pIdx}, '${esc(sentenceFrame).replace(/'/g, "\\'")}')">"${esc(sentenceFrame)}"</span>
             <span class="click-to-insert-hint">(Click to insert starter)</span>
           </div>
-        ` : ""}
+        `
+            : ""
+        }
         
         <div class="open-response-wrapper">
           <textarea id="open_response_${pIdx}" 
@@ -543,18 +561,22 @@ function renderProblem(it, pIdx) {
           <span class="feedback-badge"></span>
         </div>
         
-        ${keywords.length > 0 ? `
+        ${
+          keywords.length > 0
+            ? `
           <div class="word-bank-container">
             <div class="word-bank-label">Key Vocabulary to include (click to insert):</div>
             <div class="word-bank-chips">
-              ${keywords.map(kw => `<span class="word-chip" onclick="insertWord(${pIdx}, '${esc(kw).replace(/'/g, "\\'")}')">${esc(kw)}</span>`).join("")}
+              ${keywords.map((kw) => `<span class="word-chip" onclick="insertWord(${pIdx}, '${esc(kw).replace(/'/g, "\\'")}')">${esc(kw)}</span>`).join("")}
             </div>
           </div>
-        ` : ""}
+        `
+            : ""
+        }
       </div>
     `;
   }
-  
+
   const displayType = problemSubtype || type;
   return `
     <section class="problem-section card" id="problem_${pIdx}" data-problem-type="${type}"${problemSubtype ? ` data-problem-subtype="${problemSubtype}"` : ""}>
@@ -3082,14 +3104,14 @@ window.onload = function() {
 function main() {
   const lessons = lessonConfigs();
   let count = 0;
-  
+
   for (const { id, config } of lessons) {
     const homeworkHtml = generateHtml(id, config);
     const lessonPath = join(lessonsDir, id, "homework.html");
     writeFileSync(lessonPath, homeworkHtml);
     count++;
   }
-  
+
   console.log(`Successfully generated ${count} interactive homework HTML files.`);
 }
 

@@ -27,8 +27,7 @@ export function renderCoordinatePlane(
   const text = label || instructions;
   if (text) {
     const p = document.createElement("p");
-    p.style.cssText =
-      "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
+    p.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
     p.textContent = text;
     wrapper.append(p);
   }
@@ -45,10 +44,8 @@ export function renderCoordinatePlane(
   const plot = W - PAD * 2;
   const toX = (v) => PAD + ((v - min) / (max - min)) * plot;
   const toY = (v) => PAD + ((max - v) / (max - min)) * plot;
-  const fromX = (sx) =>
-    Math.round((((sx - PAD) / plot) * (max - min) + min) / step) * step;
-  const fromY = (sy) =>
-    Math.round((((PAD + plot - sy) / plot) * (max - min) + min) / step) * step;
+  const fromX = (sx) => Math.round((((sx - PAD) / plot) * (max - min) + min) / step) * step;
+  const fromY = (sy) => Math.round((((PAD + plot - sy) / plot) * (max - min) + min) / step) * step;
 
   const NS = "http://www.w3.org/2000/svg";
   const svg = document.createElementNS(NS, "svg");
@@ -257,16 +254,14 @@ export function renderCoordinatePlane(
     if (handled) {
       e.preventDefault();
       drawCross();
-      if (e.key.startsWith("Arrow"))
-        live.textContent = `Cursor at ${cur.x}, ${cur.y}.`;
+      if (e.key.startsWith("Arrow")) live.textContent = `Cursor at ${cur.x}, ${cur.y}.`;
     }
   });
 
   // Plane on the left, coordinates-to-plot list on the right (next to the
   // plane) so the ordered pairs are always visible. Stacks on narrow screens.
   const layout = document.createElement("div");
-  layout.style.cssText =
-    "display:flex; flex-wrap:wrap; gap:var(--sp-4); align-items:flex-start;";
+  layout.style.cssText = "display:flex; flex-wrap:wrap; gap:var(--sp-4); align-items:flex-start;";
   const planeWrap = document.createElement("div");
   planeWrap.style.cssText = "flex:1 1 340px; min-width:280px;";
   planeWrap.append(svg);
@@ -304,8 +299,7 @@ export function renderCoordinatePlane(
     return `${targets.length - placed.length} of ${targets.length} point(s) remaining. Click or use arrows + Enter.`;
   }
   const instr = document.createElement("div");
-  instr.style.cssText =
-    "font-size:0.82rem; color:var(--muted); margin-top:var(--sp-2);";
+  instr.style.cssText = "font-size:0.82rem; color:var(--muted); margin-top:var(--sp-2);";
   instr.textContent = remainingText();
   wrapper.append(instr);
 
@@ -320,19 +314,13 @@ export function renderCoordinatePlane(
   checkBtn.addEventListener("click", () => {
     if (done) return;
     if (placed.length < targets.length) {
-      showFb(
-        feedbackSlot,
-        "hint",
-        `Plot all ${targets.length} points before checking.`,
-      );
+      showFb(feedbackSlot, "hint", `Plot all ${targets.length} points before checking.`);
       return;
     }
     let correct = 0;
     const used = new Set();
     placed.forEach((p) => {
-      const m = targets.findIndex(
-        (t, ti) => !used.has(ti) && t.x === p.x && t.y === p.y,
-      );
+      const m = targets.findIndex((t, ti) => !used.has(ti) && t.x === p.x && t.y === p.y);
       if (m >= 0) {
         used.add(m);
         p.dot.setAttribute("fill", "#0f7c4a");
@@ -354,11 +342,7 @@ export function renderCoordinatePlane(
     if (correct === targets.length) {
       done = true;
       checkBtn.style.display = "none";
-      showFb(
-        feedbackSlot,
-        "success",
-        `All ${targets.length} points plotted correctly!`,
-      );
+      showFb(feedbackSlot, "success", `All ${targets.length} points plotted correctly!`);
       onComplete?.(correct, targets.length);
     } else {
       showFb(

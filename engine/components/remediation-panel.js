@@ -104,11 +104,7 @@ function injectStyles() {
 function pulseMount(card) {
   if (!card || reducedMotion()) return;
   card.classList.add("rp-pulse");
-  card.addEventListener(
-    "animationend",
-    () => card.classList.remove("rp-pulse"),
-    { once: true },
-  );
+  card.addEventListener("animationend", () => card.classList.remove("rp-pulse"), { once: true });
 }
 
 // Stagger a small reveal animation on an element (skipped under reduced motion).
@@ -139,12 +135,7 @@ function successBurst(root) {
   const burst = document.createElement("div");
   burst.className = "rp-burst";
   burst.setAttribute("aria-hidden", "true");
-  const colors = [
-    "var(--teal)",
-    "var(--success)",
-    "var(--navy)",
-    "var(--coral)",
-  ];
+  const colors = ["var(--teal)", "var(--success)", "var(--navy)", "var(--coral)"];
   const count = 14;
   for (let i = 0; i < count; i++) {
     const p = document.createElement("span");
@@ -183,8 +174,7 @@ function stepCard(title, icon) {
   card.className = "card card-coral remediation-step";
   card.setAttribute("role", "group");
   card.setAttribute("tabindex", "-1");
-  if (!reducedMotion())
-    card.style.animation = "feedbackIn 0.3s var(--ease-spring)";
+  if (!reducedMotion()) card.style.animation = "feedbackIn 0.3s var(--ease-spring)";
   const h = document.createElement("h4");
   h.style.cssText =
     "color:var(--coral); margin:0 0 var(--sp-3); display:flex; align-items:center; gap:var(--sp-2);";
@@ -208,10 +198,7 @@ function continueButton(label, onClick) {
  * Mounts the scaffolded remediation flow for a single missed practice question.
  * Calls onComplete({ recovered }) when the student exits the loop.
  */
-export function renderRemediation(
-  container,
-  { question, state, level, onComplete },
-) {
+export function renderRemediation(container, { question, state, level, onComplete }) {
   injectStyles();
   const controller = createRemediation({ question, state, level });
   const root = document.createElement("div");
@@ -251,8 +238,7 @@ export function renderRemediation(
 
   function finish(payload) {
     clearSteps();
-    const recovered =
-      payload?.recovered !== false && payload?.reason !== "exhausted";
+    const recovered = payload?.recovered !== false && payload?.reason !== "exhausted";
     if (recovered) successBurst(root);
     announce(
       recovered
@@ -285,8 +271,7 @@ export function renderRemediation(
     const { card, body } = stepCard("Worked example", "📝");
     const intro = document.createElement("p");
     intro.style.cssText = "margin:0 0 var(--sp-3); color:var(--muted);";
-    intro.textContent =
-      "Here is how a similar problem is solved, step by step.";
+    intro.textContent = "Here is how a similar problem is solved, step by step.";
     body.append(intro);
 
     const list = document.createElement("ol");
@@ -308,11 +293,7 @@ export function renderRemediation(
       body.append(c);
     }
 
-    body.append(
-      continueButton("I see — let's try it guided", () =>
-        drive({ correct: false }),
-      ),
-    );
+    body.append(continueButton("I see — let's try it guided", () => drive({ correct: false })));
     root.append(card);
     announce("Worked example shown. Review the steps, then continue.");
     focusStep(card);
@@ -330,8 +311,7 @@ export function renderRemediation(
     const prompts = payload.prompts || [];
     let revealed = 0;
     const stepsWrap = document.createElement("div");
-    stepsWrap.style.cssText =
-      "display:flex; flex-direction:column; gap:var(--sp-2);";
+    stepsWrap.style.cssText = "display:flex; flex-direction:column; gap:var(--sp-2);";
     body.append(stepsWrap);
 
     const nextBtn = continueButton("Continue", () => {});
@@ -364,8 +344,7 @@ export function renderRemediation(
         tapFeedback(revealBtn);
         const ans = document.createElement("div");
         ans.setAttribute("role", "status");
-        ans.style.cssText =
-          "margin-top:var(--sp-2); font-family:var(--font-mono);";
+        ans.style.cssText = "margin-top:var(--sp-2); font-family:var(--font-mono);";
         ans.innerHTML = `<strong>${esc(sp.label)}:</strong> ${esc(sp.answer)}`;
         row.append(ans);
         revealAnim(ans);
@@ -404,11 +383,7 @@ export function renderRemediation(
         correctIndex: q.correctIndex,
         explanation: q.explanation,
         onAnswer: (ok) => {
-          announce(
-            ok
-              ? "Correct. Back on track."
-              : "Not yet — review the steps above.",
-          );
+          announce(ok ? "Correct. Back on track." : "Not yet — review the steps above.");
           setTimeout(() => drive({ correct: ok }), 1200);
         },
       });
@@ -417,11 +392,7 @@ export function renderRemediation(
       p.style.cssText = "margin:0 0 var(--sp-3); line-height:1.55;";
       p.textContent = q.prompt || "When you're ready, continue.";
       body.append(p);
-      body.append(
-        continueButton("I understand — continue", () =>
-          drive({ correct: true }),
-        ),
-      );
+      body.append(continueButton("I understand — continue", () => drive({ correct: true })));
     }
     root.append(card);
     announce("Confidence builder question.");

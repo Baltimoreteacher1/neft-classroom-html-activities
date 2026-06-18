@@ -248,8 +248,7 @@
     loadTags();
     current = {
       sessionId: safeRandom(),
-      studentNameOrCode:
-        ("" + (opts.studentNameOrCode || "Student")).trim() || "Student",
+      studentNameOrCode: ("" + (opts.studentNameOrCode || "Student")).trim() || "Student",
       lessonId: opts.lessonId || "",
       activityId: opts.activityId || "",
       activityTitle: opts.activityTitle || "",
@@ -275,10 +274,8 @@
       problemId: entry.problemId == null ? "" : "" + entry.problemId,
       skill: entry.skill || "",
       prompt: entry.prompt || "",
-      studentAnswer:
-        entry.studentAnswer == null ? "" : "" + entry.studentAnswer,
-      correctAnswer:
-        entry.correctAnswer == null ? "" : "" + entry.correctAnswer,
+      studentAnswer: entry.studentAnswer == null ? "" : "" + entry.studentAnswer,
+      correctAnswer: entry.correctAnswer == null ? "" : "" + entry.correctAnswer,
       result: entry.result || "incorrect",
       hintUsed: !!entry.hintUsed,
       attempts: typeof entry.attempts === "number" ? entry.attempts : 1,
@@ -315,20 +312,17 @@
       if (isCorrect) correct++;
       if (r.hintUsed) hints++;
       var s = r.skill || "general";
-      if (!bySkill[s])
-        bySkill[s] = { skill: s, total: 0, correct: 0, hints: 0 };
+      if (!bySkill[s]) bySkill[s] = { skill: s, total: 0, correct: 0, hints: 0 };
       bySkill[s].total++;
       if (isCorrect) bySkill[s].correct++;
       if (r.hintUsed) bySkill[s].hints++;
       if (r.misconceptionTag) {
-        tagCounts[r.misconceptionTag] =
-          (tagCounts[r.misconceptionTag] || 0) + 1;
+        tagCounts[r.misconceptionTag] = (tagCounts[r.misconceptionTag] || 0) + 1;
       }
       if (
         isCorrect &&
         r.explanationScore &&
-        (r.explanationScore.level === "missing" ||
-          r.explanationScore.level === "too_short")
+        (r.explanationScore.level === "missing" || r.explanationScore.level === "too_short")
       ) {
         solvedNotExplained++;
       }
@@ -414,14 +408,8 @@
   function downloadCSV(filename) {
     var csv = exportCSV();
     if (!csv) return false;
-    if (
-      global.EvidenceCSV &&
-      typeof global.EvidenceCSV.download === "function"
-    ) {
-      return global.EvidenceCSV.download(
-        csv,
-        filename || defaultFileName("csv"),
-      );
+    if (global.EvidenceCSV && typeof global.EvidenceCSV.download === "function") {
+      return global.EvidenceCSV.download(csv, filename || defaultFileName("csv"));
     }
     return false;
   }
@@ -439,10 +427,7 @@
     return loadTags().then(function () {
       // Re-read summary so tag objects resolve after async load.
       var s = getSessionSummary();
-      if (
-        global.EvidenceReport &&
-        typeof global.EvidenceReport.render === "function"
-      ) {
+      if (global.EvidenceReport && typeof global.EvidenceReport.render === "function") {
         global.EvidenceReport.render(container, s, {
           tags: tagsCache,
           onExportCSV: function () {

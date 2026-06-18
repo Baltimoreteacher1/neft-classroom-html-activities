@@ -1,11 +1,4 @@
-const CONFETTI_COLORS = [
-  "#F2C15B",
-  "#1FA6A2",
-  "#D9795D",
-  "#12355B",
-  "#0FA958",
-  "#2F80D1",
-];
+const CONFETTI_COLORS = ["#F2C15B", "#1FA6A2", "#D9795D", "#12355B", "#0FA958", "#2F80D1"];
 
 const ENCOURAGE_CORRECT = [
   "Nice work!",
@@ -65,11 +58,7 @@ export function createEngagement(state) {
     if (streak >= 2) {
       el.classList.add("visible");
       el.classList.add("streak-bump");
-      el.addEventListener(
-        "animationend",
-        () => el.classList.remove("streak-bump"),
-        { once: true },
-      );
+      el.addEventListener("animationend", () => el.classList.remove("streak-bump"), { once: true });
     } else {
       el.classList.remove("visible");
     }
@@ -93,11 +82,9 @@ export function createEngagement(state) {
 
       if (element) {
         element.classList.add("pop-correct");
-        element.addEventListener(
-          "animationend",
-          () => element.classList.remove("pop-correct"),
-          { once: true },
-        );
+        element.addEventListener("animationend", () => element.classList.remove("pop-correct"), {
+          once: true,
+        });
       }
 
       const streakMsg =
@@ -132,11 +119,9 @@ export function createEngagement(state) {
 
     showCorrect(element) {
       element.classList.add("pop-correct");
-      element.addEventListener(
-        "animationend",
-        () => element.classList.remove("pop-correct"),
-        { once: true },
-      );
+      element.addEventListener("animationend", () => element.classList.remove("pop-correct"), {
+        once: true,
+      });
     },
 
     showIncorrect(element) {
@@ -145,8 +130,7 @@ export function createEngagement(state) {
     },
 
     showConfetti(container) {
-      if (!container)
-        container = document.querySelector(".celebration-overlay");
+      if (!container) container = document.querySelector(".celebration-overlay");
       if (!container) return;
 
       const count = 40;
@@ -155,8 +139,7 @@ export function createEngagement(state) {
       for (let i = 0; i < count; i++) {
         const piece = document.createElement("div");
         piece.className = "confetti-piece";
-        const color =
-          CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+        const color = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
         const size = 6 + Math.random() * 8;
         const isCircle = Math.random() > 0.5;
 
@@ -179,8 +162,7 @@ export function createEngagement(state) {
     },
 
     showBurstConfetti(container) {
-      if (!container)
-        container = document.querySelector(".celebration-overlay");
+      if (!container) container = document.querySelector(".celebration-overlay");
       if (!container) return;
       for (let i = 0; i < 3; i++) {
         setTimeout(() => this.showConfetti(container), i * 200);

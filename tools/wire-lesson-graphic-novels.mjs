@@ -18,9 +18,17 @@ import { dirname, join } from "node:path";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 const EP = {
-  u1e1: ["axiom-city-u1-e1-benchmark-and-brass.html", "Axiom City: Benchmark & Brass", "Benchmark & Brass"],
+  u1e1: [
+    "axiom-city-u1-e1-benchmark-and-brass.html",
+    "Axiom City: Benchmark & Brass",
+    "Benchmark & Brass",
+  ],
   u7e1: ["axiom-city-u7-e1-lights-out.html", "Axiom City: Lights Out", "Lights Out"],
-  u7e2: ["axiom-city-u7-e2-signal-in-the-snow.html", "Axiom City: Signal in the Snow", "Signal in the Snow"],
+  u7e2: [
+    "axiom-city-u7-e2-signal-in-the-snow.html",
+    "Axiom City: Signal in the Snow",
+    "Signal in the Snow",
+  ],
   u7e3: ["axiom-city-u7-e3-the-grid-map.html", "Axiom City: The Grid Map", "The Grid Map"],
   u8e1: ["axiom-city-u8-e1-the-antechamber.html", "Axiom City: The Antechamber", "The Antechamber"],
   u8e2: ["axiom-city-u8-e2-the-gear-locks.html", "Axiom City: The Gear Locks", "The Gear Locks"],
@@ -30,24 +38,43 @@ const EP = {
 // classroom lesson id -> episode key (by standard / topic)
 const MAP = {
   "1-5": "u1e1",
-  "7-1": "u8e1", "7-1-flagship": "u8e1", "7-2": "u8e1",
-  "7-3": "u8e2", "7-7": "u8e2",
-  "7-4": "u8e3", "7-5": "u8e3", "7-6": "u8e3",
-  "9-1": "u7e3", "9-1-flagship": "u7e3", "9-5": "u7e3", "9-6": "u7e3", "9-7": "u7e3",
+  "7-1": "u8e1",
+  "7-1-flagship": "u8e1",
+  "7-2": "u8e1",
+  "7-3": "u8e2",
+  "7-7": "u8e2",
+  "7-4": "u8e3",
+  "7-5": "u8e3",
+  "7-6": "u8e3",
+  "9-1": "u7e3",
+  "9-1-flagship": "u7e3",
+  "9-5": "u7e3",
+  "9-6": "u7e3",
+  "9-7": "u7e3",
   "9-2": "u7e2",
-  "9-3": "u7e1", "9-4": "u7e1",
+  "9-3": "u7e1",
+  "9-4": "u7e1",
 };
 
-const DESC = "Interactive Axiom City episode — read straight through; gates coach but never block. Not graded.";
+const DESC =
+  "Interactive Axiom City episode — read straight through; gates coach but never block. Not graded.";
 
-let wired = 0, skipped = 0;
+let wired = 0,
+  skipped = 0;
 for (const [lesson, epKey] of Object.entries(MAP)) {
   const cfgPath = join(ROOT, "lessons", lesson, "config.json");
-  if (!existsSync(cfgPath)) { console.log(`· missing config: ${lesson}`); continue; }
+  if (!existsSync(cfgPath)) {
+    console.log(`· missing config: ${lesson}`);
+    continue;
+  }
   let raw = readFileSync(cfgPath, "utf8");
-  if (raw.includes('"graphicNovel"')) { skipped++; continue; }
+  if (raw.includes('"graphicNovel"')) {
+    skipped++;
+    continue;
+  }
   const cfg = JSON.parse(raw);
-  const standard = cfg.standard || (Array.isArray(cfg.standards) ? cfg.standards[0] : cfg.standards) || "";
+  const standard =
+    cfg.standard || (Array.isArray(cfg.standards) ? cfg.standards[0] : cfg.standards) || "";
   const [file, title, menuTitle] = EP[epKey];
   const block =
     `,\n  "graphicNovel": {\n` +

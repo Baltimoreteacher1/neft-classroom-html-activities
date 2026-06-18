@@ -88,11 +88,7 @@
         return {};
       });
       if (!response.ok) {
-        throw new Error(
-          data.message ||
-            data.error ||
-            "Score upload failed " + response.status,
-        );
+        throw new Error(data.message || data.error || "Score upload failed " + response.status);
       }
       return data;
     }
@@ -114,16 +110,12 @@
     return isFinite(n) ? n : null;
   }
   function uuid() {
-    if (global.crypto && global.crypto.randomUUID)
-      return global.crypto.randomUUID();
-    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
-      /[xy]/g,
-      function (c) {
-        var r = (Math.random() * 16) | 0,
-          v = c === "x" ? r : (r & 0x3) | 0x8;
-        return v.toString(16);
-      },
-    );
+    if (global.crypto && global.crypto.randomUUID) return global.crypto.randomUUID();
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+      var r = (Math.random() * 16) | 0,
+        v = c === "x" ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
   }
   function persist(key, makeVal) {
     try {
@@ -240,10 +232,8 @@
       payload = payload || {};
       var id = resolveIdentity(payload.studentName, payload.classPeriod);
       var aId = payload.activityId || activityId();
-      var score =
-        payload.score != null ? payload.score : payload.problemsCorrect;
-      var maxScore =
-        payload.maxScore != null ? payload.maxScore : payload.problemsAttempted;
+      var score = payload.score != null ? payload.score : payload.problemsCorrect;
+      var maxScore = payload.maxScore != null ? payload.maxScore : payload.problemsAttempted;
       var dedupeKey =
         aId +
         "|" +
@@ -270,14 +260,10 @@
           score: score,
           maxScore: maxScore,
           stars: payload.stars,
-          problemsCorrect:
-            payload.problemsCorrect != null ? payload.problemsCorrect : score,
+          problemsCorrect: payload.problemsCorrect != null ? payload.problemsCorrect : score,
           problemsAttempted:
-            payload.problemsAttempted != null
-              ? payload.problemsAttempted
-              : maxScore,
-          misconceptions:
-            payload.misconceptions || payload.misconception_tags || [],
+            payload.problemsAttempted != null ? payload.problemsAttempted : maxScore,
+          misconceptions: payload.misconceptions || payload.misconception_tags || [],
           durationSec:
             payload.durationSec != null
               ? payload.durationSec
@@ -343,8 +329,7 @@
           var correctCount = perItem.filter(function (it) {
             return it && it.correct;
           }).length;
-          var stu =
-            typeof K.getStudent === "function" ? K.getStudent() || {} : {};
+          var stu = typeof K.getStudent === "function" ? K.getStudent() || {} : {};
           send({
             studentName: stu.alias,
             classPeriod: stu.section,
@@ -355,9 +340,7 @@
             maxScore: result.possible,
             percent: result.scorePercent,
             problemsCorrect: perItem.length ? correctCount : result.earned,
-            problemsAttempted: perItem.length
-              ? perItem.length
-              : result.possible,
+            problemsAttempted: perItem.length ? perItem.length : result.possible,
           });
         }
       } catch (e) {}
@@ -384,10 +367,8 @@
     identify: function (student) {
       student = student || {};
       try {
-        if (student.studentName)
-          localStorage.setItem("edupulse_student_name", student.studentName);
-        if (student.classPeriod)
-          localStorage.setItem("edupulse_class_period", student.classPeriod);
+        if (student.studentName) localStorage.setItem("edupulse_student_name", student.studentName);
+        if (student.classPeriod) localStorage.setItem("edupulse_class_period", student.classPeriod);
       } catch (e) {}
       return this;
     },

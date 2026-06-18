@@ -47,9 +47,7 @@ function lessonConfigs() {
     .filter((d) => LESSON_DIR_RE.test(d))
     .filter((d) => existsSync(join(lessonsDir, d, "config.json")))
     .map((id) => {
-      const cfg = JSON.parse(
-        readFileSync(join(lessonsDir, id, "config.json"), "utf8")
-      );
+      const cfg = JSON.parse(readFileSync(join(lessonsDir, id, "config.json"), "utf8"));
       const isFlagship = id.endsWith("-flagship") || cfg.flagship != null;
       return { id, cfg, isFlagship };
     })
@@ -73,10 +71,7 @@ function findPostTestBase(unit) {
   const dir = join(root, "post-test");
   if (!existsSync(dir)) return null;
   const files = readdirSync(dir).filter(
-    (f) =>
-      f.startsWith(`unit${unit}-`) &&
-      f.endsWith(".html") &&
-      !/-level-\d+\.html$/.test(f)
+    (f) => f.startsWith(`unit${unit}-`) && f.endsWith(".html") && !/-level-\d+\.html$/.test(f),
   );
   return files[0] || null;
 }
@@ -105,8 +100,8 @@ function unitResources(unit) {
         "Graphic Novel #1",
         `/graphic-novels/unit${unit}/graphic-novel-1.html`,
         true,
-        "Level 1 · Support"
-      )
+        "Level 1 · Support",
+      ),
     );
   }
   if (has("graphic-novels", `unit${unit}`, "graphic-novel-2.html")) {
@@ -115,8 +110,8 @@ function unitResources(unit) {
         "Graphic Novel #2",
         `/graphic-novels/unit${unit}/graphic-novel-2.html`,
         true,
-        "Level 2 · Enrichment"
-      )
+        "Level 2 · Enrichment",
+      ),
     );
   }
 
@@ -135,8 +130,8 @@ function unitResources(unit) {
         "Pre-Test",
         `/pre-test/unit${unit}-review.html`,
         true,
-        variants ? `+ ${variants}` : ""
-      )
+        variants ? `+ ${variants}` : "",
+      ),
     );
   }
 
@@ -176,8 +171,8 @@ function lessonResources(id) {
           resLink(
             "📝 Editable Slides (PPTX + Google Slides)",
             `/lessons/${id}/editable-slides.html`,
-            true
-          )
+            true,
+          ),
         );
       } else if (has("lessons", id, "slides.pptx")) {
         pills.push(resLink("📝 Editable Slides", `/lessons/${id}/slides.pptx`, true));
@@ -190,14 +185,10 @@ function lessonResources(id) {
     pills.push(resLink("Guided Notes", `/lessons/${id}/notes.html`, true));
   }
   if (has("lessons", id, "downloads", `${id}-notes.pdf`)) {
-    pills.push(
-      resLink("Notes PDF", `/lessons/${id}/downloads/${id}-notes.pdf`, true)
-    );
+    pills.push(resLink("Notes PDF", `/lessons/${id}/downloads/${id}-notes.pdf`, true));
   }
   if (has("lessons", id, "downloads", `${id}-notes.docx`)) {
-    pills.push(
-      resLink("Notes DOCX", `/lessons/${id}/downloads/${id}-notes.docx`, true)
-    );
+    pills.push(resLink("Notes DOCX", `/lessons/${id}/downloads/${id}-notes.docx`, true));
   }
   if (has("lessons", id, "homework.docx")) {
     pills.push(resLink("Homework", `/lessons/${id}/homework.docx`, true));
@@ -206,11 +197,7 @@ function lessonResources(id) {
     pills.push(resLink("Interactive Homework", `/lessons/${id}/homework.html`, true));
   }
   pills.push(
-    resLink(
-      "Google Forms",
-      `/teacher-tools/post-forms/?lesson=${encodeURIComponent(id)}`,
-      true
-    )
+    resLink("Google Forms", `/teacher-tools/post-forms/?lesson=${encodeURIComponent(id)}`, true),
   );
 
   return pills;
@@ -222,20 +209,15 @@ function lessonNode(item) {
   const { id, cfg, isFlagship } = item;
   const pills = lessonResources(id);
   const title = cfg.title || id;
-  const flag = isFlagship
-    ? ` <span class="badge badge-flagship">Flagship</span>`
-    : "";
-  const std = cfg.standard
-    ? ` <span class="badge badge-std">${esc(cfg.standard)}</span>`
-    : "";
-  const obj = cfg.contentObjective
-    ? `<p class="lesson-obj">${esc(cfg.contentObjective)}</p>`
-    : "";
+  const flag = isFlagship ? ` <span class="badge badge-flagship">Flagship</span>` : "";
+  const std = cfg.standard ? ` <span class="badge badge-std">${esc(cfg.standard)}</span>` : "";
+  const obj = cfg.contentObjective ? `<p class="lesson-obj">${esc(cfg.contentObjective)}</p>` : "";
   const resHtml = pills.length
     ? `<div class="res-row">${pills.join("")}</div>`
     : `<p class="res-none">No resources published yet.</p>`;
   // data-search holds the searchable haystack (title + standard + id + objective).
-  const haystack = `${id} ${title} ${cfg.standard || ""} ${cfg.contentObjective || ""}`.toLowerCase();
+  const haystack =
+    `${id} ${title} ${cfg.standard || ""} ${cfg.contentObjective || ""}`.toLowerCase();
   return `<details class="lesson" data-search="${esc(haystack)}">
           <summary class="lesson-sum">
             <span class="lesson-head">Lesson ${esc(id)} · ${esc(title)}${flag}${std}</span>
@@ -480,7 +462,7 @@ function main() {
     linkCount += lessonResources(id).filter((p) => p.includes('class="res"')).length;
   }
   console.log(
-    `Generated curriculum/index.html — ${units.size} units, ${lessons.length} lessons, ~${linkCount} live resource links.`
+    `Generated curriculum/index.html — ${units.size} units, ${lessons.length} lessons, ~${linkCount} live resource links.`,
   );
 }
 

@@ -134,8 +134,7 @@ export function renderVocabDragMatch(container, { terms, onComplete }) {
     "display:grid; grid-template-columns:1fr 40px 1fr; gap:var(--sp-3); align-items:start;";
 
   const termsCol = document.createElement("div");
-  termsCol.style.cssText =
-    "display:flex; flex-direction:column; gap:var(--sp-2);";
+  termsCol.style.cssText = "display:flex; flex-direction:column; gap:var(--sp-2);";
 
   const arrowCol = document.createElement("div");
   arrowCol.className = "vdm-arrow-col";
@@ -143,8 +142,7 @@ export function renderVocabDragMatch(container, { terms, onComplete }) {
     "display:flex; flex-direction:column; gap:var(--sp-2); align-items:center; padding-top:12px;";
 
   const defsCol = document.createElement("div");
-  defsCol.style.cssText =
-    "display:flex; flex-direction:column; gap:var(--sp-2);";
+  defsCol.style.cssText = "display:flex; flex-direction:column; gap:var(--sp-2);";
 
   let selectedTerm = null;
   let selectedTermEl = null;
@@ -264,9 +262,7 @@ export function renderVocabDragMatch(container, { terms, onComplete }) {
 
   function checkMatch(draggedTermName, defTermName, defEl) {
     attempts++;
-    const termEl = termsCol.querySelector(
-      `[data-term-name="${CSS.escape(draggedTermName)}"]`,
-    );
+    const termEl = termsCol.querySelector(`[data-term-name="${CSS.escape(draggedTermName)}"]`);
 
     if (draggedTermName === defTermName) {
       matched.add(draggedTermName);

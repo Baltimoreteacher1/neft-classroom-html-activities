@@ -79,11 +79,7 @@ function buildResources(id, lessonDir) {
 }
 
 function objectiveOf(config) {
-  return (
-    config.contentObjective ||
-    config.languageObjective ||
-    ""
-  );
+  return config.contentObjective || config.languageObjective || "";
 }
 
 function main() {
@@ -176,7 +172,7 @@ function main() {
   console.log(
     `  Resources present -> student:${tally.student} notes:${tally.notes} ` +
       `docx:${tally.notesDocx} pdf:${tally.notesPdf} homework:${tally.homework} ` +
-      `readiness:${tally.readiness} assessment:${tally.assessment}`
+      `readiness:${tally.readiness} assessment:${tally.assessment}`,
   );
   if (skipped.length) {
     console.log(`  Skipped: ${skipped.join(", ")}`);

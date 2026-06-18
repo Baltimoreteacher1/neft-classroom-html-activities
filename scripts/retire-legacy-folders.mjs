@@ -13,7 +13,8 @@ const RETIREMENT_MAPPING = {
   "unit-4/decimaloperationsreview": "math/unit-1/supplemental/decimaloperationsreview",
   "unit-4/decimals-diner": "math/unit-1/supplemental/decimals-diner",
   "unit-4/longdivisionmcapreview": "math/unit-1/supplemental/longdivisionmcapreview",
-  "unit-4/math6unit4interactivestudystudio": "math/unit-1/supplemental/math6unit4interactivestudystudio",
+  "unit-4/math6unit4interactivestudystudio":
+    "math/unit-1/supplemental/math6unit4interactivestudystudio",
 
   // unit-5 -> math/unit-5/supplemental
   "unit-5/5-1-5-3practice": "math/unit-5/supplemental/5-1-5-3practice",
@@ -36,14 +37,14 @@ const RETIREMENT_MAPPING = {
   "unit-5/world-architect-project": "math/unit-5/supplemental/world-architect-project",
 
   // unit-5-practice -> math/unit-5/supplemental/practice-hub
-  "unit-5-practice": "math/unit-5/supplemental/practice-hub"
+  "unit-5-practice": "math/unit-5/supplemental/practice-hub",
 };
 
 const PARENT_REDIRECTS = {
   "/unit-1/": "/math/unit-1/supplemental/",
   "/unit-4/": "/math/unit-1/supplemental/",
   "/unit-5/": "/math/unit-5/supplemental/",
-  "/unit-5-practice/": "/math/unit-5/supplemental/practice-hub/"
+  "/unit-5-practice/": "/math/unit-5/supplemental/practice-hub/",
 };
 
 function walk(dir) {
@@ -109,7 +110,7 @@ function runMigration() {
 
   // 3. Perform URL replacements in all source files
   console.log("Replacing link references in HTML/JS/JSON files...");
-  const files = walk(root).filter(f => {
+  const files = walk(root).filter((f) => {
     const ext = extname(f);
     return ext === ".html" || ext === ".js" || ext === ".json" || ext === ".mjs";
   });
@@ -208,7 +209,7 @@ function runMigration() {
     const routesObj = JSON.parse(readFileSync(routesPath, "utf8"));
     const existingRedirects = routesObj.redirects || [];
 
-    const existingSources = new Set(existingRedirects.map(r => r.source));
+    const existingSources = new Set(existingRedirects.map((r) => r.source));
 
     // Add parent level redirects
     for (const [src, dest] of Object.entries(PARENT_REDIRECTS)) {
@@ -216,7 +217,7 @@ function runMigration() {
         existingRedirects.push({
           source: src,
           destination: dest,
-          status: 301
+          status: 301,
         });
       }
       const srcNoTrail = src.slice(0, -1);
@@ -224,7 +225,7 @@ function runMigration() {
         existingRedirects.push({
           source: srcNoTrail,
           destination: dest,
-          status: 301
+          status: 301,
         });
       }
     }
@@ -239,14 +240,14 @@ function runMigration() {
         existingRedirects.push({
           source: srcWithTrail,
           destination: destWithTrail,
-          status: 301
+          status: 301,
         });
       }
       if (!existingSources.has(srcNoTrail)) {
         existingRedirects.push({
           source: srcNoTrail,
           destination: destWithTrail,
-          status: 301
+          status: 301,
         });
       }
     }

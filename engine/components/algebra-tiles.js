@@ -23,8 +23,7 @@ export function renderAlgebraTiles(
 
   if (instructions) {
     const p = document.createElement("p");
-    p.style.cssText =
-      "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
+    p.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
     p.textContent = instructions;
     wrapper.append(p);
   }
@@ -79,10 +78,7 @@ export function renderAlgebraTiles(
     el.dataset.value = String(t.value);
     el.dataset.tileId = `tile-${counter++}`;
     el.textContent = tileLabel(t);
-    el.setAttribute(
-      "aria-label",
-      `${t.type === "x" ? "variable" : "unit"} tile ${tileLabel(t)}`,
-    );
+    el.setAttribute("aria-label", `${t.type === "x" ? "variable" : "unit"} tile ${tileLabel(t)}`);
     el.style.cssText = `
       min-width:${t.type === "x" ? "56px" : "44px"}; height:44px; border-radius:var(--radius-sm);
       border:2px solid var(--navy); background:${tileColor(t)};
@@ -100,10 +96,7 @@ export function renderAlgebraTiles(
         e.preventDefault();
         el.click();
       }
-      if (
-        (e.key === "Delete" || e.key === "Backspace") &&
-        el.parentElement === work
-      ) {
+      if ((e.key === "Delete" || e.key === "Backspace") && el.parentElement === work) {
         e.preventDefault();
         tray.append(el);
         announce();
@@ -139,8 +132,7 @@ export function renderAlgebraTiles(
       "touchstart",
       (e) => {
         clone = el.cloneNode(true);
-        clone.style.cssText +=
-          ";position:fixed;z-index:1000;pointer-events:none;opacity:0.85;";
+        clone.style.cssText += ";position:fixed;z-index:1000;pointer-events:none;opacity:0.85;";
         document.body.append(clone);
         moveClone(e);
       },
@@ -178,9 +170,8 @@ export function renderAlgebraTiles(
     const t = e.touches?.[0] || e.changedTouches?.[0];
     if (!t) return null;
     return (
-      document
-        .elementsFromPoint(t.clientX, t.clientY)
-        .find((n) => n.dataset && n.dataset.zone) || null
+      document.elementsFromPoint(t.clientX, t.clientY).find((n) => n.dataset && n.dataset.zone) ||
+      null
     );
   }
 
@@ -229,8 +220,7 @@ export function renderAlgebraTiles(
   function exprString() {
     const { xCount, unitCount } = composition();
     const parts = [];
-    if (xCount)
-      parts.push(`${xCount === 1 ? "" : xCount === -1 ? "-" : xCount}x`);
+    if (xCount) parts.push(`${xCount === 1 ? "" : xCount === -1 ? "-" : xCount}x`);
     if (unitCount) parts.push(`${unitCount > 0 ? "+" : ""}${unitCount}`);
     return parts.join(" ") || "0";
   }
@@ -260,11 +250,7 @@ export function renderAlgebraTiles(
     if (ok) {
       done = true;
       checkBtn.style.display = "none";
-      showFb(
-        feedbackSlot,
-        "success",
-        `Correct! ${exprString()} = ${evaluate()} when x = ${xVal}.`,
-      );
+      showFb(feedbackSlot, "success", `Correct! ${exprString()} = ${evaluate()} when x = ${xVal}.`);
       burstConfetti(work);
       onComplete?.(1, 1);
     } else {

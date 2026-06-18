@@ -18,15 +18,12 @@
   if (window.GameFX) return;
 
   var reduce = !!(
-    window.matchMedia &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
   );
 
   var COLORS = ["#1aa179", "#f0a400", "#3b7dd8", "#e0542f", "#9b5de5"];
-  var SUCCESS_CLASS =
-    /(^|\s)(right|correct|is-correct|is-right|ok|success|won|gfx-correct)(\s|$)/i;
-  var INTERACTIVE =
-    /(^|\s)(opt|option|choice|answer|tile|card|btn|cell|key)(\s|$)/i;
+  var SUCCESS_CLASS = /(^|\s)(right|correct|is-correct|is-right|ok|success|won|gfx-correct)(\s|$)/i;
+  var INTERACTIVE = /(^|\s)(opt|option|choice|answer|tile|card|btn|cell|key)(\s|$)/i;
 
   function burst(cx, cy) {
     if (reduce) return;
@@ -46,12 +43,7 @@
           [
             { transform: "translate(-50%,-50%) scale(1)", opacity: 1 },
             {
-              transform:
-                "translate(calc(-50% + " +
-                tx +
-                "px), calc(-50% + " +
-                ty +
-                "px)) scale(0)",
+              transform: "translate(calc(-50% + " + tx + "px), calc(-50% + " + ty + "px)) scale(0)",
               opacity: 0,
             },
           ],
@@ -142,16 +134,14 @@
     try {
       var heroes = document.querySelectorAll("[data-parallax], .ghero");
       Array.prototype.forEach.call(heroes, function (h) {
-        var layer =
-          h.querySelector("[data-parallax-layer]") || h.querySelector(".deco");
+        var layer = h.querySelector("[data-parallax-layer]") || h.querySelector(".deco");
         if (!layer) return;
         h.addEventListener("pointermove", function (e) {
           var r = h.getBoundingClientRect();
           if (!r.width) return;
           var dx = (e.clientX - r.left) / r.width - 0.5;
           var dy = (e.clientY - r.top) / r.height - 0.5;
-          layer.style.transform =
-            "translate(" + dx * 16 + "px," + dy * 16 + "px)";
+          layer.style.transform = "translate(" + dx * 16 + "px," + dy * 16 + "px)";
         });
         h.addEventListener("pointerleave", function () {
           layer.style.transform = "";

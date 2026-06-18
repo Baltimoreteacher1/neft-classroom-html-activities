@@ -43,25 +43,90 @@ function resourcesFor(id) {
   const dl = (suffix) => `lessons/${id}/downloads/${id}-${suffix}`;
   const res = {
     lesson: { path: `/lessons/${id}/`, file: `lessons/${id}/index.html`, applicable: true },
-    guidedNotes: { path: `/lessons/${id}/notes.html`, file: `lessons/${id}/notes.html`, applicable: true },
-    guidedNotesPdf: { path: `/lessons/${id}/downloads/${id}-notes.pdf`, file: dl("notes.pdf"), applicable: true },
-    guidedNotesDocx: { path: `/lessons/${id}/downloads/${id}-notes.docx`, file: dl("notes.docx"), applicable: true },
-    handout: { path: `/lessons/${id}/handout.html`, file: `lessons/${id}/handout.html`, applicable: true },
-    homework: { path: `/lessons/${id}/homework.html`, file: `lessons/${id}/homework.html`, applicable: true },
-    homeworkDocx: { path: `/lessons/${id}/homework.docx`, file: `lessons/${id}/homework.docx`, applicable: true },
-    slides: { path: `/lessons/${id}/slides.html`, file: `lessons/${id}/slides.html`, applicable: true },
-    familyPage: { path: `/lessons/${id}/family/`, file: `lessons/${id}/family/index.html`, applicable: true },
-    teacherNotes: { path: `/lessons/${id}/teacher-notes/`, file: `lessons/${id}/teacher-notes/index.html`, applicable: true },
-    studentHelp: { path: `/lessons/${id}/student-help/`, file: `lessons/${id}/student-help/index.html`, applicable: true },
-    exitTicket: { path: `/lessons/${id}/#reflect`, file: `lessons/${id}/index.html`, applicable: true, inline: true },
+    guidedNotes: {
+      path: `/lessons/${id}/notes.html`,
+      file: `lessons/${id}/notes.html`,
+      applicable: true,
+    },
+    guidedNotesPdf: {
+      path: `/lessons/${id}/downloads/${id}-notes.pdf`,
+      file: dl("notes.pdf"),
+      applicable: true,
+    },
+    guidedNotesDocx: {
+      path: `/lessons/${id}/downloads/${id}-notes.docx`,
+      file: dl("notes.docx"),
+      applicable: true,
+    },
+    handout: {
+      path: `/lessons/${id}/handout.html`,
+      file: `lessons/${id}/handout.html`,
+      applicable: true,
+    },
+    homework: {
+      path: `/lessons/${id}/homework.html`,
+      file: `lessons/${id}/homework.html`,
+      applicable: true,
+    },
+    homeworkDocx: {
+      path: `/lessons/${id}/homework.docx`,
+      file: `lessons/${id}/homework.docx`,
+      applicable: true,
+    },
+    slides: {
+      path: `/lessons/${id}/slides.html`,
+      file: `lessons/${id}/slides.html`,
+      applicable: true,
+    },
+    familyPage: {
+      path: `/lessons/${id}/family/`,
+      file: `lessons/${id}/family/index.html`,
+      applicable: true,
+    },
+    teacherNotes: {
+      path: `/lessons/${id}/teacher-notes/`,
+      file: `lessons/${id}/teacher-notes/index.html`,
+      applicable: true,
+    },
+    studentHelp: {
+      path: `/lessons/${id}/student-help/`,
+      file: `lessons/${id}/student-help/index.html`,
+      applicable: true,
+    },
+    exitTicket: {
+      path: `/lessons/${id}/#reflect`,
+      file: `lessons/${id}/index.html`,
+      applicable: true,
+      inline: true,
+    },
   };
 
   if (present(`lessons/${id}/bundle/interactive.html`)) {
-    res.studentPractice = { path: `/lessons/${id}/bundle/student-practice.md`, file: `lessons/${id}/bundle/student-practice.md`, applicable: true };
-    res.printablePacket = { path: `/lessons/${id}/bundle/sub-packet.html`, file: `lessons/${id}/bundle/sub-packet.html`, applicable: true };
-    res.activityPack = { path: `/lessons/${id}/bundle/activity-pack.html`, file: `lessons/${id}/bundle/activity-pack.html`, applicable: true };
-    res.subPlan = { path: `/lessons/${id}/bundle/sub-packet.html`, file: `lessons/${id}/bundle/sub-packet.html`, applicable: true };
-    res.interactive = { path: `/lessons/${id}/bundle/interactive.html`, file: `lessons/${id}/bundle/interactive.html`, applicable: true };
+    res.studentPractice = {
+      path: `/lessons/${id}/bundle/student-practice.md`,
+      file: `lessons/${id}/bundle/student-practice.md`,
+      applicable: true,
+    };
+    res.printablePacket = {
+      path: `/lessons/${id}/bundle/sub-packet.html`,
+      file: `lessons/${id}/bundle/sub-packet.html`,
+      applicable: true,
+    };
+    res.activityPack = {
+      path: `/lessons/${id}/bundle/activity-pack.html`,
+      file: `lessons/${id}/bundle/activity-pack.html`,
+      applicable: true,
+    };
+    res.subPlan = {
+      path: `/lessons/${id}/bundle/sub-packet.html`,
+      file: `lessons/${id}/bundle/sub-packet.html`,
+      applicable: true,
+    };
+    res.interactive = {
+      path: `/lessons/${id}/bundle/interactive.html`,
+      file: `lessons/${id}/bundle/interactive.html`,
+      applicable: true,
+    };
   }
 
   return res;

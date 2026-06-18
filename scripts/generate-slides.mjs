@@ -1,49 +1,49 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { buildTptSlideDeckV3 } from './lib/tpt-slide-deck-v3.mjs';
-import { getUnitPalette, paletteToCssVars } from './lib/slide-theme-palettes.mjs';
-import { REFERENCE_CSS, tokensToCssVars } from './lib/slide-reference-theme.mjs';
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import { buildTptSlideDeckV3 } from "./lib/tpt-slide-deck-v3.mjs";
+import { getUnitPalette, paletteToCssVars } from "./lib/slide-theme-palettes.mjs";
+import { REFERENCE_CSS, tokensToCssVars } from "./lib/slide-reference-theme.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const root = path.resolve(__dirname, '..');
-const lessonsDir = path.join(root, 'lessons');
+const root = path.resolve(__dirname, "..");
+const lessonsDir = path.join(root, "lessons");
 
 // Define color tokens matching Design System
-const COLOR_BG = '#F7F4EC';
-const COLOR_NAVY = '#17324D';
-const COLOR_TEAL = '#1FA6A2';
-const COLOR_TEAL_LIGHT = '#DFF2EE';
-const COLOR_AMBER = '#F2C15B';
-const COLOR_BODY_TEXT = '#24323F';
-const COLOR_WHITE = '#FFFFFF';
-const COLOR_CORAL = '#FCE6DE';
-const COLOR_GRAY = '#8A96A3';
+const COLOR_BG = "#F7F4EC";
+const COLOR_NAVY = "#17324D";
+const COLOR_TEAL = "#1FA6A2";
+const COLOR_TEAL_LIGHT = "#DFF2EE";
+const COLOR_AMBER = "#F2C15B";
+const COLOR_BODY_TEXT = "#24323F";
+const COLOR_WHITE = "#FFFFFF";
+const COLOR_CORAL = "#FCE6DE";
+const COLOR_GRAY = "#8A96A3";
 
 // Helper to escape HTML strings
 function esc(str) {
-  return String(str || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+  return String(str || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 // Maps lesson theme to curated non-purple hex colors
 function getThemeColor(theme) {
   const themes = {
-    'space-station': '#17324D',     // Navy
-    'detective-agency': '#8A96A3',   // Slate Gray
-    'sports-analytics': '#1FA6A2',   // Teal
-    'treasure-map': '#D9795D',       // Terracotta/Coral
-    'culinary-academy': '#E4C050',   // Warm Gold
-    'architecture-firm': '#17324D',  // Navy
-    'time-capsule': '#8A96A3',       // Slate Gray
-    'music-studio': '#1FA6A2',       // Teal
-    'arcade-builder': '#D9795D',     // Warm Coral
+    "space-station": "#17324D", // Navy
+    "detective-agency": "#8A96A3", // Slate Gray
+    "sports-analytics": "#1FA6A2", // Teal
+    "treasure-map": "#D9795D", // Terracotta/Coral
+    "culinary-academy": "#E4C050", // Warm Gold
+    "architecture-firm": "#17324D", // Navy
+    "time-capsule": "#8A96A3", // Slate Gray
+    "music-studio": "#1FA6A2", // Teal
+    "arcade-builder": "#D9795D", // Warm Coral
   };
-  return themes[theme] || '#1FA6A2'; // Default to teal
+  return themes[theme] || "#1FA6A2"; // Default to teal
 }
 
 // Generate high-fidelity math SVG diagram based on data.launch.visual
@@ -51,10 +51,10 @@ function generateMathVisualSvg(lessonId, data) {
   const width = 440;
   const height = 240;
   let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 ${width} ${height}" style="background:white; border-radius:8px;">`;
-  
+
   // Outer frame
   svg += `<rect x="5" y="5" width="${width - 10}" height="${height - 10}" fill="#F9FBFC" stroke="${COLOR_TEAL}" stroke-width="2"/>`;
-  
+
   // Background Grid Lines
   for (let x = 20; x < width - 10; x += 30) {
     svg += `<line x1="${x}" y1="5" x2="${x}" y2="${height - 5}" stroke="#E1EAEF" stroke-width="1"/>`;
@@ -64,163 +64,167 @@ function generateMathVisualSvg(lessonId, data) {
   }
 
   const visual = data.launch && data.launch.visual;
-  
+
   if (visual && visual.kind) {
     const kind = visual.kind;
-    
-    if (kind === 'data-chips') {
-      const title = visual.title || 'Data Visual Model';
+
+    if (kind === "data-chips") {
+      const title = visual.title || "Data Visual Model";
       const values = visual.values || [];
-      const unit = visual.unit || '';
-      
+      const unit = visual.unit || "";
+
       svg += `<text x="20" y="32" font-family="Outfit, sans-serif" font-size="12" fill="${COLOR_NAVY}" font-weight="bold">${esc(title)}</text>`;
-      
+
       const startX = 40;
       const count = values.length;
       const spacing = count > 1 ? Math.min(80, (width - 80) / (count - 1)) : 60;
-      
+
       values.forEach((val, idx) => {
         const cx = startX + idx * spacing;
         const cy = 110;
         svg += `<circle cx="${cx}" cy="${cy}" r="20" fill="${COLOR_TEAL_LIGHT}" stroke="${COLOR_TEAL}" stroke-width="2" />`;
         svg += `<text x="${cx}" y="${cy + 5}" font-family="Outfit, sans-serif" font-size="13" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle">${esc(val)}</text>`;
       });
-      
+
       if (unit) {
         svg += `<text x="20" y="195" font-family="Hanken Grotesk, sans-serif" font-size="11" fill="${COLOR_NAVY}" font-weight="bold">${esc(unit)}</text>`;
       }
-      
-    } else if (kind === 'number-line') {
-      const title = visual.title || 'Number Line Model';
+    } else if (kind === "number-line") {
+      const title = visual.title || "Number Line Model";
       const min = visual.min !== undefined ? visual.min : 0;
       const max = visual.max !== undefined ? visual.max : 10;
       const step = visual.step || 1;
       const points = visual.points || visual.targets || [];
-      const caption = visual.caption || '';
-      
+      const caption = visual.caption || "";
+
       svg += `<text x="20" y="32" font-family="Outfit, sans-serif" font-size="12" fill="${COLOR_NAVY}" font-weight="bold">${esc(title)}</text>`;
-      
+
       const startX = 40;
       const endX = width - 40;
       const lineY = 120;
-      
+
       svg += `<line x1="${startX}" y1="${lineY}" x2="${endX}" y2="${lineY}" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
       svg += `<line x1="${startX}" y1="${lineY}" x2="${startX + 8}" y2="${lineY - 6}" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
       svg += `<line x1="${startX}" y1="${lineY}" x2="${startX + 8}" y2="${lineY + 6}" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
       svg += `<line x1="${endX}" y1="${lineY}" x2="${endX - 8}" y2="${lineY - 6}" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
       svg += `<line x1="${endX}" y1="${lineY}" x2="${endX - 8}" y2="${lineY + 6}" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
-      
+
       const range = max - min;
       const startTickX = startX + 15;
       const tickSpacing = (endX - startX - 30) / (range || 1);
-      
+
       for (let v = min; v <= max; v += step) {
         const tx = startTickX + (v - min) * tickSpacing;
         svg += `<line x1="${tx}" y1="${lineY - 6}" x2="${tx}" y2="${lineY + 6}" stroke="${COLOR_NAVY}" stroke-width="1.5"/>`;
         svg += `<text x="${tx}" y="${lineY + 18}" font-family="Outfit, sans-serif" font-size="9" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle">${v}</text>`;
       }
-      
-      points.forEach(pt => {
+
+      points.forEach((pt) => {
         const val = pt.value !== undefined ? pt.value : pt;
-        const label = pt.label || '';
+        const label = pt.label || "";
         const tx = startTickX + (val - min) * tickSpacing;
-        
+
         svg += `<circle cx="${tx}" cy="${lineY}" r="5" fill="${COLOR_AMBER}" stroke="${COLOR_NAVY}" stroke-width="1.2"/>`;
         if (label) {
           svg += `<text x="${tx}" y="${lineY - 12}" font-family="Outfit, sans-serif" font-size="8" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle">${esc(label)}</text>`;
         }
       });
-      
+
       if (caption) {
         svg += `<text x="20" y="210" font-family="Hanken Grotesk, sans-serif" font-size="10" fill="${COLOR_BODY_TEXT}" font-style="italic">${esc(caption)}</text>`;
       }
-      
-    } else if (kind === 'tape-diagram') {
-      const title = visual.title || 'Tape Diagram Model';
+    } else if (kind === "tape-diagram") {
+      const title = visual.title || "Tape Diagram Model";
       const rows = visual.rows || [];
-      const caption = visual.caption || '';
-      
+      const caption = visual.caption || "";
+
       svg += `<text x="20" y="32" font-family="Outfit, sans-serif" font-size="12" fill="${COLOR_NAVY}" font-weight="bold">${esc(title)}</text>`;
-      
+
       let currentY = 55;
       rows.forEach((row, rowIdx) => {
         const parts = row.parts || [];
         const totalVal = parts.reduce((sum, p) => sum + (p.value || 0), 0);
         const rowWidth = width - 80;
         const startX = 40;
-        
+
         if (row.label) {
           svg += `<text x="${startX}" y="${currentY - 6}" font-family="Outfit, sans-serif" font-size="10" fill="${COLOR_NAVY}" font-weight="bold">${esc(row.label)}</text>`;
         }
-        
+
         let currentX = startX;
         parts.forEach((part, pIdx) => {
           const partVal = part.value || 0;
-          const partWidth = totalVal > 0 ? (partVal / totalVal) * rowWidth : rowWidth / (parts.length || 1);
+          const partWidth =
+            totalVal > 0 ? (partVal / totalVal) * rowWidth : rowWidth / (parts.length || 1);
           const partHeight = 35;
           const fill = pIdx % 2 === 0 ? COLOR_TEAL_LIGHT : COLOR_AMBER;
-          
+
           svg += `<rect x="${currentX}" y="${currentY}" width="${partWidth}" height="${partHeight}" fill="${fill}" stroke="${COLOR_NAVY}" stroke-width="1.5" rx="3" ry="3"/>`;
-          
+
           const textX = currentX + partWidth / 2;
           const textY = currentY + 22;
           const displayLabel = part.label || String(partVal);
           svg += `<text x="${textX}" y="${textY}" font-family="Outfit, sans-serif" font-size="9" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle">${esc(displayLabel)}</text>`;
-          
+
           currentX += partWidth;
         });
         currentY += 65;
       });
-      
+
       if (caption) {
         svg += `<text x="20" y="210" font-family="Hanken Grotesk, sans-serif" font-size="10" fill="${COLOR_BODY_TEXT}" font-style="italic">${esc(caption)}</text>`;
       }
-      
-    } else if (kind === 'dot-plot') {
-      const title = visual.title || 'Dot Plot Model';
+    } else if (kind === "dot-plot") {
+      const title = visual.title || "Dot Plot Model";
       const values = visual.values || [];
-      const xLabel = visual.xLabel || '';
-      const caption = visual.caption || '';
-      
+      const xLabel = visual.xLabel || "";
+      const caption = visual.caption || "";
+
       svg += `<text x="20" y="32" font-family="Outfit, sans-serif" font-size="12" fill="${COLOR_NAVY}" font-weight="bold">${esc(title)}</text>`;
-      
+
       let minVal = Math.min(...values);
       let maxVal = Math.max(...values);
-      if (minVal === Infinity || isNaN(minVal)) { minVal = 0; maxVal = 10; }
-      if (minVal === maxVal) { minVal = Math.max(0, minVal - 2); maxVal = maxVal + 2; }
-      
+      if (minVal === Infinity || isNaN(minVal)) {
+        minVal = 0;
+        maxVal = 10;
+      }
+      if (minVal === maxVal) {
+        minVal = Math.max(0, minVal - 2);
+        maxVal = maxVal + 2;
+      }
+
       const range = maxVal - minVal;
       const startX = 50;
       const endX = width - 50;
       const lineY = 160;
       const spacing = (endX - startX) / (range || 1);
-      
+
       svg += `<line x1="${startX - 10}" y1="${lineY}" x2="${endX + 10}" y2="${lineY}" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
-      
+
       for (let v = minVal; v <= maxVal; v++) {
         const tx = startX + (v - minVal) * spacing;
         svg += `<line x1="${tx}" y1="${lineY}" x2="${tx}" y2="${lineY + 5}" stroke="${COLOR_NAVY}" stroke-width="1"/>`;
         svg += `<text x="${tx}" y="${lineY + 15}" font-family="Outfit, sans-serif" font-size="8" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle">${v}</text>`;
       }
-      
+
       const counts = {};
-      values.forEach(val => {
+      values.forEach((val) => {
         counts[val] = (counts[val] || 0) + 1;
         const countIdx = counts[val];
         const tx = startX + (val - minVal) * spacing;
         const dotY = lineY - countIdx * 10 + 3;
         svg += `<circle cx="${tx}" cy="${dotY}" r="4" fill="${COLOR_TEAL}" stroke="${COLOR_NAVY}" stroke-width="1"/>`;
       });
-      
+
       if (xLabel) {
         svg += `<text x="${width / 2}" y="${lineY + 28}" font-family="Outfit, sans-serif" font-size="9" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle">${esc(xLabel)}</text>`;
       }
-      
+
       if (caption) {
         svg += `<text x="20" y="210" font-family="Hanken Grotesk, sans-serif" font-size="10" fill="${COLOR_BODY_TEXT}" font-style="italic">${esc(caption)}</text>`;
       }
-    } else if (kind === 'box-plot') {
-      const title = visual.title || 'Box Plot Model';
+    } else if (kind === "box-plot") {
+      const title = visual.title || "Box Plot Model";
       const min = visual.min !== undefined ? visual.min : 0;
       const q1 = visual.q1 !== undefined ? visual.q1 : 2;
       const median = visual.median !== undefined ? visual.median : 5;
@@ -228,103 +232,104 @@ function generateMathVisualSvg(lessonId, data) {
       const max = visual.max !== undefined ? visual.max : 10;
       const axisMin = visual.axisMin !== undefined ? visual.axisMin : 0;
       const axisMax = visual.axisMax !== undefined ? visual.axisMax : 10;
-      const caption = visual.caption || '';
-      
+      const caption = visual.caption || "";
+
       svg += `<text x="20" y="32" font-family="Outfit, sans-serif" font-size="12" fill="${COLOR_NAVY}" font-weight="bold">${esc(title)}</text>`;
-      
+
       const startX = 50;
       const endX = width - 50;
       const axisY = 160;
       const axisRange = axisMax - axisMin;
       const scale = (endX - startX) / (axisRange || 1);
-      
+
       // Draw axis
       svg += `<line x1="${startX}" y1="${axisY}" x2="${endX}" y2="${axisY}" stroke="${COLOR_NAVY}" stroke-width="1.5"/>`;
-      const step = axisRange > 20 ? 5 : (axisRange > 10 ? 2 : 1);
+      const step = axisRange > 20 ? 5 : axisRange > 10 ? 2 : 1;
       for (let v = axisMin; v <= axisMax; v += step) {
         const tx = startX + (v - axisMin) * scale;
         svg += `<line x1="${tx}" y1="${axisY}" x2="${tx}" y2="${axisY + 5}" stroke="${COLOR_NAVY}" stroke-width="1"/>`;
         svg += `<text x="${tx}" y="${axisY + 15}" font-family="Outfit, sans-serif" font-size="8" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle">${v}</text>`;
       }
-      
+
       const plotY = 90;
       const xMin = startX + (min - axisMin) * scale;
       const xQ1 = startX + (q1 - axisMin) * scale;
       const xMed = startX + (median - axisMin) * scale;
       const xQ3 = startX + (q3 - axisMin) * scale;
       const xMax = startX + (max - axisMin) * scale;
-      
+
       // Whiskers
       svg += `<line x1="${xMin}" y1="${plotY}" x2="${xQ1}" y2="${plotY}" stroke="${COLOR_NAVY}" stroke-width="1.5"/>`;
       svg += `<line x1="${xQ3}" y1="${plotY}" x2="${xMax}" y2="${plotY}" stroke="${COLOR_NAVY}" stroke-width="1.5"/>`;
       svg += `<line x1="${xMin}" y1="${plotY - 10}" x2="${xMin}" y2="${plotY + 10}" stroke="${COLOR_NAVY}" stroke-width="1.5"/>`;
       svg += `<line x1="${xMax}" y1="${plotY - 10}" x2="${xMax}" y2="${plotY + 10}" stroke="${COLOR_NAVY}" stroke-width="1.5"/>`;
-      
+
       // Box
       svg += `<rect x="${xQ1}" y="${plotY - 20}" width="${Math.max(2, xQ3 - xQ1)}" height="40" fill="${COLOR_TEAL_LIGHT}" stroke="${COLOR_NAVY}" stroke-width="1.5"/>`;
       // Median line
       svg += `<line x1="${xMed}" y1="${plotY - 20}" x2="${xMed}" y2="${plotY + 20}" stroke="${COLOR_NAVY}" stroke-width="2.5"/>`;
-      
+
       // Labels
       svg += `<text x="${xMin}" y="${plotY - 14}" font-family="Outfit, sans-serif" font-size="7" fill="${COLOR_NAVY}" text-anchor="middle">Min (${min})</text>`;
       svg += `<text x="${xQ1}" y="${plotY - 24}" font-family="Outfit, sans-serif" font-size="7" fill="${COLOR_NAVY}" text-anchor="middle">Q1 (${q1})</text>`;
       svg += `<text x="${xMed}" y="${plotY + 31}" font-family="Outfit, sans-serif" font-size="7" fill="${COLOR_NAVY}" text-anchor="middle">Med (${median})</text>`;
       svg += `<text x="${xQ3}" y="${plotY - 24}" font-family="Outfit, sans-serif" font-size="7" fill="${COLOR_NAVY}" text-anchor="middle">Q3 (${q3})</text>`;
       svg += `<text x="${xMax}" y="${plotY - 14}" font-family="Outfit, sans-serif" font-size="7" fill="${COLOR_NAVY}" text-anchor="middle">Max (${max})</text>`;
-      
+
       if (caption) {
         svg += `<text x="20" y="210" font-family="Hanken Grotesk, sans-serif" font-size="9" fill="${COLOR_BODY_TEXT}" font-style="italic">${esc(caption)}</text>`;
       }
-      
-    } else if (kind === 'histogram') {
-      const title = visual.title || 'Histogram Model';
-      const xLabel = visual.xLabel || '';
-      const yLabel = visual.yLabel || '';
+    } else if (kind === "histogram") {
+      const title = visual.title || "Histogram Model";
+      const xLabel = visual.xLabel || "";
+      const yLabel = visual.yLabel || "";
       const bars = visual.bars || [];
       const highlightIndex = visual.highlightIndex !== undefined ? visual.highlightIndex : -1;
-      const caption = visual.caption || '';
-      
+      const caption = visual.caption || "";
+
       svg += `<text x="20" y="32" font-family="Outfit, sans-serif" font-size="12" fill="${COLOR_NAVY}" font-weight="bold">${esc(title)}</text>`;
-      
-      const maxVal = Math.max(...bars.map(b => b.value || 0), 1);
+
+      const maxVal = Math.max(...bars.map((b) => b.value || 0), 1);
       const startX = 60;
       const endX = width - 40;
       const axisY = 165;
       const chartHeight = 110;
       const barWidth = (endX - startX) / (bars.length || 1);
-      
+
       bars.forEach((bar, idx) => {
         const val = bar.value || 0;
         const bHeight = (val / maxVal) * chartHeight;
         const bx = startX + idx * barWidth;
         const by = axisY - bHeight;
         const fill = idx === highlightIndex ? COLOR_AMBER : COLOR_TEAL_LIGHT;
-        
+
         svg += `<rect x="${bx}" y="${by}" width="${barWidth - 2}" height="${bHeight}" fill="${fill}" stroke="${COLOR_NAVY}" stroke-width="1.5"/>`;
         svg += `<text x="${bx + barWidth / 2}" y="${axisY + 12}" font-family="Outfit, sans-serif" font-size="8" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle">${esc(bar.label)}</text>`;
         svg += `<text x="${bx + barWidth / 2}" y="${by - 4}" font-family="Outfit, sans-serif" font-size="8" fill="${COLOR_NAVY}" text-anchor="middle">${val}</text>`;
       });
-      
+
       svg += `<line x1="${startX - 5}" y1="${axisY}" x2="${endX}" y2="${axisY}" stroke="${COLOR_NAVY}" stroke-width="1.5"/>`;
       svg += `<line x1="${startX - 5}" y1="${axisY - chartHeight - 5}" x2="${startX - 5}" y2="${axisY}" stroke="${COLOR_NAVY}" stroke-width="1.5"/>`;
-      
+
       if (xLabel) {
         svg += `<text x="${(startX + endX) / 2}" y="${axisY + 26}" font-family="Outfit, sans-serif" font-size="8" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle">${esc(xLabel)}</text>`;
       }
       if (yLabel) {
         svg += `<text x="${startX - 35}" y="${axisY - chartHeight / 2}" font-family="Outfit, sans-serif" font-size="8" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle" transform="rotate(-90 ${startX - 35} ${axisY - chartHeight / 2})">${esc(yLabel)}</text>`;
       }
-      
+
       if (caption) {
         svg += `<text x="20" y="212" font-family="Hanken Grotesk, sans-serif" font-size="9" fill="${COLOR_BODY_TEXT}" font-style="italic">${esc(caption)}</text>`;
       }
     }
   } else {
     // Standard based geometric / proportional fallback
-    const standard = data.standard || '';
-    const isGeometry = standard.includes('.G.') || lessonId.startsWith('5-') || lessonId.startsWith('10-');
-    const isProportional = standard.includes('.RP.') || lessonId.startsWith('3-') || lessonId.startsWith('4-');
-    
+    const standard = data.standard || "";
+    const isGeometry =
+      standard.includes(".G.") || lessonId.startsWith("5-") || lessonId.startsWith("10-");
+    const isProportional =
+      standard.includes(".RP.") || lessonId.startsWith("3-") || lessonId.startsWith("4-");
+
     if (isGeometry) {
       svg += `<polygon points="80,180 220,50 360,180" fill="${COLOR_TEAL_LIGHT}" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
       svg += `<line x1="80" y1="195" x2="360" y2="195" stroke="${COLOR_NAVY}" stroke-width="1.5" stroke-dasharray="3,3"/>`;
@@ -345,9 +350,9 @@ function generateMathVisualSvg(lessonId, data) {
       svg += `<line x1="40" y1="120" x2="48" y2="126" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
       svg += `<line x1="400" y1="120" x2="392" y2="114" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
       svg += `<line x1="400" y1="120" x2="392" y2="126" stroke="${COLOR_NAVY}" stroke-width="2"/>`;
-      
+
       const ticks = [100, 160, 220, 280, 340];
-      const labels = ['-2', '-1', '0', '1', '2'];
+      const labels = ["-2", "-1", "0", "1", "2"];
       for (let t = 0; t < ticks.length; t++) {
         svg += `<line x1="${ticks[t]}" y1="112" x2="${ticks[t]}" y2="128" stroke="${COLOR_NAVY}" stroke-width="1.5"/>`;
         svg += `<text x="${ticks[t]}" y="${142}" font-family="Outfit, sans-serif" font-size="9" fill="${COLOR_NAVY}" font-weight="bold" text-anchor="middle">${labels[t]}</text>`;
@@ -355,17 +360,17 @@ function generateMathVisualSvg(lessonId, data) {
       svg += `<circle cx="280" cy="120" r="5" fill="${COLOR_TEAL}" stroke="${COLOR_NAVY}" stroke-width="1"/>`;
     }
   }
-  
-  svg += '</svg>';
+
+  svg += "</svg>";
   return svg;
 }
 
 function generateInteractiveWidgetHtml(lessonId, standard) {
-  const std = (standard || '').toUpperCase();
-  const isRatio = std.includes('6.RP.1') || std.includes('6.RP.2') || std.includes('6.RP.3');
-  const isCoord = std.includes('6.NS.6') || std.includes('6.NS.8');
-  const isBalance = std.includes('6.EE.5') || std.includes('6.EE.7');
-  
+  const std = (standard || "").toUpperCase();
+  const isRatio = std.includes("6.RP.1") || std.includes("6.RP.2") || std.includes("6.RP.3");
+  const isCoord = std.includes("6.NS.6") || std.includes("6.NS.8");
+  const isBalance = std.includes("6.EE.5") || std.includes("6.EE.7");
+
   if (isRatio) {
     return `
       <div class="interactive-widget-container" style="position:relative; width:440px; height:240px; background:white; border-radius:8px; overflow:hidden; font-family:'Outfit',sans-serif; user-select:none;">
@@ -383,7 +388,7 @@ function generateInteractiveWidgetHtml(lessonId, standard) {
       </div>
     `;
   }
-  
+
   if (isCoord) {
     return `
       <div class="interactive-widget-container" style="position:relative; width:440px; height:240px; background:white; border-radius:8px; overflow:hidden; font-family:'Outfit',sans-serif; user-select:none;">
@@ -408,7 +413,7 @@ function generateInteractiveWidgetHtml(lessonId, standard) {
       </div>
     `;
   }
-  
+
   if (isBalance) {
     return `
       <div class="interactive-widget-container" style="position:relative; width:440px; height:240px; background:white; border-radius:8px; overflow:hidden; font-family:'Outfit',sans-serif; user-select:none;">
@@ -444,164 +449,191 @@ function generateInteractiveWidgetHtml(lessonId, standard) {
       </div>
     `;
   }
-  
+
   return null;
 }
 
 // Generate the self-contained slides HTML
 function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
-  const title = `Lesson ${lessonId}: ${data.title || 'Math Lesson'}`;
-  const standard = data.standard || '6th Grade Common Core';
+  const title = `Lesson ${lessonId}: ${data.title || "Math Lesson"}`;
+  const standard = data.standard || "6th Grade Common Core";
   const unit = data.unit || 1;
-  const contentObj = data.contentObjective || 'Understand the mathematical connections in this lesson.';
-  const langObj = data.languageObjective || 'Discuss findings using math vocab terms.';
-  
+  const contentObj =
+    data.contentObjective || "Understand the mathematical connections in this lesson.";
+  const langObj = data.languageObjective || "Discuss findings using math vocab terms.";
+
   // Theme Emoji / Badging
-  const themeEmoji = data.themeEmoji || '🚀';
-  const themeName = data.theme ? data.theme.toUpperCase().replace('-', ' ') : 'MATH CORE';
+  const themeEmoji = data.themeEmoji || "🚀";
+  const themeName = data.theme ? data.theme.toUpperCase().replace("-", " ") : "MATH CORE";
 
   // Slide 2 Narrative Launch Bindings
-  const launchBadge = data.launch ? (data.launch.badge || 'Scenario Launch') : 'Scenario Launch';
-  const launchNarrative = data.launch ? (data.launch.narrative || 'Solve the problem and record observations.') : 'Solve the problem and record observations.';
-  const noticePrompts = data.launch ? (data.launch.noticePrompts || []) : [];
-  const wonderPrompts = data.launch ? (data.launch.wonderPrompts || []) : [];
-  const noticeStemsHtml = noticePrompts.map(p => `<div>🔹 ${esc(p)}</div>`).join('');
-  const wonderStemsHtml = wonderPrompts.map(p => `<div>🔹 ${esc(p)}</div>`).join('');
-  
-  let launchVocabBankHtml = '';
+  const launchBadge = data.launch ? data.launch.badge || "Scenario Launch" : "Scenario Launch";
+  const launchNarrative = data.launch
+    ? data.launch.narrative || "Solve the problem and record observations."
+    : "Solve the problem and record observations.";
+  const noticePrompts = data.launch ? data.launch.noticePrompts || [] : [];
+  const wonderPrompts = data.launch ? data.launch.wonderPrompts || [] : [];
+  const noticeStemsHtml = noticePrompts.map((p) => `<div>🔹 ${esc(p)}</div>`).join("");
+  const wonderStemsHtml = wonderPrompts.map((p) => `<div>🔹 ${esc(p)}</div>`).join("");
+
+  let launchVocabBankHtml = "";
   if (data.turnAndTalk && data.turnAndTalk.length > 0) {
     const talk = data.turnAndTalk[0];
     if (talk.wordBank) {
-      launchVocabBankHtml = talk.wordBank.map(v => `<span class="vocab-pill" onclick="insertAtCursor(this.textContent)">${esc(v)}</span>`).join('');
+      launchVocabBankHtml = talk.wordBank
+        .map(
+          (v) =>
+            `<span class="vocab-pill" onclick="insertAtCursor(this.textContent)">${esc(v)}</span>`,
+        )
+        .join("");
     }
   }
-  
+
   // Slide 3 Concept Intro Bindings
   const conceptIntro = data.launch ? data.launch.conceptIntro : null;
-  const conceptHeading = conceptIntro ? (conceptIntro.heading || 'Concept Introduction') : 'Concept Introduction';
-  const conceptText = conceptIntro ? (conceptIntro.intro || 'Review the core concept of this lesson.') : 'Review the core concept of this lesson.';
-  const conceptKeyIdea = conceptIntro ? (conceptIntro.keyIdea || '') : '';
-  const iDoTitle = conceptIntro && conceptIntro.iDo ? (conceptIntro.iDo.title || 'Watch me (I Do)') : 'Watch me (I Do)';
-  const iDoLines = conceptIntro && conceptIntro.iDo ? (conceptIntro.iDo.lines || []) : [];
-  const weDoTitle = conceptIntro && conceptIntro.weDo ? (conceptIntro.weDo.title || 'Let\'s try together (We Do)') : 'Let\'s try together (We Do)';
-  const weDoLines = conceptIntro && conceptIntro.weDo ? (conceptIntro.weDo.lines || []) : [];
-  const youDoTitle = conceptIntro && conceptIntro.youDo ? (conceptIntro.youDo.title || 'Now it\'s your turn (You Do)') : 'Now it\'s your turn (You Do)';
-  const youDoLines = conceptIntro && conceptIntro.youDo ? (conceptIntro.youDo.lines || []) : [];
+  const conceptHeading = conceptIntro
+    ? conceptIntro.heading || "Concept Introduction"
+    : "Concept Introduction";
+  const conceptText = conceptIntro
+    ? conceptIntro.intro || "Review the core concept of this lesson."
+    : "Review the core concept of this lesson.";
+  const conceptKeyIdea = conceptIntro ? conceptIntro.keyIdea || "" : "";
+  const iDoTitle =
+    conceptIntro && conceptIntro.iDo
+      ? conceptIntro.iDo.title || "Watch me (I Do)"
+      : "Watch me (I Do)";
+  const iDoLines = conceptIntro && conceptIntro.iDo ? conceptIntro.iDo.lines || [] : [];
+  const weDoTitle =
+    conceptIntro && conceptIntro.weDo
+      ? conceptIntro.weDo.title || "Let's try together (We Do)"
+      : "Let's try together (We Do)";
+  const weDoLines = conceptIntro && conceptIntro.weDo ? conceptIntro.weDo.lines || [] : [];
+  const youDoTitle =
+    conceptIntro && conceptIntro.youDo
+      ? conceptIntro.youDo.title || "Now it's your turn (You Do)"
+      : "Now it's your turn (You Do)";
+  const youDoLines = conceptIntro && conceptIntro.youDo ? conceptIntro.youDo.lines || [] : [];
 
   // Slide 4 Vocabulary cards (dynamic)
   const vocabList = data.vocabulary || [];
-  let vocabCardsHtml = '';
+  let vocabCardsHtml = "";
   vocabList.slice(0, 4).forEach((v, idx) => {
-    const term = v.term || '';
-    const termEs = v.termEs || '';
-    const definition = v.definition || 'No definition available.';
-    const definitionEs = v.definitionEs || '';
-    const visual = v.visual || '';
-    const cloze = v.cloze || '';
-    
+    const term = v.term || "";
+    const termEs = v.termEs || "";
+    const definition = v.definition || "No definition available.";
+    const definitionEs = v.definitionEs || "";
+    const visual = v.visual || "";
+    const cloze = v.cloze || "";
+
     vocabCardsHtml += `
       <div class="vocab-card" onclick="this.classList.toggle('flipped')">
         <div class="vocab-card-inner">
           <div class="vocab-card-front">
             <h3>${esc(term.toUpperCase())}</h3>
-            ${termEs ? `<p style="font-size:10px; color:var(--gray); font-style:italic; margin: 4px 0 0;">${esc(termEs)}</p>` : ''}
+            ${termEs ? `<p style="font-size:10px; color:var(--gray); font-style:italic; margin: 4px 0 0;">${esc(termEs)}</p>` : ""}
             <p class="click-hint">Click to flip ➔</p>
           </div>
           <div class="vocab-card-back">
             <p style="font-weight:700; margin:0 0 6px; color:var(--navy); font-size:10.5px; line-height:1.3;">${esc(definition)}</p>
-            ${definitionEs ? `<p style="font-size:9.5px; color:var(--gray); margin:0 0 8px; font-style:italic; line-height:1.2;">${esc(definitionEs)}</p>` : ''}
-            ${visual ? `<div style="border-top: 1px dashed var(--teal); padding-top:4px; font-size:9px; font-style:italic; color:var(--body-text); text-align:left;"><strong>Ex:</strong> ${esc(visual)}</div>` : ''}
-            ${cloze ? `<div style="margin-top:4px; font-size:9px; background:var(--white); padding:3px; border-radius:3px; border:1px solid #e1eaeef8; text-align:left;">📝 ${esc(cloze)}</div>` : ''}
+            ${definitionEs ? `<p style="font-size:9.5px; color:var(--gray); margin:0 0 8px; font-style:italic; line-height:1.2;">${esc(definitionEs)}</p>` : ""}
+            ${visual ? `<div style="border-top: 1px dashed var(--teal); padding-top:4px; font-size:9px; font-style:italic; color:var(--body-text); text-align:left;"><strong>Ex:</strong> ${esc(visual)}</div>` : ""}
+            ${cloze ? `<div style="margin-top:4px; font-size:9px; background:var(--white); padding:3px; border-radius:3px; border:1px solid #e1eaeef8; text-align:left;">📝 ${esc(cloze)}</div>` : ""}
           </div>
         </div>
       </div>
     `;
   });
-  
+
   // Slide 6 Explore Game Bindings
   const explore = data.explore || {};
-  const exploreInstructions = explore.instructions || explore.label || 'Sort the items into the correct categories.';
-  
+  const exploreInstructions =
+    explore.instructions || explore.label || "Sort the items into the correct categories.";
+
   let normalizedCats = [];
   if (explore.categories) {
     normalizedCats = explore.categories.map((c, idx) => {
-      if (typeof c === 'string') {
+      if (typeof c === "string") {
         return { id: String(idx), label: c };
       }
       return { id: String(c.id || idx), label: c.label || String(c) };
     });
   } else {
     normalizedCats = [
-      { id: 'cat-a', label: 'Category A' },
-      { id: 'cat-b', label: 'Category B' }
+      { id: "cat-a", label: "Category A" },
+      { id: "cat-b", label: "Category B" },
     ];
   }
-  
+
   let normalizedItems = [];
   const rawItems = explore.items || explore.cards || [];
   rawItems.forEach((item, idx) => {
     let text = item.text || String(item);
-    let catId = '';
-    
+    let catId = "";
+
     if (item.category !== undefined) {
       catId = String(item.category);
     } else if (item.correct !== undefined) {
       catId = String(item.correct);
     }
-    
+
     normalizedItems.push({ id: idx, text: text, catId: catId });
   });
 
   const discourse = explore.discourse || {};
-  const discoursePrompt = discourse.prompt || 'Explain your strategy and reasoning.';
-  const discourseFrame = discourse.sentenceFrame || '';
+  const discoursePrompt = discourse.prompt || "Explain your strategy and reasoning.";
+  const discourseFrame = discourse.sentenceFrame || "";
   const discourseKeywords = discourse.keywords || [];
-  
-  let exploreVocabBankHtml = '';
+
+  let exploreVocabBankHtml = "";
   if (discourseKeywords && discourseKeywords.length > 0) {
-    exploreVocabBankHtml = discourseKeywords.map(k => `<span class="vocab-pill" onclick="insertAtCursor(this.textContent)">${esc(k)}</span>`).join('');
+    exploreVocabBankHtml = discourseKeywords
+      .map(
+        (k) =>
+          `<span class="vocab-pill" onclick="insertAtCursor(this.textContent)">${esc(k)}</span>`,
+      )
+      .join("");
   }
-  
+
   // Slide 7 Practice Problem Bindings
   let practiceProblem = null;
-  let practiceType = 'generic'; // 'error-analysis', 'multiple-choice', 'generic'
-  
+  let practiceType = "generic"; // 'error-analysis', 'multiple-choice', 'generic'
+
   if (data.practice && data.practice.extending) {
-    const errProb = data.practice.extending.find(p => p.type === 'error-analysis');
+    const errProb = data.practice.extending.find((p) => p.type === "error-analysis");
     if (errProb) {
       practiceProblem = errProb;
-      practiceType = 'error-analysis';
+      practiceType = "error-analysis";
     }
   }
-  
+
   if (!practiceProblem && data.practice) {
     const mcProb = []
       .concat(data.practice.onLevel || [])
       .concat(data.practice.approaching || [])
       .concat(data.practice.optional || [])
-      .find(p => p.type === 'multiple-choice');
+      .find((p) => p.type === "multiple-choice");
     if (mcProb) {
       practiceProblem = mcProb;
-      practiceType = 'multiple-choice';
+      practiceType = "multiple-choice";
     }
   }
-  
-  let practiceHtml = '';
-  
-  if (practiceType === 'error-analysis') {
-    const pTitle = practiceProblem.title || 'Find the Error';
+
+  let practiceHtml = "";
+
+  if (practiceType === "error-analysis") {
+    const pTitle = practiceProblem.title || "Find the Error";
     const workedExample = practiceProblem.workedExample || [];
     const errorStep = practiceProblem.errorStep || 1;
-    const correctWork = practiceProblem.correctWork || 'Review and write the correct steps.';
-    
-    let exampleStepsHtml = '';
+    const correctWork = practiceProblem.correctWork || "Review and write the correct steps.";
+
+    let exampleStepsHtml = "";
     workedExample.forEach((step, idx) => {
       exampleStepsHtml += `<div class="worked-step" id="worked-step-${idx + 1}" style="font-size:11px; padding:6px 12px; border-bottom: 1px solid #e1eaeef8; display:flex; justify-content:space-between; align-items:center;">
         <span style="font-weight:700; color:var(--navy);">${esc(step.label)}:</span>
         <span style="font-family:monospace; background:var(--google-gray); padding:2px 6px; border-radius:3px; font-weight:700;">${esc(step.work)}</span>
       </div>`;
     });
-    
+
     practiceHtml = `
       <div class="slide-grid-2">
         <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%; position:relative;">
@@ -627,7 +659,7 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
           <div style="margin-top:6px; display:flex; flex-direction:column; gap:4px;">
             <strong style="font-size:10px; color:var(--navy); text-transform:uppercase;">Identify Error Step:</strong>
             <div style="display:flex; gap:6px;">
-              ${workedExample.map((s, idx) => `<button class="assess-btn px-btn" id="btn-errstep-${idx + 1}" onmouseover="highlightWorkedStep(${idx + 1})" onmouseout="clearStepHighlight(${idx + 1})" onclick="checkErrorStep(${idx + 1}, ${errorStep})">${idx + 1}</button>`).join('')}
+              ${workedExample.map((s, idx) => `<button class="assess-btn px-btn" id="btn-errstep-${idx + 1}" onmouseover="highlightWorkedStep(${idx + 1})" onmouseout="clearStepHighlight(${idx + 1})" onclick="checkErrorStep(${idx + 1}, ${errorStep})">${idx + 1}</button>`).join("")}
             </div>
             <div id="error-step-feedback" style="font-size:10px; font-weight:700; min-height:14px; margin-top:2px;"></div>
           </div>
@@ -645,19 +677,20 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
         </div>
       </div>
     `;
-  } else if (practiceType === 'multiple-choice') {
-    const stem = practiceProblem.stem || 'Solve this practice problem.';
+  } else if (practiceType === "multiple-choice") {
+    const stem = practiceProblem.stem || "Solve this practice problem.";
     const choices = practiceProblem.choices || [];
-    const correctIndex = practiceProblem.correctIndex !== undefined ? practiceProblem.correctIndex : 0;
-    
-    let choicesHtml = '';
+    const correctIndex =
+      practiceProblem.correctIndex !== undefined ? practiceProblem.correctIndex : 0;
+
+    let choicesHtml = "";
     choices.forEach((choice, idx) => {
       choicesHtml += `<button class="assess-btn mc-btn" id="btn-choice-${idx}" onclick="checkMCQuestion(${idx}, ${correctIndex})" style="text-align:left; padding:8px 12px; font-size:12px; margin-bottom:6px; display:flex; align-items:center; width:100%; font-weight:600; line-height:1.4; gap:10px;">
         <span style="background:var(--google-gray); color:var(--navy); width:20px; height:20px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px;">${String.fromCharCode(65 + idx)}</span>
         <span style="flex:1;">${esc(choice)}</span>
       </button>`;
     });
-    
+
     practiceHtml = `
       <div class="slide-grid-2">
         <div class="slide-card" style="display:flex; flex-direction:column; justify-content:space-between; height: 100%;">
@@ -702,28 +735,42 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
       </div>
     `;
   }
-  
+
   // Slide 8 Real-world Connection Bindings
   const connect = data.connect || {};
-  const connectScenario = connect.scenario || 'Apply the math from today to understand this real-world context.';
-  const connectPrompt = connect.promptQuestion || connect.prompt || 'How does this math apply to this scenario?';
-  const connectFrame = connect.prompt || '';
+  const connectScenario =
+    connect.scenario || "Apply the math from today to understand this real-world context.";
+  const connectPrompt =
+    connect.promptQuestion || connect.prompt || "How does this math apply to this scenario?";
+  const connectFrame = connect.prompt || "";
   const connectKeywords = connect.keywords || [];
-  
-  let connectVocabBankHtml = '';
+
+  let connectVocabBankHtml = "";
   if (connectKeywords && connectKeywords.length > 0) {
-    connectVocabBankHtml = connectKeywords.map(k => `<span class="vocab-pill" onclick="insertAtCursor(this.textContent)">${esc(k)}</span>`).join('');
+    connectVocabBankHtml = connectKeywords
+      .map(
+        (k) =>
+          `<span class="vocab-pill" onclick="insertAtCursor(this.textContent)">${esc(k)}</span>`,
+      )
+      .join("");
   }
-  
+
   // Slide 9 Exit Ticket Bindings
   const exitTicket = data.reflect ? data.reflect.exitTicket : null;
-  const exitStem = exitTicket ? (exitTicket.stem || 'Record your final answer and explanation to show mastery of this standard.') : 'Record your final answer and explanation to show mastery of this standard.';
-  const exitChoices = exitTicket ? (exitTicket.choices || []) : [];
-  const exitCorrectIndex = exitTicket ? (exitTicket.correctIndex !== undefined ? exitTicket.correctIndex : 0) : 0;
-  
-  let exitTicketHtml = '';
+  const exitStem = exitTicket
+    ? exitTicket.stem ||
+      "Record your final answer and explanation to show mastery of this standard."
+    : "Record your final answer and explanation to show mastery of this standard.";
+  const exitChoices = exitTicket ? exitTicket.choices || [] : [];
+  const exitCorrectIndex = exitTicket
+    ? exitTicket.correctIndex !== undefined
+      ? exitTicket.correctIndex
+      : 0
+    : 0;
+
+  let exitTicketHtml = "";
   if (exitChoices && exitChoices.length > 0) {
-    let exitChoicesHtml = '';
+    let exitChoicesHtml = "";
     exitChoices.forEach((choice, idx) => {
       exitChoicesHtml += `<button class="assess-btn exit-btn" id="btn-exit-${idx}" onclick="checkExitTicket(${idx}, ${exitCorrectIndex})" style="text-align:left; padding:6px 10px; font-size:11px; margin-bottom:4px; display:flex; align-items:center; width:100%; font-weight:600; line-height:1.3; gap:8px;">
         <span style="background:var(--google-gray); color:var(--navy); width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:9px;">${String.fromCharCode(65 + idx)}</span>
@@ -771,7 +818,7 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
               </div>`;
 
   const exploreHtml = `
-    ${''}
+    ${""}
     <div class="slide-badge-row">
       <span class="slide-badge" style="background:var(--theme-color); color:var(--white);">${themeEmoji} ${esc(themeName)}</span>
     </div>
@@ -797,14 +844,21 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
       <div class="slide-card" style="background:var(--teal-light);">
         <h2 class="card-title">✍️ Explore Discourse</h2>
         <p style="font-size:11px; font-weight:600;">${esc(discoursePrompt)}</p>
-        ${discourseFrame ? `<div style="font-size:9.5px; font-style:italic; margin-bottom:6px;">${esc(discourseFrame)}</div>` : ''}
+        ${discourseFrame ? `<div style="font-size:9.5px; font-style:italic; margin-bottom:6px;">${esc(discourseFrame)}</div>` : ""}
         <textarea id="explore-discourse-work" class="slide-input-placeholder" rows="3" placeholder="Type your discourse explanation here..."></textarea>
       </div>
     </div>`;
 
-  const exitOpenStem = data.reflect?.exitTicketOpen
-    || data.reflect?.openPrompt
-    || `Explain the key idea from today's lesson in your own words. Use at least one vocabulary word from: ${(vocabList.slice(0, 3).map((v) => v.term).filter(Boolean)).join(', ') || 'today\'s lesson'}.`;
+  const exitOpenStem =
+    data.reflect?.exitTicketOpen ||
+    data.reflect?.openPrompt ||
+    `Explain the key idea from today's lesson in your own words. Use at least one vocabulary word from: ${
+      vocabList
+        .slice(0, 3)
+        .map((v) => v.term)
+        .filter(Boolean)
+        .join(", ") || "today's lesson"
+    }.`;
 
   const unitPalette = getUnitPalette(unit);
   const deck = buildTptSlideDeckV3({
@@ -851,8 +905,8 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
   // This HTML deck IS the primary "Google Slides" experience for students. Do not
   // surface a link out to the legacy Drive copy from inside the deck — it sends
   // teachers/students to an old, un-upgraded presentation and hides these slides.
-  const googleSlidesLinkHtml = '';
-  
+  const googleSlidesLinkHtml = "";
+
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -2125,8 +2179,8 @@ ${deck.thumbnailsHtml}
     <h3>📝 Teacher Notes — Slide <span id="notes-slide-num">1</span></h3>
     <div id="notes-slide-content">Loading notes...</div>
     <hr style="margin:12px 0; border:none; border-top:1px solid #e1eaef;" />
-    <p style="font-size:10px; color:var(--gray);"><strong>Pacing:</strong> ${esc(data.timeEstimate || '~45 min')}</p>
-    ${data.practice?.commonMistake ? `<p style="font-size:10px;"><strong>Common mistake:</strong> ${esc(data.practice.commonMistake)}</p>` : ''}
+    <p style="font-size:10px; color:var(--gray);"><strong>Pacing:</strong> ${esc(data.timeEstimate || "~45 min")}</p>
+    ${data.practice?.commonMistake ? `<p style="font-size:10px;"><strong>Common mistake:</strong> ${esc(data.practice.commonMistake)}</p>` : ""}
   </aside>
 
   <!-- Presenter Controls HUD (Visible in fullscreen Present Mode) -->
@@ -2956,7 +3010,7 @@ ${deck.thumbnailsHtml}
           if (data.studentErrStep !== undefined && data.studentErrStep !== -1) {
             const errCheckBtn = document.getElementById('btn-errstep-1');
             if (errCheckBtn) {
-              const errorStepVal = ${practiceProblem && practiceProblem.errorStep || 1};
+              const errorStepVal = ${(practiceProblem && practiceProblem.errorStep) || 1};
               checkErrorStep(data.studentErrStep, errorStepVal);
             }
           }
@@ -3673,38 +3727,39 @@ ${deck.thumbnailsHtml}
 
 // Main execution block
 function main() {
-  console.log('Generating high-fidelity slides.html files...');
-  const lessons = fs.readdirSync(lessonsDir)
-    .filter(d => /^(\d+)-(\d+)(-flagship)?$/.test(d))
-    .filter(d => fs.existsSync(path.join(lessonsDir, d, 'config.json')));
+  console.log("Generating high-fidelity slides.html files...");
+  const lessons = fs
+    .readdirSync(lessonsDir)
+    .filter((d) => /^(\d+)-(\d+)(-flagship)?$/.test(d))
+    .filter((d) => fs.existsSync(path.join(lessonsDir, d, "config.json")));
 
   let urlMap = {};
-  const urlsPath = path.join(root, 'data', 'google-slides-urls.json');
+  const urlsPath = path.join(root, "data", "google-slides-urls.json");
   if (fs.existsSync(urlsPath)) {
     try {
-      urlMap = JSON.parse(fs.readFileSync(urlsPath, 'utf8'));
+      urlMap = JSON.parse(fs.readFileSync(urlsPath, "utf8"));
       console.log(`Loaded ${Object.keys(urlMap).length} mapped Google Slides URLs.`);
     } catch (e) {
-      console.error('Failed to parse google-slides-urls.json:', e);
+      console.error("Failed to parse google-slides-urls.json:", e);
     }
   }
-    
+
   let count = 0;
-  lessons.forEach(id => {
+  lessons.forEach((id) => {
     try {
-      const configPath = path.join(lessonsDir, id, 'config.json');
-      const data = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+      const configPath = path.join(lessonsDir, id, "config.json");
+      const data = JSON.parse(fs.readFileSync(configPath, "utf8"));
       const googleSlidesUrl = urlMap[id] || null;
       const html = generateSlidesHtml(id, data, googleSlidesUrl);
-      
-      const outputPath = path.join(lessonsDir, id, 'slides.html');
-      fs.writeFileSync(outputPath, html, 'utf8');
+
+      const outputPath = path.join(lessonsDir, id, "slides.html");
+      fs.writeFileSync(outputPath, html, "utf8");
       count++;
     } catch (e) {
       console.error(`Failed to generate slides for lesson ${id}:`, e);
     }
   });
-  
+
   console.log(`Successfully generated premium slides.html for ${count} lessons.`);
 }
 

@@ -100,9 +100,7 @@ export function getBadgeDefs() {
 export function buildLessonCoverExtras(config, savedProgress) {
   const vocabCount = config.vocabulary?.length || 0;
   const problemCount = countPracticeProblems(config);
-  const pct = savedProgress
-    ? Math.round((savedProgress.phasesCompleted / 6) * 100)
-    : 0;
+  const pct = savedProgress ? Math.round((savedProgress.phasesCompleted / 6) * 100) : 0;
 
   const phaseChips = PHASE_TIME_ESTIMATES.map(
     (p, i) =>
@@ -137,11 +135,7 @@ export function buildLessonCoverExtras(config, savedProgress) {
 /** Mount animated theme art into cover slot. */
 export function mountCoverArt(slot, config) {
   if (!slot || !config.theme) return;
-  renderThemeIllustration(
-    slot,
-    config.theme,
-    config.launch?.contextImage || null,
-  );
+  renderThemeIllustration(slot, config.theme, config.launch?.contextImage || null);
   slot.querySelector(".theme-hero-svg")?.classList.add("cover-svg-animate");
 }
 
@@ -191,27 +185,16 @@ export function renderLaunchStoryBeats(host, config) {
 }
 
 /** Build enhanced phase transition context for engagement.showPhaseComplete. */
-export function buildPhaseTransitionMeta(
-  state,
-  phaseIdx,
-  phaseName,
-  xp,
-  stars,
-) {
+export function buildPhaseTransitionMeta(state, phaseIdx, phaseName, xp, stars) {
   const s = state.get();
   const next = PHASE_CONFIGS[phaseIdx + 1];
   const phase = s.phases[phaseIdx];
-  const accuracy =
-    phase?.attempts > 0
-      ? Math.round((phase.correct / phase.attempts) * 100)
-      : null;
+  const accuracy = phase?.attempts > 0 ? Math.round((phase.correct / phase.attempts) * 100) : null;
 
   const newBadges = checkBadges(state);
 
   return {
-    nextPhase: next
-      ? { name: next.name, icon: next.icon, index: phaseIdx + 1 }
-      : null,
+    nextPhase: next ? { name: next.name, icon: next.icon, index: phaseIdx + 1 } : null,
     stats: {
       coins: s.coins,
       streak: s.streak,
@@ -220,12 +203,7 @@ export function buildPhaseTransitionMeta(
       hintsUsed: s.hintsUsed,
     },
     newBadges,
-    phaseBadge:
-      stars >= 3
-        ? `⭐ ${t("perfectPhase")}`
-        : stars >= 2
-          ? `✨ ${t("strongWork")}`
-          : "",
+    phaseBadge: stars >= 3 ? `⭐ ${t("perfectPhase")}` : stars >= 2 ? `✨ ${t("strongWork")}` : "",
   };
 }
 
@@ -233,13 +211,9 @@ export function buildPhaseTransitionMeta(
 export function buildPrintableSummary(state, config) {
   const s = state.get();
   const learned =
-    state.getResponse(5, "one_thing_learned") ||
-    state.getResponse(5, "reflect_3") ||
-    "";
+    state.getResponse(5, "one_thing_learned") || state.getResponse(5, "reflect_3") || "";
   const confidence =
-    state.getResponse(5, "confidence") ||
-    state.getResponse(5, "self-assess") ||
-    "";
+    state.getResponse(5, "confidence") || state.getResponse(5, "self-assess") || "";
 
   const wrap = document.createElement("section");
   wrap.className = "printable-summary card";
@@ -252,13 +226,11 @@ export function buildPrintableSummary(state, config) {
     <p><strong>XP:</strong> ${s.xp} · <strong>${t("stars")}:</strong> ${s.phases.reduce((sum, p) => sum + p.stars, 0)}/18 · <strong>${t("coins")}:</strong> ${s.coins}</p>
     <button type="button" class="btn btn-secondary btn-sm printable-summary-btn">🖨️ ${stackHtml(t("printSummary", "en"), t("printSummary", "es"))}</button>`;
 
-  wrap
-    .querySelector(".printable-summary-btn")
-    ?.addEventListener("click", () => {
-      wrap.classList.add("print-target");
-      window.print();
-      wrap.classList.remove("print-target");
-    });
+  wrap.querySelector(".printable-summary-btn")?.addEventListener("click", () => {
+    wrap.classList.add("print-target");
+    window.print();
+    wrap.classList.remove("print-target");
+  });
 
   return wrap;
 }

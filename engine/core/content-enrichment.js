@@ -2,20 +2,12 @@
 
 /** Derive a common-mistake callout from keyIdea, conceptIntro, or vocabulary. */
 export function deriveCommonMistake(config) {
-  const explicit =
-    config.practice?.commonMistake ||
-    config.commonMistake ||
-    null;
+  const explicit = config.practice?.commonMistake || config.commonMistake || null;
   if (explicit) {
-    return typeof explicit === "string"
-      ? explicit
-      : explicit.text || explicit.message || "";
+    return typeof explicit === "string" ? explicit : explicit.text || explicit.message || "";
   }
 
-  const keyIdea =
-    config.launch?.conceptIntro?.keyIdea ||
-    config.conceptIntro?.keyIdea ||
-    "";
+  const keyIdea = config.launch?.conceptIntro?.keyIdea || config.conceptIntro?.keyIdea || "";
   if (keyIdea) {
     return `A common mistake is to skip the key idea: "${keyIdea}" — always check your work against this rule.`;
   }

@@ -28,13 +28,7 @@ export function problemTypeLabel(def = {}) {
 /**
  * Create a premium problem card. Returns { card, body, coinSlot, setResult }.
  */
-export function createProblemCard({
-  number,
-  total,
-  tier,
-  typeLabel,
-  stem,
-} = {}) {
+export function createProblemCard({ number, total, tier, typeLabel, stem } = {}) {
   const card = document.createElement("article");
   card.className = "problem-card";
   card.setAttribute("aria-label", `Problem ${number} of ${total}`);
@@ -91,11 +85,7 @@ export function createProblemCard({
   card.append(body);
 
   function setResult(kind) {
-    card.classList.remove(
-      "problem-correct",
-      "problem-incorrect",
-      "problem-pending",
-    );
+    card.classList.remove("problem-correct", "problem-incorrect", "problem-pending");
     if (kind === "correct") {
       card.classList.add("problem-correct");
       awardCoin(coinSlot);

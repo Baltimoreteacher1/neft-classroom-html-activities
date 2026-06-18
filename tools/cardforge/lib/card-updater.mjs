@@ -25,12 +25,15 @@ export function updateCard(pkgDir) {
   const card = readJSON(resolve(dir, "card.json"));
 
   // Where the bundle would live once published.
-  const livePath = card.unit != null && card.lesson != null && card.lesson !== "demo"
-    ? `/lessons/${card.unit}-${card.lesson}/bundle/`
-    : `/math/card-builder/sample/`;
+  const livePath =
+    card.unit != null && card.lesson != null && card.lesson !== "demo"
+      ? `/lessons/${card.unit}-${card.lesson}/bundle/`
+      : `/math/card-builder/sample/`;
 
   const buttons = BUTTON_DEFS.map(([id, label, file]) => ({
-    id, label, file,
+    id,
+    label,
+    file,
     href: card.lesson === "demo" ? card.previewPath || livePath : livePath + file,
     present: !!(card.resources && card.resources[id]),
   }));
@@ -45,8 +48,12 @@ export function updateCard(pkgDir) {
   }
 
   const manifest = {
-    card: card.id, title: card.title, demo: !!card.demo,
-    liveLessonMatch: liveMatch ? liveMatch.id : null, livePath, buttons,
+    card: card.id,
+    title: card.title,
+    demo: !!card.demo,
+    liveLessonMatch: liveMatch ? liveMatch.id : null,
+    livePath,
+    buttons,
   };
   writeJSON(resolve(dir, "card-buttons.json"), manifest);
 
@@ -61,9 +68,11 @@ export function updateCard(pkgDir) {
 | --- | --- | --- | --- |
 ${buttons.map((b) => `| ${b.label} | \`${b.file}\` | ${b.present ? "yes" : "no"} | ${b.present ? "keep (idempotent)" : "add"} |`).join("\n")}
 
-${card.demo
-  ? "> Demo bundle: no live card was modified. The buttons above are the proposed set; promoting them to a live card is the publish step (see LESSON_PRODUCT_FACTORY.md)."
-  : "> To apply to the live card, run the publish step: author under `lessons/<unit>-<lesson>/`, add a `bundleResources` block, regenerate the manifest, validate, commit, push."}
+${
+  card.demo
+    ? "> Demo bundle: no live card was modified. The buttons above are the proposed set; promoting them to a live card is the publish step (see LESSON_PRODUCT_FACTORY.md)."
+    : "> To apply to the live card, run the publish step: author under `lessons/<unit>-<lesson>/`, add a `bundleResources` block, regenerate the manifest, validate, commit, push."
+}
 `;
   writeFile(resolve(dir, "card-update-report.md"), report);
 

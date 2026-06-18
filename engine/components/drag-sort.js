@@ -214,8 +214,7 @@ function renderDragSortCore(container, { items, categories, onComplete }) {
   const bank = document.createElement("div");
   bank.className = "drag-zone";
   bank.dataset.zone = "bank";
-  bank.style.cssText =
-    "margin-bottom:var(--sp-5); min-height:60px; background:var(--cream);";
+  bank.style.cssText = "margin-bottom:var(--sp-5); min-height:60px; background:var(--cream);";
   wireZoneKeyboard(bank, "Return the picked-up item to the item bank");
 
   // Tag each item with a stable unique id so grading and drag/drop don't key off
@@ -263,9 +262,7 @@ function renderDragSortCore(container, { items, categories, onComplete }) {
   // Parallax: lift the hovered category column while a desktop drag is in
   // flight. Purely visual and CSS-gated by prefers-reduced-motion. The
   // `ds-dragging` flag on the grid scopes the effect to active drags only.
-  wrapper.addEventListener("dragstart", () =>
-    catGrid.classList.add("ds-dragging"),
-  );
+  wrapper.addEventListener("dragstart", () => catGrid.classList.add("ds-dragging"));
   wrapper.addEventListener("dragend", () => {
     catGrid.classList.remove("ds-dragging");
     catGrid
@@ -308,8 +305,7 @@ function renderDragSortCore(container, { items, categories, onComplete }) {
       el.classList.add("incorrect");
     });
 
-    const allCorrect =
-      correct === total && bank.querySelectorAll(".drag-item").length === 0;
+    const allCorrect = correct === total && bank.querySelectorAll(".drag-item").length === 0;
     const fb = document.createElement("div");
     const fbType = allCorrect ? "success" : "hint";
     const fbMsg = allCorrect
@@ -394,10 +390,7 @@ function createDragItem(item) {
   el.tabIndex = 0;
   el.setAttribute("role", "button");
   el.setAttribute("aria-pressed", "false");
-  el.setAttribute(
-    "aria-label",
-    `${item.text} — press Enter to pick up, then choose a category`,
-  );
+  el.setAttribute("aria-label", `${item.text} — press Enter to pick up, then choose a category`);
   el.addEventListener("click", (e) => {
     e.stopPropagation(); // don't bubble to the zone's place handler
     dsSelect(el);
@@ -450,9 +443,7 @@ function createDragItem(item) {
       e.preventDefault();
       moveTouchClone(e);
       const target = getDropZoneUnderTouch(e);
-      document
-        .querySelectorAll(".drag-zone")
-        .forEach((z) => z.classList.remove("over"));
+      document.querySelectorAll(".drag-zone").forEach((z) => z.classList.remove("over"));
       if (target) target.classList.add("over");
     },
     { passive: false },
@@ -463,9 +454,7 @@ function createDragItem(item) {
       touchClone.remove();
       touchClone = null;
     }
-    document
-      .querySelectorAll(".drag-zone")
-      .forEach((z) => z.classList.remove("over"));
+    document.querySelectorAll(".drag-zone").forEach((z) => z.classList.remove("over"));
     const target = getDropZoneUnderTouch(e) || originZone;
     if (target && target !== el.parentElement) {
       target.append(el);
@@ -534,19 +523,15 @@ function setupDragDrop(zones, _ctx) {
       e.preventDefault();
       zone.classList.remove("over");
       const text = e.dataTransfer.getData("text/plain");
-      const dragEl = document.querySelector(
-        `.drag-item[data-item-id="${CSS.escape(text)}"]`,
-      );
+      const dragEl = document.querySelector(`.drag-item[data-item-id="${CSS.escape(text)}"]`);
       if (dragEl) {
         dragEl.classList.remove("correct", "incorrect");
         zone.append(dragEl);
         springBounce(dragEl);
         zone.classList.add("drop-snap");
-        zone.addEventListener(
-          "animationend",
-          () => zone.classList.remove("drop-snap"),
-          { once: true },
-        );
+        zone.addEventListener("animationend", () => zone.classList.remove("drop-snap"), {
+          once: true,
+        });
       }
     });
   });

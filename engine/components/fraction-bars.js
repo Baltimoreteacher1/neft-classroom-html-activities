@@ -33,8 +33,7 @@ export function renderFractionBars(
 
   if (instructions) {
     const p = document.createElement("p");
-    p.style.cssText =
-      "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
+    p.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
     p.textContent = instructions;
     wrapper.append(p);
   }
@@ -72,8 +71,7 @@ export function renderFractionBars(
 
     if (!fixedDenominator) {
       const controls = document.createElement("span");
-      controls.style.cssText =
-        "margin-left:auto; display:flex; gap:var(--sp-2);";
+      controls.style.cssText = "margin-left:auto; display:flex; gap:var(--sp-2);";
       const minus = ctrlBtn("−", "Fewer parts");
       const plus = ctrlBtn("+", "More parts");
       minus.addEventListener("click", () => {
@@ -201,8 +199,7 @@ export function renderFractionBars(
     ok = Math.abs(barA.value - targetVal) < 1e-9;
 
     if (ok && compare) {
-      const cmp =
-        barA.value < barB.value ? "<" : barA.value > barB.value ? ">" : "=";
+      const cmp = barA.value < barB.value ? "<" : barA.value > barB.value ? ">" : "=";
       const wantB = compare.numerator / compare.denominator;
       ok = Math.abs(barB.value - wantB) < 1e-9 && cmp === compare.op;
     }
