@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Canvas Grade Bridge · Neft Teacher</title>
+    <meta name="robots" content="noindex" />
+    <style>
+      :root {
+        --navy: #12355b;
+        --teal: #387f84;
+        --amber: #f2a93b;
+        --ink: #0f172a;
+        --muted: #64748b;
+        --line: #e2e8f0;
+        --bg: #f1f5f9;
+        --ok: #15803d;
+        --warn: #b54708;
+        --bad: #b91c1c;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: system-ui, "Segoe UI", sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.5;
+      }
+      header {
+        background: var(--navy);
+        color: #fff;
+        padding: 22px 24px;
+      }
+      header h1 {
+        margin: 0;
+        font-size: 22px;
+      }
+      header p {
+        margin: 6px 0 0;
+        opacity: 0.85;
+        font-size: 14px;
+      }
+      main {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+      .step {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 20px;
+        margin-bottom: 18px;
+      }
+      .step h2 {
+        margin: 0 0 4px;
+        font-size: 17px;
+      }
+      .step h2 .n {
+        display: inline-flex;
+        width: 26px;
+        height: 26px;
+        background: var(--teal);
+        color: #fff;
+        border-radius: 50%;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        margin-right: 8px;
+      }
+      .hint {
+        color: var(--muted);
+        font-size: 14px;
+        margin: 4px 0 14px;
+      }
+      textarea {
+        width: 100%;
+        min-height: 150px;
+        font:
+          13px ui-monospace,
+          Menlo,
+          monospace;
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        resize: vertical;
+      }
+      input[type="file"] {
+        font-size: 14px;
+      }
+      select,
+      input[type="text"] {
+        font: 14px system-ui;
+        padding: 9px 11px;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+      }
+      button {
+        font: 700 15px system-ui;
+        border: 0;
+        border-radius: 10px;
+        padding: 12px 20px;
+        cursor: pointer;
+        background: var(--amber);
+        color: var(--navy);
+      }
+      button.ghost {
+        background: #e2e8f0;
+        color: var(--ink);
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        margin-top: 12px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 7px 9px;
+        border-bottom: 1px solid var(--line);
+      }
+      th {
+        color: var(--muted);
+        font-weight: 700;
+      }
+      .tag {
+        font-weight: 700;
+        font-size: 12px;
+      }
+      .t-ok {
+        color: var(--ok);
+      }
+      .t-warn {
+        color: var(--warn);
+      }
+      .t-bad {
+        color: var(--bad);
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .pill {
+        display: inline-block;
+        background: #ecfdf5;
+        color: var(--ok);
+        border: 1px solid #bbf7d0;
+        border-radius: 999px;
+        padding: 3px 10px;
+        font-size: 12px;
+        font-weight: 700;
+        margin: 2px 4px 2px 0;
+      }
+      .pill.warn {
+        background: #fffbeb;
+        color: var(--warn);
+        border-color: #fde68a;
+      }
+      .pill.bad {
+        background: #fef2f2;
+        color: var(--bad);
+        border-color: #fecaca;
+      }
+      .note {
+        background: #f8fafc;
+        border-left: 4px solid var(--teal);
+        padding: 10px 14px;
+        border-radius: 0 8px 8px 0;
+        font-size: 13px;
+        color: var(--muted);
+        margin: 0 0 16px;
+      }
+      code {
+        background: #f1f5f9;
+        padding: 1px 5px;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Canvas Grade Bridge</h1>
+      <p>
+        Turn pasted student completion codes into a ready-to-import Canvas
+        gradebook CSV. Teacher-only.
+      </p>
+    </header>
+    <main>
+      <p class="note">
+        <strong>How it works:</strong> In Canvas, create the assignment, then
+        <em>Grades → Export → Current Gradebook</em>. Drop that CSV below, paste
+        the completion codes students submitted, pick the assignment column, and
+        download. Re-import the file in Canvas (<em>Grades → Import</em>).
+        Scores scale to the column's Points Possible automatically.
+      </p>
+
+      <section class="step">
+        <h2><span class="n">1</span>Canvas gradebook export (CSV)</h2>
+        <p class="hint">
+          Drop the file you exported from Canvas. Nothing is uploaded — it stays
+          in your browser.
+        </p>
+        <input id="csvFile" type="file" accept=".csv,text/csv" />
+        <div id="csvInfo" class="hint"></div>
+      </section>
+
+      <section class="step">
+        <h2><span class="n">2</span>Paste submitted completion codes</h2>
+        <p class="hint">
+          One per line. You can paste straight from the Canvas SpeedGrader /
+          submission column — extra text is ignored.
+        </p>
+        <textarea
+          id="codes"
+          placeholder="NTG1.xxxxxxxx.AB12&#10;NTG1.yyyyyyyy.CD34"
+        ></textarea>
+      </section>
+
+      <section class="step">
+        <h2><span class="n">3</span>Match &amp; build</h2>
+        <div class="row">
+          <label
+            >Assignment column:&nbsp;
+            <select id="colSelect">
+              <option value="">— load CSV first —</option>
+            </select>
+          </label>
+          <button id="buildBtn" disabled>Match &amp; preview</button>
+        </div>
+        <div id="report"></div>
+      </section>
+
+      <section class="step" id="dlStep" style="display: none">
+        <h2><span class="n">4</span>Download for Canvas import</h2>
+        <p class="hint">
+          Review the preview above, then download. Only the chosen column
+          changes; everything else is preserved exactly.
+        </p>
+        <button id="dlBtn">⬇ Download Canvas CSV</button>
+      </section>
+    </main>
+
+    <script src="/assets/canvas-code-codec.js"></script>
+    <script>
+      (function () {
+        "use strict";
+        const $ = (id) => document.getElementById(id);
+        let grid = null; // parsed CSV: array of rows (array of cells)
+        let header = []; // header row
+        let ppRow = -1; // index of "Points Possible" row
+        let studentRows = []; // indices of real student rows
+        let built = null; // last build result for download
+
+        /* ---------- robust CSV parse / serialize ---------- */
+        function parseCSV(text) {
+          const rows = [];
+          let row = [],
+            field = "",
+            i = 0,
+            inQ = false;
+          text = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+          while (i < text.length) {
+            const c = text[i];
+            if (inQ) {
+              if (c === '"') {
+                if (text[i + 1] === '"') {
+                  field += '"';
+                  i += 2;
+                  continue;
+                }
+                inQ = false;
+                i++;
+                continue;
+              }
+              field += c;
+              i++;
+              continue;
+            }
+            if (c === '"') {
+              inQ = true;
+              i++;
+              continue;
+            }
+            if (c === ",") {
+              row.push(field);
+              field = "";
+              i++;
+              continue;
+            }
+            if (c === "\n") {
+              row.push(field);
+              rows.push(row);
+              row = [];
+              field = "";
+              i++;
+              continue;
+            }
+            field += c;
+            i++;
+          }
+          if (field.length || row.length) {
+            row.push(field);
+            rows.push(row);
+          }
+          return rows;
+        }
+        function serializeCSV(rows) {
+          return rows
+            .map((r) =>
+              r
+                .map((c) => {
+                  c = c == null ? "" : String(c);
+                  return /[",\n]/.test(c)
+                    ? '"' + c.replace(/"/g, '""') + '"'
+                    : c;
+                })
+                .join(","),
+            )
+            .join("\r\n");
+        }
+
+        /* ---------- name normalization ---------- */
+        const norm = (s) =>
+          String(s || "")
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "");
+        function nameKeys(s) {
+          s = String(s || "").trim();
+          const keys = new Set([norm(s)]);
+          if (s.indexOf(",") >= 0) {
+            const p = s.split(",");
+            keys.add(norm(p[1] + p[0]));
+          } else {
+            const p = s.split(/\s+/);
+            if (p.length >= 2)
+              keys.add(norm(p[p.length - 1] + p.slice(0, -1).join("")));
+          }
+          keys.delete("");
+          return [...keys];
+        }
+
+        const NON_ASSIGN =
+          /^(student|id|sis user id|sis login id|integration id|section|current score|current points|final score|final points|unposted .*|root account)$/i;
+
+        function ingestCSV(text) {
+          grid = parseCSV(text);
+          if (!grid.length) return;
+          header = grid[0];
+          // locate Points Possible row (Canvas puts it as row 2, Student cell = "Points Possible")
+          ppRow = -1;
+          studentRows = [];
+          const studentCol = 0;
+          for (let r = 1; r < grid.length; r++) {
+            const cell = (grid[r][studentCol] || "").trim();
+            if (/^points possible$/i.test(cell)) {
+              ppRow = r;
+              continue;
+            }
+            if (!cell || /test student/i.test(cell)) continue;
+            studentRows.push(r);
+          }
+          // assignment column options
+          const sel = $("colSelect");
+          sel.innerHTML = "";
+          header.forEach((h, idx) => {
+            const name = (h || "").replace(/\s*\(\d+\)\s*$/, "").trim();
+            if (idx === 0 || NON_ASSIGN.test(name)) return;
+            const o = document.createElement("option");
+            o.value = String(idx);
+            o.textContent = h;
+            sel.append(o);
+          });
+          $("csvInfo").innerHTML =
+            `Loaded <strong>${studentRows.length}</strong> students, ` +
+            `<strong>${sel.options.length}</strong> assignment columns` +
+            (ppRow >= 0
+              ? ", Points Possible row detected."
+              : ", no Points Possible row found.");
+          $("buildBtn").disabled = sel.options.length === 0;
+          autoPickColumn();
+        }
+
+        function autoPickColumn() {
+          const codes = decodeCodes().valid;
+          if (!codes.length) return;
+          const title = norm(codes[0].t || codes[0].a || "");
+          const sel = $("colSelect");
+          for (const o of sel.options) {
+            if (title && norm(o.textContent).includes(title.slice(0, 12))) {
+              o.selected = true;
+              break;
+            }
+          }
+        }
+
+        function decodeCodes() {
+          const lines = $("codes")
+            .value.split("\n")
+            .map((l) => l.trim())
+            .filter(Boolean);
+          const valid = [],
+            forged = [],
+            junk = [];
+          const seen = new Set();
+          for (const line of lines) {
+            const res = window.NeftCanvasCodec.decode(line);
+            if (res.ok) {
+              const key = norm(res.payload.n) + "|" + (res.payload.a || "");
+              if (seen.has(key)) continue; // keep first per student+activity
+              seen.add(key);
+              valid.push(res.payload);
+            } else if (res.reason === "checksum") forged.push(res.code || line);
+            else junk.push(line);
+          }
+          return { valid, forged, junk };
+        }
+
+        function build() {
+          const colIdx = Number($("colSelect").value);
+          if (!grid || !colIdx) return;
+          const { valid, forged, junk } = decodeCodes();
+
+          // points possible for this column
+          let pp = null;
+          if (ppRow >= 0) {
+            const v = Number((grid[ppRow][colIdx] || "").trim());
+            if (isFinite(v) && v > 0) pp = v;
+          }
+
+          // roster lookup: key -> row index
+          const lookup = new Map();
+          studentRows.forEach((r) => {
+            nameKeys(grid[r][0]).forEach((k) => {
+              if (!lookup.has(k)) lookup.set(k, r);
+            });
+          });
+
+          const out = grid.map((r) => r.slice()); // deep-ish copy
+          const matched = [],
+            unmatched = [];
+          const filledRows = new Set();
+          valid.forEach((p) => {
+            let row = -1;
+            for (const k of nameKeys(p.n)) {
+              if (lookup.has(k)) {
+                row = lookup.get(k);
+                break;
+              }
+            }
+            const raw = p.s == null ? 0 : p.s;
+            const grade =
+              pp != null && p.pc != null ? Math.round((p.pc / 100) * pp) : raw;
+            if (row >= 0) {
+              out[row][colIdx] = String(grade);
+              filledRows.add(row);
+              matched.push({
+                name: grid[row][0],
+                code: `${p.s}/${p.m} (${p.pc}%)`,
+                grade,
+              });
+            } else {
+              unmatched.push({
+                name: p.n || "(no name)",
+                code: `${p.s}/${p.m} (${p.pc}%)`,
+                grade,
+              });
+            }
+          });
+          const missing = studentRows
+            .filter((r) => !filledRows.has(r))
+            .map((r) => grid[r][0]);
+
+          built = { out };
+          renderReport({
+            matched,
+            unmatched,
+            forged,
+            junk,
+            missing,
+            pp,
+            col: header[colIdx],
+          });
+          $("dlStep").style.display = matched.length ? "block" : "none";
+        }
+
+        function renderReport(d) {
+          const esc = (s) =>
+            String(s).replace(
+              /[<>&]/g,
+              (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" })[c],
+            );
+          let html = `<div class="row" style="margin-top:14px;">
+            <span class="pill">${d.matched.length} matched</span>
+            ${d.unmatched.length ? `<span class="pill warn">${d.unmatched.length} unmatched name</span>` : ""}
+            ${d.forged.length ? `<span class="pill bad">${d.forged.length} invalid/edited code</span>` : ""}
+            ${d.junk.length ? `<span class="pill warn">${d.junk.length} unreadable line</span>` : ""}
+            ${d.missing.length ? `<span class="pill warn">${d.missing.length} no submission</span>` : ""}
+          </div>`;
+          html += `<p class="hint">Column <code>${esc(d.col)}</code>${d.pp != null ? `, scaling to <strong>${d.pp}</strong> pts` : ", using raw points (no Points Possible row)"}.</p>`;
+          if (d.matched.length) {
+            html +=
+              "<table><thead><tr><th>Student</th><th>Activity score</th><th>Canvas grade</th></tr></thead><tbody>";
+            d.matched.forEach((m) => {
+              html += `<tr><td>${esc(m.name)}</td><td>${esc(m.code)}</td><td class="tag t-ok">${m.grade}</td></tr>`;
+            });
+            html += "</tbody></table>";
+          }
+          if (d.unmatched.length) {
+            html += `<p class="hint t-warn" style="margin-top:14px;"><strong>Unmatched (name didn't match the roster — fix the student's name spelling or grade manually):</strong></p>`;
+            html += d.unmatched
+              .map(
+                (u) =>
+                  `<span class="pill warn">${esc(u.name)} · ${esc(u.code)}</span>`,
+              )
+              .join(" ");
+          }
+          if (d.forged.length) {
+            html += `<p class="hint t-bad" style="margin-top:14px;"><strong>Invalid / edited codes (checksum failed — do not trust):</strong></p>`;
+            html += d.forged
+              .map(
+                (f) => `<span class="pill bad">${esc(f.slice(0, 24))}…</span>`,
+              )
+              .join(" ");
+          }
+          $("report").innerHTML = html;
+        }
+
+        function download() {
+          if (!built) return;
+          const blob = new Blob([serializeCSV(built.out)], {
+            type: "text/csv",
+          });
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = "canvas-grades-import.csv";
+          a.click();
+          setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+        }
+
+        $("csvFile").addEventListener("change", (e) => {
+          const f = e.target.files[0];
+          if (!f) return;
+          const reader = new FileReader();
+          reader.onload = () => ingestCSV(String(reader.result));
+          reader.readAsText(f);
+        });
+        $("codes").addEventListener("input", () => {
+          if (grid) autoPickColumn();
+        });
+        $("buildBtn").addEventListener("click", build);
+        $("dlBtn").addEventListener("click", download);
+      })();
+    </script>
+  </body>
+</html>
