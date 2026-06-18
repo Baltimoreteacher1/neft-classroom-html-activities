@@ -95,7 +95,12 @@ function render(code, payload) {
             Copy
           </button>
         </div>
-        <p style="margin:14px 0 0;color:#64748b;font-size:13px;">
+        <ol style="margin:14px 0 0;padding-left:20px;color:#334155;font-size:13px;line-height:1.7;">
+          <li>Go back to the <strong>Canvas assignment</strong> for this lesson.</li>
+          <li><strong>Paste</strong> the code into the text box (it's already copied).</li>
+          <li>Click <strong>Submit Assignment</strong>.</li>
+        </ol>
+        <p style="margin:10px 0 0;color:#64748b;font-size:13px;">
           Score recorded: <strong>${payload.s}/${payload.m}</strong> (${payload.pc}%).
         </p>
         <div style="text-align:right;margin-top:18px;">
