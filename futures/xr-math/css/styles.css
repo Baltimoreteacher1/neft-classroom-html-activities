@@ -257,3 +257,32 @@ body {
     font-size: 1.25rem;
   }
 }
+
+/* ---- control buttons: pin above the fixed canvas, readable on any scene ---- */
+.control-row {
+  position: fixed;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  z-index: 11;
+  margin: 0;
+}
+.control-row .mini-btn {
+  background: rgba(18, 53, 91, 0.95);
+  color: var(--cream);
+  box-shadow: var(--shadow);
+}
+.control-row .mini-btn:hover {
+  background: rgba(18, 53, 91, 0.8);
+}
+
+/* fix: no transform (it captured the fixed #readout); center via left/right + click-through */
+.control-row {
+  left: 0;
+  right: 0;
+  transform: none;
+  pointer-events: none;
+}
+.control-row .mini-btn {
+  pointer-events: auto;
+}

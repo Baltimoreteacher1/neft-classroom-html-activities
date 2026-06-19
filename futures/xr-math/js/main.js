@@ -172,14 +172,20 @@ function buildCoordScene() {
   s.add(marker);
 
   const target = TARGETS[targetIdx % TARGETS.length];
+  let solved = false;
   const setReadout = (msg) => {
     readout.innerHTML = `🎯 Plot <b>(${target.join(", ")})</b> &nbsp; ${msg}`;
   };
-  setReadout("— click the matching lattice point.");
+  setReadout("— hover a dot to read its coordinates, then click.");
+  // Live hover coordinate (was dead code writing to a hidden dataset attribute).
   onHover = (hit) => {
-    if (!hit) return;
-    const [x, y, z] = hit.object.userData.coord;
-    readout.dataset.hover = `(${x}, ${y}, ${z})`;
+    if (solved) return;
+    if (hit) {
+      const [x, y, z] = hit.object.userData.coord;
+      setReadout(`Hovering <b>(${x}, ${y}, ${z})</b>`);
+    } else {
+      setReadout("— hover a dot to read its coordinates, then click.");
+    }
   };
   onPick = (hit) => {
     const [x, y, z] = hit.object.userData.coord;
@@ -187,6 +193,7 @@ function buildCoordScene() {
     marker.visible = true;
     const ok = x === target[0] && y === target[1] && z === target[2];
     if (ok) {
+      solved = true;
       setReadout(`✅ <b>(${x}, ${y}, ${z})</b> — correct!`);
       document.getElementById("next-challenge").style.display = "inline-flex";
     } else {
@@ -246,6 +253,8 @@ function switchScene(name) {
     .querySelectorAll(".scene-btn")
     .forEach((b) => b.setAttribute("aria-pressed", b.dataset.scene === name));
   scene = name === "coord" ? buildCoordScene() : buildVolumeScene();
+  document.getElementById("reset-btn").style.display =
+    name === "coord" ? "none" : "inline-flex";
 }
 renderer.setAnimationLoop(() => {
   resize();
@@ -262,4 +271,7 @@ document.getElementById("next-challenge").addEventListener("click", () => {
   targetIdx++;
   switchScene("coord");
 });
+document
+  .getElementById("reset-btn")
+  .addEventListener("click", () => switchScene("volume"));
 switchScene("volume");
