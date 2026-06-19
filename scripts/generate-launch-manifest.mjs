@@ -54,6 +54,18 @@ function buildResources(id, lessonDir) {
     resources.notesPdf = `/lessons/${id}/downloads/${id}-notes.pdf`;
   }
 
+  // Per-level (leveled-mode) PDF variants so differentiation survives printing.
+  const notesPdfLevels = {};
+  for (const lvl of ["l1", "l2", "l3"]) {
+    const p = join(lessonDir, "downloads", `${id}-notes-${lvl}.pdf`);
+    if (fileExists(p)) {
+      notesPdfLevels[lvl] = `/lessons/${id}/downloads/${id}-notes-${lvl}.pdf`;
+    }
+  }
+  if (Object.keys(notesPdfLevels).length) {
+    resources.notesPdfLevels = notesPdfLevels;
+  }
+
   // Homework
   if (fileExists(join(lessonDir, "homework.docx"))) {
     resources.homework = `/lessons/${id}/homework.docx`;
