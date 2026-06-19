@@ -28,13 +28,14 @@
       canon[s.id.toUpperCase()] = s.id;
     });
     function looseKey(id) {
-      // 6.RP.A.3.C -> 6RP3C ; 6.NS.B.2 -> 6NS2
+      // Drop ONLY the cluster letter (the single letter between the domain and the
+      // standard number) — never a trailing sub-letter, which distinguishes standards:
+      //   6.RP.A.3 -> 6RP3 ; 6.RP.A.3.C -> 6RP3C ; 6.SP.B.5.D -> 6SP5D ; 6.G.A.1 -> 6G1
+      // Shorthand inputs (6.RP.3, 6.SP.5D, 6.G.1) already lack the cluster letter and map
+      // to the same key as their canonical form, without colliding with sub-standards.
       return String(id)
         .toUpperCase()
-        .replace(/\.([A-Z])(?=\.|$)/g, function (m, letter, off, str) {
-          // drop a standalone cluster letter only when a number follows somewhere
-          return /\.\d/.test(str) ? "." : "." + letter + ".";
-        })
+        .replace(/^(6\.[A-Z]+)\.[A-Z]\.(\d)/, "$1.$2")
         .replace(/[^0-9A-Z]/g, "");
     }
     return function normalize(raw) {

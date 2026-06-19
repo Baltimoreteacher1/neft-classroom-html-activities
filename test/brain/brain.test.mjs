@@ -41,6 +41,17 @@ const byUrl = {};
 entries.forEach((e) => (byUrl[e.url] = e));
 const contentGraph = { byUrl, byId: {} };
 
+// --- Normalizer: must NOT collapse sub-standards into their parent (regression) ---
+const normalize = Mastery.buildNormalizer({
+  standards: [{ id: "6.RP.A.3" }, { id: "6.RP.A.3.C" }, { id: "6.SP.B.5.D" }, { id: "6.G.A.1" }],
+});
+assert.equal(normalize("6.RP.A.3"), "6.RP.A.3");
+assert.equal(normalize("6.RP.A.3.C"), "6.RP.A.3.C", "sub-standard must stay distinct from parent");
+assert.notEqual(normalize("6.RP.A.3.C"), normalize("6.RP.A.3"), "no parent/sub collision");
+assert.equal(normalize("6.RP.3"), "6.RP.A.3", "shorthand -> canonical");
+assert.equal(normalize("6.SP.5d"), "6.SP.B.5.D", "shorthand sub-letter -> canonical");
+assert.equal(normalize("6.G.1"), "6.G.A.1", "shorthand -> canonical");
+
 const NOW = Date.parse("2026-06-19T12:00:00Z");
 const day = (d) => new Date(NOW - d * 86400000).toISOString();
 
