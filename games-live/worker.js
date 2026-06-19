@@ -15,7 +15,6 @@ export class GameRoom {
     this.state = state;
     this.env = env;
     this.room = null; // hydrated lazily from storage
-    this.sockets = new Set();
   }
 
   async load() {
@@ -27,11 +26,13 @@ export class GameRoom {
   }
 
   broadcast() {
+    if (!this.room) return; // nothing to broadcast until a room exists
     const msg = JSON.stringify({
       type: "state",
       state: Room.publicState(this.room),
     });
-    for (const ws of this.sockets) {
+    // Use the hibernation API, not an in-memory Set: sockets survive DO eviction.
+    for (const ws of this.state.getWebSockets()) {
       try {
         ws.send(msg);
       } catch (_) {
@@ -48,7 +49,6 @@ export class GameRoom {
       const pair = new WebSocketPair();
       const [client, server] = Object.values(pair);
       this.state.acceptWebSocket(server);
-      this.sockets.add(server);
       await this.load();
       if (this.room)
         server.send(
@@ -62,8 +62,15 @@ export class GameRoom {
       request.method === "POST" ? await request.json().catch(() => ({})) : {};
     const now = Date.now();
     let res = { ok: true };
+    const op = url.pathname.split("/").pop();
 
-    switch (url.pathname.split("/").pop()) {
+    // Every op except "create" requires an existing room — guard against null
+    // (e.g. /state on a fresh code) so we return a clean error, not a 500.
+    if (op !== "create" && !this.room) {
+      return Response.json({ ok: false, error: "no-room" }, { status: 404 });
+    }
+
+    switch (op) {
       case "create":
         this.room = Room.makeRoom(body); // { code, standard, title, questions }
         break;
@@ -112,10 +119,15 @@ export class GameRoom {
     }
   }
   async webSocketClose(ws) {
-    this.sockets.delete(ws);
+    // Hibernation API tracks sockets; just close cleanly.
+    try {
+      ws.close(1000, "closed");
+    } catch (_) {}
   }
   async webSocketError(ws) {
-    this.sockets.delete(ws);
+    try {
+      ws.close(1011, "error");
+    } catch (_) {}
   }
 }
 
