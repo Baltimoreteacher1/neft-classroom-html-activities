@@ -923,7 +923,7 @@
   padding:14px;
   margin:14px 0;
 }
-.support-panel.esol{background:linear-gradient(135deg,#f7fbff,#eef6ff 58%,#fff8e6);border-color:#cfe0f7}
+.support-panel.support{background:linear-gradient(135deg,#f7fbff,#eef6ff 58%,#fff8e6);border-color:#cfe0f7}
 .support-panel h3{margin:0 0 8px;font-size:17px;display:flex;align-items:center;gap:8px}
 .support-panel p{font-size:14px;margin:0 0 8px;color:#33445f}
 .visual-mini-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:10px}
@@ -938,7 +938,7 @@
   padding:11px;
   margin:8px 0 12px;
 }
-.starter-panel.esol{background:linear-gradient(135deg,#ffffff,#f4faff 60%,#fffaf0)}
+.starter-panel.support{background:linear-gradient(135deg,#ffffff,#f4faff 60%,#fffaf0)}
 .starter-panel-title{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:8px;font-size:12px;font-weight:900;color:#1a3580;text-transform:uppercase;letter-spacing:.04em}
 .starter-grid{display:flex;flex-wrap:wrap;gap:7px}
 .starter-btn{
@@ -954,7 +954,7 @@
   transition:.16s ease;
 }
 .starter-btn:hover{background:#eef6ff;border-color:#8ab0e8;transform:translateY(-1px)}
-.esol-word-pair{display:inline-flex;align-items:center;gap:6px;border-radius:999px;background:#fff7e6;border:1px solid #f0d59d;padding:4px 8px;margin:3px 4px 3px 0;font-size:12px;font-weight:800;color:#5f3d0b}
+.support-word-pair{display:inline-flex;align-items:center;gap:6px;border-radius:999px;background:#fff7e6;border:1px solid #f0d59d;padding:4px 8px;margin:3px 4px 3px 0;font-size:12px;font-weight:800;color:#5f3d0b}
 .field-hint{
   margin-top:-4px;
   margin-bottom:8px;
@@ -991,11 +991,11 @@
 .axis-helper div{border-radius:14px;border:1.5px solid #d8e4f4;background:#fff;padding:11px;font-size:13px;line-height:1.25;color:#3c4c65}
 .axis-helper strong{display:block;color:#14346f;margin-bottom:3px}
 .teacher-print-note{display:none}
-[data-version="regular"] .esol-only{display:none!important}
-[data-version="esol"] .regular-only{display:none!important}
-[data-version="esol"] textarea{min-height:108px}
-[data-version="esol"] .lead{font-size:18px}
-[data-version="esol"] p{line-height:1.55}
+[data-version="regular"] .support-only{display:none!important}
+[data-version="support"] .regular-only{display:none!important}
+[data-version="support"] textarea{min-height:108px}
+[data-version="support"] .lead{font-size:18px}
+[data-version="support"] p{line-height:1.55}
 @media (max-width:900px){.version-strip{grid-template-columns:1fr}.version-tag{justify-self:start}.visual-mini-grid{grid-template-columns:1fr 1fr}.axis-helper{grid-template-columns:1fr}}
 @media print{.quick-help-bar,.starter-panel,.help-chip,.word-help-btn,.version-strip{display:none!important}.field-hint{border-left:2px solid #777;background:#fff}.teacher-print-note{display:block}}
 /* ===================== END VERSION SUPPORT UPGRADE ===================== */
@@ -1005,7 +1005,7 @@
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
   <!-- nsr-injected:end -->
 </head>
-<body data-version="esol">
+<body data-version="support">
   <div class="app" id="app">
     <section class="hero"><div class="hero-dna" aria-hidden="true"></div>
       <div>
@@ -1378,7 +1378,7 @@
       histogramBuilt:false,
       finished:false
     };
-    const SUPPORT_VARIANT = 'esol';
+    const SUPPORT_VARIANT = 'support';
     const STORAGE_KEY = 'histogramDiseaseQuestV1_ESOL';
     const VERSION_NAME = 'Version 1: Extra Support + Visual Edition';
 
@@ -1875,11 +1875,11 @@
       const pill=document.getElementById('scorePill');
       if(pill && !pill.dataset.versionReady){pill.dataset.versionReady='1';}
       const bootcamp=document.querySelector('#tab-1 .panel.blue .lead');
-      if(bootcamp && SUPPORT_VARIANT==='esol') bootcamp.innerHTML='A histogram groups <strong>numbers</strong> into intervals. A bar graph compares <strong>categories</strong>. Use the picture clues and word help buttons when the words feel confusing.';
+      if(bootcamp && SUPPORT_VARIANT==='support') bootcamp.innerHTML='A histogram groups <strong>numbers</strong> into intervals. A bar graph compares <strong>categories</strong>. Use the picture clues and word help buttons when the words feel confusing.';
     }
     function addQuickHelpBar(){
       if(document.getElementById('quickHelpBar'))return;
-      const terms = SUPPORT_VARIANT==='esol' ? ['histogram','interval','frequency','cluster','peak','outlier','incidence','evidence'] : ['histogram','interval','frequency','distribution','outlier','evidence'];
+      const terms = SUPPORT_VARIANT==='support' ? ['histogram','interval','frequency','cluster','peak','outlier','incidence','evidence'] : ['histogram','interval','frequency','distribution','outlier','evidence'];
       const html = `<div class="quick-help-bar no-print" id="quickHelpBar"><strong>Need a word?</strong>${terms.map(t=>`<button class="help-chip" type="button" onclick="openMiniHelp('${t}')">${HELP_TERMS[t].title}</button>`).join('')}<button class="word-help-btn" type="button" onclick="openLanguageHelp()">Open full help</button></div>`;
       const main=document.querySelector('main');
       if(main) main.insertAdjacentHTML('afterbegin',html);
@@ -1888,11 +1888,11 @@
       const setup=document.querySelector('#tab-0 .panel.yellow');
       if(setup && !setup.dataset.supported){
         setup.dataset.supported='1';
-        setup.insertAdjacentHTML('beforeend', `<div class="support-panel ${SUPPORT_VARIANT==='esol'?'esol':''}"><h3>🧭 How to read a histogram</h3><div class="visual-mini-grid"><div class="visual-mini-card"><div class="big">↔️</div><strong>x-axis</strong><span>Shows number intervals, like 0–49.</span></div><div class="visual-mini-card"><div class="big">↕️</div><strong>y-axis</strong><span>Shows frequency: how many.</span></div><div class="visual-mini-card"><div class="big">🏔️</div><strong>Tallest bar</strong><span>Shows the most common interval.</span></div><div class="visual-mini-card"><div class="big">🔎</div><strong>Pattern</strong><span>Look for cluster, spread, peak, or outlier.</span></div></div><div class="esol-only" style="margin-top:10px"><span class="esol-word-pair">interval = intervalo</span><span class="esol-word-pair">frequency = frecuencia</span><span class="esol-word-pair">evidence = evidencia</span><span class="esol-word-pair">source = fuente</span></div></div>`);
+        setup.insertAdjacentHTML('beforeend', `<div class="support-panel ${SUPPORT_VARIANT==='support'?'support':''}"><h3>🧭 How to read a histogram</h3><div class="visual-mini-grid"><div class="visual-mini-card"><div class="big">↔️</div><strong>x-axis</strong><span>Shows number intervals, like 0–49.</span></div><div class="visual-mini-card"><div class="big">↕️</div><strong>y-axis</strong><span>Shows frequency: how many.</span></div><div class="visual-mini-card"><div class="big">🏔️</div><strong>Tallest bar</strong><span>Shows the most common interval.</span></div><div class="visual-mini-card"><div class="big">🔎</div><strong>Pattern</strong><span>Look for cluster, spread, peak, or outlier.</span></div></div><div class="support-only" style="margin-top:10px"><span class="support-word-pair">interval = intervalo</span><span class="support-word-pair">frequency = frecuencia</span><span class="support-word-pair">evidence = evidencia</span><span class="support-word-pair">source = fuente</span></div></div>`);
       }
       const sourcePanel=document.querySelector('#tab-2 .panel.purple');
       if(sourcePanel && !document.getElementById('sourceReadingHelper')){
-        sourcePanel.insertAdjacentHTML('beforeend', `<div class="support-panel ${SUPPORT_VARIANT==='esol'?'esol':''}" id="sourceReadingHelper"><h3>🌐 Website reading helper</h3><p><strong>You do not need to read every word.</strong> Look for one chart, map, table, number, or repeated pattern.</p><div class="axis-helper"><div><strong>Look for numbers</strong> cases, deaths, rates, percentages</div><div><strong>Look for places</strong> countries, regions, locations</div><div><strong>Look for time</strong> years, weeks, months, trends</div></div><p class="esol-only"><span class="esol-word-pair">cases = casos</span><span class="esol-word-pair">rate = tasa</span><span class="esol-word-pair">country = país</span><span class="esol-word-pair">trend = tendencia</span></p></div>`);
+        sourcePanel.insertAdjacentHTML('beforeend', `<div class="support-panel ${SUPPORT_VARIANT==='support'?'support':''}" id="sourceReadingHelper"><h3>🌐 Website reading helper</h3><p><strong>You do not need to read every word.</strong> Look for one chart, map, table, number, or repeated pattern.</p><div class="axis-helper"><div><strong>Look for numbers</strong> cases, deaths, rates, percentages</div><div><strong>Look for places</strong> countries, regions, locations</div><div><strong>Look for time</strong> years, weeks, months, trends</div></div><p class="support-only"><span class="support-word-pair">cases = casos</span><span class="support-word-pair">rate = tasa</span><span class="support-word-pair">country = país</span><span class="support-word-pair">trend = tendencia</span></p></div>`);
       }
       const detective=document.querySelector('#tab-3 .panel.blue .lead');
       if(detective && !document.getElementById('chartReadHelper')){
@@ -1932,18 +1932,18 @@
         finalReasoning:['This matters because ___ .','This evidence supports the claim because ___ .'],
         finalQuestion:['Next, I would investigate ___ .','A question I still have is ___ .']
       };
-      const bank = SUPPORT_VARIANT==='esol'?easy:regular;
+      const bank = SUPPORT_VARIANT==='support'?easy:regular;
       Object.entries(bank).forEach(([id, starters])=>addStarterPanel(id, starters));
     }
     function addStarterPanel(id, starters){
       const el=document.getElementById(id);
       if(!el || document.getElementById(`${id}_starterPanel`))return;
-      const title=SUPPORT_VARIANT==='esol'?'Easy click-to-insert starters':'Sentence starters';
+      const title=SUPPORT_VARIANT==='support'?'Easy click-to-insert starters':'Sentence starters';
       const buttons=starters.map(s=>`<button class="starter-btn" type="button" onclick="addStem('${id}','${safeJs(s)}')">${escapeHtml(s)}</button>`).join('');
-      el.insertAdjacentHTML('afterend', `<div class="starter-panel ${SUPPORT_VARIANT==='esol'?'esol':''}" id="${id}_starterPanel"><div class="starter-panel-title"><span>✍️ ${title}</span><span>${SUPPORT_VARIANT==='esol'?'Click one, then fill in the blanks.':'Click to begin your response.'}</span></div><div class="starter-grid">${buttons}</div></div>`);
+      el.insertAdjacentHTML('afterend', `<div class="starter-panel ${SUPPORT_VARIANT==='support'?'support':''}" id="${id}_starterPanel"><div class="starter-panel-title"><span>✍️ ${title}</span><span>${SUPPORT_VARIANT==='support'?'Click one, then fill in the blanks.':'Click to begin your response.'}</span></div><div class="starter-grid">${buttons}</div></div>`);
     }
     function addFieldHints(){
-      const hints = SUPPORT_VARIANT==='esol' ? {
+      const hints = SUPPORT_VARIANT==='support' ? {
         sourceOne:'Write the website or topic name. Example: WHO malaria data.',
         sourceOneValue:'Write one number or pattern you found. You can copy a short number, rate, or year.',
         sourceTwo:'Choose a second website or topic.',
@@ -1966,21 +1966,21 @@
       document.querySelectorAll('.source-card').forEach((card,idx)=>{
         if(card.dataset.enhanced)return;
         card.dataset.enhanced='1';
-        const helper = SUPPORT_VARIANT==='esol' ? 'Look for one number, chart, map, or word that repeats. Do not try to read the whole page.' : 'Look for a chart, map, table, statistic, or trend that could support your histogram analysis.';
+        const helper = SUPPORT_VARIANT==='support' ? 'Look for one number, chart, map, or word that repeats. Do not try to read the whole page.' : 'Look for a chart, map, table, statistic, or trend that could support your histogram analysis.';
         card.insertAdjacentHTML('beforeend',`<div class="look-for"><strong>Look for:</strong> ${helper}</div><div class="source-actions"><button class="help-chip" type="button" onclick="openMiniHelp('source')">source help</button><button class="help-chip" type="button" onclick="openMiniHelp('incidence')">rate help</button></div>`);
       });
     }
     function updateGuideForVersion(){
       const guide=document.querySelector('#guideTitle');
-      if(guide) guide.textContent=SUPPORT_VARIANT==='esol'?'Student Help: Extra Support + Visual Edition':'Student Help: Regular Edition';
+      if(guide) guide.textContent=SUPPORT_VARIANT==='support'?'Student Help: Extra Support + Visual Edition':'Student Help: Regular Edition';
       const modal=document.querySelector('#modalBackdrop .modal .stepper');
       if(modal && !modal.dataset.versionReady){
         modal.dataset.versionReady='1';
-        modal.insertAdjacentHTML('beforeend', SUPPORT_VARIANT==='esol' ? `<div class="step"><strong>Use the word help.</strong><br/>Click confusing words such as interval, frequency, source, evidence, and peak.</div><div class="step"><strong>Use sentence starters.</strong><br/>Click a starter, then replace the blank line with your own words.</div>` : `<div class="step"><strong>Use the sentence starters only when helpful.</strong><br/>Your final report should include a claim, evidence, reasoning, and next question.</div>`);
+        modal.insertAdjacentHTML('beforeend', SUPPORT_VARIANT==='support' ? `<div class="step"><strong>Use the word help.</strong><br/>Click confusing words such as interval, frequency, source, evidence, and peak.</div><div class="step"><strong>Use sentence starters.</strong><br/>Click a starter, then replace the blank line with your own words.</div>` : `<div class="step"><strong>Use the sentence starters only when helpful.</strong><br/>Your final report should include a claim, evidence, reasoning, and next question.</div>`);
       }
     }
     function updatePlaceholdersForVersion(){
-      if(SUPPORT_VARIANT==='esol'){
+      if(SUPPORT_VARIANT==='support'){
         const ph={
           launchNotice:'I notice ___ .', launchWonder:'I wonder ___ .', sourceReflection:'The sources helped me understand ___ .', detectiveExplainA:'Most locations are in ___ . The tallest bar means ___ .', epiExplain:'The peak week is ___ . This helps teams ___ .', histQuestion3:'The data are clustered/spread out because ___ .', histQuestion4:'A public-health team might ask ___ .', challengeResponse:'My recommendation is ___ . My evidence is ___ .', finalClaim:'My histogram shows ___ .', finalEvidence:'One piece of evidence is ___ .', finalReasoning:'This matters because ___ .', finalQuestion:'Next, I would investigate ___ .'
         };
@@ -1989,22 +1989,22 @@
     }
     function openMiniHelp(term){
       const info=HELP_TERMS[term]||HELP_TERMS.interval;
-      const extra = SUPPORT_VARIANT==='esol' ? `<span class="term-spanish">Spanish support: ${escapeHtml(info.spanish||'')}</span>` : '';
+      const extra = SUPPORT_VARIANT==='support' ? `<span class="term-spanish">Spanish support: ${escapeHtml(info.spanish||'')}</span>` : '';
       const html=`<div class="help-definition"><h3>${escapeHtml(info.title)}</h3><p>${escapeHtml(info.simple)}</p><div class="example">${escapeHtml(info.example)}</div>${extra}</div>`;
       document.getElementById('languageHelpTitle').textContent=info.title;
-      document.getElementById('languageHelpSubtitle').textContent=SUPPORT_VARIANT==='esol'?'Quick meaning + example.':'Quick definition and example.';
+      document.getElementById('languageHelpSubtitle').textContent=SUPPORT_VARIANT==='support'?'Quick meaning + example.':'Quick definition and example.';
       document.getElementById('languageHelpContent').innerHTML=html;
       document.getElementById('languageHelpBackdrop').classList.add('show');
     }
     function openLanguageHelp(){
-      const terms = SUPPORT_VARIANT==='esol' ? ['histogram','interval','frequency','incidence','source','evidence','cluster','peak','outlier','distribution','epi'] : ['histogram','interval','frequency','distribution','cluster','peak','outlier','evidence'];
+      const terms = SUPPORT_VARIANT==='support' ? ['histogram','interval','frequency','incidence','source','evidence','cluster','peak','outlier','distribution','epi'] : ['histogram','interval','frequency','distribution','cluster','peak','outlier','evidence'];
       const html=terms.map(t=>{
         const info=HELP_TERMS[t];
-        const extra=SUPPORT_VARIANT==='esol'?`<span class="term-spanish">${escapeHtml(info.spanish||'')}</span>`:'';
+        const extra=SUPPORT_VARIANT==='support'?`<span class="term-spanish">${escapeHtml(info.spanish||'')}</span>`:'';
         return `<div class="help-definition"><h3>${escapeHtml(info.title)}</h3><p>${escapeHtml(info.simple)}</p><div class="example">${escapeHtml(info.example)}</div>${extra}</div>`;
       }).join('');
-      document.getElementById('languageHelpTitle').textContent=SUPPORT_VARIANT==='esol'?'Word Help':'Word Help';
-      document.getElementById('languageHelpSubtitle').textContent=SUPPORT_VARIANT==='esol'?'Use these words to read sources, charts, and questions.':'Use these words while reading and explaining histograms.';
+      document.getElementById('languageHelpTitle').textContent=SUPPORT_VARIANT==='support'?'Word Help':'Word Help';
+      document.getElementById('languageHelpSubtitle').textContent=SUPPORT_VARIANT==='support'?'Use these words to read sources, charts, and questions.':'Use these words while reading and explaining histograms.';
       document.getElementById('languageHelpContent').innerHTML=html;
       document.getElementById('languageHelpBackdrop').classList.add('show');
     }
