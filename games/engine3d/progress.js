@@ -1,6 +1,12 @@
 const API_BASE = "/api";
+// Score events go to the dedicated /api/scores Pages Function
+// (functions/api/scores/[[path]].js) which persists each step + its
+// misconceptionTag. Returns 503 until the D1 binding is enabled; the queue
+// below handles that transparently.
 const SCORES_URL = `${API_BASE}/scores`;
-const PROGRESS_URL = `${API_BASE}/progress`;
+// Lightweight per-game progress mirror. localStorage (below) is the source of
+// truth for resume; the network write is best-effort and degrades gracefully.
+const PROGRESS_URL = `${API_BASE}/scores/progress`;
 const QUEUE_KEY = "e3d:syncQueue";
 const PROGRESS_PREFIX = "e3d:progress:";
 
