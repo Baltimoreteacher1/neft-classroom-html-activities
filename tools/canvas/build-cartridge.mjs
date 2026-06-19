@@ -27,13 +27,24 @@ const SITE = (process.env.NEFT_SITE || "https://eduwonderlab.com").replace(/\/$/
 const unitFilter = process.argv[2] ? Number(process.argv[2]) : null;
 
 const xml = (s) =>
-  String(s == null ? "" : s).replace(/[<>&'"]/g, (c) => ({
-    "<": "&lt;", ">": "&gt;", "&": "&amp;", "'": "&apos;", '"': "&quot;",
-  })[c]);
+  String(s == null ? "" : s).replace(
+    /[<>&'"]/g,
+    (c) =>
+      ({
+        "<": "&lt;",
+        ">": "&gt;",
+        "&": "&amp;",
+        "'": "&apos;",
+        '"': "&quot;",
+      })[c],
+  );
 
-const manifest = JSON.parse(readFileSync(resolve(repoRoot, "data/curriculum-manifest.json"), "utf8"));
-let lessons = (Array.isArray(manifest.lessons) ? manifest.lessons : Object.values(manifest.lessons))
-  .filter((l) => l && l.id && !l.flagship);
+const manifest = JSON.parse(
+  readFileSync(resolve(repoRoot, "data/curriculum-manifest.json"), "utf8"),
+);
+let lessons = (
+  Array.isArray(manifest.lessons) ? manifest.lessons : Object.values(manifest.lessons)
+).filter((l) => l && l.id && !l.flagship);
 if (unitFilter) lessons = lessons.filter((l) => Number(l.unit) === unitFilter);
 if (!lessons.length) {
   console.error("No lessons matched.");
@@ -137,6 +148,8 @@ execSync(`cd "${stage}" && zip -r -q -X "${outFile}" . -x ".*"`);
 rmSync(stage, { recursive: true, force: true });
 
 console.log(`✓ Common Cartridge built: ${outFile}`);
-console.log(`  ${lessons.length} assignment(s)${unitFilter ? ` (Unit ${unitFilter})` : ""}, all UNPUBLISHED.`);
+console.log(
+  `  ${lessons.length} assignment(s)${unitFilter ? ` (Unit ${unitFilter})` : ""}, all UNPUBLISHED.`,
+);
 console.log(`\nImport: Canvas → Course → Settings → Import Course Content →`);
 console.log(`  "Common Cartridge 1.x Package" → upload this file → Import.`);

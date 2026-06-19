@@ -67,10 +67,30 @@ function extractQuestions(id) {
   const match = [];
   (function walk(o) {
     if (o && typeof o === "object") {
-      if (o.type === "multiple-choice" && Array.isArray(o.choices) && o.choices.length >= 2 && Number.isInteger(o.correctIndex)) {
-        mc.push({ kind: "mc", stem: o.stem || o.question || "", choices: o.choices.map(String), correct: o.correctIndex, explanation: o.explanation || "" });
-      } else if (o.type === "matching-game" && Array.isArray(o.pairs) && o.pairs.length >= 2 && o.pairs.every((x) => x && x.term != null && x.match != null)) {
-        match.push({ kind: "match", prompt: o.label || "Match each item to its answer.", pairs: o.pairs.slice(0, 6).map((x) => ({ term: String(x.term), match: String(x.match) })) });
+      if (
+        o.type === "multiple-choice" &&
+        Array.isArray(o.choices) &&
+        o.choices.length >= 2 &&
+        Number.isInteger(o.correctIndex)
+      ) {
+        mc.push({
+          kind: "mc",
+          stem: o.stem || o.question || "",
+          choices: o.choices.map(String),
+          correct: o.correctIndex,
+          explanation: o.explanation || "",
+        });
+      } else if (
+        o.type === "matching-game" &&
+        Array.isArray(o.pairs) &&
+        o.pairs.length >= 2 &&
+        o.pairs.every((x) => x && x.term != null && x.match != null)
+      ) {
+        match.push({
+          kind: "match",
+          prompt: o.label || "Match each item to its answer.",
+          pairs: o.pairs.slice(0, 6).map((x) => ({ term: String(x.term), match: String(x.match) })),
+        });
       }
       for (const k in o) walk(o[k]);
     }
@@ -83,13 +103,18 @@ function extractQuestions(id) {
 const LETTERS = "ABCDEFGHIJKLMNOP".split("");
 function mcItem(q, ident, qi) {
   const labels = q.choices
-    .map((c, i) => `          <response_label ident="${LETTERS[i]}"><material><mattext texttype="text/html">${html(c)}</mattext></material></response_label>`)
+    .map(
+      (c, i) =>
+        `          <response_label ident="${LETTERS[i]}"><material><mattext texttype="text/html">${html(c)}</mattext></material></response_label>`,
+    )
     .join("\n");
   const correct = LETTERS[q.correct] || "A";
   const fb = q.explanation
     ? `    <itemfeedback ident="general_fb"><flow_mat><material><mattext texttype="text/html">${html(q.explanation)}</mattext></material></flow_mat></itemfeedback>`
     : "";
-  const fbRef = q.explanation ? `        <displayfeedback feedbacktype="Response" linkrefid="general_fb"/>` : "";
+  const fbRef = q.explanation
+    ? `        <displayfeedback feedbacktype="Response" linkrefid="general_fb"/>`
+    : "";
   return `  <item ident="${ident}" title="Question ${qi}">
     <itemmetadata><qtimetadata>
       <qtimetadatafield><fieldlabel>question_type</fieldlabel><fieldentry>multiple_choice_question</fieldentry></qtimetadatafield>
@@ -117,16 +142,26 @@ ${fb}
 function matchItem(q, ident, qi) {
   // unique right-column options; each ident "mN"; correct per term = its match's ident
   const matches = [];
-  q.pairs.forEach((p) => { if (!matches.includes(p.match)) matches.push(p.match); });
-  const optionXml = (rid) => matches.map((m, i) => `            <response_label ident="m${i}"><material><mattext texttype="text/html">${html(m)}</mattext></material></response_label>`).join("\n");
+  q.pairs.forEach((p) => {
+    if (!matches.includes(p.match)) matches.push(p.match);
+  });
+  const optionXml = (rid) =>
+    matches
+      .map(
+        (m, i) =>
+          `            <response_label ident="m${i}"><material><mattext texttype="text/html">${html(m)}</mattext></material></response_label>`,
+      )
+      .join("\n");
   const per = Math.round((100 / q.pairs.length) * 100) / 100;
   const responses = q.pairs
-    .map((p, i) => `      <response_lid ident="response_${qi}_${i}" rcardinality="Single">
+    .map(
+      (p, i) => `      <response_lid ident="response_${qi}_${i}" rcardinality="Single">
         <material><mattext texttype="text/html">${html(p.term)}</mattext></material>
         <render_choice>
 ${optionXml(i)}
         </render_choice>
-      </response_lid>`)
+      </response_lid>`,
+    )
     .join("\n");
   const conds = q.pairs
     .map((p, i) => {
@@ -329,11 +364,17 @@ execSync(`cd "${stage}" && zip -r -q -X "${outFile}" . -x ".*"`);
 rmSync(stage, { recursive: true, force: true });
 
 console.log(`✓ ${QUIZ_ONLY ? "QTI quiz package" : "Canvas course package"}: ${outFile}`);
-console.log(`  ${pagesMade} lesson pages, ${quizzesMade} auto-graded quizzes, ${unitNums.length} unit(s).`);
+console.log(
+  `  ${pagesMade} lesson pages, ${quizzesMade} auto-graded quizzes, ${unitNums.length} unit(s).`,
+);
 if (QUIZ_ONLY) {
   console.log(`\nImport: Canvas → Settings → Import Course Content → "QTI .zip file" → upload.`);
-  console.log(`Creates auto-graded quizzes directly (most reliable quiz path). Imports unpublished.`);
+  console.log(
+    `Creates auto-graded quizzes directly (most reliable quiz path). Imports unpublished.`,
+  );
 } else {
-  console.log(`\nImport: Canvas → Settings → Import Course Content → "Common Cartridge 1.x Package".`);
+  console.log(
+    `\nImport: Canvas → Settings → Import Course Content → "Common Cartridge 1.x Package".`,
+  );
   console.log(`Everything imports UNPUBLISHED. Quizzes grade themselves into the gradebook.`);
 }
