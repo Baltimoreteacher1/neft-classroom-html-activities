@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Math Brain — Demo</title>
+    <link rel="stylesheet" href="/assets/brain/brain.css" />
+    <style>
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        max-width: 980px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        color: #1a1a2e;
+      }
+      h1 {
+        margin-bottom: 0.2rem;
+      }
+      .lead {
+        opacity: 0.75;
+        margin-top: 0;
+      }
+      .bar {
+        display: flex;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+        margin: 1rem 0 1.5rem;
+      }
+      button {
+        font-size: 0.95rem;
+        padding: 0.55rem 1rem;
+        border-radius: 10px;
+        border: 1px solid #c8cce0;
+        background: #fff;
+        cursor: pointer;
+      }
+      button.primary {
+        background: #4f6ef7;
+        color: #fff;
+        border-color: #4f6ef7;
+      }
+      .panel {
+        border: 1px solid #e6e8f0;
+        border-radius: 16px;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1.5rem;
+        background: #fbfbfe;
+      }
+      .panel h2 {
+        margin-top: 0;
+      }
+      .note {
+        font-size: 0.85rem;
+        opacity: 0.7;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🧠 Math Brain — Live Demo</h1>
+    <p class="lead">
+      Seeds a realistic student's activity history, then shows what the platform
+      does with it.
+    </p>
+    <div class="bar">
+      <button class="primary" id="seedStruggling">
+        Seed: student struggling on ratios
+      </button>
+      <button id="seedMixed">Seed: mixed performer</button>
+      <button id="reset">Clear data</button>
+    </div>
+
+    <div class="panel">
+      <h2>Student view — "Picked for you"</h2>
+      <p class="note">
+        Ranked next-best activities with reasons, routed by mastery level and
+        targeting detected misconceptions.
+      </p>
+      <div id="whatsNext"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Teacher view — Mastery heatmap</h2>
+      <p class="note">
+        Per-standard mastery from the same results. This demo shows one student;
+        a roster reads from synced progress.
+      </p>
+      <div id="heatmap" style="overflow-x: auto"></div>
+    </div>
+
+    <script src="/assets/brain/mastery-engine.js"></script>
+    <script src="/assets/brain/recommend-engine.js"></script>
+    <script src="/assets/brain/brain.js"></script>
+    <script>
+      var KEY = "nt_results_v1";
+      function iso(daysAgo) {
+        return new Date(Date.now() - daysAgo * 86400000).toISOString();
+      }
+      function rec(activityId, standard, score, daysAgo) {
+        return {
+          schema: "nt_result_v1",
+          studentAlias: "Demo Student",
+          section: "demo",
+          activityId: activityId,
+          activityTitle: activityId,
+          standard: standard,
+          scorePercent: score,
+          skills: [],
+          completedAt: iso(daysAgo),
+        };
+      }
+      var SETS = {
+        struggling: [
+          rec("/math/unit-3/6-rp-1reviewlearn/", "6.RP.A.1", 30, 3),
+          rec(
+            "/math/unit-4/6-rp-a-2-interactive-study-guide/",
+            "6.RP.A.2",
+            40,
+            2,
+          ),
+          rec(
+            "/math/unit-4/6-rp-a-2-interactive-study-guide/",
+            "6.RP.A.2",
+            50,
+            1,
+          ),
+          rec("/math/unit-1/6-ns-b-4review/", "6.NS.B.4", 85, 4),
+          rec("/math/statistics/6-sp-a-1review2/", "6.SP.A.1", 95, 5),
+        ],
+        mixed: [
+          rec("/math/unit-1/6-ns-b-2reviewactivities/", "6.NS.B.2", 70, 2),
+          rec("/math/unit-9/6-ee-c-9study/", "6.EE.C.9", 55, 1),
+          rec("/math/unit-7/6-ns-cstudypractice/", "6.NS.C.8", 88, 3),
+          rec("/math/unit-5/supplemental/5-1-5-3practice/", "6.G.A.1", 35, 1),
+          rec(
+            "/math/statistics/6-sp-b-5-interactive-review/",
+            "6.SP.B.5",
+            90,
+            6,
+          ),
+        ],
+      };
+      function render() {
+        NeftBrain.load({ force: true, limit: 8 }).then(function () {
+          NeftBrain.renderWhatsNext("#whatsNext", { force: true, limit: 8 });
+          NeftBrain.renderHeatmap("#heatmap", { force: true });
+        });
+      }
+      function seed(which) {
+        localStorage.setItem(KEY, JSON.stringify(SETS[which]));
+        render();
+      }
+      document.getElementById("seedStruggling").onclick = function () {
+        seed("struggling");
+      };
+      document.getElementById("seedMixed").onclick = function () {
+        seed("mixed");
+      };
+      document.getElementById("reset").onclick = function () {
+        localStorage.removeItem(KEY);
+        render();
+      };
+      // auto-seed the struggling case on first load so the page is never empty
+      if (!localStorage.getItem(KEY))
+        localStorage.setItem(KEY, JSON.stringify(SETS.struggling));
+      document.addEventListener("DOMContentLoaded", render);
+    </script>
+  </body>
+</html>
