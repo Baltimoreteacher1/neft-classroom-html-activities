@@ -1,0 +1,54 @@
+/*!
+ * lesson-platform.css — Neft Lesson Platform · cross-layer coordination only.
+ *
+ * Loaded once per lesson by tools/inject-lesson-platform.js (one <link>). It does
+ * NOT restyle any layer — each layer ships its own CSS. This file only resolves
+ * cross-layer collisions that no single layer can know about on its own:
+ *
+ *   - The AI tutor launcher (.lp-tutor-launcher, fixed bottom-right) and the
+ *     nt-page-enhance save bar (.nt-pe-bar, fixed full-width bottom, z very high)
+ *     both occupy the bottom edge. The save bar would overlap the launcher, so
+ *     we lift the launcher / panel above the save bar's height when that bar is
+ *     present on the page.
+ *   - In ?embed=1 mode nt-page-enhance hides its chrome (incl. the save bar), so
+ *     the launcher drops back to its natural offset.
+ *
+ * All rules are additive and namespaced to the platform layers' own classes; no
+ * lesson-local selectors are touched. Honors prefers-reduced-motion (it adds no
+ * motion). See docs/superpowers/specs/INTEGRATION-CONTRACT.md.
+ */
+
+:root {
+  /* Approx. nt-page-enhance save-bar height + breathing room. The save bar is a
+     fixed bottom strip with ~12px padding around a 48px-tall control row. */
+  --lp-savebar-clearance: 72px;
+}
+
+/* When the save bar exists, lift the tutor launcher + panel above it so the bar
+   never covers the launcher. We can't use :has() reliably across the lesson's
+   own markup, so the loader leaves this to the always-present save bar: the bar
+   is a sibling of <body>, so we scope via a body-level marker the platform sets.
+   Fallback: a static safe offset that clears the save bar on all lessons. */
+.lp-tutor-launcher {
+  bottom: calc(18px + var(--lp-savebar-clearance));
+}
+
+.lp-tutor-panel {
+  bottom: calc(18px + var(--lp-savebar-clearance));
+}
+
+/* Embedded mode: nt-page-enhance hides the save bar, so reclaim the space. */
+html.nt-embed .lp-tutor-launcher,
+html.nt-embed .lp-tutor-panel {
+  bottom: 18px;
+}
+
+/* Print: nothing platform-owned should appear in printed/PDF output. The layers
+   already hide their own UI; this is a belt-and-suspenders guard for the loader
+   and any future platform-owned chrome. */
+@media print {
+  .lp-tutor-launcher,
+  .lp-tutor-panel {
+    display: none !important;
+  }
+}

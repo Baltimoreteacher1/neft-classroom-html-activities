@@ -1,0 +1,299 @@
+/* Neft Teacher — AI Tutor panel (additive, deploy-safe).
+ *
+ * Pairs with ai-tutor.js (window.NeftTutor). Self-contained styling for a
+ * floating, accessible tutor launcher + slide-in panel. All variables are
+ * namespaced (--lp-tutor-*) and fall back to the shared design tokens so the
+ * lesson's own inline :root palette is never overwritten. No external deps.
+ *
+ * Honors prefers-reduced-motion (transitions removed) and works in both the
+ * lesson's light surfaces and the neft-theme dark mode (via --nt-* fallbacks).
+ */
+
+:root {
+  --lp-tutor-accent: var(--nt-accent, var(--teal, #1fa6a2));
+  --lp-tutor-surface: var(--nt-surface, var(--card, #ffffff));
+  --lp-tutor-bg: var(--nt-bg, var(--bg, #f7f4ec));
+  --lp-tutor-text: var(--nt-text, var(--ink, #1a2433));
+  --lp-tutor-muted: var(--nt-muted, var(--muted, #5b6675));
+  --lp-tutor-border: var(--nt-border, var(--line, #dfe3ea));
+  --lp-tutor-focus: var(--nt-focus, var(--coral, #d9795d));
+  --lp-tutor-radius: var(--radius-md, 14px);
+  --lp-tutor-shadow: 0 10px 30px rgba(15, 35, 60, 0.22);
+  --lp-tutor-z: 2147483000;
+}
+
+/* ---- Launcher button -------------------------------------------------- */
+.lp-tutor-launcher {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: var(--lp-tutor-z);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  min-height: 48px;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: var(--lp-tutor-accent);
+  color: #ffffff;
+  font-family: var(--font-display, system-ui, sans-serif);
+  font-size: 1.02rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--lp-tutor-shadow);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.lp-tutor-launcher:hover {
+  transform: translateY(-2px);
+}
+
+.lp-tutor-launcher:focus-visible {
+  outline: 3px solid var(--lp-tutor-focus);
+  outline-offset: 3px;
+}
+
+.lp-tutor-launcher .lp-tutor-launcher-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+/* When the panel is open, hide the launcher from the tab order visually. */
+.lp-tutor-open .lp-tutor-launcher {
+  display: none;
+}
+
+/* ---- Panel ------------------------------------------------------------ */
+.lp-tutor-panel {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: var(--lp-tutor-z);
+  width: min(380px, calc(100vw - 36px));
+  max-height: min(620px, calc(100vh - 36px));
+  display: none;
+  flex-direction: column;
+  background: var(--lp-tutor-surface);
+  color: var(--lp-tutor-text);
+  border: 1px solid var(--lp-tutor-border);
+  border-radius: var(--lp-tutor-radius);
+  box-shadow: var(--lp-tutor-shadow);
+  overflow: hidden;
+}
+
+.lp-tutor-open .lp-tutor-panel {
+  display: flex;
+}
+
+.lp-tutor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 14px;
+  background: var(--lp-tutor-accent);
+  color: #ffffff;
+}
+
+.lp-tutor-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-family: var(--font-display, system-ui, sans-serif);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.lp-tutor-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.lp-tutor-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.lp-tutor-close:focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: 2px;
+}
+
+/* ---- Conversation log ------------------------------------------------- */
+.lp-tutor-log {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--lp-tutor-bg);
+}
+
+.lp-tutor-msg {
+  max-width: 92%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 1rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.lp-tutor-msg-tutor {
+  align-self: flex-start;
+  background: var(--lp-tutor-surface);
+  border: 1px solid var(--lp-tutor-border);
+  color: var(--lp-tutor-text);
+}
+
+.lp-tutor-msg-student {
+  align-self: flex-end;
+  background: var(--lp-tutor-accent);
+  color: #ffffff;
+}
+
+.lp-tutor-msg-error {
+  align-self: stretch;
+  max-width: 100%;
+  background: var(--error-bg, #fce6de);
+  border: 1px solid var(--lp-tutor-focus);
+  color: var(--error, #9a3b22);
+  text-align: center;
+  font-weight: 600;
+}
+
+.lp-tutor-msg-system {
+  align-self: center;
+  background: transparent;
+  color: var(--lp-tutor-muted);
+  font-size: 0.92rem;
+  text-align: center;
+}
+
+/* Typing indicator. */
+.lp-tutor-typing {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.lp-tutor-typing span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--lp-tutor-muted);
+  animation: lpTutorBlink 1.2s infinite ease-in-out both;
+}
+
+.lp-tutor-typing span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.lp-tutor-typing span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes lpTutorBlink {
+  0%,
+  80%,
+  100% {
+    opacity: 0.3;
+  }
+  40% {
+    opacity: 1;
+  }
+}
+
+/* ---- Action buttons --------------------------------------------------- */
+.lp-tutor-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  padding: 10px;
+  border-top: 1px solid var(--lp-tutor-border);
+  background: var(--lp-tutor-surface);
+}
+
+.lp-tutor-action {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 9px 6px;
+  min-height: 56px;
+  border: 1px solid var(--lp-tutor-border);
+  border-radius: 10px;
+  background: var(--lp-tutor-bg);
+  color: var(--lp-tutor-text);
+  font-family: var(--font-body, system-ui, sans-serif);
+  font-size: 0.88rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.lp-tutor-action .lp-tutor-action-icon {
+  font-size: 1.15rem;
+}
+
+.lp-tutor-action:hover:not(:disabled) {
+  border-color: var(--lp-tutor-accent);
+}
+
+.lp-tutor-action:focus-visible {
+  outline: 3px solid var(--lp-tutor-focus);
+  outline-offset: 2px;
+}
+
+.lp-tutor-action:disabled {
+  opacity: 0.55;
+  cursor: progress;
+}
+
+.lp-tutor-foot {
+  padding: 7px 10px;
+  font-size: 0.74rem;
+  color: var(--lp-tutor-muted);
+  text-align: center;
+  background: var(--lp-tutor-surface);
+  border-top: 1px solid var(--lp-tutor-border);
+}
+
+/* ---- Reduced motion --------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .lp-tutor-launcher,
+  .lp-tutor-action {
+    transition: none;
+  }
+  .lp-tutor-launcher:hover {
+    transform: none;
+  }
+  .lp-tutor-typing span {
+    animation: none;
+    opacity: 0.6;
+  }
+}
+
+@media print {
+  .lp-tutor-launcher,
+  .lp-tutor-panel {
+    display: none !important;
+  }
+}
