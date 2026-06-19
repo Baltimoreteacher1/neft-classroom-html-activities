@@ -39,9 +39,12 @@ const ESOL_RE = /esol/i;
 // offense. Skip pure-comment lines (JS //, JSDoc *, /* */, and HTML <!-- -->).
 const COMMENT_RE = /^\s*(\/\/|\*|\/\*|<!--)/;
 
-// Allowed exceptions: backward-compat localStorage keys (so existing student
-// saves still resume) are explicitly tagged and must not count as offenders.
-const ALLOW_RE = /legacyStorageKey|LEGACY_STORAGE_KEY|games2d-allow-esol/;
+// Allowed exceptions: backward-compat localStorage KEY identifiers (so existing
+// student saves still resume) are not student-facing labels. We exempt explicit
+// tags AND storage-key declarations (STORAGE_KEY = '…' / "storageKey": "…"),
+// whose suffixes are stable save identifiers, never visible labels.
+const ALLOW_RE =
+  /legacyStorageKey|LEGACY_STORAGE_KEY|games2d-allow-esol|STORAGE_KEY\s*=\s*["\x27]|["\x27]storageKey["\x27]\s*:/;
 
 function walk(dir, out) {
   for (const name of readdirSync(dir)) {
