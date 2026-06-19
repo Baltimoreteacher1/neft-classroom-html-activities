@@ -62,21 +62,38 @@ function buildVolumeScene() {
   edges.position.copy(tgt.position);
   s.add(edges);
 
-  const ghostMat = () =>
+  // Empty slot = clearly visible faint cell; hover = teal; filled = solid amber.
+  const emptyMat = () =>
     new THREE.MeshStandardMaterial({
-      color: 0x12355b,
+      color: 0x3a86b5,
       transparent: true,
-      opacity: 0.06,
-      wireframe: true,
+      opacity: 0.22,
+    });
+  const hoverMat = () =>
+    new THREE.MeshStandardMaterial({
+      color: 0x1fa6a2,
+      transparent: true,
+      opacity: 0.5,
     });
   const solidMat = () => new THREE.MeshStandardMaterial({ color: 0xf2c15b });
   const geo = new THREE.BoxGeometry(0.92, 0.92, 0.92);
+  const edgeGeo = new THREE.EdgesGeometry(geo); // crisp cell outline (no triangle diagonals)
   for (let x = 0; x < DIM.l; x++)
     for (let y = 0; y < DIM.h; y++)
       for (let z = 0; z < DIM.w; z++) {
-        const m = new THREE.Mesh(geo, ghostMat());
+        const m = new THREE.Mesh(geo, emptyMat());
         m.position.set(off.x + x, y, off.z + z);
         m.userData.filled = false;
+        m.add(
+          new THREE.LineSegments(
+            edgeGeo,
+            new THREE.LineBasicMaterial({
+              color: 0x12355b,
+              transparent: true,
+              opacity: 0.5,
+            }),
+          ),
+        );
         s.add(m);
         pickables.push(m);
       }
@@ -87,15 +104,28 @@ function buildVolumeScene() {
       (placed === total ? ` &nbsp; 🎉 <b>Filled!</b>` : "");
   };
   update();
+  let lastHover = null;
   onPick = (hit) => {
     const m = hit.object;
     m.userData.filled = !m.userData.filled;
     m.material.dispose();
-    m.material = m.userData.filled ? solidMat() : ghostMat();
+    m.material = m.userData.filled ? solidMat() : emptyMat();
+    if (lastHover === m) lastHover = null;
     placed += m.userData.filled ? 1 : -1;
     update();
   };
-  onHover = null;
+  onHover = (hit) => {
+    if (lastHover && !lastHover.userData.filled) {
+      lastHover.material.dispose();
+      lastHover.material = emptyMat();
+    }
+    lastHover = null;
+    if (hit && !hit.object.userData.filled) {
+      hit.object.material.dispose();
+      hit.object.material = hoverMat();
+      lastHover = hit.object;
+    }
+  };
   instructions.innerHTML =
     "🧱 <b>Volume builder.</b> Click the slots to drop in unit cubes and fill the glowing box. Watch how length × width × height counts the cubes.";
   camera.position.set(5, 5, 7);
@@ -178,7 +208,17 @@ function setPointer(e) {
   pointer.x = ((e.clientX - r.left) / r.width) * 2 - 1;
   pointer.y = -((e.clientY - r.top) / r.height) * 2 + 1;
 }
+// Distinguish a tap (pick) from a click-drag (OrbitControls rotate). Without
+// this, every camera rotation also toggles a cube — the "fills incorrectly" bug.
+let downPos = null;
 canvas.addEventListener("pointerdown", (e) => {
+  downPos = { x: e.clientX, y: e.clientY };
+});
+canvas.addEventListener("pointerup", (e) => {
+  if (!downPos) return;
+  const moved = Math.hypot(e.clientX - downPos.x, e.clientY - downPos.y);
+  downPos = null;
+  if (moved > 6) return; // it was a drag to rotate, not a tap to place
   setPointer(e);
   raycaster.setFromCamera(pointer, camera);
   const hits = raycaster.intersectObjects(pickables, false);
