@@ -29,6 +29,18 @@ function esc(str) {
     .replace(/'/g, "&#039;");
 }
 
+// Reusable read-aloud (TTS) button. Carries its spoken text in data-speak so the
+// runtime speakFromButton() helper (defined once in generate-slides.mjs) can read
+// it. Purely additive — no layout change, fully accessible (aria-label).
+function readAloudBtn(text, opts = {}) {
+  const clean = String(text || "").trim();
+  if (!clean) return "";
+  const lang = opts.lang === "es" ? "es-ES" : opts.lang || "en-US";
+  const label = opts.label || "Read aloud";
+  // data-speak holds the unescaped text; esc() makes it attribute-safe.
+  return `<button type="button" class="read-aloud-btn" aria-label="${esc(label)}" title="${esc(label)}" data-speak="${esc(clean)}" data-lang="${esc(lang)}" onclick="speakFromButton(this)">🔊</button>`;
+}
+
 function badge(themeEmoji, themeName) {
   return `<span class="slide-badge" style="background:var(--theme-color); color:var(--white);">${esc(themeEmoji)} ${esc(themeName)}</span>`;
 }
@@ -215,10 +227,10 @@ function buildVocabRichCard(v, themeEmoji) {
     <div class="vocab-rich-card">
       <div class="vocab-rich-visual">${vocabSvgIllustration(term, visual, themeEmoji)}</div>
       <div class="vocab-rich-content">
-        <h2 class="vocab-term">${esc(term)}</h2>
-        ${termEs ? `<p class="vocab-term-es">${esc(termEs)}</p>` : ""}
-        <p class="vocab-definition">${esc(definition)}</p>
-        ${definitionEs ? `<p class="vocab-definition-es">${esc(definitionEs)}</p>` : ""}
+        <h2 class="vocab-term">${esc(term)}${readAloudBtn(term, { label: "Say the word" })}</h2>
+        ${termEs ? `<p class="vocab-term-es">${esc(termEs)}${readAloudBtn(termEs, { lang: "es", label: "Decir la palabra en español" })}</p>` : ""}
+        <p class="vocab-definition">${esc(definition)}${readAloudBtn(definition, { label: "Read the definition aloud" })}</p>
+        ${definitionEs ? `<p class="vocab-definition-es">${esc(definitionEs)}${readAloudBtn(definitionEs, { lang: "es", label: "Leer la definición en español" })}</p>` : ""}
         <div class="vocab-example-box">
           <strong>Example:</strong> ${esc(exampleSentence)}
         </div>
@@ -252,13 +264,24 @@ function buildTurnAndTalkSlide(
     "My answer is different because ___.",
     "One pattern I notice is ___.",
   ];
-  const starterList = (talk.stems || []).length
-    ? talk.stems.map((s) => s.en || s)
-    : DEFAULT_STARTERS;
-  const stems = starterList
+  // Each stem may be a bilingual object { en, es }. Render the Spanish line
+  // underneath the English one (Level 1 language support). Gated behind the
+  // .bilingual-on body class so teachers can hide it (see slide-reference-theme).
+  const starterList = (talk.stems || []).length ? talk.stems : DEFAULT_STARTERS;
+  const stemLine = (s) => {
+    const en = typeof s === "string" ? s : s.en || "";
+    const es = typeof s === "string" ? "" : s.es || "";
+    return `<div class="tt-stem" onclick="insertAtCursor('${esc(en).replace(/'/g, "\\'")}')">✍️ ${esc(en)}${
+      es ? `<span class="stem-es">${esc(es)}</span>` : ""
+    }</div>`;
+  };
+  const stems = starterList.map(stemLine).join("");
+  const extendStems = (talk.extendStems || [])
     .map(
       (s) =>
-        `<div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\\s*/,''))">✍️ ${esc(s)}</div>`,
+        `<div class="tt-stem tt-stem-extend">➕ ${esc(typeof s === "string" ? s : s.en || "")}${
+          typeof s === "string" || !s.es ? "" : `<span class="stem-es">${esc(s.es)}</span>`
+        }</div>`,
     )
     .join("");
   const wordBank = (talk.wordBank || [])
@@ -276,10 +299,11 @@ function buildTurnAndTalkSlide(
         ${teacherCue("say", "Partner A shares first for 45 seconds, then Partner B.")}
         ${teacherCue("students", "Turn to your elbow partner. Use the sentence stems.")}
         ${teacherCue("time", `${seconds} sec`)}
-        <p class="card-desc tt-question">${esc(talk.question || "")}</p>
+        <p class="card-desc tt-question">${esc(talk.question || "")}${readAloudBtn(talk.question, { label: "Read the question aloud" })}</p>
         <div class="tt-stems-box">
           <strong>Sentence starters (tap to use):</strong>
           ${stems}
+          ${extendStems ? `<div class="tt-stems-extend"><strong>Stretch further:</strong>${extendStems}</div>` : ""}
         </div>
         ${wordBank ? `<div class="tt-wordbank"><strong>WORD BANK:</strong><div>${wordBank}</div></div>` : ""}
         <div class="turn-talk-timer" id="tt-timer-${timerId}">
@@ -371,29 +395,36 @@ function buildWhiteboardCfu(themeEmoji, themeName, contentObj) {
     </div>`;
 }
 
+// Differentiation paths use the repo-wide L0 < L1 < L2 support scheme (never
+// readiness-deficit framing). Level 0 = most-supported (IEP), Level 1 = support,
+// Level 2 = core/on-level, Level 2+ = enrichment.
 function buildDifferentiationSlide(data, themeEmoji, themeName) {
   const approaching = (data.practice?.approaching || [])[0];
   const onLevel = (data.practice?.onLevel || [])[0];
   const extending = (data.practice?.extending || [])[0];
+  // Level 0 draws from an explicit config field when present, otherwise from a
+  // simplified version of the first support (approaching) problem.
+  const levelZero = (data.practice?.level0 || data.practice?.iep || [])[0];
 
   const path = (label, color, problem, desc) => {
     const stem = problem?.stem || desc || "Practice at this level.";
     return `<div class="diff-path" style="--path-color:${color}">
       <div class="diff-path-label">${label}</div>
-      <p class="diff-path-stem">${esc(stem)}</p>
+      <p class="diff-path-stem">${esc(stem)}${readAloudBtn(stem, { label: "Read this task aloud" })}</p>
     </div>`;
   };
 
   return `
     ${slideHeader(themeEmoji, themeName, "Differentiation Paths")}
     <div class="slide-card">
-      <span class="slide-badge badge-teal">🎯 THREE PATHS</span>
-      ${teacherCue("say", "All students work on math — choose the path that matches readiness.")}
+      <span class="slide-badge badge-teal">🎯 CHOOSE YOUR LEVEL</span>
+      ${teacherCue("say", "Everyone works on the same math goal — pick the level of support that fits today.")}
       ${teacherCue("time", "8–10 min independent or partner")}
       <div class="diff-paths-grid">
-        ${path("🌱 Approaching", "var(--amber)", approaching, "Scaffolded practice with visual supports.")}
-        ${path("🎯 On-Level", "var(--teal)", onLevel, "Core practice aligned to the standard.")}
-        ${path("🚀 Challenge", "var(--navy)", extending, "Extension with error analysis or multi-step reasoning.")}
+        ${path("🧩 Level 0 · Most support", "var(--coral, #e07a5f)", levelZero, "Step-by-step with a worked model and sentence frames.")}
+        ${path("🌱 Level 1 · Support", "var(--amber)", approaching, "Scaffolded practice with visual supports.")}
+        ${path("🎯 Level 2 · Core", "var(--teal)", onLevel, "Core practice aligned to the standard.")}
+        ${path("🚀 Level 2+ · Enrichment", "var(--navy)", extending, "Extension with error analysis or multi-step reasoning.")}
       </div>
     </div>`;
 }
@@ -494,7 +525,7 @@ function buildStructuredErrorSlide(data, themeEmoji, themeName, contentObj) {
 
   const main = `
     <span class="ref-error-badge">⚠ ${esc(title)}</span>
-    <p class="ref-instruction">A classmate turned in the work below. One step has a mistake. Read every step, find it, name it, and fix it.</p>
+    <p class="ref-instruction">A classmate turned in the work below. One step has a mistake. Read every step, find it, name it, and fix it.${readAloudBtn("A classmate turned in the work below. One step has a mistake. Read every step, find it, name it, and fix it.", { label: "Read the directions aloud" })}</p>
     <div class="ref-student-work-box">
       <div class="ref-work-label">Student&apos;s work — read every step:</div>
       <div class="ea-steps">${stepsHtml || '<p class="card-desc">No worked steps provided for this lesson.</p>'}</div>
@@ -1096,12 +1127,12 @@ export function buildTptSlideDeckV3(ctx) {
     refTwoColumn(
       `
     <h2 class="card-title">🎯 Content Objective <span class="bilingual-tag">/ Objetivo de contenido</span></h2>
-    <p class="objective-text">${esc(contentObj)}</p>
+    <p class="objective-text">${esc(contentObj)}${readAloudBtn(contentObj, { label: "Read the content objective aloud" })}</p>
   `,
       `
     <h2 class="card-title">🗣️ Language Objective <span class="bilingual-tag">/ Objetivo de lenguaje</span></h2>
-    <p class="objective-text">${esc(langObj)}</p>
-    ${langObjEs ? `<p class="objective-text-es">${esc(langObjEs)}</p>` : ""}
+    <p class="objective-text">${esc(langObj)}${readAloudBtn(langObj, { label: "Read the language objective aloud" })}</p>
+    ${langObjEs ? `<p class="objective-text-es">${esc(langObjEs)}${readAloudBtn(langObjEs, { lang: "es", label: "Leer el objetivo en español" })}</p>` : ""}
     ${refTeacherNote("say", "Read objectives aloud. Ask: What will you be able to do by the end of class?")}
     ${refTeacherNote("ask", "Which vocabulary words do you already know? Which are new?")}
   `,
@@ -1185,7 +1216,7 @@ export function buildTptSlideDeckV3(ctx) {
     "👀 Launch",
     "Be Curious",
     refNoticeWonder(
-      `<p class="ref-instruction">${esc(launchBadge)}</p><p class="card-desc">${esc(launchNarrative)}</p>${svgVisual || ""}`,
+      `<p class="ref-instruction">${esc(launchBadge)}</p><p class="card-desc">${esc(launchNarrative)}${readAloudBtn(launchNarrative, { label: "Read the prompt aloud" })}</p>${svgVisual || ""}`,
       noticeStemsHtml,
       wonderStemsHtml,
     ),
