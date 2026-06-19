@@ -661,6 +661,92 @@
 }
 
 /* --------------------------------------------------------------------------
+   9b. Level 0 (most-supported) tier + Read-Aloud control
+   Level scheme is L0 < L1 < L2. .pk-lvl0 blocks mirror .pk-lvl1/.pk-lvl2
+   (base visibility lives in projects-kit.css); these are premium polish.
+   -------------------------------------------------------------------------- */
+/* Level-0 support cards injected by tools/inject-projects-premium.mjs */
+.pk .pk-lvl0.pk-l0-card {
+  background: linear-gradient(135deg, #eef6ff, #f3fbff);
+  border: 1.5px solid #cfe3f7;
+  border-left: 6px solid var(--pp-blue);
+  border-radius: 16px;
+  box-shadow: var(--pp-shadow-sm);
+  padding: 16px 18px;
+  margin: 14px 0;
+}
+.pk .pk-l0-card .pk-l0-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, var(--pp-blue), var(--pp-blue-deep));
+  color: #fff;
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}
+.pk .pk-l0-card h4 {
+  margin: 10px 0 6px;
+  font-size: 1rem;
+  color: var(--pp-ink);
+}
+.pk .pk-l0-card ul {
+  margin: 0;
+  padding-left: 18px;
+}
+.pk .pk-l0-card li {
+  margin: 5px 0;
+  line-height: 1.55;
+  color: var(--pp-ink);
+}
+.pk .pk-l0-card .pk-l0-starter {
+  background: #fff;
+  border: 1px dashed #bcd4ee;
+  border-radius: 10px;
+  padding: 6px 10px;
+  font-style: italic;
+  color: var(--pp-muted);
+}
+
+/* Level toggle: give the Level-0 button its own (most-supported) accent */
+.pk-level-toggle button[data-level-btn="level-0"] {
+  border-color: rgba(255, 255, 255, 0.42);
+}
+.pk .pk-level-toggle button[data-level-btn="level-0"][aria-pressed="true"] {
+  outline: 3px solid var(--pp-teal);
+}
+
+/* Read-Aloud toggle chip in the hero toolbar */
+.pk .toolbar button[data-tts-toggle][aria-pressed="true"] {
+  background: linear-gradient(135deg, #ffce5c, var(--pp-gold));
+  color: #3a2600;
+  border-color: rgba(255, 255, 255, 0.5);
+}
+.pk .toolbar button[data-tts-toggle][hidden] {
+  display: none;
+}
+/* When read-aloud is on, hint that prompts are tappable */
+.pk-tts-on .pk-mt-prompt,
+.pk-tts-on .pk-step-title,
+.pk-tts-on .arc-banner {
+  cursor: pointer;
+}
+.pk-tts-on .pk-mt-prompt:hover,
+.pk-tts-on .pk-step-title:hover {
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+}
+
+@media print {
+  .pk .pk-l0-card,
+  .pk [data-tts-toggle] {
+    display: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
    10. Print — flatten premium effects so worksheets stay clean
    -------------------------------------------------------------------------- */
 @media print {
