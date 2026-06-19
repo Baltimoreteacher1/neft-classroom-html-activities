@@ -76,11 +76,7 @@ function validateSourceQuestion(id, qi, q) {
     if (seen.has(k)) fail(where, `duplicate choice "${c}"`);
     seen.add(k);
   }
-  if (
-    !Number.isInteger(q.correct) ||
-    q.correct < 0 ||
-    q.correct >= q.choices.length
-  )
+  if (!Number.isInteger(q.correct) || q.correct < 0 || q.correct >= q.choices.length)
     fail(where, `correctIndex ${q.correct} out of range 0..${q.choices.length - 1}`);
 }
 
@@ -108,8 +104,7 @@ function parseQuizItems(xml) {
     const labRe =
       /<response_label ident="([^"]+)">\s*<material>\s*<mattext[^>]*>([\s\S]*?)<\/mattext>/g;
     let lm;
-    while ((lm = labRe.exec(block)))
-      choices.push({ ident: lm[1], text: stripTags(lm[2]) });
+    while ((lm = labRe.exec(block))) choices.push({ ident: lm[1], text: stripTags(lm[2]) });
     const corr = block.match(/<varequal[^>]*>([\s\S]*?)<\/varequal>/);
     items.push({ choices, correct: corr ? corr[1].trim() : null });
   }
@@ -187,9 +182,7 @@ for (const l of manifest.lessons) {
     validateSourceQuestion(l.id, i + 1, q);
   });
 }
-console.log(
-  `SOURCE: ${totalQuestions} MC questions across ${lessonsWithMc} lessons checked.`,
-);
+console.log(`SOURCE: ${totalQuestions} MC questions across ${lessonsWithMc} lessons checked.`);
 
 let courseDir = process.argv[2];
 if (!courseDir) {
