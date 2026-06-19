@@ -196,6 +196,39 @@
       .hidden {
         display: none;
       }
+      .oneclick {
+        background: #fff;
+        border: 2px solid var(--teal);
+        border-radius: 14px;
+        padding: 18px 20px;
+        margin-bottom: 18px;
+      }
+      .oneclick h2 {
+        margin: 0 0 4px;
+        font-size: 17px;
+      }
+      #oneClickBtn {
+        background: var(--teal);
+        color: #fff;
+        font-size: 16px;
+        padding: 13px 22px;
+      }
+      .map-row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin: 6px 0;
+        font-size: 13px;
+      }
+      .map-row select {
+        font-size: 13px;
+        padding: 6px 9px;
+      }
+      .map-name {
+        font-weight: 700;
+        color: var(--warn);
+      }
     </style>
   </head>
   <body>
@@ -244,6 +277,18 @@
       </div>
 
       <div id="workspace" class="hidden">
+        <div id="oneClickCard" class="oneclick hidden">
+          <h2>⚡ One-click grade sync</h2>
+          <p class="hint" id="oneClickHint"></p>
+          <div class="row">
+            <button id="oneClickBtn">
+              Fetch live scores → match roster → download Canvas CSV
+            </button>
+            <button id="oneClickEditBtn" class="ghost">Change setup</button>
+          </div>
+          <div id="oneClickStatus" class="status hint"></div>
+        </div>
+
         <div class="tabs">
           <div class="tab active" data-tab="grade">Grade an assignment</div>
           <div class="tab" data-tab="progress">Class progress</div>
@@ -278,6 +323,17 @@
             <button id="gradeBtn">Match &amp; preview</button>
           </div>
           <div id="gradeReport"></div>
+          <div id="gradeMap" class="hidden" style="margin-top: 14px">
+            <p class="hint" style="color: var(--warn)">
+              <strong>Resolve name mismatches</strong> — map each lesson name to
+              a roster student. Your choices are remembered, so the same
+              mismatch won't come back.
+            </p>
+            <div id="gradeMapRows"></div>
+            <button id="applyMapBtn" class="ghost" style="margin-top: 8px">
+              Apply maps &amp; re-match
+            </button>
+          </div>
           <div id="gradeDl" class="hidden" style="margin-top: 14px">
             <button id="dlBtn">⬇ Download Canvas CSV</button>
           </div>
@@ -318,6 +374,8 @@
         var roster = C.loadRoster();
         var events = []; // normalized score events
         var built = null;
+        var lastResult = null; // last applyScores() result, for the manual-map UI
+        var settings = C.loadSettings(); // remembered lesson/name/points/period
         var esc = function (s) {
           return String(s).replace(/[<>&]/g, function (c) {
             return { "<": "&lt;", ">": "&gt;", "&": "&amp;" }[c];
@@ -328,6 +386,34 @@
           $("adminKey").value = localStorage.getItem(ADMIN_KEY) || "";
         } catch (e) {}
         showRoster();
+
+        /* ---------- persist the assignment mapping between visits ---------- */
+        function persistSettings() {
+          settings = {
+            lessonId: $("lessonSel").value || settings.lessonId || "",
+            period: $("periodSel").value || "",
+            asgName: $("asgName").value.trim(),
+            pts: Number($("asgPts").value) || null,
+          };
+          C.saveSettings(settings);
+          refreshOneClick();
+        }
+        function hasSavedSetup() {
+          return !!(roster.length && settings && settings.lessonId);
+        }
+        function refreshOneClick() {
+          var ready = hasSavedSetup();
+          $("oneClickCard").classList.toggle("hidden", !ready);
+          if (ready) {
+            $("oneClickHint").innerHTML =
+              "Ready to repeat your last setup: <code>" +
+              esc(settings.asgName || settings.lessonId) +
+              "</code>" +
+              (settings.pts ? " · " + settings.pts + " pts" : "") +
+              (settings.period ? " · period " + esc(settings.period) : "") +
+              ". One button does the whole pipeline.";
+          }
+        }
 
         function showRoster() {
           roster = C.loadRoster();
@@ -377,15 +463,18 @@
           );
         }
 
-        /* ---------- load from API ---------- */
-        function load() {
+        /* ---------- load from API (optional onReady callback chains the
+         * one-click pipeline once scores are in) ---------- */
+        function load(onReady, onErr) {
           var key = $("adminKey").value.trim();
           if (!apiBase) {
             conn("No API base configured (edupulse-config.js).", "bad");
+            if (onErr) onErr();
             return;
           }
           if (!key) {
             conn("Enter your admin key first.", "warn");
+            if (onErr) onErr();
             return;
           }
           try {
@@ -407,17 +496,37 @@
                 });
               if (!events.length) {
                 conn("Connected, but no scores recorded yet.", "warn");
+                if (onErr) onErr();
                 return;
               }
               conn("Loaded " + events.length + " score events. ✓", "ok");
               buildLessonOptions();
               buildPeriodOptions();
+              restoreSettings();
               $("workspace").classList.remove("hidden");
+              refreshOneClick();
               renderProgress();
+              if (onReady) onReady();
             })
             .catch(function (err) {
               conn(String(err.message || err), "bad");
+              if (onErr) onErr();
             });
+        }
+        /* ---------- restore remembered lesson/name/points/period into the form ---------- */
+        function restoreSettings() {
+          if (!settings) return;
+          var ls = $("lessonSel");
+          if (settings.lessonId) {
+            var has = Array.prototype.some.call(ls.options, function (o) {
+              return o.value === settings.lessonId;
+            });
+            if (has) ls.value = settings.lessonId;
+          }
+          if (settings.period != null) $("periodSel").value = settings.period;
+          if (settings.pts) $("asgPts").value = settings.pts;
+          if (settings.asgName) $("asgName").value = settings.asgName;
+          else syncAsgName();
         }
         function conn(msg, kind) {
           var color =
@@ -493,12 +602,13 @@
           if (!$("asgName").value) $("asgName").value = label;
         }
 
-        /* ---------- grade an assignment (no codes) ---------- */
-        function gradeAssignment() {
+        /* ---------- core: fetch best scores, apply roster + saved manual map,
+         * build the import CSV. Returns the applyScores result (or null). ---------- */
+        function computeGrades() {
           if (!roster.length) {
             $("gradeReport").innerHTML =
               '<p class="hint t-warn">Add a class roster first (Connect card).</p>';
-            return;
+            return null;
           }
           var activityId = $("lessonSel").value;
           var period = $("periodSel").value;
@@ -516,10 +626,135 @@
               max: e.max,
             };
           });
-          var res = C.applyScores(roster, entries, pp);
+          var res = C.applyScores(roster, entries, pp, C.loadManualMap());
           built = { out: C.buildImportCsv(roster, name, pp, res.gradeByIndex) };
-          renderGradeReport(res, name, pp);
+          lastResult = { res: res, name: name, pp: pp };
+          persistSettings();
+          return res;
+        }
+
+        /* ---------- grade an assignment (guided button) ---------- */
+        function gradeAssignment() {
+          var res = computeGrades();
+          if (!res) return;
+          renderGradeReport(res, lastResult.name, lastResult.pp);
+          renderMapUI(res);
           $("gradeDl").classList.toggle("hidden", !res.matched.length);
+        }
+
+        /* ---------- download the current built CSV ---------- */
+        function downloadCsv() {
+          if (!built) return false;
+          var blob = new Blob([C.serializeCSV(built.out)], {
+            type: "text/csv",
+          });
+          var a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = "canvas-grades-import.csv";
+          a.click();
+          setTimeout(function () {
+            URL.revokeObjectURL(a.href);
+          }, 2000);
+          return true;
+        }
+
+        /* ---------- one-click: fetch → match → download in a single action ---------- */
+        function oneClickSync() {
+          $("oneClickStatus").textContent = "Fetching live scores…";
+          load(
+            function () {
+              var res = computeGrades();
+              if (!res) {
+                $("oneClickStatus").innerHTML =
+                  '<span style="color:var(--bad)">Add a roster first.</span>';
+                return;
+              }
+              renderGradeReport(res, lastResult.name, lastResult.pp);
+              renderMapUI(res);
+              $("gradeDl").classList.toggle("hidden", !res.matched.length);
+              if (downloadCsv()) {
+                var extra =
+                  (res.unmatched.length
+                    ? " " + res.unmatched.length + " unmatched"
+                    : "") +
+                  (res.missing.length
+                    ? " · " + res.missing.length + " no submission"
+                    : "");
+                $("oneClickStatus").innerHTML =
+                  '<span style="color:var(--ok)">Downloaded ' +
+                  res.matched.length +
+                  " grades. ✓" +
+                  esc(extra) +
+                  (extra
+                    ? " — see the Grade tab to resolve."
+                    : " Import in Canvas: Grades → Import.") +
+                  "</span>";
+              } else {
+                $("oneClickStatus").innerHTML =
+                  '<span style="color:var(--warn)">No matched students to download.</span>';
+              }
+            },
+            function () {
+              $("oneClickStatus").innerHTML =
+                '<span style="color:var(--bad)">Could not fetch — see the Connect card.</span>';
+            },
+          );
+        }
+
+        /* ---------- manual-map UI for unmatched names ---------- */
+        function renderMapUI(d) {
+          if (!d.unmatched.length) {
+            $("gradeMap").classList.add("hidden");
+            $("gradeMapRows").innerHTML = "";
+            return;
+          }
+          var opts =
+            '<option value="">— skip —</option>' +
+            roster
+              .map(function (s) {
+                return (
+                  '<option value="' +
+                  esc(s.name) +
+                  '">' +
+                  esc(s.name) +
+                  "</option>"
+                );
+              })
+              .join("");
+          $("gradeMapRows").innerHTML = d.unmatched
+            .map(function (u) {
+              return (
+                '<div class="map-row"><span class="map-name">' +
+                esc(u.name) +
+                "</span> (" +
+                esc(u.code) +
+                ') → <select data-src="' +
+                esc(u.name) +
+                '">' +
+                opts +
+                "</select></div>"
+              );
+            })
+            .join("");
+          $("gradeMap").classList.remove("hidden");
+        }
+
+        /* ---------- apply the teacher's manual maps, remember them, re-match ---------- */
+        function applyMaps() {
+          var map = C.loadManualMap();
+          var sels = $("gradeMapRows").querySelectorAll("select[data-src]");
+          var added = 0;
+          Array.prototype.forEach.call(sels, function (sel) {
+            var src = sel.getAttribute("data-src");
+            var target = sel.value;
+            if (src && target) {
+              map[src] = target;
+              added++;
+            }
+          });
+          if (!added) return;
+          C.saveManualMap(map);
+          gradeAssignment();
         }
         function renderGradeReport(d, name, pp) {
           var html =
@@ -668,7 +903,16 @@
         }
 
         /* ---------- wiring ---------- */
-        $("loadBtn").addEventListener("click", load);
+        $("loadBtn").addEventListener("click", function () {
+          load();
+        });
+        $("oneClickBtn").addEventListener("click", oneClickSync);
+        $("oneClickEditBtn").addEventListener("click", function () {
+          $("oneClickCard").classList.add("hidden");
+          document.querySelector('.tab[data-tab="grade"]').click();
+          $("lessonSel").focus();
+        });
+        $("applyMapBtn").addEventListener("click", applyMaps);
         $("forgetBtn").addEventListener("click", function () {
           try {
             localStorage.removeItem(ADMIN_KEY);
@@ -679,23 +923,15 @@
         $("lessonSel").addEventListener("change", function () {
           $("asgName").value = "";
           syncAsgName();
+          persistSettings();
+        });
+        ["periodSel", "asgName", "asgPts"].forEach(function (id) {
+          $(id).addEventListener("change", persistSettings);
         });
         $("gradeBtn").addEventListener("click", gradeAssignment);
         $("progBtn").addEventListener("click", renderProgress);
         $("progPeriod").addEventListener("change", renderProgress);
-        $("dlBtn").addEventListener("click", function () {
-          if (!built) return;
-          var blob = new Blob([C.serializeCSV(built.out)], {
-            type: "text/csv",
-          });
-          var a = document.createElement("a");
-          a.href = URL.createObjectURL(blob);
-          a.download = "canvas-grades-import.csv";
-          a.click();
-          setTimeout(function () {
-            URL.revokeObjectURL(a.href);
-          }, 2000);
-        });
+        $("dlBtn").addEventListener("click", downloadCsv);
         $("csvFile").addEventListener("change", function (e) {
           var f = e.target.files[0];
           if (!f) return;
@@ -704,6 +940,7 @@
             var read = C.readCanvasGrid(C.parseCSV(String(rd.result)));
             C.saveRoster(read.roster);
             showRoster();
+            refreshOneClick();
           };
           rd.readAsText(f);
         });

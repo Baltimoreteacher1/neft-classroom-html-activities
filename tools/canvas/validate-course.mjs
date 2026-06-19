@@ -39,6 +39,57 @@ const errors = [];
 const warns = [];
 const fail = (where, msg) => errors.push(`${where}: ${msg}`);
 
+/* ---- converters: MUST mirror build-course.mjs exactly ----
+ * build-course converts drag-sort/fill-table → matching and error-analysis → MC.
+ * This validator re-derives them with the SAME rules so the cross-check actually
+ * verifies the new keys (not just echoes the generator). Any drift here vs
+ * build-course produces a (correct) item-count / answer-key mismatch failure.   */
+const distinctCount = (arr) => new Set(arr).size;
+
+function convertDragSort(o) {
+  const items = o.items;
+  const cats = o.categories;
+  if (!Array.isArray(items) || !items.length || !Array.isArray(cats) || !cats.length) return null;
+  if (!items.every((it) => it && it.text != null && it.category != null)) return null;
+  const labelOf = (id) => {
+    const c = cats.find((c) => c && c.id === id);
+    return c && c.label != null ? String(c.label) : String(id);
+  };
+  const pairs = items.slice(0, 6).map((it) => ({ term: String(it.text), match: labelOf(it.category) }));
+  if (pairs.length < 2) return null;
+  if (distinctCount(pairs.map((p) => p.match)) < 2) return null;
+  return { kind: "match", pairs };
+}
+
+function convertFillTable(o) {
+  const cols = o.columns;
+  const rows = o.rows;
+  if (!Array.isArray(cols) || cols.length < 2 || !Array.isArray(rows) || !rows.length) return null;
+  const pairs = [];
+  for (const r of rows.slice(0, 6)) {
+    if (!r || typeof r !== "object") continue;
+    const vals = Object.values(r);
+    if (vals.length < 2) continue;
+    const term = String(vals[0]);
+    const match = String(vals[vals.length - 1]);
+    if (!term.trim() || !match.trim()) continue;
+    pairs.push({ term, match });
+  }
+  if (pairs.length < 2) return null;
+  if (distinctCount(pairs.map((p) => p.match)) < 2) return null;
+  return { kind: "match", pairs };
+}
+
+function convertErrorAnalysis(o) {
+  const we = o.workedExample;
+  if (!Array.isArray(we) || we.length < 2) return null;
+  const es = o.errorStep;
+  if (!Number.isInteger(es) || es < 0 || es >= we.length) return null;
+  const choices = we.map((s) => `${s && s.label != null ? s.label : ""}: ${s && s.work != null ? s.work : ""}`);
+  const stem = (o.title ? o.title + " — " : "") + "Which step contains the error?";
+  return { kind: "mc", stem, choices, correct: es };
+}
+
 /* ---- source: SAME extraction predicate + order + cap as build-course.mjs ----
  * build-course emits `mc.concat(match).slice(0, QUIZ_MAX)`, so this must too or
  * the package items won't line up with the source questions by index.          */
@@ -68,6 +119,9 @@ function questions(id) {
           choices: o.choices.map(String),
           correct: o.correctIndex,
         });
+      } else if (o.type === "error-analysis") {
+        const q = convertErrorAnalysis(o);
+        if (q) mc.push(q);
       } else if (
         o.type === "matching-game" &&
         Array.isArray(o.pairs) &&
@@ -78,11 +132,24 @@ function questions(id) {
           kind: "match",
           pairs: o.pairs.slice(0, 6).map((x) => ({ term: String(x.term), match: String(x.match) })),
         });
+      } else if (o.type === "drag-sort") {
+        const q = convertDragSort(o);
+        if (q) match.push(q);
+      } else if (o.type === "fill-table") {
+        const q = convertFillTable(o);
+        if (q) match.push(q);
       }
       for (const k in o) walk(o[k]);
     }
   })(cfg);
-  return mc.concat(match).slice(0, QUIZ_MAX);
+  // Interleave to MATCH build-course.mjs exactly (mc[0], match[0], mc[1], ...)
+  // so item indices line up under the same cap.
+  const all = [];
+  for (let i = 0; i < Math.max(mc.length, match.length); i++) {
+    if (i < mc.length) all.push(mc[i]);
+    if (i < match.length) all.push(match[i]);
+  }
+  return all.slice(0, QUIZ_MAX);
 }
 
 function validateSourceQuestion(id, qi, q) {

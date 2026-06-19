@@ -54,17 +54,24 @@ if (!lessons.length) {
 }
 
 /* ---- tallies for the post-build summary ---- */
-const tally = { mc: 0, match: 0, skipped: {}, capped: 0 };
+// `bySource` breaks the converted counts down by the original component type so
+// the teacher can see drag-sort/fill-table/error-analysis are now auto-graded.
+const tally = {
+  mc: 0,
+  match: 0,
+  skipped: {},
+  capped: 0,
+  bySource: { "multiple-choice": 0, "matching-game": 0, "drag-sort": 0, "fill-table": 0, "error-analysis": 0 },
+};
 // Question-ish component types we deliberately do NOT convert to QTI (no safe,
 // reliable auto-graded representation). Counted so the teacher knows what the
-// quiz omits rather than silently dropping it.
+// quiz omits rather than silently dropping it. drag-sort / fill-table /
+// error-analysis are NO LONGER here — they are converted by the helpers below.
 const UNSUPPORTED_TYPES = new Set([
-  "drag-sort",
   "drag-and-drop",
   "sequence",
   "ordering",
   "sorting",
-  "error-analysis",
   "fill-blank",
   "fill-in-the-blank",
   "short-answer",
@@ -72,6 +79,61 @@ const UNSUPPORTED_TYPES = new Set([
   "number-line",
   "graphing",
 ]);
+
+/* ---- converters for the three newly-supported component types ----
+ * These MUST mirror the re-derivation logic in validate-course.mjs exactly so
+ * the answer-key cross-check lines up item-for-item. Each returns a question in
+ * the SAME shape the existing mcItem/matchItem QTI generators already consume
+ * ({kind:"mc",...} / {kind:"match",...}), or null when the component is
+ * degenerate / not safely gradeable (caller counts it under tally.skipped). */
+const distinctCount = (arr) => new Set(arr).size;
+
+// drag-sort → matching. term = item.text, match = category LABEL (by id).
+function convertDragSort(o) {
+  const items = o.items;
+  const cats = o.categories;
+  if (!Array.isArray(items) || !items.length || !Array.isArray(cats) || !cats.length) return null;
+  if (!items.every((it) => it && it.text != null && it.category != null)) return null;
+  const labelOf = (id) => {
+    const c = cats.find((c) => c && c.id === id);
+    return c && c.label != null ? String(c.label) : String(id);
+  };
+  const pairs = items.slice(0, 6).map((it) => ({ term: String(it.text), match: labelOf(it.category) }));
+  if (pairs.length < 2) return null;
+  if (distinctCount(pairs.map((p) => p.match)) < 2) return null; // 1-bucket = degenerate
+  return { kind: "match", prompt: o.instructions || "Sort each item into the correct category.", pairs };
+}
+
+// fill-table → matching. term = first value of a row, match = last value.
+function convertFillTable(o) {
+  const cols = o.columns;
+  const rows = o.rows;
+  if (!Array.isArray(cols) || cols.length < 2 || !Array.isArray(rows) || !rows.length) return null;
+  const pairs = [];
+  for (const r of rows.slice(0, 6)) {
+    if (!r || typeof r !== "object") continue;
+    const vals = Object.values(r);
+    if (vals.length < 2) continue;
+    const term = String(vals[0]);
+    const match = String(vals[vals.length - 1]);
+    if (!term.trim() || !match.trim()) continue;
+    pairs.push({ term, match });
+  }
+  if (pairs.length < 2) return null;
+  if (distinctCount(pairs.map((p) => p.match)) < 2) return null; // all-same match = degenerate
+  return { kind: "match", prompt: o.label || "Match each item to its correct value.", pairs };
+}
+
+// error-analysis → multiple-choice. correctIndex = errorStep (0-indexed).
+function convertErrorAnalysis(o) {
+  const we = o.workedExample;
+  if (!Array.isArray(we) || we.length < 2) return null;
+  const es = o.errorStep;
+  if (!Number.isInteger(es) || es < 0 || es >= we.length) return null;
+  const choices = we.map((s) => `${s && s.label != null ? s.label : ""}: ${s && s.work != null ? s.work : ""}`);
+  const stem = (o.title ? o.title + " — " : "") + "Which step contains the error?";
+  return { kind: "mc", stem, choices, correct: es, explanation: o.correctWork || "" };
+}
 
 /* ---- pull gradeable questions (multiple-choice + matching) from a config ---- */
 function extractQuestions(id) {
@@ -83,25 +145,57 @@ function extractQuestions(id) {
   } catch (e) {
     return [];
   }
+  // mc / match keep build's existing ordering (all MC-shaped first, then all
+  // matching-shaped). `srcMc` / `srcMatch` track the original component type of
+  // each question, index-aligned, purely for the per-source-type summary.
   const mc = [];
+  const srcMc = [];
   const match = [];
+  const srcMatch = [];
+  const skip = (t) => {
+    tally.skipped[t] = (tally.skipped[t] || 0) + 1;
+  };
   (function walk(o) {
     if (o && typeof o === "object") {
       if (o.type === "multiple-choice" && Array.isArray(o.choices) && o.choices.length >= 2 && Number.isInteger(o.correctIndex)) {
         mc.push({ kind: "mc", stem: o.stem || o.question || "", choices: o.choices.map(String), correct: o.correctIndex, explanation: o.explanation || "" });
+        srcMc.push("multiple-choice");
+      } else if (o.type === "error-analysis") {
+        const q = convertErrorAnalysis(o);
+        if (q) { mc.push(q); srcMc.push("error-analysis"); }
+        else skip("error-analysis");
       } else if (o.type === "matching-game" && Array.isArray(o.pairs) && o.pairs.length >= 2 && o.pairs.every((x) => x && x.term != null && x.match != null)) {
         match.push({ kind: "match", prompt: o.label || "Match each item to its answer.", pairs: o.pairs.slice(0, 6).map((x) => ({ term: String(x.term), match: String(x.match) })) });
+        srcMatch.push("matching-game");
+      } else if (o.type === "drag-sort") {
+        const q = convertDragSort(o);
+        if (q) { match.push(q); srcMatch.push("drag-sort"); }
+        else skip("drag-sort");
+      } else if (o.type === "fill-table") {
+        const q = convertFillTable(o);
+        if (q) { match.push(q); srcMatch.push("fill-table"); }
+        else skip("fill-table");
       } else if (o && typeof o.type === "string" && UNSUPPORTED_TYPES.has(o.type)) {
-        tally.skipped[o.type] = (tally.skipped[o.type] || 0) + 1;
+        skip(o.type);
       }
       for (const k in o) walk(o[k]);
     }
   })(cfg);
-  // MC first (most reliable), then matching, capped per quiz.
-  const all = mc.concat(match);
+  // Interleave MC and matching (mc[0], match[0], mc[1], ...) so each capped
+  // quiz samples BOTH types instead of filling every slot with MC. MC leads
+  // each round (most reliable). q + source arrays stay in lockstep.
+  const all = [];
+  const allSrc = [];
+  for (let i = 0; i < Math.max(mc.length, match.length); i++) {
+    if (i < mc.length) { all.push(mc[i]); allSrc.push(srcMc[i]); }
+    if (i < match.length) { all.push(match[i]); allSrc.push(srcMatch[i]); }
+  }
   const kept = all.slice(0, QUIZ_MAX);
   tally.capped += all.length - kept.length;
-  for (const q of kept) tally[q.kind === "match" ? "match" : "mc"]++;
+  for (let i = 0; i < kept.length; i++) {
+    tally[kept[i].kind === "match" ? "match" : "mc"]++;
+    if (tally.bySource[allSrc[i]] != null) tally.bySource[allSrc[i]]++;
+  }
   return kept;
 }
 
@@ -383,6 +477,13 @@ console.log(`\n✓ ${QUIZ_ONLY ? "QTI quiz package" : "Canvas course package"}: 
 console.log(`  Quizzes:        ${quizzesMade} auto-graded   (across ${unitNums.length} unit(s))`);
 if (!QUIZ_ONLY) console.log(`  Lesson pages:   ${pagesMade}`);
 console.log(`  Questions:      ${totalQs} total  →  ${tally.mc} multiple-choice, ${tally.match} matching`);
+{
+  const bs = tally.bySource;
+  console.log(
+    `  Converted from: multiple-choice×${bs["multiple-choice"]}, matching-game×${bs["matching-game"]}, ` +
+      `drag-sort×${bs["drag-sort"]}, fill-table×${bs["fill-table"]}, error-analysis×${bs["error-analysis"]}`,
+  );
+}
 if (tally.capped > 0)
   console.log(`  Capped:         ${tally.capped} extra question(s) dropped (QUIZ_MAX=${QUIZ_MAX}/quiz)`);
 if (skippedTypes.length)

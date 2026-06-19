@@ -13,6 +13,8 @@
   "use strict";
 
   var ROSTER_KEY = "nt_canvas_roster_v1";
+  var MANUAL_MAP_KEY = "nt_canvas_manual_map_v1";
+  var SETTINGS_KEY = "nt_canvas_dashboard_settings_v1";
 
   /* ---------------- CSV ---------------- */
   function parseCSV(text) {
@@ -182,6 +184,59 @@
     };
   }
 
+  /* ---------------- manual name map ----------------
+   * A teacher-resolved override for names that don't auto-match.
+   * Stored as { normalizedSourceName: rosterName } — keyed by the ROSTER
+   * NAME (a stable string), so it survives roster reordering. */
+  function loadManualMap() {
+    try {
+      return (
+        JSON.parse(global.localStorage.getItem(MANUAL_MAP_KEY) || "{}") || {}
+      );
+    } catch (e) {
+      return {};
+    }
+  }
+  function saveManualMap(map) {
+    try {
+      global.localStorage.setItem(MANUAL_MAP_KEY, JSON.stringify(map || {}));
+    } catch (e) {}
+    return map;
+  }
+  /** Build a normalized(sourceName) -> rosterIndex lookup from a manual map. */
+  function manualLookup(roster, manualMap) {
+    var nameToIndex = {};
+    roster.forEach(function (stu, i) {
+      nameToIndex[norm(stu.name)] = i;
+    });
+    var out = {};
+    Object.keys(manualMap || {}).forEach(function (srcKey) {
+      var rosterName = manualMap[srcKey];
+      var idx = nameToIndex[norm(rosterName)];
+      if (idx != null) out[norm(srcKey)] = idx;
+    });
+    return out;
+  }
+
+  /* ---------------- dashboard settings persistence ----------------
+   * Remembers the last assignment mapping so a returning teacher can go
+   * straight from "fetch" to "download". Pure key/value over localStorage. */
+  function loadSettings() {
+    try {
+      return (
+        JSON.parse(global.localStorage.getItem(SETTINGS_KEY) || "{}") || {}
+      );
+    } catch (e) {
+      return {};
+    }
+  }
+  function saveSettings(obj) {
+    try {
+      global.localStorage.setItem(SETTINGS_KEY, JSON.stringify(obj || {}));
+    } catch (e) {}
+    return obj;
+  }
+
   /* ---------------- scoring ---------------- */
   function scaleGrade(percent, rawScore, pointsPossible) {
     if (pointsPossible != null && percent != null)
@@ -192,16 +247,24 @@
   /**
    * Match a list of result entries to the roster and compute Canvas grades.
    * entries: [{ name, percent, score, max }]
+   * Optional manualMap: { normalizedSourceName: rosterName } — teacher-resolved
+   * overrides applied AFTER auto-match, so a mismatch never recurs. Omitting it
+   * preserves the original behavior exactly.
    * returns { matched:[{name,code,grade,rosterIndex}], unmatched:[...], gradeByIndex:{} }
    */
-  function applyScores(roster, entries, pointsPossible) {
+  function applyScores(roster, entries, pointsPossible, manualMap) {
     var lookup = rosterLookup(roster);
+    var manual = manualMap ? manualLookup(roster, manualMap) : null;
     var matched = [],
       unmatched = [],
       gradeByIndex = {};
     entries.forEach(function (e) {
       var grade = scaleGrade(e.percent, e.score, pointsPossible);
       var idx = matchIndex(lookup, e.name);
+      if (idx < 0 && manual) {
+        var mk = norm(e.name);
+        if (mk in manual) idx = manual[mk];
+      }
       var label = e.score + "/" + e.max + " (" + e.percent + "%)";
       if (idx >= 0) {
         gradeByIndex[idx] = grade;
@@ -296,6 +359,13 @@
     matchIndex: matchIndex,
     loadRoster: loadRoster,
     saveRoster: saveRoster,
+    MANUAL_MAP_KEY: MANUAL_MAP_KEY,
+    loadManualMap: loadManualMap,
+    saveManualMap: saveManualMap,
+    manualLookup: manualLookup,
+    SETTINGS_KEY: SETTINGS_KEY,
+    loadSettings: loadSettings,
+    saveSettings: saveSettings,
     readCanvasGrid: readCanvasGrid,
     scaleGrade: scaleGrade,
     applyScores: applyScores,
