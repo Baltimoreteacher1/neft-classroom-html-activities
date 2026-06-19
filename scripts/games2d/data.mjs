@@ -152,6 +152,26 @@ export const GAMES_2D = {
       2: { label: "Level 2", sub: "Challenge", desc: "Two-step rules · faster asteroids · find the rule yourself" },
     },
   },
+
+  // ── Equation Forge (math/unit-8/game-equations-quest) — balance ───────
+  "game-equations-quest": {
+    ccss: "6.EE.B.7",
+    title: "Equation Forge",
+    vocab: [
+      { term: "equation", defn: "A math sentence saying two things are equal, like 2x + 3 = 11.", img: "" },
+      { term: "balance / equal", defn: "Both sides weigh the same. Whatever you do to one side, do to the other.", img: "" },
+      { term: "isolate the variable", defn: "Get x alone on one side so you can read its value.", img: "" },
+      { term: "inverse operation", defn: "The opposite move that undoes another: subtract undoes add; divide undoes multiply.", img: "" },
+    ],
+    misconceptions: [
+      { tag: "one-side-only", trigger: "Changes one side without doing the same to the other.", feedback: "Keep it balanced — do the SAME thing to BOTH sides every time." },
+      { tag: "subtract-before-divide", trigger: "Divides while a constant is still added on the variable side.", feedback: "Undo adding/subtracting FIRST, then divide to split the groups." },
+    ],
+    tiers: {
+      1: { label: "Level 1", sub: "Support", desc: "One-step equations · the rule is shown · 5 lives" },
+      2: { label: "Level 2", sub: "Challenge", desc: "Two-step equations · less help · 3 lives" },
+    },
+  },
 };
 
 export default GAMES_2D;
