@@ -1,0 +1,55 @@
+{
+  "$schema": "./config.schema.note",
+  "timezone": "America/New_York",
+  "scheduleHour": 2,
+  "scheduleMinute": 0,
+  "modules": {
+    "regression-sentinel": true,
+    "build-qa": true,
+    "divergence-watch": true,
+    "backlog-advancer": true
+  },
+  "regressionSentinel": {
+    "baselineRef": "stable-baseline-2026-06-04",
+    "autoRestore": false,
+    "shrinkPctThreshold": 35,
+    "criticalFiles": [
+      {
+        "path": "curriculum/index.html",
+        "requireMarkers": [
+          "interactive-hub",
+          "CurriculumHub"
+        ]
+      },
+      {
+        "path": "index.html",
+        "requireMarkers": []
+      },
+      {
+        "path": "_redirects",
+        "requireMarkers": []
+      },
+      {
+        "path": "data/routes.json",
+        "requireMarkers": []
+      }
+    ]
+  },
+  "buildQa": {
+    "runValidate": true,
+    "runBuild": true,
+    "playwrightSampleSize": 8
+  },
+  "divergenceWatch": {
+    "remote": "origin",
+    "mainBranch": "main",
+    "autoFixStrayRefs": false
+  },
+  "backlogAdvancer": {
+    "enabled": true,
+    "enableClaudeTasks": false,
+    "openPullRequests": true,
+    "baseBranch": "main",
+    "maxTasksPerRun": 1
+  }
+}
