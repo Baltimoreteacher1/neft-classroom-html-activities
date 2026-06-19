@@ -27,39 +27,61 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, "../..");
 const SITE = (process.env.NEFT_SITE || "https://eduwonderlab.com").replace(/\/$/, "");
 const QUIZ_MAX = Number(process.env.QUIZ_MAX || 8);
-const unitFilter = process.argv[2] ? Number(process.argv[2]) : null;
+const args = process.argv.slice(2);
+// --quizzes-only emits just the QTI quizzes (no pages/modules) for Canvas's
+// dedicated "QTI .zip file" import path — the most reliable way to land quizzes.
+const QUIZ_ONLY = args.includes("--quizzes-only") || !!process.env.QUIZ_ONLY;
+const unitArg = args.find((a) => /^\d+$/.test(a));
+const unitFilter = unitArg ? Number(unitArg) : null;
 
 const xml = (s) =>
-  String(s == null ? "" : s).replace(/[<>&'"]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", "'": "&apos;", '"': "&quot;" })[c]);
+  String(s == null ? "" : s).replace(
+    /[<>&'"]/g,
+    (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", "'": "&apos;", '"': "&quot;" })[c],
+  );
 const html = (s) => xml(s); // same escaping for our simple text content
 
-const manifest = JSON.parse(readFileSync(resolve(repoRoot, "data/curriculum-manifest.json"), "utf8"));
-let lessons = (Array.isArray(manifest.lessons) ? manifest.lessons : Object.values(manifest.lessons)).filter((l) => l && l.id && !l.flagship);
+const manifest = JSON.parse(
+  readFileSync(resolve(repoRoot, "data/curriculum-manifest.json"), "utf8"),
+);
+let lessons = (
+  Array.isArray(manifest.lessons) ? manifest.lessons : Object.values(manifest.lessons)
+).filter((l) => l && l.id && !l.flagship);
 if (unitFilter) lessons = lessons.filter((l) => Number(l.unit) === unitFilter);
-if (!lessons.length) { console.error("No lessons matched."); process.exit(1); }
+if (!lessons.length) {
+  console.error("No lessons matched.");
+  process.exit(1);
+}
 
-/* ---- pull multiple-choice questions out of a lesson config ---- */
-function mcQuestions(id) {
+/* ---- pull gradeable questions (multiple-choice + matching) from a config ---- */
+function extractQuestions(id) {
   const p = resolve(repoRoot, "lessons", id, "config.json");
   if (!existsSync(p)) return [];
   let cfg;
-  try { cfg = JSON.parse(readFileSync(p, "utf8")); } catch (e) { return []; }
-  const out = [];
+  try {
+    cfg = JSON.parse(readFileSync(p, "utf8"));
+  } catch (e) {
+    return [];
+  }
+  const mc = [];
+  const match = [];
   (function walk(o) {
     if (o && typeof o === "object") {
       if (o.type === "multiple-choice" && Array.isArray(o.choices) && o.choices.length >= 2 && Number.isInteger(o.correctIndex)) {
-        out.push({ stem: o.stem || o.question || "", choices: o.choices.map(String), correct: o.correctIndex, explanation: o.explanation || "" });
+        mc.push({ kind: "mc", stem: o.stem || o.question || "", choices: o.choices.map(String), correct: o.correctIndex, explanation: o.explanation || "" });
+      } else if (o.type === "matching-game" && Array.isArray(o.pairs) && o.pairs.length >= 2 && o.pairs.every((x) => x && x.term != null && x.match != null)) {
+        match.push({ kind: "match", prompt: o.label || "Match each item to its answer.", pairs: o.pairs.slice(0, 6).map((x) => ({ term: String(x.term), match: String(x.match) })) });
       }
       for (const k in o) walk(o[k]);
     }
   })(cfg);
-  return out.slice(0, QUIZ_MAX);
+  // MC first (most reliable), then matching, capped per quiz.
+  return mc.concat(match).slice(0, QUIZ_MAX);
 }
 
-/* ---- QTI 1.2 multiple-choice item ---- */
-const LETTERS = "ABCDEFGHIJ".split("");
-function qtiItem(q, qi, quizId) {
-  const ident = quizId + "_q" + qi;
+/* ---- QTI 1.2 items ---- */
+const LETTERS = "ABCDEFGHIJKLMNOP".split("");
+function mcItem(q, ident, qi) {
   const labels = q.choices
     .map((c, i) => `          <response_label ident="${LETTERS[i]}"><material><mattext texttype="text/html">${html(c)}</mattext></material></response_label>`)
     .join("\n");
@@ -91,6 +113,48 @@ ${fbRef}
     </resprocessing>
 ${fb}
   </item>`;
+}
+function matchItem(q, ident, qi) {
+  // unique right-column options; each ident "mN"; correct per term = its match's ident
+  const matches = [];
+  q.pairs.forEach((p) => { if (!matches.includes(p.match)) matches.push(p.match); });
+  const optionXml = (rid) => matches.map((m, i) => `            <response_label ident="m${i}"><material><mattext texttype="text/html">${html(m)}</mattext></material></response_label>`).join("\n");
+  const per = Math.round((100 / q.pairs.length) * 100) / 100;
+  const responses = q.pairs
+    .map((p, i) => `      <response_lid ident="response_${qi}_${i}" rcardinality="Single">
+        <material><mattext texttype="text/html">${html(p.term)}</mattext></material>
+        <render_choice>
+${optionXml(i)}
+        </render_choice>
+      </response_lid>`)
+    .join("\n");
+  const conds = q.pairs
+    .map((p, i) => {
+      const mi = matches.indexOf(p.match);
+      return `      <respcondition continue="Yes">
+        <conditionvar><varequal respident="response_${qi}_${i}">m${mi}</varequal></conditionvar>
+        <setvar action="Add" varname="SCORE">${per}</setvar>
+      </respcondition>`;
+    })
+    .join("\n");
+  return `  <item ident="${ident}" title="Question ${qi}">
+    <itemmetadata><qtimetadata>
+      <qtimetadatafield><fieldlabel>question_type</fieldlabel><fieldentry>matching_question</fieldentry></qtimetadatafield>
+      <qtimetadatafield><fieldlabel>points_possible</fieldlabel><fieldentry>1.0</fieldentry></qtimetadatafield>
+    </qtimetadata></itemmetadata>
+    <presentation>
+      <material><mattext texttype="text/html">${html(q.prompt)}</mattext></material>
+${responses}
+    </presentation>
+    <resprocessing>
+      <outcomes><decvar maxvalue="100" minvalue="0" varname="SCORE" vartype="Decimal"/></outcomes>
+${conds}
+    </resprocessing>
+  </item>`;
+}
+function qtiItem(q, qi, quizId) {
+  const ident = quizId + "_q" + qi;
+  return q.kind === "match" ? matchItem(q, ident, qi) : mcItem(q, ident, qi);
 }
 
 function qtiAssessment(quizId, title, qs) {
@@ -151,7 +215,8 @@ mkdirSync(resolve(stage, "wiki_content"), { recursive: true });
 const resources = [];
 const groups = {}; // unit -> groupId
 const modules = {}; // unit -> [{type, idref, title}]
-let quizzesMade = 0, pagesMade = 0;
+let quizzesMade = 0,
+  pagesMade = 0;
 
 for (const l of lessons) {
   const safe = l.id.replace(/[^a-z0-9]+/gi, "_");
@@ -161,16 +226,24 @@ for (const l of lessons) {
   modules[unit] = modules[unit] || [];
   const url = `${SITE}/lessons/${l.id}/`;
 
-  // 1. Lesson page (ungraded content)
-  const pageId = "page_" + safe;
-  const pageFile = `wiki_content/${pageId}.html`;
-  writeFileSync(resolve(stage, pageFile), lessonPageHtml(l, url));
-  resources.push(`    <resource identifier="${pageId}" type="webcontent" href="${pageFile}"><file href="${pageFile}"/></resource>`);
-  modules[unit].push({ idref: pageId, title: `Unit ${l.unit} Lesson ${l.lesson}: ${l.title}`, kind: "page" });
-  pagesMade++;
+  // 1. Lesson page (ungraded content) — skipped in quiz-only mode
+  if (!QUIZ_ONLY) {
+    const pageId = "page_" + safe;
+    const pageFile = `wiki_content/${pageId}.html`;
+    writeFileSync(resolve(stage, pageFile), lessonPageHtml(l, url));
+    resources.push(
+      `    <resource identifier="${pageId}" type="webcontent" href="${pageFile}"><file href="${pageFile}"/></resource>`,
+    );
+    modules[unit].push({
+      idref: pageId,
+      title: `Unit ${l.unit} Lesson ${l.lesson}: ${l.title}`,
+      kind: "page",
+    });
+    pagesMade++;
+  }
 
-  // 2. Auto-graded quiz (if the lesson has MC questions)
-  const qs = mcQuestions(l.id);
+  // 2. Auto-graded quiz (multiple-choice + matching)
+  const qs = extractQuestions(l.id);
   if (qs.length) {
     const quizId = "quiz_" + safe;
     const asgId = "quizasg_" + safe;
@@ -178,7 +251,10 @@ for (const l of lessons) {
     mkdirSync(resolve(stage, dir), { recursive: true });
     const title = `Unit ${l.unit} Lesson ${l.lesson} Check: ${l.title}`;
     writeFileSync(resolve(stage, dir, quizId + ".xml"), qtiAssessment(quizId, title, qs));
-    writeFileSync(resolve(stage, dir, "assessment_meta.xml"), assessmentMeta(quizId, asgId, title, qs.length, groupId));
+    writeFileSync(
+      resolve(stage, dir, "assessment_meta.xml"),
+      assessmentMeta(quizId, asgId, title, qs.length, groupId),
+    );
     resources.push(
       `    <resource identifier="${quizId}" type="imsqti_xmlv1p2/imscc_xmlv1p1/assessment" href="${dir}/${quizId}.xml">\n` +
         `      <file href="${dir}/${quizId}.xml"/>\n` +
@@ -194,7 +270,9 @@ for (const l of lessons) {
 }
 
 /* ---- assignment groups (one per unit) ---- */
-const unitNums = Object.keys(groups).map(Number).sort((a, b) => a - b);
+const unitNums = Object.keys(groups)
+  .map(Number)
+  .sort((a, b) => a - b);
 writeFileSync(
   resolve(stage, "course_settings", "assignment_groups.xml"),
   `<?xml version="1.0" encoding="UTF-8"?>
@@ -209,16 +287,22 @@ writeFileSync(
   `<?xml version="1.0" encoding="UTF-8"?>
 <modules xmlns="http://canvas.instructure.com/xsd/cccv1p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://canvas.instructure.com/xsd/cccv1p0 https://canvas.instructure.com/xsd/cccv1p0.xsd">
 ${unitNums
-    .map((u, ui) => {
-      const items = modules[u]
-        .map((it, ii) => `    <item identifier="modi_${u}_${ii}" identifierref="${it.idref}"><content_type>${it.kind === "quiz" ? "Quizzes::Quiz" : "WikiPage"}</content_type><title>${xml(it.title)}</title><position>${ii + 1}</position></item>`)
-        .join("\n");
-      return `  <module identifier="mod_unit_${u}"><title>Unit ${u}</title><position>${ui + 1}</position><workflow_state>unpublished</workflow_state><items>\n${items}\n  </items></module>`;
-    })
-    .join("\n")}
+  .map((u, ui) => {
+    const items = modules[u]
+      .map(
+        (it, ii) =>
+          `    <item identifier="modi_${u}_${ii}" identifierref="${it.idref}"><content_type>${it.kind === "quiz" ? "Quizzes::Quiz" : "WikiPage"}</content_type><title>${xml(it.title)}</title><position>${ii + 1}</position></item>`,
+      )
+      .join("\n");
+    return `  <module identifier="mod_unit_${u}"><title>Unit ${u}</title><position>${ui + 1}</position><workflow_state>unpublished</workflow_state><items>\n${items}\n  </items></module>`;
+  })
+  .join("\n")}
 </modules>`,
 );
-writeFileSync(resolve(stage, "course_settings", "canvas_export.txt"), "Canvas Common Cartridge export — Neft math course (pages + auto-graded quizzes).\n");
+writeFileSync(
+  resolve(stage, "course_settings", "canvas_export.txt"),
+  "Canvas Common Cartridge export — Neft math course (pages + auto-graded quizzes).\n",
+);
 
 /* ---- manifest ---- */
 const manifestXml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -236,13 +320,20 @@ ${resources.join("\n")}
 </manifest>`;
 writeFileSync(resolve(stage, "imsmanifest.xml"), manifestXml);
 
-const outName = unitFilter ? `neft-course-unit${unitFilter}.imscc` : "neft-course.imscc";
+const base = QUIZ_ONLY ? "neft-quizzes" : "neft-course";
+const ext = QUIZ_ONLY ? "zip" : "imscc";
+const outName = unitFilter ? `${base}-unit${unitFilter}.${ext}` : `${base}.${ext}`;
 const outFile = resolve(repoRoot, "canvas-packages", outName);
 rmSync(outFile, { force: true });
 execSync(`cd "${stage}" && zip -r -q -X "${outFile}" . -x ".*"`);
 rmSync(stage, { recursive: true, force: true });
 
-console.log(`✓ Canvas course package: ${outFile}`);
-console.log(`  ${pagesMade} lesson pages, ${quizzesMade} auto-graded quizzes, ${unitNums.length} unit module(s).`);
-console.log(`\nImport: Canvas → Settings → Import Course Content → "Common Cartridge 1.x Package".`);
-console.log(`Everything imports UNPUBLISHED. Quizzes grade themselves into the gradebook.`);
+console.log(`✓ ${QUIZ_ONLY ? "QTI quiz package" : "Canvas course package"}: ${outFile}`);
+console.log(`  ${pagesMade} lesson pages, ${quizzesMade} auto-graded quizzes, ${unitNums.length} unit(s).`);
+if (QUIZ_ONLY) {
+  console.log(`\nImport: Canvas → Settings → Import Course Content → "QTI .zip file" → upload.`);
+  console.log(`Creates auto-graded quizzes directly (most reliable quiz path). Imports unpublished.`);
+} else {
+  console.log(`\nImport: Canvas → Settings → Import Course Content → "Common Cartridge 1.x Package".`);
+  console.log(`Everything imports UNPUBLISHED. Quizzes grade themselves into the gradebook.`);
+}
