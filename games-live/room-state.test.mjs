@@ -1,16 +1,6 @@
 // Live-room state machine tests. Exits non-zero on failure (repo test convention).
-import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-import { dirname, join } from "node:path";
-import vm from "node:vm";
 import assert from "node:assert/strict";
-
-const here = dirname(fileURLToPath(import.meta.url));
-const code = readFileSync(join(here, "room-state.js"), "utf8");
-const sandbox = { module: { exports: {} }, self: {}, console };
-vm.createContext(sandbox);
-vm.runInContext(code, sandbox);
-const R = sandbox.module.exports;
+import * as R from "./room-state.js";
 
 const room = R.makeRoom({
   code: "MATH42",
