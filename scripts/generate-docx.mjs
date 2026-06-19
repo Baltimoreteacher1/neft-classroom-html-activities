@@ -718,46 +718,75 @@ function gatherPractice(practice = {}) {
   );
 }
 
+// Tier metadata: the differentiation already encoded in every config. Student-
+// facing labels never say "approaching"/"ESOL" — they read Level 1 / On Level /
+// Level 2, matching the L0<L1<L2 scheme used across the math HTML activities.
+const PRACTICE_TIERS = [
+  { key: "approaching", label: "Level 1 Support", cue: "extra scaffolding", color: TEAL },
+  { key: "onLevel", label: "On Level", cue: "grade-level practice", color: NAVY },
+  { key: "extending", label: "Level 2 Enrichment", cue: "stretch your thinking", color: PURPLE },
+];
+
+// Walk the practice tiers in order, returning labelled groups of stem-bearing
+// problems (the only items that render as numbered "You Do" questions), capping
+// the total so the packet stays a clean single section. Numbering is continuous
+// across tiers so the answer key lines up with the student copy.
+function gatherPracticeTiered(practice = {}, excludeStems = new Set(), maxTotal = 6) {
+  const groups = [];
+  let count = 0;
+  for (const tier of PRACTICE_TIERS) {
+    if (count >= maxTotal) break;
+    const items = (practice[tier.key] || []).filter(
+      (it) => it && it.stem && !excludeStems.has(it.stem),
+    );
+    if (!items.length) continue;
+    const picks = items.slice(0, maxTotal - count);
+    if (!picks.length) continue;
+    groups.push({ ...tier, items: picks, startIndex: count });
+    count += picks.length;
+  }
+  return groups;
+}
+
 // ── INDEPENDENT PRACTICE / "You Do" (numbered problems + work space) ─────────
 function independentPracticeBlock(cfg, excludeStems = new Set()) {
-  const items = gatherPractice(cfg.practice).filter((it) => it.stem && !excludeStems.has(it.stem));
-  // Up to 4 problems for a clean, one-section packet.
-  const picks = items.slice(0, 4);
-  if (!picks.length) return [];
+  const groups = gatherPracticeTiered(cfg.practice, excludeStems);
+  if (!groups.length) return [];
 
   const out = [sectionHeading("Independent Practice", { pageBreak: true })];
   out.push(subHeading("On Your Own", "You Do — show your work", AMBER));
   out.push(muted("Solve each problem. Show your thinking in the work box."));
 
-  picks.forEach((it, i) => {
-    out.push(
-      para(
-        [
-          new TextRun({
-            text: `${i + 1}.  `,
-            bold: true,
-            color: NAVY,
-            size: 22,
-          }),
-          new TextRun({ text: it.stem, bold: true, size: 21 }),
-        ],
-        { spacing: { before: 160, after: 60 }, keepNext: true },
-      ),
-    );
-    if (Array.isArray(it.choices)) {
-      it.choices.forEach((c, j) =>
-        out.push(
-          para(new TextRun({ text: `${choiceLetter(j)})  ${c}`, size: 20 }), {
-            indent: { left: 420 },
-            spacing: { after: 40 },
-          }),
+  groups.forEach((group) => {
+    // Label the differentiation tier that already exists in the config so the
+    // printed packet makes Level 1 / On Level / Level 2 visible to teachers.
+    out.push(subHeading(group.label, group.cue, group.color));
+    group.items.forEach((it, idx) => {
+      const num = group.startIndex + idx + 1;
+      out.push(
+        para(
+          [
+            new TextRun({ text: `${num}.  `, bold: true, color: NAVY, size: 22 }),
+            new TextRun({ text: it.stem, bold: true, size: 21 }),
+          ],
+          { spacing: { before: 160, after: 60 }, keepNext: true },
         ),
       );
-      out.push(spacer(20));
-      out.push(workBox(2, AMBER_BG));
-    } else {
-      out.push(workBox(4, AMBER_BG));
-    }
+      if (Array.isArray(it.choices)) {
+        it.choices.forEach((c, j) =>
+          out.push(
+            para(new TextRun({ text: `${choiceLetter(j)})  ${c}`, size: 20 }), {
+              indent: { left: 420 },
+              spacing: { after: 40 },
+            }),
+          ),
+        );
+        out.push(spacer(20));
+        out.push(workBox(2, AMBER_BG));
+      } else {
+        out.push(workBox(4, AMBER_BG));
+      }
+    });
   });
 
   return out;
@@ -791,6 +820,33 @@ function reflectBlock(cfg) {
   } else {
     out.push(...writeline(4));
   }
+  return out;
+}
+
+// Per-distractor "why this is wrong" teacher lines for an MCQ. Renders only the
+// incorrect choices (keyed off correctIndex) and only when the config supplies
+// explicit `choiceExplanations` (one per choice). This is additive and forward-
+// compatible: no current config carries the array, so nothing renders today, but
+// the moment a lesson adds it the misconception guidance appears with zero code
+// changes. The whole-item `explanation` already covers the no-array case above.
+function distractorWhyLines(it) {
+  const why = it && it.choiceExplanations;
+  if (!Array.isArray(why) || !Array.isArray(it.choices)) return [];
+  const out = [];
+  it.choices.forEach((c, j) => {
+    if (j === it.correctIndex) return;
+    const note = why[j];
+    if (!note) return;
+    out.push(
+      para(
+        [
+          new TextRun({ text: `${choiceLetter(j)})  why this is wrong:  `, bold: true, color: AMBER, size: 18 }),
+          new TextRun({ text: note, italics: true, color: MUTED, size: 18 }),
+        ],
+        { indent: { left: 420 }, spacing: { after: 30 } },
+      ),
+    );
+  });
   return out;
 }
 
@@ -838,24 +894,42 @@ function answerKeyBlock(cfg, worked, excludeStems = new Set()) {
     }
   }
 
-  const items = gatherPractice(practice).filter((it) => it.stem && !excludeStems.has(it.stem));
-  const picks = items.slice(0, 4);
-  if (picks.length) {
+  const groups = gatherPracticeTiered(practice, excludeStems);
+  if (groups.length) {
     out.push(subHeading("Independent Practice"));
-    picks.forEach((it, i) => {
-      let ans = "";
-      if (Array.isArray(it.choices) && typeof it.correctIndex === "number") {
-        ans = `${choiceLetter(it.correctIndex)})  ${it.choices[it.correctIndex]}`;
-      } else if (it.sampleAnswer) ans = it.sampleAnswer;
+    // Misconception-targeted teacher note from the existing (previously unused)
+    // commonMistake field — turns a generic key into actionable guidance.
+    if (practice.commonMistake) {
       out.push(
-        para([
-          new TextRun({ text: `${i + 1}.  `, bold: true, size: 21 }),
-          new TextRun({ text: ans || "Answers vary.", size: 21 }),
-          it.explanation
-            ? new TextRun({ text: `  — ${it.explanation}`, italics: true, color: MUTED, size: 19 })
-            : new TextRun(""),
-        ]),
+        para(
+          [
+            new TextRun({ text: "Watch for this mistake:  ", bold: true, color: AMBER, size: 20 }),
+            new TextRun({ text: practice.commonMistake, italics: true, color: MUTED, size: 19 }),
+          ],
+          { spacing: { after: 100 } },
+        ),
       );
+    }
+    groups.forEach((group) => {
+      out.push(subHeading(group.label));
+      group.items.forEach((it, idx) => {
+        const num = group.startIndex + idx + 1;
+        let ans = "";
+        if (Array.isArray(it.choices) && typeof it.correctIndex === "number") {
+          ans = `${choiceLetter(it.correctIndex)})  ${it.choices[it.correctIndex]}`;
+        } else if (it.sampleAnswer) ans = it.sampleAnswer;
+        out.push(
+          para([
+            new TextRun({ text: `${num}.  `, bold: true, size: 21 }),
+            new TextRun({ text: ans || "Answers vary.", size: 21 }),
+            it.explanation
+              ? new TextRun({ text: `  — ${it.explanation}`, italics: true, color: MUTED, size: 19 })
+              : new TextRun(""),
+          ]),
+        );
+        // Per-distractor "why this is wrong" guidance keyed off correctIndex.
+        out.push(...distractorWhyLines(it));
+      });
     });
   }
 
@@ -926,8 +1000,100 @@ function guidedNotesAnswerRows(cfg) {
   return vocab.map((v, i) => ({ label: `Notes ${i + 1}`, answer: v.term }));
 }
 
+// ── LEVEL 0 / IEP SCAFFOLDED PRACTICE ─────────────────────────────────────────
+// The most-supported tier (L0 < L1 < L2). Emitted only when a lesson provides
+// an optional `practice.level0` array, so it is purely additive and idempotent.
+// Each item is one of:
+//   { stem, choices, correctIndex }  → fewer, larger answer choices to circle
+//   { steps:[{ shown?, blank? }] }   → a partially-worked problem (some steps
+//                                       filled, others left as a guided blank),
+//                                       reusing the We-Do scaffold pattern.
+//   { cloze, hint }                  → a cloze sentence with a first-letter hint.
+// First-letter hints are derived automatically from `answer` when not supplied.
+function level0ItemBlock(it, num) {
+  const out = [];
+  const head = (text) =>
+    out.push(
+      para(
+        [
+          new TextRun({ text: `${num}.  `, bold: true, color: NAVY, size: 24 }),
+          new TextRun({ text, bold: true, size: 23 }),
+        ],
+        { spacing: { before: 160, after: 60 }, keepNext: true },
+      ),
+    );
+
+  if (it.stem && Array.isArray(it.choices)) {
+    head(it.stem);
+    // Larger, well-spaced choices to circle (one per line, big type).
+    it.choices.forEach((c, j) =>
+      out.push(
+        para(new TextRun({ text: `${choiceLetter(j)})   ${c}`, size: 24 }), {
+          indent: { left: 480 },
+          spacing: { after: 90 },
+        }),
+      ),
+    );
+    out.push(muted("Circle the answer that is correct."));
+    return out;
+  }
+
+  if (Array.isArray(it.steps)) {
+    head(it.stem || it.problem || "Finish each step.");
+    it.steps.forEach((s, i) => {
+      const label = new TextRun({ text: `Step ${i + 1}:  `, bold: true, color: PURPLE, size: 22 });
+      if (s.shown) {
+        out.push(
+          para([label, new TextRun({ text: s.shown, size: 22 })], {
+            spacing: { before: 50, after: 20 },
+          }),
+        );
+      } else {
+        out.push(para([label], { spacing: { before: 50, after: 0 }, keepNext: true }));
+        out.push(...writeline(1));
+      }
+    });
+    return out;
+  }
+
+  if (it.cloze) {
+    const hint =
+      it.hint ||
+      (it.answer ? `Starts with the letter “${String(it.answer).trim().charAt(0)}”.` : "");
+    head(it.cloze);
+    if (hint) {
+      out.push(
+        para(
+          [
+            new TextRun({ text: "Hint:  ", bold: true, color: TEAL, size: 20 }),
+            new TextRun({ text: hint, italics: true, color: MUTED, size: 20 }),
+          ],
+          { spacing: { after: 40 } },
+        ),
+      );
+    }
+    out.push(...writeline(1));
+    return out;
+  }
+
+  return out;
+}
+
+function level0Block(cfg) {
+  const items = Array.isArray(cfg.practice && cfg.practice.level0) ? cfg.practice.level0 : [];
+  if (!items.length) return [];
+  const out = [sectionHeading("Practice — Level 0", { pageBreak: true })];
+  out.push(subHeading("One Step at a Time", "extra support — you can do this", TEAL));
+  out.push(muted("Take your time. Some steps are started for you."));
+  items.slice(0, 4).forEach((it, i) => out.push(...level0ItemBlock(it, i + 1)));
+  return out;
+}
+
 // ── DOCUMENT ASSEMBLY ─────────────────────────────────────────────────────────
-function buildDoc(id, cfg, teacher = false) {
+// variant: "student" (default) | "teacher" | "level0"
+function buildDoc(id, cfg, variant = "student") {
+  const teacher = variant === "teacher";
+  const level0 = variant === "level0";
   const worked = deriveWorkedSteps(cfg);
   // I-Do and We-Do problems are worked in the notes frame; exclude them from
   // the independent "On Your Own" set so answers are not duplicated or leaked.
@@ -935,18 +1101,31 @@ function buildDoc(id, cfg, teacher = false) {
   const excludeStems = new Set(
     [worked.iDo && worked.iDo.problem, worked.weDo && worked.weDo.problem].filter(Boolean),
   );
-  const body = [
-    ...coverBlock(id, cfg),
-    ...objectivesBlock(cfg),
-    ...vocabBlock(cfg.vocabulary),
-    ...guidedNotesBlock(cfg),
-    ...workedExampleBlock(cfg, worked),
-    ...guidedPracticeBlock(cfg, worked),
-    ...independentPracticeBlock(cfg, excludeStems),
-    ...reflectBlock(cfg),
-    // Answer Key & Teacher Guide only on the teacher copy.
-    ...(teacher ? answerKeyBlock(cfg, worked, excludeStems) : []),
-  ];
+  const body = level0
+    ? [
+        // Level 0 / IEP copy: the same supported vocab + worked model students
+        // need, then the most-scaffolded practice (fewer items, partial steps,
+        // first-letter cloze hints) in place of the standard tiered "You Do".
+        ...coverBlock(id, cfg),
+        ...objectivesBlock(cfg),
+        ...vocabBlock(cfg.vocabulary),
+        ...guidedNotesBlock(cfg),
+        ...workedExampleBlock(cfg, worked),
+        ...level0Block(cfg),
+        ...reflectBlock(cfg),
+      ]
+    : [
+        ...coverBlock(id, cfg),
+        ...objectivesBlock(cfg),
+        ...vocabBlock(cfg.vocabulary),
+        ...guidedNotesBlock(cfg),
+        ...workedExampleBlock(cfg, worked),
+        ...guidedPracticeBlock(cfg, worked),
+        ...independentPracticeBlock(cfg, excludeStems),
+        ...reflectBlock(cfg),
+        // Answer Key & Teacher Guide only on the teacher copy.
+        ...(teacher ? answerKeyBlock(cfg, worked, excludeStems) : []),
+      ];
 
   const headerLabel = [
     cfg.unit != null ? `Unit ${cfg.unit}` : "",
@@ -1057,19 +1236,29 @@ async function main() {
   const filter = process.argv.slice(2);
   const ids = lessonIds(filter);
   let ok = 0;
+  let l0 = 0;
   for (const id of ids) {
     const cfg = JSON.parse(readFileSync(join(lessonsDir, id, "config.json"), "utf8"));
     const outDir = join(lessonsDir, id, "downloads");
     if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
     // Student copy — no answer key.
-    const studentBuf = await Packer.toBuffer(buildDoc(id, cfg, false));
+    const studentBuf = await Packer.toBuffer(buildDoc(id, cfg, "student"));
     writeFileSync(join(outDir, `${id}-notes.docx`), studentBuf);
     // Teacher copy — includes the Answer Key & Teacher Guide.
-    const teacherBuf = await Packer.toBuffer(buildDoc(id, cfg, true));
+    const teacherBuf = await Packer.toBuffer(buildDoc(id, cfg, "teacher"));
     writeFileSync(join(outDir, `${id}-notes-teacher.docx`), teacherBuf);
+    // Level 0 / IEP copy — only when the lesson supplies practice.level0.
+    if (Array.isArray(cfg.practice && cfg.practice.level0) && cfg.practice.level0.length) {
+      const l0Buf = await Packer.toBuffer(buildDoc(id, cfg, "level0"));
+      writeFileSync(join(outDir, `${id}-notes-l0.docx`), l0Buf);
+      l0++;
+    }
     ok++;
   }
-  console.log(`Generated ${ok}/${ids.length} notes DOCX files (student + teacher)`);
+  console.log(
+    `Generated ${ok}/${ids.length} notes DOCX files (student + teacher)` +
+      (l0 ? ` + ${l0} Level 0 copies` : ""),
+  );
 }
 
 main();

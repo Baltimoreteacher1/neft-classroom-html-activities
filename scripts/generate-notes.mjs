@@ -994,6 +994,25 @@ function reflectSection(reflect = {}) {
 </section>`;
 }
 
+// Per-distractor "why this is wrong" guidance for an MCQ, rendered only for the
+// incorrect choices (keyed off correctIndex) and only when the config supplies
+// an explicit `choiceExplanations` array. Additive/forward-compatible: nothing
+// renders until a lesson opts in, with zero generator changes required.
+function distractorWhyHtml(it) {
+  const why = it && it.choiceExplanations;
+  if (!Array.isArray(why) || !Array.isArray(it.choices)) return "";
+  const lines = it.choices
+    .map((c, j) =>
+      j === it.correctIndex || !why[j]
+        ? ""
+        : `<li><strong>${choiceLetter(j)}) why this is wrong:</strong> <span class="ak-why">${esc(
+            why[j],
+          )}</span></li>`,
+    )
+    .filter(Boolean);
+  return lines.length ? `<ul class="ak-distractors">${lines.join("")}</ul>` : "";
+}
+
 function answerKeySection(
   practice = {},
   reflect = {},
@@ -1022,9 +1041,24 @@ function answerKeySection(
       );
     });
   }
-  // Try It picks mirrored from tryItSection logic (same exclusion).
-  const items = gatherPractice(practice).filter((it) => it.stem && !usedStems.has(it.stem));
+  // Try It picks mirrored from tryItSection logic (same exclusion). Fall back to
+  // the config's practice when the caller passes an empty object so the teacher
+  // copy actually shows the independent-practice answers + misconception notes.
+  const effectivePractice =
+    gatherPractice(practice).length || !config ? practice : config.practice || {};
+  const items = gatherPractice(effectivePractice).filter(
+    (it) => it.stem && !usedStems.has(it.stem),
+  );
   const tryPicks = items.slice(-2).length ? items.slice(-2) : items.slice(0, 2);
+  // Misconception-targeted teacher note from the previously unused commonMistake
+  // field — surfaced once at the head of the independent-practice answers.
+  if (tryPicks.length && effectivePractice.commonMistake) {
+    rows.push(
+      `<li><strong>Watch for this mistake:</strong> <span class="ak-why">${esc(
+        effectivePractice.commonMistake,
+      )}</span></li>`,
+    );
+  }
   tryPicks.forEach((it) => {
     let ans = "";
     if (Array.isArray(it.choices) && typeof it.correctIndex === "number") {
@@ -1035,7 +1069,7 @@ function answerKeySection(
     rows.push(
       `<li><strong>Try It ${n++}:</strong> ${esc(ans)}${
         it.explanation ? ` <span class="ak-why">— ${esc(it.explanation)}</span>` : ""
-      }</li>`,
+      }${distractorWhyHtml(it)}</li>`,
     );
   });
 
@@ -1369,6 +1403,8 @@ input.writeline:focus,input.gn-blank:focus{outline:none;background-color:#fff7e6
 .ak-list li{margin:8px 0;}
 .ak-twr-head{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:16px;margin:14px 0 6px;}
 .ak-why{color:var(--muted);font-style:italic;}
+.ak-distractors{margin:4px 0 0;padding-left:18px;list-style:none;}
+.ak-distractors li{margin:3px 0;font-size:13.5px;color:var(--muted);}
 footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   color:var(--muted);font-size:12px;text-align:center;}
 .level-tag{display:inline-block;font-family:Calibri,system-ui,sans-serif;font-size:11.5px;
