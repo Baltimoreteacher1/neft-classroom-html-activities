@@ -488,13 +488,25 @@
           background: #fff;
         }
       }
-    
-@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
-</style>
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+    </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <link rel="stylesheet" href="/assets/brain/brain.css" />
+    <!-- nsr-injected:end -->
+  </head>
   <body>
     <a class="skip" href="#paths">Skip to my lessons</a>
     <header class="hero">
@@ -559,6 +571,16 @@
         <h2 id="focus-h">Work on these next 🎯</h2>
         <p class="sub">Your "Lost" and "Shaky" skills, ready to tackle.</p>
         <ul class="focus-list" id="focusList"></ul>
+      </section>
+
+      <!-- Smart recommendations from real activity results (Math Brain) -->
+      <section class="card" id="brainCard" aria-labelledby="brain-h">
+        <h2 id="brain-h">Picked for you 🧠</h2>
+        <p class="sub">
+          Based on how you actually did on activities — not just how you feel.
+          These target the exact skills and mix-ups to work on next.
+        </p>
+        <div id="brainWhatsNext"></div>
       </section>
 
       <!-- Paths -->
@@ -1384,7 +1406,27 @@
         });
     </script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-</body>
+    <script src="/assets/brain/mastery-engine.js"></script>
+    <script src="/assets/brain/recommend-engine.js"></script>
+    <script src="/assets/brain/brain.js"></script>
+    <script>
+      // Populate the results-driven recommendations door; hide the card if no data/graph.
+      document.addEventListener("DOMContentLoaded", function () {
+        if (!window.NeftBrain || !NeftBrain.renderWhatsNext) return;
+        NeftBrain.renderWhatsNext("#brainWhatsNext", { limit: 6 })
+          .then(function (data) {
+            if (!data || !data.recommendations.length) {
+              var c = document.getElementById("brainCard");
+              if (c) c.style.display = "none";
+            }
+          })
+          .catch(function () {
+            var c = document.getElementById("brainCard");
+            if (c) c.style.display = "none";
+          });
+      });
+    </script>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
 </html>

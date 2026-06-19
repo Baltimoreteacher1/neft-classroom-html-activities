@@ -195,9 +195,9 @@
       }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+  </head>
   <body class="tools-page">
     <main class="page-shell">
       <!-- 1. Hero -->
@@ -377,14 +377,16 @@
           <p class="eyebrow">Launch &amp; Actions</p>
           <h2 id="cc-launch-heading">Command Console</h2>
           <p>
-            Trigger repository scripts, build lesson resources, package worksheets, and review QA tests directly from this page.
+            Trigger repository scripts, build lesson resources, package
+            worksheets, and review QA tests directly from this page.
           </p>
         </div>
-        
+
         <!-- Status Indicator Panel -->
         <div id="status-panel" class="note-panel" role="note">
           <p>
-            <strong>Status:</strong> Connecting to the local Command Center server...
+            <strong>Status:</strong> Connecting to the local Command Center
+            server...
           </p>
         </div>
 
@@ -398,10 +400,13 @@
             <span class="cc-preview-pill" id="card-build-pill">Preview</span>
             <h3>🛠️ Build a Math Resource</h3>
             <p>
-              Compile lesson maps, registries, and build search indexes for lesson launchers.
+              Compile lesson maps, registries, and build search indexes for
+              lesson launchers.
             </p>
             <span class="cc-action-foot" id="card-build-foot">
-              <span class="cc-disabled-btn" aria-disabled="true">Not yet connected</span>
+              <span class="cc-disabled-btn" aria-disabled="true"
+                >Not yet connected</span
+              >
             </span>
           </div>
 
@@ -410,10 +415,13 @@
             <span class="cc-preview-pill" id="card-audit-pill">Preview</span>
             <h3>🔍 Audit a Resource</h3>
             <p>
-              Check curriculum config settings and run alignment checks on lesson plans.
+              Check curriculum config settings and run alignment checks on
+              lesson plans.
             </p>
             <span class="cc-action-foot" id="card-audit-foot">
-              <span class="cc-disabled-btn" aria-disabled="true">Not yet connected</span>
+              <span class="cc-disabled-btn" aria-disabled="true"
+                >Not yet connected</span
+              >
             </span>
           </div>
 
@@ -422,10 +430,13 @@
             <span class="cc-preview-pill" id="card-package-pill">Preview</span>
             <h3>📦 Package a Resource</h3>
             <p>
-              Export and compile notes, editable DOCX templates, and PDFs for print.
+              Export and compile notes, editable DOCX templates, and PDFs for
+              print.
             </p>
             <span class="cc-action-foot" id="card-package-foot">
-              <span class="cc-disabled-btn" aria-disabled="true">Not yet connected</span>
+              <span class="cc-disabled-btn" aria-disabled="true"
+                >Not yet connected</span
+              >
             </span>
           </div>
 
@@ -434,10 +445,13 @@
             <span class="cc-preview-pill" id="card-qa-pill">Preview</span>
             <h3>📋 Run QA Loop</h3>
             <p>
-              Execute the full QA test loop to verify links, Reveal Math launchers, and pages.
+              Execute the full QA test loop to verify links, Reveal Math
+              launchers, and pages.
             </p>
             <span class="cc-action-foot" id="card-qa-foot">
-              <span class="cc-disabled-btn" aria-disabled="true">Not yet connected</span>
+              <span class="cc-disabled-btn" aria-disabled="true"
+                >Not yet connected</span
+              >
             </span>
           </div>
 
@@ -446,86 +460,289 @@
             <span class="card-kicker">Live now</span>
             <h3>← Back to Math Hub</h3>
             <p>
-              Return to the Grade 6 Reveal Math curriculum hub and ready-to-use tools.
+              Return to the Grade 6 Reveal Math curriculum hub and ready-to-use
+              tools.
             </p>
             <span class="button-link">Open Math Hub</span>
           </a>
         </div>
 
         <!-- Custom Tool Selector Section -->
-        <div id="tool-selector-section" style="display: none; margin-top: 24px; padding: 20px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);">
-          <h3 style="margin-bottom: 16px; font-size: 1.15rem;">⚡ Advanced Shell Controls</h3>
-          
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div
+          id="tool-selector-section"
+          style="
+            display: none;
+            margin-top: 24px;
+            padding: 20px;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+          "
+        >
+          <h3 style="margin-bottom: 16px; font-size: 1.15rem">
+            ⚡ Advanced Shell Controls
+          </h3>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px">
             <!-- Run Script Dropdown -->
             <div>
-              <label style="display: block; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; color: var(--teal-dark); margin-bottom: 6px;">Execute package.json Script</label>
-              <div style="display: flex; gap: 8px;">
-                <select id="script-select" style="flex: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line); font-size: 0.92rem; outline: none; background: var(--surface);">
+              <label
+                style="
+                  display: block;
+                  font-size: 0.85rem;
+                  font-weight: 800;
+                  text-transform: uppercase;
+                  color: var(--teal-dark);
+                  margin-bottom: 6px;
+                "
+                >Execute package.json Script</label
+              >
+              <div style="display: flex; gap: 8px">
+                <select
+                  id="script-select"
+                  style="
+                    flex: 1;
+                    padding: 8px 12px;
+                    border-radius: 8px;
+                    border: 1px solid var(--line);
+                    font-size: 0.92rem;
+                    outline: none;
+                    background: var(--surface);
+                  "
+                >
                   <!-- Populated dynamically -->
                 </select>
-                <button class="button-link" onclick="runSelectedScript()" style="margin: 0; padding: 8px 16px; font-size: 0.92rem;">Execute</button>
+                <button
+                  class="button-link"
+                  onclick="runSelectedScript()"
+                  style="margin: 0; padding: 8px 16px; font-size: 0.92rem"
+                >
+                  Execute
+                </button>
               </div>
             </div>
 
             <!-- Generate Slides Selector -->
             <div>
-              <label style="display: block; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; color: var(--teal-dark); margin-bottom: 6px;">Trigger Bulk Google Slides Gen</label>
-              <div style="display: flex; gap: 8px;">
-                <select id="lesson-select" style="flex: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line); font-size: 0.92rem; outline: none; background: var(--surface);">
+              <label
+                style="
+                  display: block;
+                  font-size: 0.85rem;
+                  font-weight: 800;
+                  text-transform: uppercase;
+                  color: var(--teal-dark);
+                  margin-bottom: 6px;
+                "
+                >Trigger Bulk Google Slides Gen</label
+              >
+              <div style="display: flex; gap: 8px">
+                <select
+                  id="lesson-select"
+                  style="
+                    flex: 1;
+                    padding: 8px 12px;
+                    border-radius: 8px;
+                    border: 1px solid var(--line);
+                    font-size: 0.92rem;
+                    outline: none;
+                    background: var(--surface);
+                  "
+                >
                   <!-- Populated dynamically -->
                 </select>
-                <button class="button-link" onclick="runScript('generate-slides')" style="margin: 0; padding: 8px 16px; font-size: 0.92rem;">Bulk Sync</button>
+                <button
+                  class="button-link"
+                  onclick="runScript('generate-slides')"
+                  style="margin: 0; padding: 8px 16px; font-size: 0.92rem"
+                >
+                  Bulk Sync
+                </button>
               </div>
             </div>
           </div>
 
           <!-- Recent QA logs view -->
-          <div style="margin-top: 20px; border-top: 1px solid var(--line); padding-top: 16px;">
-            <h4 style="font-size: 0.9rem; font-weight: 800; text-transform: uppercase; color: var(--muted); margin-bottom: 10px;">Recent QA Log Output Files</h4>
-            <ul id="logs-list" style="margin: 0; padding: 0; list-style: none;">
+          <div
+            style="
+              margin-top: 20px;
+              border-top: 1px solid var(--line);
+              padding-top: 16px;
+            "
+          >
+            <h4
+              style="
+                font-size: 0.9rem;
+                font-weight: 800;
+                text-transform: uppercase;
+                color: var(--muted);
+                margin-bottom: 10px;
+              "
+            >
+              Recent QA Log Output Files
+            </h4>
+            <ul id="logs-list" style="margin: 0; padding: 0; list-style: none">
               <!-- Populated dynamically -->
             </ul>
           </div>
         </div>
 
         <!-- Terminal Log Box Display -->
-        <div id="terminal-section" style="display: none; margin-top: 24px;">
-          <h3 style="font-size: 1.05rem; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+        <div id="terminal-section" style="display: none; margin-top: 24px">
+          <h3
+            style="
+              font-size: 1.05rem;
+              margin-bottom: 8px;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            "
+          >
             <span>🖥️ Live Console Terminal Output</span>
-            <div style="display: flex; gap: 8px;">
-              <button class="button-link" id="btn-stop-script" onclick="stopRunningScript()" style="font-size: 0.75rem; padding: 4px 10px; margin: 0; background: #fee2e2; color: #991b1b; border-color: #fca5a5; display: none;">Stop Process</button>
-              <button class="button-link" onclick="clearTerminal()" style="font-size: 0.75rem; padding: 4px 10px; margin: 0;">Clear Logs</button>
+            <div style="display: flex; gap: 8px">
+              <button
+                class="button-link"
+                id="btn-stop-script"
+                onclick="stopRunningScript()"
+                style="
+                  font-size: 0.75rem;
+                  padding: 4px 10px;
+                  margin: 0;
+                  background: #fee2e2;
+                  color: #991b1b;
+                  border-color: #fca5a5;
+                  display: none;
+                "
+              >
+                Stop Process
+              </button>
+              <button
+                class="button-link"
+                onclick="clearTerminal()"
+                style="font-size: 0.75rem; padding: 4px 10px; margin: 0"
+              >
+                Clear Logs
+              </button>
             </div>
           </h3>
-          <pre id="terminal-output" style="background: #02040a; color: #34d399; font-family: var(--font-mono); font-size: 0.8rem; padding: 16px; border-radius: var(--radius); max-height: 400px; overflow-y: auto; white-space: pre-wrap; border: 1px solid var(--line); line-height: 1.45; box-shadow: inset 0 2px 8px rgba(0,0,0,0.8);"></pre>
+          <pre
+            id="terminal-output"
+            style="
+              background: #02040a;
+              color: #34d399;
+              font-family: var(--font-mono);
+              font-size: 0.8rem;
+              padding: 16px;
+              border-radius: var(--radius);
+              max-height: 400px;
+              overflow-y: auto;
+              white-space: pre-wrap;
+              border: 1px solid var(--line);
+              line-height: 1.45;
+              box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8);
+            "
+          ></pre>
         </div>
       </section>
 
       <!-- 6. Administrative Dashboards (Asset Analyzer & Student Progress) -->
-      <section id="admin-dashboards" style="display: none; margin-top: 32px; border-top: 2px solid var(--line); padding-top: 24px;">
+      <section
+        id="admin-dashboards"
+        style="
+          display: none;
+          margin-top: 32px;
+          border-top: 2px solid var(--line);
+          padding-top: 24px;
+        "
+      >
         <div class="section-heading">
           <p class="eyebrow">Admin & Analytics</p>
           <h2>Platform Analytics</h2>
-          <p>Analyze server file composition and monitor real-time student activity logs.</p>
+          <p>
+            Analyze server file composition and monitor real-time student
+            activity logs.
+          </p>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr; gap: 24px; margin-top: 16px;">
+        <div
+          style="
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+            margin-top: 16px;
+          "
+        >
           <!-- Card: Student Progress Monitor -->
-          <div class="note-panel" style="background: white; border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
-              <h3 style="font-size: 1.1rem; margin: 0; color: var(--navy); display: flex; align-items: center; gap: 6px;">👥 Student Save/Resume Monitor</h3>
-              <input type="text" id="progress-search" placeholder="Search by name, code, or class..." oninput="filterProgressTable()" style="padding: 6px 12px; font-size: 0.85rem; border: 1px solid var(--line); border-radius: 6px; width: 220px; outline: none; background: var(--surface);">
+          <div
+            class="note-panel"
+            style="
+              background: white;
+              border: 1px solid var(--line);
+              border-radius: var(--radius);
+              padding: 20px;
+              box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            "
+          >
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 16px;
+                flex-wrap: wrap;
+                gap: 10px;
+              "
+            >
+              <h3
+                style="
+                  font-size: 1.1rem;
+                  margin: 0;
+                  color: var(--navy);
+                  display: flex;
+                  align-items: center;
+                  gap: 6px;
+                "
+              >
+                👥 Student Save/Resume Monitor
+              </h3>
+              <input
+                type="text"
+                id="progress-search"
+                placeholder="Search by name, code, or class..."
+                oninput="filterProgressTable()"
+                style="
+                  padding: 6px 12px;
+                  font-size: 0.85rem;
+                  border: 1px solid var(--line);
+                  border-radius: 6px;
+                  width: 220px;
+                  outline: none;
+                  background: var(--surface);
+                "
+              />
             </div>
-            <div style="overflow-x: auto;">
-              <table id="progress-table" style="width: 100%; border-collapse: collapse; font-size: 0.88rem; text-align: left;">
+            <div style="overflow-x: auto">
+              <table
+                id="progress-table"
+                style="
+                  width: 100%;
+                  border-collapse: collapse;
+                  font-size: 0.88rem;
+                  text-align: left;
+                "
+              >
                 <thead>
-                  <tr style="border-bottom: 2px solid var(--line); color: var(--muted); font-weight: 700;">
-                    <th style="padding: 8px 12px;">Class Section</th>
-                    <th style="padding: 8px 12px;">Student</th>
-                    <th style="padding: 8px 12px;">Resume Code</th>
-                    <th style="padding: 8px 12px;">Progress</th>
-                    <th style="padding: 8px 12px;">Last Saved</th>
+                  <tr
+                    style="
+                      border-bottom: 2px solid var(--line);
+                      color: var(--muted);
+                      font-weight: 700;
+                    "
+                  >
+                    <th style="padding: 8px 12px">Class Section</th>
+                    <th style="padding: 8px 12px">Student</th>
+                    <th style="padding: 8px 12px">Resume Code</th>
+                    <th style="padding: 8px 12px">Progress</th>
+                    <th style="padding: 8px 12px">Last Saved</th>
                   </tr>
                 </thead>
                 <tbody id="progress-table-body">
@@ -536,14 +753,56 @@
           </div>
 
           <!-- Card: Build & Asset Size Analyzer -->
-          <div class="note-panel" style="background: white; border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
-            <h3 style="font-size: 1.1rem; margin: 0 0 16px; color: var(--navy); display: flex; align-items: center; gap: 6px;">📦 Workspace Asset Size Analyzer</h3>
-            <div style="overflow-x: auto;">
-              <div id="bundle-analyzer-chart" style="display: flex; flex-direction: column; gap: 12px;">
+          <div
+            class="note-panel"
+            style="
+              background: white;
+              border: 1px solid var(--line);
+              border-radius: var(--radius);
+              padding: 20px;
+              box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            "
+          >
+            <h3
+              style="
+                font-size: 1.1rem;
+                margin: 0 0 16px;
+                color: var(--navy);
+                display: flex;
+                align-items: center;
+                gap: 6px;
+              "
+            >
+              📦 Workspace Asset Size Analyzer
+            </h3>
+            <div style="overflow-x: auto">
+              <div
+                id="bundle-analyzer-chart"
+                style="display: flex; flex-direction: column; gap: 12px"
+              >
                 <!-- Populated dynamically -->
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section
+        class="cc-section"
+        aria-labelledby="cc-brain-heading"
+        style="margin-top: 24px"
+      >
+        <div class="cc-section-head">
+          <h2 id="cc-brain-heading">🧠 Mastery Heatmap</h2>
+          <p>
+            Per-standard mastery from real activity results. Green = proficient,
+            amber = developing, red = struggling, hatched = not yet assessed.
+            Hover a cell for the standard and score. Shows this device by
+            default; a roster view reads from synced progress.
+          </p>
+        </div>
+        <div style="overflow-x: auto">
+          <div id="cc-mastery-heatmap"></div>
         </div>
       </section>
 
@@ -554,7 +813,23 @@
     </main>
     <script src="/assets/app.js" defer></script>
     <script src="/assets/nt-page-enhance.js" defer></script>
-    
+    <link rel="stylesheet" href="/assets/brain/brain.css" />
+    <script src="/assets/brain/mastery-engine.js"></script>
+    <script src="/assets/brain/recommend-engine.js"></script>
+    <script src="/assets/brain/brain.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        if (window.NeftBrain && NeftBrain.renderHeatmap) {
+          NeftBrain.renderHeatmap("#cc-mastery-heatmap").catch(function () {
+            var h = document.getElementById("cc-mastery-heatmap");
+            if (h)
+              h.innerHTML =
+                "<p style='opacity:.7'>Mastery data unavailable (content graph not built).</p>";
+          });
+        }
+      });
+    </script>
+
     <script>
       const SERVER_URL = "http://localhost:3030";
       let eventSource = null;
@@ -580,7 +855,7 @@
         statusPanel.style.background = "#f0fdf4";
         statusPanel.innerHTML = `
           <p style="color: #166534; font-weight: 700; font-size: 0.95rem;">
-            🟢 Local Command Server Connected (Branch: <code>${data.branch}</code>${data.isDirty ? ' - <span style="color:#b91c1c;">*Dirty Changes Present</span>' : ''})
+            🟢 Local Command Server Connected (Branch: <code>${data.branch}</code>${data.isDirty ? ' - <span style="color:#b91c1c;">*Dirty Changes Present</span>' : ""})
           </p>
           <p style="font-size: 0.88rem; margin-top: 4px; color: #166534; line-height:1.4;">
             Local Node server is online on port 3030. You can now execute build tasks, run audits, and package handouts directly from your browser.
@@ -588,19 +863,28 @@
         `;
 
         // Update cards to trigger runs
-        setActionCardActive("card-build", "Run Build", () => runScript("build"));
-        setActionCardActive("card-audit", "Run Audit", () => runScript("audit"));
-        setActionCardActive("card-package", "Package Downloads", () => runScript("generate-downloads"));
-        setActionCardActive("card-qa", "Run QA Loop", () => runScript("qa:loop"));
+        setActionCardActive("card-build", "Run Build", () =>
+          runScript("build"),
+        );
+        setActionCardActive("card-audit", "Run Audit", () =>
+          runScript("audit"),
+        );
+        setActionCardActive("card-package", "Package Downloads", () =>
+          runScript("generate-downloads"),
+        );
+        setActionCardActive("card-qa", "Run QA Loop", () =>
+          runScript("qa:loop"),
+        );
 
         // Show dropdown selector panel and analytics section
-        document.getElementById("tool-selector-section").style.display = "block";
+        document.getElementById("tool-selector-section").style.display =
+          "block";
         document.getElementById("admin-dashboards").style.display = "block";
 
         // Populate script select
         const scriptSelect = document.getElementById("script-select");
         scriptSelect.innerHTML = "";
-        data.scripts.sort().forEach(script => {
+        data.scripts.sort().forEach((script) => {
           scriptSelect.innerHTML += `<option value="${script}">${script}</option>`;
         });
 
@@ -654,7 +938,7 @@
           body.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 12px; color: var(--muted);">No students found matching your criteria.</td></tr>`;
           return;
         }
-        students.forEach(student => {
+        students.forEach((student) => {
           const lastSavedStr = new Date(student.lastSaved).toLocaleTimeString();
           body.innerHTML += `
             <tr style="border-bottom: 1px solid var(--line);">
@@ -664,7 +948,7 @@
               <td style="padding: 10px 12px; min-width: 140px;">
                 <div style="display: flex; align-items: center; gap: 8px;">
                   <div style="flex: 1; height: 6px; background: #e4e4e7; border-radius: 3px; overflow: hidden;">
-                    <div style="width: ${student.progress}%; height: 100%; background: ${student.progress === 100 ? '#22c55e' : '#3b82f6'};"></div>
+                    <div style="width: ${student.progress}%; height: 100%; background: ${student.progress === 100 ? "#22c55e" : "#3b82f6"};"></div>
                   </div>
                   <span style="font-weight: 600; font-size: 0.8rem; width: 35px; text-align: right;">${student.progress}%</span>
                 </div>
@@ -676,11 +960,14 @@
       }
 
       function filterProgressTable() {
-        const query = document.getElementById("progress-search").value.toLowerCase();
-        const filtered = studentProgressCache.filter(student => 
-          student.name.toLowerCase().includes(query) ||
-          student.code.toLowerCase().includes(query) ||
-          student.section.toLowerCase().includes(query)
+        const query = document
+          .getElementById("progress-search")
+          .value.toLowerCase();
+        const filtered = studentProgressCache.filter(
+          (student) =>
+            student.name.toLowerCase().includes(query) ||
+            student.code.toLowerCase().includes(query) ||
+            student.section.toLowerCase().includes(query),
         );
         renderProgressTable(filtered);
       }
@@ -693,17 +980,18 @@
             const list = data.directories || [];
             const container = document.getElementById("bundle-analyzer-chart");
             container.innerHTML = "";
-            
+
             if (list.length === 0) {
               container.innerHTML = `<p style="font-size:0.85rem; color:var(--muted);">No asset directory statistics found.</p>`;
               return;
             }
 
-            const maxSize = Math.max(...list.map(d => d.size));
+            const maxSize = Math.max(...list.map((d) => d.size));
 
-            list.forEach(dir => {
+            list.forEach((dir) => {
               const sizeMB = (dir.size / (1024 * 1024)).toFixed(2);
-              const percent = maxSize > 0 ? (dir.size / maxSize * 100).toFixed(1) : 0;
+              const percent =
+                maxSize > 0 ? ((dir.size / maxSize) * 100).toFixed(1) : 0;
               container.innerHTML += `
                 <div>
                   <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom: 4px;">
@@ -757,20 +1045,26 @@
         const termOut = document.getElementById("terminal-output");
         termOut.innerText = `>>> [LOCAL COMMAND ENGINE] npm run ${scriptName}\n>>> Starting process...\n\n`;
 
-        document.getElementById("btn-stop-script").style.display = "inline-block";
+        document.getElementById("btn-stop-script").style.display =
+          "inline-block";
 
         if (eventSource) {
           eventSource.close();
         }
 
-        eventSource = new EventSource(`${SERVER_URL}/api/run?script=${scriptName}`);
+        eventSource = new EventSource(
+          `${SERVER_URL}/api/run?script=${scriptName}`,
+        );
 
         eventSource.onmessage = (event) => {
           try {
             const data = JSON.parse(event.data);
             if (data.type === "stdout" || data.type === "stderr") {
               // Strip ANSI escape color codes
-              const clean = data.text.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, "");
+              const clean = data.text.replace(
+                /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
+                "",
+              );
               termOut.innerText += clean;
               termOut.scrollTop = termOut.scrollHeight;
             } else if (data.type === "exit") {
@@ -832,7 +1126,7 @@
               list.innerHTML = `<li style="font-size:0.85rem; color:var(--muted); padding:8px 0;">No recent QA log files available.</li>`;
               return;
             }
-            data.logs.slice(0, 5).forEach(log => {
+            data.logs.slice(0, 5).forEach((log) => {
               const date = new Date(log.time).toLocaleString();
               const size = (log.size / 1024).toFixed(1);
               list.innerHTML += `
@@ -850,13 +1144,16 @@
 
       async function viewLogFile(fileName) {
         try {
-          const res = await fetch(`${SERVER_URL}/api/view-log?file=${fileName}`);
+          const res = await fetch(
+            `${SERVER_URL}/api/view-log?file=${fileName}`,
+          );
           if (res.ok) {
             const text = await res.text();
             const termSec = document.getElementById("terminal-section");
             termSec.style.display = "block";
             termSec.scrollIntoView({ behavior: "smooth" });
-            document.getElementById("terminal-output").innerText = `>>> Loading log file: ${fileName}...\n\n${text}`;
+            document.getElementById("terminal-output").innerText =
+              `>>> Loading log file: ${fileName}...\n\n${text}`;
           }
         } catch (e) {
           console.error("Failed to open log:", e);
@@ -870,7 +1167,7 @@
             const data = await res.json();
             const select = document.getElementById("lesson-select");
             select.innerHTML = "";
-            data.lessons.forEach(l => {
+            data.lessons.forEach((l) => {
               select.innerHTML += `<option value="${l.id}">${l.id} - ${l.title}</option>`;
             });
           }
@@ -886,7 +1183,7 @@
       });
     </script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+  </body>
 </html>
