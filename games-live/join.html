@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Live Game — Join</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 520px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        text-align: center;
+      }
+      input {
+        font-size: 1.2rem;
+        padding: 0.5rem;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+      }
+      .choices {
+        display: grid;
+        gap: 0.6rem;
+        margin-top: 1rem;
+      }
+      .choices button {
+        font-size: 1.1rem;
+        padding: 1rem;
+        border: 0;
+        border-radius: 12px;
+        background: #4f6ef7;
+        color: #fff;
+        cursor: pointer;
+      }
+      .score {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #2e9e5b;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Join the Game</h1>
+    <div id="gate">
+      <p>Code: <input id="code" maxlength="8" placeholder="MATH42" /></p>
+      <p>Name: <input id="name" maxlength="24" placeholder="Your name" /></p>
+      <button id="joinBtn">Join</button>
+    </div>
+    <div id="play" style="display: none">
+      <h2 id="prompt">Waiting for the next question…</h2>
+      <div class="choices" id="choices"></div>
+      <p class="score" id="score"></p>
+    </div>
+    <script>
+      const WORKER_URL = window.NEFT_LIVE_WORKER || "http://localhost:8787";
+      const id = "p_" + Math.random().toString(36).slice(2, 9);
+      let code,
+        ws,
+        answeredFor = -1;
+      const api = (path, body) =>
+        fetch(`${WORKER_URL}/${path}?code=${code}`, {
+          method: "POST",
+          body: JSON.stringify(body || {}),
+        }).then((r) => r.json());
+      document.getElementById("joinBtn").onclick = async () => {
+        code = document.getElementById("code").value.trim().toUpperCase();
+        const name = document.getElementById("name").value.trim() || "Player";
+        const r = await api("join", { id, name });
+        if (!r.ok) return alert("Could not join: " + r.error);
+        document.getElementById("gate").style.display = "none";
+        document.getElementById("play").style.display = "block";
+        ws = new WebSocket(
+          WORKER_URL.replace(/^http/, "ws") + `/?code=${code}`,
+        );
+        ws.onmessage = (e) => {
+          const m = JSON.parse(e.data);
+          if (m.type === "state") render(m.state);
+        };
+      };
+      function render(s) {
+        const q = s.question;
+        if (s.phase === "question" && q) {
+          document.getElementById("prompt").textContent = q.prompt;
+          const box = document.getElementById("choices");
+          box.innerHTML = "";
+          q.choices.forEach((c, i) => {
+            const b = document.createElement("button");
+            b.textContent = c;
+            b.disabled = answeredFor === q.index;
+            b.onclick = () => {
+              ws.send(JSON.stringify({ type: "answer", id, choice: i }));
+              answeredFor = q.index;
+              b.parentElement
+                .querySelectorAll("button")
+                .forEach((x) => (x.disabled = true));
+            };
+            box.appendChild(b);
+          });
+        } else {
+          document.getElementById("prompt").textContent =
+            s.phase === "ended" ? "Game over! 🎉" : "Waiting…";
+          document.getElementById("choices").innerHTML = "";
+        }
+        const me = s.leaderboard.find((p) => p.id === id);
+        document.getElementById("score").textContent = me
+          ? me.score + " pts"
+          : "";
+      }
+    </script>
+  </body>
+</html>

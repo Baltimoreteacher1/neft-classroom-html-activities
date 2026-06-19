@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Live Game — Host</title>
+    <link rel="stylesheet" href="/assets/brain/brain.css" />
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 760px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+      }
+      .code {
+        font-size: 3rem;
+        letter-spacing: 0.2em;
+        font-weight: 800;
+        color: #4f6ef7;
+      }
+      button {
+        font-size: 1rem;
+        padding: 0.6rem 1.1rem;
+        border-radius: 10px;
+        border: 0;
+        background: #4f6ef7;
+        color: #fff;
+        cursor: pointer;
+      }
+      .lb {
+        list-style: none;
+        padding: 0;
+      }
+      .lb li {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.4rem 0.7rem;
+        border-bottom: 1px solid #eee;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🧠 Live Math Game — Host</h1>
+    <p>
+      Join code: <span class="code" id="code">—</span> · Standard:
+      <b id="std"></b>
+    </p>
+    <div>
+      <button id="startBtn">Start</button>
+      <button id="revealBtn">Reveal answer</button>
+      <button id="nextBtn">Next question</button>
+    </div>
+    <h2 id="phase"></h2>
+    <div id="question"></div>
+    <h3>Leaderboard</h3>
+    <ul class="lb" id="lb"></ul>
+    <script>
+      // Set WORKER_URL to your deployed neft-live-rooms Worker (see README — deploy is gated).
+      const WORKER_URL = window.NEFT_LIVE_WORKER || "http://localhost:8787";
+      const CODE = (
+        new URLSearchParams(location.search).get("code") ||
+        "MATH" + Math.floor(Math.random() * 90 + 10)
+      ).toUpperCase();
+      document.getElementById("code").textContent = CODE;
+      // Demo question set; in production load from content-graph by standard.
+      const ROOM = {
+        code: CODE,
+        standard: "6.RP.A.2",
+        title: "Unit Rate Race",
+        questions: [
+          {
+            prompt: "12 apples for $6 — unit price?",
+            choices: ["$0.50", "$2", "$3"],
+            answerIndex: 0,
+            skill: "unit-rate",
+            limitMs: 20000,
+          },
+          {
+            prompt: "Which is the better buy per oz?",
+            choices: ["16oz/$4", "32oz/$6"],
+            answerIndex: 1,
+            skill: "unit-rate",
+            limitMs: 20000,
+          },
+        ],
+      };
+      const api = (path, body) =>
+        fetch(`${WORKER_URL}/${path}?code=${CODE}`, {
+          method: "POST",
+          body: JSON.stringify(body || {}),
+        }).then((r) => r.json());
+      function render(s) {
+        if (!s) return;
+        document.getElementById("std").textContent = s.standard;
+        document.getElementById("phase").textContent =
+          s.phase +
+          (s.question ? ` — Q${s.question.index + 1}/${s.question.total}` : "");
+        document.getElementById("question").textContent = s.question
+          ? s.question.prompt
+          : "";
+        document.getElementById("lb").innerHTML = s.leaderboard
+          .map((p) => `<li><span>${p.name}</span><b>${p.score}</b></li>`)
+          .join("");
+      }
+      let ws;
+      (async () => {
+        await api("create", ROOM);
+        const r = await api("state");
+        render(r.state);
+        ws = new WebSocket(
+          WORKER_URL.replace(/^http/, "ws") + `/?code=${CODE}`,
+        );
+        ws.onmessage = (e) => {
+          const m = JSON.parse(e.data);
+          if (m.type === "state") render(m.state);
+        };
+      })();
+      document.getElementById("startBtn").onclick = () => api("start");
+      document.getElementById("revealBtn").onclick = () => api("reveal");
+      document.getElementById("nextBtn").onclick = async () => {
+        const r = await api("next");
+        if (r.ended && r.results)
+          console.log(
+            "nt_result_v1 records to POST to progress endpoint:",
+            r.results,
+          );
+      };
+    </script>
+  </body>
+</html>
