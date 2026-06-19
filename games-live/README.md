@@ -4,11 +4,13 @@ Live, standards-aligned multiplayer math games (a Kahoot/Blooket-style host + jo
 flow) built on the **same spine** as the rest of the Math Brain: every live game emits
 `nt_result_v1` records, so live play feeds the mastery engine like any other activity.
 
-## Status: SCAFFOLDED, NOT DEPLOYED
+## Status: DEPLOYED (standalone Worker) — clients wired
 
-This is a **separate Cloudflare Worker** (Durable Objects), not the static Pages site.
-It is intentionally **not wired into any deploy config and not deployed**. The static
-site still deploys via push-to-main exactly as before — nothing here touches that.
+Live at **https://neft-live-rooms.neftjd.workers.dev** (separate Cloudflare Worker with
+Durable Objects, on neftjd@gmail.com's account). **Independent of the static Pages site** —
+own URL, no DNS, does not touch or race the push-to-main Pages deploy. Smoke-tested
+end-to-end (create → join → start → answer → ended emits `nt_result_v1`).
+Redeploy: `cd games-live && wrangler deploy`. Remove: `wrangler delete`.
 
 - `room-state.js` — pure game state machine (rooms, join, speed scoring, leaderboard,
   result emission). **Fully unit-tested** (`room-state.test.mjs`, runs in `npm test`).
@@ -16,7 +18,13 @@ site still deploys via push-to-main exactly as before — nothing here touches t
 - `wrangler.jsonc` — config for the standalone `neft-live-rooms` Worker.
 - `host.html` / `join.html` — minimal teacher host screen + student join client.
 
-## Before deploying (needs Joel's go-ahead)
+## Remaining wiring (optional)
+
+- POST `Room.toResults()` records to the `neft-results` endpoint so live play rolls into
+  roster mastery (gate 3 — endpoint not yet stood up).
+- Add a teacher entry point to `host.html` from the curriculum hub when ready.
+
+## Redeploy / review notes
 
 1. Review `worker.js` against the `durable-objects` and `workers-best-practices` skills
    (WebSocket hibernation, storage, error handling).
