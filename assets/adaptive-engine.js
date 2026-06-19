@@ -87,7 +87,10 @@
         window.NTtelemetry &&
         typeof window.NTtelemetry.track === "function"
       ) {
-        window.NTtelemetry.track(event);
+        // NTtelemetry.track(name, props): callers pass a single {event, ...}
+        // object, so split it into the event-name string + the object as props.
+        var name = event && typeof event === "object" ? event.event : event;
+        window.NTtelemetry.track(name, event);
       }
     } catch (e) {
       /* telemetry is best-effort only */

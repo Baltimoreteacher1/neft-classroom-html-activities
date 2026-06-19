@@ -113,7 +113,10 @@ async function storeTelemetry(env, body) {
         section,
         clamp(e && (e.type || e.event || e.kind), 40),
         clamp(JSON.stringify(e), 2000),
-        (e && typeof e.at === "string" && e.at.slice(0, 30)) || nowIso,
+        (e &&
+          typeof (e.at || e.ts) === "string" &&
+          (e.at || e.ts).slice(0, 30)) ||
+          nowIso,
       ),
     );
   await env.DB.batch(batch);
@@ -215,6 +218,71 @@ export async function onRequest(context) {
   // never errors or retries. Persist only when the binding exists. Must come
   // BEFORE the D1 guard below.
   if (seg === "telemetry") {
+    // GET = teacher mastery dashboard read. Gated by TEACHER_KEY and closed by
+    // default (student data must never be world-readable). Set TEACHER_KEY as a
+    // Pages env var to enable the dashboard at /teacher-tools/mastery/.
+    if (method === "GET") {
+      if (!env.TEACHER_KEY) {
+        return json(
+          {
+            ok: false,
+            error: "not-configured",
+            message:
+              "Set the TEACHER_KEY env var to enable the mastery dashboard.",
+          },
+          503,
+        );
+      }
+      const url = new URL(request.url);
+      const key =
+        url.searchParams.get("key") ||
+        request.headers.get("x-teacher-key") ||
+        "";
+      if (key !== env.TEACHER_KEY)
+        return json({ ok: false, error: "unauthorized" }, 401);
+      if (!env.DB)
+        return json({ ok: false, error: "backend-not-configured" }, 503);
+      try {
+        await ensureTelemetrySchema(env.DB);
+        const limit = Math.min(
+          Number(url.searchParams.get("limit")) || 2000,
+          5000,
+        );
+        const rows = await env.DB.prepare(
+          `SELECT lesson_slug, lesson_title, standard, student_name, section,
+                  event_type, payload_json, created_at
+             FROM lesson_telemetry ORDER BY id DESC LIMIT ?`,
+        )
+          .bind(limit)
+          .all();
+        const events = (rows.results || []).map((r) => {
+          let props = {};
+          try {
+            props = JSON.parse(r.payload_json || "{}");
+          } catch (e) {
+            props = {};
+          }
+          return {
+            lessonSlug: r.lesson_slug,
+            lessonTitle: r.lesson_title,
+            standard: r.standard,
+            studentName: r.student_name || "",
+            section: r.section || "",
+            type: r.event_type,
+            props,
+            at: r.created_at,
+          };
+        });
+        return json({ ok: true, count: events.length, events });
+      } catch (err) {
+        return json(
+          { ok: false, error: "server-error", message: String(err) },
+          500,
+        );
+      }
+    }
+    // POST = fire-and-forget ingest: accept (204) regardless of D1 so the client
+    // never errors or retries. Persist only when the binding exists.
     if (method !== "POST") {
       return new Response(null, { status: 204, headers: JSON_HEADERS });
     }
