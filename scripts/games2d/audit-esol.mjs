@@ -27,10 +27,17 @@ const GAME_PATH_RE =
 // Directory subtrees to walk (cheap pre-filter; final gate is GAME_PATH_RE).
 const ROOTS = ["math", "games"];
 
-// Match a real "esol" token but never the "resolv*" family. We strip every
-// occurrence of resolv-words first, then look for any remaining "esol".
-const RESOLVE_RE = /resolv\w*/gi;
+// Match a real "esol" token but never the "solv" word-family (solve, solvable,
+// resolve, and camelCase identifiers like "simulateSolve"/"verifySolvable"
+// whose lowercased form "...esolve" contains the substring "esol"). We strip
+// every word containing "solv" first, then look for any remaining "esol".
+const SOLVE_RE = /\w*solv\w*/gi;
 const ESOL_RE = /esol/i;
+
+// Code comments are never student-facing, so a comment that merely mentions the
+// word (e.g. a rule like 'never use the word "ESOL"') is not a labeling
+// offense. Skip pure-comment lines (JS //, JSDoc *, /* */, and HTML <!-- -->).
+const COMMENT_RE = /^\s*(\/\/|\*|\/\*|<!--)/;
 
 // Allowed exceptions: backward-compat localStorage keys (so existing student
 // saves still resume) are explicitly tagged and must not count as offenders.
@@ -66,7 +73,8 @@ for (const file of gameFiles) {
   const lines = text.split(/\r?\n/);
   lines.forEach((line, i) => {
     if (ALLOW_RE.test(line)) return;
-    const cleaned = line.replace(RESOLVE_RE, "");
+    if (COMMENT_RE.test(line)) return;
+    const cleaned = line.replace(SOLVE_RE, "");
     if (ESOL_RE.test(cleaned)) {
       offenders.push({ file: relative(ROOT, file), line: i + 1, text: line.trim().slice(0, 140) });
     }
