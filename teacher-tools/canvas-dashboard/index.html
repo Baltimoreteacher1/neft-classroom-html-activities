@@ -1,0 +1,724 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Canvas Dashboard · Neft Teacher</title>
+    <meta name="robots" content="noindex" />
+    <style>
+      :root {
+        --navy: #12355b;
+        --teal: #387f84;
+        --amber: #f2a93b;
+        --ink: #0f172a;
+        --muted: #64748b;
+        --line: #e2e8f0;
+        --bg: #f1f5f9;
+        --ok: #15803d;
+        --warn: #b54708;
+        --bad: #b91c1c;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: system-ui, "Segoe UI", sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.5;
+      }
+      header {
+        background: var(--navy);
+        color: #fff;
+        padding: 22px 24px;
+      }
+      header h1 {
+        margin: 0;
+        font-size: 22px;
+      }
+      header p {
+        margin: 6px 0 0;
+        opacity: 0.85;
+        font-size: 14px;
+      }
+      main {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 20px;
+        margin-bottom: 18px;
+      }
+      .card h2 {
+        margin: 0 0 10px;
+        font-size: 17px;
+      }
+      .hint {
+        color: var(--muted);
+        font-size: 14px;
+        margin: 4px 0 12px;
+      }
+      label {
+        font-size: 14px;
+        font-weight: 600;
+      }
+      input,
+      select {
+        font: 14px system-ui;
+        padding: 9px 11px;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+      }
+      input[type="text"],
+      input[type="password"] {
+        min-width: 240px;
+      }
+      button {
+        font: 700 15px system-ui;
+        border: 0;
+        border-radius: 10px;
+        padding: 11px 18px;
+        cursor: pointer;
+        background: var(--amber);
+        color: var(--navy);
+      }
+      button.ghost {
+        background: #e2e8f0;
+        color: var(--ink);
+        padding: 9px 14px;
+        font-size: 14px;
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+      .tab {
+        background: #e2e8f0;
+        color: var(--ink);
+        border-radius: 999px;
+        padding: 8px 16px;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 14px;
+      }
+      .tab.active {
+        background: var(--teal);
+        color: #fff;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        margin-top: 12px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 7px 9px;
+        border-bottom: 1px solid var(--line);
+        white-space: nowrap;
+      }
+      th {
+        color: var(--muted);
+        font-weight: 700;
+        position: sticky;
+        top: 0;
+        background: #fff;
+      }
+      .scroll {
+        overflow-x: auto;
+      }
+      .pill {
+        display: inline-block;
+        background: #ecfdf5;
+        color: var(--ok);
+        border: 1px solid #bbf7d0;
+        border-radius: 999px;
+        padding: 3px 10px;
+        font-size: 12px;
+        font-weight: 700;
+        margin: 2px 4px 2px 0;
+      }
+      .pill.warn {
+        background: #fffbeb;
+        color: var(--warn);
+        border-color: #fde68a;
+      }
+      .pill.bad {
+        background: #fef2f2;
+        color: var(--bad);
+        border-color: #fecaca;
+      }
+      .status {
+        font-size: 13px;
+        margin-top: 8px;
+      }
+      .cell-done {
+        color: var(--ok);
+        font-weight: 700;
+      }
+      .cell-low {
+        color: var(--bad);
+      }
+      .cell-none {
+        color: #cbd5e1;
+      }
+      .note {
+        background: #f8fafc;
+        border-left: 4px solid var(--teal);
+        padding: 10px 14px;
+        border-radius: 0 8px 8px 0;
+        font-size: 13px;
+        color: var(--muted);
+        margin: 0 0 16px;
+      }
+      code {
+        background: #f1f5f9;
+        padding: 1px 5px;
+        border-radius: 4px;
+      }
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Canvas Dashboard</h1>
+      <p>
+        See who finished each lesson and post grades to Canvas — without
+        collecting codes. Teacher-only.
+      </p>
+    </header>
+    <main>
+      <p class="note">
+        Lessons quietly report each student's score to your gradebook backend.
+        This dashboard reads those scores so you can grade an assignment in two
+        clicks, and watch class progress at a glance. Your admin key is stored
+        only in this browser.
+      </p>
+
+      <div class="card">
+        <h2>Connect</h2>
+        <div class="row">
+          <label
+            >Admin key
+            <input
+              id="adminKey"
+              type="password"
+              placeholder="paste your EduPulse admin key"
+            />
+          </label>
+          <button id="loadBtn">Load gradebook</button>
+          <button id="forgetBtn" class="ghost">Forget key</button>
+        </div>
+        <div id="connStatus" class="status hint"></div>
+        <div id="rosterStatus" class="status hint"></div>
+        <details style="margin-top: 10px">
+          <summary class="hint" style="cursor: pointer">
+            No roster saved? Click to add one (once)
+          </summary>
+          <p class="hint">
+            Export your Canvas gradebook (Grades → Export) and drop it here. It
+            saves your class roster for name-matching (shared with the Grade
+            Bridge tool).
+          </p>
+          <input id="csvFile" type="file" accept=".csv,text/csv" />
+        </details>
+      </div>
+
+      <div id="workspace" class="hidden">
+        <div class="tabs">
+          <div class="tab active" data-tab="grade">Grade an assignment</div>
+          <div class="tab" data-tab="progress">Class progress</div>
+        </div>
+
+        <section id="tab-grade" class="card">
+          <h2>Grade an assignment</h2>
+          <div class="row">
+            <label
+              >Lesson
+              <select id="lessonSel"></select>
+            </label>
+            <label
+              >Class period
+              <select id="periodSel">
+                <option value="">All</option>
+              </select>
+            </label>
+            <label
+              >Canvas assignment name
+              <input id="asgName" type="text" placeholder="exact Canvas name" />
+            </label>
+            <label
+              >Points
+              <input
+                id="asgPts"
+                type="number"
+                value="100"
+                min="1"
+                style="width: 90px"
+            /></label>
+            <button id="gradeBtn">Match &amp; preview</button>
+          </div>
+          <div id="gradeReport"></div>
+          <div id="gradeDl" class="hidden" style="margin-top: 14px">
+            <button id="dlBtn">⬇ Download Canvas CSV</button>
+          </div>
+        </section>
+
+        <section id="tab-progress" class="card hidden">
+          <h2>Class progress</h2>
+          <div class="row">
+            <label
+              >Class period
+              <select id="progPeriod">
+                <option value="">All</option>
+              </select>
+            </label>
+            <button id="progBtn" class="ghost">Refresh</button>
+          </div>
+          <div id="progSummary"></div>
+          <div class="scroll"><div id="progGrid"></div></div>
+        </section>
+      </div>
+    </main>
+
+    <script src="/assets/edupulse-config.js"></script>
+    <script src="/assets/canvas-code-codec.js"></script>
+    <script src="/assets/canvas-grade-core.js"></script>
+    <script>
+      (function () {
+        "use strict";
+        var $ = function (id) {
+          return document.getElementById(id);
+        };
+        var C = window.NeftGradeCore;
+        var ADMIN_KEY = "edupulse_admin_key";
+        var apiBase = ((window.EDUPULSE_CONFIG || {}).apiBase || "").replace(
+          /\/$/,
+          "",
+        );
+        var roster = C.loadRoster();
+        var events = []; // normalized score events
+        var built = null;
+        var esc = function (s) {
+          return String(s).replace(/[<>&]/g, function (c) {
+            return { "<": "&lt;", ">": "&gt;", "&": "&amp;" }[c];
+          });
+        };
+
+        try {
+          $("adminKey").value = localStorage.getItem(ADMIN_KEY) || "";
+        } catch (e) {}
+        showRoster();
+
+        function showRoster() {
+          roster = C.loadRoster();
+          $("rosterStatus").innerHTML = roster.length
+            ? "Roster: <strong>" + roster.length + "</strong> students saved."
+            : "Roster: none yet — add one below so names match Canvas.";
+        }
+
+        /* ---------- normalize a raw event from the API into a stable shape ---------- */
+        function normalizeEvent(e) {
+          e = e || {};
+          var score = num(e.score != null ? e.score : e.problemsCorrect);
+          var max = num(e.maxScore != null ? e.maxScore : e.problemsAttempted);
+          var pct =
+            e.percent != null
+              ? num(e.percent)
+              : max
+                ? Math.round((score / max) * 100)
+                : null;
+          return {
+            name: e.studentName || e.student_name || e.studentId || "",
+            period: e.classPeriod || e.class_period || "",
+            activityId: e.activityId || e.activity_id || "",
+            title:
+              e.activityTitle || e.activity_title || e.activityId || "Lesson",
+            score: score,
+            max: max,
+            percent: pct,
+            ts: e.timestamp || e.created_at || "",
+          };
+        }
+        function num(v) {
+          if (v == null || v === "") return null;
+          var n = Number(v);
+          return isFinite(n) ? n : null;
+        }
+
+        function pickArray(data) {
+          if (Array.isArray(data)) return data;
+          return (
+            data.events ||
+            data.scores ||
+            data.rows ||
+            data.data ||
+            data.results ||
+            []
+          );
+        }
+
+        /* ---------- load from API ---------- */
+        function load() {
+          var key = $("adminKey").value.trim();
+          if (!apiBase) {
+            conn("No API base configured (edupulse-config.js).", "bad");
+            return;
+          }
+          if (!key) {
+            conn("Enter your admin key first.", "warn");
+            return;
+          }
+          try {
+            localStorage.setItem(ADMIN_KEY, key);
+          } catch (e) {}
+          conn("Loading…", "");
+          fetch(apiBase + "/api/scores", { headers: { "x-admin-key": key } })
+            .then(function (r) {
+              if (r.status === 401)
+                throw new Error("Admin key rejected (401). Check the key.");
+              if (!r.ok) throw new Error("Server " + r.status);
+              return r.json();
+            })
+            .then(function (data) {
+              events = pickArray(data)
+                .map(normalizeEvent)
+                .filter(function (e) {
+                  return e.name && e.activityId;
+                });
+              if (!events.length) {
+                conn("Connected, but no scores recorded yet.", "warn");
+                return;
+              }
+              conn("Loaded " + events.length + " score events. ✓", "ok");
+              buildLessonOptions();
+              buildPeriodOptions();
+              $("workspace").classList.remove("hidden");
+              renderProgress();
+            })
+            .catch(function (err) {
+              conn(String(err.message || err), "bad");
+            });
+        }
+        function conn(msg, kind) {
+          var color =
+            kind === "ok"
+              ? "var(--ok)"
+              : kind === "bad"
+                ? "var(--bad)"
+                : kind === "warn"
+                  ? "var(--warn)"
+                  : "var(--muted)";
+          $("connStatus").innerHTML =
+            '<span style="color:' + color + '">' + esc(msg) + "</span>";
+        }
+
+        /* ---------- best score per (student, activity) ---------- */
+        function bestByStudent(activityId, period) {
+          var best = {};
+          events.forEach(function (e) {
+            if (activityId && e.activityId !== activityId) return;
+            if (period && e.period !== period) return;
+            var k = C.norm(e.name);
+            if (!best[k] || (e.percent || 0) > (best[k].percent || 0))
+              best[k] = e;
+          });
+          return best;
+        }
+
+        function buildLessonOptions() {
+          var byId = {};
+          events.forEach(function (e) {
+            if (!byId[e.activityId]) byId[e.activityId] = e.title;
+          });
+          var sel = $("lessonSel");
+          sel.innerHTML = "";
+          Object.keys(byId)
+            .sort()
+            .forEach(function (id) {
+              var o = document.createElement("option");
+              o.value = id;
+              o.textContent = byId[id] + " (" + id + ")";
+              sel.append(o);
+            });
+          syncAsgName();
+        }
+        function buildPeriodOptions() {
+          var set = {};
+          events.forEach(function (e) {
+            if (e.period) set[e.period] = 1;
+          });
+          [["periodSel"], ["progPeriod"]].forEach(function (p) {
+            var sel = $(p[0]);
+            var cur = sel.value;
+            sel.innerHTML = '<option value="">All</option>';
+            Object.keys(set)
+              .sort()
+              .forEach(function (per) {
+                var o = document.createElement("option");
+                o.value = per;
+                o.textContent = per;
+                sel.append(o);
+              });
+            sel.value = cur;
+          });
+        }
+        function syncAsgName() {
+          var sel = $("lessonSel");
+          var label = sel.options[sel.selectedIndex]
+            ? sel.options[sel.selectedIndex].textContent.replace(
+                /\s*\([^)]*\)\s*$/,
+                "",
+              )
+            : "";
+          if (!$("asgName").value) $("asgName").value = label;
+        }
+
+        /* ---------- grade an assignment (no codes) ---------- */
+        function gradeAssignment() {
+          if (!roster.length) {
+            $("gradeReport").innerHTML =
+              '<p class="hint t-warn">Add a class roster first (Connect card).</p>';
+            return;
+          }
+          var activityId = $("lessonSel").value;
+          var period = $("periodSel").value;
+          var pp = Number($("asgPts").value) || null;
+          var name =
+            $("asgName").value.trim() ||
+            $("lessonSel").options[$("lessonSel").selectedIndex].textContent;
+          var best = bestByStudent(activityId, period);
+          var entries = Object.keys(best).map(function (k) {
+            var e = best[k];
+            return {
+              name: e.name,
+              percent: e.percent,
+              score: e.score,
+              max: e.max,
+            };
+          });
+          var res = C.applyScores(roster, entries, pp);
+          built = { out: C.buildImportCsv(roster, name, pp, res.gradeByIndex) };
+          renderGradeReport(res, name, pp);
+          $("gradeDl").classList.toggle("hidden", !res.matched.length);
+        }
+        function renderGradeReport(d, name, pp) {
+          var html =
+            '<div class="row" style="margin-top:14px;">' +
+            '<span class="pill">' +
+            d.matched.length +
+            " matched</span>" +
+            (d.unmatched.length
+              ? '<span class="pill warn">' +
+                d.unmatched.length +
+                " unmatched name</span>"
+              : "") +
+            (d.missing.length
+              ? '<span class="pill warn">' +
+                d.missing.length +
+                " no submission</span>"
+              : "") +
+            "</div>";
+          html +=
+            '<p class="hint">Column <code>' +
+            esc(name) +
+            "</code>, scaled to <strong>" +
+            (pp || "raw") +
+            "</strong> pts.</p>";
+          if (d.matched.length) {
+            html +=
+              "<table><thead><tr><th>Student</th><th>Lesson score</th><th>Canvas grade</th></tr></thead><tbody>";
+            d.matched.forEach(function (m) {
+              html +=
+                "<tr><td>" +
+                esc(m.name) +
+                "</td><td>" +
+                esc(m.code) +
+                '</td><td class="cell-done">' +
+                m.grade +
+                "</td></tr>";
+            });
+            html += "</tbody></table>";
+          }
+          if (d.unmatched.length) {
+            html +=
+              '<p class="hint t-warn" style="margin-top:12px;"><strong>Unmatched names (fix spelling or grade manually):</strong></p>';
+            html += d.unmatched
+              .map(function (u) {
+                return (
+                  '<span class="pill warn">' +
+                  esc(u.name) +
+                  " · " +
+                  esc(u.code) +
+                  "</span>"
+                );
+              })
+              .join(" ");
+          }
+          if (d.missing.length) {
+            html +=
+              '<p class="hint" style="margin-top:12px;color:var(--warn)"><strong>No submission yet:</strong> ' +
+              d.missing.map(esc).join(", ") +
+              "</p>";
+          }
+          $("gradeReport").innerHTML = html;
+        }
+
+        /* ---------- class progress matrix ---------- */
+        function renderProgress() {
+          var period = $("progPeriod").value;
+          var lessons = {};
+          events.forEach(function (e) {
+            if (!period || e.period === period) lessons[e.activityId] = e.title;
+          });
+          var ids = Object.keys(lessons).sort();
+          // best % per student per lesson
+          var byStu = {};
+          events.forEach(function (e) {
+            if (period && e.period !== period) return;
+            byStu[e.name] = byStu[e.name] || {};
+            var cur = byStu[e.name][e.activityId];
+            if (cur == null || (e.percent || 0) > cur)
+              byStu[e.name][e.activityId] = e.percent || 0;
+          });
+          var names = Object.keys(byStu).sort();
+          // summary
+          var totalCells = names.length * ids.length;
+          var done = 0,
+            sumPct = 0,
+            cnt = 0;
+          names.forEach(function (n) {
+            ids.forEach(function (id) {
+              var v = byStu[n][id];
+              if (v != null) {
+                done++;
+                sumPct += v;
+                cnt++;
+              }
+            });
+          });
+          $("progSummary").innerHTML =
+            '<div class="row" style="margin:8px 0;">' +
+            '<span class="pill">' +
+            names.length +
+            " students</span>" +
+            '<span class="pill">' +
+            ids.length +
+            " lessons attempted</span>" +
+            '<span class="pill">' +
+            (totalCells ? Math.round((done / totalCells) * 100) : 0) +
+            "% completion</span>" +
+            '<span class="pill">avg ' +
+            (cnt ? Math.round(sumPct / cnt) : 0) +
+            "%</span>" +
+            "</div>";
+          if (!names.length) {
+            $("progGrid").innerHTML =
+              '<p class="hint">No data for this period.</p>';
+            return;
+          }
+          var html = "<table><thead><tr><th>Student</th>";
+          ids.forEach(function (id) {
+            html += "<th title='" + esc(lessons[id]) + "'>" + esc(id) + "</th>";
+          });
+          html += "<th>Done</th></tr></thead><tbody>";
+          names.forEach(function (n) {
+            var rowDone = 0;
+            var cells = ids
+              .map(function (id) {
+                var v = byStu[n][id];
+                if (v == null) return '<td class="cell-none">·</td>';
+                rowDone++;
+                var cls = v >= 70 ? "cell-done" : "cell-low";
+                return '<td class="' + cls + '">' + v + "</td>";
+              })
+              .join("");
+            html +=
+              "<tr><td>" +
+              esc(n) +
+              "</td>" +
+              cells +
+              "<td><strong>" +
+              rowDone +
+              "/" +
+              ids.length +
+              "</strong></td></tr>";
+          });
+          html += "</tbody></table>";
+          $("progGrid").innerHTML = html;
+        }
+
+        /* ---------- wiring ---------- */
+        $("loadBtn").addEventListener("click", load);
+        $("forgetBtn").addEventListener("click", function () {
+          try {
+            localStorage.removeItem(ADMIN_KEY);
+          } catch (e) {}
+          $("adminKey").value = "";
+          conn("Key forgotten.", "warn");
+        });
+        $("lessonSel").addEventListener("change", function () {
+          $("asgName").value = "";
+          syncAsgName();
+        });
+        $("gradeBtn").addEventListener("click", gradeAssignment);
+        $("progBtn").addEventListener("click", renderProgress);
+        $("progPeriod").addEventListener("change", renderProgress);
+        $("dlBtn").addEventListener("click", function () {
+          if (!built) return;
+          var blob = new Blob([C.serializeCSV(built.out)], {
+            type: "text/csv",
+          });
+          var a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = "canvas-grades-import.csv";
+          a.click();
+          setTimeout(function () {
+            URL.revokeObjectURL(a.href);
+          }, 2000);
+        });
+        $("csvFile").addEventListener("change", function (e) {
+          var f = e.target.files[0];
+          if (!f) return;
+          var rd = new FileReader();
+          rd.onload = function () {
+            var read = C.readCanvasGrid(C.parseCSV(String(rd.result)));
+            C.saveRoster(read.roster);
+            showRoster();
+          };
+          rd.readAsText(f);
+        });
+        document.querySelectorAll(".tab").forEach(function (t) {
+          t.addEventListener("click", function () {
+            document.querySelectorAll(".tab").forEach(function (x) {
+              x.classList.remove("active");
+            });
+            t.classList.add("active");
+            var which = t.getAttribute("data-tab");
+            $("tab-grade").classList.toggle("hidden", which !== "grade");
+            $("tab-progress").classList.toggle("hidden", which !== "progress");
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>
