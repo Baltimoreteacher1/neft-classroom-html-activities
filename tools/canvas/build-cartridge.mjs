@@ -9,9 +9,18 @@
  *   UNPUBLISHED so you can review before publishing. No admin needed.
  *
  * Usage:
- *   node tools/canvas/build-cartridge.mjs            # all 74 lessons
- *   node tools/canvas/build-cartridge.mjs 1          # just Unit 1 (good first test)
+ *   node tools/canvas/build-cartridge.mjs                 # all lessons, link mode
+ *   node tools/canvas/build-cartridge.mjs 1               # just Unit 1 (good first test)
+ *   node tools/canvas/build-cartridge.mjs --mode=iframe   # embed lesson in the page
  *   npm run cartridge -- 1
+ *   npm run cartridge -- --mode=link    (default)  |  --mode=iframe
+ *
+ * Modes:
+ *   link   (default) — the assignment body is clear 6-step instructions + a big
+ *                      link to the live lesson. Most robust; works everywhere.
+ *   iframe           — same instructions, but the lesson is also embedded in an
+ *                      <iframe> right in the assignment (with the link as a
+ *                      fallback if the frame is blocked).
  *
  * Env: NEFT_SITE overrides base site (default https://eduwonderlab.com).
  * Output: canvas-packages/neft-lessons[-unitN].imscc
@@ -24,7 +33,11 @@ import { fileURLToPath } from "url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, "../..");
 const SITE = (process.env.NEFT_SITE || "https://eduwonderlab.com").replace(/\/$/, "");
-const unitFilter = process.argv[2] ? Number(process.argv[2]) : null;
+const args = process.argv.slice(2);
+const modeArg = (args.find((a) => a.startsWith("--mode=")) || "--mode=link").split("=")[1];
+const MODE = modeArg === "iframe" ? "iframe" : "link";
+const unitNumArg = args.find((a) => /^\d+$/.test(a));
+const unitFilter = unitNumArg ? Number(unitNumArg) : null;
 
 const xml = (s) =>
   String(s == null ? "" : s).replace(/[<>&'"]/g, (c) => ({
@@ -45,15 +58,34 @@ const stage = resolve(repoRoot, "canvas-packages", "_stage");
 rmSync(stage, { recursive: true, force: true });
 mkdirSync(resolve(stage, "course_settings"), { recursive: true });
 
-const assignmentHtml = (l, url) => `<!DOCTYPE html>
+const steps = `<ol style="font-size:15px;line-height:1.7;">
+  <li><strong>Click the lesson link</strong> below to open the lesson.</li>
+  <li><strong>Complete the lesson.</strong></li>
+  <li>When you finish, a <strong>code pops up</strong> — it is <strong>copied automatically</strong>.</li>
+  <li><strong>Return to Canvas</strong> (this page).</li>
+  <li><strong>Paste the code</strong> in the text box below.</li>
+  <li>Click <strong>Submit Assignment</strong>.</li>
+</ol>`;
+
+const linkBtn = (url, title) =>
+  `<p style="margin:14px 0;"><a href="${xml(url)}" target="_blank" rel="noopener" style="display:inline-block;background:#12355b;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:bold;">▶ Start the lesson: ${xml(title)}</a></p>`;
+
+const assignmentHtml = (l, url) => {
+  const frame =
+    MODE === "iframe"
+      ? `<p style="font-size:14px;color:#475569;">If the lesson does not load below, use the button above — it opens in a new tab.</p>
+<iframe src="${xml(url)}" title="${xml(l.title)}" style="width:100%;height:640px;border:1px solid #cbd5e1;border-radius:10px;" allowfullscreen></iframe>`
+      : "";
+  return `<!DOCTYPE html>
 <html><head><meta charset="utf-8"><title>${xml(l.title)}</title></head><body>
 <h2>${xml(`Unit ${l.unit} Lesson ${l.lesson}: ${l.title}`)}</h2>
-<p>Click the link below to do the lesson. When you finish, a code will pop up
-(already copied). Come back here, <strong>paste the code in the box, and click
-Submit</strong>.</p>
-<p><a href="${xml(url)}" target="_blank" rel="noopener">▶ Start the lesson: ${xml(l.title)}</a></p>
-<p style="color:#475569;font-size:14px;">Tip: enter your name exactly as it is in Canvas when the lesson asks.</p>
+<p><strong>How to turn this in:</strong></p>
+${steps}
+${linkBtn(url, l.title)}
+${frame}
+<p style="color:#475569;font-size:14px;">Tip: type your name exactly as it appears in Canvas when the lesson asks for it.</p>
 </body></html>`;
+};
 
 const settingsXml = (l, ident, pos) => `<?xml version="1.0" encoding="UTF-8"?>
 <assignment identifier="${ident}" xmlns="http://canvas.instructure.com/xsd/cccv1p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://canvas.instructure.com/xsd/cccv1p0 https://canvas.instructure.com/xsd/cccv1p0.xsd">
@@ -137,6 +169,6 @@ execSync(`cd "${stage}" && zip -r -q -X "${outFile}" . -x ".*"`);
 rmSync(stage, { recursive: true, force: true });
 
 console.log(`✓ Common Cartridge built: ${outFile}`);
-console.log(`  ${lessons.length} assignment(s)${unitFilter ? ` (Unit ${unitFilter})` : ""}, all UNPUBLISHED.`);
+console.log(`  ${lessons.length} assignment(s)${unitFilter ? ` (Unit ${unitFilter})` : ""}, mode=${MODE}, all UNPUBLISHED.`);
 console.log(`\nImport: Canvas → Course → Settings → Import Course Content →`);
 console.log(`  "Common Cartridge 1.x Package" → upload this file → Import.`);

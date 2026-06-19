@@ -53,6 +53,26 @@ if (!lessons.length) {
   process.exit(1);
 }
 
+/* ---- tallies for the post-build summary ---- */
+const tally = { mc: 0, match: 0, skipped: {}, capped: 0 };
+// Question-ish component types we deliberately do NOT convert to QTI (no safe,
+// reliable auto-graded representation). Counted so the teacher knows what the
+// quiz omits rather than silently dropping it.
+const UNSUPPORTED_TYPES = new Set([
+  "drag-sort",
+  "drag-and-drop",
+  "sequence",
+  "ordering",
+  "sorting",
+  "error-analysis",
+  "fill-blank",
+  "fill-in-the-blank",
+  "short-answer",
+  "open-response",
+  "number-line",
+  "graphing",
+]);
+
 /* ---- pull gradeable questions (multiple-choice + matching) from a config ---- */
 function extractQuestions(id) {
   const p = resolve(repoRoot, "lessons", id, "config.json");
@@ -71,12 +91,18 @@ function extractQuestions(id) {
         mc.push({ kind: "mc", stem: o.stem || o.question || "", choices: o.choices.map(String), correct: o.correctIndex, explanation: o.explanation || "" });
       } else if (o.type === "matching-game" && Array.isArray(o.pairs) && o.pairs.length >= 2 && o.pairs.every((x) => x && x.term != null && x.match != null)) {
         match.push({ kind: "match", prompt: o.label || "Match each item to its answer.", pairs: o.pairs.slice(0, 6).map((x) => ({ term: String(x.term), match: String(x.match) })) });
+      } else if (o && typeof o.type === "string" && UNSUPPORTED_TYPES.has(o.type)) {
+        tally.skipped[o.type] = (tally.skipped[o.type] || 0) + 1;
       }
       for (const k in o) walk(o[k]);
     }
   })(cfg);
   // MC first (most reliable), then matching, capped per quiz.
-  return mc.concat(match).slice(0, QUIZ_MAX);
+  const all = mc.concat(match);
+  const kept = all.slice(0, QUIZ_MAX);
+  tally.capped += all.length - kept.length;
+  for (const q of kept) tally[q.kind === "match" ? "match" : "mc"]++;
+  return kept;
 }
 
 /* ---- QTI 1.2 items ---- */
@@ -320,6 +346,29 @@ ${resources.join("\n")}
 </manifest>`;
 writeFileSync(resolve(stage, "imsmanifest.xml"), manifestXml);
 
+/* ---- guard: validate answer keys in the staged package BEFORE shipping ----
+ * A silent off-by-one would grade every student wrong. validate-course.mjs
+ * re-derives keys from source, so a passing run means the package is safe. If
+ * it fails we abort (leaving the stage for inspection) rather than ship.       */
+const validator = resolve(__dirname, "validate-course.mjs");
+let validated = false;
+if (quizzesMade > 0 && existsSync(validator)) {
+  try {
+    execSync(`node ${JSON.stringify(validator)} ${JSON.stringify(stage)}`, {
+      stdio: "inherit",
+      env: { ...process.env, QUIZ_MAX: String(QUIZ_MAX) },
+    });
+    validated = true;
+  } catch (e) {
+    console.error(
+      `\n✗ ABORTED: answer-key validation failed for the staged package.\n` +
+        `  The package was NOT written. Inspect: ${stage}\n` +
+        `  Fix the failing lesson config(s), then rebuild.`,
+    );
+    process.exit(1);
+  }
+}
+
 const base = QUIZ_ONLY ? "neft-quizzes" : "neft-course";
 const ext = QUIZ_ONLY ? "zip" : "imscc";
 const outName = unitFilter ? `${base}-unit${unitFilter}.${ext}` : `${base}.${ext}`;
@@ -328,12 +377,24 @@ rmSync(outFile, { force: true });
 execSync(`cd "${stage}" && zip -r -q -X "${outFile}" . -x ".*"`);
 rmSync(stage, { recursive: true, force: true });
 
-console.log(`✓ ${QUIZ_ONLY ? "QTI quiz package" : "Canvas course package"}: ${outFile}`);
-console.log(`  ${pagesMade} lesson pages, ${quizzesMade} auto-graded quizzes, ${unitNums.length} unit(s).`);
+const totalQs = tally.mc + tally.match;
+const skippedTypes = Object.entries(tally.skipped);
+console.log(`\n✓ ${QUIZ_ONLY ? "QTI quiz package" : "Canvas course package"}: ${outFile}`);
+console.log(`  Quizzes:        ${quizzesMade} auto-graded   (across ${unitNums.length} unit(s))`);
+if (!QUIZ_ONLY) console.log(`  Lesson pages:   ${pagesMade}`);
+console.log(`  Questions:      ${totalQs} total  →  ${tally.mc} multiple-choice, ${tally.match} matching`);
+if (tally.capped > 0)
+  console.log(`  Capped:         ${tally.capped} extra question(s) dropped (QUIZ_MAX=${QUIZ_MAX}/quiz)`);
+if (skippedTypes.length)
+  console.log(
+    `  Skipped types:  ${skippedTypes.map(([t, n]) => `${t}×${n}`).join(", ")} (not auto-gradeable in Canvas QTI)`,
+  );
+else console.log(`  Skipped types:  none`);
+console.log(`  Answer keys:    ${validated ? "VALIDATED ✓ (every key matches source)" : "not validated"}`);
 if (QUIZ_ONLY) {
-  console.log(`\nImport: Canvas → Settings → Import Course Content → "QTI .zip file" → upload.`);
-  console.log(`Creates auto-graded quizzes directly (most reliable quiz path). Imports unpublished.`);
+  console.log(`\nImport: Canvas → Settings → Import Course Content → "QTI .zip file" → upload → Import.`);
+  console.log(`Creates auto-graded quizzes directly (most reliable quiz path). Imports UNPUBLISHED.`);
 } else {
-  console.log(`\nImport: Canvas → Settings → Import Course Content → "Common Cartridge 1.x Package".`);
+  console.log(`\nImport: Canvas → Settings → Import Course Content → "Common Cartridge 1.x Package" → upload → Import.`);
   console.log(`Everything imports UNPUBLISHED. Quizzes grade themselves into the gradebook.`);
 }
