@@ -172,6 +172,25 @@ export const GAMES_2D = {
       2: { label: "Level 2", sub: "Challenge", desc: "Two-step equations · less help · 3 lives" },
     },
   },
+
+  // ── Unit Rate Factory (math/unit-4/6-rp-a-2game) — conveyor sort ──────
+  "6-rp-a-2game": {
+    ccss: "6.RP.A.2",
+    title: "Unit Rate Factory",
+    vocab: [
+      { term: "rate", defn: "A comparison of two amounts with different units, like $6 for 3 pounds.", img: "" },
+      { term: "unit rate", defn: "The price (or amount) for ONE: divide to get it. $6 for 3 = $2 each.", img: "" },
+      { term: "per", defn: "The word that signals a unit rate: miles per hour, dollars per item.", img: "" },
+    ],
+    misconceptions: [
+      { tag: "did-not-divide", trigger: "Uses the total price instead of the unit rate.", feedback: "Unit rate means PER ONE — divide the price by the quantity." },
+      { tag: "divided-backward", trigger: "Divides quantity by price instead of price by quantity.", feedback: "For price per item, divide DOLLARS ÷ ITEMS, not items ÷ dollars." },
+    ],
+    tiers: {
+      1: { label: "Level 1", sub: "Support", desc: "Whole-number unit rates · the division is shown · 5 lives" },
+      2: { label: "Level 2", sub: "Challenge", desc: "Bigger numbers · figure the rate yourself · 3 lives" },
+    },
+  },
 };
 
 export default GAMES_2D;
