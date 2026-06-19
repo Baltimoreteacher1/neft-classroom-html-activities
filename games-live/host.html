@@ -88,10 +88,29 @@
         "6.G.A.1",
         "6.EE.B.7",
       ];
+      // Room code: 5 random base-36 chars (~60M combos) to avoid collisions.
+      function randomCode() {
+        const a = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; // no ambiguous 0/O/1/I/L
+        let c = "";
+        const r = crypto.getRandomValues(new Uint32Array(5));
+        for (let i = 0; i < 5; i++) c += a[r[i] % a.length];
+        return c;
+      }
       const CODE = (
-        new URLSearchParams(location.search).get("code") ||
-        "MATH" + Math.floor(Math.random() * 90 + 10)
+        new URLSearchParams(location.search).get("code") || randomCode()
       ).toUpperCase();
+      // Escape any server-echoed, player-controlled text before inserting as HTML.
+      function esc(s) {
+        return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+          return {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;",
+          }[c];
+        });
+      }
       const sel = document.getElementById("standard");
       STANDARDS.forEach((s) => {
         const o = document.createElement("option");
@@ -117,7 +136,10 @@
         if (s.phase !== "reveal")
           document.getElementById("reveal").textContent = "";
         document.getElementById("lb").innerHTML = s.leaderboard
-          .map((p) => `<li><span>${p.name}</span><b>${p.score}</b></li>`)
+          .map(
+            (p) =>
+              `<li><span>${esc(p.name)}</span><b>${Number(p.score) || 0}</b></li>`,
+          )
           .join("");
       }
 
