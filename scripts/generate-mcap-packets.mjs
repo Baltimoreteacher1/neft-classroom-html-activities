@@ -403,6 +403,45 @@ function skillBody(skill, { includeWorkLines = true } = {}) {
   out.push(sectionHeading("What You Need to Know", NAVY));
   skill.needToKnow.forEach((b) => out.push(bullet(b)));
 
+  // Differentiation tiers (rendered only when authored). Level 1 = support
+  // (sentence frames), Level 2 = enrichment (extension tasks). Never "ESOL".
+  if (skill.tiers && skill.tiers.L1 && Array.isArray(skill.tiers.L1.frames) && skill.tiers.L1.frames.length) {
+    out.push(
+      calloutBox(
+        [
+          new Paragraph({
+            spacing: { after: 30 },
+            children: [
+              new TextRun({ text: "Level 1 — Support", bold: true, color: PURPLE, size: 20, font: "Calibri" }),
+              new TextRun({ text: "   Sentence frames to help you start", italics: true, color: MUTED, size: 18, font: "Calibri" }),
+            ],
+          }),
+          ...skill.tiers.L1.frames.map((f) => bullet(f)),
+        ],
+        { fill: PURPLE_BG, border: PURPLE },
+      ),
+    );
+    out.push(spacer());
+  }
+  if (skill.tiers && skill.tiers.L2 && Array.isArray(skill.tiers.L2.extend) && skill.tiers.L2.extend.length) {
+    out.push(
+      calloutBox(
+        [
+          new Paragraph({
+            spacing: { after: 30 },
+            children: [
+              new TextRun({ text: "Level 2 — Enrichment", bold: true, color: AMBER, size: 20, font: "Calibri" }),
+              new TextRun({ text: "   Stretch your thinking", italics: true, color: MUTED, size: 18, font: "Calibri" }),
+            ],
+          }),
+          ...skill.tiers.L2.extend.map((f) => bullet(f)),
+        ],
+        { fill: AMBER_BG, border: AMBER },
+      ),
+    );
+    out.push(spacer());
+  }
+
   // Worked example — I Do
   out.push(cueHeading("Worked Example", "I Do — watch how it works", TEAL));
   out.push(
@@ -615,7 +654,7 @@ function answerKey(skills, label) {
         ],
       }),
     );
-    skill.mcapItems.forEach((it, i) =>
+    skill.mcapItems.forEach((it, i) => {
       out.push(
         new Paragraph({
           spacing: { after: 20 },
@@ -638,8 +677,30 @@ function answerKey(skills, label) {
             new TextRun({ text: `  — ${it.why}`, size: 19, color: MUTED, font: "Calibri" }),
           ],
         }),
-      ),
-    );
+      );
+      // Per-distractor misconception coaching (teacher key only).
+      if (it.type === "multiple-choice" && Array.isArray(it.rationales)) {
+        it.rationales.forEach((r, ci) => {
+          if (!r) return;
+          out.push(
+            new Paragraph({
+              spacing: { after: 12 },
+              indent: { left: 460 },
+              children: [
+                new TextRun({
+                  text: `If a student picks ${choiceLetter(ci)}: `,
+                  bold: true,
+                  size: 17,
+                  color: AMBER,
+                  font: "Calibri",
+                }),
+                new TextRun({ text: r, size: 17, color: MUTED, font: "Calibri" }),
+              ],
+            }),
+          );
+        });
+      }
+    });
     out.push(
       new Paragraph({
         spacing: { before: 50, after: 30 },
@@ -732,6 +793,21 @@ function htmlPacket(skill) {
     )
     .join("");
   const ntk = skill.needToKnow.map((b) => `<li>${esc(b)}</li>`).join("");
+  const tierBlocks = (() => {
+    if (!skill.tiers) return "";
+    let html = "";
+    const l1 = skill.tiers.L1 && Array.isArray(skill.tiers.L1.frames) ? skill.tiers.L1.frames : [];
+    const l2 = skill.tiers.L2 && Array.isArray(skill.tiers.L2.extend) ? skill.tiers.L2.extend : [];
+    if (l1.length)
+      html += `<div class="tier tier1"><b>Level 1 — Support</b><span class="tiernote">Sentence frames to help you start</span><ul>${l1
+        .map((f) => `<li>${esc(f)}</li>`)
+        .join("")}</ul></div>`;
+    if (l2.length)
+      html += `<div class="tier tier2"><b>Level 2 — Enrichment</b><span class="tiernote">Stretch your thinking</span><ul>${l2
+        .map((f) => `<li>${esc(f)}</li>`)
+        .join("")}</ul></div>`;
+    return html ? `<div class="tiers">${html}</div>` : "";
+  })();
   const steps = skill.workedExample.steps
     .map((s, i) => `<li><b>Step ${i + 1}.</b> ${esc(s)}</li>`)
     .join("");
@@ -763,10 +839,17 @@ function htmlPacket(skill) {
     ...skill.independent.map(
       (p, i) => `<tr><td>Independent ${i + 1}</td><td>${esc(p.answer)}</td></tr>`,
     ),
-    ...skill.mcapItems.map(
-      (it, i) =>
-        `<tr><td>Item ${i + 1} · ${esc(skill.code)}</td><td><b>${esc(it.answer)}</b> — ${esc(it.why)}</td></tr>`,
-    ),
+    ...skill.mcapItems.map((it, i) => {
+      let cell = `<b>${esc(it.answer)}</b> — ${esc(it.why)}`;
+      if (it.type === "multiple-choice" && Array.isArray(it.rationales)) {
+        const distractors = it.rationales
+          .map((r, ci) => (r ? `<li><b>${choiceLetter(ci)}:</b> ${esc(r)}</li>` : ""))
+          .join("");
+        if (distractors)
+          cell += `<ul class="distractors">${distractors}</ul>`;
+      }
+      return `<tr><td>Item ${i + 1} · ${esc(skill.code)}</td><td>${cell}</td></tr>`;
+    }),
   ].join("");
 
   return `<!DOCTYPE html>
@@ -807,6 +890,15 @@ function htmlPacket(skill) {
   .vcard strong{display:block;color:var(--navy)}
   .vcard span{font-size:.92rem}
   ul.ntk li{margin:7px 0}
+  .tiers{display:grid;gap:12px;margin:14px 0}
+  .tier{border-radius:6px;padding:12px 16px}
+  .tier b{display:block;color:var(--navy)}
+  .tier .tiernote{font-size:.85rem;color:var(--muted);font-style:italic}
+  .tier ul{margin:8px 0 0 18px}
+  .tier1{background:#EFEAF6;border:1px solid #d7cde8;border-left:5px solid var(--purple)}
+  .tier2{background:#FBF3E2;border:1px solid #E5D2A6;border-left:5px solid var(--amber)}
+  ul.distractors{margin:8px 0 2px 16px;font-size:.88rem;color:var(--muted)}
+  ul.distractors li{margin:3px 0}
   .ido{background:#E6F4F3;border:1px solid var(--teal);border-radius:6px;padding:16px 20px;margin:12px 0}
   .ido .prob{font-weight:700;margin-bottom:8px}
   .ido ol{margin:0;padding-left:20px}
@@ -871,6 +963,7 @@ function htmlPacket(skill) {
 
     <h2>What You Need to Know</h2>
     <ul class="ntk">${ntk}</ul>
+    ${tierBlocks}
 
     <h2>Worked Example <span class="cue">I Do — watch how it works</span></h2>
     <div class="ido"><div class="prob">${esc(skill.workedExample.problem)}</div><ol>${steps}</ol><div class="ans">Answer: ${esc(skill.workedExample.answer)}</div></div>
