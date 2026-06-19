@@ -1,0 +1,122 @@
+/* Neft Math Brain UI — additive, scoped under .nb- classes. */
+.nb-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin: 0 0 0.6rem;
+}
+.nb-head .nb-sub {
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+.nb-loading,
+.nb-empty {
+  opacity: 0.7;
+  font-style: italic;
+}
+
+.nb-reclist {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0.75rem;
+}
+.nb-rec {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  text-decoration: none;
+  color: inherit;
+  background: var(--nb-card-bg, #fff);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-left: 6px solid var(--nb-accent, #4f6ef7);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+.nb-rec:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.14);
+}
+.nb-rec-title {
+  font-weight: 600;
+}
+.nb-rec-std {
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+  opacity: 0.65;
+  text-transform: uppercase;
+}
+.nb-rec-why {
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+.nb-l0 {
+  --nb-accent: #d9534f;
+} /* most-supported */
+.nb-l1 {
+  --nb-accent: #4f6ef7;
+} /* on-level */
+.nb-l2 {
+  --nb-accent: #2e9e5b;
+} /* enrichment */
+
+.nb-heatmap {
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  width: 100%;
+}
+.nb-heatmap th,
+.nb-heatmap td {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 0.3rem 0.4rem;
+  text-align: center;
+}
+.nb-heatmap th {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.nb-heatmap th:first-child {
+  writing-mode: horizontal-tb;
+  transform: none;
+}
+.nb-name {
+  text-align: left;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.nb-cell {
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+}
+.nb-struggling {
+  background: #f8c9c5;
+}
+.nb-developing {
+  background: #fde9b0;
+}
+.nb-proficient {
+  background: #bfe6c9;
+}
+.nb-none {
+  background: repeating-linear-gradient(
+    45deg,
+    #f3f3f3,
+    #f3f3f3 4px,
+    #ececec 4px,
+    #ececec 8px
+  );
+}
+
+@media (prefers-color-scheme: dark) {
+  .nb-rec {
+    --nb-card-bg: #1e2230;
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+  .nb-cell {
+    color: #0c0c0c;
+  }
+}
