@@ -1,0 +1,248 @@
+#!/usr/bin/env node
+/**
+ * build-course.mjs — generate a full Canvas course package (Common Cartridge)
+ * with NATIVE auto-graded quizzes. No SCORM, no LTI, no codes, no admin.
+ *
+ * For each lesson it produces, organized into a Module per unit:
+ *   1. A "Lesson" Page (ungraded) — link to the live interactive lesson + objective.
+ *   2. A "Check" Quiz (graded) — QTI multiple-choice built from the lesson's
+ *      questions, which Canvas grades automatically into the gradebook. Each
+ *      question's explanation becomes answer feedback.
+ *
+ * Import: Canvas → Settings → Import Course Content → "Common Cartridge 1.x
+ * Package" → upload → Import. Everything imports UNPUBLISHED.
+ *
+ * Usage:
+ *   node tools/canvas/build-course.mjs            # all units
+ *   node tools/canvas/build-course.mjs 1          # just Unit 1 (recommended first test)
+ *   npm run course -- 1
+ * Env: NEFT_SITE (default https://eduwonderlab.com), QUIZ_MAX (default 8 questions).
+ */
+import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from "fs";
+import { execSync } from "child_process";
+import { dirname, resolve } from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const repoRoot = resolve(__dirname, "../..");
+const SITE = (process.env.NEFT_SITE || "https://eduwonderlab.com").replace(/\/$/, "");
+const QUIZ_MAX = Number(process.env.QUIZ_MAX || 8);
+const unitFilter = process.argv[2] ? Number(process.argv[2]) : null;
+
+const xml = (s) =>
+  String(s == null ? "" : s).replace(/[<>&'"]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", "'": "&apos;", '"': "&quot;" })[c]);
+const html = (s) => xml(s); // same escaping for our simple text content
+
+const manifest = JSON.parse(readFileSync(resolve(repoRoot, "data/curriculum-manifest.json"), "utf8"));
+let lessons = (Array.isArray(manifest.lessons) ? manifest.lessons : Object.values(manifest.lessons)).filter((l) => l && l.id && !l.flagship);
+if (unitFilter) lessons = lessons.filter((l) => Number(l.unit) === unitFilter);
+if (!lessons.length) { console.error("No lessons matched."); process.exit(1); }
+
+/* ---- pull multiple-choice questions out of a lesson config ---- */
+function mcQuestions(id) {
+  const p = resolve(repoRoot, "lessons", id, "config.json");
+  if (!existsSync(p)) return [];
+  let cfg;
+  try { cfg = JSON.parse(readFileSync(p, "utf8")); } catch (e) { return []; }
+  const out = [];
+  (function walk(o) {
+    if (o && typeof o === "object") {
+      if (o.type === "multiple-choice" && Array.isArray(o.choices) && o.choices.length >= 2 && Number.isInteger(o.correctIndex)) {
+        out.push({ stem: o.stem || o.question || "", choices: o.choices.map(String), correct: o.correctIndex, explanation: o.explanation || "" });
+      }
+      for (const k in o) walk(o[k]);
+    }
+  })(cfg);
+  return out.slice(0, QUIZ_MAX);
+}
+
+/* ---- QTI 1.2 multiple-choice item ---- */
+const LETTERS = "ABCDEFGHIJ".split("");
+function qtiItem(q, qi, quizId) {
+  const ident = quizId + "_q" + qi;
+  const labels = q.choices
+    .map((c, i) => `          <response_label ident="${LETTERS[i]}"><material><mattext texttype="text/html">${html(c)}</mattext></material></response_label>`)
+    .join("\n");
+  const correct = LETTERS[q.correct] || "A";
+  const fb = q.explanation
+    ? `    <itemfeedback ident="general_fb"><flow_mat><material><mattext texttype="text/html">${html(q.explanation)}</mattext></material></flow_mat></itemfeedback>`
+    : "";
+  const fbRef = q.explanation ? `        <displayfeedback feedbacktype="Response" linkrefid="general_fb"/>` : "";
+  return `  <item ident="${ident}" title="Question ${qi}">
+    <itemmetadata><qtimetadata>
+      <qtimetadatafield><fieldlabel>question_type</fieldlabel><fieldentry>multiple_choice_question</fieldentry></qtimetadatafield>
+      <qtimetadatafield><fieldlabel>points_possible</fieldlabel><fieldentry>1.0</fieldentry></qtimetadatafield>
+    </qtimetadata></itemmetadata>
+    <presentation>
+      <material><mattext texttype="text/html">${html(q.stem)}</mattext></material>
+      <response_lid ident="response_${qi}" rcardinality="Single">
+        <render_choice>
+${labels}
+        </render_choice>
+      </response_lid>
+    </presentation>
+    <resprocessing>
+      <outcomes><decvar maxvalue="100" minvalue="0" varname="SCORE" vartype="Decimal"/></outcomes>
+      <respcondition continue="No">
+        <conditionvar><varequal respident="response_${qi}">${correct}</varequal></conditionvar>
+        <setvar action="Set" varname="SCORE">100</setvar>
+${fbRef}
+      </respcondition>
+    </resprocessing>
+${fb}
+  </item>`;
+}
+
+function qtiAssessment(quizId, title, qs) {
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<questestinterop xmlns="http://www.imsglobal.org/xsd/ims_qtiasiv1p2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/ims_qtiasiv1p2 http://www.imsglobal.org/xsd/ims_qtiasiv1p2p1.xsd">
+  <assessment ident="${quizId}" title="${xml(title)}">
+    <qtimetadata>
+      <qtimetadatafield><fieldlabel>cc_maxattempts</fieldlabel><fieldentry>unlimited</fieldentry></qtimetadatafield>
+    </qtimetadata>
+    <section ident="root_section">
+${qs.map((q, i) => qtiItem(q, i + 1, quizId)).join("\n")}
+    </section>
+  </assessment>
+</questestinterop>`;
+}
+
+function assessmentMeta(quizId, asgId, title, points, groupRef) {
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<quiz identifier="${quizId}" xmlns="http://canvas.instructure.com/xsd/cccv1p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://canvas.instructure.com/xsd/cccv1p0 https://canvas.instructure.com/xsd/cccv1p0.xsd">
+  <title>${xml(title)}</title>
+  <points_possible>${points}.0</points_possible>
+  <quiz_type>assignment</quiz_type>
+  <assignment_group_identifierref>${groupRef}</assignment_group_identifierref>
+  <allowed_attempts>-1</allowed_attempts>
+  <scoring_policy>keep_highest</scoring_policy>
+  <shuffle_answers>true</shuffle_answers>
+  <show_correct_answers>true</show_correct_answers>
+  <available>false</available>
+  <published>false</published>
+  <assignment identifier="${asgId}">
+    <title>${xml(title)}</title>
+    <points_possible>${points}.0</points_possible>
+    <grading_type>points</grading_type>
+    <assignment_group_identifierref>${groupRef}</assignment_group_identifierref>
+    <submission_types>online_quiz</submission_types>
+    <workflow_state>unpublished</workflow_state>
+  </assignment>
+</quiz>`;
+}
+
+function lessonPageHtml(l, url) {
+  return `<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>${xml(l.title)}</title><meta name="identifier" content="page_${l.id.replace(/[^a-z0-9]+/gi, "_")}"></head><body>
+<h2>${xml(`Unit ${l.unit} Lesson ${l.lesson}: ${l.title}`)}</h2>
+<p><strong>Standard:</strong> ${xml(l.standard || "")}</p>
+<p><strong>Objective:</strong> ${xml(l.objective || l.contentObjective || "")}</p>
+<p><a href="${xml(url)}" target="_blank" rel="noopener">▶ Open the interactive lesson</a></p>
+<p>Do the lesson, then take the <strong>Check</strong> quiz to record your grade.</p>
+</body></html>`;
+}
+
+/* ---- stage ---- */
+const stage = resolve(repoRoot, "canvas-packages", "_coursestage");
+rmSync(stage, { recursive: true, force: true });
+mkdirSync(resolve(stage, "course_settings"), { recursive: true });
+mkdirSync(resolve(stage, "wiki_content"), { recursive: true });
+
+const resources = [];
+const groups = {}; // unit -> groupId
+const modules = {}; // unit -> [{type, idref, title}]
+let quizzesMade = 0, pagesMade = 0;
+
+for (const l of lessons) {
+  const safe = l.id.replace(/[^a-z0-9]+/gi, "_");
+  const unit = Number(l.unit);
+  const groupId = "g_unit_" + unit;
+  groups[unit] = groupId;
+  modules[unit] = modules[unit] || [];
+  const url = `${SITE}/lessons/${l.id}/`;
+
+  // 1. Lesson page (ungraded content)
+  const pageId = "page_" + safe;
+  const pageFile = `wiki_content/${pageId}.html`;
+  writeFileSync(resolve(stage, pageFile), lessonPageHtml(l, url));
+  resources.push(`    <resource identifier="${pageId}" type="webcontent" href="${pageFile}"><file href="${pageFile}"/></resource>`);
+  modules[unit].push({ idref: pageId, title: `Unit ${l.unit} Lesson ${l.lesson}: ${l.title}`, kind: "page" });
+  pagesMade++;
+
+  // 2. Auto-graded quiz (if the lesson has MC questions)
+  const qs = mcQuestions(l.id);
+  if (qs.length) {
+    const quizId = "quiz_" + safe;
+    const asgId = "quizasg_" + safe;
+    const dir = quizId;
+    mkdirSync(resolve(stage, dir), { recursive: true });
+    const title = `Unit ${l.unit} Lesson ${l.lesson} Check: ${l.title}`;
+    writeFileSync(resolve(stage, dir, quizId + ".xml"), qtiAssessment(quizId, title, qs));
+    writeFileSync(resolve(stage, dir, "assessment_meta.xml"), assessmentMeta(quizId, asgId, title, qs.length, groupId));
+    resources.push(
+      `    <resource identifier="${quizId}" type="imsqti_xmlv1p2/imscc_xmlv1p1/assessment" href="${dir}/${quizId}.xml">\n` +
+        `      <file href="${dir}/${quizId}.xml"/>\n` +
+        `      <dependency identifierref="${quizId}_meta"/>\n` +
+        `    </resource>\n` +
+        `    <resource identifier="${quizId}_meta" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="${dir}/assessment_meta.xml">\n` +
+        `      <file href="${dir}/assessment_meta.xml"/>\n` +
+        `    </resource>`,
+    );
+    modules[unit].push({ idref: quizId, title: title, kind: "quiz" });
+    quizzesMade++;
+  }
+}
+
+/* ---- assignment groups (one per unit) ---- */
+const unitNums = Object.keys(groups).map(Number).sort((a, b) => a - b);
+writeFileSync(
+  resolve(stage, "course_settings", "assignment_groups.xml"),
+  `<?xml version="1.0" encoding="UTF-8"?>
+<assignmentGroups xmlns="http://canvas.instructure.com/xsd/cccv1p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://canvas.instructure.com/xsd/cccv1p0 https://canvas.instructure.com/xsd/cccv1p0.xsd">
+${unitNums.map((u, i) => `  <assignmentGroup identifier="${groups[u]}"><title>Unit ${u}</title><position>${i + 1}</position><group_weight>0.0</group_weight></assignmentGroup>`).join("\n")}
+</assignmentGroups>`,
+);
+
+/* ---- modules (one per unit) ---- */
+writeFileSync(
+  resolve(stage, "course_settings", "module_meta.xml"),
+  `<?xml version="1.0" encoding="UTF-8"?>
+<modules xmlns="http://canvas.instructure.com/xsd/cccv1p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://canvas.instructure.com/xsd/cccv1p0 https://canvas.instructure.com/xsd/cccv1p0.xsd">
+${unitNums
+    .map((u, ui) => {
+      const items = modules[u]
+        .map((it, ii) => `    <item identifier="modi_${u}_${ii}" identifierref="${it.idref}"><content_type>${it.kind === "quiz" ? "Quizzes::Quiz" : "WikiPage"}</content_type><title>${xml(it.title)}</title><position>${ii + 1}</position></item>`)
+        .join("\n");
+      return `  <module identifier="mod_unit_${u}"><title>Unit ${u}</title><position>${ui + 1}</position><workflow_state>unpublished</workflow_state><items>\n${items}\n  </items></module>`;
+    })
+    .join("\n")}
+</modules>`,
+);
+writeFileSync(resolve(stage, "course_settings", "canvas_export.txt"), "Canvas Common Cartridge export — Neft math course (pages + auto-graded quizzes).\n");
+
+/* ---- manifest ---- */
+const manifestXml = `<?xml version="1.0" encoding="UTF-8"?>
+<manifest identifier="neft-course-cartridge" xmlns="http://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1" xmlns:lom="http://ltsc.ieee.org/xsd/imsccv1p1/LOM/resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1 http://www.imsglobal.org/profile/cc/ccv1p1/ccv1p1_imscp_v1p2_v1p0.xsd">
+  <metadata><schema>IMS Common Cartridge</schema><schemaversion>1.1.0</schemaversion></metadata>
+  <organizations><organization identifier="org_1" structure="rooted-hierarchy"><item identifier="root"/></organization></organizations>
+  <resources>
+${resources.join("\n")}
+    <resource identifier="res_course_settings" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="course_settings/canvas_export.txt">
+      <file href="course_settings/assignment_groups.xml"/>
+      <file href="course_settings/module_meta.xml"/>
+      <file href="course_settings/canvas_export.txt"/>
+    </resource>
+  </resources>
+</manifest>`;
+writeFileSync(resolve(stage, "imsmanifest.xml"), manifestXml);
+
+const outName = unitFilter ? `neft-course-unit${unitFilter}.imscc` : "neft-course.imscc";
+const outFile = resolve(repoRoot, "canvas-packages", outName);
+rmSync(outFile, { force: true });
+execSync(`cd "${stage}" && zip -r -q -X "${outFile}" . -x ".*"`);
+rmSync(stage, { recursive: true, force: true });
+
+console.log(`✓ Canvas course package: ${outFile}`);
+console.log(`  ${pagesMade} lesson pages, ${quizzesMade} auto-graded quizzes, ${unitNums.length} unit module(s).`);
+console.log(`\nImport: Canvas → Settings → Import Course Content → "Common Cartridge 1.x Package".`);
+console.log(`Everything imports UNPUBLISHED. Quizzes grade themselves into the gradebook.`);
