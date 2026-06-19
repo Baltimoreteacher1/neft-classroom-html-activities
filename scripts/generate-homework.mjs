@@ -344,7 +344,7 @@ function buildMatchingTable(it) {
 }
 
 // ---------- answer key ----------
-function renderAnswer(it, num) {
+function renderAnswer(it, num, commonMistake = "") {
   const out = [];
   switch (it.type) {
     case "multiple-choice": {
@@ -352,7 +352,11 @@ function renderAnswer(it, num) {
       const letter = LETTERS[idx] || String(idx);
       const ans = (it.choices || [])[idx] ?? "";
       out.push(p(`${num}. ${letter}. ${ans}`, { bold: true, after: 40 }));
-      if (it.explanation) out.push(p(`     ${it.explanation}`, { after: 80 }));
+      if (it.explanation) out.push(p(`     ${it.explanation}`, { after: 20 }));
+      // Misconception-aware teacher cue: item-level watch-for, else the
+      // lesson's shared commonMistake.
+      const watch = it.watchFor || it.distractorRationale || commonMistake;
+      if (watch) out.push(p(`     Watch for: ${watch}`, { italics: true, after: 80 }));
       break;
     }
     case "fill-table": {
@@ -387,15 +391,19 @@ function renderAnswer(it, num) {
       break;
     }
     case "error-analysis": {
+      // Canonical schema (see ERROR_ANALYSIS_SCHEMA in generate-worksheets.mjs):
+      // errorStep (0-based) + correctWork + optional explanation (the "why").
       out.push(p(`${num}. ${it.title || "Error analysis"}`, { bold: true, after: 40 }));
       if (typeof it.errorStep === "number") {
         out.push(p(`     The mistake is in Step ${it.errorStep + 1}.`, { after: 20 }));
       }
-      if (it.correctWork) out.push(p(`     ${it.correctWork}`, { after: 80 }));
+      if (it.correctWork) out.push(p(`     Correct work: ${it.correctWork}`, { after: 20 }));
+      if (it.explanation) out.push(p(`     Watch for: ${it.explanation}`, { after: 80 }));
       break;
     }
     case "open-response": {
       out.push(p(`${num}. Open response — answers will vary.`, { bold: true, after: 40 }));
+      if (it.sampleAnswer) out.push(p(`     Sample: ${it.sampleAnswer}`, { after: 20 }));
       if (Array.isArray(it.keywords) && it.keywords.length) {
         out.push(p(`     Look for key words: ${it.keywords.join(", ")}.`, { after: 80 }));
       }
@@ -539,8 +547,9 @@ function buildDoc(id, config) {
   if (!problems.length) {
     children.push(p("No problems.", { italics: true }));
   } else {
+    const commonMistake = config.practice?.commonMistake || "";
     problems.forEach((it, i) => {
-      for (const node of renderAnswer(it, i + 1)) children.push(node);
+      for (const node of renderAnswer(it, i + 1, commonMistake)) children.push(node);
     });
   }
 

@@ -478,10 +478,13 @@ function renderProblem(it, pIdx) {
       </div>
     `;
   } else if (type === "error-analysis") {
+    // Canonical schema (see ERROR_ANALYSIS_SCHEMA in generate-worksheets.mjs):
+    // errorStep (0-based) + correctWork + optional explanation (the "why").
     const title = it.title || "Analyze the worked steps";
     const workedExample = it.workedExample || [];
     const errorStep = it.errorStep !== undefined ? it.errorStep : 0;
     const correctWork = it.correctWork || "";
+    const explanation = it.explanation || "";
 
     content = `
       <div class="problem-body">
@@ -524,6 +527,7 @@ function renderProblem(it, pIdx) {
           
           <div class="reveal-box" id="error_correct_work_${pIdx}" style="display:none;">
             <strong>Correct Work Reference:</strong> ${esc(correctWork)}
+            ${explanation ? `<br /><strong>Why:</strong> ${esc(explanation)}` : ""}
           </div>
         </div>
       </div>
