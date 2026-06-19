@@ -1,1434 +1,1122 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <link rel="stylesheet" href="/assets/shared.css" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Equation Leap | Neft.Alba v2</title>
+    <meta
+      name="description"
+      content="Equation Leap: a Grade 6 math-as-mechanic game for 6.EE.B.7 — solve a one-step equation, then leap onto the platform labeled with the solution value you computed, past the decoys."
+    />
     <style>
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
-      html,
+      :root {
+        --teal: #0e8a7d;
+        --teal-bright: #12a596;
+        --gold: #d4952a;
+        --ink: #06202c;
+        --panel: #0f2b3c;
+        --line: #1f4a5b;
+        --txt: #dff1f0;
+        --muted: #8fb6bf;
+      }
       body {
-        width: 100%;
-        height: 100%;
+        background: var(--panel);
+        min-height: 100vh;
+        font-family: "Segoe UI", system-ui, sans-serif;
+        color: var(--txt);
+        overflow-x: hidden;
+      }
+      #ff-bg {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
         overflow: hidden;
-        background: #0a0e27;
-        font-family: "Segoe UI", Tahoma, sans-serif;
+        pointer-events: none;
+        background: radial-gradient(
+          130% 90% at 50% 0%,
+          #134a5a 0%,
+          #0f2b3c 55%,
+          #08202c 100%
+        );
+      }
+      .ff-mote {
+        position: absolute;
+        border-radius: 50%;
+        background: #7fd6c8;
+        opacity: 0.4;
+        animation: ffTwinkle var(--tw, 3s) ease-in-out infinite;
+      }
+      @keyframes ffTwinkle {
+        0%,
+        100% {
+          opacity: 0.12;
+          transform: scale(0.8);
+        }
+        50% {
+          opacity: 0.6;
+          transform: scale(1.2);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .ff-mote {
+          animation: none !important;
+          opacity: 0.35 !important;
+        }
+        * {
+          scroll-behavior: auto !important;
+          animation-duration: 0.001s !important;
+        }
+      }
+      #ff-sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+      #wrap {
+        position: relative;
+        z-index: 1;
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 18px 16px 48px;
+        min-height: 100vh;
+      }
+      .screen {
+        display: none;
+      }
+      .screen.on {
+        display: block;
+        animation: fade 0.35s ease;
+      }
+      @keyframes fade {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      h1 {
+        font-size: clamp(1.6rem, 4vw, 2.3rem);
+        color: #fff;
+        letter-spacing: 0.5px;
+      }
+      .sub {
+        color: var(--muted);
+        margin-top: 4px;
+        font-size: 0.95rem;
+      }
+      .card {
+        background: rgba(13, 41, 56, 0.82);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 20px;
+        margin: 16px 0;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+      }
+      .btn {
+        font:
+          600 1rem "Segoe UI",
+          system-ui,
+          sans-serif;
+        cursor: pointer;
+        border: none;
+        border-radius: 12px;
+        padding: 13px 22px;
+        color: var(--ink);
+        background: var(--teal);
+        transition:
+          transform 0.12s,
+          background 0.12s,
+          box-shadow 0.12s;
+      }
+      .btn:hover {
+        background: var(--teal-bright);
+        transform: translateY(-1px);
+      }
+      .btn:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 3px;
+      }
+      .btn.ghost {
+        background: #1a3a48;
+        color: #9fc6cf;
+      }
+      .btn.ghost:hover {
+        background: #244c5c;
+      }
+      .btn.big {
+        padding: 18px 26px;
+        font-size: 1.1rem;
+      }
+      .vocab {
+        display: grid;
+        gap: 12px;
+        margin: 14px 0;
+      }
+      .vrow {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        background: #0c2532;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px;
+      }
+      .vterm {
+        color: var(--gold);
+        font-weight: 700;
+        min-width: 130px;
+      }
+      .vdef {
+        color: var(--txt);
+      }
+      .levels {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 560px) {
+        .levels {
+          grid-template-columns: 1fr;
+        }
+      }
+      .level-pick {
+        text-align: left;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+        padding: 18px;
+        background: #0c2532;
+        border: 1px solid var(--line);
+        color: var(--txt);
+        border-radius: 14px;
+        cursor: pointer;
+      }
+      .level-pick:hover {
+        border-color: var(--teal-bright);
+        background: #102f3f;
+      }
+      .level-pick:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 3px;
+      }
+      .level-pick b {
+        color: #fff;
+        font-size: 1.15rem;
+      }
+      .level-pick .tag {
+        color: var(--teal-bright);
+        font-weight: 700;
+        font-size: 0.85rem;
+      }
+      .level-pick .desc {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .hud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .hud .pill {
+        background: #0c2532;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 6px 14px;
+        font-weight: 700;
+      }
+      .hud .pill small {
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .lives {
+        color: #e06b6b;
+        letter-spacing: 2px;
+        font-size: 1.1rem;
+      }
+      .target {
+        text-align: center;
+        margin: 6px 0 14px;
+      }
+      .target .eq {
+        font-size: clamp(1.6rem, 6vw, 2.6rem);
+        font-weight: 800;
+        color: #fff;
+        font-family: "Cambria Math", Georgia, serif;
+      }
+      .target .eq span {
+        color: var(--gold);
+      }
+      .prompt {
+        color: var(--muted);
+        margin-top: 6px;
+      }
+      /* Solve scaffold */
+      .solve {
+        max-width: 420px;
+        margin: 0 auto 10px;
+      }
+      .scaffold {
+        background: #0b2330;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 12px 14px;
+        margin-bottom: 12px;
+        color: var(--muted);
+        font-size: 0.95rem;
+        line-height: 1.5;
+      }
+      .scaffold b {
+        color: var(--gold);
+      }
+      .answer-row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .answer-row label {
+        font-weight: 700;
+        font-size: 1.4rem;
+        color: #fff;
+      }
+      #x-input {
+        width: 110px;
+        font:
+          800 1.5rem "Segoe UI",
+          system-ui,
+          sans-serif;
+        text-align: center;
+        padding: 8px 6px;
+        border-radius: 10px;
+        border: 2px solid var(--line);
+        background: #0c2532;
+        color: var(--gold);
+      }
+      #x-input:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 2px;
+        border-color: var(--teal-bright);
+      }
+      /* The leap arena */
+      .arena {
+        position: relative;
+        height: 230px;
+        margin: 10px 0 6px;
+        border-radius: 16px;
+        background: linear-gradient(180deg, #0b2734 0%, #08202c 100%);
+        border: 1px solid var(--line);
+        overflow: hidden;
+      }
+      .runner {
+        position: absolute;
+        left: 14px;
+        bottom: 14px;
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: linear-gradient(180deg, #6ff0d8, var(--teal-bright));
+        box-shadow: 0 3px 0 #0a5f55;
+        transition:
+          left 0.5s cubic-bezier(0.22, 1.2, 0.4, 1),
+          bottom 0.5s cubic-bezier(0.22, 1.2, 0.4, 1);
+        z-index: 3;
+      }
+      .runner::before,
+      .runner::after {
+        content: "";
+        position: absolute;
+        top: 12px;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #06202c;
+      }
+      .runner::before {
+        left: 8px;
+      }
+      .runner::after {
+        right: 8px;
+      }
+      .runner.fall {
+        bottom: -50px !important;
+        transition: bottom 0.5s ease-in;
+      }
+      .plats {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: flex-end;
+        gap: 10px;
+        padding: 12px;
+      }
+      .plat {
+        flex: 1;
+        min-width: 0;
+        align-self: flex-end;
+        border: none;
+        cursor: pointer;
+        border-radius: 12px;
+        padding: 14px 4px;
+        font:
+          800 1.4rem "Segoe UI",
+          system-ui,
+          sans-serif;
+        color: var(--ink);
+        background: linear-gradient(180deg, #ffd98a, var(--gold));
+        box-shadow: 0 4px 0 #a86f16;
+        transition:
+          transform 0.1s,
+          box-shadow 0.1s,
+          filter 0.1s;
+      }
+      .plat:hover {
+        transform: translateY(-2px);
+      }
+      .plat:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 3px;
+      }
+      .plat[disabled] {
+        cursor: default;
+        filter: grayscale(0.5) brightness(0.7);
+      }
+      .plat.good {
+        background: linear-gradient(180deg, #bfe7c8, #2d874b);
+        box-shadow: 0 4px 0 #1c5a32;
+        color: #06251a;
+      }
+      .plat.miss {
+        background: linear-gradient(180deg, #f0b39a, #b5531a);
+        box-shadow: 0 4px 0 #7a350f;
+        animation: shake 0.3s;
+      }
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-5px);
+        }
+        75% {
+          transform: translateX(5px);
+        }
+      }
+      .feedback {
+        min-height: 24px;
+        text-align: center;
+        margin: 10px 0;
+        font-weight: 600;
+      }
+      .feedback.bad {
+        color: #f0a06b;
+      }
+      .feedback.good {
+        color: #79d39a;
+      }
+      .hint {
+        color: var(--muted);
+        font-size: 0.9rem;
+        text-align: center;
+        margin-top: 6px;
+      }
+      .result-stars {
+        font-size: 2rem;
+        color: var(--gold);
+        letter-spacing: 6px;
+        text-align: center;
+        margin: 10px 0;
+      }
+      .result-stat {
+        display: flex;
+        justify-content: space-between;
+        max-width: 320px;
+        margin: 6px auto;
+        color: var(--muted);
+      }
+      .result-stat b {
+        color: var(--txt);
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 16px;
       }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+    <!-- Games-2D metadata source of truth (must load before the game script) -->
+    <script src="/assets/games2d-data.js"></script>
+  </head>
   <body>
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+    <div id="ff-bg" aria-hidden="true"></div>
+    <div id="ff-sr" role="status" aria-live="polite"></div>
+
+    <main id="wrap">
+      <!-- VOCAB GATE -->
+      <section id="screen-vocab" class="screen on" aria-labelledby="vh">
+        <h1 id="vh">🦘 Equation Leap</h1>
+        <p class="sub">
+          Solve one-step equations, then leap to your answer · 6.EE.B.7
+        </p>
+        <div class="card">
+          <h2 style="color: #fff; font-size: 1.2rem">Words to know first</h2>
+          <div class="vocab" id="vocab-list"></div>
+          <button class="btn big" id="vocab-go">I'm ready →</button>
+        </div>
+      </section>
+
+      <!-- LEVEL SELECT -->
+      <section id="screen-level" class="screen" aria-labelledby="lh">
+        <h1 id="lh">Choose your level</h1>
+        <p class="sub">You can change this any time by playing again.</p>
+        <div class="card">
+          <div class="levels" id="level-list"></div>
+        </div>
+      </section>
+
+      <!-- PLAY -->
+      <section id="screen-play" class="screen" aria-labelledby="ph">
+        <h1 id="ph" style="position: absolute; left: -9999px">
+          Equation Leap play
+        </h1>
+        <div class="hud">
+          <span class="pill"
+            ><small>Round</small> <span id="hud-round">1</span>/<span
+              id="hud-total"
+              >6</span
+            ></span
+          >
+          <span class="pill"
+            ><small>Score</small> <span id="hud-score">0</span></span
+          >
+          <span class="pill"
+            ><small>Lives</small>
+            <span class="lives" id="hud-lives">●●●●●</span></span
+          >
+        </div>
+        <div class="card">
+          <div class="target">
+            <div class="eq" id="t-eq">x + 3 = 8</div>
+            <div class="prompt">
+              Solve for <b>x</b>, type it, then leap to the matching platform.
+            </div>
+          </div>
+
+          <div class="solve">
+            <div class="scaffold" id="scaffold"></div>
+            <div class="answer-row">
+              <label for="x-input">x =</label>
+              <input
+                id="x-input"
+                type="number"
+                inputmode="numeric"
+                autocomplete="off"
+                aria-label="Your value for x"
+              />
+              <button class="btn" id="solve-btn">Lock in x</button>
+            </div>
+          </div>
+
+          <div class="arena" aria-hidden="true">
+            <div class="runner" id="runner"></div>
+            <div class="plats" id="plats"></div>
+          </div>
+          <p style="text-align: center; color: var(--muted); margin: 4px 0">
+            Leap to the platform whose number equals the x you found:
+          </p>
+          <div
+            class="plats"
+            id="plats-buttons"
+            role="group"
+            aria-label="Leap targets"
+          ></div>
+
+          <div
+            class="feedback"
+            id="feedback"
+            role="status"
+            aria-live="assertive"
+          ></div>
+          <p class="hint" id="hint"></p>
+        </div>
+      </section>
+
+      <!-- RESULT -->
+      <section id="screen-result" class="screen" aria-labelledby="rh">
+        <h1 id="rh">Leap complete</h1>
+        <div class="card">
+          <div class="result-stars" id="r-stars">★★★</div>
+          <div class="result-stat"><span>Score</span><b id="r-score">0</b></div>
+          <div class="result-stat">
+            <span>Equations solved</span><b id="r-correct">0</b>
+          </div>
+          <div class="result-stat">
+            <span>Rounds leapt</span><b id="r-rounds">0</b>
+          </div>
+          <div class="result-stat" id="r-high-row" style="display: none">
+            <span>★ New high score!</span><b id="r-high">0</b>
+          </div>
+          <div class="row">
+            <button class="btn big" id="r-again">Play again</button>
+            <a class="btn ghost big" href="/math/games/">All games</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
     <script>
-      // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror
-      // (document.write blocks parsing so the mirror is ready before the game script runs).
-      if (typeof Phaser === "undefined") {
-        document.write(
-          '<script src="https://unpkg.com/phaser@3.80.1/dist/phaser.min.js"><\/script>',
-        );
-      }
-      // If both CDNs are unreachable, show a clear message instead of a blank page.
-      window.addEventListener("load", function () {
-        if (typeof Phaser === "undefined") {
-          document.body.innerHTML =
-            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">\u26a0\ufe0f This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+      // ── Decorative drifting motes (reduced-motion safe) ──
+      (function () {
+        var host = document.getElementById("ff-bg");
+        if (!host) return;
+        var reduce =
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var n = reduce ? 10 : 26;
+        for (var i = 0; i < n; i++) {
+          var d = document.createElement("div");
+          d.className = "ff-mote";
+          var sz = 2 + Math.random() * 4;
+          d.style.width = d.style.height = sz.toFixed(1) + "px";
+          d.style.left = (Math.random() * 100).toFixed(2) + "%";
+          d.style.top = (Math.random() * 100).toFixed(2) + "%";
+          d.style.setProperty("--tw", (2 + Math.random() * 4).toFixed(2) + "s");
+          d.style.animationDelay = "-" + (Math.random() * 4).toFixed(2) + "s";
+          host.appendChild(d);
         }
-      });
+      })();
     </script>
+
     <script>
-      // ============================================================
-      //  EQUATION LEAP — Puzzle Platformer  (6.EE.C.9)
-      //  Jump between platforms, collect matching equation halves
-      // ============================================================
+      // ════════════════════════════════════════════════════════════════════
+      //  EQUATION LEAP — Solve & Leap  ·  Grade 6  ·  6.EE.B.7
+      //  Math-as-mechanic rebuild.
+      //
+      //  Each round shows a one-step equation. The player SOLVES it (computes
+      //  x by undoing the operation) and types the value. Locking in a correct
+      //  value launches a leap to the platform LABELED with that solution,
+      //  past decoy platforms built from common solving errors. A wrong value
+      //  (or leaping at a decoy) = a stumble + misconception nudge + a life.
+      //  Nothing is multiple-choice: the player PRODUCES the number; the leap
+      //  target is whatever they computed.
+      // ════════════════════════════════════════════════════════════════════
+      const STANDARD = "6.EE.B.7";
+      const ACTIVITY_TITLE = "Equation Leap";
+      const LS_KEY = "equation_leap_highscore";
+      const ROUNDS = 6;
 
-      const W = 800,
-        H = 600;
+      // Metadata source of truth: window.Games2DData (assets/games2d-data.js).
+      // Inline fallback keeps the page alive if the artifact fails to load.
+      const DATA = (window.Games2DData &&
+        window.Games2DData["cloudflare-pages-game-for-6-ee-9"]) || {
+        ccss: "6.EE.B.7",
+        title: "Equation Leap",
+        vocab: [
+          {
+            term: "equation",
+            defn: "A math sentence saying two amounts are equal, like x + 3 = 8. Your job is to find the value of x that makes it true.",
+          },
+          {
+            term: "solve",
+            defn: "To find the value of the variable. You undo what is done to x by doing the OPPOSITE operation to both sides.",
+          },
+          {
+            term: "inverse operation",
+            defn: "The opposite move: subtraction undoes addition, and division undoes multiplication. Use it to get x by itself.",
+          },
+        ],
+        misconceptions: [
+          {
+            tag: "wrong-operation",
+            trigger:
+              "Adds (or multiplies) instead of using the inverse to undo it.",
+            feedback:
+              "Undo with the OPPOSITE. If it says +3, subtract 3 from both sides; if it says 2x, divide both sides by 2.",
+          },
+          {
+            tag: "one-side-only",
+            trigger:
+              "Changes only one side of the equation, breaking the balance.",
+            feedback:
+              "Whatever you do to one side, do to BOTH sides so the equation stays balanced.",
+          },
+        ],
+        tiers: {
+          1: {
+            label: "Level 1",
+            sub: "Support",
+            desc: "Smaller numbers · solving steps shown · 5 lives",
+          },
+          2: {
+            label: "Level 2",
+            sub: "Challenge",
+            desc: "Bigger numbers · solve it on your own · 3 lives",
+          },
+        },
+      };
 
-      // ---------- MATH CONTENT (from original Equation Quest) ----------
-      const ALL_PAIRS = [
-        // Level 1 — One-Step Add/Sub
-        { left: "x + 3 = 8", right: "x = 5", tier: 1 },
-        { left: "x - 2 = 7", right: "x = 9", tier: 1 },
-        { left: "5 = x + 1", right: "x = 4", tier: 1 },
-        { left: "x - 4 = 6", right: "x = 10", tier: 1 },
-        // Level 2 — One-Step Mult/Div
-        { left: "2x = 10", right: "x = 5", tier: 2 },
-        { left: "3x = 15", right: "x = 5", tier: 2 },
-        { left: "x ÷ 4 = 2", right: "x = 8", tier: 2 },
-        { left: "5x = 25", right: "x = 5", tier: 2 },
-        // Level 3 — Two-Step
-        { left: "2x + 3 = 11", right: "x = 4", tier: 3 },
-        { left: "3x - 2 = 10", right: "x = 4", tier: 3 },
-        { left: "4x + 5 = 21", right: "x = 4", tier: 3 },
-        { left: "5x - 7 = 3", right: "x = 2", tier: 3 },
-        // Level 4 — Variables Both Sides
-        { left: "2x + 3 = x + 8", right: "x = 5", tier: 4 },
-        { left: "3x - 2 = x + 6", right: "x = 4", tier: 4 },
-        { left: "5x + 1 = 3x + 9", right: "x = 4", tier: 4 },
-        { left: "4x - 5 = 2x + 3", right: "x = 4", tier: 4 },
-        // Level 5 — Distributive
-        { left: "2(x+1) = 10", right: "x = 4", tier: 5 },
-        { left: "3(x-2) = 9", right: "x = 5", tier: 5 },
-        { left: "2x+3(x-1)=12", right: "x = 3", tier: 5 },
-        { left: "4(x+2)-3=21", right: "x = 4", tier: 5 },
-        // Level 6 — Word Problems (simplified labels)
-        { left: "Books: x+5=23", right: "x = 18", tier: 6 },
-        { left: "Coins: 3x = 30", right: "x = 10", tier: 6 },
-        { left: "Width: 4x+6=26", right: "x = 5", tier: 6 },
-        { left: "Age: 2x-4 = 12", right: "x = 8", tier: 6 },
-      ];
-
-      // ============================================================
-      //  BOOT SCENE — Generate all textures programmatically
-      // ============================================================
-      class BootScene extends Phaser.Scene {
-        constructor() {
-          super("BootScene");
-        }
-        create() {
-          const g = this.make.graphics({ x: 0, y: 0, add: false });
-
-          // Player — green square character with eyes
-          g.clear();
-          g.fillStyle(0x00ff88);
-          g.fillRoundedRect(2, 4, 28, 28, 4);
-          g.fillStyle(0xffffff);
-          g.fillCircle(10, 14, 4);
-          g.fillCircle(22, 14, 4);
-          g.fillStyle(0x0a0e27);
-          g.fillCircle(11, 14, 2);
-          g.fillCircle(23, 14, 2);
-          g.generateTexture("player", 32, 32);
-          g.clear();
-
-          // Platform
-          g.fillStyle(0x1a1f3a);
-          g.fillRect(0, 0, 96, 16);
-          g.fillStyle(0x00d4ff);
-          g.fillRect(0, 0, 96, 3);
-          g.generateTexture("platform", 96, 16);
-          g.clear();
-
-          // Equation gem (left half — blue)
-          g.fillStyle(0x00d4ff);
-          g.fillRect(2, 2, 28, 28);
-          g.fillStyle(0x0088cc);
-          g.fillRect(4, 4, 24, 24);
-          g.lineStyle(2, 0x00d4ff);
-          g.strokeRect(2, 2, 28, 28);
-          g.generateTexture("gemLeft", 32, 32);
-          g.clear();
-
-          // Solution gem (right half — green)
-          g.fillStyle(0x00ff88);
-          g.fillRect(2, 2, 28, 28);
-          g.fillStyle(0x00aa55);
-          g.fillRect(4, 4, 24, 24);
-          g.lineStyle(2, 0x00ff88);
-          g.strokeRect(2, 2, 28, 28);
-          g.generateTexture("gemRight", 32, 32);
-          g.clear();
-
-          // Wrong gem — red
-          g.fillStyle(0xff4444);
-          g.fillRect(2, 2, 28, 28);
-          g.fillStyle(0xcc2222);
-          g.fillRect(4, 4, 24, 24);
-          g.lineStyle(2, 0xff4444);
-          g.strokeRect(2, 2, 28, 28);
-          g.generateTexture("gemWrong", 32, 32);
-          g.clear();
-
-          // Star particle
-          g.fillStyle(0xffd166);
-          g.fillCircle(4, 4, 4);
-          g.generateTexture("star", 8, 8);
-          g.clear();
-
-          // Spark
-          g.fillStyle(0x00ff88);
-          g.fillCircle(3, 3, 3);
-          g.generateTexture("spark", 6, 6);
-          g.clear();
-
-          // Heart
-          g.fillStyle(0xff006e);
-          g.fillCircle(6, 6, 6);
-          g.fillCircle(14, 6, 6);
-          g.fillTriangle(0, 8, 20, 8, 10, 18);
-          g.generateTexture("heart", 20, 20);
-          g.clear();
-
-          // Coin
-          g.fillStyle(0xffd166);
-          g.fillCircle(8, 8, 8);
-          g.fillStyle(0xffaa00);
-          g.fillCircle(8, 8, 5);
-          g.generateTexture("coin", 16, 16);
-          g.clear();
-
-          // Background tile
-          g.fillStyle(0x0a0e27);
-          g.fillRect(0, 0, 64, 64);
-          g.lineStyle(1, 0x151a3a);
-          g.strokeRect(0, 0, 64, 64);
-          g.generateTexture("bgTile", 64, 64);
-          g.clear();
-
-          // Spike
-          g.fillStyle(0xff006e);
-          g.fillTriangle(0, 16, 8, 0, 16, 16);
-          g.generateTexture("spike", 16, 16);
-          g.clear();
-
-          // Portal
-          g.lineStyle(3, 0xff006e);
-          g.strokeCircle(16, 16, 14);
-          g.lineStyle(2, 0x00d4ff);
-          g.strokeCircle(16, 16, 10);
-          g.lineStyle(1, 0x00ff88);
-          g.strokeCircle(16, 16, 6);
-          g.generateTexture("portal", 32, 32);
-          g.clear();
-
-          g.destroy();
-          this.scene.start("TitleScene");
-        }
-      }
-
-      // ============================================================
-      //  AUDIO HELPER
-      // ============================================================
+      // ── Tiny WebAudio SFX ──
       const SFX = {
         ctx: null,
         init() {
           if (!this.ctx)
-            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+            try {
+              this.ctx = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
+            } catch (e) {}
         },
-        play(type) {
-          this.init();
-          const c = this.ctx,
-            t = c.currentTime,
-            o = c.createOscillator(),
-            g = c.createGain();
-          o.connect(g);
-          g.connect(c.destination);
-          g.gain.setValueAtTime(0.12, t);
-          if (type === "jump") {
-            o.frequency.setValueAtTime(300, t);
-            o.frequency.linearRampToValueAtTime(600, t + 0.1);
-            g.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
-            o.start(t);
-            o.stop(t + 0.15);
-          } else if (type === "collect") {
-            o.frequency.setValueAtTime(523, t);
-            o.frequency.setValueAtTime(659, t + 0.08);
-            o.frequency.setValueAtTime(784, t + 0.16);
-            g.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
-            o.start(t);
-            o.stop(t + 0.25);
-          } else if (type === "match") {
-            o.frequency.setValueAtTime(523, t);
-            o.frequency.setValueAtTime(784, t + 0.1);
-            o.frequency.setValueAtTime(1047, t + 0.2);
-            g.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
-            o.start(t);
-            o.stop(t + 0.35);
-          } else if (type === "wrong") {
-            o.type = "sawtooth";
-            o.frequency.setValueAtTime(200, t);
-            o.frequency.linearRampToValueAtTime(100, t + 0.2);
-            g.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
-            o.start(t);
-            o.stop(t + 0.25);
-          } else if (type === "hurt") {
-            o.type = "square";
-            o.frequency.setValueAtTime(150, t);
-            o.frequency.linearRampToValueAtTime(80, t + 0.3);
-            g.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
-            o.start(t);
-            o.stop(t + 0.35);
-          } else if (type === "portal") {
-            o.type = "sine";
-            o.frequency.setValueAtTime(400, t);
-            o.frequency.linearRampToValueAtTime(1200, t + 0.4);
-            g.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
-            o.start(t);
-            o.stop(t + 0.5);
-          } else if (type === "levelUp") {
-            const o2 = c.createOscillator(),
-              g2 = c.createGain();
-            o2.connect(g2);
-            g2.connect(c.destination);
-            g2.gain.setValueAtTime(0.1, t);
-            o.frequency.setValueAtTime(523, t);
-            o2.frequency.setValueAtTime(659, t);
-            o.frequency.setValueAtTime(784, t + 0.15);
-            o2.frequency.setValueAtTime(1047, t + 0.15);
-            g.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
-            g2.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
-            o.start(t);
-            o.stop(t + 0.5);
-            o2.start(t);
-            o2.stop(t + 0.5);
-          }
-        },
-      };
-
-      // ============================================================
-      //  TITLE SCENE
-      // ============================================================
-      class TitleScene extends Phaser.Scene {
-        constructor() {
-          super("TitleScene");
-        }
-        create() {
-          // Background
-          for (let x = 0; x < W; x += 64)
-            for (let y = 0; y < H; y += 64)
-              this.add.image(x + 32, y + 32, "bgTile");
-
-          // Floating platforms for decoration
-          const deco = [
-            [150, 400],
-            [350, 300],
-            [550, 350],
-            [650, 250],
-          ];
-          deco.forEach(([x, y]) => {
-            const p = this.add.image(x, y, "platform");
-            this.tweens.add({
-              targets: p,
-              y: y - 8,
-              duration: 1500 + Math.random() * 1000,
-              yoyo: true,
-              repeat: -1,
-              ease: "Sine.easeInOut",
-            });
-          });
-
-          // Floating gems
-          [200, 400, 600].forEach((x, i) => {
-            const gem = this.add.image(
-              x,
-              200 + i * 30,
-              i % 2 === 0 ? "gemLeft" : "gemRight",
-            );
-            this.tweens.add({
-              targets: gem,
-              y: gem.y - 15,
-              duration: 1200,
-              yoyo: true,
-              repeat: -1,
-              ease: "Sine.easeInOut",
-            });
-          });
-
-          // Title
-          this.add
-            .text(W / 2, 100, "EQUATION LEAP", {
-              fontSize: "48px",
-              fontFamily: "Segoe UI",
-              fontStyle: "bold",
-              color: "#00ff88",
-              stroke: "#005533",
-              strokeThickness: 4,
-            })
-            .setOrigin(0.5);
-
-          this.add
-            .text(W / 2, 155, "A Puzzle Platformer", {
-              fontSize: "18px",
-              color: "#00d4ff",
-            })
-            .setOrigin(0.5);
-
-          this.add
-            .text(
-              W / 2,
-              185,
-              "Standard 6.EE.C.9 — Independent & Dependent Variables",
-              {
-                fontSize: "12px",
-                color: "#888",
-              },
-            )
-            .setOrigin(0.5);
-
-          // Instructions
-          const inst = [
-            "Arrow Keys / WASD to Move & Jump",
-            "Collect an EQUATION gem (blue), then its SOLUTION gem (green)",
-            "Avoid WRONG solutions (red) and spikes!",
-            "Match all pairs to open the portal",
-          ];
-          inst.forEach((t, i) => {
-            this.add
-              .text(W / 2, 240 + i * 24, t, { fontSize: "14px", color: "#ccc" })
-              .setOrigin(0.5);
-          });
-
-          // Difficulty buttons
-          const modes = [
-            { label: "EASY (Tiers 1-2)", tiers: [1, 2], color: 0x00ff88 },
-            { label: "MEDIUM (Tiers 3-4)", tiers: [3, 4], color: 0xffd166 },
-            { label: "HARD (Tiers 5-6)", tiers: [5, 6], color: 0xff006e },
-            { label: "ALL TIERS", tiers: [1, 2, 3, 4, 5, 6], color: 0x00d4ff },
-          ];
-          modes.forEach((m, i) => {
-            const bx = W / 2 - 150 + (i % 2) * 300,
-              by = 380 + Math.floor(i / 2) * 60;
-            const btn = this.add
-              .rectangle(bx, by, 240, 44, m.color, 0.2)
-              .setStrokeStyle(2, m.color)
-              .setInteractive({ useHandCursor: true });
-            this.add
-              .text(bx, by, m.label, {
-                fontSize: "15px",
-                fontStyle: "bold",
-                color: "#fff",
-              })
-              .setOrigin(0.5);
-            btn.on("pointerover", () => btn.setFillStyle(m.color, 0.4));
-            btn.on("pointerout", () => btn.setFillStyle(m.color, 0.2));
-            btn.on("pointerdown", () => {
-              SFX.play("collect");
-              this.scene.start("GameScene", { tiers: m.tiers });
-            });
-          });
-
-          this.add
-            .text(W / 2, H - 30, "Neft.Alba Premium Math", {
-              fontSize: "11px",
-              color: "#555",
-            })
-            .setOrigin(0.5);
-
-          // Player demo
-          const demo = this.add.image(400, 455, "player").setScale(1.5);
-          this.tweens.add({
-            targets: demo,
-            y: 445,
-            duration: 600,
-            yoyo: true,
-            repeat: -1,
-            ease: "Sine.easeInOut",
-          });
-        }
-      }
-
-      // ============================================================
-      //  GAME SCENE — The main platformer
-      // ============================================================
-      class GameScene extends Phaser.Scene {
-        constructor() {
-          super("GameScene");
-        }
-
-        init(data) {
-          this.selectedTiers = data.tiers || [1, 2];
-          this.score = 0;
-          this.lives = 3;
-          this.combo = 0;
-          this.matched = 0;
-          this.heldEquation = null; // the pair object currently held
-          this.totalPairs = 0;
-          this.wrongPicks = 0;
-          this.levelWidth = 0;
-        }
-
-        create() {
-          // Select pairs for this run
-          const pool = ALL_PAIRS.filter((p) =>
-            this.selectedTiers.includes(p.tier),
-          );
-          Phaser.Utils.Array.Shuffle(pool);
-          this.pairs = pool.slice(0, Math.min(8, pool.length));
-          this.totalPairs = this.pairs.length;
-
-          // Level dimensions
-          this.levelWidth = Math.max(1600, this.totalPairs * 250);
-          const LH = H;
-
-          // Camera & world bounds
-          this.physics.world.setBounds(0, 0, this.levelWidth, LH);
-          this.cameras.main.setBounds(0, 0, this.levelWidth, LH);
-
-          // Background
-          for (let x = 0; x < this.levelWidth; x += 64)
-            for (let y = 0; y < LH; y += 64)
-              this.add.image(x + 32, y + 32, "bgTile").setScrollFactor(0.3);
-
-          // Stars background
-          for (let i = 0; i < 80; i++) {
-            const sx = Phaser.Math.Between(0, this.levelWidth);
-            const sy = Phaser.Math.Between(0, LH - 100);
-            const s = this.add
-              .image(sx, sy, "star")
-              .setAlpha(0.3 + Math.random() * 0.5)
-              .setScale(0.5 + Math.random());
-            s.setScrollFactor(0.2);
-          }
-
-          // ---- PLATFORMS ----
-          this.platforms = this.physics.add.staticGroup();
-
-          // Ground
-          for (let x = 0; x < this.levelWidth; x += 96) {
-            this.platforms.create(x + 48, LH - 8, "platform");
-          }
-
-          // Generate interesting platform layout
-          this.generatePlatforms();
-
-          // ---- PLAYER ----
-          this.player = this.physics.add.sprite(60, LH - 60, "player");
-          this.player.setCollideWorldBounds(true);
-          this.player.setBounce(0.1);
-          this.player.setGravityY(200);
-          this.physics.add.collider(this.player, this.platforms);
-
-          // Camera follow
-          this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
-
-          // ---- GEMS ----
-          this.equationGems = this.physics.add.group(); // blue — equation side
-          this.solutionGems = this.physics.add.group(); // green — correct solution
-          this.wrongGems = this.physics.add.group(); // red — wrong solutions
-
-          this.placeGems();
-
-          // ---- SPIKES ----
-          this.spikes = this.physics.add.staticGroup();
-          this.placeSpikes();
-
-          // ---- PORTAL ----
-          this.portal = this.physics.add.sprite(
-            this.levelWidth - 80,
-            LH - 60,
-            "portal",
-          );
-          this.portal.body.setAllowGravity(false);
-          this.portal.setImmovable(true);
-          this.portal.setAlpha(0.3); // starts dim
-          this.tweens.add({
-            targets: this.portal,
-            angle: 360,
-            duration: 3000,
-            repeat: -1,
-          });
-
-          // ---- COLLISIONS ----
-          this.physics.add.overlap(
-            this.player,
-            this.equationGems,
-            this.collectEquation,
-            null,
-            this,
-          );
-          this.physics.add.overlap(
-            this.player,
-            this.solutionGems,
-            this.collectSolution,
-            null,
-            this,
-          );
-          this.physics.add.overlap(
-            this.player,
-            this.wrongGems,
-            this.collectWrong,
-            null,
-            this,
-          );
-          this.physics.add.overlap(
-            this.player,
-            this.spikes,
-            this.hitSpike,
-            null,
-            this,
-          );
-          this.physics.add.overlap(
-            this.player,
-            this.portal,
-            this.enterPortal,
-            null,
-            this,
-          );
-
-          // Gem-platform colliders
-          this.physics.add.collider(this.equationGems, this.platforms);
-          this.physics.add.collider(this.solutionGems, this.platforms);
-          this.physics.add.collider(this.wrongGems, this.platforms);
-
-          // ---- CONTROLS ----
-          this.cursors = this.input.keyboard.createCursorKeys();
-          this.wasd = this.input.keyboard.addKeys({
-            up: Phaser.Input.Keyboard.KeyCodes.W,
-            down: Phaser.Input.Keyboard.KeyCodes.S,
-            left: Phaser.Input.Keyboard.KeyCodes.A,
-            right: Phaser.Input.Keyboard.KeyCodes.D,
-          });
-
-          // Touch controls
-          this.touchLeft = false;
-          this.touchRight = false;
-          this.touchJump = false;
-
-          this.input.on("pointerdown", (p) => {
-            if (p.y > H * 0.6) {
-              if (p.x < W * 0.3) this.touchLeft = true;
-              else if (p.x > W * 0.7) this.touchRight = true;
-            } else {
-              this.touchJump = true;
-            }
-          });
-          this.input.on("pointerup", () => {
-            this.touchLeft = false;
-            this.touchRight = false;
-            this.touchJump = false;
-          });
-
-          // ---- HUD ----
-          this.createHUD();
-
-          // Invulnerability timer
-          this.invulnerable = false;
-
-          // Camera flash for start
-          this.cameras.main.flash(500, 0, 255, 136);
-        }
-
-        generatePlatforms() {
-          const LH = H;
-          const sections = Math.floor(this.levelWidth / 200);
-
-          for (let s = 0; s < sections; s++) {
-            const baseX = 100 + s * 200;
-            // 2-3 platforms per section at varying heights
-            const count = Phaser.Math.Between(1, 3);
-            for (let p = 0; p < count; p++) {
-              const px = baseX + Phaser.Math.Between(-40, 60);
-              const py = LH - Phaser.Math.Between(80, 350);
-              if (py > 50 && px > 0 && px < this.levelWidth - 48) {
-                this.platforms.create(px, py, "platform");
-              }
-            }
-          }
-        }
-
-        placeGems() {
-          const LH = H;
-          const spacing = (this.levelWidth - 200) / (this.totalPairs + 1);
-
-          // Build list of all wrong solutions for decoys
-          const allSolutions = this.pairs.map((p) => p.right);
-
-          this.pairs.forEach((pair, i) => {
-            // Place equation gem (blue) in first half-ish
-            const eqX = 120 + i * spacing + Phaser.Math.Between(-20, 20);
-            const eqY = LH - Phaser.Math.Between(60, 200);
-            const eqGem = this.equationGems.create(eqX, eqY, "gemLeft");
-            eqGem.setData("pair", pair);
-            eqGem.setBounce(0.3);
-            eqGem.body.setGravityY(-200); // float gently
-
-            // Label
-            const eqLabel = this.add
-              .text(eqX, eqY - 24, pair.left, {
-                fontSize: "10px",
-                color: "#00d4ff",
-                fontStyle: "bold",
-                backgroundColor: "rgba(0,0,0,0.7)",
-                padding: { x: 3, y: 2 },
-              })
-              .setOrigin(0.5);
-            eqGem.setData("label", eqLabel);
-
-            // Floating animation
-            this.tweens.add({
-              targets: [eqGem, eqLabel],
-              y: "-=12",
-              duration: 1200 + Math.random() * 600,
-              yoyo: true,
-              repeat: -1,
-              ease: "Sine.easeInOut",
-            });
-
-            // Place solution gem (green) further along
-            const solX = eqX + spacing * 0.5 + Phaser.Math.Between(30, 80);
-            const solY = LH - Phaser.Math.Between(80, 250);
-            const solGem = this.solutionGems.create(solX, solY, "gemRight");
-            solGem.setData("pair", pair);
-            solGem.setBounce(0.3);
-            solGem.body.setGravityY(-200);
-
-            const solLabel = this.add
-              .text(solX, solY - 24, pair.right, {
-                fontSize: "10px",
-                color: "#00ff88",
-                fontStyle: "bold",
-                backgroundColor: "rgba(0,0,0,0.7)",
-                padding: { x: 3, y: 2 },
-              })
-              .setOrigin(0.5);
-            solGem.setData("label", solLabel);
-
-            this.tweens.add({
-              targets: [solGem, solLabel],
-              y: "-=10",
-              duration: 1000 + Math.random() * 600,
-              yoyo: true,
-              repeat: -1,
-              ease: "Sine.easeInOut",
-            });
-
-            // Place 1-2 WRONG gems near the solution as decoys
-            const wrongCount = Phaser.Math.Between(1, 2);
-            for (let w = 0; w < wrongCount; w++) {
-              // Pick a wrong solution (not matching this pair)
-              const wrongOptions = allSolutions.filter((s) => s !== pair.right);
-              if (wrongOptions.length === 0) continue;
-              const wrongText = Phaser.Utils.Array.GetRandom(wrongOptions);
-
-              const wx = solX + Phaser.Math.Between(-100, 100);
-              const wy = LH - Phaser.Math.Between(60, 280);
-              const wGem = this.wrongGems.create(wx, wy, "gemWrong");
-              wGem.setData("pair", pair);
-              wGem.setData("wrongFor", pair);
-              wGem.setBounce(0.3);
-              wGem.body.setGravityY(-200);
-
-              const wLabel = this.add
-                .text(wx, wy - 24, wrongText, {
-                  fontSize: "10px",
-                  color: "#ff4444",
-                  fontStyle: "bold",
-                  backgroundColor: "rgba(0,0,0,0.7)",
-                  padding: { x: 3, y: 2 },
-                })
-                .setOrigin(0.5);
-              wGem.setData("label", wLabel);
-
-              this.tweens.add({
-                targets: [wGem, wLabel],
-                y: "-=8",
-                duration: 900 + Math.random() * 600,
-                yoyo: true,
-                repeat: -1,
-                ease: "Sine.easeInOut",
-              });
-            }
-          });
-        }
-
-        placeSpikes() {
-          const sections = Math.floor(this.levelWidth / 300);
-          for (let s = 1; s < sections; s++) {
-            const count = Phaser.Math.Between(1, 3);
-            for (let i = 0; i < count; i++) {
-              const sx = s * 300 + Phaser.Math.Between(-60, 60);
-              this.spikes.create(sx, H - 20, "spike");
-            }
-          }
-        }
-
-        createHUD() {
-          const style = { fontSize: "14px", color: "#fff", fontStyle: "bold" };
-
-          // Score
-          this.scoreText = this.add
-            .text(16, 16, "Score: 0", style)
-            .setScrollFactor(0)
-            .setDepth(100);
-
-          // Lives
-          this.livesContainer = this.add
-            .container(16, 40)
-            .setScrollFactor(0)
-            .setDepth(100);
-          this.updateLivesDisplay();
-
-          // Combo
-          this.comboText = this.add
-            .text(16, 64, "", {
-              fontSize: "12px",
-              color: "#ffd166",
-              fontStyle: "bold",
-            })
-            .setScrollFactor(0)
-            .setDepth(100);
-
-          // Held equation display
-          this.heldText = this.add
-            .text(W / 2, 16, "", {
-              fontSize: "14px",
-              color: "#00d4ff",
-              fontStyle: "bold",
-              backgroundColor: "rgba(0,0,0,0.8)",
-              padding: { x: 8, y: 4 },
-            })
-            .setOrigin(0.5, 0)
-            .setScrollFactor(0)
-            .setDepth(100);
-
-          // Progress
-          this.progressText = this.add
-            .text(W - 16, 16, `Matched: 0/${this.totalPairs}`, {
-              fontSize: "13px",
-              color: "#00ff88",
-            })
-            .setOrigin(1, 0)
-            .setScrollFactor(0)
-            .setDepth(100);
-
-          // Touch hints
-          if (!this.sys.game.device.os.desktop) {
-            this.add
-              .text(60, H - 30, "< LEFT", { fontSize: "12px", color: "#555" })
-              .setOrigin(0.5)
-              .setScrollFactor(0)
-              .setDepth(100);
-            this.add
-              .text(W - 60, H - 30, "RIGHT >", {
-                fontSize: "12px",
-                color: "#555",
-              })
-              .setOrigin(0.5)
-              .setScrollFactor(0)
-              .setDepth(100);
-            this.add
-              .text(W / 2, H / 4, "TAP TOP TO JUMP", {
-                fontSize: "12px",
-                color: "#555",
-              })
-              .setOrigin(0.5)
-              .setScrollFactor(0)
-              .setDepth(100);
-          }
-        }
-
-        updateLivesDisplay() {
-          this.livesContainer.removeAll(true);
-          for (let i = 0; i < this.lives; i++) {
-            this.livesContainer.add(
-              this.add.image(i * 22, 0, "heart").setScale(0.8),
-            );
-          }
-        }
-
-        // ---- COLLECT EQUATION (Blue) ----
-        collectEquation(player, gem) {
-          const pair = gem.getData("pair");
-          this.heldEquation = pair;
-
-          // Remove gem + label
-          const label = gem.getData("label");
-          if (label) label.destroy();
-
-          // Particle burst
-          this.emitParticles(gem.x, gem.y, 0x00d4ff);
-          gem.destroy();
-
-          SFX.play("collect");
-
-          // Update HUD
-          this.heldText.setText(
-            "Holding: " + pair.left + "  →  Find the solution!",
-          );
-          this.heldText.setColor("#00d4ff");
-
-          // Flash camera
-          this.cameras.main.flash(200, 0, 100, 200);
-        }
-
-        // ---- COLLECT SOLUTION (Green) ----
-        collectSolution(player, gem) {
-          const pair = gem.getData("pair");
-
-          if (!this.heldEquation) {
-            // Not holding anything — show hint
-            this.showFloatingText(
-              gem.x,
-              gem.y - 30,
-              "Pick up an equation first!",
-              "#ffd166",
-            );
-            return;
-          }
-
-          if (this.heldEquation === pair) {
-            // CORRECT MATCH
-            this.matched++;
-            this.combo++;
-            const pts = 100 + this.combo * 25;
-            this.score += pts;
-
-            const label = gem.getData("label");
-            if (label) label.destroy();
-
-            this.emitParticles(gem.x, gem.y, 0x00ff88, 15);
-            gem.destroy();
-
-            SFX.play("match");
-
-            this.showFloatingText(
-              gem.x,
-              gem.y - 30,
-              `MATCH! +${pts}`,
-              "#00ff88",
-            );
-            this.heldEquation = null;
-            this.heldText.setText("");
-
-            this.scoreText.setText("Score: " + this.score);
-            if (this.combo > 1)
-              this.comboText.setText("Combo x" + this.combo + "!");
-            this.progressText.setText(
-              `Matched: ${this.matched}/${this.totalPairs}`,
-            );
-
-            this.cameras.main.flash(300, 0, 255, 136);
-            this.cameras.main.shake(100, 0.005);
-
-            // Check if all matched
-            if (this.matched >= this.totalPairs) {
-              this.openPortal();
-            }
-          } else {
-            // Wrong match — this solution doesn't go with held equation
-            this.combo = 0;
-            this.comboText.setText("");
-            this.wrongPicks++;
-
-            SFX.play("wrong");
-            this.showFloatingText(gem.x, gem.y - 30, "Wrong match!", "#ff4444");
-            this.cameras.main.shake(200, 0.01);
-
-            // Drop the held equation
-            this.heldEquation = null;
-            this.heldText.setText("Dropped! Pick up again.");
-            this.heldText.setColor("#ff4444");
-            this.time.delayedCall(1500, () => {
-              if (!this.heldEquation) this.heldText.setText("");
-            });
-          }
-        }
-
-        // ---- COLLECT WRONG (Red) ----
-        collectWrong(player, gem) {
-          if (!this.heldEquation) {
-            this.showFloatingText(
-              gem.x,
-              gem.y - 30,
-              "Pick up a blue gem first!",
-              "#ffd166",
-            );
-            return;
-          }
-
-          // Wrong answer!
-          this.combo = 0;
-          this.comboText.setText("");
-          this.wrongPicks++;
-          this.lives--;
-
-          const label = gem.getData("label");
-          if (label) label.destroy();
-          gem.destroy();
-
-          SFX.play("wrong");
-          this.showFloatingText(gem.x, gem.y - 30, "WRONG! -1 Life", "#ff4444");
-          this.cameras.main.shake(300, 0.02);
-          this.cameras.main.flash(200, 255, 0, 0);
-          this.updateLivesDisplay();
-
-          // Drop held
-          this.heldEquation = null;
-          this.heldText.setText("Wrong solution! Pick up again.");
-          this.heldText.setColor("#ff4444");
-          this.time.delayedCall(1500, () => {
-            if (!this.heldEquation) this.heldText.setText("");
-          });
-
-          if (this.lives <= 0) {
-            this.gameOver();
-          }
-        }
-
-        hitSpike(player, spike) {
-          if (this.invulnerable) return;
-          this.invulnerable = true;
-
-          this.lives--;
-          SFX.play("hurt");
-          this.cameras.main.shake(300, 0.02);
-          this.cameras.main.flash(200, 255, 0, 0);
-          this.updateLivesDisplay();
-
-          // Knock back
-          this.player.setVelocityY(-250);
-
-          // Flash player
-          this.tweens.add({
-            targets: this.player,
-            alpha: 0.3,
-            duration: 100,
-            yoyo: true,
-            repeat: 8,
-            onComplete: () => {
-              this.player.setAlpha(1);
-              this.invulnerable = false;
-            },
-          });
-
-          // Drop held equation
-          if (this.heldEquation) {
-            this.heldEquation = null;
-            this.heldText.setText("Ouch! Equation dropped!");
-            this.heldText.setColor("#ff4444");
-            this.time.delayedCall(1500, () => {
-              if (!this.heldEquation) this.heldText.setText("");
-            });
-          }
-
-          if (this.lives <= 0) {
-            this.gameOver();
-          }
-        }
-
-        openPortal() {
-          this.portal.setAlpha(1);
-          this.tweens.add({
-            targets: this.portal,
-            scaleX: 1.5,
-            scaleY: 1.5,
-            duration: 500,
-            yoyo: true,
-            repeat: 2,
-            ease: "Sine.easeInOut",
-          });
-          SFX.play("portal");
-
-          this.showFloatingText(
-            this.portal.x,
-            this.portal.y - 40,
-            "PORTAL OPEN!",
-            "#ff006e",
-          );
-
-          // Arrow pointing to portal
-          const arrow = this.add
-            .text(this.portal.x, this.portal.y - 60, "▼ PORTAL ▼", {
-              fontSize: "14px",
-              color: "#ff006e",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5);
-          this.tweens.add({
-            targets: arrow,
-            y: arrow.y - 10,
-            duration: 500,
-            yoyo: true,
-            repeat: -1,
-          });
-        }
-
-        enterPortal(player, portal) {
-          if (this.matched < this.totalPairs) return; // portal not open yet
-
-          this.physics.pause();
-          SFX.play("levelUp");
-          this.cameras.main.flash(1000, 0, 255, 136);
-
-          this.time.delayedCall(800, () => {
-            this.scene.start("ResultsScene", {
-              score: this.score,
-              matched: this.matched,
-              total: this.totalPairs,
-              lives: this.lives,
-              wrongPicks: this.wrongPicks,
-              tiers: this.selectedTiers,
-            });
-          });
-        }
-
-        gameOver() {
-          this.physics.pause();
-          SFX.play("hurt");
-
-          const overlay = this.add
-            .rectangle(W / 2, H / 2, W, H, 0x000000, 0.7)
-            .setScrollFactor(0)
-            .setDepth(200);
-          this.add
-            .text(W / 2, H / 2 - 40, "GAME OVER", {
-              fontSize: "40px",
-              color: "#ff006e",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5)
-            .setScrollFactor(0)
-            .setDepth(201);
-
-          this.add
-            .text(
-              W / 2,
-              H / 2 + 10,
-              `Matched ${this.matched}/${this.totalPairs} pairs`,
-              {
-                fontSize: "18px",
-                color: "#fff",
-              },
-            )
-            .setOrigin(0.5)
-            .setScrollFactor(0)
-            .setDepth(201);
-
-          const retry = this.add
-            .text(W / 2, H / 2 + 60, "[ CLICK TO RETRY ]", {
-              fontSize: "16px",
-              color: "#00ff88",
-              fontStyle: "bold",
-            })
-            .setOrigin(0.5)
-            .setScrollFactor(0)
-            .setDepth(201)
-            .setInteractive({ useHandCursor: true });
-
-          this.tweens.add({
-            targets: retry,
-            alpha: 0.5,
-            duration: 600,
-            yoyo: true,
-            repeat: -1,
-          });
-          retry.on("pointerdown", () => {
-            this.scene.start("GameScene", { tiers: this.selectedTiers });
-          });
-
-          // Also allow keyboard
-          this.input.keyboard.once("keydown-SPACE", () => {
-            this.scene.start("GameScene", { tiers: this.selectedTiers });
-          });
-        }
-
-        showFloatingText(x, y, text, color) {
-          const t = this.add
-            .text(x, y, text, {
-              fontSize: "14px",
-              color: color,
-              fontStyle: "bold",
-              stroke: "#000",
-              strokeThickness: 2,
-            })
-            .setOrigin(0.5)
-            .setDepth(150);
-          this.tweens.add({
-            targets: t,
-            y: y - 50,
-            alpha: 0,
-            duration: 1200,
-            ease: "Power2",
-            onComplete: () => t.destroy(),
-          });
-        }
-
-        emitParticles(x, y, tint, count) {
-          count = count || 8;
-          for (let i = 0; i < count; i++) {
-            const p = this.add
-              .image(x, y, "spark")
-              .setTint(tint)
-              .setScale(1 + Math.random());
-            const angle = (Math.PI * 2 * i) / count;
-            const dist = 40 + Math.random() * 40;
-            this.tweens.add({
-              targets: p,
-              x: x + Math.cos(angle) * dist,
-              y: y + Math.sin(angle) * dist,
-              alpha: 0,
-              scale: 0,
-              duration: 400 + Math.random() * 200,
-              ease: "Power2",
-              onComplete: () => p.destroy(),
-            });
-          }
-        }
-
-        update() {
-          if (!this.player || !this.player.body) return;
-
-          const onGround =
-            this.player.body.touching.down || this.player.body.blocked.down;
-          const speed = 200;
-
-          // Horizontal movement
-          if (
-            this.cursors.left.isDown ||
-            this.wasd.left.isDown ||
-            this.touchLeft
-          ) {
-            this.player.setVelocityX(-speed);
-            this.player.setFlipX(true);
-          } else if (
-            this.cursors.right.isDown ||
-            this.wasd.right.isDown ||
-            this.touchRight
-          ) {
-            this.player.setVelocityX(speed);
-            this.player.setFlipX(false);
-          } else {
-            this.player.setVelocityX(0);
-          }
-
-          // Jump
-          if (
-            (this.cursors.up.isDown || this.wasd.up.isDown || this.touchJump) &&
-            onGround
-          ) {
-            this.player.setVelocityY(-420);
-            SFX.play("jump");
-            this.touchJump = false; // one jump per tap
-          }
-
-          // Sync gem labels with gem positions (for the floating ones)
-          [this.equationGems, this.solutionGems, this.wrongGems].forEach(
-            (group) => {
-              group.getChildren().forEach((gem) => {
-                const label = gem.getData("label");
-                if (label && label.active) {
-                  label.setPosition(gem.x, gem.y - 24);
-                }
-              });
-            },
-          );
-
-          // Player glow when holding equation
-          if (this.heldEquation) {
-            this.player.setTint(0x00d4ff);
-          } else {
-            this.player.clearTint();
-          }
-        }
-      }
-
-      // ============================================================
-      //  RESULTS SCENE
-      // ============================================================
-      class ResultsScene extends Phaser.Scene {
-        constructor() {
-          super("ResultsScene");
-        }
-
-        init(data) {
-          this.finalScore = data.score || 0;
-          this.matched = data.matched || 0;
-          this.total = data.total || 0;
-          this.lives = data.lives || 0;
-          this.wrongPicks = data.wrongPicks || 0;
-          this.tiers = data.tiers || [1, 2];
-        }
-
-        create() {
-          // Background
-          for (let x = 0; x < W; x += 64)
-            for (let y = 0; y < H; y += 64)
-              this.add.image(x + 32, y + 32, "bgTile");
-
-          // Rank
-          const accuracy =
-            this.total > 0 ? Math.round((this.matched / this.total) * 100) : 0;
-          let rank = "C",
-            rankColor = "#ff4444";
-          if (accuracy >= 100 && this.wrongPicks === 0) {
-            rank = "S";
-            rankColor = "#ffd166";
-          } else if (accuracy >= 100) {
-            rank = "A";
-            rankColor = "#00ff88";
-          } else if (accuracy >= 60) {
-            rank = "B";
-            rankColor = "#00d4ff";
-          }
-
-          // Stars
-          let stars = 0;
-          if (accuracy >= 100 && this.wrongPicks <= 2) stars = 3;
-          else if (accuracy >= 100) stars = 2;
-          else if (accuracy >= 50) stars = 1;
-
+        play(t, f, d, v = 0.2) {
+          if (!this.ctx) return;
           try {
-            window.EduPulse &&
-              EduPulse.record({
-                activityTitle: document.title,
-                score: this.matched,
-                maxScore: this.total,
-                stars: stars,
-                problemsCorrect: this.matched,
-                problemsAttempted: this.total,
-                percent: accuracy,
-                standard: "6.EE.C.9",
-              });
+            const c = this.ctx,
+              o = c.createOscillator(),
+              g = c.createGain();
+            o.type = t;
+            o.frequency.value = f;
+            g.gain.setValueAtTime(v, c.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + d);
+            o.connect(g);
+            g.connect(c.destination);
+            o.start();
+            o.stop(c.currentTime + d);
           } catch (e) {}
-
-          // Victory particles
-          for (let i = 0; i < 30; i++) {
-            const s = this.add
-              .image(
-                Phaser.Math.Between(50, W - 50),
-                Phaser.Math.Between(50, H - 50),
-                "star",
-              )
-              .setTint(
-                Phaser.Utils.Array.GetRandom([
-                  0x00ff88, 0x00d4ff, 0xffd166, 0xff006e,
-                ]),
-              )
-              .setAlpha(0)
-              .setScale(0);
-            this.tweens.add({
-              targets: s,
-              alpha: 0.8,
-              scale: 1 + Math.random() * 2,
-              duration: 500,
-              delay: i * 50,
-              yoyo: true,
-              repeat: -1,
-              hold: 200,
-            });
-          }
-
-          // Title
-          this.add
-            .text(W / 2, 60, "LEVEL COMPLETE!", {
-              fontSize: "40px",
-              color: "#00ff88",
-              fontStyle: "bold",
-              stroke: "#005533",
-              strokeThickness: 3,
-            })
-            .setOrigin(0.5);
-
-          // Rank badge
-          this.add
-            .text(W / 2, 130, rank, {
-              fontSize: "80px",
-              color: rankColor,
-              fontStyle: "bold",
-              stroke: "#000",
-              strokeThickness: 5,
-            })
-            .setOrigin(0.5);
-
-          // Stars
-          const starStr = "★".repeat(stars) + "☆".repeat(3 - stars);
-          this.add
-            .text(W / 2, 190, starStr, {
-              fontSize: "36px",
-              color: "#ffd166",
-            })
-            .setOrigin(0.5);
-
-          // Stats
-          const stats = [
-            `Score: ${this.finalScore}`,
-            `Pairs Matched: ${this.matched}/${this.total}`,
-            `Wrong Picks: ${this.wrongPicks}`,
-            `Lives Remaining: ${this.lives}`,
-            `Accuracy: ${accuracy}%`,
-          ];
-          stats.forEach((s, i) => {
-            this.add
-              .text(W / 2, 240 + i * 28, s, {
-                fontSize: "16px",
-                color: "#ccc",
-              })
-              .setOrigin(0.5);
-          });
-
-          // Buttons
-          const retryBtn = this.add
-            .rectangle(W / 2 - 110, 440, 180, 44, 0x00d4ff, 0.2)
-            .setStrokeStyle(2, 0x00d4ff)
-            .setInteractive({ useHandCursor: true });
-          this.add
-            .text(W / 2 - 110, 440, "PLAY AGAIN", {
-              fontSize: "15px",
-              fontStyle: "bold",
-              color: "#fff",
-            })
-            .setOrigin(0.5);
-          retryBtn.on("pointerover", () =>
-            retryBtn.setFillStyle(0x00d4ff, 0.4),
+        },
+        leap() {
+          this.play("sine", 440, 0.12, 0.25);
+          this.play("sine", 660, 0.16, 0.2);
+        },
+        bad() {
+          this.play("sawtooth", 190, 0.24, 0.2);
+        },
+        win() {
+          [523, 659, 784, 1046].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.18, 0.25), i * 90),
           );
-          retryBtn.on("pointerout", () => retryBtn.setFillStyle(0x00d4ff, 0.2));
-          retryBtn.on("pointerdown", () => {
-            this.scene.start("GameScene", { tiers: this.tiers });
-          });
+        },
+      };
 
-          const menuBtn = this.add
-            .rectangle(W / 2 + 110, 440, 180, 44, 0xff006e, 0.2)
-            .setStrokeStyle(2, 0xff006e)
-            .setInteractive({ useHandCursor: true });
-          this.add
-            .text(W / 2 + 110, 440, "MAIN MENU", {
-              fontSize: "15px",
-              fontStyle: "bold",
-              color: "#fff",
-            })
-            .setOrigin(0.5);
-          menuBtn.on("pointerover", () => menuBtn.setFillStyle(0xff006e, 0.4));
-          menuBtn.on("pointerout", () => menuBtn.setFillStyle(0xff006e, 0.2));
-          menuBtn.on("pointerdown", () => {
-            this.scene.start("TitleScene");
-          });
+      // ── Helpers ──
+      const $ = (id) => document.getElementById(id);
+      const rint = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
+      function shuffle(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = (Math.random() * (i + 1)) | 0;
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+      }
+      const srSay = (m) => {
+        const el = $("ff-sr");
+        if (el) {
+          el.textContent = "";
+          setTimeout(() => (el.textContent = m), 30);
+        }
+      };
+      function show(screen) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("on"));
+        $("screen-" + screen).classList.add("on");
+      }
 
-          this.add
-            .text(W / 2, H - 20, "Neft.Alba Premium Math | 6.EE.C.9", {
-              fontSize: "10px",
-              color: "#555",
-            })
-            .setOrigin(0.5);
+      // ── Equation generator ──
+      // op: add (x+b=c), sub (x-b=c), mul (b·x=c), div (x/b=c). Solution is whole.
+      function makeEquation(level) {
+        const small = level === 1;
+        const op = ["add", "sub", "mul", "div"][rint(0, 3)];
+        let x, b, c, text, scaffold, decoys;
+        if (op === "add") {
+          x = small ? rint(1, 9) : rint(6, 24);
+          b = small ? rint(1, 9) : rint(5, 19);
+          c = x + b;
+          text = "x + " + b + " = " + c;
+          scaffold = `Undo <b>+ ${b}</b>: subtract ${b} from both sides → x = ${c} − ${b}`;
+          // decoys = common errors: added instead, off-by-b
+          decoys = [c + b, b, c];
+        } else if (op === "sub") {
+          b = small ? rint(1, 9) : rint(5, 19);
+          x = small ? rint(b + 1, b + 9) : rint(b + 4, b + 24);
+          c = x - b;
+          text = "x − " + b + " = " + c;
+          scaffold = `Undo <b>− ${b}</b>: add ${b} to both sides → x = ${c} + ${b}`;
+          decoys = [c - b, c, b];
+        } else if (op === "mul") {
+          b = small ? rint(2, 6) : rint(3, 9);
+          x = small ? rint(2, 9) : rint(4, 15);
+          c = b * x;
+          text = b + "x = " + c;
+          scaffold = `Undo <b>× ${b}</b>: divide both sides by ${b} → x = ${c} ÷ ${b}`;
+          decoys = [c, c * b, c - b];
+        } else {
+          b = small ? rint(2, 5) : rint(3, 8);
+          x = small ? b * rint(2, 6) : b * rint(3, 9);
+          c = x / b;
+          text = "x ÷ " + b + " = " + c;
+          scaffold = `Undo <b>÷ ${b}</b>: multiply both sides by ${b} → x = ${c} × ${b}`;
+          decoys = [c, b, c + b];
+        }
+        // Build platform labels: solution + 2 unique sensible decoys, all positive whole, distinct.
+        const labels = new Set([x]);
+        for (const d of shuffle(decoys)) {
+          if (labels.size >= 3) break;
+          if (Number.isInteger(d) && d > 0 && d !== x) labels.add(d);
+        }
+        // Pad with nearby values if decoys collided.
+        let pad = 1;
+        while (labels.size < 3) {
+          if (x + pad > 0) labels.add(x + pad);
+          if (labels.size < 3 && x - pad > 0) labels.add(x - pad);
+          pad++;
+        }
+        return {
+          text,
+          solution: x,
+          op,
+          b,
+          c,
+          scaffold,
+          labels: shuffle([...labels]),
+        };
+      }
+
+      // ── State ──
+      const S = {
+        level: 1,
+        lives: 5,
+        score: 0,
+        round: 0,
+        solved: 0,
+        rounds: [],
+        cur: null,
+        locked: false,
+      };
+
+      // ── Vocab gate ──
+      function renderVocab() {
+        $("vocab-list").innerHTML = (DATA.vocab || [])
+          .map(
+            (v) =>
+              `<div class="vrow"><span class="vterm">${v.term}</span><span class="vdef">${v.defn}</span></div>`,
+          )
+          .join("");
+      }
+
+      // ── Level select ──
+      function renderLevels() {
+        const t = DATA.tiers || {};
+        $("level-list").innerHTML = Object.keys(t)
+          .map((k) => {
+            const tier = t[k];
+            return `<button class="level-pick" data-level="${k}">
+              <span class="tag">${tier.label} · ${tier.sub}</span>
+              <b>${k === "1" ? "Steady Leaper" : "Sky Leaper"}</b>
+              <span class="desc">${tier.desc}</span>
+            </button>`;
+          })
+          .join("");
+        $("level-list")
+          .querySelectorAll("[data-level]")
+          .forEach((el) =>
+            el.addEventListener("click", () =>
+              startGame(Number(el.dataset.level)),
+            ),
+          );
+      }
+
+      // ── Game flow ──
+      function startGame(level) {
+        SFX.init();
+        S.level = level;
+        S.lives = level === 1 ? 5 : 3;
+        S.score = 0;
+        S.round = 0;
+        S.solved = 0;
+        S.rounds = [];
+        for (let i = 0; i < ROUNDS; i++) S.rounds.push(makeEquation(level));
+        $("hud-total").textContent = ROUNDS;
+        show("play");
+        loadRound(0);
+      }
+
+      function loadRound(i) {
+        S.round = i;
+        S.cur = S.rounds[i];
+        S.locked = false;
+        const p = S.cur;
+        $("hud-round").textContent = i + 1;
+        $("hud-score").textContent = S.score;
+        $("hud-lives").textContent = "●".repeat(S.lives) || "—";
+        $("t-eq").textContent = p.text;
+        $("feedback").textContent = "";
+        $("feedback").className = "feedback";
+        $("x-input").value = "";
+        $("x-input").disabled = false;
+        $("solve-btn").disabled = false;
+        $("scaffold").innerHTML =
+          S.level === 1
+            ? p.scaffold
+            : "Get x by itself using the inverse operation, then leap to your answer.";
+        $("hint").textContent =
+          S.level === 1
+            ? "Tip: do the OPPOSITE operation to BOTH sides to undo it."
+            : "Solve it in your head or on paper, then lock in x.";
+        renderPlatforms(false);
+        resetRunner();
+        $("x-input").focus();
+        srSay(`Round ${i + 1}. Solve ${p.text.replace("÷", "divided by")}.`);
+      }
+
+      function resetRunner() {
+        const r = $("runner");
+        r.classList.remove("fall");
+        r.style.left = "14px";
+        r.style.bottom = "14px";
+      }
+
+      // Render leap-target platforms. Locked = only enabled once x is typed.
+      function renderPlatforms(enabled) {
+        const labels = S.cur.labels;
+        const host = $("plats-buttons");
+        host.innerHTML = "";
+        labels.forEach((val, idx) => {
+          const b = document.createElement("button");
+          b.className = "plat";
+          b.textContent = val;
+          b.dataset.val = val;
+          b.disabled = !enabled;
+          b.setAttribute("aria-label", `Leap to platform ${val}`);
+          b.addEventListener("click", () => leapTo(val, idx));
+          host.appendChild(b);
+        });
+        // mirror visual-only platforms in the arena
+        const arena = $("plats");
+        arena.innerHTML = "";
+        labels.forEach((val) => {
+          const d = document.createElement("div");
+          d.className = "plat";
+          d.style.cursor = "default";
+          d.textContent = val;
+          arena.appendChild(d);
+        });
+      }
+
+      // Player computes x and locks it in.
+      function lockIn() {
+        if (S.locked) return;
+        const raw = $("x-input").value.trim();
+        if (raw === "") {
+          flash("Type the value of x first, then leap.", "bad");
+          $("x-input").focus();
+          return;
+        }
+        const val = Number(raw);
+        if (!Number.isFinite(val)) {
+          flash("Type a number for x.", "bad");
+          return;
+        }
+        if (val === S.cur.solution) {
+          // Correct solve → enable the matching leap platform path.
+          S.locked = true;
+          $("x-input").disabled = true;
+          $("solve-btn").disabled = true;
+          renderPlatforms(true);
+          // highlight matching platform target in the arena
+          $("plats")
+            .querySelectorAll(".plat")
+            .forEach((el) => {
+              if (Number(el.textContent) === val) el.classList.add("good");
+            });
+          flash("x = " + val + " ✓  Now leap to platform " + val + "!", "good");
+          srSay("Correct. Leap to platform " + val + ".");
+          // auto-focus the matching leap button for keyboard players
+          const btn = [...$("plats-buttons").children].find(
+            (b) => Number(b.dataset.val) === val,
+          );
+          if (btn) btn.focus();
+        } else {
+          // Wrong value → misconception nudge + life lost. They re-solve.
+          loseLife(nudgeFor(val));
         }
       }
 
-      // ============================================================
-      //  PHASER CONFIG
-      // ============================================================
-      const config = {
-        type: Phaser.AUTO,
-        width: W,
-        height: H,
-        parent: document.body,
-        backgroundColor: "#0a0e27",
-        scale: {
-          mode: Phaser.Scale.FIT,
-          autoCenter: Phaser.Scale.CENTER_BOTH,
-        },
-        physics: {
-          default: "arcade",
-          arcade: {
-            gravity: { y: 600 },
-            debug: false,
-          },
-        },
-        scene: [BootScene, TitleScene, GameScene, ResultsScene],
-      };
+      function nudgeFor(val) {
+        const p = S.cur,
+          m = DATA.misconceptions || [];
+        // wrong-operation: applied the operation instead of its inverse
+        const applied =
+          p.op === "add"
+            ? p.c + p.b
+            : p.op === "sub"
+              ? p.c - p.b
+              : p.op === "mul"
+                ? p.c * p.b
+                : p.c + p.b;
+        if (val === applied)
+          return (
+            (m[0] && m[0].feedback) || "Use the inverse operation to undo it."
+          );
+        if (val === p.c)
+          return (
+            (m[1] && m[1].feedback) ||
+            "You stopped early — keep going until x is alone."
+          );
+        return "Not quite. Re-check: undo the operation on BOTH sides to find x.";
+      }
 
-      new Phaser.Game(config);
+      // Leap onto a chosen platform (only reachable once x is locked in).
+      function leapTo(val, idx) {
+        if (!S.locked) {
+          flash("Solve for x and lock it in before you leap.", "bad");
+          return;
+        }
+        const correct = val === S.cur.solution;
+        // animate runner toward the platform
+        const r = $("runner"),
+          n = S.cur.labels.length;
+        r.style.left = `calc(${(idx + 0.5) * (100 / n)}% - 20px)`;
+        r.style.bottom = "120px";
+        if (correct) {
+          SFX.leap();
+          S.score += S.level === 1 ? 50 : 70;
+          S.solved++;
+          $("hud-score").textContent = S.score;
+          [...$("plats-buttons").children].forEach((b) => (b.disabled = true));
+          flash("Stuck the landing! x = " + val, "good");
+          if (window.GameFX && GameFX.successBurst)
+            try {
+              GameFX.successBurst();
+            } catch (e) {}
+          if (S.round + 1 >= ROUNDS) setTimeout(() => endGame(true), 1100);
+          else setTimeout(() => loadRound(S.round + 1), 1100);
+        } else {
+          // Landed on a decoy → fall + nudge + life.
+          SFX.bad();
+          r.classList.add("fall");
+          const btn = [...$("plats-buttons").children][idx];
+          if (btn) btn.classList.add("miss");
+          loseLife(
+            "That platform is " +
+              val +
+              ", not your x. Leap to platform " +
+              S.cur.solution +
+              ".",
+          );
+          setTimeout(resetRunner, 600);
+        }
+      }
+
+      function loseLife(msg) {
+        S.lives--;
+        SFX.bad();
+        $("hud-lives").textContent = "●".repeat(S.lives) || "—";
+        flash(msg, "bad");
+        if (S.lives <= 0) {
+          setTimeout(() => endGame(false), 900);
+        }
+      }
+
+      function flash(msg, cls) {
+        const f = $("feedback");
+        f.textContent = msg;
+        f.className = "feedback " + cls;
+        srSay(msg);
+      }
+
+      function endGame(won) {
+        const pct = ROUNDS ? S.solved / ROUNDS : 0;
+        const stars = pct >= 0.95 ? 3 : pct >= 0.6 ? 2 : pct >= 0.3 ? 1 : 0;
+        $("r-stars").textContent = "★".repeat(stars) + "☆".repeat(3 - stars);
+        $("r-score").textContent = S.score;
+        $("r-correct").textContent = S.solved;
+        $("r-rounds").textContent = won ? ROUNDS : S.round;
+        let high = 0;
+        try {
+          high = Number(localStorage.getItem(LS_KEY) || 0);
+        } catch (e) {}
+        if (S.score > high) {
+          try {
+            localStorage.setItem(LS_KEY, String(S.score));
+          } catch (e) {}
+          $("r-high").textContent = S.score;
+          $("r-high-row").style.display = "flex";
+        }
+        try {
+          window.EduPulse &&
+            EduPulse.record({
+              activityTitle: ACTIVITY_TITLE,
+              score: S.score,
+              stars: stars,
+              problemsCorrect: S.solved,
+              problemsAttempted: ROUNDS,
+              percent: Math.round(pct * 100),
+              standard: STANDARD,
+            });
+        } catch (e) {}
+        if (won) SFX.win();
+        srSay(
+          (won ? "All rounds leapt. " : "Out of lives. ") +
+            "Score " +
+            S.score +
+            ", " +
+            stars +
+            " stars.",
+        );
+        show("result");
+      }
+
+      // ── Wiring ──
+      $("vocab-go").addEventListener("click", () => {
+        renderLevels();
+        show("level");
+      });
+      $("r-again").addEventListener("click", () => {
+        renderLevels();
+        show("level");
+      });
+      $("solve-btn").addEventListener("click", lockIn);
+      $("x-input").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          lockIn();
+        }
+      });
+
+      renderVocab();
     </script>
+
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
 </html>

@@ -1,35 +1,81 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <link rel="stylesheet" href="/assets/shared.css" />
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Underwater Adventure — 6.NS.A.1</title>
+    <meta
+      name="description"
+      content="Deep Dive Fractions: a Grade 6 math-as-mechanic game for 6.NS.A.1 — partition a depth-bar model into equal jumps to construct the quotient of a fraction divided by a fraction (how many c/d are in a/b)."
+    />
     <style>
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
-      html,
+      :root {
+        --sea: #0b2f4a;
+        --sea-bright: #1488b8;
+        --gold: #f0b429;
+        --ink: #042033;
+        --panel: #0a2438;
+        --line: #1b4a66;
+        --whole: #103a55;
+        --jump: #1fa6c2;
+        --txt: #e4f3fb;
+        --muted: #8fb9cf;
+        --bad: #ef8b6b;
+        --good: #6fd6a3;
+      }
       body {
-        width: 100%;
-        height: 100%;
+        background: var(--panel);
+        min-height: 100vh;
+        font-family: "Segoe UI", system-ui, sans-serif;
+        color: var(--txt);
+        overflow-x: hidden;
+      }
+      #ff-bg {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
         overflow: hidden;
-        background: #020a18;
-        font-family: Inter, system-ui, sans-serif;
+        pointer-events: none;
+        background: radial-gradient(
+          130% 95% at 50% 0%,
+          #11516f 0%,
+          #0a2438 55%,
+          #051a2a 100%
+        );
       }
-      #game-container {
-        width: 100%;
-        height: 100%;
+      .ff-mote {
+        position: absolute;
+        border-radius: 50%;
+        background: #74d6e6;
+        opacity: 0.4;
+        animation: ffTwinkle var(--tw, 3s) ease-in-out infinite;
       }
-      canvas {
-        display: block;
+      @keyframes ffTwinkle {
+        0%,
+        100% {
+          opacity: 0.1;
+          transform: scale(0.8) translateY(0);
+        }
+        50% {
+          opacity: 0.55;
+          transform: scale(1.2) translateY(-6px);
+        }
       }
-      .sr-only {
+      @media (prefers-reduced-motion: reduce) {
+        .ff-mote {
+          animation: none !important;
+          opacity: 0.3 !important;
+        }
+        * {
+          scroll-behavior: auto !important;
+        }
+      }
+      #ff-sr {
         position: absolute;
         width: 1px;
         height: 1px;
@@ -40,1665 +86,951 @@
         white-space: nowrap;
         border: 0;
       }
+      #wrap {
+        position: relative;
+        z-index: 1;
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 18px 16px 48px;
+        min-height: 100vh;
+      }
+      .screen {
+        display: none;
+      }
+      .screen.on {
+        display: block;
+        animation: fade 0.35s ease;
+      }
+      @keyframes fade {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      h1 {
+        font-size: clamp(1.6rem, 4vw, 2.3rem);
+        color: #fff;
+        letter-spacing: 0.5px;
+      }
+      .sub {
+        color: var(--muted);
+        margin-top: 4px;
+        font-size: 0.95rem;
+      }
+      .card {
+        background: rgba(10, 36, 56, 0.86);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 20px;
+        margin: 16px 0;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+      }
+      .btn {
+        font:
+          600 1rem "Segoe UI",
+          system-ui,
+          sans-serif;
+        cursor: pointer;
+        border: none;
+        border-radius: 12px;
+        padding: 13px 22px;
+        color: var(--ink);
+        background: var(--sea-bright);
+        transition:
+          transform 0.12s,
+          background 0.12s,
+          box-shadow 0.12s;
+      }
+      .btn:hover {
+        background: #1fa0d4;
+        transform: translateY(-1px);
+      }
+      .btn:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 3px;
+      }
+      .btn.ghost {
+        background: #143b52;
+        color: #9fcbe0;
+      }
+      .btn.ghost:hover {
+        background: #1b4d6a;
+      }
+      .btn.big {
+        padding: 18px 26px;
+        font-size: 1.1rem;
+      }
+      .vocab {
+        display: grid;
+        gap: 12px;
+        margin: 14px 0;
+      }
+      .vrow {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        background: #0a2c44;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px;
+      }
+      .vterm {
+        color: var(--gold);
+        font-weight: 700;
+        min-width: 140px;
+      }
+      .vdef {
+        color: var(--txt);
+      }
+      .levels {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 560px) {
+        .levels {
+          grid-template-columns: 1fr;
+        }
+      }
+      .level-pick {
+        text-align: left;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+        padding: 18px;
+        background: #0a2c44;
+        border: 1px solid var(--line);
+        color: var(--txt);
+        border-radius: 14px;
+        cursor: pointer;
+      }
+      .level-pick:hover {
+        border-color: var(--sea-bright);
+        background: #0e3450;
+      }
+      .level-pick:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 3px;
+      }
+      .level-pick b {
+        color: #fff;
+        font-size: 1.15rem;
+      }
+      .level-pick .tag {
+        color: var(--jump);
+        font-weight: 700;
+        font-size: 0.85rem;
+      }
+      .level-pick .desc {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .hud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .hud .pill {
+        background: #0a2c44;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 6px 14px;
+        font-weight: 700;
+      }
+      .hud .pill small {
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .lives {
+        color: #ef8b6b;
+        letter-spacing: 2px;
+        font-size: 1.1rem;
+      }
+      .target {
+        text-align: center;
+        margin: 6px 0 14px;
+      }
+      .target .nums {
+        font-size: clamp(1.4rem, 5vw, 2.1rem);
+        font-weight: 800;
+        color: #fff;
+      }
+      .target .nums b {
+        color: var(--gold);
+      }
+      .prompt {
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .frac {
+        display: inline-flex;
+        flex-direction: column;
+        vertical-align: middle;
+        text-align: center;
+        line-height: 1.05;
+        margin: 0 2px;
+      }
+      .frac .num {
+        border-bottom: 2px solid currentColor;
+        padding: 0 4px;
+      }
+      .frac .den {
+        padding: 0 4px;
+      }
+      /* depth bar model */
+      .modelwrap {
+        margin: 10px 0 6px;
+      }
+      .modellbl {
+        display: flex;
+        justify-content: space-between;
+        color: var(--muted);
+        font-size: 0.85rem;
+        margin-bottom: 4px;
+      }
+      .bar {
+        position: relative;
+        height: 92px;
+        border-radius: 12px;
+        background: var(--whole);
+        border: 2px solid var(--line);
+        overflow: hidden;
+      }
+      .bar .fill {
+        position: absolute;
+        inset: 0 auto 0 0;
+        background: linear-gradient(180deg, #155b7a, #0e3e57);
+        border-right: 3px solid var(--gold);
+      }
+      .bar .tick {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 1px;
+        background: rgba(143, 185, 207, 0.35);
+      }
+      .bar .jump {
+        position: absolute;
+        top: 8px;
+        bottom: 8px;
+        border-radius: 8px;
+        background: linear-gradient(180deg, #2ec0dc, var(--jump));
+        border: 2px solid #0a2c44;
+        box-shadow: 0 3px 0 #0c6a82;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        color: var(--ink);
+        transition:
+          left 0.18s ease,
+          width 0.18s ease;
+      }
+      .bar .jump.over {
+        background: linear-gradient(180deg, #f4a78a, var(--bad));
+        box-shadow: 0 3px 0 #b85a3a;
+      }
+      .bar .goal {
+        position: absolute;
+        top: -2px;
+        bottom: -2px;
+        width: 4px;
+        background: var(--gold);
+        box-shadow: 0 0 8px var(--gold);
+      }
+      .controls {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        margin: 14px 0 6px;
+      }
+      .counter {
+        background: #0a2c44;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 8px 16px;
+        font-weight: 800;
+        font-size: 1.1rem;
+        min-width: 168px;
+        text-align: center;
+      }
+      .counter b {
+        color: var(--gold);
+        font-size: 1.4rem;
+      }
+      .step {
+        width: 52px;
+        height: 52px;
+        font-size: 1.5rem;
+        padding: 0;
+        border-radius: 14px;
+      }
+      .readout {
+        display: flex;
+        gap: 18px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin: 8px 0 2px;
+      }
+      .readout .r {
+        background: #0a2c44;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 8px 16px;
+      }
+      .readout .r b {
+        color: var(--gold);
+      }
+      .feedback {
+        min-height: 24px;
+        text-align: center;
+        margin: 10px 0;
+        font-weight: 600;
+      }
+      .feedback.bad {
+        color: var(--bad);
+      }
+      .feedback.good {
+        color: var(--good);
+      }
+      .hint {
+        color: var(--muted);
+        font-size: 0.9rem;
+        text-align: center;
+        margin-top: 6px;
+      }
+      .result-stars {
+        font-size: 2rem;
+        color: var(--gold);
+        letter-spacing: 6px;
+        text-align: center;
+        margin: 10px 0;
+      }
+      .result-stat {
+        display: flex;
+        justify-content: space-between;
+        max-width: 320px;
+        margin: 6px auto;
+        color: var(--muted);
+      }
+      .result-stat b {
+        color: var(--txt);
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 16px;
+      }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+    <!-- Games-2D metadata source of truth (must load before the game script) -->
+    <script src="/assets/games2d-data.js"></script>
+  </head>
   <body>
-    <div
-      id="game-container"
-      role="application"
-      aria-label="Underwater Adventure — a Grade 6 math game for dividing fractions (6.NS.A.1)."
-    >
-      <p class="sr-only">
-        Underwater Adventure is an interactive math game. Dive deeper by solving
-        fraction-division problems and choosing the correct answer; avoid sea
-        creatures carrying wrong answers. Play with touch, mouse, or keyboard.
-      </p>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
-    <script>
-      // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror
-      // (document.write blocks parsing so the mirror is ready before the game script runs).
-      if (typeof Phaser === "undefined") {
-        document.write(
-          '<script src="https://unpkg.com/phaser@3.80.1/dist/phaser.min.js"><\/script>',
-        );
-      }
-      // If both CDNs are unreachable, show a clear message instead of a blank page.
-      window.addEventListener("load", function () {
-        if (typeof Phaser === "undefined") {
-          document.body.innerHTML =
-            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#12355b">\u26a0\ufe0f This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
-        }
-      });
-    </script>
-    <script>
-      "use strict";
-      (() => {
-        /* ============================================================
-   UNDERWATER ADVENTURE — 6.NS.A.1
-   Divide fractions by fractions.
-   Dive deeper by solving fraction division problems.
-   Avoid sea creatures carrying wrong answers.
-   ============================================================ */
+    <div id="ff-bg" aria-hidden="true"></div>
+    <div id="ff-sr" role="status" aria-live="polite"></div>
 
-        // --- Audio helpers ---
-        let audioCtx = null;
-        function getAudio() {
-          if (!audioCtx)
+    <main id="wrap">
+      <!-- VOCAB GATE -->
+      <section id="screen-vocab" class="screen on" aria-labelledby="vh">
+        <h1 id="vh">🌊 Deep Dive Fractions</h1>
+        <p class="sub">Unit 2 · Dividing fractions on a model · 6.NS.A.1</p>
+        <div class="card">
+          <h2 style="color: #fff; font-size: 1.2rem">Words to know first</h2>
+          <div class="vocab" id="vocab-list"></div>
+          <button class="btn big" id="vocab-go">I'm ready →</button>
+        </div>
+      </section>
+
+      <!-- LEVEL SELECT -->
+      <section id="screen-level" class="screen" aria-labelledby="lh">
+        <h1 id="lh">Choose your dive</h1>
+        <p class="sub">You can change this any time by playing again.</p>
+        <div class="card">
+          <div class="levels" id="level-list"></div>
+        </div>
+      </section>
+
+      <!-- PLAY -->
+      <section id="screen-play" class="screen" aria-labelledby="ph">
+        <h1 id="ph" style="position: absolute; left: -9999px">
+          Deep Dive Fractions play
+        </h1>
+        <div class="hud">
+          <span class="pill"
+            ><small>Dive</small> <span id="hud-round">1</span>/<span
+              id="hud-total"
+              >5</span
+            ></span
+          >
+          <span class="pill"
+            ><small>Score</small> <span id="hud-score">0</span></span
+          >
+          <span class="pill"
+            ><small>Air</small>
+            <span class="lives" id="hud-lives">●●●●●</span></span
+          >
+        </div>
+        <div class="card">
+          <div class="target">
+            <div class="nums" id="t-question"></div>
+            <div class="prompt" id="t-prompt">
+              How many jumps of the small fraction fit into the big distance?
+            </div>
+          </div>
+
+          <div class="modelwrap">
+            <div class="modellbl">
+              <span>start (0)</span>
+              <span id="m-goal-lbl">goal</span>
+            </div>
+            <div class="bar" id="bar" aria-hidden="true">
+              <div class="fill" id="bar-fill"></div>
+              <div class="goal" id="bar-goal"></div>
+            </div>
+          </div>
+
+          <div class="controls">
+            <button
+              class="btn ghost step"
+              id="btn-minus"
+              aria-label="Remove one jump"
+            >
+              −
+            </button>
+            <span class="counter">Jumps placed: <b id="c-jumps">0</b></span>
+            <button
+              class="btn ghost step"
+              id="btn-plus"
+              aria-label="Add one jump"
+            >
+              +
+            </button>
+            <button class="btn" id="btn-dive">Dive! ✓</button>
+          </div>
+
+          <div class="readout">
+            <span class="r">Distance covered: <b id="ro-covered">0</b></span>
+            <span class="r">Goal distance: <b id="ro-goal">—</b></span>
+          </div>
+
+          <div
+            class="feedback"
+            id="feedback"
+            role="status"
+            aria-live="assertive"
+          ></div>
+          <p class="hint" id="hint"></p>
+        </div>
+      </section>
+
+      <!-- RESULT -->
+      <section id="screen-result" class="screen" aria-labelledby="rh">
+        <h1 id="rh">Dive complete</h1>
+        <div class="card">
+          <div class="result-stars" id="r-stars">★★★</div>
+          <div class="result-stat"><span>Score</span><b id="r-score">0</b></div>
+          <div class="result-stat">
+            <span>Quotients built</span><b id="r-correct">0</b>
+          </div>
+          <div class="result-stat">
+            <span>Dives completed</span><b id="r-rounds">0</b>
+          </div>
+          <div class="result-stat" id="r-high-row" style="display: none">
+            <span>★ New high score!</span><b id="r-high">0</b>
+          </div>
+          <div class="row">
+            <button class="btn big" id="r-again">Play again</button>
+            <a class="btn ghost big" href="/math/games/">All games</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      // ── Decorative drifting bubbles/motes (reduced-motion safe) ──
+      (function () {
+        var host = document.getElementById("ff-bg");
+        if (!host) return;
+        var reduce =
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var n = reduce ? 10 : 26;
+        for (var i = 0; i < n; i++) {
+          var d = document.createElement("div");
+          d.className = "ff-mote";
+          var sz = 2 + Math.random() * 5;
+          d.style.width = d.style.height = sz.toFixed(1) + "px";
+          d.style.left = (Math.random() * 100).toFixed(2) + "%";
+          d.style.top = (Math.random() * 100).toFixed(2) + "%";
+          d.style.setProperty("--tw", (2 + Math.random() * 4).toFixed(2) + "s");
+          d.style.animationDelay = "-" + (Math.random() * 4).toFixed(2) + "s";
+          host.appendChild(d);
+        }
+      })();
+    </script>
+
+    <script>
+      // ════════════════════════════════════════════════════════════════════
+      //  DEEP DIVE FRACTIONS  ·  Grade 6  ·  6.NS.A.1
+      //  Math-as-mechanic rebuild (see docs/games-2d-rebuild-spec.md).
+      //
+      //  The diver must travel a goal distance (a/b) by placing equal JUMPS,
+      //  each worth the divisor fraction (c/d), on a depth-bar number-line
+      //  model. The number of jumps that lands EXACTLY on the goal IS the
+      //  quotient (a/b) ÷ (c/d). Too few = short of the goal; too many =
+      //  overshoot. You construct the quotient by partitioning the model —
+      //  there is no precomputed answer to click.
+      // ════════════════════════════════════════════════════════════════════
+      const STANDARD = "6.NS.A.1";
+      const ACTIVITY_TITLE = "Deep Dive Fractions — 6.NS.A.1";
+      const LS_KEY = "ddf_deep_dive_fractions_highscore";
+      const ROUNDS = 5;
+
+      // Metadata source of truth: window.Games2DData (from scripts/games2d/data.mjs
+      // via assets/games2d-data.js). Inline fallback keeps the page alive if the
+      // artifact fails to load.
+      const DATA = (window.Games2DData &&
+        window.Games2DData["6-ns-a-1game"]) || {
+        ccss: "6.NS.A.1",
+        title: "Deep Dive Fractions",
+        vocab: [
+          {
+            term: "dividend",
+            defn: "The whole amount you are measuring out — the big distance you need to dive (the a/b in a/b ÷ c/d).",
+          },
+          {
+            term: "divisor",
+            defn: "The size of each equal group or jump — the small fraction you measure with (the c/d in a/b ÷ c/d).",
+          },
+          {
+            term: "quotient",
+            defn: "The answer to a division: how many equal jumps of the divisor fit exactly into the dividend.",
+          },
+        ],
+        misconceptions: [
+          {
+            tag: "divide-shrinks",
+            trigger:
+              "Expects the answer to be smaller, so stops with too few jumps.",
+            feedback:
+              "Dividing by a fraction less than 1 gives MORE, not fewer — keep adding jumps until you reach the goal.",
+          },
+          {
+            tag: "overshoot",
+            trigger:
+              "Adds jumps past the goal line and thinks it still counts.",
+            feedback:
+              "You went past the goal. The quotient is the number of jumps that land EXACTLY on the goal, not over it.",
+          },
+        ],
+        tiers: {
+          1: {
+            label: "Level 1",
+            sub: "Support",
+            desc: "Same-denominator fractions · jump labels shown · 5 air",
+          },
+          2: {
+            label: "Level 2",
+            sub: "Challenge",
+            desc: "Unlike denominators & bigger answers · less help · 3 air",
+          },
+        },
+      };
+
+      // Curated puzzle pools. Each puzzle: [dividendNum,dividendDen, divisorNum,divisorDen].
+      // Quotient is always a whole number so it lands exactly on the model.
+      const POOLS = {
+        1: [
+          [3, 4, 1, 4], // 3/4 ÷ 1/4 = 3
+          [5, 6, 1, 6], // = 5
+          [4, 5, 1, 5], // = 4
+          [6, 8, 1, 8], // = 6
+          [2, 3, 1, 3], // = 2
+          [3, 5, 1, 5], // = 3
+          [4, 6, 2, 6], // = 2
+          [6, 8, 3, 8], // = 2
+        ],
+        2: [
+          [3, 4, 1, 8], // 3/4 ÷ 1/8 = 6 (unlike denoms)
+          [2, 3, 1, 6], // = 4
+          [5, 6, 1, 12], // = 10
+          [1, 2, 1, 8], // = 4
+          [3, 4, 3, 8], // = 2
+          [2, 5, 1, 10], // = 4
+          [3, 4, 1, 12], // = 9
+          [5, 8, 1, 16], // = 10
+        ],
+      };
+
+      // ── Tiny WebAudio SFX ──
+      const SFX = {
+        ctx: null,
+        init() {
+          if (!this.ctx)
             try {
-              audioCtx = new (
+              this.ctx = new (
                 window.AudioContext || window.webkitAudioContext
               )();
             } catch (e) {}
-          return audioCtx;
-        }
-        function playTone(freq, dur, type = "sine", vol = 0.06) {
-          const c = getAudio();
-          if (!c) return;
-          if (c.state === "suspended") c.resume();
-          const o = c.createOscillator(),
-            g = c.createGain();
-          o.type = type;
-          o.frequency.value = freq;
-          g.gain.setValueAtTime(0.0001, c.currentTime);
-          g.gain.linearRampToValueAtTime(vol, c.currentTime + 0.02);
-          g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + dur);
-          o.connect(g).connect(c.destination);
-          o.start();
-          o.stop(c.currentTime + dur + 0.01);
-        }
-        function sfxCorrect() {
-          playTone(523, 0.12);
-          setTimeout(() => playTone(659, 0.12), 80);
-          setTimeout(() => playTone(784, 0.15), 160);
-        }
-        function sfxWrong() {
-          playTone(200, 0.15, "sawtooth", 0.04);
-          setTimeout(() => playTone(160, 0.18, "sawtooth", 0.03), 100);
-        }
-        function sfxDive() {
-          playTone(330, 0.2, "triangle", 0.04);
-          setTimeout(() => playTone(262, 0.25, "triangle", 0.03), 120);
-        }
-        function sfxBubble() {
-          playTone(800 + Math.random() * 400, 0.08, "sine", 0.02);
-        }
-        function sfxLevelUp() {
-          [523, 659, 784, 1047].forEach((f, i) =>
-            setTimeout(() => playTone(f, 0.15, "sine", 0.05), i * 100),
+        },
+        play(t, f, d, v = 0.2) {
+          if (!this.ctx) return;
+          try {
+            const c = this.ctx,
+              o = c.createOscillator(),
+              g = c.createGain();
+            o.type = t;
+            o.frequency.value = f;
+            g.gain.setValueAtTime(v, c.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + d);
+            o.connect(g);
+            g.connect(c.destination);
+            o.start();
+            o.stop(c.currentTime + d);
+          } catch (e) {}
+        },
+        tick() {
+          this.play("sine", 520, 0.06, 0.18);
+        },
+        good() {
+          this.play("sine", 660, 0.1, 0.3);
+          this.play("sine", 880, 0.15, 0.25);
+        },
+        bad() {
+          this.play("sawtooth", 190, 0.22, 0.2);
+        },
+        win() {
+          [523, 659, 784, 1046].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.18, 0.25), i * 90),
           );
-        }
+        },
+      };
 
-        // --- Math helpers ---
-        function gcd(a, b) {
-          a = Math.abs(a);
-          b = Math.abs(b);
-          while (b) {
-            [a, b] = [b, a % b];
-          }
-          return a || 1;
-        }
-        function simplify(n, d) {
-          if (d < 0) {
-            n *= -1;
-            d *= -1;
-          }
-          const g = gcd(n, d);
-          return { n: n / g, d: d / g };
-        }
-        function fracStr(f) {
-          const s = simplify(f.n, f.d);
-          if (s.d === 1) return "" + s.n;
-          return s.n + "/" + s.d;
-        }
-        function fracDisplay(f) {
-          const s = simplify(f.n, f.d);
-          if (s.d === 1) return "" + s.n;
-          if (Math.abs(s.n) > s.d) {
-            const w = Math.trunc(s.n / s.d),
-              r = Math.abs(s.n % s.d);
-            return r === 0 ? "" + w : w + " " + r + "/" + s.d;
-          }
-          return s.n + "/" + s.d;
-        }
-        function fracEqual(a, b) {
-          const x = simplify(a.n, a.d),
-            y = simplify(b.n, b.d);
-          return x.n === y.n && x.d === y.d;
-        }
-        function divFrac(a, b) {
-          return simplify(a.n * b.d, a.d * b.n);
-        }
-        function mulFrac(a, b) {
-          return simplify(a.n * b.n, a.d * b.d);
-        }
-        function addFrac(a, b) {
-          return simplify(a.n * b.d + b.n * a.d, a.d * b.d);
-        }
-        function subtractFrac(a, b) {
-          return simplify(a.n * b.d - b.n * a.d, a.d * b.d);
-        }
-        function rand(min, max) {
-          return Math.floor(Math.random() * (max - min + 1)) + min;
-        }
-        function pick(arr) {
-          return arr[rand(0, arr.length - 1)];
-        }
-        function shuffle(arr) {
-          const a = [...arr];
-          for (let i = a.length - 1; i > 0; i--) {
-            const j = rand(0, i);
-            [a[i], a[j]] = [a[j], a[i]];
-          }
-          return a;
-        }
+      // ── Math helpers ──
+      const gcd = (a, b) => (b ? gcd(b, a % b) : a);
+      function simplify(n, d) {
+        const g = gcd(n, d) || 1;
+        return [n / g, d / g];
+      }
+      const val = (n, d) => n / d;
 
-        // --- Question generator ---
-        function generateQuestion(level) {
-          const divisorDens =
-            level <= 2
-              ? [2, 3, 4]
-              : level <= 4
-                ? [2, 3, 4, 5, 6]
-                : [2, 3, 4, 5, 6, 8];
-          
-          let quotients;
-          if (level <= 1) {
-            quotients = [2, 3, 4];
-          } else if (level <= 3) {
-            quotients = [1.5, 2, 2.5, 3, 4];
-          } else {
-            quotients = [1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
-          }
+      // ── State ──
+      const S = {
+        level: 1,
+        lives: 5,
+        score: 0,
+        round: 0,
+        built: 0,
+        puzzles: [],
+        cur: null,
+        jumps: 0,
+      };
 
-          let a, b, qVal;
-          let attempts = 0;
-          
-          do {
-            const db = pick(divisorDens);
-            const nb = rand(1, db - 1);
-            b = simplify(nb, db);
+      const $ = (id) => document.getElementById(id);
+      const srSay = (m) => {
+        const el = $("ff-sr");
+        if (el) {
+          el.textContent = "";
+          setTimeout(() => (el.textContent = m), 30);
+        }
+      };
 
-            qVal = pick(quotients);
-            const qFrac = qVal % 1 === 0 ? { n: qVal, d: 1 } : { n: Math.round(qVal * 2), d: 2 };
-            
-            a = simplify(b.n * qFrac.n, b.d * qFrac.d);
-            attempts++;
-          } while (
-            (a.d > 12 || (a.n / a.d) > 4.5) && attempts < 100
+      function show(screen) {
+        document
+          .querySelectorAll(".screen")
+          .forEach((s) => s.classList.remove("on"));
+        $("screen-" + screen).classList.add("on");
+      }
+
+      function fracHTML(n, d) {
+        return `<span class="frac"><span class="num">${n}</span><span class="den">${d}</span></span>`;
+      }
+
+      // Build a puzzle model.
+      function makePuzzle([dn, dd, sn, sd]) {
+        const goal = val(dn, dd); // 0..1
+        const step = val(sn, sd); // each jump
+        const quotient = Math.round(goal / step);
+        return { dn, dd, sn, sd, goal, step, quotient, jumps: 0 };
+      }
+
+      // ── Vocab gate ──
+      function renderVocab() {
+        $("vocab-list").innerHTML = (DATA.vocab || [])
+          .map(
+            (v) =>
+              `<div class="vrow"><span class="vterm">${v.term}</span><span class="vdef">${v.defn}</span></div>`,
+          )
+          .join("");
+      }
+
+      // ── Level select ──
+      function renderLevels() {
+        const t = DATA.tiers || {};
+        $("level-list").innerHTML = Object.keys(t)
+          .map((k) => {
+            const tier = t[k];
+            return `<button class="level-pick" data-level="${k}">
+              <span class="tag">${tier.label} · ${tier.sub}</span>
+              <b>${k === "1" ? "Reef Diver" : "Deep Trench Diver"}</b>
+              <span class="desc">${tier.desc}</span>
+            </button>`;
+          })
+          .join("");
+        $("level-list")
+          .querySelectorAll("[data-level]")
+          .forEach((el) =>
+            el.addEventListener("click", () =>
+              startGame(Number(el.dataset.level)),
+            ),
           );
+      }
 
-          if (attempts >= 100) {
-            b = { n: 1, d: 2 };
-            a = { n: 3, d: 2 }; // 1.5
-            qVal = 3;
-          }
-
-          return {
-            a,
-            b,
-            qVal,
-            prompt: fracDisplay(a) + " ÷ " + fracDisplay(b),
-            hint: "How many times does " + fracDisplay(b) + " fit into " + fracDisplay(a) + "?"
-          };
+      // ── Game flow ──
+      function startGame(level) {
+        SFX.init();
+        S.level = level;
+        S.lives = level === 1 ? 5 : 3;
+        S.score = 0;
+        S.round = 0;
+        S.built = 0;
+        const pool = (POOLS[level] || POOLS[1]).slice();
+        for (let i = pool.length - 1; i > 0; i--) {
+          const j = (Math.random() * (i + 1)) | 0;
+          [pool[i], pool[j]] = [pool[j], pool[i]];
         }
+        S.puzzles = pool.slice(0, ROUNDS).map(makePuzzle);
+        $("hud-total").textContent = ROUNDS;
+        show("play");
+        loadRound(0);
+      }
 
-        // --- Phaser Config ---
-        const W = 960,
-          H = 640;
-        const config = {
-          type: Phaser.AUTO,
-          parent: "game-container",
-          width: W,
-          height: H,
-          backgroundColor: "#020a18",
-          scale: {
-            mode: Phaser.Scale.FIT,
-            autoCenter: Phaser.Scale.CENTER_BOTH,
-          },
-          physics: {
-            default: "arcade",
-            arcade: { gravity: { y: 0 }, debug: false },
-          },
-          scene: [],
-        };
+      function loadRound(i) {
+        S.round = i;
+        S.cur = S.puzzles[i];
+        S.jumps = 0;
+        const p = S.cur;
+        $("hud-round").textContent = i + 1;
+        $("hud-score").textContent = S.score;
+        $("hud-lives").textContent = "●".repeat(S.lives) || "—";
+        $("t-question").innerHTML =
+          `How many jumps of ${fracHTML(p.sn, p.sd)} reach ${fracHTML(p.dn, p.dd)}? &nbsp; <b>${fracHTML(p.dn, p.dd)} ÷ ${fracHTML(p.sn, p.sd)}</b>`;
+        $("m-goal-lbl").innerHTML = `goal = ${fracHTML(p.dn, p.dd)}`;
+        $("ro-goal").innerHTML = fracHTML(p.dn, p.dd);
+        $("feedback").textContent = "";
+        $("feedback").className = "feedback";
+        $("hint").textContent =
+          S.level === 1
+            ? "Add jumps until the blue jumps land exactly on the gold goal line, then Dive!"
+            : "The divisor may have a different denominator — build it carefully and land exactly on the goal.";
+        renderModel();
+        srSay(
+          `Dive ${i + 1}. Build ${p.dn} over ${p.dd} divided by ${p.sn} over ${p.sd} by placing equal jumps.`,
+        );
+      }
 
-        // ==================== BOOT SCENE ====================
-        class BootScene extends Phaser.Scene {
-          constructor() {
-            super("Boot");
-          }
-          create() {
-            // Generate textures
-            const g = this.make.graphics({ add: false });
-
-            // Diver (player)
-            g.clear();
-            g.fillStyle(0x61dafb);
-            g.fillEllipse(20, 16, 40, 28);
-            g.fillStyle(0xffd166);
-            g.fillCircle(32, 10, 8);
-            g.fillStyle(0x18d2ba);
-            g.fillRect(0, 6, 10, 20);
-            g.fillStyle(0x61dafb);
-            g.fillTriangle(-6, 16, -18, 8, -18, 24);
-            g.generateTexture("diver", 44, 32);
-
-            // Bubble
-            g.clear();
-            g.fillStyle(0xffffff, 0.3);
-            g.fillCircle(6, 6, 6);
-            g.fillStyle(0xffffff, 0.5);
-            g.fillCircle(4, 4, 2);
-            g.generateTexture("bubble", 12, 12);
-
-            // Answer pod (neutral)
-            g.clear();
-            g.lineStyle(2, 0x61dafb, 0.6);
-            g.fillStyle(0x0a1e3a, 0.9);
-            g.fillRoundedRect(0, 0, 100, 50, 12);
-            g.strokeRoundedRect(0, 0, 100, 50, 12);
-            g.generateTexture("pod", 100, 50);
-
-            // Sea creature (enemy)
-            g.clear();
-            g.fillStyle(0xff6b6b);
-            g.fillEllipse(20, 14, 40, 28);
-            g.fillStyle(0xffffff);
-            g.fillCircle(28, 10, 5);
-            g.fillStyle(0x000000);
-            g.fillCircle(29, 10, 2);
-            g.fillStyle(0xff6b6b);
-            g.fillTriangle(0, 14, -8, 6, -8, 22);
-            g.generateTexture("enemy", 44, 28);
-
-            // Jellyfish
-            g.clear();
-            g.fillStyle(0xc084fc, 0.7);
-            g.fillEllipse(16, 10, 32, 20);
-            for (let i = 0; i < 5; i++) {
-              g.lineStyle(2, 0xc084fc, 0.5);
-              g.lineBetween(4 + i * 7, 18, 2 + i * 7, 36);
-            }
-            g.generateTexture("jellyfish", 32, 38);
-
-            // Treasure chest
-            g.clear();
-            g.fillStyle(0xfbbf24);
-            g.fillRoundedRect(0, 8, 32, 20, 4);
-            g.fillStyle(0xd97706);
-            g.fillRoundedRect(0, 0, 32, 12, 4);
-            g.fillStyle(0xffffff);
-            g.fillRect(14, 4, 4, 6);
-            g.generateTexture("chest", 32, 28);
-
-            // Coral
-            g.clear();
-            g.fillStyle(0xff6b8a, 0.6);
-            g.fillRoundedRect(0, 10, 8, 20, 3);
-            g.fillRoundedRect(6, 5, 8, 25, 3);
-            g.fillRoundedRect(12, 12, 8, 18, 3);
-            g.generateTexture("coral", 20, 30);
-
-            // Particle
-            g.clear();
-            g.fillStyle(0xffffff);
-            g.fillCircle(3, 3, 3);
-            g.generateTexture("particle", 6, 6);
-
-            // Star particle
-            g.clear();
-            g.fillStyle(0xffd166);
-            g.fillCircle(4, 4, 4);
-            g.generateTexture("star", 8, 8);
-
-            // Health heart
-            g.clear();
-            g.fillStyle(0xff6b6b);
-            g.fillCircle(8, 6, 6);
-            g.fillCircle(16, 6, 6);
-            g.fillTriangle(2, 8, 22, 8, 12, 20);
-            g.generateTexture("heart", 24, 20);
-
-            this.scene.start("Title");
-          }
+      // Render the depth bar with the placed jumps + goal marker.
+      function renderModel() {
+        const p = S.cur;
+        const bar = $("bar");
+        bar.querySelectorAll(".jump,.tick").forEach((el) => el.remove());
+        const fill = $("bar-fill");
+        const goalMark = $("bar-goal");
+        const reach = S.jumps * p.step;
+        // Bar represents the larger of (goal, current reach, 1) so it never clips.
+        const span = Math.max(p.goal, reach, 1) * 1.04;
+        goalMark.style.left = (p.goal / span) * 100 + "%";
+        fill.style.width = Math.min(100, (reach / span) * 100) + "%";
+        for (let t = p.step; t <= span + 1e-9; t += p.step) {
+          const tk = document.createElement("div");
+          tk.className = "tick";
+          tk.style.left = (t / span) * 100 + "%";
+          bar.appendChild(tk);
         }
-
-        // ==================== TITLE SCENE ====================
-        class TitleScene extends Phaser.Scene {
-          constructor() {
-            super("Title");
-          }
-          create() {
-            // Ocean gradient background
-            const bg = this.add.graphics();
-            bg.fillGradientStyle(0x031321, 0x031321, 0x072a44, 0x072a44, 1);
-            bg.fillRect(0, 0, W, H);
-
-            // Animated bubbles
-            for (let i = 0; i < 30; i++) {
-              const b = this.add
-                .image(rand(20, W - 20), rand(20, H - 20), "bubble")
-                .setAlpha(0.2 + Math.random() * 0.3)
-                .setScale(0.5 + Math.random() * 1.5);
-              this.tweens.add({
-                targets: b,
-                y: b.y - 100 - Math.random() * 200,
-                alpha: 0,
-                duration: 3000 + Math.random() * 4000,
-                repeat: -1,
-                delay: Math.random() * 3000,
-              });
-            }
-
-            // Title
-            this.add
-              .text(W / 2, 120, "UNDERWATER\nADVENTURE", {
-                fontSize: "52px",
-                fontFamily: "Inter,system-ui,sans-serif",
-                fontStyle: "bold",
-                color: "#61dafb",
-                align: "center",
-                lineSpacing: 8,
-                stroke: "#0a3a58",
-                strokeThickness: 4,
-              })
-              .setOrigin(0.5);
-
-            this.add
-              .text(W / 2, 210, "6.NS.A.1 — Divide Fractions by Fractions", {
-                fontSize: "16px",
-                color: "#a8d7e5",
-                align: "center",
-              })
-              .setOrigin(0.5);
-
-            // Diver animation
-            const diver = this.add.image(W / 2, 320, "diver").setScale(3);
-            this.tweens.add({
-              targets: diver,
-              y: 340,
-              duration: 2000,
-              yoyo: true,
-              repeat: -1,
-              ease: "Sine.easeInOut",
-            });
-
-            // Instructions
-            const info = [
-              "Dive deep and solve fraction division!",
-              "Find the locked treasure chests hidden in the deep.",
-              "Tile the target corridor exactly using the divisor tiles.",
-              "Avoid roaming sea creatures that cost you lives.",
-              "Arrow keys / WASD / Touch to move",
-            ];
-            info.forEach((t, i) => {
-              this.add
-                .text(W / 2, 400 + i * 24, t, {
-                  fontSize: "14px",
-                  color: "#7ec8e3",
-                  align: "center",
-                })
-                .setOrigin(0.5);
-            });
-
-            // Start button
-            const btn = this.add
-              .rectangle(W / 2, 570, 220, 50, 0x18d2ba)
-              .setInteractive({ useHandCursor: true });
-            const btnTxt = this.add
-              .text(W / 2, 570, "START DIVE", {
-                fontSize: "20px",
-                fontStyle: "bold",
-                color: "#000",
-              })
-              .setOrigin(0.5);
-
-            btn.on("pointerover", () => btn.setFillStyle(0x34d399));
-            btn.on("pointerout", () => btn.setFillStyle(0x18d2ba));
-            btn.on("pointerdown", () => {
-              getAudio();
-              sfxDive();
-              this.cameras.main.fadeOut(500, 2, 10, 24);
-              this.time.delayedCall(500, () => this.scene.start("Game"));
-            });
-
-            // Keyboard start
-            this.input.keyboard.on("keydown-SPACE", () => {
-              getAudio();
-              sfxDive();
-              this.cameras.main.fadeOut(500);
-              this.time.delayedCall(500, () => this.scene.start("Game"));
-            });
-            this.input.keyboard.on("keydown-ENTER", () => {
-              getAudio();
-              sfxDive();
-              this.cameras.main.fadeOut(500);
-              this.time.delayedCall(500, () => this.scene.start("Game"));
-            });
-
-            this.cameras.main.fadeIn(400);
-          }
+        for (let j = 0; j < S.jumps; j++) {
+          const blk = document.createElement("div");
+          blk.className = "jump";
+          const start = j * p.step,
+            end = (j + 1) * p.step;
+          blk.style.left = (start / span) * 100 + "%";
+          blk.style.width = ((end - start) / span) * 100 - 0.6 + "%";
+          if (S.level === 1) blk.textContent = `${p.sn}/${p.sd}`;
+          if (end > p.goal + 1e-9) blk.classList.add("over");
+          bar.appendChild(blk);
         }
-
-        // ==================== GAME SCENE ====================
-        class GameScene extends Phaser.Scene {
-          constructor() {
-            super("Game");
-          }
-
-          create() {
-            this.cameras.main.fadeIn(400);
-
-            // State
-            this.score = 0;
-            this.combo = 0;
-            this.lives = 4;
-            this.level = 1;
-            this.questionsAnswered = 0;
-            this.questionsCorrect = 0;
-            this.depth = 0;
-            this.targetDepth = 0;
-            this.currentQ = null;
-            this.answered = false;
-            this.bestCombo = 0;
-
-            // Ocean background layers
-            this.bgBack = this.add.tileSprite(0, 0, W, H, null).setOrigin(0);
-            const bg = this.add.graphics();
-            bg.fillGradientStyle(0x072a44, 0x072a44, 0x031321, 0x031321, 1);
-            bg.fillRect(0, 0, W, H);
-            bg.setScrollFactor(0);
-
-            // Light rays
-            this.rays = this.add.graphics().setAlpha(0.08).setScrollFactor(0);
-            for (let i = 0; i < 6; i++) {
-              this.rays.fillStyle(0x61dafb);
-              const x = 100 + i * 160;
-              this.rays.fillTriangle(x, 0, x - 40, H, x + 40, H);
-            }
-
-            // Bubbles particle
-            this.bubbleParticles = this.add
-              .particles(0, 0, "bubble", {
-                x: { min: 0, max: W },
-                y: { min: H + 10, max: H + 50 },
-                lifespan: 4000,
-                speedY: { min: -30, max: -80 },
-                speedX: { min: -10, max: 10 },
-                scale: { start: 0.3, end: 0.8 },
-                alpha: { start: 0.4, end: 0 },
-                frequency: 200,
-                quantity: 1,
-              })
-              .setScrollFactor(0);
-
-            // Coral decorations at bottom
-            for (let i = 0; i < 12; i++) {
-              this.add
-                .image(rand(20, W - 20), H - rand(5, 30), "coral")
-                .setScale(1 + Math.random())
-                .setAlpha(0.3 + Math.random() * 0.3)
-                .setTint(pick([0xff6b8a, 0xc084fc, 0x34d399, 0x61dafb]))
-                .setScrollFactor(0);
-            }
-
-            // Player (diver)
-            this.player = this.physics.add
-              .image(120, H / 2, "diver")
-              .setScale(1.8)
-              .setDepth(10);
-            this.player.setCollideWorldBounds(true);
-            this.player.body.setMaxVelocity(280, 280);
-            this.player.setDamping(true);
-            this.player.setDrag(0.92);
-
-            // Player glow
-            this.playerGlow = this.add
-              .ellipse(0, 0, 70, 50, 0x61dafb, 0.15)
-              .setDepth(9);
-            this.tweens.add({
-              targets: this.playerGlow,
-              scaleX: 1.2,
-              scaleY: 1.2,
-              alpha: 0.08,
-              duration: 1000,
-              yoyo: true,
-              repeat: -1,
-            });
-
-            // Trail particles
-            this.trailEmitter = this.add
-              .particles(0, 0, "particle", {
-                follow: this.player,
-                followOffset: { x: -20, y: 0 },
-                lifespan: 600,
-                speedX: { min: -20, max: -60 },
-                speedY: { min: -15, max: 15 },
-                scale: { start: 0.5, end: 0 },
-                alpha: { start: 0.5, end: 0 },
-                tint: 0x61dafb,
-                frequency: 50,
-                quantity: 1,
-              })
-              .setDepth(9);
-
-            // Locked chests group
-            this.chests = this.physics.add.group();
-
-            // Enemy creatures group
-            this.enemies = this.physics.add.group();
-
-            // Collectibles
-            this.collectibles = this.physics.add.group();
-
-            // HUD
-            this.createHUD();
-
-            // Controls
-            this.cursors = this.input.keyboard.createCursorKeys();
-            this.wasd = {
-              up: this.input.keyboard.addKey("W"),
-              down: this.input.keyboard.addKey("S"),
-              left: this.input.keyboard.addKey("A"),
-              right: this.input.keyboard.addKey("D"),
-            };
-
-            // Touch controls
-            this.touchTarget = null;
-            this.input.on("pointerdown", (p) => {
-              this.touchTarget = { x: p.worldX, y: p.worldY };
-            });
-            this.input.on("pointermove", (p) => {
-              if (p.isDown) this.touchTarget = { x: p.worldX, y: p.worldY };
-            });
-            this.input.on("pointerup", () => {
-              this.touchTarget = null;
-            });
-
-            // Collisions
-            this.physics.add.overlap(
-              this.player,
-              this.chests,
-              (p, chest) => this.hitChest(chest),
-              null,
-              this,
-            );
-            this.physics.add.overlap(
-              this.player,
-              this.enemies,
-              (p, e) => this.hitEnemy(e),
-              null,
-              this,
-            );
-            this.physics.add.overlap(
-              this.player,
-              this.collectibles,
-              (p, c) => this.hitCollectible(c),
-              null,
-              this,
-            );
-
-            // Spawn first question
-            this.nextQuestion();
-
-            // Ambient fish spawner
-            this.time.addEvent({
-              delay: 3000,
-              callback: () => this.spawnAmbientFish(),
-              loop: true,
-            });
-
-            // Depth timer (auto increase)
-            this.time.addEvent({
-              delay: 100,
-              callback: () => {
-                this.depth += 0.3;
-                this.depthText.setText(
-                  "Depth: " + Math.floor(this.depth) + "m",
-                );
-              },
-              loop: true,
-            });
-          }
-
-          createHUD() {
-            const pad = 12;
-            // Score
-            this.add
-              .rectangle(80, pad + 18, 140, 36, 0x0a1e3a, 0.8)
-              .setScrollFactor(0)
-              .setDepth(100)
-              .setStrokeStyle(1, 0x61dafb, 0.3);
-            this.scoreText = this.add
-              .text(80, pad + 18, "Score: 0", {
-                fontSize: "16px",
-                fontStyle: "bold",
-                color: "#61dafb",
-              })
-              .setOrigin(0.5)
-              .setScrollFactor(0)
-              .setDepth(101);
-
-            // Combo
-            this.add
-              .rectangle(230, pad + 18, 120, 36, 0x0a1e3a, 0.8)
-              .setScrollFactor(0)
-              .setDepth(100)
-              .setStrokeStyle(1, 0xffd166, 0.3);
-            this.comboText = this.add
-              .text(230, pad + 18, "Combo: 0", {
-                fontSize: "16px",
-                fontStyle: "bold",
-                color: "#ffd166",
-              })
-              .setOrigin(0.5)
-              .setScrollFactor(0)
-              .setDepth(101);
-
-            // Level
-            this.add
-              .rectangle(370, pad + 18, 120, 36, 0x0a1e3a, 0.8)
-              .setScrollFactor(0)
-              .setDepth(100)
-              .setStrokeStyle(1, 0x34d399, 0.3);
-            this.levelText = this.add
-              .text(370, pad + 18, "Level: 1", {
-                fontSize: "16px",
-                fontStyle: "bold",
-                color: "#34d399",
-              })
-              .setOrigin(0.5)
-              .setScrollFactor(0)
-              .setDepth(101);
-
-            // Depth
-            this.add
-              .rectangle(510, pad + 18, 140, 36, 0x0a1e3a, 0.8)
-              .setScrollFactor(0)
-              .setDepth(100)
-              .setStrokeStyle(1, 0xc084fc, 0.3);
-            this.depthText = this.add
-              .text(510, pad + 18, "Depth: 0m", {
-                fontSize: "16px",
-                fontStyle: "bold",
-                color: "#c084fc",
-              })
-              .setOrigin(0.5)
-              .setScrollFactor(0)
-              .setDepth(101);
-
-            // Lives (hearts)
-            this.heartsGroup = [];
-            for (let i = 0; i < 4; i++) {
-              const h = this.add
-                .image(W - 120 + i * 28, pad + 18, "heart")
-                .setScale(1.2)
-                .setScrollFactor(0)
-                .setDepth(101);
-              this.heartsGroup.push(h);
-            }
-
-            // Question display (bottom panel)
-            this.qPanel = this.add
-              .rectangle(W / 2, H - 50, W - 40, 80, 0x0a1e3a, 0.85)
-              .setScrollFactor(0)
-              .setDepth(100)
-              .setStrokeStyle(1, 0x61dafb, 0.4);
-            this.qText = this.add
-              .text(W / 2, H - 60, "", {
-                fontSize: "24px",
-                fontStyle: "bold",
-                color: "#fff",
-                align: "center",
-              })
-              .setOrigin(0.5)
-              .setScrollFactor(0)
-              .setDepth(101);
-            this.qHint = this.add
-              .text(W / 2, H - 35, "", {
-                fontSize: "13px",
-                color: "#a8d7e5",
-                align: "center",
-              })
-              .setOrigin(0.5)
-              .setScrollFactor(0)
-              .setDepth(101);
-            this.feedbackText = this.add
-              .text(W / 2, H / 2, "", {
-                fontSize: "28px",
-                fontStyle: "bold",
-                color: "#34d399",
-                stroke: "#000",
-                strokeThickness: 4,
-                align: "center",
-              })
-              .setOrigin(0.5)
-              .setScrollFactor(0)
-              .setDepth(102)
-              .setAlpha(0);
-          }
-
-          nextQuestion() {
-            // Clear old chests and enemies
-            this.chests.clear(true, true);
-            this.enemies.clear(true, true);
-            this.answered = false;
-
-            // Generate question
-            this.currentQ = generateQuestion(this.level);
-            this.qText.setText("Target: " + this.currentQ.prompt);
-            this.qHint.setText("Swim to the locked chest to decrypt it!");
-
-            // Spawn locked chest
-            const cx = rand(300, W - 80);
-            const cy = rand(100, H - 150);
-            const chest = this.physics.add.image(cx, cy, "chest").setScale(2.2).setDepth(8);
-            chest.body.setImmovable(true);
-            
-            // Add bobbing tween
-            this.tweens.add({
-              targets: chest,
-              y: cy - 6,
-              duration: 1200,
-              yoyo: true,
-              repeat: -1,
-              ease: "Sine.easeInOut"
-            });
-            this.chests.add(chest);
-
-            // Spawn some extra roaming enemies
-            for (let i = 0; i < this.level; i++) {
-              const ex = rand(W * 0.3, W - 60);
-              const ey = rand(60, H - 120);
-              const enemy = this.physics.add
-                .image(ex, ey, pick(["enemy", "jellyfish"]))
-                .setScale(1.2)
-                .setDepth(4);
-              enemy.setData("speed", rand(40, 100));
-              enemy.setData("dir", Math.random() > 0.5 ? 1 : -1);
-              enemy.setData("vertDir", Math.random() > 0.5 ? 1 : -1);
-              this.enemies.add(enemy);
-            }
-
-            // Spawn collectible bubbles
-            this.collectibles.clear(true, true);
-            for (let i = 0; i < rand(1, 3); i++) {
-              const cx = rand(200, W - 80);
-              const cy = rand(80, H - 150);
-              const c = this.physics.add
-                .image(cx, cy, "star")
-                .setScale(1.5)
-                .setDepth(4);
-              c.setData("type", "bonus");
-              this.tweens.add({
-                targets: c,
-                y: cy - 15,
-                duration: 1000,
-                yoyo: true,
-                repeat: -1,
-                ease: "Sine.easeInOut",
-              });
-              this.collectibles.add(c);
-            }
-          }
-
-          hitChest(chest) {
-            if (this.answered) return;
-            this.openTilingOverlay(chest);
-          }
-
-          openTilingOverlay(chest) {
-            this.physics.pause();
-            this.player.body.setVelocity(0, 0);
-
-            // Container for overlay elements
-            this.tilingContainer = this.add.container(0, 0).setDepth(200);
-
-            // Keep track of dynamically created texts and buttons for cleanup
-            this.overlayTexts = [];
-            this.overlayButtons = [];
-            this.overlayTileTexts = [];
-
-            // 1. Backdrop
-            const backdrop = this.add.rectangle(W / 2, H / 2, W, H, 0x000000, 0.82)
-              .setInteractive();
-            backdrop.on('pointerdown', (pointer) => { pointer.event.stopPropagation(); });
-            this.tilingContainer.add(backdrop);
-
-            // 2. Dialog Card
-            const cardX = W / 2;
-            const cardY = H / 2;
-            const cardW = 740;
-            const cardH = 460;
-            const card = this.add.rectangle(cardX, cardY, cardW, cardH, 0x0a1e3a, 0.96);
-            card.setStrokeStyle(3, 0x61dafb, 1);
-            this.tilingContainer.add(card);
-
-            // 3. Header Texts
-            const title = this.add.text(cardX, cardY - cardH / 2 + 35, "CHEST SECURITY LOCK", {
-              fontSize: "24px",
-              fontStyle: "bold",
-              color: "#ffd166",
-              fontFamily: "Inter, system-ui, sans-serif"
-            }).setOrigin(0.5);
-            this.tilingContainer.add(title);
-            this.overlayTexts.push(title);
-
-            const equationText = this.add.text(cardX, cardY - cardH / 2 + 80, 
-              fracDisplay(this.currentQ.a) + "  ÷  " + fracDisplay(this.currentQ.b) + "  =  ?", {
-              fontSize: "36px",
-              fontStyle: "bold",
-              color: "#ffffff",
-              stroke: "#020a18",
-              strokeThickness: 5,
-              fontFamily: "Inter, system-ui, sans-serif"
-            }).setOrigin(0.5);
-            this.tilingContainer.add(equationText);
-            this.overlayTexts.push(equationText);
-
-            // 4. Drawing Corridor
-            const corridorX = cardX - 250;
-            const corridorY = cardY - 30;
-            const corridorW = 500;
-            const corridorH = 50;
-
-            this.corridorGraphics = this.add.graphics();
-            this.tilingContainer.add(this.corridorGraphics);
-
-            this.corridorGraphics.fillStyle(0x020a18, 0.85);
-            this.corridorGraphics.fillRect(corridorX, corridorY, corridorW, corridorH);
-            this.corridorGraphics.lineStyle(2, 0x61dafb, 0.8);
-            this.corridorGraphics.strokeRect(corridorX, corridorY, corridorW, corridorH);
-
-            // Ticks drawing
-            const targetVal = this.currentQ.a.n / this.currentQ.a.d;
-            const pixelsPerUnit = corridorW / targetVal;
-            const maxInteger = Math.ceil(targetVal);
-
-            for (let i = 0; i <= maxInteger; i++) {
-              const tx = corridorX + i * pixelsPerUnit;
-              if (tx <= corridorX + corridorW + 0.1) {
-                this.corridorGraphics.lineStyle(1.5, 0x7ec8e3, 0.4);
-                this.corridorGraphics.lineBetween(tx, corridorY, tx, corridorY + corridorH);
-
-                const tickTxt = this.add.text(tx, corridorY + corridorH + 6, String(i), {
-                  fontSize: "12px",
-                  color: "#a8d7e5",
-                  fontFamily: "Inter, system-ui, sans-serif"
-                }).setOrigin(0.5, 0);
-                this.tilingContainer.add(tickTxt);
-                this.overlayTexts.push(tickTxt);
-              }
-            }
-
-            // Draw goal mark at end
-            if (targetVal % 1 !== 0) {
-              const endTxt = this.add.text(corridorX + corridorW, corridorY + corridorH + 6, fracDisplay(this.currentQ.a), {
-                fontSize: "12px",
-                fontStyle: "bold",
-                color: "#ffd166",
-                fontFamily: "Inter, system-ui, sans-serif"
-              }).setOrigin(0.5, 0);
-              this.tilingContainer.add(endTxt);
-              this.overlayTexts.push(endTxt);
-            }
-
-            // Tiling State
-            this.placedTiles = [];
-            this.tilesGraphics = this.add.graphics();
-            this.tilingContainer.add(this.tilesGraphics);
-
-            // Dynamic equation text
-            this.progressText = this.add.text(cardX, cardY + 50, "", {
-              fontSize: "15px",
-              fontStyle: "bold",
-              color: "#a8d7e5",
-              fontFamily: "Inter, system-ui, sans-serif"
-            }).setOrigin(0.5);
-            this.tilingContainer.add(this.progressText);
-            this.overlayTexts.push(this.progressText);
-
-            this.groupsText = this.add.text(cardX, cardY + 75, "", {
-              fontSize: "14px",
-              color: "#61dafb",
-              fontFamily: "Inter, system-ui, sans-serif"
-            }).setOrigin(0.5);
-            this.tilingContainer.add(this.groupsText);
-            this.overlayTexts.push(this.groupsText);
-
-            // Overlay Feedback (for incorrect trials)
-            this.overlayFeedback = this.add.text(cardX, cardY - cardH / 2 + 130, "", {
-              fontSize: "18px",
-              fontStyle: "bold",
-              color: "#ff6b6b",
-              stroke: "#000",
-              strokeThickness: 3,
-              fontFamily: "Inter, system-ui, sans-serif"
-            }).setOrigin(0.5).setAlpha(0);
-            this.tilingContainer.add(this.overlayFeedback);
-            this.overlayTexts.push(this.overlayFeedback);
-
-            // Render initial state
-            this.drawTiles();
-
-            // Local helper for buttons inside container
-            const createOverlayButton = (scene, x, y, width, height, label, color, textColor, onClick) => {
-              const btn = scene.add.rectangle(x, y, width, height, color).setInteractive({ useHandCursor: true });
-              const txt = scene.add.text(x, y, label, { fontSize: "14px", fontStyle: "bold", color: textColor, fontFamily: "Inter, system-ui, sans-serif" }).setOrigin(0.5);
-              btn.on("pointerover", () => btn.setAlpha(0.85));
-              btn.on("pointerout", () => btn.setAlpha(1.0));
-              btn.on("pointerdown", () => {
-                onClick();
-              });
-              scene.tilingContainer.add([btn, txt]);
-              scene.overlayButtons.push(btn);
-              scene.overlayTexts.push(txt);
-            };
-
-            // 5. Buttons Placement
-            const btnY1 = cardY + 135;
-            const btnW = 120;
-            const btnH = 36;
-
-            // Row 1 buttons: Tiling actions
-            createOverlayButton(this, cardX - 195, btnY1, btnW, btnH, "+1 Tile", 0x18d2ba, "#000", () => {
-              this.placedTiles.push('whole');
-              this.drawTiles();
-            });
-
-            createOverlayButton(this, cardX - 65, btnY1, btnW, btnH, "+1/2 Tile", 0xf59e0b, "#000", () => {
-              this.placedTiles.push('half');
-              this.drawTiles();
-            });
-
-            createOverlayButton(this, cardX + 65, btnY1, btnW, btnH, "Remove", 0xef4444, "#fff", () => {
-              this.placedTiles.pop();
-              this.drawTiles();
-            });
-
-            createOverlayButton(this, cardX + 195, btnY1, btnW, btnH, "Reset", 0x4b5563, "#fff", () => {
-              this.placedTiles = [];
-              this.drawTiles();
-            });
-
-            // Row 2 buttons: submit or leave
-            const btnY2 = cardY + 195;
-            
-            createOverlayButton(this, cardX - 100, btnY2, 160, 42, "SWIM AWAY", 0x3b82f6, "#fff", () => {
-              // Knock back player and close
-              this.closeTilingOverlay();
-              this.player.x = this.player.x > chest.x ? chest.x + 85 : chest.x - 85;
-              this.player.y = this.player.y > chest.y ? chest.y + 85 : chest.y - 85;
-            });
-
-            createOverlayButton(this, cardX + 100, btnY2, 160, 42, "SUBMIT ANSWER", 0x10b981, "#fff", () => {
-              this.submitTiling(chest);
-            });
-          }
-
-          drawTiles() {
-            this.tilesGraphics.clear();
-            this.overlayTileTexts.forEach(t => t.destroy());
-            this.overlayTileTexts = [];
-
-            const cardX = W / 2;
-            const cardY = H / 2;
-            const corridorX = cardX - 250;
-            const corridorY = cardY - 30;
-            const corridorW = 500;
-            const corridorH = 50;
-
-            const targetVal = this.currentQ.a.n / this.currentQ.a.d;
-            const divisorVal = this.currentQ.b.n / this.currentQ.b.d;
-            const pixelsPerUnit = corridorW / targetVal;
-
-            const wholeWidth = divisorVal * pixelsPerUnit;
-            const halfWidth = wholeWidth / 2;
-
-            let currentX = corridorX;
-            let sum = { n: 0, d: 1 };
-            let totalGroups = 0;
-
-            this.placedTiles.forEach((tileType) => {
-              let w = 0;
-              let name = "";
-              let color = 0;
-              let strokeColor = 0;
-              let tileFrac;
-
-              if (tileType === 'whole') {
-                w = wholeWidth;
-                name = fracDisplay(this.currentQ.b);
-                color = 0x61dafb; // Cyan
-                strokeColor = 0x072a44;
-                tileFrac = this.currentQ.b;
-                totalGroups += 1;
-              } else {
-                w = halfWidth;
-                const halfFrac = simplify(this.currentQ.b.n, this.currentQ.b.d * 2);
-                name = fracDisplay(halfFrac);
-                color = 0xffd166; // Gold/Yellow
-                strokeColor = 0xd97706;
-                tileFrac = halfFrac;
-                totalGroups += 0.5;
-              }
-
-              sum = addFrac(sum, tileFrac);
-
-              // Draw tile graphics
-              this.tilesGraphics.fillStyle(color, 0.85);
-              this.tilesGraphics.fillRect(currentX, corridorY + 3, w, corridorH - 6);
-              this.tilesGraphics.lineStyle(2, strokeColor, 1);
-              this.tilesGraphics.strokeRect(currentX, corridorY + 3, w, corridorH - 6);
-
-              // Tile label text
-              if (w > 26) {
-                const labelTxt = name;
-                const tText = this.add.text(currentX + w / 2, corridorY + corridorH / 2, labelTxt, {
-                  fontSize: "11px",
-                  fontStyle: "bold",
-                  color: "#0a1e3a",
-                  fontFamily: "Inter, system-ui, sans-serif"
-                }).setOrigin(0.5);
-                this.tilingContainer.add(tText);
-                this.overlayTileTexts.push(tText);
-              }
-
-              currentX += w;
-            });
-
-            const sumVal = sum.n / sum.d;
-            const percentage = Math.round((sumVal / targetVal) * 100);
-            
-            this.progressText.setText("Tiled Length: " + fracDisplay(sum) + " / " + fracDisplay(this.currentQ.a) + "  (" + percentage + "%)");
-            
-            let groupLabel = "Total Tiles: " + totalGroups;
-            if (totalGroups > 0) {
-              groupLabel += "  (Equation: " + fracDisplay(this.currentQ.b) + " × " + totalGroups + " = " + fracDisplay(sum) + ")";
-            }
-            this.groupsText.setText(groupLabel);
-          }
-
-          submitTiling(chest) {
-            let sum = { n: 0, d: 1 };
-            this.placedTiles.forEach((tileType) => {
-              if (tileType === 'whole') {
-                sum = addFrac(sum, this.currentQ.b);
-              } else {
-                sum = addFrac(sum, simplify(this.currentQ.b.n, this.currentQ.b.d * 2));
-              }
-            });
-
-            const target = this.currentQ.a;
-            const isCorrect = (sum.n * target.d === target.n * sum.d);
-
-            if (isCorrect) {
-              this.answered = true; // Mark as answered to prevent double overlap trigger
-              sfxCorrect();
-              
-              this.combo++;
-              this.bestCombo = Math.max(this.bestCombo, this.combo);
-              this.questionsCorrect++;
-              this.questionsAnswered++;
-              
-              const points = 100 + this.combo * 20 + this.level * 30;
-              this.score += points;
-
-              this.closeTilingOverlay();
-              this.showFeedback("CORRECT! Chest Unlocked! +" + points, 0x34d399);
-
-              const emitter = this.add.particles(chest.x, chest.y, "star", {
-                speed: { min: 60, max: 200 },
-                lifespan: 800,
-                scale: { start: 1, end: 0 },
-                alpha: { start: 1, end: 0 },
-                quantity: 20,
-                tint: 0xffd166,
-                emitting: false,
-              });
-              emitter.explode(20);
-
-              this.cameras.main.flash(200, 52, 211, 153);
-              this.cameras.main.shake(150, 0.005);
-
-              chest.destroy();
-              this.depth += 10 + this.level * 5;
-
-              if (
-                this.questionsCorrect > 0 &&
-                this.questionsCorrect % 4 === 0 &&
-                this.level < 6
-              ) {
-                this.level++;
-                this.levelText.setText("Level: " + this.level);
-                sfxLevelUp();
-                this.showFeedback(
-                  "LEVEL " + this.level + "! Diving deeper!",
-                  0xffd166,
-                );
-              }
-
-              this.updateHUD();
-
-              this.time.delayedCall(1200, () => {
-                if (this.lives > 0) this.nextQuestion();
-              });
-
-            } else {
-              sfxWrong();
-              this.combo = 0;
-              this.lives--;
-              this.updateHUD();
-
-              const sumVal = sum.n / sum.d;
-              const targetVal = target.n / target.d;
-
-              let feedbackMsg = "";
-              if (sumVal < targetVal) {
-                const diff = subtractFrac(target, sum);
-                feedbackMsg = "Gap of " + fracDisplay(diff) + "! The corridor is not full.";
-                
-                const cardX = W / 2;
-                const cardY = H / 2;
-                const corridorX = cardX - 250;
-                const corridorY = cardY - 30;
-                const corridorW = 500;
-                const pixelsPerUnit = corridorW / targetVal;
-                
-                const startGapX = corridorX + sumVal * pixelsPerUnit;
-                const gapW = (targetVal - sumVal) * pixelsPerUnit;
-
-                this.tilesGraphics.fillStyle(0xff6b6b, 0.4);
-                this.tilesGraphics.fillRect(startGapX, corridorY + 3, gapW, 44);
-                this.tilesGraphics.lineStyle(2, 0xff6b6b, 0.8);
-                this.tilesGraphics.strokeRect(startGapX, corridorY + 3, gapW, 44);
-
-              } else {
-                const diff = subtractFrac(sum, target);
-                feedbackMsg = "Overlapped by " + fracDisplay(diff) + "! Too many tiles.";
-                
-                const cardX = W / 2;
-                const cardY = H / 2;
-                const corridorX = cardX - 250;
-                const corridorY = cardY - 30;
-                const corridorW = 500;
-                const pixelsPerUnit = corridorW / targetVal;
-
-                const startOverlapX = corridorX + corridorW;
-                const overlapW = (sumVal - targetVal) * pixelsPerUnit;
-
-                this.tilesGraphics.fillStyle(0xff6b6b, 0.5);
-                this.tilesGraphics.fillRect(startOverlapX, corridorY + 3, overlapW, 44);
-                this.tilesGraphics.lineStyle(2, 0xff6b6b, 1);
-                this.tilesGraphics.strokeRect(startOverlapX, corridorY + 3, overlapW, 44);
-              }
-
-              this.overlayFeedback.setText(feedbackMsg).setAlpha(1);
-              this.cameras.main.shake(200, 0.005);
-              
-              if (this.lives <= 0) {
-                this.closeTilingOverlay();
-                this.time.delayedCall(1000, () => this.endGame());
-              }
-            }
-          }
-
-          closeTilingOverlay() {
-            if (this.tilingContainer) {
-              this.tilingContainer.destroy(true);
-              this.tilingContainer = null;
-            }
-            this.physics.resume();
-          }
-
-          hitEnemy(enemy) {
-            if (this.answered) return;
-
-            sfxWrong();
-            this.combo = 0;
-            this.lives--;
-
-            // Knockback
-            const angle = Phaser.Math.Angle.Between(
-              enemy.x,
-              enemy.y,
-              this.player.x,
-              this.player.y,
-            );
-            this.player.body.velocity.x = Math.cos(angle) * 250;
-            this.player.body.velocity.y = Math.sin(angle) * 250;
-
-            // Flash player
-            this.tweens.add({
-              targets: this.player,
-              alpha: 0.3,
-              duration: 100,
-              yoyo: true,
-              repeat: 3,
-            });
-
-            this.cameras.main.shake(200, 0.008);
-            this.showFeedback("Ouch! Sea creature hit! -1 life", 0xff6b6b);
-
-            // Particles
-            this.add
-              .particles(enemy.x, enemy.y, "particle", {
-                speed: { min: 30, max: 100 },
-                lifespan: 500,
-                scale: { start: 0.6, end: 0 },
-                tint: 0xff6b6b,
-                quantity: 8,
-                emitting: false,
-              })
-              .explode(8);
-
-            // Remove this enemy
-            enemy.destroy();
-
-            this.updateHUD();
-
-            if (this.lives <= 0) {
-              this.time.delayedCall(800, () => this.endGame());
-            }
-          }
-
-          hitCollectible(col) {
-            sfxBubble();
-            const type = col.getData("type");
-            if (type === "bonus") {
-              this.score += 50;
-              this.showFeedback("+50 bonus!", 0xffd166);
-            }
-            this.add
-              .particles(col.x, col.y, "star", {
-                speed: { min: 30, max: 100 },
-                lifespan: 500,
-                scale: { start: 0.8, end: 0 },
-                tint: 0xffd166,
-                quantity: 6,
-                emitting: false,
-              })
-              .explode(6);
-            col.destroy();
-            this.updateHUD();
-          }
-
-          showFeedback(text, color) {
-            const hex = "#" + color.toString(16).padStart(6, "0");
-            this.feedbackText
-              .setText(text)
-              .setColor(hex)
-              .setAlpha(1)
-              .setScale(0.5);
-            this.tweens.add({
-              targets: this.feedbackText,
-              scale: 1,
-              duration: 200,
-              ease: "Back.easeOut",
-            });
-            this.tweens.add({
-              targets: this.feedbackText,
-              alpha: 0,
-              y: this.feedbackText.y - 30,
-              duration: 800,
-              delay: 1000,
-              onComplete: () => {
-                this.feedbackText.y = H / 2;
-              },
-            });
-          }
-
-          updateHUD() {
-            this.scoreText.setText("Score: " + this.score);
-            this.comboText.setText(
-              "Combo: " + this.combo + (this.combo >= 3 ? " 🔥" : ""),
-            );
-            this.levelText.setText("Level: " + this.level);
-
-            // Hearts
-            this.heartsGroup.forEach((h, i) => {
-              h.setAlpha(i < this.lives ? 1 : 0.2);
-              h.setTint(i < this.lives ? 0xffffff : 0x333333);
-            });
-          }
-
-          spawnAmbientFish() {
-            const y = rand(60, H - 120);
-            const dir = Math.random() > 0.5 ? 1 : -1;
-            const fish = this.add.ellipse(
-              dir > 0 ? -30 : W + 30,
-              y,
-              30 + rand(0, 20),
-              12 + rand(0, 8),
-              pick([0x61dafb, 0xffd166, 0x34d399, 0xc084fc]),
-              0.4,
-            );
-            this.tweens.add({
-              targets: fish,
-              x: dir > 0 ? W + 30 : -30,
-              duration: 6000 + rand(0, 4000),
-              onComplete: () => fish.destroy(),
-            });
-          }
-
-          endGame() {
-            this.physics.pause();
-            this.scene.start("Results", {
-              score: this.score,
-              correct: this.questionsCorrect,
-              total: this.questionsAnswered,
-              level: this.level,
-              bestCombo: this.bestCombo,
-              depth: Math.floor(this.depth),
-            });
-          }
-
-          update(time, delta) {
-            if (this.lives <= 0) return;
-
-            // Player movement
-            const speed = 320;
-            let vx = 0,
-              vy = 0;
-
-            if (this.cursors.left.isDown || this.wasd.left.isDown) vx = -speed;
-            if (this.cursors.right.isDown || this.wasd.right.isDown) vx = speed;
-            if (this.cursors.up.isDown || this.wasd.up.isDown) vy = -speed;
-            if (this.cursors.down.isDown || this.wasd.down.isDown) vy = speed;
-
-            // Touch
-            if (this.touchTarget) {
-              const dx = this.touchTarget.x - this.player.x;
-              const dy = this.touchTarget.y - this.player.y;
-              const dist = Math.hypot(dx, dy);
-              if (dist > 15) {
-                vx = (dx / dist) * speed;
-                vy = (dy / dist) * speed;
-              }
-            }
-
-            this.player.body.velocity.x = Phaser.Math.Linear(
-              this.player.body.velocity.x,
-              vx,
-              0.15,
-            );
-            this.player.body.velocity.y = Phaser.Math.Linear(
-              this.player.body.velocity.y,
-              vy,
-              0.15,
-            );
-
-            // Flip diver based on direction
-            if (vx < -20) this.player.setFlipX(true);
-            else if (vx > 20) this.player.setFlipX(false);
-
-            // Player glow follows
-            this.playerGlow.setPosition(this.player.x, this.player.y);
-
-            // Animate enemies
-            this.enemies.getChildren().forEach((e) => {
-              const sp = e.getData("speed") || 50;
-              const d = e.getData("dir") || 1;
-              const vd = e.getData("vertDir") || 0;
-              e.x += (d * sp * delta) / 1000;
-              e.y += ((vd * (sp * 0.5) * delta) / 1000) * Math.sin(time / 500);
-
-              // Bounce at edges
-              if (e.x < 100 || e.x > W - 20) e.setData("dir", -d);
-              if (e.y < 40 || e.y > H - 100) e.setData("vertDir", -(vd || 1));
-
-              // Face direction
-              e.setFlipX(d < 0);
-            });
-
-            // Subtle ray animation
-            if (this.rays) {
-              this.rays.setAlpha(0.06 + Math.sin(time / 2000) * 0.02);
-            }
-          }
+        $("c-jumps").textContent = S.jumps;
+        const cov = simplify(S.jumps * p.sn, p.sd);
+        $("ro-covered").innerHTML = S.jumps ? fracHTML(cov[0], cov[1]) : "0";
+      }
+
+      function changeJumps(delta) {
+        const next = S.jumps + delta;
+        if (next < 0) return;
+        // cap so the model stays sane (twice the true quotient + 2)
+        if (next > S.cur.quotient * 2 + 2) {
+          flash("That's already way past the goal.", "bad");
+          return;
         }
+        S.jumps = next;
+        SFX.tick();
+        renderModel();
+        const reach = S.jumps * S.cur.step;
+        srSay(
+          `${S.jumps} jumps. ` +
+            (Math.abs(reach - S.cur.goal) < 1e-9
+              ? "Right on the goal — press Dive."
+              : reach > S.cur.goal
+                ? "Past the goal."
+                : "Still short of the goal."),
+        );
+      }
 
-        // ==================== RESULTS SCENE ====================
-        class ResultsScene extends Phaser.Scene {
-          constructor() {
-            super("Results");
-          }
-
-          init(data) {
-            this.data = data;
-          }
-
-          create() {
-            const d = this.data;
-
+      // Player commits their constructed model → check the quotient.
+      function dive() {
+        const p = S.cur;
+        const reach = S.jumps * p.step;
+        if (Math.abs(reach - p.goal) < 1e-9 && S.jumps === p.quotient) {
+          // EXACT — quotient constructed correctly
+          S.score += S.level === 1 ? 30 : 45;
+          S.built++;
+          SFX.win();
+          $("hud-score").textContent = S.score;
+          flash(
+            `Exactly! ${p.dn}/${p.dd} ÷ ${p.sn}/${p.sd} = ${p.quotient}. The diver reaches the goal in ${p.quotient} jumps. 🐠`,
+            "good",
+          );
+          if (window.GameFX && GameFX.successBurst)
             try {
-              window.EduPulse &&
-                EduPulse.record({
-                  activityTitle: document.title,
-                  score: d.correct,
-                  maxScore: d.total,
-                  percent: d.total
-                    ? Math.round((d.correct / d.total) * 100)
-                    : 0,
-                  problemsCorrect: d.correct,
-                  problemsAttempted: d.total,
-                  standard: "6.NS.A.1",
-                });
+              GameFX.successBurst();
             } catch (e) {}
-
-            // Background
-            const bg = this.add.graphics();
-            bg.fillGradientStyle(0x031321, 0x031321, 0x072a44, 0x072a44, 1);
-            bg.fillRect(0, 0, W, H);
-
-            // Bubbles
-            for (let i = 0; i < 20; i++) {
-              const b = this.add
-                .image(rand(20, W - 20), rand(20, H - 20), "bubble")
-                .setAlpha(0.15)
-                .setScale(0.8 + Math.random());
-              this.tweens.add({
-                targets: b,
-                y: b.y - 150,
-                alpha: 0,
-                duration: 4000 + Math.random() * 3000,
-                repeat: -1,
-                delay: Math.random() * 3000,
-              });
-            }
-
-            // Title
-            const won = d.correct >= 10;
-            this.add
-              .text(W / 2, 60, won ? "DEEP SEA CHAMPION!" : "DIVE COMPLETE", {
-                fontSize: "38px",
-                fontStyle: "bold",
-                color: won ? "#ffd166" : "#61dafb",
-                align: "center",
-                stroke: "#000",
-                strokeThickness: 3,
-              })
-              .setOrigin(0.5);
-
-            this.add
-              .text(W / 2, 100, "6.NS.A.1 — Fraction Division", {
-                fontSize: "14px",
-                color: "#7ec8e3",
-              })
-              .setOrigin(0.5);
-
-            // Stats grid
-            const stats = [
-              { label: "Score", value: d.score, color: "#61dafb" },
-              {
-                label: "Correct",
-                value: d.correct + "/" + d.total,
-                color: "#34d399",
-              },
-              {
-                label: "Accuracy",
-                value:
-                  (d.total ? Math.round((d.correct / d.total) * 100) : 0) + "%",
-                color: "#ffd166",
-              },
-              { label: "Level", value: d.level, color: "#c084fc" },
-              { label: "Best Combo", value: d.bestCombo, color: "#fb923c" },
-              { label: "Depth", value: d.depth + "m", color: "#38bdf8" },
-            ];
-
-            stats.forEach((s, i) => {
-              const col = i % 3;
-              const row = Math.floor(i / 3);
-              const x = W / 2 - 200 + col * 200;
-              const y = 170 + row * 100;
-
-              this.add
-                .rectangle(x, y, 170, 75, 0x0a1e3a, 0.8)
-                .setStrokeStyle(1, parseInt(s.color.slice(1), 16), 0.4);
-              this.add
-                .text(x, y - 15, s.label, {
-                  fontSize: "12px",
-                  color: "#7ec8e3",
-                  align: "center",
-                })
-                .setOrigin(0.5);
-              this.add
-                .text(x, y + 12, String(s.value), {
-                  fontSize: "26px",
-                  fontStyle: "bold",
-                  color: s.color,
-                  align: "center",
-                })
-                .setOrigin(0.5);
-            });
-
-            // Badges
-            const acc = d.total ? (d.correct / d.total) * 100 : 0;
-            const badges = [];
-            if (acc >= 90) badges.push("Fraction Master");
-            if (acc >= 75) badges.push("Strong Diver");
-            if (d.bestCombo >= 5) badges.push("Combo King");
-            if (d.depth >= 200) badges.push("Deep Explorer");
-            if (d.level >= 4) badges.push("Advanced");
-            if (badges.length === 0) badges.push("Keep Practicing!");
-
-            this.add
-              .text(W / 2, 390, "Achievements", {
-                fontSize: "14px",
-                color: "#7ec8e3",
-              })
-              .setOrigin(0.5);
-            badges.forEach((b, i) => {
-              const bx = W / 2 + (i - (badges.length - 1) / 2) * 140;
-              this.add
-                .rectangle(bx, 425, 120, 30, 0x1a0d3e, 0.8)
-                .setStrokeStyle(1, 0xc084fc, 0.5);
-              this.add
-                .text(bx, 425, b, {
-                  fontSize: "11px",
-                  fontStyle: "bold",
-                  color: "#c084fc",
-                })
-                .setOrigin(0.5);
-            });
-
-            // Tip
-            this.add
-              .text(
-                W / 2,
-                480,
-                "Remember: Keep the first fraction, flip the second,\nmultiply across, then simplify!",
-                {
-                  fontSize: "14px",
-                  color: "#a8d7e5",
-                  align: "center",
-                  lineSpacing: 4,
-                },
-              )
-              .setOrigin(0.5);
-
-            // Buttons
-            const playBtn = this.add
-              .rectangle(W / 2 - 80, 560, 160, 48, 0x18d2ba)
-              .setInteractive({ useHandCursor: true });
-            this.add
-              .text(W / 2 - 80, 560, "DIVE AGAIN", {
-                fontSize: "18px",
-                fontStyle: "bold",
-                color: "#000",
-              })
-              .setOrigin(0.5);
-            playBtn.on("pointerover", () => playBtn.setFillStyle(0x34d399));
-            playBtn.on("pointerout", () => playBtn.setFillStyle(0x18d2ba));
-            playBtn.on("pointerdown", () => {
-              sfxDive();
-              this.scene.start("Game");
-            });
-
-            const menuBtn = this.add
-              .rectangle(W / 2 + 100, 560, 120, 48, 0x0a1e3a)
-              .setStrokeStyle(1, 0x61dafb, 0.5)
-              .setInteractive({ useHandCursor: true });
-            this.add
-              .text(W / 2 + 100, 560, "MENU", {
-                fontSize: "16px",
-                fontStyle: "bold",
-                color: "#61dafb",
-              })
-              .setOrigin(0.5);
-            menuBtn.on("pointerdown", () => this.scene.start("Title"));
-
-            // Keyboard
-            this.input.keyboard.on("keydown-SPACE", () => {
-              sfxDive();
-              this.scene.start("Game");
-            });
-
-            this.cameras.main.fadeIn(400);
-
-            // Confetti if good score
-            if (acc >= 70) {
-              for (let i = 0; i < 30; i++) {
-                const star = this.add
-                  .image(rand(50, W - 50), -20, "star")
-                  .setScale(1 + Math.random())
-                  .setTint(
-                    pick([0xffd166, 0x34d399, 0x61dafb, 0xc084fc, 0xff6b8a]),
-                  );
-                this.tweens.add({
-                  targets: star,
-                  y: H + 20,
-                  x: star.x + rand(-100, 100),
-                  angle: 360,
-                  duration: 2000 + rand(0, 2000),
-                  delay: rand(0, 1000),
-                  alpha: 0,
-                });
-              }
-            }
-          }
+          if (S.round + 1 >= ROUNDS) setTimeout(() => endGame(true), 1500);
+          else setTimeout(() => loadRound(S.round + 1), 1500);
+          return;
         }
+        // Empty dive — coach, don't penalize.
+        if (S.jumps === 0) {
+          flash("Place some jumps first, then Dive.", "bad");
+          return;
+        }
+        // Wrong → visible mismatch + misconception nudge + air lost
+        S.lives--;
+        SFX.bad();
+        $("hud-lives").textContent = "●".repeat(S.lives) || "—";
+        const m = DATA.misconceptions || [];
+        const msg =
+          reach < p.goal - 1e-9
+            ? (m[0] && m[0].feedback) ||
+              "Too short — dividing by a small fraction needs MORE jumps."
+            : (m[1] && m[1].feedback) ||
+              "You overshot the goal — use fewer jumps so you land exactly on it.";
+        flash(msg, "bad");
+        if (S.lives <= 0) return endGame(false);
+      }
 
-        // --- Register scenes and start ---
-        config.scene = [BootScene, TitleScene, GameScene, ResultsScene];
-        const game = new Phaser.Game(config);
-      })();
+      function flash(msg, cls) {
+        const f = $("feedback");
+        f.textContent = msg;
+        f.className = "feedback " + cls;
+        srSay(msg);
+      }
+
+      function endGame(won) {
+        const pct = ROUNDS ? S.built / ROUNDS : 0;
+        const stars = pct >= 0.9 ? 3 : pct >= 0.6 ? 2 : pct >= 0.3 ? 1 : 0;
+        $("r-stars").textContent = "★".repeat(stars) + "☆".repeat(3 - stars);
+        $("r-score").textContent = S.score;
+        $("r-correct").textContent = S.built;
+        $("r-rounds").textContent = won ? ROUNDS : S.round;
+        let high = 0;
+        try {
+          high = Number(localStorage.getItem(LS_KEY) || 0);
+        } catch (e) {}
+        if (S.score > high) {
+          try {
+            localStorage.setItem(LS_KEY, String(S.score));
+          } catch (e) {}
+          $("r-high").textContent = S.score;
+          $("r-high-row").style.display = "flex";
+        }
+        // EduPulse (guarded)
+        try {
+          window.EduPulse &&
+            EduPulse.record({
+              activityTitle: ACTIVITY_TITLE,
+              score: S.score,
+              stars: stars,
+              problemsCorrect: S.built,
+              problemsAttempted: ROUNDS,
+              percent: Math.round(pct * 100),
+              standard: STANDARD,
+            });
+        } catch (e) {}
+        srSay(
+          (won ? "All dives complete. " : "Out of air. ") +
+            "Score " +
+            S.score +
+            ", " +
+            stars +
+            " stars.",
+        );
+        show("result");
+      }
+
+      // ── Wiring ──
+      $("vocab-go").addEventListener("click", () => {
+        renderLevels();
+        show("level");
+      });
+      $("r-again").addEventListener("click", () => {
+        renderLevels();
+        show("level");
+      });
+      $("btn-plus").addEventListener("click", () => changeJumps(1));
+      $("btn-minus").addEventListener("click", () => changeJumps(-1));
+      $("btn-dive").addEventListener("click", dive);
+
+      // Keyboard: →/+ add a jump, ←/− remove a jump, Enter dives
+      document.addEventListener("keydown", (e) => {
+        if (!$("screen-play").classList.contains("on")) return;
+        if (e.key === "ArrowRight" || e.key === "+" || e.key === "=") {
+          e.preventDefault();
+          changeJumps(1);
+        } else if (e.key === "ArrowLeft" || e.key === "-") {
+          e.preventDefault();
+          changeJumps(-1);
+        } else if (e.key === "Enter") {
+          e.preventDefault();
+          dive();
+        }
+      });
+
+      renderVocab();
     </script>
+
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
 </html>
