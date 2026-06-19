@@ -29,6 +29,7 @@ function copyStandaloneHtml() {
     "scripts",
     "tools",
     "docs",
+    "night-shift",
   ]);
   const ROOT_FILES = ["_headers", "_redirects", "404.html", "robots.txt", "sitemap.xml"];
   // Keep dev artifacts out of the published site: nested .claude/.git/node_modules
