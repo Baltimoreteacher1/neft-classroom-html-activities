@@ -88,10 +88,34 @@
         "6.G.A.1",
         "6.EE.B.7",
       ];
+
+      // Room code: 5 random chars (no ambiguous 0/O/1/I/L) ~ 28M combos.
+      function randomCode() {
+        const a = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+        const r = crypto.getRandomValues(new Uint32Array(5));
+        let c = "";
+        for (let i = 0; i < 5; i++) c += a[r[i] % a.length];
+        return c;
+      }
       const CODE = (
-        new URLSearchParams(location.search).get("code") ||
-        "MATH" + Math.floor(Math.random() * 90 + 10)
+        new URLSearchParams(location.search).get("code") || randomCode()
       ).toUpperCase();
+      // Escape server-echoed, player-controlled text before inserting as HTML.
+      function esc(s) {
+        return String(s == null ? "" : s).replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[c],
+        );
+      }
+      let hostToken = null; // secret minted by the Worker on /create — only this host has it
+
       const sel = document.getElementById("standard");
       STANDARDS.forEach((s) => {
         const o = document.createElement("option");
@@ -99,10 +123,11 @@
         sel.appendChild(o);
       });
 
+      // Host control calls automatically carry the hostToken; player calls don't need it.
       const api = (path, body) =>
         fetch(`${WORKER_URL}/${path}?code=${CODE}`, {
           method: "POST",
-          body: JSON.stringify(body || {}),
+          body: JSON.stringify(Object.assign({ hostToken }, body || {})),
         }).then((r) => r.json());
 
       function render(s) {
@@ -117,24 +142,32 @@
         if (s.phase !== "reveal")
           document.getElementById("reveal").textContent = "";
         document.getElementById("lb").innerHTML = s.leaderboard
-          .map((p) => `<li><span>${p.name}</span><b>${p.score}</b></li>`)
+          .map(
+            (p) =>
+              `<li><span>${esc(p.name)}</span><b>${Number(p.score) || 0}</b></li>`,
+          )
           .join("");
       }
 
       let ws;
       document.getElementById("createBtn").onclick = async () => {
-        // Send only the chosen standard — the Worker loads questions + answers server-side.
-        await api("create", {
+        // Send only the chosen standard; the Worker loads questions + answers server-side
+        // and returns the hostToken that authorizes start/reveal/next.
+        const created = await api("create", {
           code: CODE,
           standard: sel.value,
           title: sel.value + " Live",
         });
+        if (!created.ok)
+          return alert(
+            "Could not create game: " + (created.error || "unknown"),
+          );
+        hostToken = created.hostToken;
         document.getElementById("code").textContent = CODE;
         document.getElementById("codeRow").style.display = "";
         document.getElementById("controls").style.display = "";
         document.getElementById("setup").style.display = "none";
-        const r = await api("state");
-        render(r.state);
+        render((await api("state")).state);
         ws = new WebSocket(
           WORKER_URL.replace(/^http/, "ws") + `/?code=${CODE}`,
         );
@@ -148,7 +181,7 @@
         api("start");
       };
       document.getElementById("revealBtn").onclick = async () => {
-        // The correct answer is returned transiently by the server here — never embedded in the page.
+        // The correct answer is returned transiently by the server (host-token gated) — never embedded.
         const r = await api("reveal");
         if (r.ok && typeof r.answerIndex === "number")
           document.getElementById("reveal").textContent =

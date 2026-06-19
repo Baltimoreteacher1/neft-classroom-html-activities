@@ -70,8 +70,30 @@ export class GameRoom {
       return Response.json({ ok: false, error: "no-room" }, { status: 404 });
     }
 
+    // Host-only control ops require the secret hostToken minted at /create. Players
+    // (join/answer/state) never need it, and /reveal is gated here so a player who
+    // knows the room code cannot fetch the answer key.
+    const HOST_OPS = { start: 1, reveal: 1, next: 1 };
+    if (
+      HOST_OPS[op] &&
+      (!this.room.hostToken || body.hostToken !== this.room.hostToken)
+    ) {
+      return Response.json({ ok: false, error: "not-host" }, { status: 403 });
+    }
+
     switch (op) {
       case "create":
+        // Re-creating an existing room requires the current host's token (no hijacking).
+        if (
+          this.room &&
+          this.room.hostToken &&
+          body.hostToken !== this.room.hostToken
+        ) {
+          return Response.json(
+            { ok: false, error: "room-exists" },
+            { status: 409 },
+          );
+        }
         // Client sends { code, standard, title } only. Questions (with answer keys)
         // come from the server-side bank so no answer key is exposed to clients.
         this.room = Room.makeRoom({
@@ -80,6 +102,8 @@ export class GameRoom {
           title: body.title,
           questions: questionsFor(body.standard),
         });
+        this.room.hostToken = crypto.randomUUID(); // returned ONLY in this response
+        res = { ok: true, hostToken: this.room.hostToken };
         break;
       case "join":
         res = Room.addPlayer(this.room, body.id, body.name);
