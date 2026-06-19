@@ -16,7 +16,7 @@
  *   node tools/canvas/build-course.mjs            # all units
  *   node tools/canvas/build-course.mjs 1          # just Unit 1 (recommended first test)
  *   npm run course -- 1
- * Env: NEFT_SITE (default https://eduwonderlab.com), QUIZ_MAX (default 8 questions).
+ * Env: NEFT_SITE (default https://eduwonderlab.com), QUIZ_MAX (default 12 questions).
  */
 import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from "fs";
 import { execSync } from "child_process";
@@ -26,7 +26,7 @@ import { fileURLToPath } from "url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, "../..");
 const SITE = (process.env.NEFT_SITE || "https://eduwonderlab.com").replace(/\/$/, "");
-const QUIZ_MAX = Number(process.env.QUIZ_MAX || 8);
+const QUIZ_MAX = Number(process.env.QUIZ_MAX || 12);
 const args = process.argv.slice(2);
 // --quizzes-only emits just the QTI quizzes (no pages/modules) for Canvas's
 // dedicated "QTI .zip file" import path — the most reliable way to land quizzes.

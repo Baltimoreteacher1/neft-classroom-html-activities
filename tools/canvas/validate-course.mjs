@@ -23,7 +23,7 @@
  *
  * Usage:
  *   node tools/canvas/validate-course.mjs [path/to/extracted/course]
- * Env: QUIZ_MAX (default 8) — must match the value used for the build.
+ * Env: QUIZ_MAX (default 12) — must match the value used for the build.
  * Exit code 0 = flawless, 1 = at least one defect (so it can gate CI/regen).
  */
 import { readFileSync, existsSync, readdirSync } from "fs";
@@ -33,7 +33,7 @@ import { execSync } from "child_process";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const LETTERS = "ABCDEFGHIJKLMNOP".split("");
-const QUIZ_MAX = Number(process.env.QUIZ_MAX || 8);
+const QUIZ_MAX = Number(process.env.QUIZ_MAX || 12);
 
 const errors = [];
 const warns = [];
