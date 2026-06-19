@@ -65,4 +65,6 @@ const out = {
   coverage,
 };
 writeFileSync(join(root, "data/content-graph.json"), JSON.stringify(out, null, 1));
-console.log(`content-graph.json: ${entries.length} entries, ${taggedCount} freshly tagged, ${Object.keys(byStandard).length} standards`);
+console.log(
+  `content-graph.json: ${entries.length} entries, ${taggedCount} freshly tagged, ${Object.keys(byStandard).length} standards`,
+);

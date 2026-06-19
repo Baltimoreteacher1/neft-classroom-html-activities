@@ -17,7 +17,9 @@ const labelOf = Object.fromEntries(tax.standards.map((s) => [s.id, s.label]));
 
 // 1. coverage gaps, worst first (no content > no level-0 > no enrichment)
 const rank = (f) => (f.includes("NO_CONTENT") ? 0 : f.includes("no-level-0") ? 1 : 2);
-const gaps = cov.gaps.slice().sort((a, b) => rank(a.flags) - rank(b.flags) || a.standard.localeCompare(b.standard));
+const gaps = cov.gaps
+  .slice()
+  .sort((a, b) => rank(a.flags) - rank(b.flags) || a.standard.localeCompare(b.standard));
 
 // 2. low-confidence tags (auto-assigned, worth review)
 const lowConf = graph.entries
@@ -45,7 +47,8 @@ md += `| Conf | Standard | Activity |\n|---|---|---|\n`;
 lowConf.slice(0, 40).forEach((e) => {
   md += `| ${e.confidence.toFixed(2)} | \`${e.standard}\` | [${e.title.replace(/\|/g, "/")}](${e.url}) |\n`;
 });
-if (lowConf.length > 40) md += `\n_…and ${lowConf.length - 40} more in data/content-graph.json (confidence < 0.7)._\n`;
+if (lowConf.length > 40)
+  md += `\n_…and ${lowConf.length - 40} more in data/content-graph.json (confidence < 0.7)._\n`;
 
 md += `\n## 3. Strongest standards (Brain routes well here today)\n\n`;
 md += `Full coverage across support (L0), on-level (L1), and enrichment (L2).\n\n`;
@@ -56,4 +59,6 @@ strong.forEach((r) => {
 
 mkdirSync(join(root, "reports"), { recursive: true });
 writeFileSync(join(root, "reports/math-brain-action-plan.md"), md);
-console.log(`reports/math-brain-action-plan.md — ${gaps.length} gaps, ${lowConf.length} low-confidence tags, ${strong.length} strong standards`);
+console.log(
+  `reports/math-brain-action-plan.md — ${gaps.length} gaps, ${lowConf.length} low-confidence tags, ${strong.length} strong standards`,
+);

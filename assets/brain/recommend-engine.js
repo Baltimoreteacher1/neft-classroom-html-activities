@@ -58,10 +58,8 @@
         var levelFit = fitLevels.indexOf(e.level);
         if (levelFit === -1) return; // wrong level for this band
         score += urgency - levelFit * 8; // primary level fits best
-        if (s.band === "struggling")
-          reasons.push("You're still building " + e.standard);
-        else if (s.band === "developing")
-          reasons.push("Keep growing on " + e.standard);
+        if (s.band === "struggling") reasons.push("You're still building " + e.standard);
+        else if (s.band === "developing") reasons.push("Keep growing on " + e.standard);
         else reasons.push("Stretch yourself on " + e.standard);
 
         // misconception match: this activity targets a misconception the student shows
