@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Live Game — Host (Teacher)</title>
+    <link rel="stylesheet" href="/assets/brain/brain.css" />
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 760px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+      }
+      .code {
+        font-size: 3rem;
+        letter-spacing: 0.2em;
+        font-weight: 800;
+        color: #4f6ef7;
+      }
+      button,
+      select {
+        font-size: 1rem;
+        padding: 0.6rem 1.1rem;
+        border-radius: 10px;
+        border: 1px solid #c8cce0;
+      }
+      button {
+        background: #4f6ef7;
+        color: #fff;
+        border: 0;
+        cursor: pointer;
+      }
+      .lb {
+        list-style: none;
+        padding: 0;
+      }
+      .lb li {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.4rem 0.7rem;
+        border-bottom: 1px solid #eee;
+      }
+      .reveal {
+        font-weight: 700;
+        color: #2e9e5b;
+      }
+      .teacher-note {
+        font-size: 0.85rem;
+        opacity: 0.7;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🧠 Live Math Game — Host</h1>
+    <p class="teacher-note">
+      Teacher screen. Pick a skill, share the join code, and run the game.
+      Answers stay on the server and only appear here when you reveal.
+    </p>
+    <div id="setup">
+      <label
+        >Skill:
+        <select id="standard"></select
+      ></label>
+      <button id="createBtn">Create game</button>
+    </div>
+    <p style="display: none" id="codeRow">
+      Join code: <span class="code" id="code">—</span> · Skill: <b id="std"></b>
+    </p>
+    <div id="controls" style="display: none">
+      <button id="startBtn">Start</button>
+      <button id="revealBtn">Reveal answer</button>
+      <button id="nextBtn">Next question</button>
+    </div>
+    <h2 id="phase"></h2>
+    <div id="question"></div>
+    <p class="reveal" id="reveal"></p>
+    <h3>Leaderboard</h3>
+    <ul class="lb" id="lb"></ul>
+    <script>
+      // Deployed neft-live-rooms Worker (no answer keys live in this page).
+      const WORKER_URL =
+        window.NEFT_LIVE_WORKER || "https://neft-live-rooms.neftjd.workers.dev";
+      const STANDARDS = [
+        "6.RP.A.2",
+        "6.RP.A.3",
+        "6.NS.C.7",
+        "6.G.A.1",
+        "6.EE.B.7",
+      ];
+      const CODE = (
+        new URLSearchParams(location.search).get("code") ||
+        "MATH" + Math.floor(Math.random() * 90 + 10)
+      ).toUpperCase();
+      const sel = document.getElementById("standard");
+      STANDARDS.forEach((s) => {
+        const o = document.createElement("option");
+        o.value = o.textContent = s;
+        sel.appendChild(o);
+      });
+
+      const api = (path, body) =>
+        fetch(`${WORKER_URL}/${path}?code=${CODE}`, {
+          method: "POST",
+          body: JSON.stringify(body || {}),
+        }).then((r) => r.json());
+
+      function render(s) {
+        if (!s) return;
+        document.getElementById("std").textContent = s.standard;
+        document.getElementById("phase").textContent =
+          s.phase +
+          (s.question ? ` — Q${s.question.index + 1}/${s.question.total}` : "");
+        document.getElementById("question").textContent = s.question
+          ? s.question.prompt
+          : "";
+        if (s.phase !== "reveal")
+          document.getElementById("reveal").textContent = "";
+        document.getElementById("lb").innerHTML = s.leaderboard
+          .map((p) => `<li><span>${p.name}</span><b>${p.score}</b></li>`)
+          .join("");
+      }
+
+      let ws;
+      document.getElementById("createBtn").onclick = async () => {
+        // Send only the chosen standard — the Worker loads questions + answers server-side.
+        await api("create", {
+          code: CODE,
+          standard: sel.value,
+          title: sel.value + " Live",
+        });
+        document.getElementById("code").textContent = CODE;
+        document.getElementById("codeRow").style.display = "";
+        document.getElementById("controls").style.display = "";
+        document.getElementById("setup").style.display = "none";
+        const r = await api("state");
+        render(r.state);
+        ws = new WebSocket(
+          WORKER_URL.replace(/^http/, "ws") + `/?code=${CODE}`,
+        );
+        ws.onmessage = (e) => {
+          const m = JSON.parse(e.data);
+          if (m.type === "state") render(m.state);
+        };
+      };
+      document.getElementById("startBtn").onclick = () => {
+        document.getElementById("reveal").textContent = "";
+        api("start");
+      };
+      document.getElementById("revealBtn").onclick = async () => {
+        // The correct answer is returned transiently by the server here — never embedded in the page.
+        const r = await api("reveal");
+        if (r.ok && typeof r.answerIndex === "number")
+          document.getElementById("reveal").textContent =
+            "Correct answer: choice " + (r.answerIndex + 1);
+      };
+      document.getElementById("nextBtn").onclick = async () => {
+        document.getElementById("reveal").textContent = "";
+        const r = await api("next");
+        if (r.ended && r.results)
+          console.log(
+            "nt_result_v1 records to POST to progress endpoint:",
+            r.results,
+          );
+      };
+    </script>
+  </body>
+</html>
