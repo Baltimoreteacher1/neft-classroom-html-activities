@@ -8,10 +8,12 @@ import { sh, hasCommand, readJson, writeJson } from "../lib/util.mjs";
 
 export const name = "Backlog Advancer";
 
-async function makeWorktree(ctx, branch) {
+async function makeWorktree(ctx, branch, baseRef) {
   const wt = path.join(ctx.root, ".night-shift-worktrees", branch.replace(/[^\w.-]/g, "_"));
   await ctx.git.raw("worktree", "prune");
-  const r = await ctx.git.raw("worktree", "add", "-B", branch, wt, "HEAD");
+  // Base off the deploy branch (origin/main) so regen PRs contain ONLY the
+  // regen diff — never the dirty working branch the repo happens to sit on.
+  const r = await ctx.git.raw("worktree", "add", "-B", branch, wt, baseRef);
   return r.ok ? wt : null;
 }
 
@@ -42,6 +44,12 @@ export async function run(ctx) {
   const haveGh = await hasCommand("gh");
   const haveClaude = await hasCommand("claude");
 
+  // Resolve the deploy branch as the base for all generated worktrees.
+  const remote = ctx.config.divergenceWatch?.remote || "origin";
+  const mainBranch = cfg.baseBranch || ctx.config.divergenceWatch?.mainBranch || "main";
+  if (!ctx.dryRun) await ctx.git.raw("fetch", remote, mainBranch);
+  const baseRef = `${remote}/${mainBranch}`;
+
   for (const task of batch) {
     if (task.type === "claude" && !cfg.enableClaudeTasks) {
       details.push(`⏭️ "${task.title}" — claude task, but enableClaudeTasks is off.`);
@@ -57,7 +65,7 @@ export async function run(ctx) {
     }
 
     const branch = `night-shift/${task.id}`;
-    const wt = await makeWorktree(ctx, branch);
+    const wt = await makeWorktree(ctx, branch, baseRef);
     if (!wt) {
       worst = "warn";
       details.push(`⚠️ "${task.title}" — could not create worktree, skipped.`);
@@ -112,6 +120,8 @@ export async function run(ctx) {
           [
             "pr",
             "create",
+            "--base",
+            mainBranch,
             "--head",
             branch,
             "--title",
