@@ -34,9 +34,31 @@ meta: {
   standard: "6.NS.4",            // copied verbatim from the source file
   artBase: "../_art/unit1/",     // reused existing backgrounds
   home: "../index.html",
+  tier: 0,                       // OPTIONAL: 0 = Level 0 (IEP / most-supported)
+                                 // build. See "Level 0 tier" below.
   theme: { "--accent": "#ff8a3d", "--accent2": "#3da5ff" }  // optional overrides
 }
 ```
+
+### Level 0 tier (`meta.tier: 0`) — IEP / most-supported build
+
+The curriculum standard is **L0 < L1 < L2**. Setting `meta.tier: 0` makes the
+engine auto-scaffold a single story file for the most-supported tier **without
+authoring a third story by hand**:
+
+- **2 choices instead of 3** — the engine keeps the correct answer plus the
+  first distractor (its mapped misconception). To control the pair, mark choices
+  with `keepL0: true` (keep exactly those), or supply a whole `choicesL0: [...]`
+  array on the step (same `{en,es,correct,why}` shape) for a simplified number
+  set.
+- **Fewer beats per act** — the engine keeps the first beat, the last beat, and
+  any `misconception` beat. Supply `beatsL0: [...]` on a beats step to override.
+- **Sentence frame always open** — the Writing-coach fold is rendered already
+  expanded so the frame is visible without a tap.
+- A `body[data-tier="0"]` flag is set for CSS (calmer, roomier scaffolding).
+
+`tier` is independent of `version`/`level` (the level pill still reads
+`meta.level`, e.g. `"Level 0"`). Stories without `tier` are unchanged.
 
 ### cast — the speaker model (with optional avatar slot)
 
@@ -187,9 +209,40 @@ Step fields:
 | `ask`                       | challenge  | the question, voiced as a bubble `{who,en,es,vocab?,callout?,misconception?}`       |
 | `hint`                      | challenge  | folds into a “Need a hint?” bubble                                                  |
 | `frame`                     | challenge  | the sentence frame, folded into a “Writing coach” bubble                            |
-| `choices[]`                 | challenge  | protagonist replies `{en,es?,tree?,correct}`                                        |
-| `goodEn/Es`, `badEn/Es`     | challenge  | feedback                                                                            |
+| `choices[]`                 | challenge  | protagonist replies `{en,es?,tree?,correct,why?,keepL0?,choicesL0?}`                |
+| `goodEn/Es`, `badEn/Es`     | challenge  | feedback (`badEn/Es` is the fallback when no tiered `help`/`why` is authored)       |
+| `help`                      | challenge  | tiered remediation `{conceptual?,procedural?,example?}` — see below                 |
 | `solveArt/Alt`, `solveBeat` | challenge  | optional art swap + reaction line on solve                                          |
+
+### Escalating, misconception-targeted feedback (the "Ask VEX" ladder)
+
+Every wrong attempt should reveal **more** help, never the answer — the pattern
+Axiom City uses. The engine tracks attempts **per challenge group** and builds
+the feedback message in tiers:
+
+- **1st miss →** the clicked distractor's own `why: {en, es}` (so each wrong
+  option is remediated to _its_ misconception). If a choice has no `why`, the
+  engine uses `help.conceptual` instead.
+- **2nd miss →** appends `help.procedural` (the worked _steps_). Falls back to
+  the existing `hint` if no `help.procedural` is given.
+- **3rd+ miss →** appends `help.example` — a worked example with **DIFFERENT
+  numbers** (model the method, never the answer).
+
+```js
+help: {
+  conceptual: { en: "A prime has exactly two factors.", es: "…" },
+  procedural: { en: "Step 1: list its factors. Step 2: count them.", es: "…" },
+  example:    { en: "Other numbers: 11 is prime; 8 = 2×4 is not.", es: "…" },
+},
+choices: [
+  { en: "7 is prime", correct: true },
+  { en: "9 is prime", correct: false,
+    why: { en: "9 = 3×3, so it has more than two factors.", es: "…" } },
+]
+```
+
+If a step authors neither `help` nor any choice `why`, the engine shows the
+legacy single `badEn/badEs` message — existing stories are unchanged.
 
 ### Pop-ups (layered on the panel, never replacing it)
 
@@ -252,11 +305,13 @@ motion support, and functional layout down to 320 px (panel aspect ratio steps
 ## Literacy layer (SP1) — comprehension, interactions, dual scoring
 
 ### `meta.readingStandard`
+
 Default reading-comprehension standard for the novel's Reading score rollup,
 e.g. `"RL.6.1"`. Used by the results tracker for the "Reading Comprehension"
 section.
 
 ### `comprehension` step type
+
 A scored READING question, a sibling of `challenge`. Same flow (voiced `ask`,
 choices/interaction, gating), but tagged as reading so it scores separately.
 
@@ -282,6 +337,7 @@ choices/interaction, gating), but tagged as reading so it scores separately.
 `.reading-tag` header with the skill, standard, and DOK.
 
 ### `interaction` field (on a comprehension OR challenge step)
+
 - `"mc"` / omitted — multiple-choice buttons (default; existing behavior).
 - `"evidence"` — each `choices[]` renders as a tappable "text-evidence" line;
   selecting the `correct` one scores (cite-evidence). Reuses the choice contract.
@@ -290,6 +346,7 @@ choices/interaction, gating), but tagged as reading so it scores separately.
   `.choice.correct` so the results tracker records it.
 
 ### Dual scoring contract
+
 Comprehension `.choices` groups carry `data-score-group="reading"` (and
 `data-standard`). The results tracker reports two sections — **Math** (existing
 `meta.standard`) and **Reading Comprehension** (`meta.readingStandard`) — into
@@ -297,6 +354,7 @@ the `NTResults`/EduPulse pipeline. Math challenge groups are unchanged. The
 `.choices` / `.choice.correct` / `#choicesComplete` contract is never renamed.
 
 ### Read-aloud, notebook
+
 Every bubble (and comprehension `ask`) gets a 🔊 read-aloud control (Web Speech
 API, EN + ES) when the browser supports it. The mission-complete screen renders
 a printable "My Reading + Math Log" (`#nt-notebook`) collecting each solved
