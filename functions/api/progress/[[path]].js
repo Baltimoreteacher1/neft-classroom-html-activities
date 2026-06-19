@@ -35,7 +35,9 @@ function json(obj, status = 200) {
 
 // Loose validation of a resume code: PREFIX-SUFFIX, safe characters only.
 function validCode(code) {
-  return typeof code === "string" && /^[A-Z0-9]{1,12}-[A-Z0-9]{3,8}$/.test(code);
+  return (
+    typeof code === "string" && /^[A-Z0-9]{1,12}-[A-Z0-9]{3,8}$/.test(code)
+  );
 }
 
 function clamp(s, n) {
@@ -60,6 +62,61 @@ async function ensureSchema(db) {
       )`,
     )
     .run();
+}
+
+async function ensureTelemetrySchema(db) {
+  // Idempotent: created on first telemetry write — no separate migration needed.
+  await db
+    .prepare(
+      `CREATE TABLE IF NOT EXISTS lesson_telemetry (
+        id           INTEGER PRIMARY KEY AUTOINCREMENT,
+        lesson_slug  TEXT,
+        lesson_title TEXT,
+        standard     TEXT,
+        student_name TEXT,
+        section      TEXT,
+        event_type   TEXT,
+        payload_json TEXT,
+        created_at   TEXT NOT NULL
+      )`,
+    )
+    .run();
+}
+
+// Best-effort telemetry sink. NEVER throws into the client: returns 204 whether
+// or not D1 is configured, so the fire-and-forget client never errors or retries.
+async function storeTelemetry(env, body) {
+  if (!env.DB || !body) return;
+  const events = Array.isArray(body.events) ? body.events : [];
+  if (!events.length) return;
+  await ensureTelemetrySchema(env.DB);
+  const slug = clamp(body.activityId, 200);
+  const title = clamp(body.activityTitle, 300);
+  const standard = clamp(body.standard, 20);
+  const name = clamp(body.studentName, 60);
+  const section = clamp(body.section, 40);
+  const nowIso = new Date().toISOString();
+  const stmt = env.DB.prepare(
+    `INSERT INTO lesson_telemetry
+       (lesson_slug, lesson_title, standard, student_name, section, event_type, payload_json, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+  );
+  // Bound batch; one statement per event keeps it simple and within D1 limits.
+  const batch = events
+    .slice(0, 100)
+    .map((e) =>
+      stmt.bind(
+        slug,
+        title,
+        standard,
+        name,
+        section,
+        clamp(e && (e.type || e.event || e.kind), 40),
+        clamp(JSON.stringify(e), 2000),
+        (e && typeof e.at === "string" && e.at.slice(0, 30)) || nowIso,
+      ),
+    );
+  await env.DB.batch(batch);
 }
 
 function recordFromRow(row) {
@@ -122,7 +179,14 @@ async function upsert(db, body, isCreate) {
                 section = COALESCE(NULLIF(?, ''), section)
           WHERE save_code = ?`,
       )
-      .bind(stateJson, progress, nowIso, clamp(body.studentName, 60), clamp(body.section, 40), code)
+      .bind(
+        stateJson,
+        progress,
+        nowIso,
+        clamp(body.studentName, 60),
+        clamp(body.section, 40),
+        code,
+      )
       .run();
     if (!res.meta || res.meta.changes === 0) {
       await upsert(db, body, true);
@@ -147,6 +211,22 @@ export async function onRequest(context) {
     return json({ ok: true, backend: "cloudflare", d1: !!env.DB });
   }
 
+  // Telemetry is fire-and-forget: accept (204) regardless of D1 so the client
+  // never errors or retries. Persist only when the binding exists. Must come
+  // BEFORE the D1 guard below.
+  if (seg === "telemetry") {
+    if (method !== "POST") {
+      return new Response(null, { status: 204, headers: JSON_HEADERS });
+    }
+    try {
+      const body = await request.json().catch(() => null);
+      await storeTelemetry(env, body);
+    } catch (e) {
+      // Swallow — telemetry must never fail loudly.
+    }
+    return new Response(null, { status: 204, headers: JSON_HEADERS });
+  }
+
   // All data routes require the D1 binding. Absent -> graceful 503.
   if (!env.DB) {
     return json(
@@ -164,9 +244,13 @@ export async function onRequest(context) {
     await ensureSchema(env.DB);
 
     if (seg === "load" && method === "GET") {
-      const code = (new URL(request.url).searchParams.get("code") || "").toUpperCase();
+      const code = (
+        new URL(request.url).searchParams.get("code") || ""
+      ).toUpperCase();
       if (!validCode(code)) return json({ ok: false, error: "bad-code" }, 400);
-      const row = await env.DB.prepare("SELECT * FROM student_progress WHERE save_code = ?")
+      const row = await env.DB.prepare(
+        "SELECT * FROM student_progress WHERE save_code = ?",
+      )
         .bind(code)
         .first();
       if (!row) return json({ ok: false, error: "not-found" }, 404);
@@ -175,13 +259,17 @@ export async function onRequest(context) {
 
     if ((seg === "create" || seg === "save") && method === "POST") {
       const body = await request.json().catch(() => null);
-      if (!body || !validCode(body.saveCode)) return json({ ok: false, error: "bad-payload" }, 400);
+      if (!body || !validCode(body.saveCode))
+        return json({ ok: false, error: "bad-payload" }, 400);
       const updatedAt = await upsert(env.DB, body, seg === "create");
       return json({ ok: true, saveCode: body.saveCode, updatedAt });
     }
 
     return json({ ok: false, error: "not-found", route: seg }, 404);
   } catch (err) {
-    return json({ ok: false, error: "server-error", message: String(err) }, 500);
+    return json(
+      { ok: false, error: "server-error", message: String(err) },
+      500,
+    );
   }
 }

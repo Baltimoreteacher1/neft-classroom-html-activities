@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Canvas + EduWonderLab Command Center · Neft Teacher</title>
+    <style>
+      :root {
+        --navy: #12355b;
+        --teal: #387f84;
+        --amber: #f2a93b;
+        --ink: #0f172a;
+        --muted: #64748b;
+        --line: #e2e8f0;
+        --bg: #f1f5f9;
+        --ok: #15803d;
+        --warn: #b45309;
+        --bad: #b91c1c;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        line-height: 1.55;
+      }
+      header {
+        background: linear-gradient(135deg, var(--navy), var(--teal));
+        color: #fff;
+        padding: 28px 20px;
+      }
+      header .wrap {
+        max-width: 1040px;
+        margin: 0 auto;
+      }
+      header h1 {
+        margin: 0 0 6px;
+        font-size: 26px;
+      }
+      header p {
+        margin: 0;
+        opacity: 0.92;
+        font-size: 15px;
+      }
+      main {
+        max-width: 1040px;
+        margin: 0 auto;
+        padding: 22px 20px 60px;
+      }
+      section {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 20px 22px;
+        margin: 0 0 18px;
+      }
+      section h2 {
+        margin: 0 0 4px;
+        font-size: 19px;
+        color: var(--navy);
+        display: flex;
+        align-items: center;
+        gap: 9px;
+      }
+      section h2 .tag {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        background: var(--amber);
+        color: #3a2a06;
+        padding: 2px 8px;
+        border-radius: 20px;
+        text-transform: uppercase;
+      }
+      section > p.lead {
+        margin: 2px 0 14px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      ol.flow {
+        margin: 0;
+        padding-left: 20px;
+      }
+      ol.flow li {
+        margin: 4px 0;
+      }
+      .paths {
+        display: grid;
+        gap: 10px;
+        grid-template-columns: 1fr;
+        margin-top: 12px;
+      }
+      @media (min-width: 720px) {
+        .paths {
+          grid-template-columns: 1fr 1fr 1fr;
+        }
+      }
+      .path {
+        border: 1px solid var(--line);
+        border-radius: 11px;
+        padding: 12px 14px;
+        background: #f8fafc;
+      }
+      .path h3 {
+        margin: 0 0 5px;
+        font-size: 14px;
+      }
+      .path.best {
+        border-color: var(--ok);
+        background: #f0fdf4;
+      }
+      .path .badge {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--ok);
+      }
+      .path p {
+        margin: 0;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      code,
+      .cmd {
+        font-family: ui-monospace, "SF Mono", Menlo, monospace;
+        font-size: 13px;
+      }
+      .cmd {
+        display: inline-block;
+        background: #0f172a;
+        color: #e2e8f0;
+        padding: 3px 9px;
+        border-radius: 7px;
+        cursor: pointer;
+        border: none;
+        margin: 1px 0;
+      }
+      .cmd:hover {
+        background: #1e293b;
+      }
+      .cmd::before {
+        content: "⧉ ";
+        opacity: 0.5;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13.5px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 8px 9px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+      th {
+        color: var(--muted);
+        font-weight: 600;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+      }
+      .pill {
+        display: inline-block;
+        padding: 1px 8px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .pill.ok {
+        background: #dcfce7;
+        color: var(--ok);
+      }
+      .pill.warn {
+        background: #fef3c7;
+        color: var(--warn);
+      }
+      .pill.bad {
+        background: #fee2e2;
+        color: var(--bad);
+      }
+      .pill.muted {
+        background: #e2e8f0;
+        color: var(--muted);
+      }
+      .grid2 {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: 1fr;
+      }
+      @media (min-width: 720px) {
+        .grid2 {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 11px;
+        padding: 13px 15px;
+      }
+      .card h3 {
+        margin: 0 0 6px;
+        font-size: 15px;
+        color: var(--navy);
+      }
+      .card a {
+        color: var(--teal);
+        font-weight: 600;
+        text-decoration: none;
+      }
+      .card a:hover {
+        text-decoration: underline;
+      }
+      .nba {
+        background: linear-gradient(135deg, #fff7ed, #ffedd5);
+        border-color: var(--amber);
+      }
+      .nba .big {
+        font-size: 17px;
+        font-weight: 700;
+        color: #3a2a06;
+        margin: 0 0 8px;
+      }
+      .note {
+        font-size: 13px;
+        color: var(--muted);
+        background: #f8fafc;
+        border-radius: 9px;
+        padding: 10px 12px;
+      }
+      .toast {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--ink);
+        color: #fff;
+        padding: 9px 16px;
+        border-radius: 9px;
+        font-size: 13px;
+        opacity: 0;
+        transition: opacity 0.2s;
+        pointer-events: none;
+      }
+      .toast.show {
+        opacity: 1;
+      }
+      footer {
+        max-width: 1040px;
+        margin: 0 auto;
+        padding: 0 20px 40px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="wrap">
+        <h1>Canvas + EduWonderLab Command Center</h1>
+        <p>
+          One page: what's ready, what to import, how to grade, and the next
+          best step — no district IT required.
+        </p>
+      </div>
+    </header>
+    <main id="app">
+      <section><p class="lead">Loading status…</p></section>
+    </main>
+    <footer id="foot"></footer>
+    <div class="toast" id="toast">Copied</div>
+
+    <script>
+      const SITE_FALLBACK = "https://eduwonderlab.com";
+      const toast = (msg) => {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 1300);
+      };
+      function copy(text) {
+        navigator.clipboard?.writeText(text).then(
+          () => toast("Copied: " + text),
+          () => toast("Copy failed — select manually"),
+        );
+      }
+      const cmd = (c) =>
+        `<button class="cmd" onclick="copy('${c.replace(/'/g, "\\'")}')">${c}</button>`;
+      const esc = (s) =>
+        String(s == null ? "" : s).replace(
+          /[&<>]/g,
+          (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c],
+        );
+
+      function pkgPill(p) {
+        if (!p || !p.exists) return '<span class="pill muted">not built</span>';
+        return `<span class="pill ok">built · ${p.sizeKB}KB</span>`;
+      }
+
+      function render(s) {
+        const site = (s && s.site) || SITE_FALLBACK;
+        const app = document.getElementById("app");
+        const u = s.units || [];
+
+        // A. Start Here
+        const startHere = `
+        <section>
+          <h2><span class="tag">Start here</span> Recommended workflow</h2>
+          <ol class="flow">
+            <li><strong>Import</strong> a lesson-assignment cartridge <em>or</em> a native quiz package (start with Unit 1).</li>
+            <li><strong>Publish only</strong> the assignments / quizzes you actually need that week.</li>
+            <li><strong>Students complete</strong> the work (quizzes auto-grade; lessons return a completion code).</li>
+            <li><strong>Import grades</strong> with the Canvas Dashboard / Grade Bridge, or let native quizzes grade themselves.</li>
+          </ol>
+          <div class="paths">
+            <div class="path"><h3>No-IT path</h3><p>Common Cartridge lesson assignment + completion code + Canvas Grade Bridge.</p></div>
+            <div class="path best"><span class="badge">★ Best no-IT path</span><h3>Native Canvas quizzes</h3><p>QTI&nbsp;.zip imports auto-graded quizzes straight into the gradebook. No codes, no admin.</p></div>
+            <div class="path"><h3>IT path (later)</h3><p>SCORM upload, LTI 1.3, or a scoped API token — only if the district enables it.</p></div>
+          </div>
+        </section>`;
+
+        // B. Package Builder
+        const gp = s.globalPackages || {};
+        const packageBuilder = `
+        <section>
+          <h2><span class="tag">Builder</span> Canvas package builder</h2>
+          <p class="lead">Click a command to copy it, then run it in the repo terminal. Packages land in <code>canvas-packages/</code> and are copied to your Desktop.</p>
+          <table>
+            <thead><tr><th>Package</th><th>What it is</th><th>Status</th><th>Command</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Lesson assignments</strong></td><td>One graded assignment per lesson (completion code)</td><td>${pkgPill(gp.cartridge)}</td><td>${cmd("npm run cartridge")}<br>${cmd("npm run cartridge -- 1")}</td></tr>
+              <tr><td><strong>Native quizzes (QTI)</strong></td><td>Auto-graded quizzes only — the best no-IT path</td><td>${pkgPill(gp.quizzes)}</td><td>${cmd("npm run course -- --quizzes-only")}<br>${cmd("npm run course -- 1 --quizzes-only")}</td></tr>
+              <tr><td><strong>Full course</strong></td><td>Lesson pages + quizzes in modules per unit</td><td>${pkgPill(gp.course)}</td><td>${cmd("npm run course")}<br>${cmd("npm run course -- 1")}</td></tr>
+              <tr><td><strong>One unit pack</strong></td><td>Everything for one unit in a single folder</td><td><span class="pill muted">on demand</span></td><td>${cmd("npm run unit-pack -- 1")}<br>${cmd("npm run unit-pack -- all")}</td></tr>
+            </tbody>
+          </table>
+          <p class="note">Iframe variant of the lesson assignment (embeds the lesson in Canvas): ${cmd("npm run cartridge -- --mode=iframe")} — default is the more robust link mode.</p>
+        </section>`;
+
+        // C. Unit Status
+        const rows = u
+          .map((un) => {
+            const quizQ = un.mc + un.match;
+            const warns = (un.warnings || []).length
+              ? `<span class="pill warn">${esc(un.warnings.join("; "))}</span>`
+              : '<span class="pill ok">ready</span>';
+            return `<tr>
+              <td><strong>Unit ${un.unit}</strong></td>
+              <td>${un.lessons.length}</td>
+              <td>${un.quizLessons}</td>
+              <td>${quizQ} <span style="color:var(--muted)">(${un.mc} MC · ${un.match} match)</span></td>
+              <td>${pkgPill(un.packages.quizzes)}</td>
+              <td>${esc(un.recommendedPath)}</td>
+              <td>${warns}</td>
+            </tr>`;
+          })
+          .join("");
+        const unitStatus = `
+        <section>
+          <h2><span class="tag">Units</span> Unit status</h2>
+          <p class="lead">${s.totals.lessons} lessons · ${s.totals.mc} MC + ${s.totals.match} matching questions · cap ${s.quizMax}/quiz.</p>
+          <table>
+            <thead><tr><th>Unit</th><th>Lessons</th><th>w/ quiz</th><th>Quiz Qs</th><th>Quiz pkg</th><th>Recommended path</th><th>Status</th></tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </section>`;
+
+        // D. Grading Center
+        const gradingCenter = `
+        <section>
+          <h2><span class="tag">Grading</span> Grading center</h2>
+          <div class="grid2">
+            <div class="card"><h3>Canvas Dashboard</h3><p>No-code grading + class progress from live scores.</p><a href="../canvas-dashboard/">Open dashboard →</a></div>
+            <div class="card"><h3>Canvas Grade Bridge / Grades</h3><p>Turn completion codes into a Canvas-ready gradebook.</p><a href="../canvas-grades/">Open grade bridge →</a></div>
+            <div class="card"><h3>Native quiz grading</h3><p>QTI quizzes grade themselves into the Canvas gradebook — nothing to import.</p></div>
+            <div class="card"><h3>Completion-code fallback</h3><p>Students paste a code; verify it in the grade bridge. Works with zero IT.</p></div>
+          </div>
+        </section>`;
+
+        // E. Progress + Intervention
+        const intervention = `
+        <section>
+          <h2><span class="tag">Intervention</span> Progress &amp; intervention</h2>
+          <p class="lead">Live mastery data appears here when an EduPulse / progress score source is connected.</p>
+          <div class="note">
+            <strong>No live score source connected yet.</strong> To light this up:
+            <ol class="flow" style="margin-top:6px;">
+              <li>Grade with native Canvas quizzes or the Canvas Dashboard so scores exist.</li>
+              <li>Connect the EduPulse gradebook (<code>edupulse-gradebook.pages.dev</code>) or export the Canvas gradebook CSV.</li>
+              <li>This panel will then show: who finished, who's missing, average by lesson, students below 70%, suggested reteach &amp; enrichment groups, and the next lesson.</li>
+            </ol>
+            Until then, use the Canvas Dashboard's class-progress view for the same picture.
+          </div>
+        </section>`;
+
+        // F. Next Best Action
+        const nba = s.nextBestAction || {};
+        const nextAction = `
+        <section class="card nba">
+          <h2><span class="tag">Do this next</span> Next best action</h2>
+          <p class="big">${esc(nba.action || "Build the Unit 1 quiz package first.")}</p>
+          ${nba.command ? (nba.command.startsWith("npm") || nba.command.startsWith("node") ? cmd(nba.command) : `<code>${esc(nba.command)}</code>`) : ""}
+        </section>`;
+
+        app.innerHTML =
+          nextAction +
+          startHere +
+          packageBuilder +
+          unitStatus +
+          gradingCenter +
+          intervention;
+        document.getElementById("foot").innerHTML =
+          `Status generated: ${esc(s.generatedAt || "(rebuild with npm run command-center)")} · site ${esc(site)} · ` +
+          `regenerate anytime: <code>npm run command-center</code>`;
+      }
+
+      function renderError() {
+        document.getElementById("app").innerHTML = `
+        <section>
+          <h2>Status not generated yet</h2>
+          <p class="lead">Run the generator in the repo to populate this page:</p>
+          <button class="cmd" onclick="copy('npm run command-center')">npm run command-center</button>
+          <p class="note" style="margin-top:12px;">Then reload. The command builds <code>status.json</code> from the curriculum manifest and the built Canvas packages.</p>
+        </section>`;
+      }
+
+      fetch("status.json", { cache: "no-store" })
+        .then((r) => (r.ok ? r.json() : Promise.reject()))
+        .then(render)
+        .catch(renderError);
+    </script>
+  </body>
+</html>
