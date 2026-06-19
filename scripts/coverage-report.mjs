@@ -26,16 +26,35 @@ for (const s of tax.standards) {
   if (total === 0) flags.push("NO_CONTENT");
   if (levels[0] === 0) flags.push("no-level-0");
   if (levels[2] === 0) flags.push("no-enrichment");
-  rows.push({ standard: s.id, domain: s.domain, total, l0: levels[0], l1: levels[1], l2: levels[2], flags });
+  rows.push({
+    standard: s.id,
+    domain: s.domain,
+    total,
+    l0: levels[0],
+    l1: levels[1],
+    l2: levels[2],
+    flags,
+  });
   if (flags.length) gaps.push({ standard: s.id, label: s.label, flags });
 }
 
-writeFileSync(join(root, "data/content-coverage.json"), JSON.stringify({ generated: new Date().toISOString(), rows, gaps }, null, 1));
+writeFileSync(
+  join(root, "data/content-coverage.json"),
+  JSON.stringify({ generated: new Date().toISOString(), rows, gaps }, null, 1),
+);
 
 console.log("\nSTANDARD      TOT  L0  L1  L2  FLAGS");
 rows.forEach((r) => {
   console.log(
-    r.standard.padEnd(13) + String(r.total).padStart(3) + String(r.l0).padStart(4) + String(r.l1).padStart(4) + String(r.l2).padStart(4) + "  " + r.flags.join(",")
+    r.standard.padEnd(13) +
+      String(r.total).padStart(3) +
+      String(r.l0).padStart(4) +
+      String(r.l1).padStart(4) +
+      String(r.l2).padStart(4) +
+      "  " +
+      r.flags.join(","),
   );
 });
-console.log(`\n${gaps.length} standards have coverage gaps. Full report: data/content-coverage.json`);
+console.log(
+  `\n${gaps.length} standards have coverage gaps. Full report: data/content-coverage.json`,
+);
