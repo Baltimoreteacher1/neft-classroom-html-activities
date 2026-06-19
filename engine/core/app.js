@@ -264,6 +264,45 @@ function mountWelcomeGoogleSlidesLink(lessonId, slot) {
   });
 }
 
+// Decode a ?class=<code> roster (base64url JSON: {p:"period", n:["First L.", ...]})
+// and render a name dropdown so students pick their exact name. Privacy: the
+// roster lives only in the teacher's link, never on the server.
+function mountClassRoster(screen, nameInput, periodInput, startBtn) {
+  let roster;
+  try {
+    const m = /[?&]class=([A-Za-z0-9_-]+)/.exec(window.location.search);
+    if (!m) return;
+    let b64 = m[1].replace(/-/g, "+").replace(/_/g, "/");
+    while (b64.length % 4) b64 += "=";
+    roster = JSON.parse(decodeURIComponent(escape(window.atob(b64))));
+  } catch (e) {
+    return;
+  }
+  const names = Array.isArray(roster) ? roster : roster.n || roster.names || [];
+  if (!names.length) return;
+  const period = (!Array.isArray(roster) && (roster.p || roster.period)) || "";
+  const form = screen.querySelector(".identity-form");
+  if (!form) return;
+  const wrap = document.createElement("div");
+  wrap.className = "identity-roster";
+  wrap.style.cssText = "margin-bottom:12px;text-align:left;";
+  wrap.innerHTML =
+    `<label for="id-roster">${escHtml(t("yourName", "en") || "Pick your name")}</label>` +
+    `<select id="id-roster" style="width:100%;padding:11px;border-radius:10px;border:1px solid #cbd5e1;font:inherit;">` +
+    `<option value="">— choose your name —</option>` +
+    names.map((n) => `<option>${escHtml(String(n))}</option>`).join("") +
+    `</select>` +
+    `<p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;">Not listed? Type your name below instead.</p>`;
+  form.insertBefore(wrap, form.firstChild);
+  if (period && periodInput && !periodInput.value) periodInput.value = period;
+  wrap.querySelector("#id-roster").addEventListener("change", (e) => {
+    if (e.target.value) {
+      nameInput.value = e.target.value;
+      startBtn.disabled = false;
+    }
+  });
+}
+
 function showIdentityScreen(root, config) {
   const themeEmoji = config.themeEmoji || "📐";
   const saved = findSavedStudents(config.lessonId);
@@ -376,6 +415,12 @@ function showIdentityScreen(root, config) {
   });
 
   startBtn.addEventListener("click", launchApp);
+
+  // Optional class roster: when the lesson is opened with ?class=<code> (a link
+  // the teacher distributes), show a name dropdown instead of free typing so
+  // names match Canvas exactly. No roster data is stored on the server — it
+  // travels only in the teacher's link.
+  mountClassRoster(screen, nameInput, periodInput, startBtn);
 
   if (saved.length) {
     const list = screen.querySelector("#id-saved-list");

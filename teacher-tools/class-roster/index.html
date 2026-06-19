@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Class Roster Links · Neft Teacher</title>
+    <meta name="robots" content="noindex" />
+    <style>
+      :root {
+        --navy: #12355b;
+        --teal: #387f84;
+        --amber: #f2a93b;
+        --ink: #0f172a;
+        --muted: #64748b;
+        --line: #e2e8f0;
+        --bg: #f1f5f9;
+        --ok: #15803d;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: system-ui, "Segoe UI", sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.5;
+      }
+      header {
+        background: var(--navy);
+        color: #fff;
+        padding: 22px 24px;
+      }
+      header h1 {
+        margin: 0;
+        font-size: 22px;
+      }
+      header p {
+        margin: 6px 0 0;
+        opacity: 0.85;
+        font-size: 14px;
+      }
+      main {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 20px;
+        margin-bottom: 18px;
+      }
+      .card h2 {
+        margin: 0 0 6px;
+        font-size: 17px;
+      }
+      .hint {
+        color: var(--muted);
+        font-size: 14px;
+        margin: 4px 0 12px;
+      }
+      textarea {
+        width: 100%;
+        min-height: 150px;
+        font:
+          14px ui-monospace,
+          Menlo,
+          monospace;
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+      }
+      input,
+      select {
+        font: 14px system-ui;
+        padding: 9px 11px;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+      }
+      button {
+        font: 700 15px system-ui;
+        border: 0;
+        border-radius: 10px;
+        padding: 11px 18px;
+        cursor: pointer;
+        background: var(--amber);
+        color: var(--navy);
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .out {
+        background: #f8fafc;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 12px;
+        font:
+          13px ui-monospace,
+          Menlo,
+          monospace;
+        word-break: break-all;
+        margin-top: 8px;
+      }
+      .note {
+        background: #ecfeff;
+        border: 1px solid #a5f3fc;
+        border-radius: 12px;
+        padding: 12px 16px;
+        font-size: 13px;
+        color: #155e63;
+        margin-bottom: 16px;
+      }
+      label {
+        font-weight: 600;
+        font-size: 14px;
+      }
+      .ok {
+        color: var(--ok);
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Class Roster Links</h1>
+      <p>
+        Make a link that shows students a name dropdown — so names match Canvas
+        exactly. Teacher-only.
+      </p>
+    </header>
+    <main>
+      <p class="note">
+        <strong>Privacy:</strong> your class list is never uploaded or saved on
+        any server. It is encoded inside the link only. Use first name + last
+        initial (e.g. <em>Jane D.</em>). Share the link with your class (or
+        paste it into the Canvas assignment).
+      </p>
+
+      <div class="card">
+        <h2>1. Paste your class names</h2>
+        <p class="hint">One per line. First name + last initial is best.</p>
+        <textarea
+          id="names"
+          placeholder="Jane D.&#10;Marcus L.&#10;Ava S."
+        ></textarea>
+        <div class="row" style="margin-top: 12px">
+          <label
+            >Class/period (optional)
+            <input
+              id="period"
+              type="text"
+              placeholder="P3"
+              style="width: 120px"
+          /></label>
+          <label
+            >Lesson
+            <select id="lesson"></select
+          ></label>
+          <button id="gen">Make the link</button>
+        </div>
+      </div>
+
+      <div class="card" id="result" style="display: none">
+        <h2>2. Your class link <span id="count" class="ok"></span></h2>
+        <p class="hint">
+          Give this to students (or put it in the Canvas assignment). They'll
+          pick their name from a dropdown.
+        </p>
+        <div class="row">
+          <button id="copyLink">Copy link</button>
+          <span id="copied" class="ok"></span>
+        </div>
+        <div class="out" id="link"></div>
+        <p class="hint" style="margin-top: 14px">
+          Just the code (to append <code>?class=…</code> to any lesson
+          yourself):
+        </p>
+        <div class="out" id="code"></div>
+      </div>
+    </main>
+
+    <script>
+      (function () {
+        "use strict";
+        var $ = function (id) {
+          return document.getElementById(id);
+        };
+        var SITE = location.origin;
+        // a small set of lessons for the dropdown; teacher can also reuse the code anywhere
+        var LESSONS = [
+          "1-1",
+          "1-2",
+          "1-3",
+          "1-4",
+          "1-5",
+          "2-1",
+          "2-2",
+          "3-1",
+          "3-2",
+          "4-1",
+          "5-1",
+          "6-1",
+          "7-1",
+          "8-1",
+          "9-1",
+          "10-1",
+        ];
+        var sel = $("lesson");
+        LESSONS.forEach(function (id) {
+          var o = document.createElement("option");
+          o.value = id;
+          o.textContent = "Lesson " + id;
+          sel.append(o);
+        });
+
+        function encode(obj) {
+          var json = JSON.stringify(obj);
+          var b64 = btoa(unescape(encodeURIComponent(json)));
+          return b64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+        }
+        function gen() {
+          var names = $("names")
+            .value.split("\n")
+            .map(function (s) {
+              return s.trim();
+            })
+            .filter(Boolean);
+          if (!names.length) {
+            alert("Paste at least one name.");
+            return;
+          }
+          var period = $("period").value.trim();
+          var code = encode(period ? { p: period, n: names } : { n: names });
+          var url = SITE + "/lessons/" + sel.value + "/?class=" + code;
+          $("link").textContent = url;
+          $("code").textContent = "?class=" + code;
+          $("count").textContent = "(" + names.length + " students)";
+          $("result").style.display = "block";
+          $("result").scrollIntoView({ behavior: "smooth" });
+        }
+        $("gen").addEventListener("click", gen);
+        $("copyLink").addEventListener("click", function () {
+          navigator.clipboard
+            .writeText($("link").textContent)
+            .then(function () {
+              $("copied").textContent = "Copied ✓";
+              setTimeout(function () {
+                $("copied").textContent = "";
+              }, 1600);
+            });
+        });
+      })();
+    </script>
+  </body>
+</html>
