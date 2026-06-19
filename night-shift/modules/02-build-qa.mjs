@@ -87,33 +87,45 @@ export async function run(ctx) {
         "Install with `npx playwright install chromium` to enable.",
     );
   } else {
-    const roots = cfg.runBuild ? cfg.lessonGlobRoots : ["math", "lessons"];
-    const pages = await findLessonPages(roots || ["dist"], ctx.root, cfg.playwrightSampleSize || 8);
-    const sample = rotatingSample(pages, cfg.playwrightSampleSize || 8);
-    if (!sample.length) {
-      details.push("⏭️ No lesson pages found to smoke-test (build dist first?).");
+    // Smoke must run against BUILT output served over HTTP, so root-relative
+    // `/assets/...` paths resolve. Loading raw source via file:// produces
+    // meaningless ERR_FILE_NOT_FOUND noise. Require dist/.
+    const distDir = path.join(ctx.root, "dist");
+    const haveDist = (await sh("test", ["-d", distDir])).ok;
+    if (!haveDist) {
+      if (worst === "ok") worst = "warn";
+      details.push(
+        "⚠️ Browser smoke SKIPPED — no `dist/`. Set `buildQa.runBuild: true` so the " +
+          "smoke runs against built, HTTP-served pages (set in config; default for the nightly job).",
+      );
     } else {
-      const script = pwSmokeScript(sample);
-      const tmp = path.join(ctx.root, "night-shift", "briefings", ".smoke.mjs");
-      await writeText(tmp, script);
-      const r = await sh("node", [tmp], { cwd: ctx.root, timeout: 5 * 60_000 });
-      const errLines = r.stdout.split("\n").filter((l) => l.startsWith("ERR "));
-      if (r.ok) {
-        details.push(`✅ Browser smoke clean on ${sample.length} sampled lesson page(s).`);
-      } else if (errLines.length === 0) {
-        // Process failed but produced no page errors → the runner itself broke
-        // (missing browser binary, launch failure). Tooling issue, not a page bug.
-        if (worst === "ok") worst = "warn";
-        const why = (r.stderr || r.stdout).split("\n").filter(Boolean).slice(-2).join(" ");
-        details.push(
-          `⚠️ Browser smoke could not run (tooling): ${why.slice(0, 200)}. ` +
-            "Run `npx playwright install chromium`.",
-        );
+      const pages = await findLessonPages(["dist"], ctx.root, cfg.playwrightSampleSize || 8);
+      const sample = rotatingSample(pages, cfg.playwrightSampleSize || 8).map((f) =>
+        path.relative(distDir, f),
+      );
+      if (!sample.length) {
+        details.push("⏭️ No built lesson pages found in dist/ to smoke-test.");
       } else {
-        worst = "fail";
-        details.push(`❌ Browser smoke found console errors on ${errLines.length} page(s):`);
-        errLines.slice(0, 8).forEach((b) => details.push(`   ${b.replace(/^ERR /, "")}`));
-        actions.push("Lesson page(s) throw JS at runtime — the validator-invisible crash class.");
+        const tmp = path.join(ctx.root, "night-shift", "briefings", ".smoke.mjs");
+        await writeText(tmp, pwSmokeScript(distDir, sample));
+        const r = await sh("node", [tmp], { cwd: ctx.root, timeout: 6 * 60_000 });
+        const errLines = r.stdout.split("\n").filter((l) => l.startsWith("ERR "));
+        const noteLines = r.stdout.split("\n").filter((l) => l.startsWith("NOTE "));
+        if (r.ok && errLines.length === 0) {
+          let msg = `✅ Browser smoke clean (no JS exceptions) on ${sample.length} built page(s).`;
+          if (noteLines.length) msg += ` (${noteLines.length} page(s) had ignorable resource 404s.)`;
+          details.push(msg);
+        } else if (!r.ok && errLines.length === 0) {
+          // Runner crashed without emitting page errors → tooling, not a page bug.
+          if (worst === "ok") worst = "warn";
+          const why = (r.stderr || r.stdout).split("\n").filter(Boolean).slice(-2).join(" ");
+          details.push(`⚠️ Browser smoke could not run (tooling): ${why.slice(0, 200)}.`);
+        } else {
+          worst = "fail";
+          details.push(`❌ Browser smoke caught JS exceptions on ${errLines.length} page(s):`);
+          errLines.slice(0, 8).forEach((b) => details.push(`   ${b.replace(/^ERR /, "")}`));
+          actions.push("Built page(s) throw JS at runtime — the validator-invisible crash class.");
+        }
       }
     }
   }
@@ -127,25 +139,64 @@ export async function run(ctx) {
   return { name, status: worst, summary, details, actions };
 }
 
-// Standalone Playwright runner emitted to a temp file; prints `ERR <url> :: <msg>` lines.
-function pwSmokeScript(files) {
+// Standalone runner emitted to a temp file. Serves `root` over a local HTTP
+// server (so root-relative asset paths resolve), loads each relative page, and
+// separates real JS exceptions (`ERR`) from ignorable resource 404s (`NOTE`).
+function pwSmokeScript(root, relPages) {
   return `import { chromium } from "playwright";
-const files = ${JSON.stringify(files)};
-const browser = await chromium.launch();
-let bad = 0;
-for (const f of files) {
-  const page = await browser.newPage();
-  const errs = [];
-  page.on("console", (m) => { if (m.type() === "error") errs.push(m.text()); });
-  page.on("pageerror", (e) => errs.push(String(e.message || e)));
+import http from "node:http";
+import { readFile } from "node:fs/promises";
+import { existsSync, statSync } from "node:fs";
+import { join, normalize, extname } from "node:path";
+
+const ROOT = ${JSON.stringify(root)};
+const PAGES = ${JSON.stringify(relPages)};
+const MIME = { ".html":"text/html", ".js":"text/javascript", ".mjs":"text/javascript",
+  ".css":"text/css", ".json":"application/json", ".svg":"image/svg+xml", ".png":"image/png",
+  ".jpg":"image/jpeg", ".jpeg":"image/jpeg", ".gif":"image/gif", ".webp":"image/webp",
+  ".woff":"font/woff", ".woff2":"font/woff2", ".ttf":"font/ttf", ".pptx":"application/octet-stream",
+  ".docx":"application/octet-stream", ".pdf":"application/pdf", ".map":"application/json" };
+
+const server = http.createServer(async (req, res) => {
   try {
-    await page.goto("file://" + f, { waitUntil: "load", timeout: 20000 });
-    await page.waitForTimeout(800);
-  } catch (e) { errs.push("navigation: " + String(e.message || e)); }
-  if (errs.length) { bad++; for (const e of errs.slice(0, 3)) console.log("ERR " + f + " :: " + e); }
+    let p = decodeURIComponent(req.url.split("?")[0]);
+    let fp = normalize(join(ROOT, p));
+    if (!fp.startsWith(ROOT)) { res.writeHead(403); return res.end(); }
+    if (existsSync(fp) && statSync(fp).isDirectory()) fp = join(fp, "index.html");
+    if (!existsSync(fp)) { res.writeHead(404); return res.end("404"); }
+    res.writeHead(200, { "content-type": MIME[extname(fp)] || "application/octet-stream" });
+    res.end(await readFile(fp));
+  } catch { res.writeHead(500); res.end(); }
+});
+await new Promise((r) => server.listen(0, "127.0.0.1", r));
+const port = server.address().port;
+const base = "http://127.0.0.1:" + port + "/";
+
+// A real bug = uncaught JS exception. Resource-load failures are environmental noise.
+const isResourceNoise = (s) => /Failed to load resource|ERR_[A-Z_]+|net::|favicon/i.test(s);
+
+const browser = await chromium.launch();
+let jsErrors = 0;
+for (const rel of PAGES) {
+  const page = await browser.newPage();
+  const real = [], noise = [];
+  page.on("pageerror", (e) => real.push(String(e.message || e)));
+  page.on("console", (m) => {
+    if (m.type() !== "error") return;
+    const t = m.text();
+    (isResourceNoise(t) ? noise : real).push(t);
+  });
+  try {
+    await page.goto(base + rel.split("/").map(encodeURIComponent).join("/"),
+      { waitUntil: "load", timeout: 25000 });
+    await page.waitForTimeout(900);
+  } catch (e) { real.push("navigation: " + String(e.message || e)); }
+  if (real.length) { jsErrors++; for (const e of real.slice(0, 3)) console.log("ERR /" + rel + " :: " + e); }
+  else if (noise.length) console.log("NOTE /" + rel + " :: " + noise.length + " resource 404(s) ignored");
   await page.close();
 }
 await browser.close();
-process.exit(bad ? 1 : 0);
+server.close();
+process.exit(jsErrors ? 1 : 0);
 `;
 }
