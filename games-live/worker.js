@@ -1,14 +1,14 @@
 /*
  * Neft Math Brain — Live Rooms Durable Object + Worker.
  *
- * GATED: this is a SEPARATE Cloudflare Worker deploy surface, NOT part of the
- * static Pages site (push-to-main). It is scaffolded and locally testable but
- * intentionally NOT deployed and NOT wired into any deploy config. Review against
- * the `durable-objects` and `workers-best-practices` skills before `wrangler deploy`.
- *
- * Transport + persistence only — all game rules live in room-state.js (pure, tested).
+ * SEPARATE Cloudflare Worker deploy surface (deployed standalone as `neft-live-rooms`,
+ * NOT part of the static Pages site). Transport + persistence only — game rules live in
+ * room-state.js (pure, tested). Questions + answer keys live server-side in
+ * question-bank.js and are never sent to clients (only the chosen answer is revealed,
+ * transiently, after a question closes).
  */
 import * as Room from "./room-state.js";
+import { questionsFor } from "./question-bank.js";
 
 export class GameRoom {
   constructor(state, env) {
@@ -72,7 +72,14 @@ export class GameRoom {
 
     switch (op) {
       case "create":
-        this.room = Room.makeRoom(body); // { code, standard, title, questions }
+        // Client sends { code, standard, title } only. Questions (with answer keys)
+        // come from the server-side bank so no answer key is exposed to clients.
+        this.room = Room.makeRoom({
+          code: body.code,
+          standard: body.standard,
+          title: body.title,
+          questions: questionsFor(body.standard),
+        });
         break;
       case "join":
         res = Room.addPlayer(this.room, body.id, body.name);

@@ -43,7 +43,20 @@
     <h1>Join the Game</h1>
     <div id="gate">
       <p>Code: <input id="code" maxlength="8" placeholder="MATH42" /></p>
-      <p>Name: <input id="name" maxlength="24" placeholder="Your name" /></p>
+      <p>
+        Your handle:
+        <input id="name" maxlength="16" placeholder="class # or initials" />
+      </p>
+      <p
+        style="
+          font-size: 0.8rem;
+          opacity: 0.7;
+          max-width: 30ch;
+          margin: 0.25rem auto;
+        "
+      >
+        Use your class number or initials — not your full name.
+      </p>
       <button id="joinBtn">Join</button>
     </div>
     <div id="play" style="display: none">
@@ -52,7 +65,8 @@
       <p class="score" id="score"></p>
     </div>
     <script>
-      const WORKER_URL = window.NEFT_LIVE_WORKER || "http://localhost:8787";
+      const WORKER_URL =
+        window.NEFT_LIVE_WORKER || "https://neft-live-rooms.neftjd.workers.dev";
       const id = "p_" + Math.random().toString(36).slice(2, 9);
       let code,
         ws,
