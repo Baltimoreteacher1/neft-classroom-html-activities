@@ -1,0 +1,245 @@
+/* The Overnight Loop — teacher morning-briefing UI. Palette from /assets/design-tokens.css */
+:root {
+  --navy: #12355b;
+  --teal: #1fa6a2;
+  --amber: #f2c15b;
+  --cream: #f7f4ec;
+  --card: #fff;
+  --ink: #21313f;
+  --muted: #5f6f80;
+  --line: #d7e2ed;
+  --success: #0f7c4a;
+  --success-bg: #e6f7ef;
+  --error: #b64e2f;
+  --error-bg: #fef0ec;
+  --r-sm: 8px;
+  --r-md: 14px;
+  --r-lg: 22px;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: var(--cream);
+  color: var(--ink);
+  font:
+    17px/1.55 -apple-system,
+    "Segoe UI",
+    system-ui,
+    sans-serif;
+}
+header.top {
+  background: var(--navy);
+  color: #fff;
+  padding: 22px clamp(16px, 4vw, 48px);
+}
+header.top h1 {
+  margin: 0 0 4px;
+  font-size: clamp(22px, 3.4vw, 32px);
+}
+header.top .sub {
+  opacity: 0.85;
+  font-size: 15px;
+}
+.privacy {
+  background: var(--success-bg);
+  color: var(--success);
+  border: 1px solid #b7e3cc;
+  border-radius: var(--r-sm);
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-block;
+  margin-top: 10px;
+}
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: clamp(16px, 4vw, 36px);
+}
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+}
+.tabs button {
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.tabs button[aria-selected="true"] {
+  background: var(--teal);
+  color: #fff;
+  border-color: var(--teal);
+}
+.grid {
+  display: grid;
+  gap: 16px;
+}
+.cols-2 {
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: 18px 20px;
+  box-shadow: 0 1px 3px rgba(18, 53, 91, 0.06);
+}
+.card h2 {
+  margin: 0 0 10px;
+  font-size: 20px;
+  color: var(--navy);
+}
+.card h3 {
+  margin: 14px 0 6px;
+  font-size: 16px;
+}
+.hotbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 10px 0;
+}
+.hotbar .meter {
+  flex: 1;
+  height: 14px;
+  background: #eef3f8;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.hotbar .meter > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--amber), var(--error));
+}
+.hotbar .label {
+  flex: 0 0 auto;
+  font-weight: 600;
+  min-width: 0;
+}
+.hotbar .count {
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-size: 13px;
+}
+.pill {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 999px;
+  color: #fff;
+}
+.sev-3 {
+  background: var(--error);
+}
+.sev-2 {
+  background: #d98a2b;
+}
+.sev-1 {
+  background: var(--teal);
+}
+.bundle {
+  border-left: 3px solid var(--teal);
+  padding-left: 14px;
+  margin: 10px 0;
+}
+.bundle .kind {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--teal);
+}
+.bundle p {
+  margin: 2px 0 0;
+}
+.bundle ul {
+  margin: 4px 0 0;
+  padding-left: 20px;
+}
+.student-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+}
+.student-row:last-child {
+  border-bottom: 0;
+}
+.student-row .nm {
+  font-weight: 700;
+}
+.group-card {
+  border-top: 4px solid var(--amber);
+}
+.muted {
+  color: var(--muted);
+}
+.actions {
+  margin: 18px 0;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.btn {
+  border: 0;
+  background: var(--navy);
+  color: #fff;
+  padding: 11px 20px;
+  border-radius: var(--r-sm);
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+}
+.btn.alt {
+  background: var(--card);
+  color: var(--navy);
+  border: 1px solid var(--line);
+}
+dialog {
+  border: 0;
+  border-radius: var(--r-lg);
+  padding: 0;
+  max-width: 640px;
+  width: 92vw;
+}
+dialog .dlg-head {
+  background: var(--navy);
+  color: #fff;
+  padding: 18px 22px;
+}
+dialog .dlg-body {
+  padding: 20px 22px;
+  max-height: 70vh;
+  overflow: auto;
+}
+dialog .dlg-head h2 {
+  color: #fff;
+  margin: 0;
+}
+@media print {
+  .tabs,
+  .actions,
+  header.top .privacy {
+    display: none;
+  }
+  body {
+    background: #fff;
+  }
+  .card {
+    box-shadow: none;
+    page-break-inside: avoid;
+  }
+}
