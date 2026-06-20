@@ -193,7 +193,7 @@
       <aside class="rail">
         <div class="panel">
           <h2>🚀 Build your package</h2>
-          <p class="foot" style="margin-top:0">Pick a grading path, then run the command in your repo terminal.</p>
+          <p class="foot" style="margin-top:0">Pick a grading path, then download your ready-to-import Canvas package — right here, no terminal needed.</p>
           <div class="pathbtns" id="paths">
             <button class="pathbtn" data-path="link" aria-pressed="true">
               <b>Links (no grading)</b>
@@ -212,12 +212,22 @@
             <input type="checkbox" id="split" style="width:16px;height:16px;accent-color:var(--teal);" />
             One importable package <strong>per section</strong> (roll out week by week)
           </label>
-          <div class="cmd" id="cmd">npm run library-cartridge</div>
-          <button class="copybtn" id="copy">Copy command</button>
-          <button class="copybtn" id="download" style="background: var(--teal); margin-left: 8px;">
-            ⬇ Selection file
+
+          <button class="copybtn" id="dlpkg"
+            style="display:block;width:100%;margin:14px 0 4px;background:var(--teal);font-size:15px;padding:13px 16px;">
+            ⬇ Download Canvas package (.imscc)
           </button>
-          <p class="foot" id="cmdnote"></p>
+          <p class="foot" id="dlnote">Builds your import-ready package right in the browser — nothing to install. Then import it in Canvas (steps below).</p>
+
+          <details style="margin-top:10px;">
+            <summary style="cursor:pointer;font-size:12px;color:var(--muted);font-weight:600;">Prefer the terminal? (also builds the auto-graded QTI quizzes)</summary>
+            <div class="cmd" id="cmd">npm run library-cartridge</div>
+            <button class="copybtn" id="copy">Copy command</button>
+            <button class="copybtn" id="download" style="background: var(--teal); margin-left: 8px;">
+              ⬇ Selection file
+            </button>
+            <p class="foot" id="cmdnote"></p>
+          </details>
         </div>
 
         <div class="panel">
@@ -396,6 +406,17 @@
         const dl = document.getElementById("download");
         const splitEl = document.getElementById("split");
         if (!cmdEl) return;
+
+        // One-click .imscc download covers link + graded. QTI quizzes still need
+        // the course tool, so on that path we hide the download and open the
+        // terminal fallback instead.
+        const dlpkg = document.getElementById("dlpkg");
+        const dlnote = document.getElementById("dlnote");
+        const fallback = cmdEl.closest("details");
+        const isQuiz = state.path === "quizzes";
+        if (dlpkg) dlpkg.style.display = isQuiz ? "none" : "block";
+        if (dlnote) dlnote.style.display = isQuiz ? "none" : "block";
+        if (fallback && isQuiz) fallback.open = true;
         const type = state.type !== "all" ? state.type : null;
         const n = selectedUrls().length;
         const split = !!(splitEl && splitEl.checked);
@@ -496,6 +517,112 @@
       });
       document.getElementById("download").addEventListener("click", downloadSelection);
       document.getElementById("split").addEventListener("change", renderCommand);
+
+      // Bridge to the ES-module builder below (separate scope can't see these).
+      window.CanvasStudio = {
+        get state() { return state; },
+        selectedUrls,
+        filteredItems: filtered,
+        splitOn: () => !!document.getElementById("split")?.checked,
+      };
+    </script>
+
+    <!-- One-click in-browser .imscc builder: same generator the audited
+         `npm run library-cartridge` tool uses, plus a tiny zip writer, so a
+         teacher gets an import-ready package with no terminal and no install. -->
+    <script type="module">
+      import { buildCartridgeFiles, buildModulesFromItems, zipStore } from "./cartridge-files.mjs";
+
+      const btn = document.getElementById("dlpkg");
+      const note = document.getElementById("dlnote");
+      const sectionSlug = (k) => String(k).replace(/[^a-z0-9]+/gi, "-").replace(/^-+|-+$/g, "");
+
+      function save(bytes, filename, mime) {
+        const blob = new Blob([bytes], { type: mime });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+      }
+
+      function rolloutSheet(rows, mode) {
+        const modeLine = mode === "graded"
+          ? "Each item is a text-entry assignment; students paste a completion code (decode it in the Canvas Grades tool)."
+          : "Each item is a page linking to the live activity; publish what you teach.";
+        return (
+          "# Canvas rollout — per-section import sheet\n\n" +
+          "Generated from the Canvas Studio · mode: **" + mode + "** · " + rows.length + " sections.\n\n" +
+          "Import one section the week you teach it: **Canvas → Settings → Import Course Content → " +
+          '"Common Cartridge 1.x Package" → upload → Import.**\n' +
+          "Everything imports UNPUBLISHED. " + modeLine + "\n\n" +
+          "| # | Section | Items | Package to import |\n| - | --- | ---: | --- |\n" +
+          rows.map((r, i) => "| " + (i + 1) + " | " + r.title + " | " + r.count + " | `" + r.file + "` |").join("\n") +
+          "\n"
+        );
+      }
+
+      function chosenItems(api) {
+        const sel = api.selectedUrls();
+        if (sel.length) {
+          const set = new Set(sel);
+          return api.state.data.items.filter((it) => set.has(it.url));
+        }
+        return api.filteredItems(); // honors the active type filter + search
+      }
+
+      btn?.addEventListener("click", () => {
+        const api = window.CanvasStudio;
+        if (!api || !api.state.data) return;
+        if (api.state.path === "quizzes") return; // handled by terminal fallback
+        const mode = api.state.path === "graded" ? "graded" : "link";
+        const site = api.state.data.site || "https://eduwonderlab.com";
+
+        const items = chosenItems(api);
+        if (!items.length) {
+          note.textContent = "Nothing to export yet — pick a type or tick some activities above.";
+          return;
+        }
+        const split = api.splitOn() && !api.selectedUrls().length;
+        const modules = buildModulesFromItems(items, api.state.data.modules);
+        const suffix = mode === "graded" ? "-graded" : "";
+        const original = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = "Building…";
+
+        try {
+          if (split) {
+            const bundle = [];
+            const rows = [];
+            for (const m of modules) {
+              const { files, itemCount } = buildCartridgeFiles({ modules: [m], mode, site });
+              const file = "neft-library-" + sectionSlug(m.key) + suffix + ".imscc";
+              bundle.push({ path: file, content: zipStore(files) });
+              rows.push({ title: m.title, count: itemCount, file });
+            }
+            bundle.push({ path: "INDEX.md", content: rolloutSheet(rows, mode) });
+            save(zipStore(bundle), "neft-canvas-sections" + suffix + ".zip", "application/zip");
+            note.innerHTML = "Downloaded <b>" + modules.length + " section packs</b> + INDEX.md (a .zip). Import one .imscc per week.";
+          } else {
+            const { files, itemCount } = buildCartridgeFiles({ modules, mode, site });
+            save(zipStore(files), "neft-library" + suffix + ".imscc", "application/octet-stream");
+            note.innerHTML =
+              "Downloaded <b>neft-library" + suffix + ".imscc</b> — " + itemCount +
+              " item" + (itemCount === 1 ? "" : "s") + " in " + modules.length +
+              " module" + (modules.length === 1 ? "" : "s") + ". Import it in Canvas (steps below).";
+          }
+          btn.textContent = "Downloaded ✓";
+          setTimeout(() => { btn.textContent = original; }, 1800);
+        } catch (e) {
+          console.error(e);
+          note.textContent = "Couldn't build the package in this browser — use the terminal command below.";
+          btn.textContent = original;
+        } finally {
+          btn.disabled = false;
+        }
+      });
     </script>
   </body>
 </html>

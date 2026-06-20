@@ -12,14 +12,33 @@ new item lands in Canvas automatically.
 > SCORM tool, no district admin. SCORM is only needed for the live-activity
 > auto-grade path, which requires your district to enable the Canvas SCORM LTI.
 
+## Easiest path — one click, no terminal
+
+Open **[Canvas Studio](https://eduwonderlab.com/teacher-tools/canvas-studio/)**,
+tick what you want (or nothing for the whole library), pick **Links** or
+**Completion codes**, and press **⬇ Download Canvas package (.imscc)**. The page
+builds a real, import-ready Common Cartridge right in your browser — no terminal,
+no Node, no repo checkout — then you upload that file to Canvas. Tick the
+**per-section** box to download a single `.zip` of one `.imscc` per unit plus a
+printable `INDEX.md` rollout sheet.
+
+This in-browser builder uses the **same generator** as the `npm run
+library-cartridge` tool (`teacher-tools/canvas-studio/cartridge-files.mjs`,
+imported by both), so the package you download is byte-for-byte the package the
+audited terminal tool ships — and it's self-validated by
+`cartridge-files.test.mjs` (build → zip → unzip → validate). The terminal
+commands below remain available for power users and are still required for the
+auto-graded **QTI quizzes** path.
+
 ## The pieces
 
 | File | What it does |
 | --- | --- |
 | `tools/canvas/lib/library-select.mjs` | Single source of truth: which registry items are student-safe, and which Canvas module each belongs to. Imported by the two tools below so the console you browse == the package you build. |
 | `tools/canvas/build-library-cartridge.mjs` | Builds a Common Cartridge of the whole library, organized into Modules. `npm run library-cartridge`. |
+| `teacher-tools/canvas-studio/cartridge-files.mjs` | The shared, isomorphic generator (cartridge file tree + a dependency-free zip writer). Imported by both the Node tool above **and** the browser console, so the terminal package and the one-click download are identical. |
 | `tools/canvas/build-studio-index.mjs` | Snapshots the library to `teacher-tools/canvas-studio/library.json` for the static console. `npm run canvas-studio`. |
-| `teacher-tools/canvas-studio/index.html` | The teacher console: browse / search / filter the whole library and copy the one command that builds your import package. |
+| `teacher-tools/canvas-studio/index.html` | The teacher console: browse / search / filter the whole library and **download an import-ready `.imscc` in one click** (or copy a terminal command). |
 | `assets/canvas-bridge.js` | One-line opt-in that gives **any** standalone activity the same completion code (and optional SCORM score) the engine lessons already emit. |
 
 ## Grading paths (all SCORM-free)
