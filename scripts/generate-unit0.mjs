@@ -282,7 +282,183 @@ const PAGE_CSS = `
   .frames li{margin:.3em 0}
   textarea.exit{width:100%;min-height:90px;border:1.5px solid var(--line);border-radius:10px;padding:10px;font:inherit}
   footer{color:var(--muted);font-size:13px;text-align:center;margin:24px 0}
+  .reslinks{display:flex;flex-wrap:wrap;gap:10px}
+  .reslinks a{display:inline-block;padding:9px 14px;border:1.5px solid var(--line);border-radius:10px;text-decoration:none;color:var(--accent);font-weight:600;background:#f0fdfa}
+  .reslinks a:hover{border-color:var(--accent)}
 `;
+
+const PRINT_CSS = `
+  *{box-sizing:border-box}
+  body{font-family:Georgia,'Times New Roman',serif;color:#000;max-width:760px;margin:0 auto;padding:28px 26px;line-height:1.5}
+  h1{font-size:21px;margin:0 0 2px}
+  .meta{font-size:13px;color:#333;margin-bottom:6px}
+  .namebar{display:flex;justify-content:space-between;border-top:2px solid #000;border-bottom:2px solid #000;padding:6px 0;margin:10px 0 16px;font-size:14px}
+  ol.prob{padding-left:22px}
+  ol.prob li{margin:0 0 16px}
+  .choice{margin:3px 0 0 6px}
+  .ans-space{display:block;border-bottom:1px solid #999;height:22px;margin-top:8px}
+  .key{margin-top:26px;border:2px solid #000;border-radius:8px;padding:12px 16px;page-break-before:always}
+  .key h2{margin:.2em 0 .4em;font-size:16px}
+  .key ol{padding-left:22px;margin:0}
+  .key li{margin:.25em 0}
+  .teacheronly{font-size:12px;font-weight:bold;letter-spacing:.05em;text-transform:uppercase}
+  @media print{a{color:#000;text-decoration:none}}
+`;
+
+const DOC_CSS = `
+  *{box-sizing:border-box}
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#0f172a;background:#f8fafc;max-width:780px;margin:0 auto;padding:24px;line-height:1.55}
+  a.back{display:inline-block;margin-bottom:12px;color:#0d9488;text-decoration:none;font-weight:600}
+  h1{font-size:22px;margin:.2em 0}
+  .tag{display:inline-block;background:#f0fdfa;color:#0d9488;border-radius:999px;padding:3px 12px;font-size:13px;font-weight:700}
+  section{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:16px 18px;margin:14px 0}
+  section h2{margin:0 0 .5em;font-size:17px}
+  .vocab b{color:#0d9488}
+  ol li,ul li{margin:.3em 0}
+`;
+
+/* Per-lesson teaching metadata (specific, not generic — keyed by standard). */
+const META = {
+  "6.NS.C.7.A": {
+    misconception:
+      "Students compare the digits and conclude −8 > −3 because 8 > 3, instead of comparing position on the number line.",
+    teachTip:
+      "Keep a number line visible; have students physically point to each number before choosing > or <.",
+    familyHelp:
+      "Ask your child to compare two negative numbers (like −2 and −9) and explain which is greater — the one farther right on a number line wins.",
+  },
+  "6.NS.C.7.B": {
+    misconception:
+      "Students read 'a bigger debt' as 'a greater number,' so they may claim −50 > −20 because 50 > 20.",
+    teachTip:
+      "Always restate the inequality in the story's words: which is colder, higher, or more money?",
+    familyHelp:
+      "Talk about real negatives — temperatures below zero, or money owed — and ask which value is greater and what that means in the situation.",
+  },
+  "6.NS.C.7.D": {
+    misconception:
+      "Students confuse 'greater value' with 'greater absolute value,' especially for negative numbers.",
+    teachTip:
+      "Use money: −$30 is less than −$5 (order) but a bigger debt (absolute value). Treat them as two separate questions.",
+    familyHelp:
+      "Ask: which is the lower number, −7 or −2? Then ask which is farther from zero. They have different answers — that's the whole idea.",
+  },
+  "6.EE.A.2.B": {
+    misconception:
+      "Students miscount terms (treating 3x as two terms) or call the variable the coefficient.",
+    teachTip:
+      "Box each term at the + and − signs first, then label the coefficient inside each term.",
+    familyHelp:
+      "Have your child point to the terms and name the coefficient in an expression like 4x + 7.",
+  },
+  "6.SP.B.5.A": {
+    misconception:
+      "Students forget to count repeated values, or confuse n (how many) with the largest value (how big).",
+    teachTip:
+      "Stress that n counts every data point, including repeats — it answers 'how many,' not 'how big.'",
+    familyHelp:
+      "Give your child a short list of numbers and ask how many values there are — remind them to count repeats too.",
+  },
+  "6.SP.B.5.B": {
+    misconception:
+      "Students name the data set itself instead of the attribute, or leave out the units.",
+    teachTip:
+      "Ask three questions every time: what was measured? how was it measured? in what units?",
+    familyHelp:
+      "Pick any data around the house (heights, temperatures, minutes) and ask: what is being measured, how, and in what units?",
+  },
+};
+
+/** answer-key list HTML from a lesson's practice + exit ticket. */
+function keyList(L) {
+  const items = L.practice
+    .map((p, i) => `<li><b>${i + 1}.</b> ${esc(p.answer)}</li>`)
+    .join("\n      ");
+  return `<ol>\n      ${items}\n      <li><b>Exit ticket:</b> answers will vary — look for correct reasoning about ${esc(L.standard)} (see the worked example and teaching tip).</li>\n    </ol>`;
+}
+
+function printPage(L) {
+  const probs = L.practice
+    .map((p) => {
+      if (p.type === "mc") {
+        const ch = p.choices
+          .map((c, j) => `<div class="choice">${"ABCD"[j]}. ${esc(c)}</div>`)
+          .join("");
+        return `<li>${esc(p.q)}${ch}</li>`;
+      }
+      return `<li>${esc(p.q)}<span class="ans-space"></span></li>`;
+    })
+    .join("\n      ");
+  return `<!doctype html>
+<html lang="en"><head><meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>${esc(L.title)} — Worksheet (${esc(L.standard)})</title>
+<style>${PRINT_CSS}</style></head>
+<body>
+  <h1>${esc(L.title)}</h1>
+  <div class="meta">Grade 6 Math · Unit 0 · Standard ${esc(L.standard)}</div>
+  <div class="namebar"><span>Name: ______________________________</span><span>Date: ____________</span></div>
+  <p><strong>Goal:</strong> ${esc(L.objective)}</p>
+  <ol class="prob">
+      ${probs}
+      <li><strong>Exit ticket.</strong> ${esc(L.exit)}<span class="ans-space"></span><span class="ans-space"></span></li>
+  </ol>
+  <div class="key">
+    <div class="teacheronly">Teacher answer key — remove before copying</div>
+    <h2>Answer key</h2>
+    ${keyList(L)}
+  </div>
+</body></html>
+`;
+}
+
+function teacherPage(L) {
+  const m = META[L.standard] || {};
+  return `<!doctype html>
+<html lang="en"><head><meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>${esc(L.title)} — Teacher Notes (${esc(L.standard)})</title>
+<link rel="stylesheet" href="/assets/shared.css" />
+<style>${DOC_CSS}</style></head>
+<body>
+  <a class="back" href="./">← Back to lesson</a>
+  <span class="tag">${esc(L.standard)} · Teacher notes</span>
+  <h1>${L.emoji} ${esc(L.title)}</h1>
+  <section><h2>Objectives</h2>
+    <p><strong>Content:</strong> ${esc(L.objective)}</p>
+    <p><strong>Language:</strong> ${esc(L.languageObjective)}</p>
+  </section>
+  <section><h2>⚠️ Common misconception</h2><p>${esc(m.misconception || "")}</p></section>
+  <section><h2>💡 Teaching tip</h2><p>${esc(m.teachTip || "")}</p></section>
+  <section class="vocab"><h2>Vocabulary</h2>
+    <ul>${L.vocab.map(([t, d]) => `<li><b>${esc(t)}:</b> ${esc(d)}</li>`).join("")}</ul>
+  </section>
+  <section><h2>Answer key</h2>${keyList(L)}</section>
+  <section><h2>Print</h2><p><a href="./print.html">Open the printable worksheet + key →</a></p></section>
+</body></html>
+`;
+}
+
+function familyPage(L) {
+  const m = META[L.standard] || {};
+  return `<!doctype html>
+<html lang="en"><head><meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>${esc(L.title)} — Family Page (${esc(L.standard)})</title>
+<link rel="stylesheet" href="/assets/shared.css" />
+<style>${DOC_CSS}</style></head>
+<body>
+  <a class="back" href="./">← Back to lesson</a>
+  <span class="tag">${esc(L.standard)} · For families</span>
+  <h1>${L.emoji} ${esc(L.title)}</h1>
+  <section><h2>What we're learning</h2><p>${esc(L.objective)}</p></section>
+  <section><h2>🏠 Try this at home</h2><p>${esc(m.familyHelp || "")}</p></section>
+  <section class="vocab"><h2>Words to know</h2>
+    <ul>${L.vocab.map(([t, d]) => `<li><b>${esc(t)}:</b> ${esc(d)}</li>`).join("")}</ul>
+  </section>
+</body></html>
+`;
+}
 
 function lessonPage(L) {
   const practiceHtml = L.practice
@@ -364,6 +540,15 @@ function lessonPage(L) {
     <h2>🎟️ Exit ticket</h2>
     <p>${esc(L.exit)}</p>
     <textarea class="exit" id="exit" placeholder="Type your answer..."></textarea>
+  </div>
+
+  <div class="card">
+    <h2>🧰 Lesson resources</h2>
+    <div class="reslinks">
+      <a href="./print.html">🖨️ Printable worksheet + key</a>
+      <a href="./teacher.html">👩‍🏫 Teacher notes</a>
+      <a href="./family.html">👪 Family page</a>
+    </div>
   </div>
 
   <footer>Grade 6 Math · Unit 0 (holding area) · Standard ${esc(L.standard)}</footer>
@@ -490,6 +675,9 @@ for (const L of LESSONS) {
   const dir = join(outDir, L.slug);
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, "index.html"), lessonPage(L));
+  writeFileSync(join(dir, "print.html"), printPage(L));
+  writeFileSync(join(dir, "teacher.html"), teacherPage(L));
+  writeFileSync(join(dir, "family.html"), familyPage(L));
   count++;
 }
 console.log(`Unit 0: wrote hub + ${count} lessons to math/unit-0/`);
