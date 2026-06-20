@@ -51,72 +51,58 @@ be retrieved from this environment.
 
 ---
 
-## What is CONFIRMED about the revision (multiple consistent sources)
+## Reconstructed framework (search-derived; verify wording/numbering vs PDF)
 
-- A new **Algebraic Thinking (AT)** domain **merges** the old
-  **Ratios & Proportional Relationships (RP)** and **Expressions & Equations (EE)**.
-- Old **Geometry (G)** is reframed as **Geometric Reasoning and Measurement (GR)**.
-- Ratio content lands in a **6.AT.A** cluster (e.g. the ratio-language standard,
-  old 6.RP.A.1, appears as **6.AT.A.1**).
-- Stated goals: clarify expectations, elevate fluency with a focus on algebraic
-  thinking, and create a more cohesive geometry experience across middle grades.
-- The format is a **crosswalk** that shows each revised standard beside its prior
-  version — i.e. the underlying Grade 6 *content* carries forward; it is
-  **reorganized and renumbered**, not replaced with new topics.
+The full machine-readable reconstruction lives in
+`data/standards-crosswalk-2025.json` (`proposedNewDomain` / `proposedNewId` +
+`confidence` per standard). Summary:
 
-## What is NOT yet verified (must come from the source before applying)
+**Domains**
 
-- Whether **The Number System** stays `NS` or becomes `NOS` (WebSearch summaries
-  conflict — both appear).
-- The **Statistics** domain abbreviation (`SP` vs `STATS`).
-- Exact **cluster letters**, **sub-standard numbering**, and **verbatim wording**
-  for every standard.
+| Old domain | New domain | Confidence |
+|---|---|---|
+| RP — Ratios & Proportional Relationships | **AT** — Algebraic Thinking | high |
+| EE — Expressions & Equations | **AT** — Algebraic Thinking | high |
+| NS — The Number System | **NOS** — Number & Operation Sense | high |
+| G — Geometry | **GR** — Geometric Reasoning & Measurement | high |
+| SP — Statistics & Probability | **DS** — Data & Statistics | medium (sources also showed STATS / DR) |
 
-Because of the above, the draft crosswalk below fills in only the high-confidence
-structural mapping and marks every uncertain code as **`⟨confirm⟩`**. Do not ship
-any `⟨confirm⟩` value without checking it against the source document.
+**Verbatim-confirmed standards (quoted consistently across sources)**
 
----
+- `6.AT.A.1` — "Use ratio language in context (… 'to', 'for every', 'per') to
+  describe a ratio relationship between two quantities, including part-to-part
+  and part-to-whole."
+- `6.AT.A.4` — find a percent of a quantity as a rate per 100, incl. finding the
+  whole given a part and the percent (tables, tape diagrams, double number lines).
+- `6.NOS.A.1` — "Divide fractions by fractions in context."
+- `6.NOS.C.8` — order & absolute value; distinguish comparisons of absolute value
+  from order (e.g. a balance less than −$30 is a debt greater than $30).
+- `6.NOS.C.9` — solve problems by graphing points in all four quadrants
+  (same first / same second coordinate).
+- `6.GR.A.1` — "Find the area of triangles, quadrilaterals, and polygons by
+  composing into rectangles or decomposing into triangles and quadrilaterals."
+- `6.DS.A.1` — recognize a statistical question as one that anticipates variability.
 
-## Draft old→new crosswalk (structural; confirm exact codes from source)
+**Cluster structure (reconstructed)**
 
-Old codes are the current repo taxonomy (`data/standards-taxonomy.json`).
+- `6.AT.A` ratios/rates/percent · `6.AT.B` algebraic expressions ·
+  `6.AT.C` one-variable equations & inequalities · `6.AT.D` dependent/independent
+  variables.
+- `6.NOS.A` divide fractions · `6.NOS.B` fluent computation, GCF/LCM ·
+  `6.NOS.C` rational-number system (coordinate plane, order, absolute value).
+- `6.GR.A` area / volume / surface area / polygons on the plane.
+- `6.DS.A`–`6.DS.B` statistical questions, distributions, displays, summaries.
 
-| Old (CCSS, in repo) | Old description (short) | New domain (confirmed) | New code |
-|---|---|---|---|
-| 6.RP.A.1 | Ratio concept / language | Algebraic Thinking (AT) | 6.AT.A.1 |
-| 6.RP.A.2 | Unit rate a/b | Algebraic Thinking (AT) | 6.AT.A.⟨confirm⟩ |
-| 6.RP.A.3 | Ratio/rate reasoning to solve | Algebraic Thinking (AT) | 6.AT.A.⟨confirm⟩ |
-| 6.RP.A.3.A | Equivalent-ratio tables; plot | Algebraic Thinking (AT) | 6.AT.A.⟨confirm⟩ |
-| 6.RP.A.3.B | Unit-rate / pricing / speed | Algebraic Thinking (AT) | 6.AT.A.⟨confirm⟩ |
-| 6.RP.A.3.C | Percent of a quantity | Algebraic Thinking (AT) | 6.AT.A.⟨confirm⟩ |
-| 6.RP.A.3.D | Convert measurement units | Algebraic Thinking (AT) | 6.AT.A.⟨confirm⟩ |
-| 6.EE.A.1 | Whole-number exponents | Algebraic Thinking (AT) | 6.AT.⟨confirm⟩ |
-| 6.EE.A.2 / .2A–.2C | Read/write/evaluate expressions | Algebraic Thinking (AT) | 6.AT.⟨confirm⟩ |
-| 6.EE.A.3 | Equivalent expressions (properties) | Algebraic Thinking (AT) | 6.AT.⟨confirm⟩ |
-| 6.EE.A.4 | Identify equivalent expressions | Algebraic Thinking (AT) | 6.AT.⟨confirm⟩ |
-| 6.EE.B.5 | Solving as a truth question | Algebraic Thinking (AT) | 6.AT.⟨confirm⟩ |
-| 6.EE.B.6 | Variables to represent numbers | Algebraic Thinking (AT) | 6.AT.⟨confirm⟩ |
-| 6.EE.B.7 | One-step equations x+p=q, px=q | Algebraic Thinking (AT) | 6.AT.⟨confirm⟩ |
-| 6.EE.B.8 | Inequalities x>c / x<c | Algebraic Thinking (AT) | 6.AT.⟨confirm⟩ |
-| 6.EE.C.9 | Dependent/independent variables | Algebraic Thinking (AT) | 6.AT.⟨confirm⟩ |
-| 6.NS.A.1 | Divide fractions by fractions | Number System (NS/NOS ⟨confirm⟩) | 6.⟨confirm⟩.A.1 |
-| 6.NS.B.2 | Fluently divide multi-digit | Number System ⟨confirm⟩ | 6.⟨confirm⟩.B.2 |
-| 6.NS.B.3 | Decimal operations | Number System ⟨confirm⟩ | 6.⟨confirm⟩.B.3 |
-| 6.NS.B.4 | GCF, LCM, distributive | Number System ⟨confirm⟩ | 6.⟨confirm⟩.B.4 |
-| 6.NS.C.5 | Pos/neg in context | Number System ⟨confirm⟩ | 6.⟨confirm⟩.C.5 |
-| 6.NS.C.6 / .6A–.6C | Rational numbers on the line/plane | Number System ⟨confirm⟩ | 6.⟨confirm⟩.C.6 |
-| 6.NS.C.7 / .7A–.7D | Order & absolute value | Number System ⟨confirm⟩ | 6.⟨confirm⟩.C.7 |
-| 6.NS.C.8 | Four-quadrant graphing; distance | Number System ⟨confirm⟩ | 6.⟨confirm⟩.C.8 |
-| 6.G.A.1 | Area by compose/decompose | Geometric Reasoning & Measurement (GR) | 6.GR.⟨confirm⟩ |
-| 6.G.A.2 | Volume w/ fractional edges | Geometric Reasoning & Measurement (GR) | 6.GR.⟨confirm⟩ |
-| 6.G.A.3 | Polygons in coordinate plane | Geometric Reasoning & Measurement (GR) | 6.GR.⟨confirm⟩ |
-| 6.G.A.4 | Nets & surface area | Geometric Reasoning & Measurement (GR) | 6.GR.⟨confirm⟩ |
-| 6.SP.A.1 | Statistical question | Statistics (SP/STATS ⟨confirm⟩) | 6.⟨confirm⟩.A.1 |
-| 6.SP.A.2 | Distribution: center/spread/shape | Statistics ⟨confirm⟩ | 6.⟨confirm⟩.A.2 |
-| 6.SP.A.3 | Center vs variability | Statistics ⟨confirm⟩ | 6.⟨confirm⟩.A.3 |
-| 6.SP.B.4 | Dot plots/histograms/box plots | Statistics ⟨confirm⟩ | 6.⟨confirm⟩.B.4 |
-| 6.SP.B.5 / .5A–.5D | Summarize numerical data | Statistics ⟨confirm⟩ | 6.⟨confirm⟩.B.5 |
+### ⚠️ Two cautions before applying
+
+1. **Clusters are renumbered, not 1:1.** Confirmed example: old `6.NS.C.6` →
+   `6.NOS.C.7`, old `6.NS.C.7` → `6.NOS.C.8`, old `6.NS.C.8` → `6.NOS.C.9`. A
+   formula-based shift will be wrong — every sub-number must be read from the PDF.
+2. **Reconstruction ≠ verification.** Everything above is synthesized from web
+   search, not a direct read of the official document. In the crosswalk JSON these
+   are `proposedNewId` values; `newId` stays `null` until each is confirmed, and
+   the apply tool refuses to run until then. Confirm especially the **DS** domain
+   abbreviation and all `low`-confidence sub-numbers.
 
 ---
 
