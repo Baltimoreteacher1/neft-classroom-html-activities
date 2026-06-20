@@ -70,7 +70,7 @@
     });
 
     function restore(saved) {
-      if (!saved || !saved.quiz) return;
+      if (!saved || !Array.isArray(saved.quiz)) return;
       saved.quiz.forEach(function (wasDone, idx) {
         if (wasDone && questions[idx] && !state[idx]) complete(questions[idx], idx, true);
       });
