@@ -237,6 +237,10 @@
       });
       document.addEventListener("keydown", function (e) {
         if (e.key === "/" && document.activeElement !== searchEl) {
+          var active = document.activeElement;
+          if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.isContentEditable)) {
+            return;
+          }
           e.preventDefault(); searchEl.focus();
         }
       });
@@ -248,7 +252,10 @@
       if (params.get("strand")) { state.strand = params.get("strand"); }
 
       fetch("/data/math-finder-index.json")
-        .then(function (r) { return r.json(); })
+        .then(function (r) {
+          if (!r.ok) throw new Error("Network response was not ok");
+          return r.json();
+        })
         .then(function (j) {
           DATA = (j.activities || []).slice().sort(function (a, b) {
             var order = { Lesson: 0, Activity: 1, Game: 2, Project: 3, Assessment: 4, Review: 5, Tool: 9 };

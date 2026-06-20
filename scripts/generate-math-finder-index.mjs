@@ -142,6 +142,7 @@ const STRAND_BY_PREFIX = {
 const STD_RE = /6\.(NS|RP|EE|G|SP|NOS|AT|DS|GR)\.?[A-D]?\.?\d{0,2}[a-d]?/gi;
 
 function extractStandards(entry) {
+  STD_RE.lastIndex = 0; // global regex — reset state between calls (defensive)
   const text = `${entry.title || ""} ${entry.standard || ""}`;
   const found = new Set();
   let m;
@@ -225,6 +226,20 @@ const CURATED = {
 
 const TEACHER_FOLDERS = new Set(["teacher-tools", "dashboard"]);
 const TEACHER_HINT = /\b(notes|teacher|answer|key|command-center|tracker|dashboard|studio)\b/i;
+// Teacher-only content that must NOT surface to students by default: answer
+// keys, teacher guides/notes, and anything under a /teacher/ path segment.
+const TEACHER_URL_RE = /(\/teacher\/|\/teacher$|\/answer-key(\/|$)|notes-teacher|teacher-(guide|notes))/i;
+const TEACHER_TITLE_RE = /\b(answer key|teacher guide|teacher notes|teacher setup|teacher workspace|growth tracker)\b/i;
+
+/** True when an entry is teacher-facing and should be hidden from students by default. */
+function isTeacher(seg, type, url, title) {
+  return (
+    TEACHER_FOLDERS.has(seg) ||
+    TEACHER_URL_RE.test(url) ||
+    TEACHER_TITLE_RE.test(title || "") ||
+    (type === "Tool" && TEACHER_HINT.test(url + " " + (title || "")))
+  );
+}
 
 const registry = JSON.parse(readFileSync(REGISTRY, "utf8"));
 const seen = new Set();
@@ -254,9 +269,7 @@ for (const a of registry.activities) {
     unit,
     strand,
     standards,
-    teacher:
-      TEACHER_FOLDERS.has(seg) ||
-      (type === "Tool" && TEACHER_HINT.test(url + " " + (a.title || ""))),
+    teacher: isTeacher(seg, type, url, a.title),
   });
 }
 
