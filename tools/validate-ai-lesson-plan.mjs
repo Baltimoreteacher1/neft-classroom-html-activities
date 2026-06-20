@@ -56,9 +56,11 @@ assert.throws(
 );
 
 let workersRequest;
+let workersModel;
 const workersResult = await buildWorkersLesson(
   {
-    run: async (_model, request) => {
+    run: async (modelName, request) => {
+      workersModel = modelName;
       workersRequest = request;
       return { response: plan };
     },
@@ -67,7 +69,10 @@ const workersResult = await buildWorkersLesson(
   lessonPlanSchema,
 );
 assert.deepEqual(workersResult.plan, plan);
+assert.equal(workersModel, "@cf/meta/llama-3.1-8b-instruct-fast");
 assert.equal(workersRequest.response_format.type, "json_schema");
 assert.equal(workersRequest.response_format.json_schema, lessonPlanSchema);
+assert.equal(workersRequest.max_tokens, 8_500);
+assert.equal(workersRequest.temperature, 0.2);
 
 console.log("AI lesson-plan contract validation passed.");

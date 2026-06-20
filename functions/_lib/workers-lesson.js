@@ -1,4 +1,4 @@
-const MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
+const MODEL = "@cf/meta/llama-3.1-8b-instruct-fast";
 
 export async function buildWorkersLesson(ai, prompt, schema) {
   const result = await ai.run(MODEL, {
@@ -14,7 +14,8 @@ export async function buildWorkersLesson(ai, prompt, schema) {
       type: "json_schema",
       json_schema: schema,
     },
-    max_tokens: 12_000,
+    max_tokens: 8_500,
+    temperature: 0.2,
   });
   const plan =
     result?.response && typeof result.response === "object"
