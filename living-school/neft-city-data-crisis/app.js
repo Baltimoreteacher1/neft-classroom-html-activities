@@ -46,14 +46,15 @@
     { id: "passport", label: "Passport", icon: "🪪" },
   ];
 
+  // Vocabulary is shown bilingually (English + Español) for ESOL learners.
   const VOCAB = [
-    { term: "data", def: "Facts and numbers we collect to learn something.", ex: "The 20 wait times are our data." },
-    { term: "mean", def: "The average. Add all the numbers, then divide by how many there are.", ex: "Mean = total ÷ number of values." },
-    { term: "median", def: "The middle number after you sort from least to greatest.", ex: "With 20 numbers, the median is between the 10th and 11th." },
-    { term: "mode", def: "The number that appears the most. There can be more than one.", ex: "If 9 appears most, 9 is a mode." },
-    { term: "range", def: "The distance from the smallest to the largest number.", ex: "Range = greatest − least." },
-    { term: "histogram", def: "A bar graph that shows how many values fall into each group (interval).", ex: "Each bar shows how many people waited that long." },
-    { term: "evidence", def: "Proof from your data that supports your idea.", ex: "“The mode was 9–12 minutes” is evidence." },
+    { term: "data", es: "datos", def: "Facts and numbers we collect to learn something.", ex: "The 20 wait times are our data.", defEs: "Hechos y números que reunimos para aprender algo.", exEs: "Los 20 tiempos de espera son nuestros datos." },
+    { term: "mean", es: "media", def: "The average. Add all the numbers, then divide by how many there are.", ex: "Mean = total ÷ number of values.", defEs: "El promedio. Suma todos los números y divide entre cuántos hay.", exEs: "Media = total ÷ número de valores." },
+    { term: "median", es: "mediana", def: "The middle number after you sort from least to greatest.", ex: "With 20 numbers, the median is between the 10th and 11th.", defEs: "El número del medio después de ordenar de menor a mayor.", exEs: "Con 20 números, la mediana está entre el 10.º y el 11.º." },
+    { term: "mode", es: "moda", def: "The number that appears the most. There can be more than one.", ex: "If 9 appears most, 9 is a mode.", defEs: "El número que aparece más veces. Puede haber más de uno.", exEs: "Si el 9 aparece más, el 9 es una moda." },
+    { term: "range", es: "rango", def: "The distance from the smallest to the largest number.", ex: "Range = greatest − least.", defEs: "La distancia del número más pequeño al más grande.", exEs: "Rango = mayor − menor." },
+    { term: "histogram", es: "histograma", def: "A bar graph that shows how many values fall into each group (interval).", ex: "Each bar shows how many people waited that long.", defEs: "Una gráfica de barras que muestra cuántos valores caen en cada grupo (intervalo).", exEs: "Cada barra muestra cuántas personas esperaron ese tiempo." },
+    { term: "evidence", es: "evidencia", def: "Proof from your data that supports your idea.", ex: "“The mode was 9–12 minutes” is evidence.", defEs: "Prueba de tus datos que apoya tu idea.", exEs: "“La moda fue de 9 a 12 minutos” es evidencia." },
   ];
 
   const DECISION_STARTERS = [
@@ -88,12 +89,189 @@
     "Community Advocate": "As our Community Advocate, you'll speak up for the visitors waiting in line.",
   };
 
+  const ROLE_FLAVOR_ES = {
+    "Data Analyst": "Como Analista de Datos, primero explorarás los números.",
+    "City Planner": "Como Planificador de la Ciudad, imaginarás cómo un cambio afecta al estadio.",
+    "News Reporter": "Como Reportero de Noticias, explicarás la historia a toda la ciudad.",
+    "Budget Advisor": "Como Asesor de Presupuesto, pesarás el costo de cada opción.",
+    "Community Advocate": "Como Defensor de la Comunidad, hablarás por los visitantes que esperan en fila.",
+  };
+
+  const DECISION_STARTERS_ES = [
+    "Los datos muestran ",
+    "Los tiempos de espera más comunes fueron ",
+    "Recomiendo ",
+    "Una pieza de evidencia es ",
+    "Otra pieza de evidencia es ",
+  ];
+
+  const NEWS_FRAMES_ES = [
+    "Neft City estudió ",
+    "Los datos mostraron ",
+    "El histograma nos ayudó a ver ",
+    "Recomiendo ",
+  ];
+
+  // Optional enrichment: add a 30-minute outlier to the 20-value data set.
+  // New sum = 256 over 21 values -> mean ≈ 12.19; median (11th of 21) stays 11.
+  const OUTLIER = {
+    value: 30,
+    mean: 12.19, // 256 / 21
+    median: 11,
+    which: "mean",
+    whichOpts: [
+      { key: "mean", en: "The mean", es: "La media" },
+      { key: "median", en: "The median", es: "La mediana" },
+      { key: "same", en: "They changed the same", es: "Cambiaron igual" },
+    ],
+  };
+
+  // Spanish strings for static elements tagged with data-i18n / data-i18n-html.
+  // English comes from the captured DOM, so only Spanish lives here.
+  const I18N_ES = {
+    "ui.vocab": "📘 Vocabulario", "ui.back": "← Atrás", "ui.clear": "Borrar",
+    "ui.check": "Revisar", "ui.tryit": "Inténtalo",
+    "enter.eyebrow": "Living School · Capítulo 1",
+    "enter.intro": "La ciudad de Neft crece rápido. El alcalde necesita que tu equipo use <strong>datos</strong> para tomar una buena decisión. ¿Listo para ayudar?",
+    "enter.nameLabel": "Primero, dinos tu <strong>nombre</strong>",
+    "enter.nameHelp": "Lo usamos en tu reporte final.",
+    "enter.roleLegend": "Elige tu <strong>rol</strong> en el equipo de la ciudad",
+    "role.analyst": "Te encantan los números y los patrones.",
+    "role.planner": "Diseñas cómo funciona la ciudad.",
+    "role.reporter": "Cuentas la historia de la ciudad.",
+    "role.budget": "Cuidas el dinero de la ciudad.",
+    "role.advocate": "Hablas por la gente.",
+    "enter.start": "Entrar a Neft City →",
+    "briefing.title": "🏛️ Informe de la Misión",
+    "briefing.goalsTitle": "🎯 Metas de tu Misión",
+    "briefing.goal1": "Ordena los datos de menor a mayor.",
+    "briefing.goal2": "Halla la <em>media, mediana, moda</em> y el <em>rango</em>.",
+    "briefing.goal3": "Construye un histograma (gráfica de barras) de los tiempos de espera.",
+    "briefing.goal4": "Decide qué debe hacer la ciudad.",
+    "briefing.goal5": "Explica tu decisión usando <em>evidencia</em>.",
+    "briefing.vocabHint": "¿Palabra nueva? Toca una palabra azul para ver qué significa:",
+    "briefing.next": "Ir al Laboratorio de Datos →",
+    "datalab.title": "🔬 Laboratorio de Datos",
+    "datalab.intro": "Aquí están los <strong>20 tiempos de espera</strong> (en minutos). Haz clic en los números en orden de <strong>menor a mayor</strong> para ordenarlos.",
+    "datalab.step1": "Paso 1 · Ordena los datos",
+    "datalab.step1help": "Haz clic en un número para ponerlo en fila. Haz clic en un número colocado para devolverlo.",
+    "datalab.poolLabel": "Números por ordenar",
+    "datalab.trayLabel": "Fila ordenada (menor → mayor)",
+    "datalab.checkSort": "Revisar Orden",
+    "datalab.step2": "Paso 2 · Halla los valores",
+    "datalab.step2help": "Usa las tarjetas de fórmulas para ayudarte. Después de dos intentos verás una pista.",
+    "datalab.next": "Construir la Gráfica →",
+    "graph.title": "📊 Construye el Histograma",
+    "graph.lead": "Cuenta cuántos tiempos de espera caen en cada intervalo. Usa <strong>+</strong> y <strong>−</strong> (o haz clic en una barra) para fijar la altura de cada barra.",
+    "graph.check": "Revisar Gráfica",
+    "graph.reset": "Reiniciar barras",
+    "graph.interpTitle": "Interpreta tu gráfica",
+    "graph.checkAnswers": "Revisar Respuestas",
+    "graph.next": "Ir a la Sala de Decisiones →",
+    "decision.title": "🗳️ Sala de Decisiones",
+    "decision.council": "Concejo de la Ciudad",
+    "decision.prompt": "¿Qué debe hacer Neft City sobre los largos tiempos de espera? Elige una recomendación y explícala con <strong>evidencia</strong> de tus datos.",
+    "decision.choiceA": "Agregar un puesto de comida más.",
+    "decision.choiceB": "No hacer nada porque las esperas están bien.",
+    "decision.choiceC": "Cerrar el estadio temprano.",
+    "decision.choiceD": "Servir comida solo en el medio tiempo.",
+    "decision.explainTitle": "Explica con evidencia",
+    "decision.explainHelp": "Usa al menos <strong>dos piezas de evidencia</strong> de tus datos y tu gráfica. (Al menos 18 palabras.)",
+    "decision.submit": "Enviar Recomendación",
+    "reaction.title": "🌆 Reacción de la Ciudad",
+    "reaction.status": "Estado de la Ciudad",
+    "reaction.revise": "← Revisar Decisión",
+    "reaction.next": "Escribir el Reporte de Noticias →",
+    "outlier.summary": "🔬 Reto de Ampliación: El Valor Atípico (opcional)",
+    "outlier.intro": "¡Noticia de última hora! Un <strong>visitante número 21</strong> esperó unos enormes <strong>30 minutos</strong>. Agrega este <em>valor atípico</em> a los datos. ¿Qué pasa con la media y la mediana?",
+    "outlier.meanQ": "¿Nueva media de las 21 esperas?",
+    "outlier.medianQ": "¿Nueva mediana de las 21 esperas?",
+    "outlier.whichQ": "¿Cuál medida cambió más por el valor atípico?",
+    "outlier.reflectLabel": "¿Por qué una cambió más que la otra? (1 oración)",
+    "news.title": "📰 Noticias de Neft City",
+    "news.lead": "Escribe un breve reporte público: <strong>3 a 5 oraciones</strong> sobre qué pasó, qué mostraron los datos y qué debe hacer Neft City. (Al menos 35 palabras.)",
+    "news.wordbankLabel": "Banco de palabras — toca para agregar",
+    "news.framesLabel": "Marcos de oración — toca para agregar",
+    "news.checklistTitle": "📋 Lista para revisar mi reporte",
+    "news.check1": "Expliqué el problema.",
+    "news.check2": "Usé evidencia de los datos.",
+    "news.check3": "Hice una recomendación.",
+    "news.check4": "Escribí oraciones completas.",
+    "news.submit": "Publicar y Obtener Pasaporte →",
+    "passport.title": "🪪 Pasaporte de Aprendizaje",
+    "passport.mission": "Misión:",
+    "passport.completed": "Completada",
+    "passport.skills": "Habilidades demostradas",
+    "passport.outcome": "Resultado de la Ciudad:",
+    "passport.reflection": "Reflexión",
+    "passport.reflect1": "Algo que entiendo mejor ahora es…",
+    "passport.reflect2": "Algo que aún quiero practicar es…",
+    "passport.export": "Exporta tu trabajo",
+    "passport.print": "🖨️ Imprimir / Guardar PDF",
+    "passport.download": "⬇️ Descargar JSON",
+    "passport.reset": "♻️ Reiniciar Misión",
+    "vocab.title": "📘 Ayuda de Vocabulario",
+  };
+
+  // Strings generated by JS (need both languages); t() falls back to English.
+  const STR = {
+    en: {
+      startReady: "Ready! Press the button to begin.",
+      startAdd: "Add your name and pick a role to begin.",
+      locked: "🔒 Locked", unlocked: "🔓 Unlocked",
+      check: "Check", tryit: "Try it", solved: "✓ Solved", minutes: "minutes",
+      meanName: "Mean (average)", medianName: "Median (middle)", modeName: "Mode (most common)", rangeName: "Range (spread)",
+      mTrust: "Public Trust", mWait: "Wait Time Problem", mConfidence: "Data Confidence", mExplanation: "Explanation Strength",
+      welcome: ", welcome to the team! ", welcomeNoName: "Welcome to the team! ",
+      briefBody: "Neft City's new sports arena is amazing — but the concession stands have <strong>long wait times</strong>. We surveyed <strong>20 visitors</strong> and timed how long each waited in line. Your job: study the data and tell us what the city should do.",
+      skillSort: "I can sort data.",
+      skillCalc: "I can find mean, median, mode, and range.",
+      skillGraph: "I can build a graph from data.",
+      skillRecommend: "I can make a recommendation using evidence.",
+      skillRevise: "I can revise my thinking.",
+      outGood: "Your team used strong data evidence. Neft City approves a new concession stand, and wait times begin to improve.",
+      outMedium: "Your team found some useful evidence, but the city needs a clearer explanation before making a full decision.",
+      outRevise: "The city made a rushed decision and the problem continued. Your team must revise the data report.",
+      ppApproved: "New concession stand approved 🎉", ppReview: "Decision under review 🤔", ppRevise: "Report sent back for revision ⚠️",
+      olCorrect: "✅ Correct!", olTryMean: "Not yet. Add the 30 to the total (226 + 30 = 256), then divide by 21.",
+      olTryMedian: "Not yet. With 21 sorted values, the middle is the 11th value. The 30 goes at the end.",
+      olWhichRight: "✅ Yes! The mean jumped (11.3 → 12.2) but the median barely moved. Outliers pull the mean more.",
+      olWhichWrong: "Look again: compare how much each value changed.",
+      olDone: "🌟 Enrichment complete! You showed how an outlier affects the mean more than the median.",
+    },
+    es: {
+      startReady: "¡Listo! Presiona el botón para comenzar.",
+      startAdd: "Agrega tu nombre y elige un rol para comenzar.",
+      locked: "🔒 Bloqueado", unlocked: "🔓 Desbloqueado",
+      check: "Revisar", tryit: "Inténtalo", solved: "✓ Resuelto", minutes: "minutos",
+      meanName: "Media (promedio)", medianName: "Mediana (del medio)", modeName: "Moda (más común)", rangeName: "Rango (amplitud)",
+      mTrust: "Confianza Pública", mWait: "Problema de Espera", mConfidence: "Confianza en Datos", mExplanation: "Fuerza de Explicación",
+      welcome: ", ¡bienvenido al equipo! ", welcomeNoName: "¡Bienvenido al equipo! ",
+      briefBody: "El nuevo estadio de Neft City es increíble, pero los puestos de comida tienen <strong>largos tiempos de espera</strong>. Encuestamos a <strong>20 visitantes</strong> y medimos cuánto esperó cada uno en la fila. Tu trabajo: estudia los datos y dinos qué debe hacer la ciudad.",
+      skillSort: "Puedo ordenar datos.",
+      skillCalc: "Puedo hallar media, mediana, moda y rango.",
+      skillGraph: "Puedo construir una gráfica con datos.",
+      skillRecommend: "Puedo hacer una recomendación usando evidencia.",
+      skillRevise: "Puedo revisar mi pensamiento.",
+      outGood: "Tu equipo usó evidencia sólida de los datos. Neft City aprueba un nuevo puesto de comida y los tiempos de espera empiezan a mejorar.",
+      outMedium: "Tu equipo encontró evidencia útil, pero la ciudad necesita una explicación más clara antes de decidir del todo.",
+      outRevise: "La ciudad tomó una decisión apresurada y el problema continuó. Tu equipo debe revisar el reporte de datos.",
+      ppApproved: "Nuevo puesto de comida aprobado 🎉", ppReview: "Decisión en revisión 🤔", ppRevise: "Reporte devuelto para revisión ⚠️",
+      olCorrect: "✅ ¡Correcto!", olTryMean: "Aún no. Suma el 30 al total (226 + 30 = 256), luego divide entre 21.",
+      olTryMedian: "Aún no. Con 21 valores ordenados, el del medio es el 11.º. El 30 va al final.",
+      olWhichRight: "✅ ¡Sí! La media saltó (11.3 → 12.2) pero la mediana casi no cambió. Los valores atípicos jalan más a la media.",
+      olWhichWrong: "Mira otra vez: compara cuánto cambió cada valor.",
+      olDone: "🌟 ¡Ampliación completa! Mostraste cómo un valor atípico afecta más a la media que a la mediana.",
+    },
+  };
+
   const STORAGE_KEY = "neftcity_datacrisis_v1";
 
   /* ============================ STATE ============================ */
   const defaultState = () => ({
     name: "",
     role: "",
+    lang: "en", // "en" | "es"
     current: "enter",
     maxStep: 0, // highest unlocked step index
     sort: { tray: [], solved: false },
@@ -110,6 +288,7 @@
     reflect: { r1: "", r2: "" },
     meters: { trust: 0, wait: 0, confidence: 0, explanation: 0 },
     outcomeTier: "", // good | medium | revise
+    outlier: { mean: "", meanSolved: false, median: "", medianSolved: false, which: "", written: "" },
   });
 
   let state = load() || defaultState();
@@ -145,6 +324,43 @@
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
   const wordCount = (s) => (s.trim().match(/\S+/g) || []).length;
   const stepIndex = (id) => STEPS.findIndex((s) => s.id === id);
+
+  /* ============================ I18N ============================ */
+  // t(key): JS-generated strings (English fallback). Static elements use applyLang().
+  const t = (key) => (STR[state.lang] && STR[state.lang][key]) ?? STR.en[key] ?? key;
+
+  const ORIG = new Map(); // captured English text/html for [data-i18n] elements
+  function applyLang() {
+    const es = state.lang === "es";
+    document.documentElement.lang = state.lang;
+    $$("[data-i18n], [data-i18n-html]").forEach((el) => {
+      const html = el.hasAttribute("data-i18n-html");
+      const key = el.getAttribute(html ? "data-i18n-html" : "data-i18n");
+      if (!ORIG.has(el)) ORIG.set(el, html ? el.innerHTML : el.textContent);
+      const value = es ? (I18N_ES[key] != null ? I18N_ES[key] : ORIG.get(el)) : ORIG.get(el);
+      if (html) el.innerHTML = value; else el.textContent = value;
+    });
+    const langBtn = $("#langBtn");
+    if (langBtn) {
+      langBtn.textContent = es ? "🌐 English" : "🌐 Español";
+      langBtn.setAttribute("aria-label", es ? "Switch to English" : "Cambiar a Español");
+    }
+    // Repaint JS-generated, language-aware content (all read from state -> idempotent).
+    buildVocab();
+    renderBriefing();
+    renderCalc();
+    renderGraph();
+    renderDecisionStarters();
+    renderNewsSupports();
+    if (state.current === "reaction") renderReaction();
+    if (state.current === "passport") renderPassport();
+  }
+
+  function toggleLang() {
+    state.lang = state.lang === "es" ? "en" : "es";
+    save();
+    applyLang();
+  }
 
   let toastTimer;
   function toast(msg, type = "") {
@@ -224,7 +440,7 @@
     const refresh = () => {
       const ok = state.name.trim().length > 0 && state.role;
       startBtn.disabled = !ok;
-      startHelp.textContent = ok ? "Ready! Press the button to begin." : "Add your name and pick a role to begin.";
+      startHelp.textContent = ok ? t("startReady") : t("startAdd");
     };
 
     nameInput.addEventListener("input", () => { state.name = nameInput.value; save(); refresh(); });
@@ -253,23 +469,22 @@
   function renderBriefing() {
     if (state.maxStep >= stepIndex("briefing")) unlock("datalab"); // keep Data Lab reachable on resume
     const intro = $("#mayorBriefing");
-    const flavor = ROLE_FLAVOR[state.role] || "";
-    intro.innerHTML =
-      `${state.name ? `<strong>${escapeHtml(state.name)}</strong>, welcome to the team! ` : "Welcome to the team! "}` +
-      `${flavor} ` +
-      `Neft City's new sports arena is amazing — but the concession stands have <strong>long wait times</strong>. ` +
-      `We surveyed <strong>20 visitors</strong> and timed how long each waited in line. ` +
-      `Your job: study the data and tell us what the city should do.`;
+    const flavorMap = state.lang === "es" ? ROLE_FLAVOR_ES : ROLE_FLAVOR;
+    const flavor = flavorMap[state.role] || "";
+    const greeting = state.name
+      ? `<strong>${escapeHtml(state.name)}</strong>${t("welcome")}`
+      : t("welcomeNoName");
+    intro.innerHTML = `${greeting}${flavor} ${t("briefBody")}`;
 
-    // vocab chips
+    // vocab chips (Spanish term shown when in ES mode)
     const wrap = $("#briefingVocab");
     wrap.innerHTML = "";
-    ["data", "mean", "median", "mode", "range", "histogram", "evidence"].forEach((t) => {
+    VOCAB.forEach((v) => {
       const b = document.createElement("button");
       b.className = "vocab-term";
       b.type = "button";
-      b.textContent = t;
-      b.addEventListener("click", () => openVocab(t));
+      b.textContent = state.lang === "es" ? v.es : v.term;
+      b.addEventListener("click", () => openVocab(v.term));
       wrap.appendChild(b);
     });
   }
@@ -338,10 +553,6 @@
       setFeedback(fb, "ok", "✅ Perfect! The data is sorted least → greatest. Calculations unlocked!");
       markSortSolved();
       awardXp("Data sorted!");
-      $("#calcBlock").classList.remove("locked");
-      $("#calcBlock").setAttribute("aria-disabled", "false");
-      $("#calcLockTag").textContent = "🔓 Unlocked";
-      $("#calcLockTag").classList.add("unlocked");
     } else {
       // find first out-of-order index for targeted hint
       let firstBad = tray.findIndex((n, i) => n !== SORTED[i]);
@@ -356,19 +567,25 @@
     $$("#sortTray .num-chip").forEach((c) => c.classList.remove("bad"));
     $("#calcBlock").classList.remove("locked");
     $("#calcBlock").setAttribute("aria-disabled", "false");
-    $("#calcLockTag").textContent = "🔓 Unlocked";
+    $("#calcLockTag").textContent = t("unlocked");
     $("#calcLockTag").classList.add("unlocked");
   }
 
   /* ============================ 3. DATA LAB — CALCULATIONS ============================ */
   const CALC_DEFS = [
-    { key: "mean", name: "Mean (average)", placeholder: "e.g. 11.3", hint: "Add all 20 numbers (total = 226). Then divide: 226 ÷ 20.", aria: "Mean answer" },
-    { key: "median", name: "Median (middle)", placeholder: "e.g. 11", hint: "With 20 sorted numbers, look at the 10th and 11th. They are both 11, so the median is 11.", aria: "Median answer" },
-    { key: "mode", name: "Mode (most common)", placeholder: "e.g. 9, 10, 12", hint: "Count each number. 9 appears 3 times, 10 appears 3 times, 12 appears 3 times. Three modes!", aria: "Mode answer" },
-    { key: "range", name: "Range (spread)", placeholder: "e.g. 10", hint: "Greatest − least = 17 − 7.", aria: "Range answer" },
+    { key: "mean", nameKey: "meanName", placeholder: "e.g. 11.3", hint: "Add all 20 numbers (total = 226). Then divide: 226 ÷ 20.", aria: "Mean answer" },
+    { key: "median", nameKey: "medianName", placeholder: "e.g. 11", hint: "With 20 sorted numbers, look at the 10th and 11th. They are both 11, so the median is 11.", aria: "Median answer" },
+    { key: "mode", nameKey: "modeName", placeholder: "e.g. 9, 10, 12", hint: "Count each number. 9 appears 3 times, 10 appears 3 times, 12 appears 3 times. Three modes!", aria: "Mode answer" },
+    { key: "range", nameKey: "rangeName", placeholder: "e.g. 10", hint: "Greatest − least = 17 − 7.", aria: "Range answer" },
   ];
 
   function renderCalc() {
+    // keep the Step-2 lock tag in sync with language + solved state
+    const calcLock = $("#calcLockTag");
+    if (calcLock) {
+      calcLock.textContent = state.sort.solved ? t("unlocked") : t("locked");
+      calcLock.classList.toggle("unlocked", state.sort.solved);
+    }
     const grid = $("#calcGrid");
     grid.innerHTML = "";
     CALC_DEFS.forEach((def) => {
@@ -377,13 +594,13 @@
       row.className = "calc-row";
       row.innerHTML = `
         <div class="calc-head">
-          <span class="calc-name">${def.name}</span>
-          <span class="calc-state ${c.solved ? "solved" : ""}" id="state-${def.key}">${c.solved ? "✓ Solved" : "Try it"}</span>
+          <span class="calc-name">${t(def.nameKey)}</span>
+          <span class="calc-state ${c.solved ? "solved" : ""}" id="state-${def.key}">${c.solved ? t("solved") : t("tryit")}</span>
         </div>
         <div class="calc-input-row">
           <input type="text" inputmode="decimal" id="input-${def.key}" value="${escapeAttr(c.value)}"
             placeholder="${def.placeholder}" aria-label="${def.aria}" ${c.solved ? "disabled" : ""} />
-          <button class="btn-primary" type="button" id="check-${def.key}" ${c.solved ? "disabled" : ""}>Check</button>
+          <button class="btn-primary" type="button" id="check-${def.key}" ${c.solved ? "disabled" : ""}>${t("check")}</button>
           <button class="btn-hint" type="button" id="hint-${def.key}">💡 Hint</button>
         </div>
         <p class="feedback" id="fb-${def.key}" role="status" aria-live="polite"></p>
@@ -417,11 +634,11 @@
       c.solved = true;
       save();
       setFeedback(fb, "ok", "✅ Correct! Nice work.");
-      $(`#state-${key}`).textContent = "✓ Solved";
+      $(`#state-${key}`).textContent = t("solved");
       $(`#state-${key}`).classList.add("solved");
       $(`#input-${key}`).disabled = true;
       $(`#check-${key}`).disabled = true;
-      awardXp(`${CALC_DEFS.find((d) => d.key === key).name.split(" ")[0]} solved!`);
+      awardXp(`${t(CALC_DEFS.find((d) => d.key === key).nameKey).split(" ")[0]} solved!`);
       refreshDataLabGate();
     } else {
       c.attempts++;
@@ -498,7 +715,7 @@
           <button class="hbar-btn" type="button" id="plus-${i}" aria-label="Increase ${label} bar">+</button>
         </div>
         <span class="hbar-label">${label}</span>
-        <span class="hbar-tick">minutes</span>
+        <span class="hbar-tick">${t("minutes")}</span>
       `;
       wrap.appendChild(col);
 
@@ -516,10 +733,13 @@
       });
       paintBar(i);
     });
+    const interpLock = $("#interpLockTag");
+    if (interpLock) {
+      interpLock.textContent = state.graph.solved ? t("unlocked") : t("locked");
+      interpLock.classList.toggle("unlocked", state.graph.solved);
+    }
     if (state.graph.solved) {
       $("#interpBlock").classList.remove("locked");
-      $("#interpLockTag").textContent = "🔓 Unlocked";
-      $("#interpLockTag").classList.add("unlocked");
     }
     renderInterp();
   }
@@ -556,7 +776,7 @@
       save();
       setFeedback(fb, "ok", "✅ Your histogram matches the data! Interpretation questions unlocked.");
       $("#interpBlock").classList.remove("locked");
-      $("#interpLockTag").textContent = "🔓 Unlocked";
+      $("#interpLockTag").textContent = t("unlocked");
       $("#interpLockTag").classList.add("unlocked");
       awardXp("Histogram built!");
     } else {
@@ -676,16 +896,7 @@
       });
     });
 
-    // sentence starters
-    const wrap = $("#decisionStarters");
-    DECISION_STARTERS.forEach((s) => {
-      const b = document.createElement("button");
-      b.className = "starter";
-      b.type = "button";
-      b.textContent = s.trim() + "…";
-      b.addEventListener("click", () => insertText("#decisionText", s, "decision", "text"));
-      wrap.appendChild(b);
-    });
+    renderDecisionStarters();
 
     const ta = $("#decisionText");
     ta.addEventListener("input", () => {
@@ -695,6 +906,21 @@
     });
 
     $("#submitDecisionBtn").addEventListener("click", submitDecision);
+  }
+
+  function renderDecisionStarters() {
+    const wrap = $("#decisionStarters");
+    if (!wrap) return;
+    wrap.innerHTML = "";
+    const starters = state.lang === "es" ? DECISION_STARTERS_ES : DECISION_STARTERS;
+    starters.forEach((s) => {
+      const b = document.createElement("button");
+      b.className = "starter";
+      b.type = "button";
+      b.textContent = s.trim() + "…";
+      b.addEventListener("click", () => insertText("#decisionText", s, "decision", "text"));
+      wrap.appendChild(b);
+    });
   }
 
   function renderDecision() {
@@ -796,9 +1022,9 @@
   }
 
   const OUTCOME_COPY = {
-    good: { icon: "🎉", cls: "good", text: "Your team used strong data evidence. Neft City approves a new concession stand, and wait times begin to improve." },
-    medium: { icon: "🤔", cls: "medium", text: "Your team found some useful evidence, but the city needs a clearer explanation before making a full decision." },
-    revise: { icon: "⚠️", cls: "revise", text: "The city made a rushed decision and the problem continued. Your team must revise the data report." },
+    good: { icon: "🎉", cls: "good", key: "outGood" },
+    medium: { icon: "🤔", cls: "medium", key: "outMedium" },
+    revise: { icon: "⚠️", cls: "revise", key: "outRevise" },
   };
 
   function renderReaction() {
@@ -808,13 +1034,13 @@
     const banner = $("#outcomeBanner");
     banner.className = "outcome-banner " + copy.cls;
     $("#outcomeIcon").textContent = copy.icon;
-    $("#outcomeStory").textContent = copy.text;
+    $("#outcomeStory").textContent = t(copy.key);
 
     const meters = [
-      { name: "Public Trust", val: state.meters.trust },
-      { name: "Wait Time Problem", val: state.meters.wait },
-      { name: "Data Confidence", val: state.meters.confidence },
-      { name: "Explanation Strength", val: state.meters.explanation },
+      { name: t("mTrust"), val: state.meters.trust },
+      { name: t("mWait"), val: state.meters.wait },
+      { name: t("mConfidence"), val: state.meters.confidence },
+      { name: t("mExplanation"), val: state.meters.explanation },
     ];
     const wrap = $("#meters");
     wrap.innerHTML = "";
@@ -830,28 +1056,113 @@
 
     // News unlocks once they've seen reaction with an accepted best decision
     if (state.decision.accepted) unlock("news");
+
+    renderOutlier();
+  }
+
+  /* ---- Enrichment: the outlier ---- */
+  function renderOutlier() {
+    const o = state.outlier;
+    const mi = $("#input-omean"), di = $("#input-omedian");
+    if (!mi || !di) return;
+    mi.value = o.mean; di.value = o.median;
+    mi.disabled = o.meanSolved; di.disabled = o.medianSolved;
+    const ms = $("#state-omean"), ds = $("#state-omedian");
+    if (ms) { ms.textContent = o.meanSolved ? t("solved") : t("tryit"); ms.classList.toggle("solved", o.meanSolved); }
+    if (ds) { ds.textContent = o.medianSolved ? t("solved") : t("tryit"); ds.classList.toggle("solved", o.medianSolved); }
+
+    const opts = $("#outlierOpts");
+    opts.innerHTML = "";
+    OUTLIER.whichOpts.forEach((opt) => {
+      const b = document.createElement("button");
+      b.className = "opt";
+      b.type = "button";
+      b.textContent = state.lang === "es" ? opt.es : opt.en;
+      b.setAttribute("aria-pressed", String(o.which === opt.key));
+      if (o.which === opt.key) b.classList.add(opt.key === OUTLIER.which ? "correct" : "wrong");
+      b.addEventListener("click", () => {
+        state.outlier.which = opt.key;
+        save();
+        const fb = $("#fb-owhich");
+        const right = opt.key === OUTLIER.which;
+        setFeedback(fb, right ? "ok" : "no", right ? t("olWhichRight") : t("olWhichWrong"));
+        renderOutlier();
+        maybeOutlierDone();
+      });
+      opts.appendChild(b);
+    });
+
+    const w = $("#outlierWritten");
+    if (w) w.value = o.written;
+  }
+
+  function checkOutlierCalc(which) {
+    const o = state.outlier;
+    const input = $(`#input-o${which}`);
+    const fb = $(`#fb-o${which}`);
+    const raw = input.value.trim();
+    o[which] = raw;
+    const v = parseFloat(raw.replace(/,/g, ".").replace(/[^0-9.\-]/g, ""));
+    const ok = which === "mean" ? Math.abs(v - OUTLIER.mean) < 0.06 : Math.abs(v - OUTLIER.median) < 0.001;
+    if (ok) {
+      o[which + "Solved"] = true;
+      save();
+      setFeedback(fb, "ok", t("olCorrect"));
+      renderOutlier();
+      maybeOutlierDone();
+    } else {
+      save();
+      setFeedback(fb, "no", which === "mean" ? t("olTryMean") : t("olTryMedian"));
+    }
+  }
+
+  function maybeOutlierDone() {
+    const o = state.outlier;
+    if (o.meanSolved && o.medianSolved && o.which === OUTLIER.which) {
+      setFeedback($("#outlierDone"), "ok", t("olDone"));
+    }
+  }
+
+  function initOutlier() {
+    $("#check-omean").addEventListener("click", () => checkOutlierCalc("mean"));
+    $("#check-omedian").addEventListener("click", () => checkOutlierCalc("median"));
+    $("#input-omean").addEventListener("keydown", (e) => { if (e.key === "Enter") checkOutlierCalc("mean"); });
+    $("#input-omedian").addEventListener("keydown", (e) => { if (e.key === "Enter") checkOutlierCalc("median"); });
+    $("#outlierWritten").addEventListener("input", (e) => { state.outlier.written = e.target.value; save(); });
   }
 
   /* ============================ 7. NEWS ============================ */
-  function initNews() {
+  function renderNewsSupports() {
+    // Word bank keeps the academic English terms (target vocabulary).
     const bank = $("#newsWordbank");
-    NEWS_WORDS.forEach((w) => {
-      const b = document.createElement("button");
-      b.className = "word-chip";
-      b.type = "button";
-      b.textContent = w;
-      b.addEventListener("click", () => insertText("#newsText", w + " ", "news", "text"));
-      bank.appendChild(b);
-    });
+    if (bank) {
+      bank.innerHTML = "";
+      NEWS_WORDS.forEach((w) => {
+        const b = document.createElement("button");
+        b.className = "word-chip";
+        b.type = "button";
+        b.textContent = w;
+        b.addEventListener("click", () => insertText("#newsText", w + " ", "news", "text"));
+        bank.appendChild(b);
+      });
+    }
     const frames = $("#newsStarters");
-    NEWS_FRAMES.forEach((f) => {
-      const b = document.createElement("button");
-      b.className = "starter";
-      b.type = "button";
-      b.textContent = f.trim() + "…";
-      b.addEventListener("click", () => insertText("#newsText", f, "news", "text"));
-      frames.appendChild(b);
-    });
+    if (frames) {
+      frames.innerHTML = "";
+      const list = state.lang === "es" ? NEWS_FRAMES_ES : NEWS_FRAMES;
+      list.forEach((f) => {
+        const b = document.createElement("button");
+        b.className = "starter";
+        b.type = "button";
+        b.textContent = f.trim() + "…";
+        b.addEventListener("click", () => insertText("#newsText", f, "news", "text"));
+        frames.appendChild(b);
+      });
+    }
+  }
+
+  function initNews() {
+    renderNewsSupports();
     const ta = $("#newsText");
     ta.addEventListener("input", () => {
       state.news.text = ta.value;
@@ -883,8 +1194,8 @@
     $("#ppName").textContent = state.name || "Student";
     $("#ppRole").textContent = state.role || "City Team";
     const tier = state.outcomeTier || "medium";
-    $("#ppOutcome").textContent = tier === "good" ? "New concession stand approved 🎉"
-      : tier === "medium" ? "Decision under review 🤔" : "Report sent back for revision ⚠️";
+    $("#ppOutcome").textContent = tier === "good" ? t("ppApproved")
+      : tier === "medium" ? t("ppReview") : t("ppRevise");
 
     // "recommend" skill credit requires the best choice AND real evidence,
     // not just the 18-word gate, so the checkmark reflects genuine reasoning.
@@ -900,7 +1211,7 @@
     list.innerHTML = "";
     SKILLS.forEach((s) => {
       const li = document.createElement("li");
-      li.textContent = s.label;
+      li.textContent = t("skill" + s.key.charAt(0).toUpperCase() + s.key.slice(1));
       if (!earned[s.key]) li.classList.add("not-yet");
       list.appendChild(li);
     });
@@ -1104,7 +1415,11 @@
       const div = document.createElement("div");
       div.className = "vocab-item";
       div.id = "vocab-" + v.term;
-      div.innerHTML = `<h3>${v.term}</h3><p>${v.def}</p><p class="vi-ex">Example: ${v.ex}</p>`;
+      // Always bilingual so ESOL learners can use both languages side by side.
+      div.innerHTML =
+        `<h3>${v.term} <span class="vi-es">· ${v.es}</span></h3>` +
+        `<p>${v.def}</p><p class="vi-ex">Example: ${v.ex}</p>` +
+        `<p class="vi-trans"><strong>${v.es}:</strong> ${v.defEs}</p><p class="vi-ex">Ejemplo: ${v.exEs}</p>`;
       list.appendChild(div);
     });
   }
@@ -1194,10 +1509,14 @@
     $("#resetGraphBtn").addEventListener("click", () => { state.graph.bars = [0, 0, 0, 0]; state.graph.solved = false; save(); renderGraph(); setFeedback($("#graphFeedback"), "", ""); });
     $("#checkInterpBtn").addEventListener("click", checkInterp);
 
-    // decision / news / passport
+    // decision / news / passport / enrichment
     initDecision();
     initNews();
     initPassport();
+    initOutlier();
+
+    // language toggle
+    $("#langBtn").addEventListener("click", toggleLang);
 
     // modals
     $("#vocabOpenBtn").addEventListener("click", () => openVocab());
@@ -1217,6 +1536,9 @@
     renderGraph();
     renderDecision();
     renderNews();
+
+    // apply saved language to all static + dynamic content
+    applyLang();
 
     // resume on last screen
     go(state.current || "enter");
