@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unit 9 Exit Ticket — Integers &amp; the Coordinate Plane | Neft Teacher</title>
+    <meta name="description" content="Quick 3-question self-checking exit ticket for Grade 6 Math Unit 9: Integers &amp; the Coordinate Plane (6.NS.5–8)." />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      .et-bar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:12px 0; }
+      .et-btn { background:#0f2b3c; color:#fff; border:none; border-radius:10px; padding:9px 16px; font-weight:700; font-size:14px; cursor:pointer; font-family:inherit; }
+      .et-score { font-weight:800; color:#2d874b; }
+      .et-q { background:#fff; border:1px solid var(--line,#e2e7ec); border-radius:14px; padding:18px 20px; margin:14px 0; box-shadow:0 2px 10px rgba(15,43,60,.05); }
+      .et-n { font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:#1a6fb5; }
+      .et-prompt { font-size:18px; font-weight:700; margin:6px 0 12px; }
+      .et-q input { width:200px; padding:11px 13px; border:2px solid var(--line,#e2e7ec); border-radius:10px; font-size:16px; font-family:inherit; }
+      .et-check { background:#1a6fb5; color:#fff; border:none; border-radius:10px; padding:10px 18px; font-weight:800; cursor:pointer; font-family:inherit; margin-left:8px; }
+      .fb { margin-top:10px; font-weight:700; min-height:22px; }
+      .fb.ok { color:#2d874b; } .fb.no { color:#c45a3c; }
+      @media print { .et-btn,.et-check { display:none; } .et-q { box-shadow:none; break-inside:avoid; } }
+    </style>
+  </head>
+  <body>
+    <main class="page-shell">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a><span>/</span><a href="/math/">Math</a><span>/</span><a href="/math/exit-tickets/">Exit Tickets</a><span>/</span><span>Unit 9</span>
+      </nav>
+      <section class="hero compact-hero">
+        <p class="eyebrow">Exit Ticket · Unit 9 · 6.NS.5–8</p>
+        <h1>🧭 Integers &amp; the Coordinate Plane</h1>
+        <p class="hero-copy">A quick 3-question check. Answer each one and press Check. Aim for 3 out of 3!</p>
+      </section>
+      <div class="et-bar">
+        <span class="et-score" id="score">0 / 3 correct</span>
+        <button class="et-btn" type="button" onclick="window.print()">🖨️ Print</button>
+      </div>
+        <div class="et-q">
+          <span class="et-n">Question 1</span>
+          <p class="et-prompt">Find |−15|.</p>
+          <input type="text" id="a1" autocomplete="off" placeholder="Your answer" aria-label="Answer 1" />
+          <button class="et-check" type="button" onclick="checkQ(1,"15","Distance from 0 is 15.")">Check</button>
+          <div class="fb" id="fb1" role="status" aria-live="polite"></div>
+        </div>
+        <div class="et-q">
+          <span class="et-n">Question 2</span>
+          <p class="et-prompt">What is the opposite of 6? (type like -6)</p>
+          <input type="text" id="a2" autocomplete="off" placeholder="Your answer" aria-label="Answer 2" />
+          <button class="et-check" type="button" onclick="checkQ(2,"-6","Same distance, other side.")">Check</button>
+          <div class="fb" id="fb2" role="status" aria-live="polite"></div>
+        </div>
+        <div class="et-q">
+          <span class="et-n">Question 3</span>
+          <p class="et-prompt">Which is least: −5, 2, −1 ? Type the number.</p>
+          <input type="text" id="a3" autocomplete="off" placeholder="Your answer" aria-label="Answer 3" />
+          <button class="et-check" type="button" onclick="checkQ(3,"-5","Most negative is least.")">Check</button>
+          <div class="fb" id="fb3" role="status" aria-live="polite"></div>
+        </div>
+      <footer class="site-footer">
+        <span>Neft Teacher · Unit 9 Exit Ticket</span>
+        <span><span data-current-year></span></span>
+      </footer>
+    </main>
+    <script>
+      var got={};
+      function norm(s){ s=String(s).trim().toLowerCase().replace(/\s+/g,""); s=s.replace(/^\$/,"").replace(/%$/,""); s=s.replace(/(squarefeet|cubicfeet|sqft|ft2|ft3|ft²|ft³|units?|cubic|each)$/,""); return s; }
+      function ratio(s){ var m=s.match(/^(\d+(?:\.\d+)?)[:\/](\d+(?:\.\d+)?)$/); return m?parseFloat(m[1])/parseFloat(m[2]):null; }
+      function checkQ(i, correct, why){
+        var raw=document.getElementById("a"+i).value, fb=document.getElementById("fb"+i);
+        if(raw.trim()===""){ fb.textContent="⚠ Type an answer first."; fb.className="fb no"; return; }
+        var s=norm(raw), c=norm(correct), ok=false;
+        var rs=ratio(s), rc=ratio(c);
+        if(rs!==null&&rc!==null){ ok=Math.abs(rs-rc)<1e-9; }
+        else { var ns=parseFloat(s), nc=parseFloat(c); ok=(!isNaN(ns)&&!isNaN(nc))?Math.abs(ns-nc)<1e-9:(s===c); }
+        if(ok){ got[i]=true; fb.textContent="✓ Correct! "+why; fb.className="fb ok"; }
+        else { got[i]=false; fb.textContent="✗ Not yet — try again."; fb.className="fb no"; }
+        var n=0; for(var k in got) if(got[k]) n++;
+        document.getElementById("score").textContent=n+" / 3 correct"+(n===3?" 🎉":"");
+      }
+    </script>
+    <script src="/assets/app.js" defer></script>
+  </body>
+</html>
