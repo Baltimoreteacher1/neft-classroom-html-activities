@@ -3,10 +3,13 @@
  *
  * Uses the repo's root playwright.config.ts harness (builds the site and serves
  * the static `dist/` output on the contract port). For each game it loads the
- * page, lets Phaser boot, and asserts:
- *   - Phaser actually loaded (local vendor copy or CDN fallback),
- *   - a <canvas> rendering surface was created,
- *   - no uncaught JS exceptions fired,
+ * page, lets the engine boot, then interacts with it (click to start + a spread
+ * of common keys) so the Title→Game transition and first-input handlers run.
+ * It asserts:
+ *   - the game rendered (a <canvas> for Phaser games, real DOM for the few
+ *     DOM-engine games),
+ *   - the rendering surface survives interaction (no crash mid-game),
+ *   - no uncaught JS exceptions fired (during boot OR interaction),
  *   - no broken SAME-ORIGIN asset requests (a real missing /assets or
  *     /games/vendor file), and
  *   - no unexpected console errors.
@@ -102,6 +105,42 @@ for (const url of GAMES) {
       ).toBeGreaterThan(40);
     }
 
+    // ── Exercise the game PAST boot ────────────────────────────────────────
+    // Click to focus/start, then send a spread of common inputs (advance a
+    // title, answer 1–4, move) so the Title→Game transition and first-input
+    // handlers actually run. Mechanics differ per game, so we don't assert
+    // specific content — only that nothing crashed (caught by the error
+    // listeners below) and the surface survives. Best-effort: every step is
+    // guarded so a game that ignores an input can't fail the test.
+    const urlBefore = page.url();
+    const target =
+      canvasCount > 0 ? page.locator("canvas").first() : page.locator("body");
+    await target.click({ timeout: 5_000 }).catch(() => {});
+    for (const key of [
+      "Enter",
+      "Space",
+      "Digit1",
+      "ArrowRight",
+      "ArrowUp",
+      "Space",
+      "Digit2",
+      "ArrowLeft",
+    ]) {
+      await page.keyboard.press(key).catch(() => {});
+      await page.waitForTimeout(250);
+    }
+    await page.waitForTimeout(800);
+
+    // If an input didn't navigate away, a canvas game must still have its
+    // surface (a crash mid-game would tear it down).
+    if ((phaserLoaded || canvasCount > 0) && page.url() === urlBefore) {
+      expect(
+        await page.locator("canvas").count(),
+        `canvas disappeared after input on ${url}`,
+      ).toBeGreaterThan(0);
+    }
+
+    // These accumulate across BOTH boot and the interaction above.
     expect(pageErrors, `uncaught error(s) on ${url}`).toEqual([]);
     expect(badResponses, `broken same-origin asset(s) on ${url}`).toEqual([]);
     expect(consoleErrors, `console error(s) on ${url}`).toEqual([]);
