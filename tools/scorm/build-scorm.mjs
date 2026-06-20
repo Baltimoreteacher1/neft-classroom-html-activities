@@ -19,17 +19,39 @@ import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const [lessonId, titleArg] = process.argv.slice(2);
+const [target, titleArg] = process.argv.slice(2);
 
-if (!lessonId) {
-  console.error('Usage: node tools/scorm/build-scorm.mjs <lessonId> ["Title"]');
+if (!target) {
+  console.error(
+    "Usage: node tools/scorm/build-scorm.mjs <lessonId | /path/ | url> [\"Title\"]\n" +
+      "  Examples:\n" +
+      "    node tools/scorm/build-scorm.mjs 1-3 \"Unit 1 Lesson 3\"   # a lesson\n" +
+      "    node tools/scorm/build-scorm.mjs /ratio-color-mixer/      # any activity\n" +
+      "    node tools/scorm/build-scorm.mjs https://eduwonderlab.com/fractions-soccer/",
+  );
   process.exit(1);
 }
 
 const SITE = (process.env.NEFT_SITE || "https://eduwonderlab.com").replace(/\/$/, "");
 const origin = new URL(SITE).origin;
-const lessonUrl = `${SITE}/lessons/${lessonId}/`;
-const title = titleArg || `Lesson ${lessonId}`;
+
+// Accept three target forms:
+//   - a bare lesson id ("1-3")        → /lessons/1-3/   (back-compat)
+//   - a site-relative path ("/x/")    → SITE + /x/
+//   - a full URL                      → used as-is
+// A "lesson id" is the legacy shorthand: no slash and no scheme.
+const isUrl = /^https?:\/\//i.test(target);
+const isLessonId = !isUrl && !target.includes("/");
+const lessonUrl = isUrl
+  ? target
+  : isLessonId
+    ? `${SITE}/lessons/${target}/`
+    : `${SITE}/${target.replace(/^\/+/, "")}`;
+// Stable id/slug for filenames + the SCORM manifest identifier.
+const lessonId = isLessonId
+  ? target
+  : (new URL(lessonUrl).pathname.split("/").filter(Boolean).pop() || "activity");
+const title = titleArg || (isLessonId ? `Lesson ${target}` : lessonId);
 
 const tplDir = resolve(__dirname, "template");
 const fill = (s) =>
