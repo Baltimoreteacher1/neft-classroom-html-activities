@@ -2389,8 +2389,14 @@
         if (state.bg === "coord") buildCoordBg();
       }
       function renderCanvas() {
-        const r = workspace.getBoundingClientRect();
-        ctx.clearRect(0, 0, r.width, r.height);
+        // Clear by the canvas's own device-pixel size (fast, never triggers
+        // layout) instead of querying the workspace rect — this runs on every
+        // highlighter pointermove frame. Reset the transform just for the
+        // clear, then restore the DPR transform set in sizeCanvas().
+        ctx.save();
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.restore();
         for (const st of state.strokes) drawStroke(st);
       }
       function drawStroke(st) {
@@ -2415,28 +2421,36 @@
 
       /* ----------------------- Drawing interaction ----------------------- */
       let drawing = null;
-      function localPt(e) {
-        const r = workspace.getBoundingClientRect();
+      function ptFromRect(e, r) {
         return { x: e.clientX - r.left, y: e.clientY - r.top };
+      }
+      function localPt(e) {
+        return ptFromRect(e, workspace.getBoundingClientRect());
       }
       canvas.addEventListener("pointerdown", (e) => {
         if (document.body.dataset.draw !== "1") return;
         canvas.setPointerCapture(e.pointerId);
-        const p = localPt(e);
+        // Measure the workspace once and reuse it for the whole stroke. The
+        // pointer is captured and nothing mutates layout mid-gesture, so this
+        // avoids a getBoundingClientRect() (a synchronous layout query) on
+        // every pointermove — and on every coalesced sample within it.
+        const rect = workspace.getBoundingClientRect();
+        const p = ptFromRect(e, rect);
         if (tool === "eraser") {
           eraseAt(p);
-          drawing = { erase: true };
+          drawing = { erase: true, rect };
           return;
         }
         const color = tool === "highlighter" ? hiColor : penColor;
         const size =
           tool === "highlighter" ? Math.max(penSize * 3, 14) : penSize;
-        drawing = { tool, color, size, pts: [p] };
+        drawing = { tool, color, size, pts: [p], rect };
       });
       canvas.addEventListener("pointermove", (e) => {
         if (!drawing) return;
+        const rect = drawing.rect;
         if (drawing.erase) {
-          eraseAt(localPt(e));
+          eraseAt(ptFromRect(e, rect));
           return;
         }
         // Capture coalesced samples so fast strokes on a stylus / touch screen
@@ -2446,9 +2460,9 @@
             ? e.getCoalescedEvents()
             : null;
         if (events && events.length) {
-          for (const ce of events) drawing.pts.push(localPt(ce));
+          for (const ce of events) drawing.pts.push(ptFromRect(ce, rect));
         } else {
-          drawing.pts.push(localPt(e));
+          drawing.pts.push(ptFromRect(e, rect));
         }
         if (drawing.tool === "highlighter") {
           // A highlighter is semi-transparent: re-stroking the whole growing
