@@ -1508,28 +1508,29 @@
   
       
       function runWhatIf() {
-        const v = parseFloat($("whatIfVal").value);
-        let sample = worldSample();
-        const customSize = $("r-pts") ? num("r-pts") : NaN;
-        if (!isNaN(customSize) && customSize > 0) {
-          sample = [...sample, customSize];
-        }
-        if (isNaN(v)) {
-          $("whatIfBox").textContent = "Enter a number first.";
+        const pts = num("r-pts");
+        const games = num("r-games");
+        const extra = parseFloat($("wf-pts").value);
+        if (isNaN(pts) || isNaN(games) || games <= 0) {
+          $("whatIfBox").textContent =
+            "First enter the athlete's total points and games played in Part 1.";
           return;
         }
-        const before = PK.mean(sample);
-        const after = PK.mean(sample.concat([v]));
-        
-        let beforeStr = false ? "$" + before.toFixed(2) : before.toFixed(2) + " PPG";
-        let afterStr = false ? "$" + after.toFixed(2) : after.toFixed(2) + " PPG";
-        let vStr = false ? "$" + v.toFixed(2) : v + " PPG";
-
+        if (isNaN(extra) || extra < 0) {
+          $("whatIfBox").textContent =
+            "Enter the extra points scored in a hot-streak game.";
+          return;
+        }
+        const r = (x) => Math.round(x * 100) / 100;
         PK.whatIf(
           "whatIfBox",
-          { average: beforeStr },
-          { average: afterStr },
-          "Adding a value of " + vStr + " to the sample:"
+          { games: games, "avg PPG": r(pts / games) },
+          { games: games + 1, "avg PPG": r((pts + extra) / (games + 1)) },
+          "Add one " +
+            extra +
+            "-point hot-streak game to a " +
+            games +
+            "-game season:",
         );
       }
   
