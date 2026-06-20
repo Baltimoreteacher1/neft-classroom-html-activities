@@ -36,6 +36,51 @@
     return v == null ? "" : v;
   }
 
+  /* ---------- tier (Level 0 / 1 / 2) ----------
+     meta.tier drives engine-level scaffolding so a single story file can serve
+     the most-supported (Level 0 / IEP) tier WITHOUT authoring a third full story:
+       tier 0 → fewer beats per act, only 2 choices, sentence-frame always open,
+                simplified number set when a step provides choicesL0/beatsL0.
+       tier 1/2 (or unset) → full story, unchanged.
+     Authors may optionally provide step.choicesL0 / step.beatsL0 / per-choice
+     keepL0 to control the simpler set; otherwise the engine auto-reduces. */
+  var TIER = S.meta && S.meta.tier != null ? +S.meta.tier : null;
+  var IS_L0 = TIER === 0;
+
+  /* Reduce a choices[] to 2 for Level 0: prefer an explicit choicesL0, else keep
+     the correct answer plus the first distractor (its mapped misconception). */
+  function tierChoices(step) {
+    var all = step.choices || [];
+    if (!IS_L0) return all;
+    if (Array.isArray(step.choicesL0) && step.choicesL0.length) {
+      return step.choicesL0;
+    }
+    var kept = all.filter(function (c) {
+      return c.keepL0;
+    });
+    if (kept.length >= 2) return kept;
+    var correct = all.filter(function (c) {
+      return c.correct === true;
+    });
+    var wrong = all.filter(function (c) {
+      return c.correct !== true;
+    });
+    return correct.concat(wrong.slice(0, 1));
+  }
+
+  /* Trim beats for Level 0: prefer beatsL0, else keep the misconception beat plus
+     the first/last so the story still reads but is shorter. */
+  function tierBeats(step) {
+    var all = step.beats || [];
+    if (!IS_L0 || all.length <= 2) return all;
+    if (Array.isArray(step.beatsL0) && step.beatsL0.length) return step.beatsL0;
+    var keep = [];
+    all.forEach(function (b, i) {
+      if (i === 0 || i === all.length - 1 || b.misconception) keep.push(b);
+    });
+    return keep.length >= 2 ? keep : all.slice(0, 2);
+  }
+
   /* Read-aloud (text-to-speech) via the Web Speech API. Offline, no assets. */
   var TTS = (function () {
     var synth = window.speechSynthesis;
@@ -260,6 +305,8 @@
     r.style.setProperty("--accent", accent);
     // Enrichment (#2) reads a touch deeper/darker so the two versions differ.
     if (S.meta.version === 2) r.style.setProperty("--accent2", "#0f172a");
+    // Level 0 (IEP / most-supported) flags the body so CSS can calm the layout.
+    if (IS_L0) document.body.setAttribute("data-tier", "0");
     if (S.meta.theme) {
       Object.keys(S.meta.theme).forEach(function (k) {
         r.style.setProperty(k, S.meta.theme[k]);
@@ -671,20 +718,29 @@
       });
       html +=
         '<div class="challenge bonus" id="chalComplete">' +
-          '<div class="chal-grid">' +
-            '<div class="chal-left">' +
-              '<span class="bonus-tag">&#127942; MASTER RANK CHALLENGE</span>' +
-              '<h3 style="margin-top:8px;">' + (m.headingEn || "Prove your rank!") + '</h3>' +
-              '<p class="prompt" style="margin-top:8px;">' + m.promptEn +
-                (m.promptEs ? '<span class="es" style="display:block;margin-top:4px;font-style:italic;color:var(--muted);">' + m.promptEs + '</span>' : '') +
-              '</p>' +
-            '</div>' +
-            '<div class="chal-right">' +
-              '<div class="choices" id="choicesComplete">' + ch + '</div>' +
-              '<div class="feedback" id="fbComplete"></div>' +
-            '</div>' +
-          '</div>' +
-        '</div>';
+        '<div class="chal-grid">' +
+        '<div class="chal-left">' +
+        '<span class="bonus-tag">&#127942; MASTER RANK CHALLENGE</span>' +
+        '<h3 style="margin-top:8px;">' +
+        (m.headingEn || "Prove your rank!") +
+        "</h3>" +
+        '<p class="prompt" style="margin-top:8px;">' +
+        m.promptEn +
+        (m.promptEs
+          ? '<span class="es" style="display:block;margin-top:4px;font-style:italic;color:var(--muted);">' +
+            m.promptEs +
+            "</span>"
+          : "") +
+        "</p>" +
+        "</div>" +
+        '<div class="chal-right">' +
+        '<div class="choices" id="choicesComplete">' +
+        ch +
+        "</div>" +
+        '<div class="feedback" id="fbComplete"></div>' +
+        "</div>" +
+        "</div>" +
+        "</div>";
     }
     html +=
       '<div id="nt-notebook" class="notebook"></div>' +
@@ -885,25 +941,26 @@
       clearCallouts();
       nextBtn.style.display = "";
       var bi = 0;
+      var beats = tierBeats(step); // Level 0 → fewer beats
       dotsEl.innerHTML = "";
-      step.beats.forEach(function () {
+      beats.forEach(function () {
         dotsEl.appendChild(el("i"));
       });
       function renderBeat() {
-        var beat = step.beats[bi];
+        var beat = beats[bi];
         speechEl.innerHTML = "";
         speechEl.appendChild(bubble(beat));
         if (beat.callout) addCallout(beat.callout);
         Array.prototype.slice.call(dotsEl.children).forEach(function (d, k) {
           d.classList.toggle("on", k <= bi);
         });
-        var last = bi === step.beats.length - 1;
+        var last = bi === beats.length - 1;
         nextBtn.innerHTML = last
           ? step.lastLabel || "Continue &#9654;"
           : "Next &#9654;";
       }
       nextBtn.onclick = function () {
-        if (bi < step.beats.length - 1) {
+        if (bi < beats.length - 1) {
           bi++;
           renderBeat();
         } else {
@@ -1000,7 +1057,7 @@
       }
       var wrap = el("div", "challenge" + (optional ? " bonus" : ""));
       wrap.id = "chal-" + act.id + "-" + step.id;
-      
+
       var bonusHeader = "";
       if (optional) {
         bonusHeader =
@@ -1010,18 +1067,25 @@
           '<p class="prompt" style="font-size:0.82rem;color:var(--muted);' +
           'margin:6px 0 12px">Optional — try it or press the button to move on.</p>';
       }
-      
+
       var qText = "";
       if (step.ask) {
         var whoName = "";
         if (step.ask.who && S.cast && S.cast[step.ask.who]) {
           whoName = S.cast[step.ask.who].name;
         }
-        qText = '<div class="chal-question-text">' +
-          (whoName ? '<span class="chal-speaker">' + whoName + ':</span> ' : '') +
+        qText =
+          '<div class="chal-question-text">' +
+          (whoName
+            ? '<span class="chal-speaker">' + whoName + ":</span> "
+            : "") +
           injectVocab(txt(step.ask.en), step.ask.vocab) +
-          (step.ask.es ? '<div class="es" style="margin-top:6px;font-style:italic;color:var(--muted)">' + step.ask.es + '</div>' : '') +
-          '</div>';
+          (step.ask.es
+            ? '<div class="es" style="margin-top:6px;font-style:italic;color:var(--muted)">' +
+              step.ask.es +
+              "</div>"
+            : "") +
+          "</div>";
       }
 
       var tools = '<div class="chal-tools">';
@@ -1032,10 +1096,13 @@
           '" aria-expanded="false">&#128161; Need a hint?</button>';
       }
       if (step.frame) {
+        // Level 0: the sentence frame is always visible (button pre-expanded).
         tools +=
           '<button type="button" class="toolbtn" data-fold="coach-' +
           step.id +
-          '" aria-expanded="false">&#9997;&#65039; Writing coach</button>';
+          '" aria-expanded="' +
+          (IS_L0 ? "true" : "false") +
+          '">&#9997;&#65039; Writing coach</button>';
       }
       tools += "</div>";
       var folds = "";
@@ -1055,7 +1122,9 @@
       }
       if (step.frame) {
         folds +=
-          '<div class="foldout coach" id="coach-' +
+          '<div class="foldout coach' +
+          (IS_L0 ? " show" : "") +
+          '" id="coach-' +
           step.id +
           '"><b>Sentence frame:</b> ' +
           step.frame.en +
@@ -1100,10 +1169,12 @@
         step.interaction === "mc" ||
         !INTERACTIONS[step.interaction]
       ) {
-        step.choices.forEach(function (c) {
+        tierChoices(step).forEach(function (c, ci) {
           choices +=
             '<button class="choice" data-correct="' +
             !!c.correct +
+            '" data-cidx="' +
+            ci +
             '">' +
             c.en +
             (c.tree ? '<span class="tree">' + c.tree + "</span>" : "") +
@@ -1112,19 +1183,24 @@
         });
       }
       choices += "</div>";
-      
-      wrap.innerHTML = bonusHeader +
+
+      wrap.innerHTML =
+        bonusHeader +
         '<div class="chal-grid">' +
-          '<div class="chal-left">' +
-            qText +
-            tools +
-            folds +
-          '</div>' +
-          '<div class="chal-right">' +
-            choices +
-            '<div class="feedback" id="fb-' + act.id + '-' + step.id + '"></div>' +
-          '</div>' +
-        '</div>';
+        '<div class="chal-left">' +
+        qText +
+        tools +
+        folds +
+        "</div>" +
+        '<div class="chal-right">' +
+        choices +
+        '<div class="feedback" id="fb-' +
+        act.id +
+        "-" +
+        step.id +
+        '"></div>' +
+        "</div>" +
+        "</div>";
       chalHost.appendChild(wrap);
       wrap.scrollIntoView({ behavior: "smooth", block: "center" });
       wireFolds(wrap);
@@ -1155,13 +1231,61 @@
       });
   }
 
+  /* ---- escalating, misconception-targeted feedback ----
+     Mirrors Axiom City's "Ask VEX" ladder. Each wrong attempt shows MORE help,
+     never the answer:
+       1st miss  → conceptual nudge (the per-choice `why`, or step.help.conceptual)
+       2nd miss  → procedural hint  (step.help.procedural, or the existing step.hint)
+       3rd+ miss → worked example with DIFFERENT numbers (step.help.example)
+     A choice may carry its own `why` so each distractor is remediated to ITS
+     misconception. Falls back to step.badEn so legacy stories are unchanged. */
+  function escalatingFeedback(step, choice, attempts) {
+    var help = step.help || {};
+    var parts = [];
+    // Tier 1: this distractor's own "why", else a conceptual reframe.
+    if (choice && choice.why) {
+      parts.push({ en: choice.why.en || choice.why, es: choice.why.es });
+    } else if (help.conceptual) {
+      parts.push(help.conceptual);
+    }
+    // Tier 2: procedural steps (reuse the hint if no dedicated procedural help).
+    if (attempts >= 2) {
+      var proc = help.procedural || step.hint;
+      if (proc) parts.push(proc);
+    }
+    // Tier 3: a worked example with DIFFERENT numbers (never the answer).
+    if (attempts >= 3 && help.example) {
+      parts.push(help.example);
+    }
+    if (!parts.length) {
+      // No tiered data authored → preserve the legacy single message.
+      return {
+        en: step.badEn || "Not quite — look back at the panel.",
+        es: step.badEs || "",
+      };
+    }
+    var en = parts
+      .map(function (p) {
+        return p.en || p;
+      })
+      .join(" ");
+    var es = parts
+      .map(function (p) {
+        return p.es || "";
+      })
+      .filter(Boolean)
+      .join(" ");
+    return { en: en, es: es };
+  }
+
   function wireChoices(step, act, onSolve) {
     var groupId = "choices-" + act.id + "-" + step.id;
     var fbId = "fb-" + act.id + "-" + step.id;
     var solved = false;
+    var attempts = 0; // wrong-answer counter for this group (escalating help)
     Array.prototype.slice
       .call($(groupId).querySelectorAll(".choice"))
-      .forEach(function (btn) {
+      .forEach(function (btn, idx) {
         btn.addEventListener("click", function () {
           if (solved) return;
           var correct = btn.dataset.correct === "true";
@@ -1182,12 +1306,15 @@
               });
             if (onSolve) onSolve();
           } else {
+            attempts++;
             btn.classList.add("wrong");
             btn.disabled = true;
+            var rendered = tierChoices(step);
+            var choice = rendered && rendered[+btn.dataset.cidx];
+            var msg = escalatingFeedback(step, choice, attempts);
             fb.className = "feedback show bad";
             fb.innerHTML =
-              (step.badEn || "Not quite — look back at the panel.") +
-              (step.badEs ? '<span class="es">' + step.badEs + "</span>" : "");
+              msg.en + (msg.es ? '<span class="es">' + msg.es + "</span>" : "");
           }
         });
       });

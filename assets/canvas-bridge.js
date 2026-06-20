@@ -80,15 +80,39 @@
     return new Promise(function (resolve) {
       var existing = document.querySelector('script[src="' + CODEC_SRC + '"]');
       if (existing) {
-        existing.addEventListener("load", function () { resolve(global.NeftCanvasCodec || null); }, { once: true });
-        existing.addEventListener("error", function () { resolve(null); }, { once: true });
+        existing.addEventListener(
+          "load",
+          function () {
+            resolve(global.NeftCanvasCodec || null);
+          },
+          { once: true },
+        );
+        existing.addEventListener(
+          "error",
+          function () {
+            resolve(null);
+          },
+          { once: true },
+        );
         if (global.NeftCanvasCodec) resolve(global.NeftCanvasCodec);
         return;
       }
       var s = document.createElement("script");
       s.src = CODEC_SRC;
-      s.addEventListener("load", function () { resolve(global.NeftCanvasCodec || null); }, { once: true });
-      s.addEventListener("error", function () { resolve(null); }, { once: true });
+      s.addEventListener(
+        "load",
+        function () {
+          resolve(global.NeftCanvasCodec || null);
+        },
+        { once: true },
+      );
+      s.addEventListener(
+        "error",
+        function () {
+          resolve(null);
+        },
+        { once: true },
+      );
       (document.body || document.documentElement).appendChild(s);
     });
   }
@@ -155,7 +179,9 @@
       '<p style="margin:0 0 14px;color:#475569;font-size:14px;">Paste this completion code into the matching Canvas assignment.</p>' +
       warn +
       '<div style="display:flex;gap:8px;">' +
-      '<input id="nt-cb-input" readonly value="' + String(code).replace(/"/g, "&quot;") + '" ' +
+      '<input id="nt-cb-input" readonly value="' +
+      String(code).replace(/"/g, "&quot;") +
+      '" ' +
       'style="flex:1;font-family:ui-monospace,Menlo,monospace;font-size:13px;padding:11px 12px;border:1px solid #cbd5e1;border-radius:10px;background:#f8fafc;color:#0f172a;" />' +
       '<button id="nt-cb-copy" style="background:#12355b;color:#fff;border:0;border-radius:10px;padding:0 16px;font-weight:700;cursor:pointer;">Copy</button>' +
       "</div>" +
@@ -167,21 +193,31 @@
     var copyBtn = card.querySelector("#nt-cb-copy");
     function flag() {
       copyBtn.textContent = "Copied ✓";
-      setTimeout(function () { copyBtn.textContent = "Copy"; }, 1600);
+      setTimeout(function () {
+        copyBtn.textContent = "Copy";
+      }, 1600);
     }
     function doCopy() {
-      return (navigator.clipboard
-        ? navigator.clipboard.writeText(code)
-        : Promise.reject()
-      ).then(flag, function () {
-        safe(function () { input.select(); document.execCommand("copy"); flag(); });
-      });
+      return (navigator.clipboard ? navigator.clipboard.writeText(code) : Promise.reject()).then(
+        flag,
+        function () {
+          safe(function () {
+            input.select();
+            document.execCommand("copy");
+            flag();
+          });
+        },
+      );
     }
     copyBtn.addEventListener("click", doCopy);
     doCopy().catch(function () {});
-    function close() { card.remove(); }
+    function close() {
+      card.remove();
+    }
     card.querySelector("#nt-cb-close").addEventListener("click", close);
-    card.addEventListener("click", function (e) { if (e.target === card) close(); });
+    card.addEventListener("click", function (e) {
+      if (e.target === card) close();
+    });
   }
 
   /**
@@ -229,7 +265,10 @@
     if (cfg.manual || cfg.auto === false) return;
     var threshold = typeof cfg.threshold === "number" ? cfg.threshold : 100;
     var timer = setInterval(function () {
-      if (fired) { clearInterval(timer); return; }
+      if (fired) {
+        clearInterval(timer);
+        return;
+      }
       var pct = identity().percent;
       if (typeof pct === "number" && pct >= threshold) {
         clearInterval(timer);
@@ -237,14 +276,30 @@
       }
     }, 1500);
     // Stop watching if the page is unloaded.
-    global.addEventListener("pagehide", function () { clearInterval(timer); }, { once: true });
+    global.addEventListener(
+      "pagehide",
+      function () {
+        clearInterval(timer);
+      },
+      { once: true },
+    );
   }
 
   global.NeftCanvasBridge = {
-    complete: function (percent, opts) { return safe(function () { return complete(percent, opts); }); },
-    reportScore: function (percent) { return safe(function () { return reportScore(percent); }); },
+    complete: function (percent, opts) {
+      return safe(function () {
+        return complete(percent, opts);
+      });
+    },
+    reportScore: function (percent) {
+      return safe(function () {
+        return reportScore(percent);
+      });
+    },
     isScormLaunch: isScormLaunch,
-    reset: function () { fired = false; },
+    reset: function () {
+      fired = false;
+    },
     __loaded: true,
   };
 

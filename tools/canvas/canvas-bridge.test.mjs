@@ -104,7 +104,9 @@ function makeDom({ search = "", percent = 100, name = "Alex K", section = "Perio
   w.eval(bridgeSrc);
   w.NeftCanvasBridge.complete(80, { studentName: "Jordan P", classPeriod: "Block 2" });
   await tick();
-  const code = w.document.getElementById("nt-canvas-bridge-code").querySelector("#nt-cb-input").value;
+  const code = w.document
+    .getElementById("nt-canvas-bridge-code")
+    .querySelector("#nt-cb-input").value;
   const decoded = w.NeftCanvasCodec.decode(code);
   assert.equal(decoded.payload.n, "Jordan P", "name override carried into the code");
   assert.equal(decoded.payload.p, "Block 2", "class period override carried into the code");

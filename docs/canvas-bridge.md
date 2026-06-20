@@ -56,7 +56,8 @@ npm run library-cartridge -- --split             # one importable package PER se
 `--split` emits one independently-importable, self-validated cartridge per
 module (`neft-library-unit-3.imscc`, `neft-library-games.imscc`, …) instead of
 one combined course — how teachers roll out week by week. Combines with
-`--mode=graded`.
+`--mode=graded`. It also writes `canvas-packages/INDEX.md` — a printable rollout
+sheet listing each section, its item count, and the package to import, in order.
 
 ### Exact selection from Canvas Studio
 

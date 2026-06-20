@@ -60,7 +60,8 @@ export function validateCartridgeDir(dir) {
     const txt = readFileSync(join(dir, f), "utf8");
     if (!txt.startsWith("<?xml")) errors.push(`${f}: missing <?xml declaration`);
     const badAmp = txt.match(/&(?!amp;|lt;|gt;|apos;|quot;|#\d+;|#x[0-9a-fA-F]+;)/);
-    if (badAmp) errors.push(`${f}: unescaped '&' near "${txt.slice(badAmp.index, badAmp.index + 24)}…"`);
+    if (badAmp)
+      errors.push(`${f}: unescaped '&' near "${txt.slice(badAmp.index, badAmp.index + 24)}…"`);
     const tok = txt.match(/\{\{[A-Z0-9_]+\}\}/);
     if (tok) errors.push(`${f}: unfilled template token ${tok[0]}`);
   }
@@ -81,14 +82,17 @@ export function validateCartridgeDir(dir) {
   }
 
   // 3. module_meta identifierrefs resolve to declared resources
-  const resIds = new Set([...manifest.matchAll(/<resource identifier="([^"]+)"/g)].map((m) => m[1]));
+  const resIds = new Set(
+    [...manifest.matchAll(/<resource identifier="([^"]+)"/g)].map((m) => m[1]),
+  );
   const mmPath = join(dir, "course_settings/module_meta.xml");
   if (existsSync(mmPath)) {
     const mm = readFileSync(mmPath, "utf8");
     const idrefs = [...mm.matchAll(/identifierref="([^"]+)"/g)].map((m) => m[1]);
     stats.moduleItems = idrefs.length;
     const dangling = idrefs.filter((id) => !resIds.has(id));
-    for (const d of dangling.slice(0, 10)) errors.push(`module item references unknown resource: ${d}`);
+    for (const d of dangling.slice(0, 10))
+      errors.push(`module item references unknown resource: ${d}`);
     if (dangling.length) stats.danglingModuleItems = dangling.length;
   }
 
@@ -141,7 +145,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
           .map((f) => join(pkgDir, f))
       : [];
     if (!targets.length) {
-      console.log("No packages in canvas-packages/. Build one first, e.g. npm run library-cartridge.");
+      console.log(
+        "No packages in canvas-packages/. Build one first, e.g. npm run library-cartridge.",
+      );
       process.exit(0);
     }
   }

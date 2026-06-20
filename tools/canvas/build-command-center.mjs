@@ -22,9 +22,18 @@ const QUIZ_MAX = Number(process.env.QUIZ_MAX || 8);
 const STAMP = process.env.CC_STAMP || ""; // optional ISO timestamp (Date.* unavailable here)
 
 const UNSUPPORTED_TYPES = new Set([
-  "drag-sort", "drag-and-drop", "sequence", "ordering", "sorting",
-  "error-analysis", "fill-blank", "fill-in-the-blank", "short-answer",
-  "open-response", "number-line", "graphing",
+  "drag-sort",
+  "drag-and-drop",
+  "sequence",
+  "ordering",
+  "sorting",
+  "error-analysis",
+  "fill-blank",
+  "fill-in-the-blank",
+  "short-answer",
+  "open-response",
+  "number-line",
+  "graphing",
 ]);
 
 function extract(id) {
@@ -36,13 +45,27 @@ function extract(id) {
   } catch {
     return { mc: 0, match: 0, skipped: {} };
   }
-  let mc = 0, match = 0;
+  let mc = 0,
+    match = 0;
   const skipped = {};
   (function walk(o) {
     if (o && typeof o === "object") {
-      if (o.type === "multiple-choice" && Array.isArray(o.choices) && o.choices.length >= 2 && Number.isInteger(o.correctIndex)) mc++;
-      else if (o.type === "matching-game" && Array.isArray(o.pairs) && o.pairs.length >= 2 && o.pairs.every((x) => x && x.term != null && x.match != null)) match++;
-      else if (typeof o.type === "string" && UNSUPPORTED_TYPES.has(o.type)) skipped[o.type] = (skipped[o.type] || 0) + 1;
+      if (
+        o.type === "multiple-choice" &&
+        Array.isArray(o.choices) &&
+        o.choices.length >= 2 &&
+        Number.isInteger(o.correctIndex)
+      )
+        mc++;
+      else if (
+        o.type === "matching-game" &&
+        Array.isArray(o.pairs) &&
+        o.pairs.length >= 2 &&
+        o.pairs.every((x) => x && x.term != null && x.match != null)
+      )
+        match++;
+      else if (typeof o.type === "string" && UNSUPPORTED_TYPES.has(o.type))
+        skipped[o.type] = (skipped[o.type] || 0) + 1;
       for (const k in o) walk(o[k]);
     }
   })(cfg);
@@ -53,10 +76,12 @@ function extract(id) {
   return { mc: keptMc, match: keptMatch, skipped };
 }
 
-const manifest = JSON.parse(readFileSync(resolve(repoRoot, "data/curriculum-manifest.json"), "utf8"));
-let lessons = (Array.isArray(manifest.lessons) ? manifest.lessons : Object.values(manifest.lessons)).filter(
-  (l) => l && l.id && !l.flagship,
+const manifest = JSON.parse(
+  readFileSync(resolve(repoRoot, "data/curriculum-manifest.json"), "utf8"),
 );
+let lessons = (
+  Array.isArray(manifest.lessons) ? manifest.lessons : Object.values(manifest.lessons)
+).filter((l) => l && l.id && !l.flagship);
 
 const unitMap = {};
 for (const l of lessons) {
@@ -73,7 +98,8 @@ for (const l of lessons) {
   unitMap[u].mc += e.mc;
   unitMap[u].match += e.match;
   if (e.mc + e.match > 0) unitMap[u].quizLessons++;
-  for (const [t, n] of Object.entries(e.skipped)) unitMap[u].skipped[t] = (unitMap[u].skipped[t] || 0) + n;
+  for (const [t, n] of Object.entries(e.skipped))
+    unitMap[u].skipped[t] = (unitMap[u].skipped[t] || 0) + n;
 }
 
 /* ---- package snapshot (what is currently built on disk) ---- */
@@ -89,7 +115,9 @@ const units = Object.values(unitMap).sort((a, b) => a.unit - b.unit);
 for (const u of units) {
   const quizQ = u.mc + u.match;
   u.recommendedPath =
-    quizQ > 0 ? "Native Canvas quizzes (QTI) — auto-graded, no IT" : "Lesson assignment + completion code";
+    quizQ > 0
+      ? "Native Canvas quizzes (QTI) — auto-graded, no IT"
+      : "Lesson assignment + completion code";
   u.warnings = [];
   if (u.quizLessons < u.lessons.length)
     u.warnings.push(`${u.lessons.length - u.quizLessons} lesson(s) have no quiz questions`);
@@ -131,7 +159,8 @@ function nextBestAction() {
       command: `npm run course -- ${missing.unit} --quizzes-only`,
     };
   return {
-    action: "All quiz packages are built. Import Unit 1 into Canvas and publish only the quizzes you need.",
+    action:
+      "All quiz packages are built. Import Unit 1 into Canvas and publish only the quizzes you need.",
     command: 'Canvas → Settings → Import Course Content → "QTI .zip file"',
   };
 }

@@ -18,13 +18,7 @@
  *   node tools/inject-lesson-platform.js --dry-run  # report only
  *   node tools/inject-lesson-platform.js --revert   # remove the injected blocks
  */
-import {
-  readdirSync,
-  statSync,
-  readFileSync,
-  writeFileSync,
-  existsSync,
-} from "fs";
+import { readdirSync, statSync, readFileSync, writeFileSync, existsSync } from "fs";
 import { join, dirname, basename } from "path";
 import { fileURLToPath } from "url";
 
@@ -50,13 +44,7 @@ const ROOTS = [
   "math/unit-10",
 ];
 
-const SKIP_DIRS = new Set([
-  "node_modules",
-  "dist",
-  "vendor",
-  "engine3d",
-  ".git",
-]);
+const SKIP_DIRS = new Set(["node_modules", "dist", "vendor", "engine3d", ".git"]);
 
 // Leaf subfolders inside a unit that are never graded lessons.
 const SKIP_LEAF = new Set(["games", "projects", "supplemental"]);
@@ -66,8 +54,7 @@ const SKIP_LEAF = new Set(["games", "projects", "supplemental"]);
 // gradeable control). This is intentionally content-driven, not a hardcoded
 // folder list, so new lessons are picked up automatically.
 const ITEM_RE = /class="q-card"|data-q=/;
-const CONTROL_RE =
-  /class="(check-btn|mc-btn|fill-input|tf-btn|drag-item|drag-zone)"/;
+const CONTROL_RE = /class="(check-btn|mc-btn|fill-input|tf-btn|drag-item|drag-zone)"/;
 
 function isInteractiveLesson(html) {
   return (ITEM_RE.test(html) && CONTROL_RE.test(html)) || CONTROL_RE.test(html);
@@ -144,14 +131,8 @@ function processFile(file) {
     return;
   }
 
-  html = html.replace(
-    /<\/head>/i,
-    `  ${BEGIN}\n  ${LINK_TAG}\n  ${END}\n</head>`,
-  );
-  html = html.replace(
-    /<\/body>/i,
-    `  ${BEGIN}\n  ${SCRIPT_TAG}\n  ${END}\n</body>`,
-  );
+  html = html.replace(/<\/head>/i, `  ${BEGIN}\n  ${LINK_TAG}\n  ${END}\n</head>`);
+  html = html.replace(/<\/body>/i, `  ${BEGIN}\n  ${SCRIPT_TAG}\n  ${END}\n</body>`);
   if (!DRY) writeFileSync(file, html);
   report.injected++;
   report.matched.push(file);
@@ -164,9 +145,7 @@ for (const r of ROOTS) {
 }
 files.forEach(processFile);
 
-console.log(
-  `Lesson Platform injection ${DRY ? "(dry-run)" : ""}${REVERT ? " — revert" : ""}`,
-);
+console.log(`Lesson Platform injection ${DRY ? "(dry-run)" : ""}${REVERT ? " — revert" : ""}`);
 console.log("  candidate lessons :", report.scanned);
 if (REVERT) {
   console.log("  reverted          :", report.reverted);

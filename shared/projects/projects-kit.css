@@ -175,12 +175,17 @@
   min-height: 200px;
 }
 
-/* ---- Level 1 / Level 2 tier toggle ----
-   Default: show neither tier-only block until a level is chosen, but show
-   shared content. Pages set body class .pk-level-1 / .pk-level-2. */
+/* ---- Level 0 / Level 1 / Level 2 tier toggle ----
+   Scheme is L0 < L1 < L2 (L0 = most-supported / IEP, L1 = on-grade support
+   default, L2 = enrichment). Tier-only blocks are hidden until their level
+   is chosen. Pages set body class .pk-level-0 / .pk-level-1 / .pk-level-2. */
+.pk-lvl0,
 .pk-lvl1,
 .pk-lvl2 {
   display: none;
+}
+.pk-level-0 .pk-lvl0 {
+  display: block;
 }
 .pk-level-1 .pk-lvl1 {
   display: block;

@@ -57,30 +57,59 @@ function simplify(a, b) {
 }
 
 // ---------------------------------------------------------------------------
-// Order sets per level (reused verbatim from the original).
+// Declarative per-level order sets (single source of truth for this game).
+//   Level 0 (most-supported / IEP): hints stay on screen, NO timer pressure,
+//     smallest numbers, fewest rounds. Scheme is L0 < L1 < L2.
 //   Level 1 (support): hints on, smaller numbers, simple part-to-part ratios.
 //   Level 2 (enrichment): larger / multi-step ratios + unit-rate questions.
-// Each entry becomes one customer order on the belt.
+// Each round carries a `tag` (misconceptionTag) so the results pipeline can
+// report WHICH sub-skill failed, not just the raw score.
 // ---------------------------------------------------------------------------
-function makeLevel(level) {
-  if (level === 1) {
-    return {
-      hints: true,
-      orders: [
-        { kind: "ratio", a: 1, b: 1 },
-        { kind: "ratio", a: 2, b: 1 },
-        { kind: "ratio", a: 1, b: 2 },
-        { kind: "ratio", a: 2, b: 3 },
-        { kind: "ratio", a: 3, b: 2 },
-      ],
-    };
-  }
-  return {
+const LEVEL_DATA = {
+  0: {
+    hints: true, // persistent on-screen hints
+    persistentHints: true, // keep the hint visible the whole order
+    noTimer: true, // remove timer pressure entirely
+    orders: [
+      { kind: "ratio", a: 1, b: 1, tag: "ratio-1-to-1" },
+      { kind: "ratio", a: 2, b: 1, tag: "ratio-simple" },
+      { kind: "ratio", a: 1, b: 2, tag: "ratio-simple" },
+    ],
+  },
+  1: {
+    hints: true,
+    orders: [
+      { kind: "ratio", a: 1, b: 1, tag: "ratio-1-to-1" },
+      { kind: "ratio", a: 2, b: 1, tag: "ratio-simple" },
+      { kind: "ratio", a: 1, b: 2, tag: "ratio-simple" },
+      { kind: "ratio", a: 2, b: 3, tag: "ratio-part-to-part" },
+      { kind: "ratio", a: 3, b: 2, tag: "ratio-part-to-part" },
+    ],
+  },
+  2: {
     hints: false,
     orders: [
-      { kind: "ratio", a: 4, b: 6, baseLabel: "2 : 3, doubled" },
-      { kind: "ratio", a: 6, b: 4, baseLabel: "3 : 2, doubled" },
-      { kind: "ratio", a: 6, b: 9, baseLabel: "2 : 3, tripled" },
+      {
+        kind: "ratio",
+        a: 4,
+        b: 6,
+        baseLabel: "2 : 3, doubled",
+        tag: "ratio-scale-up",
+      },
+      {
+        kind: "ratio",
+        a: 6,
+        b: 4,
+        baseLabel: "3 : 2, doubled",
+        tag: "ratio-scale-up",
+      },
+      {
+        kind: "ratio",
+        a: 6,
+        b: 9,
+        baseLabel: "2 : 3, tripled",
+        tag: "ratio-scale-up",
+      },
       // $6 ÷ 3 = $2 each.
       {
         kind: "rate",
@@ -89,6 +118,7 @@ function makeLevel(level) {
         count: 3,
         unit: "$",
         answer: 2,
+        tag: "unit-rate-price",
       },
       // 12 scoops ÷ 4 servings = 3 scoops each.
       {
@@ -98,6 +128,7 @@ function makeLevel(level) {
         count: 4,
         unit: "",
         answer: 3,
+        tag: "unit-rate-quantity",
       },
       // $10 ÷ 5 = $2 each.
       {
@@ -107,6 +138,7 @@ function makeLevel(level) {
         count: 5,
         unit: "$",
         answer: 2,
+        tag: "unit-rate-price",
       },
       // $15 ÷ 5 = $3 each.
       {
@@ -116,13 +148,29 @@ function makeLevel(level) {
         count: 5,
         unit: "$",
         answer: 3,
+        tag: "unit-rate-price",
       },
     ],
-  };
+  },
+};
+
+function makeLevel(level) {
+  // Level 0 is the most-supported tier; fall back to Level 1 for any unknown.
+  return LEVEL_DATA[level] || LEVEL_DATA[1];
 }
 
 export default {
   id: "unit-1-smoothie-stand",
+  // Single source of truth for this game's standard + targets + level data.
+  // A validator can assert every game exposes vocab, a CCSS standard, and
+  // Level 0/1/2 round sets. game-base.js reads `standard` onto every score row.
+  standard: "6.RP.A.1-3",
+  learningTargets: [
+    "Describe a part-to-part ratio of two quantities.",
+    "Build an equivalent ratio by scaling both parts by the same number.",
+    "Find a unit rate as total ÷ count.",
+  ],
+  levels: LEVEL_DATA,
   vocab: [
     {
       term: "Ratio",
@@ -438,7 +486,9 @@ export default {
     let rateGuess = 0;
     const total = cfg.orders.length;
 
-    const START_LIVES = level === 2 ? 3 : 4;
+    // Level 0 (most-supported) gets the most lives and no timer pressure.
+    const noTimer = !!cfg.noTimer;
+    const START_LIVES = level === 0 ? 6 : level === 2 ? 3 : 4;
     let lives = START_LIVES;
     let streak = 0;
     let bestStreak = 0;
@@ -448,7 +498,8 @@ export default {
 
     // Real-time order timing. The belt carries the customer in; once they reach
     // the serve window the countdown begins. Pace ramps as the shift goes on.
-    const BELT_SPEED = level === 2 ? 5.0 : 4.2; // world units / sec
+    // Level 0 moves the belt slowly and (below) disables the countdown entirely.
+    const BELT_SPEED = level === 0 ? 3.0 : level === 2 ? 5.0 : 4.2; // units/sec
     function orderTime(i) {
       // Generous early, tighter later. Level 2 is faster overall.
       const base = level === 2 ? 12 : 15;
@@ -621,6 +672,7 @@ export default {
       onScore(pts, {
         order: orderIndex + 1,
         kind: order.kind,
+        misconceptionTag: order.tag || null,
         target: order.kind === "rate" ? order.answer : `${order.a}:${order.b}`,
       });
 
@@ -665,6 +717,17 @@ export default {
       if (typeof hud.setStreak === "function") hud.setStreak(0);
       lives = Math.max(0, lives - 1);
       if (typeof hud.setLives === "function") hud.setLives(lives);
+
+      // Log the miss for the results pipeline so a teacher can see WHICH
+      // sub-skill failed. Negative points => the engine records a missed step
+      // (no progress advance, streak reset) and carries the misconceptionTag.
+      onScore(-1, {
+        order: orderIndex + 1,
+        kind: order.kind,
+        timedOut: !!timedOut,
+        misconceptionTag: order.tag || null,
+        target: order.kind === "rate" ? order.answer : `${order.a}:${order.b}`,
+      });
 
       feel.sfx("wrong");
       if (!reduced) {
@@ -733,10 +796,17 @@ export default {
         }
       }
       if (cfg.hints) {
+        // Level 0 keeps the hint on screen the whole order (duration 0);
+        // other levels flash it briefly so it does not give the answer away.
+        const dur = cfg.persistentHints
+          ? 0
+          : order.kind === "rate"
+            ? 2600
+            : 3200;
         if (order.kind === "rate")
           hud.message(`Try ${order.total} ÷ ${order.count}.`, {
             tone: "info",
-            duration: 2600,
+            duration: dur,
           });
         else {
           const [ba, bb] = simplify(order.a, order.b);
@@ -744,15 +814,18 @@ export default {
             `Recipe ${ba} : ${bb}. Build ${order.b} yellow + matching red.`,
             {
               tone: "info",
-              duration: 3200,
+              duration: dur,
             },
           );
         }
       }
+      const serveCue = noTimer
+        ? "then serve when you are ready."
+        : "then serve before the timer runs out.";
       announce(
         order.kind === "rate"
-          ? `New customer. ${order.prompt} Dial your answer, then serve before the timer runs out.`
-          : `New customer. Recipe ${simplify(order.a, order.b).join(" to ")}. Build ${order.b} yellow with the matching red, then serve before the timer runs out.`,
+          ? `New customer. ${order.prompt} Dial your answer, ${serveCue}`
+          : `New customer. Recipe ${simplify(order.a, order.b).join(" to ")}. Build ${order.b} yellow with the matching red, ${serveCue}`,
       );
     }
 
@@ -843,7 +916,9 @@ export default {
       clearCup();
       if (typeof hud.setLives === "function") hud.setLives(lives);
       if (typeof hud.setStreak === "function") hud.setStreak(0);
-      hud.setLevel(level === 2 ? "Level 2" : "Level 1");
+      // ctx.levelInfo carries the right label for Level 0 / 1 / 2.
+      if (ctx.levelInfo && ctx.levelInfo.label)
+        hud.setLevel(ctx.levelInfo.label);
       running = true;
       startOrder(0);
     }
@@ -924,9 +999,15 @@ export default {
           if (Math.abs(cu.position.x - SERVE_X) < 0.2) {
             cu.position.x = SERVE_X;
             phase = "active";
-            barBg.visible = true;
-            barFill.visible = true;
+            // Level 0 has no timer pressure: hide the countdown bar entirely.
+            barBg.visible = !noTimer;
+            barFill.visible = !noTimer;
           }
+        } else if (phase === "active" && noTimer) {
+          // Level 0: no countdown. Gentle idle bob only; the order waits for
+          // the student. (No timeout miss is ever triggered.)
+          if (!reduced)
+            cu.userData.body.position.y = 0.9 + Math.sin(t * 3) * 0.03;
         } else if (phase === "active") {
           // Countdown.
           timeLeft = Math.max(0, timeLeft - d);

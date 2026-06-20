@@ -131,9 +131,7 @@ function figureAria(cfg, fallback = "Data figure") {
   if (Array.isArray(cfg?.bars) && cfg.bars.length) {
     parts.push(
       "Values — " +
-        cfg.bars
-          .map((b) => `${b.label != null ? b.label + ": " : ""}${b.value}`)
-          .join(", "),
+        cfg.bars.map((b) => `${b.label != null ? b.label + ": " : ""}${b.value}`).join(", "),
     );
   } else if (Array.isArray(cfg?.values) && cfg.values.length) {
     parts.push("Values — " + cfg.values.join(", "));
@@ -390,9 +388,7 @@ function tapeDiagramSVG(cfg) {
     "var(--navy,#264653)",
   ];
   // Scale so the longest row (by total) fills the track.
-  const totals = rows.map((r) =>
-    (r.parts || []).reduce((s, p) => s + (Number(p.value) || 0), 0),
-  );
+  const totals = rows.map((r) => (r.parts || []).reduce((s, p) => s + (Number(p.value) || 0), 0));
   const maxTotal = Math.max(...totals, 1);
   const trackW = W - padL - padR - labelW;
   let y = 8;
@@ -519,9 +515,7 @@ function renderLearnItBridge(host, ctx, config) {
     "border-left:4px solid var(--gold,#d4952a); background:rgba(233,196,106,0.12); display:flex; flex-wrap:wrap; gap:var(--sp-3,12px); align-items:center; justify-content:space-between;";
   card.innerHTML = `
     <div style="flex:1 1 260px;">
-      <h4 style="color:var(--navy,#264653); margin:0 0 4px;">📖 Now learn ${esc(
-        heading,
-      )
+      <h4 style="color:var(--navy,#264653); margin:0 0 4px;">📖 Now learn ${esc(heading)
         .replace(/^What is /i, "")
         .replace(/\?$/, "")}</h4>
       <p style="margin:0; font-size:0.95rem; line-height:1.5;">You've seen the problem. Open <strong>Learn It</strong> to see exactly how to solve it — step by step, with examples you can work through — then come back and keep going.</p>
@@ -531,12 +525,7 @@ function renderLearnItBridge(host, ctx, config) {
   if (btn) {
     btn.addEventListener("click", () => {
       if (ctx && typeof ctx.openExtra === "function") ctx.openExtra("learn");
-      else
-        window.open(
-          `/lessons/${config.lessonId}/learn.html`,
-          "_blank",
-          "noopener",
-        );
+      else window.open(`/lessons/${config.lessonId}/learn.html`, "_blank", "noopener");
     });
   }
   host.append(card);
@@ -589,21 +578,15 @@ function resolveTurnTalk(phase, config) {
     const stems =
       Array.isArray(authored.stems) && authored.stems.length
         ? authored.stems.map((s) =>
-            typeof s === "string"
-              ? { en: s, es: "" }
-              : { en: s.en || "", es: s.es || "" },
+            typeof s === "string" ? { en: s, es: "" } : { en: s.en || "", es: s.es || "" },
           )
         : DEFAULT_TURN_TALK_STEMS;
     // Surface the richer authored fields so the live lesson mirrors the notes:
     // a Level 1 "Start here" kernel + word bank, and a Level 2 extend prompt
     // with stretch stems. `listenFor` is intentionally omitted (teacher-only).
-    const wordBank = Array.isArray(authored.wordBank)
-      ? authored.wordBank.filter(Boolean)
-      : [];
-    const kernel =
-      typeof authored.kernel === "string" ? authored.kernel.trim() : "";
-    const extend =
-      typeof authored.extend === "string" ? authored.extend.trim() : "";
+    const wordBank = Array.isArray(authored.wordBank) ? authored.wordBank.filter(Boolean) : [];
+    const kernel = typeof authored.kernel === "string" ? authored.kernel.trim() : "";
+    const extend = typeof authored.extend === "string" ? authored.extend.trim() : "";
     const extendStems = Array.isArray(authored.extendStems)
       ? authored.extendStems.filter(Boolean)
       : [];
@@ -766,13 +749,7 @@ async function completePhase(el, ctx, state, phaseIdx, name, correct, total) {
   }
   const xp = ctx.engagement.awardXP(phaseIdx, { correct, total });
   const stars = state.get().phases[phaseIdx]?.stars ?? 0;
-  const transitionMeta = buildPhaseTransitionMeta(
-    state,
-    phaseIdx,
-    name,
-    xp,
-    stars,
-  );
+  const transitionMeta = buildPhaseTransitionMeta(state, phaseIdx, name, xp, stars);
   await ctx.engagement.showPhaseComplete(el, name, xp, stars, transitionMeta);
   ctx.navigateTo(phaseIdx + 1);
 }
@@ -865,9 +842,7 @@ export function renderComponent(container, problemDef, onAnswer, shellOpts) {
       renderMatchingGame(body, {
         pairs,
         columns: problemDef.columns || 2,
-        label: problemDef.hideStem
-          ? problemDef.label
-          : problemDef.stem || problemDef.label,
+        label: problemDef.hideStem ? problemDef.label : problemDef.stem || problemDef.label,
         onComplete: (c, t) => wrappedOnAnswer(c === t),
       });
       break;
@@ -941,11 +916,7 @@ function renderUnknownComponentFallback(container, def = {}) {
     card.append(p);
   }
 
-  const source = Array.isArray(def.items)
-    ? def.items
-    : Array.isArray(def.rows)
-      ? def.rows
-      : [];
+  const source = Array.isArray(def.items) ? def.items : Array.isArray(def.rows) ? def.rows : [];
   const cols = Array.isArray(def.columns)
     ? def.columns
     : Array.isArray(def.headers)
@@ -959,13 +930,9 @@ function renderUnknownComponentFallback(container, def = {}) {
       const li = document.createElement("li");
       if (row && typeof row === "object" && !Array.isArray(row)) {
         const keys = Object.keys(row);
-        li.textContent = keys
-          .map((k, i) => `${cols[i] || k}: ${row[k]}`)
-          .join("  ·  ");
+        li.textContent = keys.map((k, i) => `${cols[i] || k}: ${row[k]}`).join("  ·  ");
       } else if (Array.isArray(row)) {
-        li.textContent = row
-          .map((v, i) => `${cols[i] ? cols[i] + ": " : ""}${v}`)
-          .join("  ·  ");
+        li.textContent = row.map((v, i) => `${cols[i] ? cols[i] + ": " : ""}${v}`).join("  ·  ");
       } else {
         li.textContent = String(row);
       }
@@ -1008,10 +975,7 @@ function revealSlidesFor(config, placements) {
   const all = Array.isArray(config?.revealSlides) ? config.revealSlides : [];
   if (!all.length) return [];
   const wanted = Array.isArray(placements) ? placements : [placements];
-  return all.filter(
-    (s) =>
-      s && typeof s.src === "string" && s.src && wanted.includes(s.placement),
-  );
+  return all.filter((s) => s && typeof s.src === "string" && s.src && wanted.includes(s.placement));
 }
 
 // Append an accessible Reveal Math figure list for the given placement(s) to
@@ -1039,9 +1003,7 @@ function renderRevealSlides(host, config, placements) {
     img.setAttribute("decoding", "async");
     img.src = slide.src;
     const pageNum = Number.isFinite(slide.page) ? slide.page : i + 1;
-    img.alt = slide.caption
-      ? String(slide.caption)
-      : `Reveal Math slide ${pageNum}`;
+    img.alt = slide.caption ? String(slide.caption) : `Reveal Math slide ${pageNum}`;
     fig.append(img);
 
     if (slide.caption) {
@@ -1105,9 +1067,7 @@ function renderNoticeAndWonder(host, config, state) {
     img.setAttribute("loading", "lazy");
     img.setAttribute("decoding", "async");
     img.src = String(nw.image);
-    img.alt = nw.context
-      ? String(nw.context)
-      : "Notice and Wonder data display";
+    img.alt = nw.context ? String(nw.context) : "Notice and Wonder data display";
     fig.append(img);
     card.append(fig);
   }
@@ -1130,18 +1090,13 @@ function renderNoticeAndWonder(host, config, state) {
     ta.rows = 4;
     ta.placeholder = opts.placeholder;
     ta.id = `nw-${opts.key}`;
-    ta.value =
-      (state && state.getResponse && state.getResponse(0, opts.responseKey)) ||
-      "";
+    ta.value = (state && state.getResponse && state.getResponse(0, opts.responseKey)) || "";
 
     if (opts.starters.length) {
       const chips = document.createElement("div");
       chips.className = "nw-chips";
       chips.setAttribute("role", "group");
-      chips.setAttribute(
-        "aria-label",
-        "Sentence starters — tap one to add it to your answer",
-      );
+      chips.setAttribute("aria-label", "Sentence starters — tap one to add it to your answer");
       opts.starters.forEach((starter) => {
         const chip = document.createElement("button");
         chip.type = "button";
@@ -1216,10 +1171,8 @@ function renderNoticeAndWonder(host, config, state) {
 function renderShowYourWork(host, config, state) {
   const wp = config && config.revealWordProblem;
   const hasAuthored = wp && typeof wp === "object" && (wp.text || wp.image);
-  const get = (k) =>
-    (state && state.getResponse && state.getResponse(0, k)) || "";
-  const set = (k, v) =>
-    state && state.saveResponse && state.saveResponse(0, k, v);
+  const get = (k) => (state && state.getResponse && state.getResponse(0, k)) || "";
+  const set = (k, v) => state && state.saveResponse && state.saveResponse(0, k, v);
 
   const card = document.createElement("section");
   card.className = "card wp-card syw-card";
@@ -1372,8 +1325,7 @@ function renderShowYourWork(host, config, state) {
 export function resolveContentObjective(config) {
   if (config.contentObjective) return esc(config.contentObjective);
   // Fallbacks to any pre-existing objective field, prefixed with "I can ".
-  const legacy =
-    config.objective || (config.launch && config.launch.objective) || "";
+  const legacy = config.objective || (config.launch && config.launch.objective) || "";
   if (legacy) {
     const trimmed = String(legacy).trim();
     return /^i can\b/i.test(trimmed) ? esc(trimmed) : `I can ${esc(trimmed)}`;
@@ -1464,9 +1416,7 @@ function renderLaunchPhase(el, state, ctx, config) {
   // When the lesson ships a richer Reveal "Notice & Wonder" card (rendered by
   // renderNoticeAndWonder, which has its own response boxes), it owns the
   // notice/wonder capture and we skip the generic grid below — no duplicates.
-  const hasRevealNW = !!(
-    config.noticeAndWonder && typeof config.noticeAndWonder === "object"
-  );
+  const hasRevealNW = !!(config.noticeAndWonder && typeof config.noticeAndWonder === "object");
 
   renderLaunchHeader(el, state, config);
 
@@ -1526,9 +1476,7 @@ function renderLaunchPhase(el, state, ctx, config) {
     noticeTA.rows = 3;
     noticeTA.placeholder = "I notice that...";
     noticeTA.value = state.getResponse(0, "notice") || "";
-    noticeTA.addEventListener("input", () =>
-      state.saveResponse(0, "notice", noticeTA.value),
-    );
+    noticeTA.addEventListener("input", () => state.saveResponse(0, "notice", noticeTA.value));
     noticeCard.append(noticeTA);
 
     const wonderCard = document.createElement("div");
@@ -1540,9 +1488,7 @@ function renderLaunchPhase(el, state, ctx, config) {
     wonderTA.rows = 3;
     wonderTA.placeholder = "I wonder if...";
     wonderTA.value = state.getResponse(0, "wonder") || "";
-    wonderTA.addEventListener("input", () =>
-      state.saveResponse(0, "wonder", wonderTA.value),
-    );
+    wonderTA.addEventListener("input", () => state.saveResponse(0, "wonder", wonderTA.value));
     wonderCard.append(wonderTA);
 
     grid.append(noticeCard, wonderCard);
@@ -1613,9 +1559,7 @@ function renderExplorePhase(el, state, ctx, config) {
   if (exploreDiagram) {
     const figCard = document.createElement("div");
     figCard.className = "card";
-    figCard.innerHTML = cfg.diagram
-      ? buildVisual(cfg.diagram)
-      : histogramSVG(cfg.histogram);
+    figCard.innerHTML = cfg.diagram ? buildVisual(cfg.diagram) : histogramSVG(cfg.histogram);
     el.append(figCard);
   }
 
@@ -1630,9 +1574,7 @@ function renderExplorePhase(el, state, ctx, config) {
     cont.type = "button";
     cont.className = "btn btn-primary btn-lg mt-4";
     cont.textContent = "Continue to Practice →";
-    cont.addEventListener("click", () =>
-      completePhase(el, ctx, state, 1, "Explore", 1, 1),
-    );
+    cont.addEventListener("click", () => completePhase(el, ctx, state, 1, "Explore", 1, 1));
     el.append(cont);
   };
 
@@ -1742,11 +1684,9 @@ function gradeSkillAnswer(student, correct) {
   if (!a) return { graded: false };
   if (a === b) return { graded: true, correct: true };
   const isNum = (s) => /^-?\d+(?:\.\d+)?$/.test(s);
-  if (isNum(a) && isNum(b))
-    return { graded: true, correct: Number(a) === Number(b) };
+  if (isNum(a) && isNum(b)) return { graded: true, correct: Number(a) === Number(b) };
   // Short, simple answers (one word/number, no operators) are safe to mark.
-  if (b.length <= 12 && !/[*^/+]/.test(b))
-    return { graded: true, correct: false };
+  if (b.length <= 12 && !/[*^/+]/.test(b)) return { graded: true, correct: false };
   return { graded: false };
 }
 
@@ -1764,9 +1704,7 @@ function renderSkillPractice(host, config, state) {
         it &&
         it.stem &&
         (Array.isArray(it.choices) || it.sampleAnswer || it.answer) &&
-        (it.type === "multiple-choice" ||
-          it.type === "open-response" ||
-          !it.type),
+        (it.type === "multiple-choice" || it.type === "open-response" || !it.type),
     )
     .slice(0, 3);
   if (!pool.length) return;
@@ -1800,12 +1738,8 @@ function renderSkillPractice(host, config, state) {
     const reveal = wrap.querySelector(".sp-reveal");
     workEl.value = state.getResponse(2, `sp-work-${i}`) || "";
     ansEl.value = state.getResponse(2, `sp-ans-${i}`) || "";
-    workEl.addEventListener("input", () =>
-      state.saveResponse(2, `sp-work-${i}`, workEl.value),
-    );
-    ansEl.addEventListener("input", () =>
-      state.saveResponse(2, `sp-ans-${i}`, ansEl.value),
-    );
+    workEl.addEventListener("input", () => state.saveResponse(2, `sp-work-${i}`, workEl.value));
+    ansEl.addEventListener("input", () => state.saveResponse(2, `sp-ans-${i}`, ansEl.value));
     wrap.querySelector(".sp-check").addEventListener("click", () => {
       reveal.hidden = false;
       const why = it.explanation
@@ -1920,8 +1854,7 @@ function renderPracticePhase(el, state, ctx, config) {
       const label = document.createElement("div");
       label.style.cssText =
         "font-size:0.82rem; font-weight:700; color:var(--muted); margin-bottom:var(--sp-3);";
-      const stepWord =
-        config.practice?.optionalActivity?.stepLabel || "Extra Practice";
+      const stepWord = config.practice?.optionalActivity?.stepLabel || "Extra Practice";
       label.textContent = `${stepWord} ${i + 1} of ${items.length}`;
       host.append(label);
       const slot = document.createElement("div");
@@ -1988,8 +1921,7 @@ function renderPracticePhase(el, state, ctx, config) {
           const result = ctx.engagement.recordCorrect(null);
           if (result.streakMessage) {
             const toast = document.createElement("div");
-            toast.className =
-              "feedback feedback-success visible practice-toast";
+            toast.className = "feedback feedback-success visible practice-toast";
             toast.style.animation = "feedbackIn 0.3s var(--ease-spring)";
             toast.innerHTML = `<span class="feedback-icon">✓</span><span>${result.message} ${result.streakMessage}</span>`;
             area.append(toast);
@@ -2069,8 +2001,7 @@ function renderConnectPhase(el, state, ctx, config) {
 
   // Editable response box (core-owned), mirroring Launch/Reflect persistence.
   const minLength = 25;
-  const promptText =
-    cfg.promptQuestion || "How does this connect to what we learned?";
+  const promptText = cfg.promptQuestion || "How does this connect to what we learned?";
 
   const respCard = document.createElement("div");
   respCard.className = "card card-teal";
@@ -2087,10 +2018,7 @@ function renderConnectPhase(el, state, ctx, config) {
   if (cfg.prompt) {
     const frame = document.createElement("div");
     frame.className = "sentence-frame";
-    frame.innerHTML = String(cfg.prompt).replace(
-      /___/g,
-      '<span class="blank">&nbsp;</span>',
-    );
+    frame.innerHTML = String(cfg.prompt).replace(/___/g, '<span class="blank">&nbsp;</span>');
     respCard.append(frame);
   }
 
@@ -2109,8 +2037,7 @@ function renderConnectPhase(el, state, ctx, config) {
   const updateCount = () => {
     const len = textarea.value.trim().length;
     charCount.textContent = `${len} / ${minLength} characters minimum`;
-    charCount.style.color =
-      len >= minLength ? "var(--success)" : "var(--muted)";
+    charCount.style.color = len >= minLength ? "var(--success)" : "var(--muted)";
   };
   updateCount();
   respCard.append(charCount);
@@ -2147,19 +2074,14 @@ function renderConnectPhase(el, state, ctx, config) {
     const text = textarea.value.trim();
 
     if (text.length < minLength) {
-      showFeedback(
-        "hint",
-        `Write at least ${minLength} characters. You have ${text.length}.`,
-      );
+      showFeedback("hint", `Write at least ${minLength} characters. You have ${text.length}.`);
       return;
     }
 
     let valid = true;
     if (cfg.keywords && cfg.keywords.length > 0) {
       const lower = text.toLowerCase();
-      const found = cfg.keywords.filter((kw) =>
-        lower.includes(String(kw).toLowerCase()),
-      );
+      const found = cfg.keywords.filter((kw) => lower.includes(String(kw).toLowerCase()));
       if (found.length === 0) {
         showFeedback(
           "hint",
@@ -2208,9 +2130,7 @@ function renderReflectPhase(el, state, ctx, config) {
     ta.rows = r.n > 1 ? 2 : 1;
     ta.placeholder = `${r.n} ${r.label}...`;
     ta.value = state.getResponse(4, `reflect_${r.n}`) || "";
-    ta.addEventListener("input", () =>
-      state.saveResponse(4, `reflect_${r.n}`, ta.value),
-    );
+    ta.addEventListener("input", () => state.saveResponse(4, `reflect_${r.n}`, ta.value));
     row.append(ta);
     rCard.append(row);
   });
@@ -2278,13 +2198,7 @@ function renderReflectPhase(el, state, ctx, config) {
   renderRevealSlides(el, config, "closure");
 
   // Exit ticket
-  phaseHeader(
-    el,
-    "🎯",
-    "section-icon-navy",
-    "Exit Ticket",
-    "Show what you know!",
-  );
+  phaseHeader(el, "🎯", "section-icon-navy", "Exit Ticket", "Show what you know!");
   renderMultipleChoice(el, {
     ...cfg.exitTicket,
     onAnswer(isCorrect) {
@@ -2377,12 +2291,8 @@ function showFinalSummary(el, state, config) {
         : pct >= 0.5
           ? `👍 ${t("gradeGood")}`
           : `💪 ${t("gradeKeep")}`;
-  const streakText =
-    s.bestStreak >= 3 ? `🔥 Best streak: ${s.bestStreak} in a row` : "";
-  const accuracy =
-    s.totalAttempts > 0
-      ? Math.round((s.totalCorrect / s.totalAttempts) * 100)
-      : 100;
+  const streakText = s.bestStreak >= 3 ? `🔥 Best streak: ${s.bestStreak} in a row` : "";
+  const accuracy = s.totalAttempts > 0 ? Math.round((s.totalCorrect / s.totalAttempts) * 100) : 100;
   checkBadges(state);
   const earnedBadges = (s.badges || [])
     .map((id) => getBadgeDefs().find((b) => b.id === id))

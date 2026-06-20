@@ -65,9 +65,7 @@ function clampStr(v, n) {
 
 function clientIp(request) {
   return (
-    request.headers.get("CF-Connecting-IP") ||
-    request.headers.get("X-Forwarded-For") ||
-    "anon"
+    request.headers.get("CF-Connecting-IP") || request.headers.get("X-Forwarded-For") || "anon"
   );
 }
 
@@ -125,9 +123,7 @@ function parseBody(body) {
 }
 
 function systemPrompt(mode, standard) {
-  const stdLine = standard
-    ? `The problem targets math standard ${standard}. `
-    : "";
+  const stdLine = standard ? `The problem targets math standard ${standard}. ` : "";
   const base =
     `You are a warm, patient Grade 6 math tutor for a multilingual classroom. ${stdLine}` +
     `Use short sentences and simple words. Be encouraging. Never shame a wrong answer. ` +
@@ -162,10 +158,8 @@ function systemPrompt(mode, standard) {
 
 function userPrompt(v) {
   const lines = [`Problem the student is working on:\n${v.itemText}`];
-  if (v.studentWork)
-    lines.push(`\nWhat the student has tried so far:\n${v.studentWork}`);
-  if (v.mode === "hint")
-    lines.push(`\nGive me a hint for the next step (not the answer).`);
+  if (v.studentWork) lines.push(`\nWhat the student has tried so far:\n${v.studentWork}`);
+  if (v.mode === "hint") lines.push(`\nGive me a hint for the next step (not the answer).`);
   else if (v.mode === "explain") lines.push(`\nExplain why / how this works.`);
   else lines.push(`\nGive me another problem like this to practice.`);
   return lines.join("\n");

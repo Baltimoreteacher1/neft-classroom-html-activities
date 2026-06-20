@@ -10,13 +10,30 @@ import { TOPICS } from "./data.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 
+// Map a single data.mjs quiz item into the Forms payload, carrying:
+//   - explain        : correct-answer feedback (the "why this is right")
+//   - misconceptions : { "<option text>": "why this is wrong" } targeted feedback
+// Both are optional; older items without them still build a plain quiz.
+function mapItem(i) {
+  const out = { q: i.prompt, answer: i.answer, options: i.options };
+  if (i.explain) out.explain = i.explain;
+  if (i.misconceptions && typeof i.misconceptions === "object")
+    out.misconceptions = i.misconceptions;
+  return out;
+}
+
 const QUIZ = {};
 for (const t of TOPICS) {
-  QUIZ[t.slug] = {
+  const entry = {
     title: t.title,
-    pre: t.preQuiz.map((i) => ({ q: i.prompt, answer: i.answer, options: i.options })),
-    post: t.postQuiz.map((i) => ({ q: i.prompt, answer: i.answer, options: i.options })),
+    pre: t.preQuiz.map(mapItem),
+    post: t.postQuiz.map(mapItem),
   };
+  // Tiered Forms (optional, data-driven). Never labeled "ESOL".
+  //   level1 = support (fewer / foundational), level2 = enrichment (extension).
+  if (Array.isArray(t.level1) && t.level1.length) entry.level1 = t.level1.map(mapItem);
+  if (Array.isArray(t.level2) && t.level2.length) entry.level2 = t.level2.map(mapItem);
+  QUIZ[t.slug] = entry;
 }
 
 const gs = `/* ==========================================================================
@@ -28,7 +45,13 @@ const gs = `/* =================================================================
      • Pre-Quiz (Teacher)   — same items + visible answer key (master)
      • Post-Quiz (Student)  — auto-graded quiz students take AFTER
      • Post-Quiz (Teacher)  — same items + visible answer key (master)
+   Plus, for any topic that defines them in data.mjs, differentiated variants:
+     • Level 1 (Student)    — support: fewer / foundational items
+     • Level 2 (Student)    — enrichment: multi-step extension items
    All are quizzes (auto-graded, 1 pt/question) and collect the student name.
+   Each item shows targeted feedback: the correct-answer explanation on a right
+   answer, and the per-distractor "why this is wrong" notes on a wrong answer
+   (built from the optional misconceptions map in data.mjs).
 
    HOW TO RUN
    1. Go to https://script.google.com  →  New project.
@@ -56,12 +79,20 @@ function createAllInterventionForms() {
   var out = {};
   Object.keys(QUIZ_DATA).forEach(function (slug) {
     var topic = QUIZ_DATA[slug];
-    out[slug] = {
+    var links = {
       preStudent: buildForm_(folder, slug, topic.title, "Pre", topic.pre, false),
       preTeacher: buildForm_(folder, slug, topic.title, "Pre", topic.pre, true),
       postStudent: buildForm_(folder, slug, topic.title, "Post", topic.post, false),
       postTeacher: buildForm_(folder, slug, topic.title, "Post", topic.post, true),
     };
+    // Differentiated variants only when the topic supplies them in data.mjs.
+    if (topic.level1 && topic.level1.length) {
+      links.level1Student = buildForm_(folder, slug, topic.title, "Level 1", topic.level1, false);
+    }
+    if (topic.level2 && topic.level2.length) {
+      links.level2Student = buildForm_(folder, slug, topic.title, "Level 2", topic.level2, false);
+    }
+    out[slug] = links;
   });
   printSnippet_(out);
 }
@@ -91,9 +122,20 @@ function buildForm_(folder, slug, title, phase, items, isTeacher) {
     });
     q.setTitle(it.q).setChoices(choices).setPoints(1).setRequired(true);
     if (isTeacher) q.setHelpText("✔ Answer: " + it.answer);
-    var fb = FormApp.createFeedback().setText("Answer: " + it.answer).build();
-    q.setFeedbackForCorrect(fb);
-    q.setFeedbackForIncorrect(fb);
+
+    // Correct-answer feedback = the explanation (falls back to the answer).
+    var correctText = it.explain ? it.explain : "Answer: " + it.answer;
+    q.setFeedbackForCorrect(
+      FormApp.createFeedback().setText(correctText).build(),
+    );
+
+    // Wrong-answer feedback. The Forms API gives one incorrect-feedback per
+    // item (not per choice), so assemble the per-distractor misconception notes
+    // into a single targeted message. Falls back to the answer when none given.
+    var incorrectText = buildIncorrectFeedback_(it);
+    q.setFeedbackForIncorrect(
+      FormApp.createFeedback().setText(incorrectText).build(),
+    );
   });
 
   // file the form in the folder
@@ -111,23 +153,43 @@ function getOrCreateFolder_(name) {
   return it.hasNext() ? it.next() : DriveApp.createFolder(name);
 }
 
+// Build the wrong-answer feedback for one item. Lists each distractor's
+// "why this is wrong" note from it.misconceptions (keyed by option text), then
+// states the correct answer + explanation. Falls back gracefully when a item
+// has no misconceptions map.
+function buildIncorrectFeedback_(it) {
+  var lines = [];
+  var map = it.misconceptions || {};
+  it.options.forEach(function (opt) {
+    var key = String(opt);
+    if (key === String(it.answer)) return; // skip the correct choice
+    if (map[key]) lines.push("• " + key + ": " + map[key]);
+  });
+  var tail = it.explain
+    ? "Correct answer: " + it.answer + ". " + it.explain
+    : "Correct answer: " + it.answer + ".";
+  return lines.length ? lines.join("\\n") + "\\n\\n" + tail : tail;
+}
+
 function printSnippet_(out) {
   var lines = ["window.INTERVENTION_FORMS = {"];
   Object.keys(out).forEach(function (slug) {
     var u = out[slug];
-    lines.push(
-      '  "' +
-        slug +
-        '": { preStudent: "' +
-        u.preStudent +
-        '", preTeacher: "' +
-        u.preTeacher +
-        '", postStudent: "' +
-        u.postStudent +
-        '", postTeacher: "' +
-        u.postTeacher +
-        '" },',
-    );
+    // Emit every link present (the optional level1/level2 keys only appear when
+    // the topic defined tiered variants), keeping the existing key order first.
+    var order = [
+      "preStudent",
+      "preTeacher",
+      "postStudent",
+      "postTeacher",
+      "level1Student",
+      "level2Student",
+    ];
+    var parts = [];
+    order.forEach(function (k) {
+      if (u[k]) parts.push(k + ': "' + u[k] + '"');
+    });
+    lines.push('  "' + slug + '": { ' + parts.join(", ") + " },");
   });
   lines.push("};");
   var block = lines.join("\\n");

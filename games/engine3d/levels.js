@@ -1,6 +1,12 @@
 import { onActivate } from "./a11y.js";
 
 export const LEVELS = {
+  0: {
+    id: 0,
+    label: "Level 0",
+    kind: "most-supported",
+    blurb: "Smallest numbers, hints stay on screen, no timer rush.",
+  },
   1: {
     id: 1,
     label: "Level 1",
@@ -15,10 +21,13 @@ export const LEVELS = {
   },
 };
 
+// Ordered ids for rendering the selector (most-supported → enrichment).
+const LEVEL_ORDER = [0, 1, 2];
+
 /**
- * Level selection UI. Level 1 = support/scaffolded, Level 2 = enrichment.
- * Never uses the word "ESOL".
- * onSelect receives the numeric level (1 or 2).
+ * Level selection UI. Level 0 = most supported (IEP), Level 1 = support,
+ * Level 2 = enrichment. Scheme is L0 < L1 < L2. Never uses the word "ESOL".
+ * onSelect receives the numeric level (0, 1 or 2).
  */
 export function showLevelSelect(
   mountEl,
@@ -36,14 +45,13 @@ export function showLevelSelect(
     <div class="e3d-levels-card">
       <h2 class="e3d-levels-title">${title}</h2>
       <div class="e3d-levels-grid">
-        <button class="e3d-level-btn" data-level="1" type="button">
-          <span class="e3d-level-name">${LEVELS[1].label}</span>
-          <span class="e3d-level-blurb">${LEVELS[1].blurb}</span>
-        </button>
-        <button class="e3d-level-btn" data-level="2" type="button">
-          <span class="e3d-level-name">${LEVELS[2].label}</span>
-          <span class="e3d-level-blurb">${LEVELS[2].blurb}</span>
-        </button>
+        ${LEVEL_ORDER.map(
+          (id) => `
+        <button class="e3d-level-btn" data-level="${id}" type="button">
+          <span class="e3d-level-name">${LEVELS[id].label}</span>
+          <span class="e3d-level-blurb">${LEVELS[id].blurb}</span>
+        </button>`,
+        ).join("")}
       </div>
     </div>`;
   mountEl.appendChild(overlay);
@@ -76,11 +84,11 @@ function injectLevelStyles() {
   s.textContent = `
   .e3d-levels{position:absolute;inset:0;z-index:45;display:flex;align-items:center;justify-content:center;
     background:rgba(18,53,91,.94);padding:var(--sp-4,16px);font-family:var(--font-body,system-ui,sans-serif);}
-  .e3d-levels-card{background:var(--card,#fff);color:var(--ink,#21313f);max-width:480px;width:100%;
+  .e3d-levels-card{background:var(--card,#fff);color:var(--ink,#21313f);max-width:680px;width:100%;
     border-radius:var(--radius-lg,22px);padding:var(--sp-6,24px);text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.4);}
   .e3d-levels-title{font-family:var(--font-display,system-ui,sans-serif);color:var(--navy,#12355b);margin:0 0 var(--sp-5,20px);}
-  .e3d-levels-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-4,16px);}
-  @media (max-width:480px){.e3d-levels-grid{grid-template-columns:1fr;}}
+  .e3d-levels-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--sp-4,16px);}
+  @media (max-width:640px){.e3d-levels-grid{grid-template-columns:1fr;}}
   .e3d-level-btn{display:flex;flex-direction:column;gap:6px;padding:var(--sp-5,20px);cursor:pointer;
     border:2px solid var(--line,#d7e2ed);border-radius:var(--radius-md,14px);background:var(--cream,#f7f4ec);text-align:center;}
   .e3d-level-btn:hover{border-color:var(--teal,#1fa6a2);}

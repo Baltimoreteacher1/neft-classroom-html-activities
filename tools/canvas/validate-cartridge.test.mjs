@@ -49,7 +49,10 @@ const good = stageRealPackage();
   rmSync(join(dir, "wiki_content", page));
   const res = validateCartridgeDir(dir);
   assert.equal(res.ok, false, "missing file should fail");
-  assert.ok(res.errors.some((e) => e.includes("no file on disk")), "reports the missing href");
+  assert.ok(
+    res.errors.some((e) => e.includes("no file on disk")),
+    "reports the missing href",
+  );
   ok("missing referenced file → FAIL");
 }
 
@@ -57,11 +60,16 @@ const good = stageRealPackage();
 {
   const dir = mkdtempSync(join(tmpdir(), "cart-"));
   cpSync(good, dir, { recursive: true });
-  writeFileSync(join(dir, "course_settings/module_meta.xml"),
-    '<?xml version="1.0"?>\n<modules><module>{{LESSON_ID}}</module></modules>\n');
+  writeFileSync(
+    join(dir, "course_settings/module_meta.xml"),
+    '<?xml version="1.0"?>\n<modules><module>{{LESSON_ID}}</module></modules>\n',
+  );
   const res = validateCartridgeDir(dir);
   assert.equal(res.ok, false, "template token should fail");
-  assert.ok(res.errors.some((e) => e.includes("template token")), "reports the token");
+  assert.ok(
+    res.errors.some((e) => e.includes("template token")),
+    "reports the token",
+  );
   ok("unfilled {{TOKEN}} → FAIL");
 }
 
@@ -69,11 +77,16 @@ const good = stageRealPackage();
 {
   const dir = mkdtempSync(join(tmpdir(), "cart-"));
   cpSync(good, dir, { recursive: true });
-  writeFileSync(join(dir, "course_settings/canvas_export.txt.xml"),
-    '<?xml version="1.0"?>\n<x>Tom & Jerry</x>\n');
+  writeFileSync(
+    join(dir, "course_settings/canvas_export.txt.xml"),
+    '<?xml version="1.0"?>\n<x>Tom & Jerry</x>\n',
+  );
   const res = validateCartridgeDir(dir);
   assert.equal(res.ok, false, "unescaped & should fail");
-  assert.ok(res.errors.some((e) => e.includes("unescaped")), "reports the bad ampersand");
+  assert.ok(
+    res.errors.some((e) => e.includes("unescaped")),
+    "reports the bad ampersand",
+  );
   ok("unescaped '&' in XML → FAIL");
 }
 

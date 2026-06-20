@@ -25,8 +25,7 @@
   var ENDPOINT = "/api/tutor";
   var MAX_HISTORY = 8; // turns sent upstream
   var reduce = !!(
-    window.matchMedia &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
   );
 
   // ---- small safe helpers -------------------------------------------------
@@ -81,8 +80,7 @@
         var visible = rect.bottom > 0 && rect.top < vh;
         var done = c.classList.contains("correct");
         // Score: prefer visible, not-done, nearer the top of viewport.
-        var score =
-          (visible ? 1000 : 0) + (done ? -500 : 0) - Math.abs(rect.top);
+        var score = (visible ? 1000 : 0) + (done ? -500 : 0) - Math.abs(rect.top);
         if (score > bestScore) {
           bestScore = score;
           best = c;
@@ -130,10 +128,7 @@
         if (v) bits.push(v);
       }
       var sel = card.querySelector(".mc-btn.selected,.tf-btn.selected");
-      if (sel)
-        bits.push(
-          "chose: " + (sel.textContent || "").replace(/\s+/g, " ").trim(),
-        );
+      if (sel) bits.push("chose: " + (sel.textContent || "").replace(/\s+/g, " ").trim());
     } catch (e) {}
     return clamp(bits.join("; "), 2000);
   }
@@ -207,11 +202,7 @@
       state.actions.push(b);
     });
 
-    var foot = el(
-      "div",
-      "lp-tutor-foot",
-      "Hints guide you — they won't give the answer.",
-    );
+    var foot = el("div", "lp-tutor-foot", "Hints guide you — they won't give the answer.");
 
     panel.appendChild(header);
     panel.appendChild(log);
@@ -242,10 +233,7 @@
     state.panel.removeAttribute("hidden");
     state.launcher.setAttribute("aria-expanded", "true");
     if (!state.log.childNodes.length) {
-      addMessage(
-        "tutor",
-        "Hi! Pick an option below and I'll help you with the problem you're on.",
-      );
+      addMessage("tutor", "Hi! Pick an option below and I'll help you with the problem you're on.");
     }
     // Move focus into the dialog for keyboard users.
     var firstAction = state.actions[0];
@@ -391,10 +379,7 @@
           }
           celebrateIfAllowed(typing);
         } else if (res.status === 429) {
-          addMessage(
-            "error",
-            "You're asking quickly! Give it a few seconds and try again.",
-          );
+          addMessage("error", "You're asking quickly! Give it a few seconds and try again.");
         } else {
           offlineMessage();
         }

@@ -187,6 +187,16 @@ function lessonResources(id) {
   if (has("lessons", id, "downloads", `${id}-notes.pdf`)) {
     pills.push(resLink("Notes PDF", `/lessons/${id}/downloads/${id}-notes.pdf`, true));
   }
+  // Per-level (leveled-mode) Notes PDFs so differentiation survives printing.
+  for (const lvl of [
+    ["l1", "Notes PDF · L1 Support"],
+    ["l2", "Notes PDF · L2 Standard"],
+    ["l3", "Notes PDF · L3 Enrichment"],
+  ]) {
+    if (has("lessons", id, "downloads", `${id}-notes-${lvl[0]}.pdf`)) {
+      pills.push(resLink(lvl[1], `/lessons/${id}/downloads/${id}-notes-${lvl[0]}.pdf`, true));
+    }
+  }
   if (has("lessons", id, "downloads", `${id}-notes.docx`)) {
     pills.push(resLink("Notes DOCX", `/lessons/${id}/downloads/${id}-notes.docx`, true));
   }

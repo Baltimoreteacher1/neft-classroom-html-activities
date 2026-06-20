@@ -14,21 +14,28 @@
  */
 import { readdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
+import { domainName } from "./lib/ccss.mjs";
 
 const root = process.cwd();
 const packetsDir = join(root, "mcap-review", "packets");
 
-// Domain metadata mirrors the parent packets/index.html (icon + accent colour).
+// Icon + accent colour are presentation-only; domain NAMES come from the
+// canonical CCSS registry (data/ccss-standards.json) via scripts/lib/ccss.mjs
+// so they can never drift from the single source of truth.
 const DOMAINS = {
   "ratios-proportional-relationships": {
     icon: "⚖️",
-    name: "Ratios & Proportional Relationships",
+    name: domainName("ratios-proportional-relationships"),
     color: "#1FA6A2",
   },
-  "the-number-system": { icon: "🔢", name: "The Number System", color: "#6B4FA0" },
-  "expressions-equations": { icon: "✖️", name: "Expressions & Equations", color: "#12355B" },
-  geometry: { icon: "📐", name: "Geometry", color: "#B97A12" },
-  statistics: { icon: "📊", name: "Statistics & Probability", color: "#C0392B" },
+  "the-number-system": { icon: "🔢", name: domainName("the-number-system"), color: "#6B4FA0" },
+  "expressions-equations": {
+    icon: "✖️",
+    name: domainName("expressions-equations"),
+    color: "#12355B",
+  },
+  geometry: { icon: "📐", name: domainName("geometry"), color: "#B97A12" },
+  statistics: { icon: "📊", name: domainName("statistics"), color: "#C0392B" },
 };
 
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");

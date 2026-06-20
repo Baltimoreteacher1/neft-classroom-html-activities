@@ -255,7 +255,11 @@
       go(current - 1);
     });
     nextBtn.addEventListener("click", function () {
-      go(current + 1);
+      if (current === steps.length - 1) {
+        finishMission();
+      } else {
+        go(current + 1);
+      }
     });
     footer.appendChild(backBtn);
     footer.appendChild(nextBtn);
@@ -313,11 +317,13 @@
         steps[current].title;
 
       backBtn.disabled = current === 0;
-      nextBtn.disabled = current === steps.length - 1;
+      // The final step's button is actionable: it hands the student their
+      // Canvas completion code (see finishMission), so never disable it.
+      nextBtn.disabled = false;
       nextBtn.classList.toggle("is-final", current === steps.length - 1);
       nextBtn.innerHTML =
         current === steps.length - 1
-          ? '<span aria-hidden="true">✓</span> Finished'
+          ? '<span aria-hidden="true">✓</span> Finish &amp; get Canvas code'
           : 'Next <span aria-hidden="true">→</span>';
 
       // Focus + scroll management (skip on first paint)
@@ -356,6 +362,76 @@
     });
 
     go(0);
+
+    /* ---------- 8. Completion → Canvas code ---------- */
+    // Reaching the last step + clicking "Finish" hands the student the SAME
+    // Canvas completion code the lessons and games show, so a finished mission
+    // syncs to Canvas the same seamless way. Fire-and-forget; never blocks.
+    var CANVAS_CODE_UI_SRC = "/assets/canvas-code-ui.js";
+    function ensureCanvasCodeUI() {
+      if (window.NeftCanvasCodeUI) return Promise.resolve(window.NeftCanvasCodeUI);
+      return new Promise(function (resolve) {
+        var s = document.querySelector('script[src="' + CANVAS_CODE_UI_SRC + '"]');
+        if (!s) {
+          s = document.createElement("script");
+          s.src = CANVAS_CODE_UI_SRC;
+          document.body.appendChild(s);
+        }
+        s.addEventListener("load", function () {
+          resolve(window.NeftCanvasCodeUI || null);
+        }, { once: true });
+        s.addEventListener("error", function () {
+          resolve(null);
+        }, { once: true });
+        if (window.NeftCanvasCodeUI) resolve(window.NeftCanvasCodeUI);
+      });
+    }
+    function storedStudentName() {
+      try {
+        return (
+          localStorage.getItem("edupulse_student_name") ||
+          localStorage.getItem("nt_student_name") ||
+          localStorage.getItem("ewl_student_name") ||
+          (JSON.parse(localStorage.getItem("nt_student") || "{}") || {}).alias ||
+          ""
+        );
+      } catch (e) {
+        return "";
+      }
+    }
+    function missionTitle() {
+      var h1 = document.querySelector("h1");
+      if (h1 && h1.textContent.trim()) return h1.textContent.trim();
+      return (document.title || "Math Lab Mission").trim();
+    }
+    function missionId() {
+      try {
+        var p = window.location.pathname
+          .replace(/\/index\.html?$/i, "")
+          .replace(/^\/+|\/+$/g, "");
+        return p || "math-lab-mission";
+      } catch (e) {
+        return "math-lab-mission";
+      }
+    }
+    function finishMission() {
+      // Show the "you're done" state, then surface the completion code.
+      dotEls.forEach(function (d) {
+        d.dataset.state = "done";
+      });
+      barFill.style.width = "100%";
+      ensureCanvasCodeUI().then(function (ui) {
+        if (!ui || typeof ui.show !== "function") return;
+        ui.show({
+          studentName: storedStudentName(),
+          activityId: missionId(),
+          activityTitle: missionTitle(),
+          score: steps.length,
+          maxScore: steps.length,
+          percent: 100,
+        });
+      });
+    }
 
     /* ---------- helpers ---------- */
     function escapeHtml(value) {

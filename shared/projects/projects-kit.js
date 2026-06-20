@@ -9,8 +9,11 @@
 
    Public API (window.PK):
      toggleEs()                       — toggle EN/ES help (.pk-show-es on body)
-     setLevel(level, storageKey?)     — 'level-1' | 'level-2' tier; persists
+     setLevel(level, storageKey?)     — 'level-0' | 'level-1' | 'level-2' tier; persists
      initLevel(opts)                  — wire Level buttons + restore saved level
+     speak(text)                      — read text aloud (speechSynthesis, slow)
+     stopSpeaking()                   — cancel any in-progress read-aloud
+     initTts(opts?)                   — wire Read-Aloud toggle + tap-to-hear prompts
      checkWork(inputId, correct, tol) — green Correct / red Try again
      peerCompare(container, rows)     — render me-vs-partner stat cards
      statDiffCards(container, pairs)  — generic labeled stat cards
@@ -37,9 +40,12 @@
     document.body.classList.toggle("pk-show-es");
   };
 
-  /* ---------------- Level 1 / Level 2 tiers ---------------- */
+  /* ---------------- Level 0 / Level 1 / Level 2 tiers ----------------
+     Scheme is L0 < L1 < L2: Level 0 = most-supported (IEP / readiness),
+     Level 1 = on-grade support (default), Level 2 = enrichment. */
   PK.setLevel = function (level, storageKey) {
-    document.body.classList.remove("pk-level-1", "pk-level-2");
+    document.body.classList.remove("pk-level-0", "pk-level-1", "pk-level-2");
+    if (level === "level-0") document.body.classList.add("pk-level-0");
     if (level === "level-1") document.body.classList.add("pk-level-1");
     if (level === "level-2") document.body.classList.add("pk-level-2");
     document.querySelectorAll("[data-level-btn]").forEach((b) => {
@@ -73,6 +79,125 @@
       }
     }
     PK.setLevel(saved || opts.default || "level-1", opts.storageKey);
+  };
+
+  /* ---------------- Read-aloud (TTS) ----------------
+     Zero-dependency text-to-speech for Grade 6 readers who need support.
+     Uses the browser's built-in speechSynthesis at a slower rate. A toggle
+     button turns "tap any prompt to hear it" on/off; nothing autoplays. */
+  const TTS = {
+    on: false,
+    rate: 0.85,
+    supported:
+      typeof window !== "undefined" &&
+      "speechSynthesis" in window &&
+      typeof window.SpeechSynthesisUtterance === "function",
+  };
+
+  function pickVoice() {
+    if (!TTS.supported) return null;
+    const voices = window.speechSynthesis.getVoices() || [];
+    if (!voices.length) return null;
+    // Prefer an English voice; fall back to the platform default.
+    return (
+      voices.find((v) => /^en(-|_|$)/i.test(v.lang) && /female|samantha|google/i.test(v.name)) ||
+      voices.find((v) => /^en(-|_|$)/i.test(v.lang)) ||
+      voices[0]
+    );
+  }
+
+  PK.stopSpeaking = function () {
+    if (TTS.supported) {
+      try {
+        window.speechSynthesis.cancel();
+      } catch (e) {
+        /* ignore */
+      }
+    }
+  };
+
+  PK.speak = function (text) {
+    if (!TTS.supported) return;
+    const clean = String(text == null ? "" : text)
+      .replace(/\s+/g, " ")
+      .trim();
+    if (!clean) return;
+    PK.stopSpeaking();
+    try {
+      const u = new window.SpeechSynthesisUtterance(clean);
+      u.rate = TTS.rate;
+      u.pitch = 1;
+      const v = pickVoice();
+      if (v) {
+        u.voice = v;
+        u.lang = v.lang;
+      }
+      window.speechSynthesis.speak(u);
+    } catch (e) {
+      /* ignore speech errors */
+    }
+  };
+
+  // Text of a prompt element without its child controls (inputs/buttons).
+  function promptText(el) {
+    const clone = el.cloneNode(true);
+    clone
+      .querySelectorAll("input, textarea, select, button, .pk-tts-toggle")
+      .forEach((n) => n.remove());
+    return clone.textContent || "";
+  }
+
+  PK.setTts = function (on, storageKey) {
+    TTS.on = !!on;
+    document.body.classList.toggle("pk-tts-on", TTS.on);
+    document.querySelectorAll("[data-tts-toggle]").forEach((b) => {
+      b.setAttribute("aria-pressed", TTS.on ? "true" : "false");
+    });
+    if (!TTS.on) PK.stopSpeaking();
+    if (storageKey) {
+      try {
+        localStorage.setItem(storageKey + ":tts", TTS.on ? "1" : "0");
+      } catch (e) {
+        /* ignore */
+      }
+    }
+  };
+
+  PK.initTts = function (opts) {
+    opts = opts || {};
+    if (!TTS.supported) {
+      // Hide controls the injector added; the feature is unavailable here.
+      document.querySelectorAll("[data-tts-toggle]").forEach((b) => {
+        b.hidden = true;
+      });
+      return;
+    }
+    // Prime the voice list (some browsers populate it asynchronously).
+    if (typeof window.speechSynthesis.onvoiceschanged !== "undefined") {
+      window.speechSynthesis.onvoiceschanged = pickVoice;
+    }
+    document.querySelectorAll("[data-tts-toggle]").forEach((b) => {
+      b.addEventListener("click", () => PK.setTts(!TTS.on, opts.storageKey));
+    });
+    // Delegated tap-to-hear: only active while the toggle is on.
+    const SPEAKABLE = ".pk-mt-prompt, .task, .q-group, label.fld, .pk-step-title, .arc-banner";
+    document.addEventListener("click", (ev) => {
+      if (!TTS.on) return;
+      const target = ev.target;
+      if (target.closest("input, textarea, select, button, a")) return;
+      const el = target.closest(SPEAKABLE);
+      if (!el) return;
+      PK.speak(promptText(el));
+    });
+    let saved = null;
+    if (opts.storageKey) {
+      try {
+        saved = localStorage.getItem(opts.storageKey + ":tts");
+      } catch (e) {
+        saved = null;
+      }
+    }
+    PK.setTts(saved === "1", opts.storageKey);
   };
 
   /* ---------------- Self-check ---------------- */

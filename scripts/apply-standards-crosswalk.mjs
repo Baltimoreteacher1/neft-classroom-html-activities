@@ -110,9 +110,7 @@ if (INIT) {
 // load crosswalk + report completeness
 // ---------------------------------------------------------------------------
 if (!existsSync(XWALK_PATH)) {
-  console.error(
-    "Missing data/standards-crosswalk-2025.json. Run with --init first.",
-  );
+  console.error("Missing data/standards-crosswalk-2025.json. Run with --init first.");
   process.exit(1);
 }
 const xwalk = loadJSON(XWALK_PATH);
@@ -143,23 +141,17 @@ console.log("─".repeat(60));
 console.log(`Taxonomy standards : ${xwalk.entries.length}`);
 console.log(`Resolved newId     : ${xwalk.entries.length - unresolved.length}`);
 console.log(`Unresolved         : ${unresolved.length}`);
-console.log(
-  `Lesson configs use ${Object.keys(lessonUsage).length} distinct short-form codes.`,
-);
+console.log(`Lesson configs use ${Object.keys(lessonUsage).length} distinct short-form codes.`);
 
 const unmatched = Object.keys(lessonUsage).filter((s) => !byOldShort[s]);
 if (unmatched.length) {
-  console.log(
-    `\n⚠ lesson codes with no taxonomy match (check manually): ${unmatched.join(", ")}`,
-  );
+  console.log(`\n⚠ lesson codes with no taxonomy match (check manually): ${unmatched.join(", ")}`);
 }
 
 if (unresolved.length) {
   console.log("\nNeed newId from the source document for:");
   for (const e of unresolved.slice(0, 50)) {
-    console.log(
-      `  ${e.oldId.padEnd(12)} (${e.oldShortForm.padEnd(8)}) -> domain ${e.newDomain}`,
-    );
+    console.log(`  ${e.oldId.padEnd(12)} (${e.oldShortForm.padEnd(8)}) -> domain ${e.newDomain}`);
   }
 }
 

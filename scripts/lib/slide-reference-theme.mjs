@@ -303,11 +303,18 @@ export function refExitSplit(reflectionFields, ticketHtml) {
 
 /** Vocabulary table — navy header row */
 export function refVocabTable(rows) {
+  // Inline read-aloud (TTS) button — speaks the term + definition. Pairs with the
+  // window.speakFromButton() runtime helper emitted once in generate-slides.mjs.
+  const speakBtn = (text, label, lang = "en-US") => {
+    const clean = String(text || "").trim();
+    if (!clean) return "";
+    return `<button type="button" class="read-aloud-btn" aria-label="${esc(label)}" title="${esc(label)}" data-speak="${esc(clean)}" data-lang="${lang}" onclick="speakFromButton(this)">🔊</button>`;
+  };
   const body = (rows || [])
     .map(
       (r) => `
     <tr>
-      <td class="ref-vocab-term">${esc(r.term)}${r.termEs ? `<br/><em>${esc(r.termEs)}</em>` : ""}</td>
+      <td class="ref-vocab-term">${esc(r.term)}${speakBtn(`${r.term}. ${r.definition || ""}`, `Read ${r.term} and its meaning aloud`)}${r.termEs ? `<br/><em>${esc(r.termEs)}</em>${speakBtn(`${r.termEs}. ${r.definitionEs || ""}`, `Leer ${r.termEs} en español`, "es-ES")}` : ""}</td>
       <td>${esc(r.definition)}${r.definitionEs ? `<br/><em>${esc(r.definitionEs)}</em>` : ""}</td>
       <td>${esc(r.example || "")}</td>
       <td class="ref-vocab-visual">${r.visual || "📐"}</td>

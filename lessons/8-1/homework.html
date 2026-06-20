@@ -1655,13 +1655,351 @@ body.help-modal-open { overflow: hidden; }
 }
 .problem-hint-row { margin: 8px 0 12px; }
 
+/* Language mode overrides */
+body.lang-mode-en .lang-es,
+body.lang-mode-en .welcome-title-es,
+body.lang-mode-en .tab-es,
+body.lang-mode-en .vocab-es,
+body.lang-mode-en .vocab-def-es,
+body.lang-mode-en .ext-title-es,
+body.lang-mode-en [lang="es"],
+body.lang-mode-en .bilingual-col.lang-es {
+  display: none !important;
+}
+
+body.lang-mode-es .lang-en,
+body.lang-mode-es .welcome-title-en,
+body.lang-mode-es .tab-en,
+body.lang-mode-es .vocab-def,
+body.lang-mode-es .ext-title-en,
+body.lang-mode-es .learning-big:not([lang="es"]),
+body.lang-mode-es .learning-sub:not([lang="es"]),
+body.lang-mode-es .bilingual-col.lang-en {
+  display: none !important;
+}
+
+body.lang-mode-en .bilingual-grid,
+body.lang-mode-es .bilingual-grid {
+  grid-template-columns: 1fr !important;
+}
+
+/* Premium language selector card styles */
+.lang-selector-card {
+  margin-top: 18px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-md);
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.lang-selector-title {
+  font-family: var(--font-display);
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--white);
+}
+.lang-selector-buttons {
+  display: flex;
+  gap: 8px;
+}
+.lang-toggle-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: var(--white);
+  padding: 6px 14px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.lang-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: var(--white);
+}
+.lang-toggle-btn.active {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: var(--white);
+  box-shadow: 0 4px 12px rgba(31, 166, 162, 0.35);
+}
+@media (max-width: 640px) {
+  .lang-selector-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .lang-selector-buttons {
+    flex-direction: column;
+  }
+  .lang-toggle-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* Parent Sign-off container styling */
+.parent-signoff-container {
+  margin-top: 24px;
+  padding: 24px;
+  background: var(--white);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 30px rgba(18, 53, 91, 0.06);
+  text-align: left;
+}
+.signoff-title {
+  margin: 0 0 16px;
+  font-family: var(--font-display);
+  font-size: 17px;
+  color: var(--navy);
+  font-weight: 800;
+  border-bottom: 2px solid var(--teal-light);
+  padding-bottom: 8px;
+}
+.signoff-field {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.signoff-field label {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy);
+}
+.checkbox-field {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 10px;
+}
+.checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 14.5px;
+  line-height: 1.4;
+  color: var(--ink);
+}
+.checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: var(--teal);
+  cursor: pointer;
+}
+.signoff-field input[type="text"],
+.signoff-field textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 14px;
+  background: var(--cream);
+  color: var(--ink);
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+.signoff-field input[type="text"]:focus,
+.signoff-field textarea:focus {
+  outline: none;
+  border-color: var(--teal);
+  background: var(--white);
+}
+.signoff-submit-btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 800;
+  background: var(--teal);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.signoff-submit-btn:disabled {
+  background: var(--line);
+  color: var(--muted);
+  cursor: not-allowed;
+}
+.signoff-submit-btn:not(:disabled):hover {
+  background: var(--navy);
+  box-shadow: 0 4px 15px rgba(18, 53, 91, 0.15);
+}
+
+/* Certificate View */
+.certificate-badge {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  background: var(--teal-light);
+  border: 2px solid var(--teal);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.cert-check {
+  font-size: 40px;
+  line-height: 1;
+}
+.cert-info {
+  flex-grow: 1;
+}
+.cert-header {
+  margin: 0 0 4px;
+  font-family: var(--font-display);
+  font-size: 16px;
+  color: var(--teal);
+  font-weight: 800;
+}
+.cert-detail {
+  font-size: 17px;
+  color: var(--navy);
+  margin: 0 0 2px;
+}
+.cert-date {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0;
+}
+.cert-note-box {
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: var(--white);
+  border-left: 3px solid var(--coral);
+  border-radius: var(--radius-xs);
+  text-align: left;
+}
+.cert-note-title {
+  margin: 0 0 4px;
+  font-size: 12px;
+  color: var(--coral);
+}
+.cert-note-content {
+  margin: 0;
+  font-size: 13.5px;
+  font-style: italic;
+  color: var(--ink);
+}
+.cert-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.print-cert-btn {
+  background: var(--navy);
+  color: var(--white);
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+}
+.print-cert-btn:hover {
+  background: var(--teal);
+}
+.edit-signoff-btn {
+  color: var(--muted);
+  font-size: 13px;
+  text-decoration: underline;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.edit-signoff-btn:hover {
+  color: var(--coral);
+}
+
+/* Print Certificate specific layout */
+.print-only-certificate {
+  display: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .homework-tab-btn, .hw-game-choice-btn, .help-pop-btn { transition: none; }
 }
 @media print {
-  .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn { display: none !important; }
+  .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn, .parent-signoff-container { display: none !important; }
   .tab-panel-inner[hidden] { display: block !important; page-break-inside: avoid; }
   body { padding-bottom: 0; }
+  
+  .print-only-certificate.is-signed {
+    display: block !important;
+    margin-top: 40px;
+    padding: 24px;
+    border: 4px double var(--navy) !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    text-align: center;
+    page-break-inside: avoid;
+  }
+  .print-cert-header h2 {
+    font-family: var(--font-display);
+    font-size: 15px;
+    letter-spacing: 0.1em;
+    color: var(--muted) !important;
+    margin: 0 0 6px;
+  }
+  .print-cert-header h3 {
+    font-family: var(--font-display);
+    font-size: 22px;
+    color: var(--navy) !important;
+    margin: 0 0 20px;
+  }
+  .print-cert-body p {
+    font-size: 15px;
+    color: var(--ink) !important;
+    margin-bottom: 30px;
+  }
+  .print-cert-signatures {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 30px;
+  }
+  .print-sig-block {
+    width: 40%;
+    text-align: center;
+  }
+  .sig-line {
+    font-family: 'Outfit', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--navy) !important;
+    border-bottom: 1.5px solid var(--ink);
+    padding-bottom: 6px;
+    margin-bottom: 6px;
+    min-height: 28px;
+  }
+  .sig-label {
+    font-size: 11px;
+    color: var(--muted) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .print-cert-note {
+    text-align: left;
+    background: #f9f9f9;
+    padding: 12px 16px;
+    border-left: 4px solid var(--coral);
+    border-radius: 4px;
+  }
+  .print-cert-note .note-heading {
+    font-size: 12px;
+    color: var(--coral) !important;
+    margin: 0 0 4px;
+  }
+  .print-cert-note .note-body {
+    font-size: 13.5px;
+    font-style: italic;
+    margin: 0;
+  }
 }
 
 
@@ -1758,9 +2096,6 @@ body { font-size: 15px; line-height: 1.58; }
   .card { box-shadow: none; }
 }
 </style>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
 </head>
 <body>
 
@@ -1771,7 +2106,7 @@ body { font-size: 15px; line-height: 1.58; }
       <div class="welcome-hero">
         <span class="welcome-emoji" aria-hidden="true">🏀</span>
         <div class="welcome-titles">
-          <p class="welcome-tag">Unit 8 · 6.SP.1</p>
+          <p class="welcome-tag">Unit 8 · 6.DS.1</p>
           <h1 class="welcome-title-en">Family Math Night</h1>
           <h1 class="welcome-title-es" lang="es">Ayuda a tu estudiante</h1>
           <p class="welcome-lesson">Statistical Questions and Data · Lesson 8-1</p>
@@ -1781,6 +2116,22 @@ body { font-size: 15px; line-height: 1.58; }
         <span class="lang-en"><strong>English:</strong> You don't need to be a math expert. This page helps you <em>guide</em> your student — with pictures, steps, and words in both languages.</span>
         <span class="lang-es" lang="es"><strong>Español:</strong> No necesitas ser experto en matemáticas. Esta página te ayuda a <em>guiar</em> a tu estudiante — con dibujos, pasos y palabras en dos idiomas.</span>
       </p>
+      
+      <!-- Modern language mode selector -->
+      <div class="lang-selector-card">
+        <span class="lang-selector-title">Language / Idioma:</span>
+        <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector">
+          <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')">
+            🇺🇸🇪🇸 Bilingual / Bilíngüe
+          </button>
+          <button type="button" class="lang-toggle-btn" data-lang-mode="en" onclick="setLanguageMode('en')">
+            🇺🇸 English Only
+          </button>
+          <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')">
+            🇪🇸 Solo Español
+          </button>
+        </div>
+      </div>
     </header>
 
   
@@ -1865,16 +2216,9 @@ body { font-size: 15px; line-height: 1.58; }
     
       <h2 class="section-title">🎯 The big idea / La idea principal</h2>
       <div class="concept-visual-wrap">
-      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Data display">
-        <rect x="8" y="20" width="404" height="160" rx="12" fill="#dff2ee" stroke="#1fa6a2" stroke-width="2"/>
-        <text x="210" y="48" text-anchor="middle" font-size="14" font-weight="700" fill="#12355b">Data / Datos</text>
-        <rect x="60" y="110" width="30" height="40" fill="#1fa6a2"/>
-        <rect x="100" y="90" width="30" height="60" fill="#1fa6a2"/>
-        <rect x="140" y="70" width="30" height="80" fill="#1fa6a2"/>
-        <rect x="180" y="100" width="30" height="50" fill="#1fa6a2"/>
-        <text x="260" y="90" font-size="13" fill="#21313f">Mean · Median · Mode</text>
-        <text x="260" y="115" font-size="13" fill="#21313f" lang="es">Media · Mediana · Moda</text>
-      </svg></div>
+    <div class="concept-fallback-visual" aria-hidden="true">
+      <div class="concept-fallback-step step-color-1"><span class="step-dot">1</span><span>A statistical question is one you answer by collecting data, and the answers are different for different people or cases</span></div><div class="concept-fallback-step step-color-2"><span class="step-dot">2</span><span>Question 1: &quot;How many points did our top player score last night?&quot; There is one player and one game, so there is one fixed answer, like 18 points</span></div><div class="concept-fallback-step step-color-3"><span class="step-dot">3</span><span>One answer, no variety, so this is NOT a statistical question</span></div>
+    </div></div>
       <div class="key-idea-banner">
         <p class="lang-en"><strong>Watch for this:</strong> If you expect the answers to vary, it is a statistical question.</p>
         <p class="lang-es" lang="es"><strong>Observa esto:</strong> Esta noche practican: tell the difference between a pregunta estadística and a non-pregunta estadística. Usen el vocabulario y dejen que su estudiante explique con dibujos o ejemplos del hogar.</p>
@@ -2317,17 +2661,10 @@ body { font-size: 15px; line-height: 1.58; }
         <ul class="external-resource-list">
           
             <li>
-              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-data-statistics/cc-6th-mean-median/v/calculating-the-mean" target="_blank" rel="noopener noreferrer" class="external-resource-link">
+              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math" target="_blank" rel="noopener noreferrer" class="external-resource-link">
                 <span class="ext-source">Khan Academy</span>
-                <span class="ext-title-en">Mean, median, and mode</span>
-                <span class="ext-title-es" lang="es">Media, mediana y moda</span>
-              </a>
-            </li>
-            <li>
-              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-data-statistics/cc-6th-box-plot/v/constructing-a-box-and-whisker-plot" target="_blank" rel="noopener noreferrer" class="external-resource-link">
-                <span class="ext-source">Khan Academy</span>
-                <span class="ext-title-en">Box plots</span>
-                <span class="ext-title-es" lang="es">Diagramas de caja</span>
+                <span class="ext-title-en">Grade 6 math overview</span>
+                <span class="ext-title-es" lang="es">Resumen de matemáticas de 6° grado</span>
               </a>
             </li>
         </ul>
@@ -2341,54 +2678,19 @@ body { font-size: 15px; line-height: 1.58; }
         <span class="lang-es" lang="es">Refuercen el tema de hoy con un juego rápido en familia. ¡Ustedes preguntan; su estudiante decide!</span>
       </p>
       
-      <div class="hw-game hw-game-sort" id="hw_game_stats" data-game-type="drag-bucket" data-items='[{"text":"What is 2 + 2?","bucket":"not"},{"text":"What is your favorite color?","bucket":"stat"},{"text":"Minutes spent on homework","bucket":"stat"},{"text":"Spell the word cat","bucket":"not"},{"text":"Heights of plants in cm","bucket":"stat"},{"text":"How many pets do students have?","bucket":"stat"}]'>
+      <div class="hw-game hw-game-mc" id="hw_game_vocab" data-game-type="mc-speed" data-rounds='[{"q":"What does \"Statistical Question\" mean?","choices":[{"text":"Collecting facts by asking people questions.","isCorrect":false},{"text":"A question where the answers will be different for different people.","isCorrect":true},{"text":"Facts and numbers you collect, like answers to a survey.","isCorrect":false},{"text":"How spread out the numbers are.","isCorrect":false}],"hint":""},{"q":"What does \"Data\" mean?","choices":[{"text":"Collecting facts by asking people questions.","isCorrect":false},{"text":"A question where the answers will be different for different people.","isCorrect":false},{"text":"Facts and numbers you collect, like answers to a survey.","isCorrect":true},{"text":"How spread out the numbers are.","isCorrect":false}],"hint":""},{"q":"What does \"Variability\" mean?","choices":[{"text":"Collecting facts by asking people questions.","isCorrect":false},{"text":"A question where the answers will be different for different people.","isCorrect":false},{"text":"Facts and numbers you collect, like answers to a survey.","isCorrect":false},{"text":"How spread out the numbers are.","isCorrect":true}],"hint":""},{"q":"What does \"Survey\" mean?","choices":[{"text":"A question where the answers will be different for different people.","isCorrect":false},{"text":"Collecting facts by asking people questions.","isCorrect":true},{"text":"How spread out the numbers are.","isCorrect":false},{"text":"Facts and numbers you collect, like answers to a survey.","isCorrect":false}],"hint":""}]'>
         <div class="hw-game-header">
-          <h3 class="hw-game-title">Stat Sort! <span lang="es">¡Estadística!</span></h3>
+          <h3 class="hw-game-title">Word Match! <span lang="es">¡Palabras!</span></h3>
           <p class="hw-game-coach bilingual-block">
-            <span class="lang-en">🎮 Play together! Statistical questions expect many different answers from a group.</span>
-            <span class="lang-es" lang="es">🎮 ¡Jueguen juntos! Las preguntas estadísticas esperan muchas respuestas diferentes de un grupo.</span>
+            <span class="lang-en">🎮 Play together! Use tonight&#039;s vocabulary words as you play!</span>
+            <span class="lang-es" lang="es">🎮 ¡Jueguen juntos! ¡Usen las palabras del vocabulario de hoy mientras juegan!</span>
           </p>
         </div>
-        <div class="hw-game-buckets">
-          
-            <div class="hw-game-bucket" data-bucket="stat" ondragover="hwGameAllowDrop(event)" ondrop="hwGameDrop(event,'stat')">
-              <div class="hw-game-bucket-label">Statistical question / <span lang="es">Pregunta estadística</span></div>
-              <div class="hw-game-bucket-slots" id="bucket_stat"></div>
-            </div>
-            <div class="hw-game-bucket" data-bucket="not" ondragover="hwGameAllowDrop(event)" ondrop="hwGameDrop(event,'not')">
-              <div class="hw-game-bucket-label">NOT statistical / <span lang="es">NO estadística</span></div>
-              <div class="hw-game-bucket-slots" id="bucket_not"></div>
-            </div>
-        </div>
-        <div class="hw-game-pile" id="hw_game_pile" ondragover="hwGameAllowDrop(event)" ondrop="hwGameDrop(event,'')">
-          
-            <div class="hw-game-card" draggable="true" id="hwcard_0" data-bucket="not"
-                 ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
-              What is 2 + 2?
-            </div>
-            <div class="hw-game-card" draggable="true" id="hwcard_1" data-bucket="stat"
-                 ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
-              What is your favorite color?
-            </div>
-            <div class="hw-game-card" draggable="true" id="hwcard_2" data-bucket="stat"
-                 ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
-              Minutes spent on homework
-            </div>
-            <div class="hw-game-card" draggable="true" id="hwcard_3" data-bucket="not"
-                 ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
-              Spell the word cat
-            </div>
-            <div class="hw-game-card" draggable="true" id="hwcard_4" data-bucket="stat"
-                 ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
-              Heights of plants in cm
-            </div>
-            <div class="hw-game-card" draggable="true" id="hwcard_5" data-bucket="stat"
-                 ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
-              How many pets do students have?
-            </div>
-        </div>
-        <button type="button" class="btn btn-primary" onclick="hwGameCheckSort()">Check sort / Verificar</button>
+        <div class="hw-game-score" id="hw_game_score">Round 1 / Ronda 1</div>
+        <p class="hw-game-question" id="hw_game_question"></p>
+        <div class="hw-game-choices" id="hw_game_choices" role="group"></div>
         <p class="hw-game-feedback" id="hw_game_feedback" role="status" aria-live="polite"></p>
+        <button type="button" class="btn btn-primary hw-game-restart" id="hw_game_restart" hidden>Play again / Jugar otra vez</button>
       </div>
     </div>
 <div class="tab-panel-inner" data-tab-panel="done" id="hw_panel_done" role="tabpanel" hidden>
@@ -2400,6 +2702,93 @@ body { font-size: 15px; line-height: 1.58; }
         <span class="lang-en">Answers save automatically on this device. Tap <strong>Check This Problem</strong> anytime.</span>
         <span class="lang-es" lang="es">Las respuestas se guardan solas en este dispositivo. Toquen <strong>Revisar esta pregunta</strong> cuando quieran.</span>
       </p>
+
+      <div class="parent-signoff-container card-ish">
+        <h3 class="signoff-title">✍️ Parent Sign-off & Feedback / Firma del padre y comentarios</h3>
+        
+        <!-- Active Form -->
+        <div id="signoff_form_wrapper">
+          <div class="signoff-field checkbox-field">
+            <label class="checkbox-label">
+              <input type="checkbox" id="parent_reviewed_checkbox" onchange="toggleSignoffSubmitBtn()" />
+              <span class="lang-en">I reviewed this homework with my student tonight.</span>
+              <span class="lang-es" lang="es">Revisé esta tarea con mi estudiante esta noche.</span>
+            </label>
+          </div>
+          
+          <div class="signoff-field text-field">
+            <label for="parent_name_input">
+              <span class="lang-en">Parent/Guardian Name:</span>
+              <span class="lang-es" lang="es">Nombre del padre/tutor:</span>
+            </label>
+            <input type="text" id="parent_name_input" placeholder="e.g. Maria Lopez" oninput="toggleSignoffSubmitBtn()" />
+          </div>
+
+          <div class="signoff-field textarea-field">
+            <label for="parent_note_input">
+              <span class="lang-en">Note to Teacher (optional):</span>
+              <span class="lang-es" lang="es">Nota para el maestro (opcional):</span>
+            </label>
+            <textarea id="parent_note_input" rows="3" placeholder="e.g. Student did great with equations but struggled with drawing the number line."></textarea>
+          </div>
+
+          <button type="button" id="submit_signoff_btn" class="signoff-submit-btn" disabled onclick="saveParentSignoff()">
+            <span class="lang-en">Confirm & Save / Confirmar y Guardar</span>
+          </button>
+        </div>
+
+        <!-- Confirmed View -->
+        <div id="signoff_confirmed_wrapper" hidden>
+          <div class="certificate-badge">
+            <div class="cert-check">🏆</div>
+            <div class="cert-info">
+              <h4 class="cert-header">
+                <span class="lang-en">Homework Review Verified!</span>
+                <span class="lang-es" lang="es">¡Revisión de tarea verificada!</span>
+              </h4>
+              <p class="cert-detail"><strong id="display_parent_name"></strong></p>
+              <p class="cert-date"><span class="lang-en">Signed on:</span><span class="lang-es" lang="es">Firmado el:</span> <span id="display_signoff_date"></span></p>
+              <div id="display_parent_note_box" class="cert-note-box" hidden>
+                <p class="cert-note-title"><strong>Note to teacher / Nota para el maestro:</strong></p>
+                <p id="display_parent_note" class="cert-note-content"></p>
+              </div>
+            </div>
+          </div>
+          <div class="cert-actions">
+            <button type="button" class="btn btn-secondary print-cert-btn" onclick="window.print()">
+              <span class="lang-en">🖨️ Print Certificate / Imprimir certificado</span>
+            </button>
+            <button type="button" class="edit-signoff-btn" onclick="editParentSignoff()">
+              <span class="lang-en">Edit sign-off / Editar firma</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Print-Only Certificate Layout -->
+      <div class="print-only-certificate" id="print_only_certificate">
+        <div class="print-cert-header">
+          <h2>EDU WONDERLAB MATH</h2>
+          <h3>Family Math Night Completion Certificate</h3>
+        </div>
+        <div class="print-cert-body">
+          <p>This certifies that the homework for <strong><span id="print_lesson_title"></span></strong> was completed and reviewed collaboratively.</p>
+          <div class="print-cert-signatures">
+            <div class="print-sig-block">
+              <p class="sig-line" id="print_parent_name"></p>
+              <p class="sig-label">Parent/Guardian Signature</p>
+            </div>
+            <div class="print-sig-block">
+              <p class="sig-line" id="print_signoff_date"></p>
+              <p class="sig-label">Date</p>
+            </div>
+          </div>
+          <div class="print-cert-note" id="print_parent_note_wrapper" style="display:none;">
+            <p class="note-heading"><strong>Parent Note to Teacher:</strong></p>
+            <p id="print_parent_note" class="note-body"></p>
+          </div>
+        </div>
+      </div>
     </div>
       </div>
     </div>
@@ -2438,6 +2827,8 @@ body { font-size: 15px; line-height: 1.58; }
 </div>
 
 <script>
+window.LESSON_ID = "8-1";
+window.LESSON_TITLE = "Statistical Questions and Data";
 
 function syncHomeworkChromeHeights() {
   const status = document.querySelector('.bottom-status-bar');
@@ -2509,6 +2900,136 @@ function triggerCelebration() {
   document.querySelector('.section-celebrate')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
+function setLanguageMode(mode) {
+  try { localStorage.setItem('hw_lang_mode', mode); } catch(e) {}
+  document.body.classList.remove('lang-mode-bilingual', 'lang-mode-en', 'lang-mode-es');
+  document.body.classList.add('lang-mode-' + mode);
+  document.querySelectorAll('.lang-toggle-btn').forEach(function(btn) {
+    const active = btn.getAttribute('data-lang-mode') === mode;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+}
+
+function toggleSignoffSubmitBtn() {
+  const checkbox = document.getElementById('parent_reviewed_checkbox');
+  const nameInput = document.getElementById('parent_name_input');
+  const submitBtn = document.getElementById('submit_signoff_btn');
+  if (checkbox && nameInput && submitBtn) {
+    submitBtn.disabled = !(checkbox.checked && nameInput.value.trim().length > 0);
+  }
+}
+
+function saveParentSignoff() {
+  const nameVal = document.getElementById('parent_name_input')?.value.trim();
+  const noteVal = document.getElementById('parent_note_input')?.value.trim();
+  const checked = document.getElementById('parent_reviewed_checkbox')?.checked;
+  const lessonId = window.LESSON_ID || 'general';
+  const lessonTitle = window.LESSON_TITLE || "Tonight's Lesson";
+  
+  if (!checked || !nameVal) return;
+  
+  const signoffDate = new Date().toLocaleDateString(undefined, { 
+    year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' 
+  });
+  
+  const payload = {
+    parentName: nameVal,
+    note: noteVal,
+    date: signoffDate,
+    lessonTitle: lessonTitle
+  };
+  
+  try {
+    localStorage.setItem('hw_parent_signoff_' + lessonId, JSON.stringify(payload));
+  } catch(e) {}
+  
+  updateSignoffUI(payload);
+}
+
+function updateSignoffUI(data) {
+  const nameEl = document.getElementById('display_parent_name');
+  if (nameEl) nameEl.textContent = data.parentName;
+  
+  const dateEl = document.getElementById('display_signoff_date');
+  if (dateEl) dateEl.textContent = data.date;
+  
+  const noteBox = document.getElementById('display_parent_note_box');
+  const noteEl = document.getElementById('display_parent_note');
+  if (noteBox && noteEl) {
+    if (data.note) {
+      noteEl.textContent = data.note;
+      noteBox.hidden = false;
+    } else {
+      noteBox.hidden = true;
+    }
+  }
+  
+  const formWrap = document.getElementById('signoff_form_wrapper');
+  const confWrap = document.getElementById('signoff_confirmed_wrapper');
+  if (formWrap) formWrap.hidden = true;
+  if (confWrap) confWrap.hidden = false;
+  
+  const printTitle = document.getElementById('print_lesson_title');
+  if (printTitle) printTitle.textContent = data.lessonTitle;
+  
+  const printName = document.getElementById('print_parent_name');
+  if (printName) printName.textContent = data.parentName;
+  
+  const printDate = document.getElementById('print_signoff_date');
+  if (printDate) printDate.textContent = data.date.split(' at ')[0];
+  
+  const printNoteWrapper = document.getElementById('print_parent_note_wrapper');
+  const printNote = document.getElementById('print_parent_note');
+  if (printNoteWrapper && printNote) {
+    if (data.note) {
+      printNote.textContent = data.note;
+      printNoteWrapper.style.display = 'block';
+    } else {
+      printNoteWrapper.style.display = 'none';
+    }
+  }
+  
+  const printCert = document.getElementById('print_only_certificate');
+  if (printCert) printCert.classList.add('is-signed');
+}
+
+function editParentSignoff() {
+  const formWrap = document.getElementById('signoff_form_wrapper');
+  const confWrap = document.getElementById('signoff_confirmed_wrapper');
+  if (formWrap) formWrap.hidden = false;
+  if (confWrap) confWrap.hidden = true;
+  
+  const printCert = document.getElementById('print_only_certificate');
+  if (printCert) printCert.classList.remove('is-signed');
+}
+
+function restoreParentSignoff() {
+  try {
+    const langMode = localStorage.getItem('hw_lang_mode') || 'bilingual';
+    setLanguageMode(langMode);
+  } catch(e) {
+    setLanguageMode('bilingual');
+  }
+
+  const lessonId = window.LESSON_ID || 'general';
+  try {
+    const saved = localStorage.getItem('hw_parent_signoff_' + lessonId);
+    if (saved) {
+      const data = JSON.parse(saved);
+      const nameInput = document.getElementById('parent_name_input');
+      const noteInput = document.getElementById('parent_note_input');
+      const checkbox = document.getElementById('parent_reviewed_checkbox');
+      if (nameInput) nameInput.value = data.parentName || '';
+      if (noteInput) noteInput.value = data.note || '';
+      if (checkbox) checkbox.checked = true;
+      toggleSignoffSubmitBtn();
+      
+      updateSignoffUI(data);
+    }
+  } catch(e) {}
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   syncHomeworkChromeHeights();
   window.addEventListener('resize', syncHomeworkChromeHeights);
@@ -2520,6 +3041,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (last && document.getElementById('hw_tab_' + last)) switchHomeworkTab(last);
     else switchHomeworkTab('learn');
   } catch(e) {}
+  restoreParentSignoff();
 });
 
 
@@ -3670,8 +4192,5 @@ window.onload = function() {
   });
 };
 </script>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
 </body>
 </html>

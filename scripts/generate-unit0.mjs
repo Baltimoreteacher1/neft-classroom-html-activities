@@ -23,11 +23,7 @@ import { dirname, join } from "node:path";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const outDir = join(root, "math", "unit-0");
 
-const esc = (s) =>
-  String(s)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 /** @type {Array<Object>} */
 const LESSONS = [
@@ -42,8 +38,14 @@ const LESSONS = [
       "I can explain a comparison using the words greater than, less than, left, and right.",
     vocab: [
       ["Inequality", "A statement that compares two values using > or <."],
-      ["Number line", "A line where every point stands for a number, with values increasing left to right."],
-      ["Rational number", "Any number that can be written as a fraction, including integers and negatives."],
+      [
+        "Number line",
+        "A line where every point stands for a number, with values increasing left to right.",
+      ],
+      [
+        "Rational number",
+        "Any number that can be written as a fraction, including integers and negatives.",
+      ],
     ],
     teach: [
       "On a horizontal number line, numbers get larger as you move <strong>right</strong> and smaller as you move <strong>left</strong>.",
@@ -59,10 +61,34 @@ const LESSONS = [
       ],
     },
     practice: [
-      { type: "mc", q: "Which symbol makes it true:  −2 ___ −5 ?", choices: [">", "<", "="], answer: ">", hint: "−2 is closer to 0, so it is farther right than −5." },
-      { type: "mc", q: "A number to the LEFT of another number on the line is always…", choices: ["greater", "less", "equal"], answer: "less", hint: "Values increase to the right, decrease to the left." },
-      { type: "input", q: "Order from least to greatest (use commas):  −4, 0, −1", answer: "-4, -1, 0", hint: "Least is farthest left on the line.", normalize: true },
-      { type: "mc", q: "True or False:  −8 > −3", choices: ["True", "False"], answer: "False", hint: "−8 is farther left than −3, so it is less." },
+      {
+        type: "mc",
+        q: "Which symbol makes it true:  −2 ___ −5 ?",
+        choices: [">", "<", "="],
+        answer: ">",
+        hint: "−2 is closer to 0, so it is farther right than −5.",
+      },
+      {
+        type: "mc",
+        q: "A number to the LEFT of another number on the line is always…",
+        choices: ["greater", "less", "equal"],
+        answer: "less",
+        hint: "Values increase to the right, decrease to the left.",
+      },
+      {
+        type: "input",
+        q: "Order from least to greatest (use commas):  −4, 0, −1",
+        answer: "-4, -1, 0",
+        hint: "Least is farthest left on the line.",
+        normalize: true,
+      },
+      {
+        type: "mc",
+        q: "True or False:  −8 > −3",
+        choices: ["True", "False"],
+        answer: "False",
+        hint: "−8 is farther left than −3, so it is less.",
+      },
     ],
     exit: "Without computing, explain why −1 > −6 using the position of each number on a number line.",
   },
@@ -73,8 +99,7 @@ const LESSONS = [
     emoji: "🌡️",
     objective:
       "I can write, interpret, and explain statements of order for rational numbers in real-world situations.",
-    languageObjective:
-      "I can explain what an inequality means in a real situation using because.",
+    languageObjective: "I can explain what an inequality means in a real situation using because.",
     vocab: [
       ["Order statement", "An inequality such as −7 < −3 that tells which value is greater."],
       ["Context", "The real-world situation a number describes (money, temperature, elevation)."],
@@ -93,10 +118,34 @@ const LESSONS = [
       ],
     },
     practice: [
-      { type: "mc", q: "Account A: −$20.  Account B: −$50.  Which balance is greater?", choices: ["−$20", "−$50", "they are equal"], answer: "−$20", hint: "−20 is closer to 0, so it is the greater balance." },
-      { type: "mc", q: "Using those accounts, who OWES more money?", choices: ["Account A", "Account B"], answer: "Account B", hint: "Owing more = farther below zero = −50." },
-      { type: "input", q: "A diver is at −30 ft and a fish is at −12 ft. Write an inequality comparing the diver to the fish (use < or >). Example form: -30 ? -12", answer: "-30 < -12", hint: "Deeper is more negative, so it is less.", normalize: true },
-      { type: "mc", q: "−12 < −5 for the temperatures above. What does it MEAN?", choices: ["Wednesday was colder", "Tuesday was colder", "Both days were equal"], answer: "Wednesday was colder", hint: "The smaller temperature is the colder one." },
+      {
+        type: "mc",
+        q: "Account A: −$20.  Account B: −$50.  Which balance is greater?",
+        choices: ["−$20", "−$50", "they are equal"],
+        answer: "−$20",
+        hint: "−20 is closer to 0, so it is the greater balance.",
+      },
+      {
+        type: "mc",
+        q: "Using those accounts, who OWES more money?",
+        choices: ["Account A", "Account B"],
+        answer: "Account B",
+        hint: "Owing more = farther below zero = −50.",
+      },
+      {
+        type: "input",
+        q: "A diver is at −30 ft and a fish is at −12 ft. Write an inequality comparing the diver to the fish (use < or >). Example form: -30 ? -12",
+        answer: "-30 < -12",
+        hint: "Deeper is more negative, so it is less.",
+        normalize: true,
+      },
+      {
+        type: "mc",
+        q: "−12 < −5 for the temperatures above. What does it MEAN?",
+        choices: ["Wednesday was colder", "Tuesday was colder", "Both days were equal"],
+        answer: "Wednesday was colder",
+        hint: "The smaller temperature is the colder one.",
+      },
     ],
     exit: "A debt of $15 and a debt of $40 can be written as balances −15 and −40. Write an order statement comparing the two balances and explain what it means about who owes more.",
   },
@@ -128,11 +177,40 @@ const LESSONS = [
       ],
     },
     practice: [
-      { type: "input", q: "Evaluate:  |−7| =", answer: "7", hint: "Absolute value is distance from 0 — drop the sign." },
-      { type: "mc", q: "Which number is GREATER:  −7 or −2 ?", choices: ["−7", "−2"], answer: "−2", hint: "Greater = farther right on the line." },
-      { type: "mc", q: "Which number has the GREATER ABSOLUTE VALUE:  −7 or −2 ?", choices: ["−7", "−2"], answer: "−7", hint: "|−7| = 7, |−2| = 2." },
-      { type: "mc", q: "A debt of $45 (−45) vs a debt of $20 (−20): who OWES more?", choices: ["the $45 debt", "the $20 debt"], answer: "the $45 debt", hint: "Owing more = greater absolute value, even though −45 < −20." },
-      { type: "mc", q: "True or False:  If a < b then |a| < |b| is always true.", choices: ["True", "False"], answer: "False", hint: "Counterexample: −5 < 2 but |−5| = 5 > 2 = |2|." },
+      {
+        type: "input",
+        q: "Evaluate:  |−7| =",
+        answer: "7",
+        hint: "Absolute value is distance from 0 — drop the sign.",
+      },
+      {
+        type: "mc",
+        q: "Which number is GREATER:  −7 or −2 ?",
+        choices: ["−7", "−2"],
+        answer: "−2",
+        hint: "Greater = farther right on the line.",
+      },
+      {
+        type: "mc",
+        q: "Which number has the GREATER ABSOLUTE VALUE:  −7 or −2 ?",
+        choices: ["−7", "−2"],
+        answer: "−7",
+        hint: "|−7| = 7, |−2| = 2.",
+      },
+      {
+        type: "mc",
+        q: "A debt of $45 (−45) vs a debt of $20 (−20): who OWES more?",
+        choices: ["the $45 debt", "the $20 debt"],
+        answer: "the $45 debt",
+        hint: "Owing more = greater absolute value, even though −45 < −20.",
+      },
+      {
+        type: "mc",
+        q: "True or False:  If a < b then |a| < |b| is always true.",
+        choices: ["True", "False"],
+        answer: "False",
+        hint: "Counterexample: −5 < 2 but |−5| = 5 > 2 = |2|.",
+      },
     ],
     exit: "Diver A is at −40 ft and Diver B is at −25 ft. Write one sentence comparing their positions (order) and one sentence comparing their depths (absolute value).",
   },
@@ -148,7 +226,10 @@ const LESSONS = [
     vocab: [
       ["Term", "A part of an expression separated by + or −. In 3x + 7, the terms are 3x and 7."],
       ["Coefficient", "The number multiplied by a variable. In 3x, the coefficient is 3."],
-      ["Factor", "Numbers or expressions multiplied together. In 4(x+2), the factors are 4 and (x+2)."],
+      [
+        "Factor",
+        "Numbers or expressions multiplied together. In 4(x+2), the factors are 4 and (x+2).",
+      ],
       ["Sum / Product / Quotient", "The result of adding / multiplying / dividing."],
     ],
     teach: [
@@ -165,11 +246,38 @@ const LESSONS = [
       ],
     },
     practice: [
-      { type: "input", q: "How many terms are in  5y + 2 ?", answer: "2", hint: "Count the parts separated by + or −." },
-      { type: "input", q: "In  5y, what is the coefficient?", answer: "5", hint: "The number multiplied by the variable." },
-      { type: "mc", q: "The expression  4(x + 2)  is best described as a…", choices: ["sum", "product", "quotient"], answer: "product", hint: "Its outer operation is multiplication of two factors." },
-      { type: "input", q: "How many terms are in  8a + 3b − 6 ?", answer: "3", hint: "8a, 3b, and 6." },
-      { type: "mc", q: "In  8a + 3b − 6,  the coefficient of b is…", choices: ["8", "3", "6"], answer: "3", hint: "Find the number multiplying b." },
+      {
+        type: "input",
+        q: "How many terms are in  5y + 2 ?",
+        answer: "2",
+        hint: "Count the parts separated by + or −.",
+      },
+      {
+        type: "input",
+        q: "In  5y, what is the coefficient?",
+        answer: "5",
+        hint: "The number multiplied by the variable.",
+      },
+      {
+        type: "mc",
+        q: "The expression  4(x + 2)  is best described as a…",
+        choices: ["sum", "product", "quotient"],
+        answer: "product",
+        hint: "Its outer operation is multiplication of two factors.",
+      },
+      {
+        type: "input",
+        q: "How many terms are in  8a + 3b − 6 ?",
+        answer: "3",
+        hint: "8a, 3b, and 6.",
+      },
+      {
+        type: "mc",
+        q: "In  8a + 3b − 6,  the coefficient of b is…",
+        choices: ["8", "3", "6"],
+        answer: "3",
+        hint: "Find the number multiplying b.",
+      },
     ],
     exit: "For the expression 7m + 4, name the two terms and state the coefficient of m.",
   },
@@ -178,8 +286,7 @@ const LESSONS = [
     standard: "6.DS.B.6.a",
     title: "Summarizing Data: Number of Observations",
     emoji: "🔢",
-    objective:
-      "I can summarize a data set by reporting the number of observations (n).",
+    objective: "I can summarize a data set by reporting the number of observations (n).",
     languageObjective:
       "I can state how many data values were collected using the phrase there are ___ observations.",
     vocab: [
@@ -197,10 +304,31 @@ const LESSONS = [
       work: ["Count each value: 88, 92, 75, 90, 85.", "There are 5 values, so n = 5."],
     },
     practice: [
-      { type: "input", q: "How many observations are in  {3, 7, 7, 2, 9, 4} ?", answer: "6", hint: "Count every value, including the repeated 7." },
-      { type: "input", q: "A survey asked 12 households how many pets they own. What is n?", answer: "12", hint: "n is the number of responses." },
-      { type: "input", q: "A dot plot shows these dots above the numbers: 2 dots on 4, 3 dots on 5, 1 dot on 7. How many observations?", answer: "6", hint: "Add up all the dots: 2 + 3 + 1." },
-      { type: "mc", q: "The number of observations tells you…", choices: ["how many data values were collected", "the largest value", "the average value"], answer: "how many data values were collected", hint: "n counts the data, it does not summarize size." },
+      {
+        type: "input",
+        q: "How many observations are in  {3, 7, 7, 2, 9, 4} ?",
+        answer: "6",
+        hint: "Count every value, including the repeated 7.",
+      },
+      {
+        type: "input",
+        q: "A survey asked 12 households how many pets they own. What is n?",
+        answer: "12",
+        hint: "n is the number of responses.",
+      },
+      {
+        type: "input",
+        q: "A dot plot shows these dots above the numbers: 2 dots on 4, 3 dots on 5, 1 dot on 7. How many observations?",
+        answer: "6",
+        hint: "Add up all the dots: 2 + 3 + 1.",
+      },
+      {
+        type: "mc",
+        q: "The number of observations tells you…",
+        choices: ["how many data values were collected", "the largest value", "the average value"],
+        answer: "how many data values were collected",
+        hint: "n counts the data, it does not summarize size.",
+      },
     ],
     exit: "A class recorded {6, 8, 6, 10, 9, 7, 8}. State the number of observations and explain what n means.",
   },
@@ -215,7 +343,10 @@ const LESSONS = [
       "I can describe a data set using the sentence frame the attribute is ___ , measured in ___ .",
     vocab: [
       ["Attribute", "The characteristic being measured or counted (height, temperature, time)."],
-      ["Units of measurement", "The standard the attribute is measured in (cm, °F, minutes, books)."],
+      [
+        "Units of measurement",
+        "The standard the attribute is measured in (cm, °F, minutes, books).",
+      ],
       ["Measurement tool", "What you use to get the value (ruler, thermometer, stopwatch)."],
     ],
     teach: [
@@ -232,10 +363,34 @@ const LESSONS = [
       ],
     },
     practice: [
-      { type: "mc", q: "Data: the daily high temperatures in a city. The attribute is…", choices: ["temperature", "the city", "the day"], answer: "temperature", hint: "The attribute is the characteristic being measured." },
-      { type: "mc", q: "Good units for that temperature data would be…", choices: ["degrees (°F or °C)", "inches", "students"], answer: "degrees (°F or °C)", hint: "Temperature is measured in degrees." },
-      { type: "mc", q: "Data: number of books each student read this month. The units are…", choices: ["books", "minutes", "grams"], answer: "books", hint: "It is a count of books." },
-      { type: "mc", q: "Best tool to measure 'length of each fish caught'?", choices: ["a ruler/measuring tape", "a thermometer", "a stopwatch"], answer: "a ruler/measuring tape", hint: "Length is measured with a ruler or tape." },
+      {
+        type: "mc",
+        q: "Data: the daily high temperatures in a city. The attribute is…",
+        choices: ["temperature", "the city", "the day"],
+        answer: "temperature",
+        hint: "The attribute is the characteristic being measured.",
+      },
+      {
+        type: "mc",
+        q: "Good units for that temperature data would be…",
+        choices: ["degrees (°F or °C)", "inches", "students"],
+        answer: "degrees (°F or °C)",
+        hint: "Temperature is measured in degrees.",
+      },
+      {
+        type: "mc",
+        q: "Data: number of books each student read this month. The units are…",
+        choices: ["books", "minutes", "grams"],
+        answer: "books",
+        hint: "It is a count of books.",
+      },
+      {
+        type: "mc",
+        q: "Best tool to measure 'length of each fish caught'?",
+        choices: ["a ruler/measuring tape", "a thermometer", "a stopwatch"],
+        answer: "a ruler/measuring tape",
+        hint: "Length is measured with a ruler or tape.",
+      },
     ],
     exit: "For the data set 'lengths of fish caught', name the attribute, a tool you could use to measure it, and appropriate units.",
   },
@@ -268,11 +423,41 @@ const LESSONS = [
       ],
     },
     practice: [
-      { type: "input", q: "Solve:  x + 4 > 9   (write like  x > 5 )", answer: "x > 5", hint: "Subtract 4 from both sides.", normalize: true },
-      { type: "input", q: "Solve:  3x ≤ 12   (write like  x <= 4 )", answer: "x <= 4", hint: "Divide both sides by 3.", normalize: true },
-      { type: "mc", q: "The graph of  x > 2  uses a(n) ___ circle at 2.", choices: ["open", "closed"], answer: "open", hint: "> and < do not include the endpoint." },
-      { type: "mc", q: "'A number is at least 10' translates to…", choices: ["n ≥ 10", "n > 10", "n ≤ 10"], answer: "n ≥ 10", hint: "'At least' includes the value, so ≥." },
-      { type: "mc", q: "Is x = 6 a solution of  x + 1 > 6 ?", choices: ["Yes", "No"], answer: "Yes", hint: "6 + 1 = 7, and 7 > 6 is true." },
+      {
+        type: "input",
+        q: "Solve:  x + 4 > 9   (write like  x > 5 )",
+        answer: "x > 5",
+        hint: "Subtract 4 from both sides.",
+        normalize: true,
+      },
+      {
+        type: "input",
+        q: "Solve:  3x ≤ 12   (write like  x <= 4 )",
+        answer: "x <= 4",
+        hint: "Divide both sides by 3.",
+        normalize: true,
+      },
+      {
+        type: "mc",
+        q: "The graph of  x > 2  uses a(n) ___ circle at 2.",
+        choices: ["open", "closed"],
+        answer: "open",
+        hint: "> and < do not include the endpoint.",
+      },
+      {
+        type: "mc",
+        q: "'A number is at least 10' translates to…",
+        choices: ["n ≥ 10", "n > 10", "n ≤ 10"],
+        answer: "n ≥ 10",
+        hint: "'At least' includes the value, so ≥.",
+      },
+      {
+        type: "mc",
+        q: "Is x = 6 a solution of  x + 1 > 6 ?",
+        choices: ["Yes", "No"],
+        answer: "Yes",
+        hint: "6 + 1 = 7, and 7 > 6 is true.",
+      },
     ],
     exit: "Write and solve a one-step inequality for 'twice a number is less than 8,' then describe its graph (circle type and direction).",
   },
@@ -298,7 +483,8 @@ const LESSONS = [
       "These words help predict which responses will be more or less common when you collect data.",
     ],
     example: {
-      prompt: "A spinner is mostly blue with a small red slice and no green. Describe landing on each color.",
+      prompt:
+        "A spinner is mostly blue with a small red slice and no green. Describe landing on each color.",
       work: [
         "Blue: likely (it covers most of the spinner).",
         "Red: unlikely (only a small slice).",
@@ -306,10 +492,34 @@ const LESSONS = [
       ],
     },
     practice: [
-      { type: "mc", q: "Rolling a 7 on a standard 1–6 number cube is…", choices: ["impossible", "certain", "likely"], answer: "impossible", hint: "A 1–6 cube has no 7." },
-      { type: "mc", q: "The sun rising tomorrow is…", choices: ["certain", "unlikely", "impossible"], answer: "certain", hint: "It always happens." },
-      { type: "mc", q: "A bag has 9 red and 1 blue marble. Drawing red is…", choices: ["likely", "unlikely", "impossible"], answer: "likely", hint: "Most marbles are red." },
-      { type: "mc", q: "Flipping heads on a fair coin, compared to tails, is…", choices: ["equally likely", "more likely", "impossible"], answer: "equally likely", hint: "A fair coin has two equal outcomes." },
+      {
+        type: "mc",
+        q: "Rolling a 7 on a standard 1–6 number cube is…",
+        choices: ["impossible", "certain", "likely"],
+        answer: "impossible",
+        hint: "A 1–6 cube has no 7.",
+      },
+      {
+        type: "mc",
+        q: "The sun rising tomorrow is…",
+        choices: ["certain", "unlikely", "impossible"],
+        answer: "certain",
+        hint: "It always happens.",
+      },
+      {
+        type: "mc",
+        q: "A bag has 9 red and 1 blue marble. Drawing red is…",
+        choices: ["likely", "unlikely", "impossible"],
+        answer: "likely",
+        hint: "Most marbles are red.",
+      },
+      {
+        type: "mc",
+        q: "Flipping heads on a fair coin, compared to tails, is…",
+        choices: ["equally likely", "more likely", "impossible"],
+        answer: "equally likely",
+        hint: "A fair coin has two equal outcomes.",
+      },
     ],
     exit: "Name one certain event, one impossible event, and one likely event from your day, and explain each choice.",
   },
@@ -555,10 +765,7 @@ function lessonPage(L) {
     .map((p, i) => {
       if (p.type === "mc") {
         const btns = p.choices
-          .map(
-            (c) =>
-              `<button type="button" data-c="${esc(c)}">${esc(c)}</button>`,
-          )
+          .map((c) => `<button type="button" data-c="${esc(c)}">${esc(c)}</button>`)
           .join("");
         return `<div class="q" data-type="mc" data-i="${i}" data-answer="${esc(p.answer)}">
         <div class="prompt">${i + 1}. ${esc(p.q)}</div>

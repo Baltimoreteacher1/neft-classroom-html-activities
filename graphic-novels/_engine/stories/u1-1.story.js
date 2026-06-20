@@ -15,6 +15,8 @@ window.GN_STORY = {
     assessment: "Graphic Novel U1 #1: Prime Station: The Factor Code",
     artBase: "../_art/unit1/",
     home: "../index.html",
+    // tier: 0  // uncomment for the Level 0 (IEP) build — engine auto-reduces to
+    //          // 2 choices, fewer beats, and keeps the sentence frame open.
   },
 
   cast: {
@@ -149,18 +151,45 @@ window.GN_STORY = {
             en: "“The number ____ is prime because it has only ____ factors.”",
             es: "“El número ____ es primo porque solo tiene ____ factores.”",
           },
+          // Escalating, misconception-targeted help. The engine shows the matched
+          // choice's `why` on the 1st miss, then `help.procedural`, then
+          // `help.example` (DIFFERENT numbers — never the answer).
+          help: {
+            procedural: {
+              en: "Step 1: list every number that divides it. Step 2: a prime has exactly two — 1 and itself.",
+              es: "Paso 1: enumera lo que lo divide. Paso 2: un primo tiene solo dos: 1 y él mismo.",
+            },
+            example: {
+              en: "Worked example with other numbers: 11 is prime (only 1 × 11). 8 is NOT — 8 = 2 × 4. Now check yours the same way.",
+              es: "Ejemplo con otros números: 11 es primo (solo 1 × 11). 8 no lo es: 8 = 2 × 4. Revisa el tuyo igual.",
+            },
+          },
           choices: [
             {
               en: "Not 9 — that's 3 × 3. The prime is <b>7</b> (only 1 × 7).",
               es: "9 no: es 3 × 3. El primo es 7 (solo 1 × 7).",
               correct: true,
+              keepL0: true,
             },
             {
               en: "You're right, AXIS — 9 is prime.",
               es: "Tienes razón, AXIS: 9 es primo.",
               correct: false,
+              keepL0: true,
+              why: {
+                en: "9 is not prime — it splits into 3 × 3, so it has more than two factors.",
+                es: "9 no es primo: es 3 × 3, así que tiene más de dos factores.",
+              },
             },
-            { en: "15 is prime.", es: "15 es primo.", correct: false },
+            {
+              en: "15 is prime.",
+              es: "15 es primo.",
+              correct: false,
+              why: {
+                en: "15 is not prime — it splits into 3 × 5, so it has more than two factors.",
+                es: "15 no es primo: es 3 × 5, así que tiene más de dos factores.",
+              },
+            },
           ],
           goodEn:
             "✅ Correct! 7 is prime — only 1 and 7 divide it. Lock one is open.",

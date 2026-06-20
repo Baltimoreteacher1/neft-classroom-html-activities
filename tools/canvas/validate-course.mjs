@@ -55,7 +55,9 @@ function convertDragSort(o) {
     const c = cats.find((c) => c && c.id === id);
     return c && c.label != null ? String(c.label) : String(id);
   };
-  const pairs = items.slice(0, 6).map((it) => ({ term: String(it.text), match: labelOf(it.category) }));
+  const pairs = items
+    .slice(0, 6)
+    .map((it) => ({ term: String(it.text), match: labelOf(it.category) }));
   if (pairs.length < 2) return null;
   if (distinctCount(pairs.map((p) => p.match)) < 2) return null;
   return { kind: "match", pairs };
@@ -85,7 +87,9 @@ function convertErrorAnalysis(o) {
   if (!Array.isArray(we) || we.length < 2) return null;
   const es = o.errorStep;
   if (!Number.isInteger(es) || es < 0 || es >= we.length) return null;
-  const choices = we.map((s) => `${s && s.label != null ? s.label : ""}: ${s && s.work != null ? s.work : ""}`);
+  const choices = we.map(
+    (s) => `${s && s.label != null ? s.label : ""}: ${s && s.work != null ? s.work : ""}`,
+  );
   const stem = (o.title ? o.title + " — " : "") + "Which step contains the error?";
   return { kind: "mc", stem, choices, correct: es };
 }
@@ -209,7 +213,8 @@ function parseQuizItems(xml) {
         const respident = lm[1];
         const term = stripTags(lm[2]);
         const body = lm[3];
-        const labRe = /<response_label ident="(m\d+)">\s*<material>\s*<mattext[^>]*>([\s\S]*?)<\/mattext>/g;
+        const labRe =
+          /<response_label ident="(m\d+)">\s*<material>\s*<mattext[^>]*>([\s\S]*?)<\/mattext>/g;
         let opt;
         while ((opt = labRe.exec(body))) {
           if (!(opt[1] in optionText)) optionText[opt[1]] = stripTags(opt[2]);
@@ -329,10 +334,7 @@ function validatePackage(courseDir) {
           if (t.correctIdent == null)
             fail(where, `matching term "${p.term}" has no correct option marked`);
           else if (t.correctText !== p.match.trim())
-            fail(
-              where,
-              `matching "${p.term}" → "${t.correctText}" but source says → "${p.match}"`,
-            );
+            fail(where, `matching "${p.term}" → "${t.correctText}" but source says → "${p.match}"`);
         });
       }
     });
