@@ -506,6 +506,413 @@
     });
   }
 
+  /* ---- Saved to Device Pulsing Indicator ---- */
+  var saveDebounceTimer = null;
+  function injectSaveIndicator() {
+    var parent = document.querySelector(".pk-tabbar-top");
+    if (!parent || document.getElementById("pk-save-indicator")) return;
+    
+    var ind = document.createElement("span");
+    ind.id = "pk-save-indicator";
+    ind.className = "pk-save-indicator";
+    ind.innerHTML = '<span class="pk-save-icon">☁️</span> <span class="pk-save-text">Saved to Device</span>';
+    
+    parent.appendChild(ind);
+    
+    function triggerSaving() {
+      ind.classList.add("saving");
+      ind.querySelector(".pk-save-text").textContent = "Saving progress...";
+      
+      clearTimeout(saveDebounceTimer);
+      saveDebounceTimer = setTimeout(function () {
+        ind.classList.remove("saving");
+        ind.querySelector(".pk-save-text").textContent = "Saved to Device";
+      }, 800);
+    }
+    
+    document.addEventListener("input", function (e) {
+      if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) {
+        triggerSaving();
+      }
+    });
+    document.addEventListener("change", function (e) {
+      if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.target.type === "checkbox")) {
+        triggerSaving();
+      }
+    });
+  }
+
+  /* ---- Multi-Theme / Skin Selector ---- */
+  function injectThemeSelector() {
+    var parent = document.querySelector(".pk-tabbar-top");
+    if (!parent || document.getElementById("pk-theme-selector")) return;
+    
+    var div = document.createElement("div");
+    div.id = "pk-theme-selector";
+    div.className = "pk-theme-selector";
+    div.innerHTML = '<label for="pk-theme-select">🎨 Skin:</label>' +
+      '<select id="pk-theme-select">' +
+      '  <option value="theme-default">Classic Blue</option>' +
+      '  <option value="theme-cyber">Cyberpunk Neon</option>' +
+      '  <option value="theme-notebook">Notebook Lined</option>' +
+      '</select>';
+    
+    parent.appendChild(div);
+    
+    var select = document.getElementById("pk-theme-select");
+    var activeTheme = localStorage.getItem("pk-active-theme") || "theme-default";
+    select.value = activeTheme;
+    
+    function applyTheme(theme) {
+      document.body.classList.remove("theme-cyber", "theme-notebook");
+      if (theme !== "theme-default") {
+        document.body.classList.add(theme);
+      }
+    }
+    applyTheme(activeTheme);
+    
+    select.addEventListener("change", function () {
+      var selected = select.value;
+      localStorage.setItem("pk-active-theme", selected);
+      applyTheme(selected);
+      playClickSound();
+    });
+  }
+
+  /* ---- Floating Scratchpad whiteboard panel ---- */
+  function injectScratchpad() {
+    if (document.getElementById("pk-scratch-btn")) return;
+    
+    // Inject floating button
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.id = "pk-scratch-btn";
+    btn.className = "pk-scratch-btn pk-no-print";
+    btn.innerHTML = "✏️ Scratchpad";
+    document.body.appendChild(btn);
+    
+    // Inject panel
+    var panel = document.createElement("div");
+    panel.id = "pk-scratch-panel";
+    panel.className = "pk-scratch-panel pk-no-print";
+    panel.innerHTML = '<div class="pk-scratch-header">' +
+      '  <span>✏️ Floating Scratchpad</span>' +
+      '  <button type="button" class="pk-scratch-close" id="pk-scratch-close">×</button>' +
+      '</div>' +
+      '<div class="pk-scratch-canvas-wrap">' +
+      '  <canvas id="pk-scratch-canvas"></canvas>' +
+      '</div>' +
+      '<div class="pk-scratch-toolbar">' +
+      '  <button type="button" class="pk-scratch-tool color-black active" data-action="draw-black"></button>' +
+      '  <button type="button" class="pk-scratch-tool color-red" data-action="draw-red"></button>' +
+      '  <button type="button" class="pk-scratch-tool color-blue" data-action="draw-blue"></button>' +
+      '  <button type="button" class="pk-scratch-tool" data-action="eraser" title="Eraser">🧽</button>' +
+      '  <button type="button" class="pk-scratch-tool" style="margin-left: auto;" data-action="clear" title="Clear Canvas">🗑️ Clear</button>' +
+      '</div>';
+    document.body.appendChild(panel);
+    
+    btn.addEventListener("click", function () {
+      panel.classList.toggle("open");
+      playClickSound();
+    });
+    
+    document.getElementById("pk-scratch-close").addEventListener("click", function () {
+      panel.classList.remove("open");
+      playClickSound();
+    });
+    
+    initScratchpadCanvas(document.getElementById("pk-scratch-canvas"), panel);
+  }
+
+  function initScratchpadCanvas(canvas, panel) {
+    var ctx = canvas.getContext("2d");
+    ctx.lineWidth = 3;
+    ctx.lineCap = "round";
+    ctx.strokeStyle = "#000000";
+    var drawing = false;
+    var lastX = 0;
+    var lastY = 0;
+    
+    function resize() {
+      var rect = canvas.parentNode.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+      ctx.lineWidth = 3;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = "#000000";
+    }
+    setTimeout(resize, 400);
+    window.addEventListener("resize", resize);
+    
+    function getPos(e) {
+      var rect = canvas.getBoundingClientRect();
+      var cx = e.clientX || (e.touches && e.touches[0].clientX);
+      var cy = e.clientY || (e.touches && e.touches[0].clientY);
+      return { x: cx - rect.left, y: cy - rect.top };
+    }
+    
+    function start(e) {
+      drawing = true;
+      var pos = getPos(e);
+      lastX = pos.x;
+      lastY = pos.y;
+    }
+    
+    function draw(e) {
+      if (!drawing) return;
+      var pos = getPos(e);
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+      lastX = pos.x;
+      lastY = pos.y;
+    }
+    
+    function stop() { drawing = false; }
+    
+    canvas.addEventListener("mousedown", start);
+    canvas.addEventListener("mousemove", draw);
+    canvas.addEventListener("mouseup", stop);
+    canvas.addEventListener("mouseleave", stop);
+    canvas.addEventListener("touchstart", function (e) { start(e); e.preventDefault(); });
+    canvas.addEventListener("touchmove", function (e) { draw(e); e.preventDefault(); });
+    canvas.addEventListener("touchend", function (e) { stop(e); e.preventDefault(); });
+    
+    var tools = panel.querySelectorAll(".pk-scratch-tool");
+    tools.forEach(function (tool) {
+      tool.addEventListener("click", function () {
+        var act = tool.getAttribute("data-action");
+        if (act === "clear") {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          playClickSound();
+        } else {
+          tools.forEach(function (t) { if(t.getAttribute("data-action") !== "clear") t.classList.remove("active"); });
+          tool.classList.add("active");
+          playClickSound();
+          if (act === "eraser") {
+            ctx.strokeStyle = "#f8fafc";
+            ctx.lineWidth = 16;
+          } else if (act === "draw-black") {
+            ctx.strokeStyle = "#000000";
+            ctx.lineWidth = 3;
+          } else if (act === "draw-red") {
+            ctx.strokeStyle = "#ef4444";
+            ctx.lineWidth = 3;
+          } else if (act === "draw-blue") {
+            ctx.strokeStyle = "#3b82f6";
+            ctx.lineWidth = 3;
+          }
+        }
+      });
+    });
+  }
+
+  /* ---- Digital Signature Canvas & printable Certificate lock ---- */
+  function generateMockQrCode() {
+    var size = 15;
+    var svg = '<svg class="pk-cert-qr-svg" viewBox="0 0 15 15" width="50" height="50" shape-rendering="crispEdges">';
+    function drawAnchor(x, y) {
+      svg += '<rect x="' + x + '" y="' + y + '" width="5" height="5" fill="black"/>';
+      svg += '<rect x="' + (x+1) + '" y="' + (y+1) + '" width="3" height="3" fill="white"/>';
+      svg += '<rect x="' + (x+2) + '" y="' + (y+2) + '" width="1" height="1" fill="black"/>';
+    }
+    drawAnchor(0, 0);
+    drawAnchor(10, 0);
+    drawAnchor(0, 10);
+    for (var r = 0; r < size; r++) {
+      for (var c = 0; c < size; c++) {
+        var isAnchor = (r < 5 && c < 5) || (r < 5 && c >= 10) || (r >= 10 && c < 5);
+        if (!isAnchor) {
+          if (Math.random() > 0.55) {
+            svg += '<rect x="' + c + '" y="' + r + '" width="1" height="1" fill="black"/>';
+          }
+        }
+      }
+    }
+    svg += '</svg>';
+    return svg;
+  }
+
+  function injectSignatureAndCertificate() {
+    var panels = document.querySelectorAll(".pk-tab-panel");
+    if (!panels.length) return;
+    
+    var lastPanel = panels[panels.length - 1];
+    if (!lastPanel || lastPanel.querySelector(".pk-signature-card")) return;
+    
+    var projKey = location.pathname;
+    
+    var sigCard = document.createElement("div");
+    sigCard.className = "pk-signature-card pk-no-print";
+    sigCard.innerHTML = '<h3>✍️ Certify & Sign Project</h3>' +
+      '<p>Drawing your signature below locks all calculations and issues your official project certificate.</p>' +
+      '<div class="pk-signature-area">' +
+      '  <canvas id="pk-sig-canvas" width="400" height="120"></canvas>' +
+      '  <button type="button" id="pk-sig-clear">Clear</button>' +
+      '</div>' +
+      '<button type="button" class="btn" id="pk-sig-lock">Certify & Lock Project</button>';
+    
+    var certCard = document.createElement("div");
+    certCard.id = "pk-cert-card";
+    certCard.className = "pk-certificate-card";
+    certCard.style.display = "none";
+    certCard.innerHTML = '<div class="pk-cert-border">' +
+      '  <h2>📜 CERTIFICATE OF MATHEMATICAL DESIGN</h2>' +
+      '  <p class="pk-cert-award">This certifies that:</p>' +
+      '  <h3 class="pk-cert-name" id="pk-cert-student-name">Grade 6 Architect</h3>' +
+      '  <p class="pk-cert-body">Has successfully designed, audited, and mathematically verified all proportional parameters for this Grade 6 culminating project:</p>' +
+      '  <h4 class="pk-cert-project" id="pk-cert-title">Project Design Ratios & Relationships</h4>' +
+      '  <div class="pk-cert-footer">' +
+      '    <div class="pk-cert-sig-img-wrap">' +
+      '      <img id="pk-cert-sig-img" src="" alt="Signature"/>' +
+      '      <div class="pk-cert-line">Student Architect</div>' +
+      '    </div>' +
+      '    <div class="pk-cert-qr-wrap">' +
+      '      <div id="pk-cert-qr"></div>' +
+      '      <div class="pk-cert-line" style="border:none; margin-top:2px;">CODE: <span id="pk-cert-code"></span></div>' +
+      '    </div>' +
+      '  </div>' +
+      '</div>' +
+      '<div style="margin-top: 15px;" class="pk-no-print">' +
+      '  <button type="button" class="btn" onclick="window.print()">Print / Save PDF</button>' +
+      '  <button type="button" class="btn alt" id="pk-sig-unlock" style="margin-left: 10px;">🔓 Unlock &amp; Edit</button>' +
+      '</div>';
+    
+    lastPanel.appendChild(sigCard);
+    lastPanel.appendChild(certCard);
+    
+    var canvas = document.getElementById("pk-sig-canvas");
+    var clearBtn = document.getElementById("pk-sig-clear");
+    var lockBtn = document.getElementById("pk-sig-lock");
+    var unlockBtn = document.getElementById("pk-sig-unlock");
+    var nameEl = document.getElementById("pk-cert-student-name");
+    
+    initSignatureCanvas(canvas, clearBtn);
+    
+    function setControlsLock(locked) {
+      var inputs = document.querySelectorAll("input, textarea, select");
+      inputs.forEach(function (inp) {
+        if (inp.id !== "pk-theme-select" && inp.id !== "pk-sig-unlock") {
+          inp.disabled = locked;
+        }
+      });
+    }
+    
+    function lockProject() {
+      // get student name
+      var studentName = "Grade 6 Student";
+      var sName = document.querySelector("input[id*='studentName'], input[id*='partnerName'], input[id*='partner']");
+      if (sName && sName.value.trim()) {
+        studentName = sName.value.trim();
+      } else if (window.NeftIdentity && typeof window.NeftIdentity.getName === "function") {
+        studentName = window.NeftIdentity.getName() || studentName;
+      }
+      
+      // project title
+      var pTitle = document.querySelector("h1, h2");
+      var titleText = pTitle ? pTitle.textContent.replace(/✍️|📝|📐|🎨/g, "").trim() : "Grade 6 Project";
+      
+      var dataUrl = canvas.toDataURL();
+      localStorage.setItem("pk-certified-" + projKey, "true");
+      localStorage.setItem("pk-sig-data-" + projKey, dataUrl);
+      
+      nameEl.textContent = studentName;
+      document.getElementById("pk-cert-title").textContent = titleText;
+      document.getElementById("pk-cert-sig-img").src = dataUrl;
+      document.getElementById("pk-cert-qr").innerHTML = generateMockQrCode();
+      
+      var randomCode = "MATH-" + Math.floor(100000 + Math.random() * 900000);
+      document.getElementById("pk-cert-code").textContent = randomCode;
+      
+      sigCard.style.display = "none";
+      certCard.style.display = "block";
+      setControlsLock(true);
+      playSuccessSound();
+      fireConfetti();
+    }
+    
+    function unlockProject() {
+      localStorage.removeItem("pk-certified-" + projKey);
+      localStorage.removeItem("pk-sig-data-" + projKey);
+      sigCard.style.display = "block";
+      certCard.style.display = "none";
+      setControlsLock(false);
+      
+      // clear signature canvas
+      var ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      playClickSound();
+    }
+    
+    lockBtn.addEventListener("click", lockProject);
+    unlockBtn.addEventListener("click", unlockProject);
+    
+    // Check initial certified state
+    if (localStorage.getItem("pk-certified-" + projKey) === "true") {
+      var savedSig = localStorage.getItem("pk-sig-data-" + projKey);
+      if (savedSig) {
+        var img = new Image();
+        img.onload = function () {
+          canvas.getContext("2d").drawImage(img, 0, 0);
+          lockProject();
+        };
+        img.src = savedSig;
+      }
+    }
+  }
+
+  function initSignatureCanvas(canvas, clearBtn) {
+    var ctx = canvas.getContext("2d");
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = "round";
+    ctx.strokeStyle = "#0f2b3c";
+    var drawing = false;
+    var lastX = 0;
+    var lastY = 0;
+    
+    function getPos(e) {
+      var rect = canvas.getBoundingClientRect();
+      var cx = e.clientX || (e.touches && e.touches[0].clientX);
+      var cy = e.clientY || (e.touches && e.touches[0].clientY);
+      return {
+        x: (cx - rect.left) * (canvas.width / rect.width),
+        y: (cy - rect.top) * (canvas.height / rect.height)
+      };
+    }
+    
+    function start(e) {
+      drawing = true;
+      var pos = getPos(e);
+      lastX = pos.x;
+      lastY = pos.y;
+    }
+    
+    function draw(e) {
+      if (!drawing) return;
+      var pos = getPos(e);
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+      lastX = pos.x;
+      lastY = pos.y;
+    }
+    function stop() { drawing = false; }
+    
+    canvas.addEventListener("mousedown", start);
+    canvas.addEventListener("mousemove", draw);
+    canvas.addEventListener("mouseup", stop);
+    canvas.addEventListener("mouseleave", stop);
+    canvas.addEventListener("touchstart", function(e) { start(e); e.preventDefault(); });
+    canvas.addEventListener("touchmove", function(e) { draw(e); e.preventDefault(); });
+    canvas.addEventListener("touchend", function(e) { stop(e); e.preventDefault(); });
+    clearBtn.addEventListener("click", function () {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      playClickSound();
+    });
+  }
+
   ready(function () {
     if (document.body.hasAttribute("data-pk-no-tabs")) return;
     injectResearchPhase();
@@ -524,5 +931,9 @@
     injectSoundToggle();
     wireInteractiveSounds();
     setTimeout(injectVocabTooltips, 200);
+    injectSaveIndicator();
+    injectThemeSelector();
+    injectScratchpad();
+    setTimeout(injectSignatureAndCertificate, 300);
   });
 })();

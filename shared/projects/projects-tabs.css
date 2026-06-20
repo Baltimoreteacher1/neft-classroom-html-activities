@@ -996,3 +996,456 @@ svg[id^="phase-svg-"] text {
   visibility: visible;
 }
 
+/* ==========================================================================
+   Culminating Projects Ultimate Upgrades (Signature, Cloud Save, Themes, Scratchpad)
+   ========================================================================== */
+
+/* Digital Signature Card */
+.pk-signature-card {
+  background: var(--pp-bg, #f8fafc);
+  border: 2px solid var(--pp-line, #e2e8f0);
+  border-radius: 14px;
+  padding: 20px;
+  margin: 24px auto;
+  max-width: 480px;
+  text-align: center;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+}
+.pk-signature-area {
+  margin: 16px auto;
+  max-width: 400px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  height: 120px;
+}
+#pk-sig-canvas {
+  display: block;
+  cursor: crosshair;
+  background: #ffffff;
+  touch-action: none;
+}
+.pk-signature-area button {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  cursor: pointer;
+  z-index: 10;
+  color: #334155;
+  font-weight: bold;
+}
+.pk-signature-area button:hover {
+  background: #e2e8f0;
+}
+
+/* Certificate Card */
+.pk-certificate-card {
+  background: #ffffff;
+  border: 8px double #0f2b3c;
+  border-radius: 12px;
+  padding: 24px;
+  margin: 30px auto;
+  max-width: 520px;
+  text-align: center;
+  box-shadow: 0 15px 35px rgba(15,43,60,0.12);
+  position: relative;
+  page-break-inside: avoid;
+  break-inside: avoid;
+  color: #0f2b3c !important;
+}
+.pk-cert-border {
+  border: 1.5px solid rgba(15,43,60,0.15);
+  padding: 18px;
+  border-radius: 6px;
+  background: radial-gradient(circle, #ffffff 60%, #fafcff 100%);
+}
+.pk-certificate-card h2 {
+  font-size: 18px;
+  color: #0f2b3c;
+  margin: 0 0 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+.pk-cert-award {
+  font-size: 13px;
+  color: #64748b;
+  margin: 10px 0 2px;
+  font-style: italic;
+}
+.pk-cert-name {
+  font-size: 22px;
+  color: var(--pp-blue, #1763c7) !important;
+  margin: 4px 0 10px;
+  border-bottom: 2px solid #cbd5e1;
+  display: inline-block;
+  padding: 0 20px 2px;
+  font-family: 'Georgia', serif;
+  font-weight: bold;
+}
+.pk-cert-body {
+  font-size: 13px;
+  color: #334155;
+  line-height: 1.5;
+  margin: 10px 0;
+}
+.pk-cert-project {
+  font-size: 14px;
+  color: #0e9a8c;
+  margin: 5px 0 20px;
+  font-weight: bold;
+}
+.pk-cert-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 15px;
+}
+.pk-cert-sig-img-wrap {
+  width: 160px;
+  text-align: center;
+}
+#pk-cert-sig-img {
+  max-height: 40px;
+  display: block;
+  margin: 0 auto 4px;
+}
+.pk-cert-line {
+  border-top: 1px solid #94a3b8;
+  font-size: 10px;
+  color: #64748b;
+  padding-top: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.pk-cert-qr-wrap {
+  text-align: center;
+}
+.pk-cert-qr-svg {
+  display: block;
+  margin: 0 auto 4px;
+  width: 50px;
+  height: 50px;
+}
+
+/* Saved to Device indicator */
+.pk-save-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: bold;
+  margin-left: 10px;
+  border: 1px solid #e2e8f0;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: #ffffff;
+}
+.pk-save-indicator.saving {
+  color: #0e9a8c;
+  border-color: #ccfbf1;
+  background: #f0fdfa;
+}
+.pk-save-icon {
+  font-size: 0.95rem;
+}
+.pk-save-indicator.saving .pk-save-icon {
+  animation: pk-pulse 1s infinite alternate;
+}
+@keyframes pk-pulse {
+  0% { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(1.1); opacity: 1; }
+}
+
+/* Theme selector dropdown */
+.pk-theme-selector {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  margin-left: 10px;
+}
+.pk-theme-selector label {
+  font-weight: bold;
+  color: var(--pp-muted, #54677c);
+}
+.pk-theme-selector select {
+  padding: 4px 6px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  font-size: 0.82rem;
+  cursor: pointer;
+  outline: none;
+  font-weight: 600;
+  color: #334155;
+  transition: all 0.2s ease;
+}
+.pk-theme-selector select:hover {
+  border-color: #94a3b8;
+  background: #f8fafc;
+}
+
+/* CYBERPUNK THEME STYLE */
+body.theme-cyber {
+  --pp-bg: #090d16;
+  --pp-line: #1e293b;
+  --pp-ink: #f1f5f9;
+  --pp-blue: #38bdf8;
+  --pp-teal: #2dd4bf;
+  --pp-navy: #0f172a;
+  --pp-muted: #94a3b8;
+  background-color: #020617 !important;
+  color: #f1f5f9 !important;
+}
+body.theme-cyber .pk .wrap,
+body.theme-cyber .phase {
+  background: #090d16 !important;
+  color: #f1f5f9 !important;
+  border-color: #1e293b !important;
+  box-shadow: 0 10px 30px rgba(56, 189, 248, 0.04) !important;
+}
+body.theme-cyber .pk-math-scaffold-card,
+body.theme-cyber .pk-research-inline-card,
+body.theme-cyber .pk-field-notes,
+body.theme-cyber .pk-mt-card,
+body.theme-cyber .toolbar,
+body.theme-cyber .pk-signature-card {
+  background: #0f172a !important;
+  border-color: #1e293b !important;
+  color: #f1f5f9 !important;
+}
+body.theme-cyber input,
+body.theme-cyber textarea,
+body.theme-cyber select {
+  background: #020617 !important;
+  color: #f1f5f9 !important;
+  border-color: #334155 !important;
+}
+body.theme-cyber .pk .pk-tab {
+  background: #0f172a !important;
+  color: #94a3b8 !important;
+  border: 1px solid #1e293b !important;
+}
+body.theme-cyber .pk .pk-tab.pk-active {
+  background: #1e293b !important;
+  color: #38bdf8 !important;
+  border-color: #38bdf8 !important;
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.15) !important;
+}
+body.theme-cyber svg {
+  background: #0b0f19 !important;
+  border-color: #1e293b !important;
+}
+body.theme-cyber svg text {
+  fill: #f1f5f9 !important;
+}
+body.theme-cyber .readout,
+body.theme-cyber .hintbox,
+body.theme-cyber .pk-callout,
+body.theme-cyber .xtopic,
+body.theme-cyber .task {
+  background: #0f172a !important;
+  border-color: #1e293b !important;
+  color: #cbd5e1 !important;
+}
+
+/* NOTEBOOK/SKETCHBOOK THEME STYLE */
+body.theme-notebook {
+  --pp-bg: #fffdf6;
+  --pp-line: #b3c5d7;
+  --pp-ink: #1a2f4c;
+  --pp-blue: #0b5394;
+  --pp-teal: #1f7a6b;
+  --pp-navy: #0b5394;
+  --pp-muted: #627284;
+  font-family: "Caveat", "Comic Sans MS", cursive, sans-serif !important;
+  background-color: #fcf9eb !important;
+  color: #1a2f4c !important;
+}
+body.theme-notebook .pk .wrap,
+body.theme-notebook .phase {
+  background: #fffdf6 !important;
+  color: #1a2f4c !important;
+  border: 2px dashed #b3c5d7 !important;
+  box-shadow: 2px 2px 10px rgba(0,0,0,0.05) !important;
+}
+body.theme-notebook .pk-math-scaffold-card,
+body.theme-notebook .pk-research-inline-card,
+body.theme-notebook .pk-field-notes,
+body.theme-notebook .pk-mt-card,
+body.theme-notebook .toolbar,
+body.theme-notebook .pk-signature-card {
+  background: #fffefb !important;
+  border: 1px dashed #b3c5d7 !important;
+  border-radius: 4px !important;
+}
+body.theme-notebook .pk .pk-tab {
+  border-radius: 4px !important;
+  border: 1px dashed #b3c5d7 !important;
+  font-family: inherit !important;
+}
+body.theme-notebook .pk .pk-tab.pk-active {
+  background: #eef5fc !important;
+  border-color: #0b5394 !important;
+  font-weight: 900 !important;
+}
+body.theme-notebook input,
+body.theme-notebook textarea,
+body.theme-notebook select {
+  font-family: inherit !important;
+  border-bottom: 1.5px dashed #b3c5d7 !important;
+}
+
+/* Floating Scratchpad */
+.pk-scratch-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  background: var(--pp-blue, #1763c7);
+  color: #ffffff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 30px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(23,99,199,0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+.pk-scratch-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(23,99,199,0.4);
+}
+.pk-scratch-panel {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 320px;
+  height: 400px;
+  background: #ffffff;
+  border: 2px solid #0f2b3c;
+  border-radius: 12px;
+  z-index: 9998;
+  box-shadow: 0 10px 30px rgba(15,43,60,0.18);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  opacity: 0;
+  transform: scale(0.9);
+  visibility: hidden;
+  transition: all 0.25s cubic-bezier(0.1, 0.8, 0.3, 1);
+  color: #0f2b3c !important;
+}
+.pk-scratch-panel.open {
+  opacity: 1;
+  transform: scale(1);
+  visibility: visible;
+}
+.pk-scratch-header {
+  background: #0f2b3c;
+  color: #ffffff;
+  padding: 10px 14px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.pk-scratch-close {
+  background: none;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+.pk-scratch-canvas-wrap {
+  flex: 1;
+  position: relative;
+  background: #f8fafc;
+}
+#pk-scratch-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+}
+.pk-scratch-toolbar {
+  background: #f1f5f9;
+  border-top: 1px solid #cbd5e1;
+  padding: 6px;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+.pk-scratch-tool {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  transition: all 0.1s ease;
+}
+.pk-scratch-tool.active {
+  border-color: var(--pp-blue, #1763c7);
+  background: #e0f2fe;
+  color: var(--pp-blue, #1763c7);
+}
+.pk-scratch-tool.color-black { border-left: 5px solid #000000; }
+.pk-scratch-tool.color-red { border-left: 5px solid #ef4444; }
+.pk-scratch-tool.color-blue { border-left: 5px solid #3b82f6; }
+
+/* Printable SVGs Override */
+@media print {
+  .pk-signature-card,
+  .pk-scratch-btn,
+  .pk-scratch-panel {
+    display: none !important;
+  }
+  .pk-math-scaffold-card.no-print,
+  .pk-math-scaffold-card {
+    display: block !important;
+    visibility: visible !important;
+    border: 1.5px solid #000000 !important;
+    background: #ffffff !important;
+    margin: 15px auto !important;
+    max-width: 480px !important;
+    opacity: 1 !important;
+    height: auto !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .pk-math-scaffold-card svg,
+  .pk-math-scaffold-card .pk-visualizer-svg {
+    display: block !important;
+    visibility: visible !important;
+    margin: 0 auto !important;
+    background: #ffffff !important;
+    border: none !important;
+  }
+  .pk-math-scaffold-card button,
+  .pk-math-scaffold-card .toolbar,
+  .pk-math-scaffold-card .pk-no-print {
+    display: none !important;
+  }
+}
+
+
