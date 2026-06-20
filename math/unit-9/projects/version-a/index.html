@@ -770,13 +770,7 @@
           <div>
             
     <div class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
-      <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px;" xmlns="http://www.w3.org/2000/svg">
-        
-      <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Math Diagram Guide</text>
-      <rect x="150" y="60" width="200" height="90" rx="10" fill="rgba(14,138,125,0.1)" stroke="#0e8a7d" stroke-width="1.5"/>
-      <text x="250" y="110" text-anchor="middle" font-size="11" font-weight="bold" fill="#0e8a7d">Interactive Calculation Visual</text>
-    
-      </svg>
+      <svg id="phase-svg-1a" width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px" xmlns="http://www.w3.org/2000/svg"></svg>
     </div>
   
             <button class="btn" type="button" onclick="calcEquation()">
@@ -842,13 +836,7 @@
           <div>
             
     <div class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
-      <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px;" xmlns="http://www.w3.org/2000/svg">
-        
-      <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Math Diagram Guide</text>
-      <rect x="150" y="60" width="200" height="90" rx="10" fill="rgba(14,138,125,0.1)" stroke="#0e8a7d" stroke-width="1.5"/>
-      <text x="250" y="110" text-anchor="middle" font-size="11" font-weight="bold" fill="#0e8a7d">Interactive Calculation Visual</text>
-    
-      </svg>
+      <svg id="phase-svg-1b" width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px" xmlns="http://www/w3.org/2000/svg"></svg>
     </div>
   
             <div class="task">
@@ -919,13 +907,7 @@
           <div>
             
     <div class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
-      <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px;" xmlns="http://www.w3.org/2000/svg">
-        
-      <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Math Diagram Guide</text>
-      <rect x="150" y="60" width="200" height="90" rx="10" fill="rgba(14,138,125,0.1)" stroke="#0e8a7d" stroke-width="1.5"/>
-      <text x="250" y="110" text-anchor="middle" font-size="11" font-weight="bold" fill="#0e8a7d">Interactive Calculation Visual</text>
-    
-      </svg>
+      <svg id="phase-svg-1c" width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px" xmlns="http://www/w3.org/2000/svg"></svg>
     </div>
   
             <p style="color: var(--muted)">
@@ -1934,7 +1916,7 @@
 
       
       function drawVisualizer() {
-        const rpm = num("exp-coeff") || 4.5;
+        const rpm = getK() || 4.5;
         
         let html = "";
         if (rpm > 0) {
@@ -1953,7 +1935,7 @@
             <circle cx="420" cy="60" r="5" fill="#1a6fb5" />
             <text x="410" y="55" text-anchor="end" font-size="10" font-weight="bold" fill="#1a6fb5">${maxViews}k views: $${maxEarnings.toFixed(2)}</text>
             
-            <text x="250" y="220" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Earnings Linear Growth Line (y = ${rpm}x)</text>
+            <text x="250" y="220" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Earnings Linear Growth Line (y = ${rpm.toFixed(1)}x)</text>
           `;
         } else {
           html = `
@@ -1985,7 +1967,8 @@ function recalcAll() {
         worldGo();
         updateSwTargetLabel();
         updateProgress();
-      }
+      
+        if(typeof drawFunctionMachine === "function"){drawFunctionMachine(); drawSequenceBars();}}
 
       /* ---- Report ---- */
       function reportText() {
@@ -2100,6 +2083,71 @@ function recalcAll() {
         PK.load("u9ProjectA", { after: recalcAll });
         updateProgress();
       });
+    
+      function drawFunctionMachine() {
+        const k = getK();
+        const svg = $("phase-svg-1a");
+        if (!svg) return;
+        
+        if (k == null) {
+          svg.innerHTML = '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter growth rate k to draw function machine</text>';
+          return;
+        }
+        
+        svg.innerHTML = `
+          <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Function Forge (y = ${k}x)</text>
+          
+          <g transform="translate(60, 70)">
+            <rect x="0" y="15" width="80" height="40" rx="8" fill="#e8f2fc" stroke="#1a6fb5" stroke-width="1.5" />
+            <text x="40" y="35" text-anchor="middle" font-size="11" font-weight="bold" fill="#1a6fb5">Input x (weeks)</text>
+            
+            <line x1="80" y1="35" x2="140" y2="35" stroke="#cbd5e1" stroke-width="2" marker-end="url(#arr-arrow)" />
+            
+            <rect x="140" y="10" width="100" height="50" rx="8" fill="#e0f2f1" stroke="#004d40" stroke-width="1.5" />
+            <text x="190" y="33" text-anchor="middle" font-size="11" font-weight="bold" fill="#004d40">Multiply by k = ${k}</text>
+            
+            <line x1="240" y1="35" x2="300" y2="35" stroke="#cbd5e1" stroke-width="2" marker-end="url(#arr-arrow)" />
+            
+            <rect x="300" y="15" width="80" height="40" rx="8" fill="#e6f4ea" stroke="#0e8a7d" stroke-width="1.5" />
+            <text x="340" y="35" text-anchor="middle" font-size="11" font-weight="bold" fill="#0e8a7d">y (subscribers)</text>
+          </g>
+          
+          <defs>
+            <marker id="arr-arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+              <polygon points="0 0, 6 3, 0 6" fill="#cbd5e1" />
+            </marker>
+          </defs>
+        `;
+      }
+      
+      function drawSequenceBars() {
+        const k = getK();
+        const svg = $("phase-svg-1b");
+        if (!svg) return;
+        
+        if (k == null) {
+          svg.innerHTML = '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter growth rate k to draw growth sequence bars</text>';
+          return;
+        }
+        
+        let bars = '';
+        for (let x = 1; x <= 4; x++) {
+          const val = k * x;
+          const bh = 100 * (val / (k * 4));
+          const bx = 80 + (320 / 4) * (x - 1);
+          bars += `
+            <rect x="${bx}" y="${140 - bh}" width="40" height="${bh}" fill="rgba(14, 138, 125, 0.2)" stroke="#0e8a7d" stroke-width="1.5" />
+            <text x="${bx + 20}" y="155" text-anchor="middle" font-size="10" fill="#0f2b3c">Wk ${x}</text>
+            <text x="${bx + 20}" y="${135 - bh}" text-anchor="middle" font-size="9" font-weight="bold" fill="#0e8a7d">${val}</text>
+          `;
+        }
+        
+        svg.innerHTML = `
+          <text x="250" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Subscribers Growth by Week (k = ${k})</text>
+          ${bars}
+        `;
+      }
+    
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

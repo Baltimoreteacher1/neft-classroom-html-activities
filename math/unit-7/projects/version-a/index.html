@@ -2600,7 +2600,8 @@
         renderWorld();
         worldGo();
         updateProgress();
-      }
+      
+        if(typeof drawReflectionSVG === "function"){drawReflectionSVG(); drawDistanceSVG();}}
 
       /* ---- Report ---- */
       function reportText() {
@@ -2745,6 +2746,81 @@
         PK.load("u7ProjectA", { after: recalcAll });
         updateProgress();
       });
+    
+      function drawReflectionSVG() {
+        const x = num("rx");
+        const y = num("ry");
+        const axis = $("refAxis") ? $("refAxis").value : "x-axis";
+        const svg = $("phase-svg-1a");
+        if (!svg) return;
+        
+        if (isNaN(x) || isNaN(y)) {
+          svg.innerHTML = '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter coordinates to draw reflection</text>';
+          return;
+        }
+        
+        const rx = axis === "x-axis" ? x : -x;
+        const ry = axis === "x-axis" ? -y : y;
+        
+        const toX = (val) => 250 + val * 8;
+        const toY = (val) => 100 - val * 8;
+        
+        svg.innerHTML = `
+          <text x="250" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">Reflection Across ${axis === 'x-axis' ? 'X-Axis' : 'Y-Axis'}</text>
+          <line x1="170" y1="100" x2="330" y2="100" stroke="#cbd5e1" stroke-width="1.5" />
+          <line x1="250" y1="20" x2="250" y2="180" stroke="#cbd5e1" stroke-width="1.5" />
+          
+          ${axis === "x-axis" ? `<line x1="170" y1="100" x2="330" y2="100" stroke="#0e8a7d" stroke-width="3" />` : `<line x1="250" y1="20" x2="250" y2="180" stroke="#0e8a7d" stroke-width="3" />`}
+          
+          <circle cx="${toX(x)}" cy="${toY(y)}" r="5" fill="#1e88e5" />
+          <text x="${toX(x) + 8}" y="${toY(y) - 4}" font-size="9" fill="#1e88e5" font-weight="bold">(${x}, ${y})</text>
+          
+          <circle cx="${toX(rx)}" cy="${toY(ry)}" r="5" fill="#ffb74d" />
+          <text x="${toX(rx) + 8}" y="${toY(ry) - 4}" font-size="9" fill="#f57c00" font-weight="bold">(${rx}, ${ry})</text>
+          
+          <line x1="${toX(x)}" y1="${toY(y)}" x2="${toX(rx)}" y2="${toY(ry)}" stroke="#c45a3c" stroke-width="1" stroke-dasharray="3" />
+        `;
+      }
+      
+      function drawDistanceSVG() {
+        const x1 = num("d1x");
+        const y1 = num("d1y");
+        const x2 = num("d2x");
+        const y2 = num("d2y");
+        const svg = $("phase-svg-1b");
+        if (!svg) return;
+        
+        if (isNaN(x1) || isNaN(y1) || isNaN(x2) || isNaN(y2)) {
+          svg.innerHTML = '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter points A and B to draw distance path</text>';
+          return;
+        }
+        
+        const toX = (val) => 250 + val * 8;
+        const toY = (val) => 100 - val * 8;
+        
+        const sameX = x1 === x2;
+        const sameY = y1 === y2;
+        const dist = sameX ? Math.abs(y1 - y2) : sameY ? Math.abs(x1 - x2) : 0;
+        
+        svg.innerHTML = `
+          <text x="250" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">Distance between coordinates: |p - q|</text>
+          <line x1="170" y1="100" x2="330" y2="100" stroke="#cbd5e1" stroke-width="1" />
+          <line x1="250" y1="20" x2="250" y2="180" stroke="#cbd5e1" stroke-width="1" />
+          
+          <circle cx="${toX(x1)}" cy="${toY(y1)}" r="5" fill="#1e88e5" />
+          <text x="${toX(x1) + 8}" y="${toY(y1) - 4}" font-size="9" fill="#1e88e5" font-weight="bold">A (${x1}, ${y1})</text>
+          
+          <circle cx="${toX(x2)}" cy="${toY(y2)}" r="5" fill="#ffb74d" />
+          <text x="${toX(x2) + 8}" y="${toY(y2) - 4}" font-size="9" fill="#f57c00" font-weight="bold">B (${x2}, ${y2})</text>
+          
+          <line x1="${toX(x1)}" y1="${toY(y1)}" x2="${toX(x2)}" y2="${toY(y2)}" stroke="${sameX || sameY ? '#0e8a7d' : '#f44336'}" stroke-width="2.5" />
+          
+          <text x="250" y="192" text-anchor="middle" font-size="11" fill="#0f2b3c" font-weight="bold">
+            ${sameX || sameY ? `Distance = ${dist} units` : '⚠️ Points must share the same x or same y coordinate!'}
+          </text>
+        `;
+      }
+    
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

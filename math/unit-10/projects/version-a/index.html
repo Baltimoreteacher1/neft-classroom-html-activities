@@ -2392,7 +2392,8 @@
         worldGo();
         calcOpt();
         updateProgress();
-      }
+      
+        if(typeof drawPrismSVG === "function"){drawPrismSVG(); drawNetSVG(); drawCostSVG();}}
 
       /* ---- Report ---- */
       function reportText() {
@@ -2525,6 +2526,88 @@
         PK.load("u10ProjectA", { after: recalcAll });
         updateProgress();
       });
+    
+      function drawPrismSVG() {
+        const l = num("v-length");
+        const w = num("v-width");
+        const h = num("v-height");
+        const svg = $("phase-svg-1a");
+        if (!svg) return;
+        
+        if (isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0) {
+          svg.innerHTML = '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter dimensions to draw 3D prism box</text>';
+          return;
+        }
+        
+        const originX = 200, originY = 140;
+        const scale = Math.min(100 / l, 100 / w, 100 / h);
+        const sw = l * scale;
+        const sh = h * scale;
+        const sd = w * scale;
+        
+        const dx = sd * 0.866;
+        const dy = -sd * 0.5;
+        
+        svg.innerHTML = `
+          <text x="250" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">3D Isometric Prism Blueprint</text>
+          <polygon points="${originX},${originY} ${originX+sw},${originY} ${originX+sw},${originY-sh} ${originX},${originY-sh}" fill="rgba(26,111,181,0.15)" stroke="#1a6fb5" stroke-width="1.5" />
+          <polygon points="${originX},${originY-sh} ${originX+sw},${originY-sh} ${originX+sw+dx},${originY-sh+dy} ${originX+dx},${originY-sh+dy}" fill="rgba(26,111,181,0.08)" stroke="#1a6fb5" stroke-width="1.5" />
+          <polygon points="${originX+sw},${originY} ${originX+sw},${originY-sh} ${originX+sw+dx},${originY-sh+dy} ${originX+sw+dx},${originY+dy}" fill="rgba(26,111,181,0.22)" stroke="#1a6fb5" stroke-width="1.5" />
+          
+          <text x="${originX + sw/2}" y="${originY + 15}" text-anchor="middle" font-size="10" font-weight="bold" fill="#1a6fb5">Length: ${l} in</text>
+          <text x="${originX + sw + dx/2 + 10}" y="${originY + dy/2 + 5}" font-size="10" font-weight="bold" fill="#1a6fb5">Width: ${w} in</text>
+          <text x="${originX - 10}" y="${originY - sh/2}" text-anchor="end" font-size="10" font-weight="bold" fill="#1a6fb5">Height: ${h} in</text>
+        `;
+      }
+      
+      function drawNetSVG() {
+        const l = num("v-length");
+        const w = num("v-width");
+        const h = num("v-height");
+        const svg = $("phase-svg-1b");
+        if (!svg) return;
+        
+        if (isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0) {
+          svg.innerHTML = '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter dimensions to draw flat net blueprint</text>';
+          return;
+        }
+        
+        svg.innerHTML = `
+          <text x="250" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Flat Unfolded Net Blueprint</text>
+          
+          <g transform="translate(140, 50)" stroke="#0e8a7d" stroke-width="1.5" fill="rgba(14, 138, 125, 0.1)">
+            <rect x="40" y="0" width="80" height="30" />
+            <text x="80" y="18" text-anchor="middle" font-size="8" fill="#0e8a7d" stroke="none">L &times; W</text>
+            
+            <rect x="0" y="30" width="40" height="50" />
+            <text x="20" y="58" text-anchor="middle" font-size="8" fill="#0e8a7d" stroke="none">W &times; H</text>
+            
+            <rect x="40" y="30" width="80" height="50" fill="rgba(14, 138, 125, 0.2)" />
+            <text x="80" y="58" text-anchor="middle" font-size="9" font-weight="bold" fill="#0e8a7d" stroke="none">L &times; H</text>
+            
+            <rect x="120" y="30" width="40" height="50" />
+            <text x="140" y="58" text-anchor="middle" font-size="8" fill="#0e8a7d" stroke="none">W &times; H</text>
+            
+            <rect x="40" y="80" width="80" height="30" />
+            <text x="80" y="98" text-anchor="middle" font-size="8" fill="#0e8a7d" stroke="none">L &times; W</text>
+            
+            <rect x="40" y="110" width="80" height="50" />
+            <text x="80" y="138" text-anchor="middle" font-size="9" fill="#0e8a7d" stroke="none">L &times; H</text>
+          </g>
+        `;
+      }
+      
+      function drawCostSVG() {
+        const svg = $("phase-svg-1c");
+        if (!svg) return;
+        svg.innerHTML = `
+          <text x="250" y="40" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Cardboard Material & Shipping Cost calculator</text>
+          <rect x="80" y="70" width="340" height="80" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" />
+          <text x="250" y="105" text-anchor="middle" font-size="13" font-weight="bold" fill="#2d874b">Cost = SA &times; $0.03 / sq in</text>
+          <text x="250" y="130" text-anchor="middle" font-size="10" fill="#64748b">Calculates automatically when dimensions are populated</text>
+        `;
+      }
+    
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

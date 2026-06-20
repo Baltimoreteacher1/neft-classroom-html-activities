@@ -661,6 +661,11 @@
           <div class="pk-research-inline-header">
             <span class="pk-research-badge">🔍 Research Required</span>
             <a href="https://www.bls.gov/charts/consumer-price-index/consumer-price-index-average-price-data.htm" target="_blank" class="pk-research-inline-link">🔗 BLS Consumer Price Index Average Prices ↗</a>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px;">
+            <a href="https://www.walmart.com/" target="_blank" class="pk-research-inline-link">🛒 Walmart Grocery ↗</a>
+            <a href="https://www.target.com/" target="_blank" class="pk-research-inline-link">🛒 Target Grocery ↗</a>
+            <a href="https://www.kroger.com/" target="_blank" class="pk-research-inline-link">🛒 Kroger Grocery ↗</a>
+          </div>
           </div>
           <p class="pk-research-inline-instructions">Open the BLS database. Find the national average retail price for a gallon of whole milk. Enter the average price below to compute your decimal totals:</p>
           <div class="grid2">
@@ -788,13 +793,7 @@
           <div>
             
     <div class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
-      <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px;" xmlns="http://www.w3.org/2000/svg">
-        
-      <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Math Diagram Guide</text>
-      <rect x="150" y="60" width="200" height="90" rx="10" fill="rgba(14,138,125,0.1)" stroke="#0e8a7d" stroke-width="1.5"/>
-      <text x="250" y="110" text-anchor="middle" font-size="11" font-weight="bold" fill="#0e8a7d">Interactive Calculation Visual</text>
-    
-      </svg>
+      <svg id="phase-svg-1a" width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px" xmlns="http://www.w3.org/2000/svg"></svg>
     </div>
   
             <p style="font-size: 14px; color: var(--muted)">
@@ -1715,7 +1714,8 @@ function recalcAll() {
         renderWorld();
         worldGo();
         updateProgress();
-      }
+      
+        if(typeof drawConvertSVG === "function"){drawConvertSVG();}}
 
       /* ---- Report ---- */
       function reportText() {
@@ -1839,6 +1839,96 @@ function recalcAll() {
         PK.load("u4ProjectB", { after: recalcAll });
         updateProgress();
       });
+    
+      function drawConvertSVG() {
+        const val = num("conv-val");
+        const from = $("conv-from").value;
+        const to = $("conv-to").value;
+        const svg = $("phase-svg-1a");
+        if (!svg) return;
+        
+        if (isNaN(val) || val <= 0 || from === to) {
+          svg.innerHTML = '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter units & values to draw conversion dimensional visual</text>';
+          return;
+        }
+        
+        const row = CONV[from];
+        if (!row || row[to] === undefined) {
+          svg.innerHTML = '<text x="250" y="100" text-anchor="middle" font-size="12" fill="#c45a3c">Incompatible units (e.g. length to weight)</text>';
+          return;
+        }
+        
+        const factor = row[to];
+        const result = val * factor;
+        
+        svg.innerHTML = `
+          <text x="250" y="35" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Dimensional Conversion Scale</text>
+          
+          <rect x="50" y="70" width="400" height="40" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" rx="6" />
+          
+          <text x="120" y="95" text-anchor="middle" font-size="14" font-weight="bold" fill="#1e88e5">${val} ${from}</text>
+          <text x="210" y="95" text-anchor="middle" font-size="14" fill="#64b5f6">&times;</text>
+          <text x="270" y="95" text-anchor="middle" font-size="14" font-weight="bold" fill="#d4952a">${factor.toFixed(4).replace(/\.0+$/, "")} (${to}/${from})</text>
+          <text x="340" y="95" text-anchor="middle" font-size="14" fill="#64b5f6">=</text>
+          <text x="390" y="95" text-anchor="middle" font-size="14" font-weight="bold" fill="#0e8a7d">${result.toFixed(2).replace(/\.0+$/, "")} ${to}</text>
+          
+          <text x="250" y="160" text-anchor="middle" font-size="11" fill="#5e6e7e" italic>
+            Units Cancel: ${from} cancels out, leaving ${to}
+          </text>
+        `;
+      }
+      
+      function drawVisualizer() {
+        const ap = num("a-price");
+        const au = num("a-units");
+        const bp = num("b-price");
+        const bu = num("b-units");
+        const svg = $("projectVisualizer");
+        if (!svg) return;
+        
+        if (isNaN(ap) || isNaN(au) || au <= 0 || isNaN(bp) || isNaN(bu) || bu <= 0) {
+          svg.innerHTML = `
+            <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+              <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter prices and unit sizes to visualize the better buy</text>
+            </svg>
+          `;
+          return;
+        }
+        
+        const rateA = ap / au;
+        const rateB = bp / bu;
+        
+        const maxRate = Math.max(rateA, rateB);
+        const heightA = 120 * (rateA / maxRate);
+        const heightB = 120 * (rateB / maxRate);
+        
+        const better = rateA < rateB ? "A" : rateB < rateA ? "B" : "Tie";
+        
+        svg.innerHTML = `
+          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            <text x="250" y="35" text-anchor="middle" font-size="16" font-weight="bold" fill="#0f2b3c">Better Buy Unit Price Comparison</text>
+            
+            <g transform="translate(100, 50)">
+              <rect x="0" y="${120 - heightA}" width="80" height="${heightA}" fill="${better === 'A' ? 'rgba(14, 138, 125, 0.2)' : 'rgba(244, 67, 54, 0.1)'}" stroke="${better === 'A' ? '#0e8a7d' : '#f44336'}" stroke-width="2" rx="4" />
+              <text x="40" y="${110 - heightA}" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Package A</text>
+              <text x="40" y="140" text-anchor="middle" font-size="12" font-weight="bold" fill="${better === 'A' ? '#0e8a7d' : '#f44336'}">$${rateA.toFixed(4)}/unit</text>
+              <text x="40" y="160" text-anchor="middle" font-size="10" fill="#5e6e7e">${au} units @ $${ap.toFixed(2)}</text>
+            </g>
+            
+            <g transform="translate(320, 50)">
+              <rect x="0" y="${120 - heightB}" width="80" height="${heightB}" fill="${better === 'B' ? 'rgba(14, 138, 125, 0.2)' : 'rgba(244, 67, 54, 0.1)'}" stroke="${better === 'B' ? '#0e8a7d' : '#f44336'}" stroke-width="2" rx="4" />
+              <text x="40" y="${110 - heightB}" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Package B</text>
+              <text x="40" y="140" text-anchor="middle" font-size="12" font-weight="bold" fill="${better === 'B' ? '#0e8a7d' : '#f44336'}">$${rateB.toFixed(4)}/unit</text>
+              <text x="40" y="160" text-anchor="middle" font-size="10" fill="#5e6e7e">${bu} units @ $${bp.toFixed(2)}</text>
+            </g>
+            
+            <text x="250" y="215" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">
+              ${better === 'Tie' ? "Both packages have the same unit rate!" : `Package ${better} is the Better Buy by $${Math.abs(rateA - rateB).toFixed(4)} per unit!`}
+            </text>
+          </svg>
+        `;
+      }
+    
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

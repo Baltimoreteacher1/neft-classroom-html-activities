@@ -731,17 +731,7 @@
           <div>
             
     <div class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
-      <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px;" xmlns="http://www.w3.org/2000/svg">
-        
-      <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Algebra Balance Scale</text>
-      <line x1="250" y1="150" x2="250" y2="90" stroke="#1a2633" stroke-width="3"/>
-      <line x1="160" y1="90" x2="340" y2="90" stroke="#1a2633" stroke-width="3"/>
-      <polygon points="230,160 270,160 250,140" fill="#1a2633"/>
-      <circle cx="180" cy="105" r="12" fill="#6d3fa0" />
-      <text x="180" y="109" text-anchor="middle" font-size="10" fill="#fff" font-weight="bold">x</text>
-      <circle cx="320" cy="105" r="8" fill="#d4952a"/>
-    
-      </svg>
+      <svg id="phase-svg-1a" width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px" xmlns="http://www.w3.org/2000/svg"></svg>
     </div>
   
             <label class="fld" for="appName">App you actually use</label>
@@ -793,17 +783,7 @@
           <div>
             
     <div class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
-      <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px;" xmlns="http://www.w3.org/2000/svg">
-        
-      <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Algebra Balance Scale</text>
-      <line x1="250" y1="150" x2="250" y2="90" stroke="#1a2633" stroke-width="3"/>
-      <line x1="160" y1="90" x2="340" y2="90" stroke="#1a2633" stroke-width="3"/>
-      <polygon points="230,160 270,160 250,140" fill="#1a2633"/>
-      <circle cx="180" cy="105" r="12" fill="#6d3fa0" />
-      <text x="180" y="109" text-anchor="middle" font-size="10" fill="#fff" font-weight="bold">x</text>
-      <circle cx="320" cy="105" r="8" fill="#d4952a"/>
-    
-      </svg>
+      <svg id="phase-svg-1b" width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px" xmlns="http://www/w3.org/2000/svg"></svg>
     </div>
   
             <p>
@@ -823,6 +803,10 @@
           <div class="pk-research-inline-header">
             <span class="pk-research-badge">🔍 Research Required</span>
             <a href="https://en.wikipedia.org/wiki/Streaming_television#Pricing" target="_blank" class="pk-research-inline-link">🔗 Wikipedia: Pricing of major video streaming apps ↗</a>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px;">
+            <a href="https://developer.apple.com/support/purchase-activation/" target="_blank" class="pk-research-inline-link">🍎 Apple App Store Developer Fees ↗</a>
+            <a href="https://support.google.com/googleplay/android-developer/answer/112622" target="_blank" class="pk-research-inline-link">🤖 Google Play Store Developer Pricing ↗</a>
+          </div>
           </div>
           <p class="pk-research-inline-instructions">Open the database or check current pricing. Find the standard monthly fee of a Netflix Standard plan. Enter the monthly cost below:</p>
           <div class="grid2">
@@ -1743,7 +1727,8 @@ function recalcAll() {
         renderWorld();
         worldGo();
         updateProgress();
-      }
+      
+        if(typeof drawNamingSVG === "function"){drawNamingSVG(); drawExpressionSVG();}}
 
       /* ---- Report ---- */
       function reportText() {
@@ -1856,6 +1841,81 @@ function recalcAll() {
         PK.load("u6ProjectB", { after: recalcAll });
         updateProgress();
       });
+    
+      function drawNamingSVG() {
+        const name = $("appName") ? $("appName").value.trim() : "";
+        const svg = $("phase-svg-1a");
+        if (!svg) return;
+        
+        svg.innerHTML = `
+          <defs>
+            <linearGradient id="app-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#0f2b3c" />
+              <stop offset="100%" stop-color="#0e8a7d" />
+            </linearGradient>
+          </defs>
+          <rect x="10" y="10" width="480" height="180" rx="15" fill="url(#app-grad)" stroke="#cbd5e1" stroke-width="2" />
+          
+          <rect x="60" y="50" width="100" height="100" rx="22" fill="#fff" stroke="#cbd5e1" stroke-width="2" />
+          <circle cx="110" cy="100" r="30" fill="#0e8a7d" />
+          <path d="M100,85 L125,100 L100,115 Z" fill="#fff" />
+          
+          <text x="180" y="95" text-anchor="start" font-size="18" font-weight="bold" fill="#fff">
+            ${name || "YOUR APP HERE"}
+          </text>
+          <text x="180" y="125" text-anchor="start" font-size="10" fill="#cbd5e1" font-weight="bold">
+            MOBILE APPLICATION BLUEPRINT
+          </text>
+        `;
+      }
+      
+      function drawExpressionSVG() {
+        const rate = num("cost-p");
+        const flat = num("cost-fee");
+        const months = num("cost-n");
+        const svg = $("phase-svg-1b");
+        if (!svg) return;
+        
+        if (isNaN(rate) || isNaN(flat) || isNaN(months)) {
+          svg.innerHTML = '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter monthly price, fee & months to draw flow machine</text>';
+          return;
+        }
+        
+        const total = rate * months + flat;
+        
+        svg.innerHTML = `
+          <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Expression Flow Machine: ${rate}n + ${flat}</text>
+          
+          <g transform="translate(40, 70)">
+            <rect x="0" y="15" width="80" height="40" rx="8" fill="#e8f2fc" stroke="#1a6fb5" stroke-width="1.5" />
+            <text x="40" y="35" text-anchor="middle" font-size="11" font-weight="bold" fill="#1a6fb5">Months n = ${months}</text>
+            
+            <line x1="80" y1="35" x2="120" y2="35" stroke="#cbd5e1" stroke-width="2" marker-end="url(#arr-arrow)" />
+            
+            <rect x="120" y="10" width="100" height="50" rx="8" fill="#e0f2f1" stroke="#004d40" stroke-width="1.5" />
+            <text x="170" y="33" text-anchor="middle" font-size="11" font-weight="bold" fill="#004d40">Monthly $${rate}</text>
+            <text x="170" y="48" text-anchor="middle" font-size="10" fill="#00796b">${months} &times; $${rate} = $${(months*rate).toFixed(2)}</text>
+            
+            <line x1="220" y1="35" x2="260" y2="35" stroke="#cbd5e1" stroke-width="2" marker-end="url(#arr-arrow)" />
+            
+            <rect x="260" y="10" width="100" height="50" rx="8" fill="#fff8e1" stroke="#ff8f00" stroke-width="1.5" />
+            <text x="310" y="33" text-anchor="middle" font-size="11" font-weight="bold" fill="#ff8f00">Setup Fee $${flat}</text>
+            <text x="310" y="48" text-anchor="middle" font-size="10" fill="#ffa000">$${(months*rate).toFixed(2)} + $${flat.toFixed(2)}</text>
+            
+            <line x1="360" y1="35" x2="400" y2="35" stroke="#cbd5e1" stroke-width="2" marker-end="url(#arr-arrow)" />
+            
+            <rect x="400" y="15" width="80" height="40" rx="8" fill="#e6f4ea" stroke="#0e8a7d" stroke-width="1.5" />
+            <text x="440" y="35" text-anchor="middle" font-size="11" font-weight="bold" fill="#0e8a7d">Total: $${total.toFixed(2)}</text>
+          </g>
+          
+          <defs>
+            <marker id="arr-arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+              <polygon points="0 0, 6 3, 0 6" fill="#cbd5e1" />
+            </marker>
+          </defs>
+        `;
+      }
+    
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
