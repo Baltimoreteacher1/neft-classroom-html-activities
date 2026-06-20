@@ -36,7 +36,7 @@
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
   <!-- nsr-injected:end -->
 </head>
-<body>
+<body data-onramp-ok="✅ Right — that's the amount for exactly one." data-onramp-retry="Divide to get the amount for ONE. Try again.">
   <main>
     <header class="hero">
       <span class="tag">On-Ramp · Grade 6 · 6.RP.A.2</span>
@@ -93,16 +93,9 @@
     <footer>Mr. Neft's Classroom · ESOL Math On-Ramp · © <span data-current-year></span></footer>
   </main>
   <script src="/assets/app.js"></script>
-  <script>
-    (() => { let done=0; const counter=document.querySelector("[data-done]");
-      document.querySelectorAll("[data-q]").forEach((q)=>{ const fb=q.querySelector(".fb"); let answered=false;
-        q.querySelectorAll(".choice").forEach((btn)=>{ btn.addEventListener("click",()=>{
-          if(btn.hasAttribute("data-correct")){ btn.classList.add("correct"); fb.textContent="✅ Right — that's the amount for exactly one."; fb.className="fb show ok";
-            q.querySelectorAll(".choice").forEach(b=>b.disabled=true); if(!answered){answered=true; counter.textContent=++done;} }
-          else { btn.classList.add("wrong"); fb.textContent="Divide to get the amount for ONE. Try again."; fb.className="fb show no"; btn.disabled=true; } }); }); }); })();
-  </script>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js" defer></script>
   <!-- nsr-injected:end -->
+  <script src="/assets/onramp-quiz.js" defer></script>
 </body>
 </html>
