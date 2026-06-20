@@ -2390,32 +2390,22 @@
       }
 
       function runWhatIf() {
-        const v = parseFloat($("whatIfVal").value);
-        let sample = worldSample();
-        const customSize = $("worldSize") ? num("worldSize") : NaN;
-        if (!isNaN(customSize) && customSize > 0) {
-          sample = [...sample, customSize];
-        }
-        if (isNaN(v)) {
-          $("whatIfBox").textContent = "Enter a number first.";
+        const batch = parseFloat($("wi-batch").value);
+        const serve = parseFloat($("wi-serve").value);
+        if (isNaN(batch) || batch <= 0 || isNaN(serve) || serve <= 0) {
+          $("whatIfBox").textContent =
+            "Enter a batch size and a serving size — both greater than 0.";
           return;
         }
-        const before = PK.mean(sample);
-        const after = PK.mean(sample.concat([v]));
-
-        let beforeStr = false
-          ? "$" + before.toFixed(2)
-          : before.toFixed(2) + " oz";
-        let afterStr = false
-          ? "$" + after.toFixed(2)
-          : after.toFixed(2) + " oz";
-        let vStr = false ? "$" + v.toFixed(2) : v + " oz";
-
+        const r = (x) => Math.round(x * 100) / 100;
+        const half = serve / 2;
         PK.whatIf(
           "whatIfBox",
-          { average: beforeStr },
-          { average: afterStr },
-          "Adding a value of " + vStr + " to the sample:",
+          { "serving size": serve + " cup", servings: r(batch / serve) },
+          { "serving size": half + " cup", servings: r(batch / half) },
+          "Batch of " +
+            batch +
+            " cups ÷ serving size = servings. Cut the serving size in half → twice as many servings:",
         );
       }
 

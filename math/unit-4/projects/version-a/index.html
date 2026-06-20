@@ -2266,30 +2266,28 @@
       }
 
       function runWhatIf() {
-        const v = parseFloat($("whatIfVal").value);
-        let sample = worldSample();
-        const customSize = $("tax-rate") ? num("tax-rate") : NaN;
-        if (!isNaN(customSize) && customSize > 0) {
-          sample = [...sample, customSize];
-        }
-        if (isNaN(v)) {
-          $("whatIfBox").textContent = "Enter a number first.";
+        const cost = num("cost");
+        const markup = num("markup");
+        const discount = num("discount");
+        const coupon = parseFloat($("whatIfCoupon").value);
+        if (isNaN(cost) || cost <= 0 || isNaN(markup) || isNaN(discount)) {
+          $("whatIfBox").textContent =
+            "First fill in your cost, markup, and sale discount in Part 1.";
           return;
         }
-        const before = PK.mean(sample);
-        const after = PK.mean(sample.concat([v]));
-
-        let beforeStr = false
-          ? "$" + before.toFixed(2)
-          : before.toFixed(2) + "%";
-        let afterStr = false ? "$" + after.toFixed(2) : after.toFixed(2) + "%";
-        let vStr = false ? "$" + v.toFixed(2) : v + "%";
-
+        if (isNaN(coupon) || coupon < 0 || coupon > 100) {
+          $("whatIfBox").textContent =
+            "Enter an extra coupon percent between 0 and 100 (% off the sale price).";
+          return;
+        }
+        const money = (x) => "$" + (Math.round(x * 100) / 100).toFixed(2);
+        const sale = cost * (1 + markup / 100) * (1 - discount / 100);
+        const afterCoupon = sale * (1 - coupon / 100);
         PK.whatIf(
           "whatIfBox",
-          { average: beforeStr },
-          { average: afterStr },
-          "Adding a value of " + vStr + " to the sample:",
+          { "final price": money(sale) },
+          { "final price": money(afterCoupon) },
+          "Take an extra " + coupon + "% off your sale price of " + money(sale) + ":",
         );
       }
 
