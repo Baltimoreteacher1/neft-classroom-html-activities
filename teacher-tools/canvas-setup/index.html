@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Canvas Setup Wizard · Neft Teacher</title>
+    <meta name="robots" content="noindex" />
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --navy: #12355b;
+        --teal: #387f84;
+        --amber: #f2a93b;
+        --ink: #0f172a;
+        --muted: #64748b;
+        --line: #e2e8f0;
+        --bg: #f1f5f9;
+        --ok: #15803d;
+        --warn: #b54708;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: system-ui, "Segoe UI", sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.55;
+      }
+      header {
+        background: var(--navy);
+        color: #fff;
+        padding: 24px;
+      }
+      header h1 {
+        margin: 0;
+        font-size: 23px;
+      }
+      header p {
+        margin: 6px 0 0;
+        opacity: 0.85;
+        font-size: 14px;
+        max-width: 760px;
+      }
+      main {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 20px 22px;
+        margin-bottom: 16px;
+      }
+      .status {
+        border-left: 6px solid var(--teal);
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 16px;
+        justify-content: space-between;
+      }
+      .status-text h2 {
+        margin: 0 0 4px;
+        font-size: 18px;
+      }
+      .status-text p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .bar {
+        height: 12px;
+        background: var(--line);
+        border-radius: 999px;
+        overflow: hidden;
+        min-width: 200px;
+        flex: 1;
+      }
+      .bar > i {
+        display: block;
+        height: 100%;
+        width: 0;
+        background: var(--teal);
+        transition: width 220ms ease;
+      }
+      .step {
+        display: grid;
+        grid-template-columns: 30px 1fr;
+        gap: 14px;
+        align-items: start;
+      }
+      .step.optional {
+        opacity: 1;
+      }
+      .step input[type="checkbox"] {
+        width: 22px;
+        height: 22px;
+        margin-top: 4px;
+        cursor: pointer;
+        accent-color: var(--teal);
+      }
+      .step.done .step-body h2 {
+        color: var(--ok);
+      }
+      .step-num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 26px;
+        height: 26px;
+        border-radius: 999px;
+        background: var(--navy);
+        color: #fff;
+        font-weight: 700;
+        font-size: 13px;
+      }
+      .step.optional .step-num {
+        background: var(--amber);
+        color: var(--navy);
+      }
+      .step-body h2 {
+        margin: 0 0 2px;
+        font-size: 17px;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .tag {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: #fef3c7;
+        color: var(--warn);
+      }
+      .why {
+        color: var(--muted);
+        font-size: 14px;
+        margin: 4px 0 10px;
+      }
+      .how {
+        background: var(--bg);
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin: 0;
+        font-size: 14px;
+      }
+      .how li {
+        margin: 3px 0;
+      }
+      code {
+        background: #e8eef5;
+        border-radius: 6px;
+        padding: 1px 6px;
+        font-family: ui-monospace, "SF Mono", Menlo, monospace;
+        font-size: 13px;
+      }
+      a.btn,
+      button {
+        font: 700 14px system-ui;
+        border: 0;
+        border-radius: 10px;
+        padding: 10px 16px;
+        cursor: pointer;
+        background: var(--amber);
+        color: var(--navy);
+        text-decoration: none;
+        display: inline-block;
+      }
+      a.btn.ghost,
+      button.ghost {
+        background: #e2e8f0;
+        color: var(--ink);
+      }
+      .row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-top: 8px;
+      }
+      .copybox {
+        width: 100%;
+        min-height: 230px;
+        margin-top: 12px;
+        font:
+          13px ui-monospace,
+          Menlo,
+          monospace;
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        resize: vertical;
+      }
+      .toast {
+        color: var(--ok);
+        font-weight: 700;
+        font-size: 14px;
+      }
+      .footnote {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .crumb {
+        color: var(--teal);
+        font-weight: 700;
+        text-decoration: none;
+        font-size: 14px;
+      }
+      @media (max-width: 560px) {
+        .status {
+          flex-direction: column;
+          align-items: stretch;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Canvas Setup Wizard</h1>
+      <p>
+        Zero to a fully wired, self-grading Canvas course. Check each step as
+        you finish — your progress is saved on this device. No Canvas API token,
+        no admin help, and no IT ticket required to get started.
+      </p>
+    </header>
+
+    <main>
+      <a class="crumb" href="/teacher-tools/">&larr; Teacher Tools</a>
+
+      <div class="card status" role="status" aria-live="polite">
+        <div class="status-text">
+          <h2 id="status-head">Loading…</h2>
+          <p id="status-sub"></p>
+        </div>
+        <div class="bar" aria-hidden="true"><i id="bar-fill"></i></div>
+      </div>
+
+      <div id="steps"></div>
+
+      <div class="card">
+        <p class="footnote">
+          Reset progress on this device if you want to start the checklist over.
+        </p>
+        <button class="ghost" id="reset-btn" type="button">
+          Reset checklist
+        </button>
+      </div>
+    </main>
+
+    <script>
+      var STORAGE_KEY = "neft-canvas-setup-v1";
+
+      var EMAIL_SUBJECT =
+        "Enable automatic grade passback for my Grade 6 math activities";
+
+      var EMAIL_BODY = [
+        "To: Canvas / LMS Administrator",
+        "From: Joel Neft — Grade 6 Math",
+        "Subject: Enable automatic grade passback for my Grade 6 math activities",
+        "",
+        "Hi,",
+        "",
+        "I run a set of interactive Grade 6 math lessons that my students complete",
+        "online. I already import them into Canvas myself as Common Cartridge",
+        "packages and native QTI quizzes, and the quizzes grade themselves in the",
+        "gradebook — that part needs nothing from you.",
+        "",
+        "The one piece I can't do alone is automatic grade passback for the",
+        "interactive (non-quiz) lessons. Today I work around it with completion",
+        "codes pasted into a Text-Entry assignment, matched by hand. To make it",
+        "automatic, please enable ONE of the following for my course — whichever",
+        "fits district policy best:",
+        "",
+        "Option A — Register my activity site as an LTI 1.3 external tool (preferred).",
+        "In Admin > Developer Keys > + LTI Key, create a key (I'll confirm the exact",
+        "production URLs before you save):",
+        "  - Target Link URI: https://eduwonderlab.com/",
+        "  - OpenID Connect Login URL: https://eduwonderlab.com/lti/login",
+        "  - Redirect URIs: https://eduwonderlab.com/lti/launch",
+        "  - Public JWK / JWKS URL: https://eduwonderlab.com/.well-known/jwks.json",
+        "  - Scopes: AGS (result + score) and Names & Role Provisioning. No admin scopes.",
+        "  - Placement: course navigation / assignment, scoped to my course only.",
+        "Turn the key On, add the Client ID to my course, and send me the Client ID",
+        "and Deployment ID — I'll finish configuration on my end.",
+        "",
+        "Option B — Enable the SCORM uploader for my course.",
+        "Turn on SCORM upload so I can upload SCORM 1.2 packages that report scores",
+        "straight to the gradebook. I'll upload and grade them myself.",
+        "",
+        "Why this is low-risk:",
+        "  - Same standards-based grade passback Canvas already uses for approved",
+        "    tools (Google Drive/Assignments and Nearpod both pass grades back via",
+        "    LTI). This is one more LTI tool, scoped to a single teacher's course.",
+        "  - No account-admin scopes, no student PII beyond the Canvas roster, scope",
+        "    limited to my own course's submissions and grades.",
+        "  - If you'd rather not enable either, no problem — my current import",
+        "    workflow works without admin help, so nothing breaks either way.",
+        "",
+        "Happy to send a sample package or LTI config JSON for whichever is easiest.",
+        "",
+        "Thank you,",
+        "Joel Neft",
+        "Grade 6 Math",
+      ].join("\n");
+
+      var STEPS = [
+        {
+          id: "import",
+          title: "Bulk-import the whole course (one time)",
+          why: "One upload creates a module per unit, a lesson page for each lesson, and a native auto-graded quiz for each lesson. Everything arrives unpublished, so nothing is visible to students until you choose.",
+          how: [
+            "Build the package if you haven't: run <code>npm run course</code> — it writes <code>canvas-packages/neft-course.imscc</code>.",
+            "In Canvas, open your course &rarr; <strong>Settings</strong> &rarr; <strong>Import Course Content</strong>.",
+            "Content Type: <strong>Common Cartridge 1.x Package</strong>.",
+            "Choose the file <code>neft-course.imscc</code> (in <code>canvas-packages/</code>, or wherever you copied it — e.g. your Desktop).",
+            "Click <strong>Import</strong>, then wait for the job to finish.",
+            "Note: everything imports <strong>unpublished</strong>. You publish later in Step 4.",
+          ],
+        },
+        {
+          id: "quizzes",
+          optional: true,
+          title: "Import the auto-graded quizzes via QTI",
+          why: "Skip this if Step 1's full-course package already gave you the quizzes you want. Use this only if you'd rather load just the native quizzes through Canvas's dedicated QTI path.",
+          how: [
+            "Build the quiz-only package: <code>npm run course -- --quizzes-only</code> &rarr; writes <code>canvas-packages/neft-quizzes.zip</code>.",
+            "In Canvas: <strong>Settings</strong> &rarr; <strong>Import Course Content</strong>.",
+            "Content Type: <strong>QTI .zip file</strong>.",
+            "Choose <code>neft-quizzes.zip</code> and click <strong>Import</strong>.",
+            "These are real Canvas quizzes — they grade themselves once published.",
+          ],
+        },
+        {
+          id: "dates",
+          title: "Set due dates & release schedule",
+          why: "Everything imported with no dates. Use the Unit Plan Builder to generate a Canvas-ready CSV of dates, then apply it on your logged-in Canvas session (BCPS blocks the API, so this is driven by Claude-in-Chrome on the live page — no token needed).",
+          how: [
+            'Open the <a href="/teacher-tools/unit-plan-builder/">Unit Plan Builder</a> and fill in your unit pacing.',
+            "Download the Canvas-ready <code>.csv</code> it produces.",
+            'Use the "Deploy to Canvas" toolkit card with Claude-in-Chrome on your logged-in Canvas tab to apply the dates and module release.',
+            "Spot-check a couple of modules so the dates landed where you expect.",
+          ],
+        },
+        {
+          id: "publish",
+          title: "Publish modules & quizzes",
+          why: "Nothing is visible to students until you publish it. Once a quiz is published, it scores itself in the Canvas gradebook — no codes, no IT, no manual entry.",
+          how: [
+            "In Canvas, open <strong>Modules</strong>.",
+            "Publish each unit module (and the items inside) when you're ready to release it.",
+            'A published quiz is "auto-graded": when a student submits, Canvas grades it instantly and the score lands in the gradebook.',
+            "You can publish unit by unit as your pacing moves — leave future units unpublished.",
+          ],
+        },
+        {
+          id: "interactive",
+          title: "Grade the interactive lessons (no IT needed)",
+          why: "The non-quiz interactive lessons can't auto-post grades without IT. Until you send the IT email (Step 6), use the built-in completion-code flow — students prove they finished, you import the scores in seconds.",
+          how: [
+            "Each interactive lesson shows a tamper-resistant completion code when the student finishes.",
+            "In Canvas, make a simple <strong>Text-Entry</strong> assignment per lesson; students paste their code.",
+            'Open the <a href="/teacher-tools/canvas-dashboard/">Canvas Dashboard</a> or <a href="/teacher-tools/canvas-grades/">Canvas Grade Bridge</a>.',
+            "Paste the codes/scores; the tool name-matches students and builds a Canvas import CSV.",
+            "Upload that CSV in the Canvas Gradebook (Import) and the scores post.",
+          ],
+        },
+        {
+          id: "it",
+          optional: true,
+          title: "Unlock full automation — email IT",
+          why: "Optional. This is the ONLY step that needs your admin. It turns Step 5's manual import into fully automatic grade passback for the interactive lessons, via LTI 1.3 or the SCORM uploader. One routine email.",
+          how: [
+            "Review the email below (also saved at <code>docs/canvas/it-unlock-email.md</code>).",
+            "Click <strong>Copy email</strong>, paste into a new message to your Canvas admin, confirm the production URLs, and send.",
+            "When IT replies with a Client ID / Deployment ID (Option A) or enables SCORM (Option B), you're done — interactive scores post automatically.",
+          ],
+          email: true,
+        },
+      ];
+
+      function loadState() {
+        try {
+          return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+        } catch (e) {
+          return {};
+        }
+      }
+
+      function saveState(state) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {
+          /* storage may be unavailable; UI still works for the session */
+        }
+      }
+
+      var state = loadState();
+
+      function buildList(items) {
+        var ol = document.createElement("ol");
+        ol.className = "how";
+        items.forEach(function (html) {
+          var li = document.createElement("li");
+          li.innerHTML = html;
+          ol.appendChild(li);
+        });
+        return ol;
+      }
+
+      function copyEmail(textarea, toast) {
+        var text = EMAIL_BODY;
+        function fallback() {
+          textarea.focus();
+          textarea.select();
+          try {
+            document.execCommand("copy");
+          } catch (e) {}
+        }
+        toast.textContent = "";
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(
+            function () {
+              toast.textContent = "Copied to clipboard.";
+            },
+            function () {
+              fallback();
+              toast.textContent =
+                "Copied (selected the text — press Cmd/Ctrl+C).";
+            },
+          );
+        } else {
+          fallback();
+          toast.textContent = "Selected the text — press Cmd/Ctrl+C to copy.";
+        }
+      }
+
+      function buildEmailBlock() {
+        var wrap = document.createElement("div");
+        var subj = document.createElement("p");
+        subj.className = "footnote";
+        subj.innerHTML = "<strong>Subject:</strong> " + EMAIL_SUBJECT;
+        var ta = document.createElement("textarea");
+        ta.className = "copybox";
+        ta.readOnly = true;
+        ta.value = EMAIL_BODY;
+        ta.setAttribute("aria-label", "IT unlock email body");
+        var row = document.createElement("div");
+        row.className = "row";
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.textContent = "Copy email";
+        var toast = document.createElement("span");
+        toast.className = "toast";
+        toast.setAttribute("role", "status");
+        toast.setAttribute("aria-live", "polite");
+        btn.addEventListener("click", function () {
+          copyEmail(ta, toast);
+        });
+        row.appendChild(btn);
+        row.appendChild(toast);
+        wrap.appendChild(subj);
+        wrap.appendChild(ta);
+        wrap.appendChild(row);
+        return wrap;
+      }
+
+      function renderSteps() {
+        var host = document.getElementById("steps");
+        host.textContent = "";
+        STEPS.forEach(function (step, index) {
+          var card = document.createElement("div");
+          card.className = "card step" + (step.optional ? " optional" : "");
+          if (state[step.id]) card.className += " done";
+
+          var box = document.createElement("input");
+          box.type = "checkbox";
+          box.checked = !!state[step.id];
+          box.id = "chk-" + step.id;
+          box.setAttribute("aria-label", "Mark step done: " + step.title);
+          box.addEventListener("change", function () {
+            state[step.id] = box.checked;
+            saveState(state);
+            renderSteps();
+            renderStatus();
+          });
+
+          var body = document.createElement("div");
+          body.className = "step-body";
+
+          var h2 = document.createElement("h2");
+          var num = document.createElement("span");
+          num.className = "step-num";
+          num.textContent = String(index + 1);
+          h2.appendChild(num);
+          h2.appendChild(document.createTextNode(" " + step.title));
+          if (step.optional) {
+            var tag = document.createElement("span");
+            tag.className = "tag";
+            tag.textContent = "Optional";
+            h2.appendChild(tag);
+          }
+
+          var why = document.createElement("p");
+          why.className = "why";
+          why.textContent = step.why;
+
+          body.appendChild(h2);
+          body.appendChild(why);
+          body.appendChild(buildList(step.how));
+          if (step.email) body.appendChild(buildEmailBlock());
+
+          var label = document.createElement("label");
+          label.setAttribute("for", "chk-" + step.id);
+          label.appendChild(box);
+
+          card.appendChild(label);
+          card.appendChild(body);
+          host.appendChild(card);
+        });
+      }
+
+      function renderStatus() {
+        var required = STEPS.filter(function (s) {
+          return !s.optional;
+        });
+        var total = STEPS.length;
+        var doneCount = STEPS.filter(function (s) {
+          return state[s.id];
+        }).length;
+        var fill = document.getElementById("bar-fill");
+        fill.style.width = Math.round((doneCount / total) * 100) + "%";
+
+        var head = document.getElementById("status-head");
+        var sub = document.getElementById("status-sub");
+
+        var nextRequired = required.find(function (s) {
+          return !state[s.id];
+        });
+        if (!nextRequired) {
+          var allOptional = STEPS.every(function (s) {
+            return state[s.id];
+          });
+          head.textContent = allOptional
+            ? "All set — your Canvas course is fully wired."
+            : "Required setup complete — your course is self-grading.";
+          sub.textContent = allOptional
+            ? doneCount + " of " + total + " done."
+            : "Optional next: send the IT email to unlock full automation.";
+          return;
+        }
+        head.textContent =
+          doneCount + " of " + total + " done — next: " + nextRequired.title;
+        sub.textContent = "Work top to bottom; check each step as you finish.";
+      }
+
+      document
+        .getElementById("reset-btn")
+        .addEventListener("click", function () {
+          state = {};
+          saveState(state);
+          renderSteps();
+          renderStatus();
+        });
+
+      renderSteps();
+      renderStatus();
+    </script>
+  </body>
+</html>
