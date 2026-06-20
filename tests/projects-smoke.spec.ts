@@ -138,7 +138,7 @@ for (const route of ROUTES) {
       fields.forEach((el) => {
         try {
           if (el.type === "checkbox" || el.type === "radio") {
-            // leave as-is; clicking handled below
+            el.click(); // exercise change/click handlers wired to toggles
           } else if (el.tagName === "SELECT") {
             el.dispatchEvent(new Event("change", { bubbles: true }));
           } else {

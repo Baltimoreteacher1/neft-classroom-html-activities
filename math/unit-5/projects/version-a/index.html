@@ -2589,6 +2589,10 @@
           $("whatIfBox").textContent = "Enter how many feet to add to the base.";
           return;
         }
+        if (base + add <= 0) {
+          $("whatIfBox").textContent = "The new base must be greater than 0 ft.";
+          return;
+        }
         const r = (x) => Math.round(x * 100) / 100;
         PK.whatIf(
           "whatIfBox",

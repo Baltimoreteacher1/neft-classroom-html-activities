@@ -2274,9 +2274,9 @@
             "First fill in your cost, markup, and sale discount in Part 1.";
           return;
         }
-        if (isNaN(coupon) || coupon < 0) {
+        if (isNaN(coupon) || coupon < 0 || coupon > 100) {
           $("whatIfBox").textContent =
-            "Enter an extra coupon percent (% off the sale price).";
+            "Enter an extra coupon percent between 0 and 100 (% off the sale price).";
           return;
         }
         const money = (x) => "$" + (Math.round(x * 100) / 100).toFixed(2);
