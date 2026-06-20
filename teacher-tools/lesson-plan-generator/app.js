@@ -94,7 +94,7 @@
     const li = els.pipeline.querySelector(`[data-stage="${stage}"]`);
     if (li) li.className = state;
   }
-  const tick = () => new Promise((r) => setTimeout(r, 80));
+  const tick = () => new Promise((r) => setTimeout(r, 12));
 
   /* ===================== SOURCE EXTRACTION ===================== */
   async function extractPptx(arrayBuffer) {
@@ -107,16 +107,22 @@
         return na - nb;
       });
     if (!slideFiles.length) throw new Error("No slides found in the .pptx.");
-    const parts = [];
-    for (const name of slideFiles) {
+    let loaded = 0;
+    const promises = slideFiles.map(async (name) => {
       const xml = await zip.files[name].async("string");
       const runs = [...xml.matchAll(/<a:t>([\s\S]*?)<\/a:t>/g)].map((m) =>
         decodeXml(m[1]),
       );
       const n = (name.match(/slide(\d+)/) || [])[1];
       const text = runs.join(" ").replace(/\s+/g, " ").trim();
-      if (text) parts.push(`--- Slide ${n} ---\n${text}`);
-    }
+      loaded++;
+      els.fileStatus.textContent = `Reading slide ${loaded} of ${slideFiles.length}…`;
+      return { n, text };
+    });
+    const results = await Promise.all(promises);
+    const parts = results
+      .filter((r) => r.text)
+      .map((r) => `--- Slide ${r.n} ---\n${r.text}`);
     return parts.join("\n\n");
   }
 
@@ -152,8 +158,9 @@
     }
     const doc = await pdfjs.getDocument({ data: new Uint8Array(arrayBuffer) })
       .promise;
-    const out = [];
-    for (let p = 1; p <= doc.numPages; p++) {
+    let loaded = 0;
+    const pagesRange = Array.from({ length: doc.numPages }, (_, i) => i + 1);
+    const pagePromises = pagesRange.map(async (p) => {
       const page = await doc.getPage(p);
       const content = await page.getTextContent();
       const txt = content.items
@@ -161,8 +168,14 @@
         .join(" ")
         .replace(/\s+/g, " ")
         .trim();
-      if (txt) out.push(`--- Page ${p} ---\n${txt}`);
-    }
+      loaded++;
+      els.fileStatus.textContent = `Reading page ${loaded} of ${doc.numPages}…`;
+      return { p, txt };
+    });
+    const pageResults = await Promise.all(pagePromises);
+    const out = pageResults
+      .filter((r) => r.txt)
+      .map((r) => `--- Page ${r.p} ---\n${r.txt}`);
     const text = out.join("\n\n");
     if (!text)
       throw new Error(
@@ -242,7 +255,7 @@
       .filter(Boolean);
     const SENT = "␟";
     const segText = text
-      .replace(/([.!?])\s+(?=[^0-9])/g, "$1" + SENT)
+      .replace(/(?<!\b[A-Za-z]\.)(?<!\b[a-z]{1,3}\.)(?<!\b\d+\.[A-Z]\.\d+)([.!?])\s+(?=[A-Z])/g, "$1" + SENT)
       .replace(/[\r\n]+/g, SENT)
       .replace(/[;•]/g, SENT);
     const segments = segText
