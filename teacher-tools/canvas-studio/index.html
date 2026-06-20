@@ -210,6 +210,9 @@
           </div>
           <div class="cmd" id="cmd">npm run library-cartridge</div>
           <button class="copybtn" id="copy">Copy command</button>
+          <button class="copybtn" id="download" style="background: var(--teal); margin-left: 8px;">
+            ⬇ Selection file
+          </button>
           <p class="foot" id="cmdnote"></p>
         </div>
 
@@ -382,24 +385,68 @@
       function renderCommand() {
         const cmdEl = document.getElementById("cmd");
         const note = document.getElementById("cmdnote");
+        const dl = document.getElementById("download");
         if (!cmdEl) return;
         const type = state.type !== "all" ? state.type : null;
+        const n = selectedUrls().length;
 
         if (state.path === "quizzes") {
           cmdEl.textContent = "npm run course -- --quizzes-only";
           note.innerHTML = "Builds <code>neft-quizzes.zip</code> — native auto-graded quizzes from lesson questions. Append a unit number (e.g. <code>npm run course -- 1 --quizzes-only</code>) to scope it.";
+          if (dl) dl.style.display = "none";
           return;
         }
+        if (dl) dl.style.display = "";
+
+        const modeWord = state.path === "graded" ? "completion-code assignments" : "live-link pages";
+        const gradedFlag = state.path === "graded" ? " --mode=graded" : "";
+
+        if (n > 0) {
+          // Exact selection → download a file, build precisely those items.
+          cmdEl.textContent = "npm run library-cartridge -- --select=canvas-selection.json" + gradedFlag;
+          note.innerHTML =
+            `Builds an <code>.imscc</code> of your <b>${n} selected item${n === 1 ? "" : "s"}</b> as ${modeWord}. ` +
+            `Click <b>⬇ Selection file</b>, save <code>canvas-selection.json</code> to your repo root, then run the command.`;
+          if (dl) dl.disabled = false;
+          return;
+        }
+
+        // Nothing checked → fall back to whole-library / type-filtered export.
         const flags = [];
         if (state.path === "graded") flags.push("--mode=graded");
         if (type) flags.push(`--type=${type}`);
         cmdEl.textContent = "npm run library-cartridge" + (flags.length ? " -- " + flags.join(" ") : "");
-
-        const n = selectedUrls().length;
-        const modeWord = state.path === "graded" ? "completion-code assignments" : "live-link pages";
         note.innerHTML =
-          `Builds an <code>.imscc</code> of your ${type ? esc(type) + " items" : "whole library"} as ${modeWord}.` +
-          (n ? ` <em>Your ${n} checkbox selection is a planning aid — the command exports by type/section. Use the type filter to match your picks.</em>` : "");
+          `Builds an <code>.imscc</code> of your ${type ? esc(type) + " items" : "whole library"} as ${modeWord}. ` +
+          `<em>Tick items above to export an exact selection instead.</em>`;
+        if (dl) dl.disabled = true;
+      }
+
+      function downloadSelection() {
+        const urls = selectedUrls();
+        if (!urls.length) return;
+        const byUrl = new Map(state.data.items.map((it) => [it.url, it]));
+        const payload = {
+          generatedAt: new Date().toISOString(),
+          source: "Canvas Studio",
+          count: urls.length,
+          urls,
+          items: urls.map((u) => {
+            const it = byUrl.get(u) || {};
+            return { url: u, title: it.title || u, type: it.type || null, module: it.module || null };
+          }),
+        };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "canvas-selection.json";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+        const btn = document.getElementById("download");
+        btn.textContent = "Downloaded ✓";
+        setTimeout(() => (btn.textContent = "⬇ Selection file"), 1500);
       }
 
       function renderImportSteps() {
@@ -433,6 +480,7 @@
           .then(() => { btn.textContent = "Copied ✓"; setTimeout(() => (btn.textContent = "Copy command"), 1500); })
           .catch(() => {});
       });
+      document.getElementById("download").addEventListener("click", downloadSelection);
     </script>
   </body>
 </html>

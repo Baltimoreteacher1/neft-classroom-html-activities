@@ -116,7 +116,7 @@ export function moduleOf(item) {
  * @returns { items:[{title,url,activityType,standard,module}], modules:[{key,title,order,items:[]}] }
  */
 export function selectLibrary(repoRoot, opts = {}) {
-  const { typeFilter = null, sectionFilter = null, limit = 0, includePrivate = false } = opts;
+  const { typeFilter = null, sectionFilter = null, limit = 0, includePrivate = false, selectUrls = null } = opts;
   const registry = JSON.parse(readFileSync(resolve(repoRoot, "data/registry.json"), "utf8"));
   const all = Array.isArray(registry.activities) ? registry.activities : [];
   const privatePaths = loadPrivatePaths(repoRoot);
@@ -124,6 +124,12 @@ export function selectLibrary(repoRoot, opts = {}) {
   let items = all.filter((it) => isStudentSafe(it, privatePaths, includePrivate));
   if (typeFilter) items = items.filter((i) => i.activityType === typeFilter);
   if (sectionFilter) items = items.filter((i) => norm(i.url).includes(String(sectionFilter).toLowerCase()));
+  // Exact selection (from the Studio): keep only these urls, in the registry's
+  // own order so module grouping stays stable.
+  if (Array.isArray(selectUrls) && selectUrls.length) {
+    const wanted = new Set(selectUrls.map(norm));
+    items = items.filter((i) => wanted.has(norm(i.url)));
+  }
 
   // de-dupe by normalized url
   const seen = new Set();

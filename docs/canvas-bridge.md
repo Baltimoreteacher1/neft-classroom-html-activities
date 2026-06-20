@@ -42,11 +42,25 @@ new item lands in Canvas automatically.
 ### Useful flags
 
 ```bash
-npm run library-cartridge -- --type=Game        # one activity type
-npm run library-cartridge -- --section=esol      # urls under /esol…/
-npm run library-cartridge -- --mode=graded       # completion-code assignments
-npm run library-cartridge -- --limit=25          # small smoke-test package
+npm run library-cartridge -- --type=Game         # one activity type
+npm run library-cartridge -- --section=esol       # urls under /esol…/
+npm run library-cartridge -- --mode=graded        # completion-code assignments
+npm run library-cartridge -- --limit=25           # small smoke-test package
+npm run library-cartridge -- --select=canvas-selection.json   # exact picks from the Studio
+npm run library-cartridge -- --select-urls=/lessons/1-1/,/netfold-3d/   # inline picks
 ```
+
+### Exact selection from Canvas Studio
+
+In the Studio, tick the activities you want, click **⬇ Selection file** to save
+`canvas-selection.json` to the repo root, then run the command it shows:
+
+```bash
+npm run library-cartridge -- --select=canvas-selection.json
+```
+
+The package contains exactly your picks (add `--mode=graded` for completion-code
+assignments). Any selected url no longer in the library is reported and skipped.
 
 Output lands in `canvas-packages/` (gitignored) with a `.manifest.json` sidecar
 listing exactly what shipped, by module.

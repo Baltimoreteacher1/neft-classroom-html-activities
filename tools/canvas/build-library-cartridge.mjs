@@ -34,7 +34,7 @@
  * Env: NEFT_SITE overrides the base site (default https://eduwonderlab.com).
  * Output: canvas-packages/neft-library[-suffix].imscc  (+ a manifest .json sidecar)
  */
-import { writeFileSync, mkdirSync, rmSync } from "fs";
+import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from "fs";
 import { execSync } from "child_process";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
@@ -55,6 +55,33 @@ const SECTION_FILTER = getOpt("section"); // url substring, e.g. "math", "esol"
 const LIMIT = Number(getOpt("limit", 0)) || 0;
 const INCLUDE_PRIVATE = args.includes("--include-private");
 
+// Exact selection exported from Canvas Studio. --select=<file> reads a JSON
+// { urls:[...] } (or a bare array / newline list); --select-urls=a,b,c is inline.
+const SELECT_FILE = getOpt("select");
+const SELECT_INLINE = getOpt("select-urls");
+let SELECT_URLS = null;
+if (SELECT_FILE) {
+  const f = resolve(repoRoot, SELECT_FILE);
+  if (!existsSync(f)) {
+    console.error(`Selection file not found: ${f}`);
+    process.exit(1);
+  }
+  const raw = readFileSync(f, "utf8").trim();
+  try {
+    const parsed = JSON.parse(raw);
+    SELECT_URLS = Array.isArray(parsed) ? parsed : Array.isArray(parsed.urls) ? parsed.urls : [];
+  } catch {
+    // tolerate a plain newline/comma list
+    SELECT_URLS = raw.split(/[\n,]+/).map((s) => s.trim()).filter(Boolean);
+  }
+} else if (SELECT_INLINE) {
+  SELECT_URLS = SELECT_INLINE.split(",").map((s) => s.trim()).filter(Boolean);
+}
+if (SELECT_URLS && !SELECT_URLS.length) {
+  console.error("Selection is empty — nothing to build.");
+  process.exit(1);
+}
+
 const xml = (s) =>
   String(s == null ? "" : s).replace(
     /[<>&'"]/g,
@@ -67,11 +94,19 @@ const { items, modules: orderedModules } = selectLibrary(repoRoot, {
   sectionFilter: SECTION_FILTER,
   limit: LIMIT,
   includePrivate: INCLUDE_PRIVATE,
+  selectUrls: SELECT_URLS,
 });
 
 if (!items.length) {
   console.error("No items matched the given filters.");
   process.exit(1);
+}
+// Surface any selected urls that didn't resolve (e.g. removed from the library).
+if (SELECT_URLS) {
+  const got = new Set(items.map((i) => norm(i.url)));
+  const missing = SELECT_URLS.map(norm).filter((u) => !got.has(u));
+  if (missing.length)
+    console.warn(`⚠ ${missing.length} selected url(s) not in the current library (skipped):\n  ${missing.slice(0, 8).join("\n  ")}`);
 }
 
 /* ---------- staging ---------- */
@@ -236,6 +271,7 @@ writeFileSync(resolve(stage, "imsmanifest.xml"), manifestXml);
 
 /* ---------- zip ---------- */
 const suffix = [
+  SELECT_URLS ? "selection" : null,
   TYPE_FILTER ? TYPE_FILTER.toLowerCase() : null,
   SECTION_FILTER ? SECTION_FILTER.toLowerCase() : null,
   MODE === "graded" ? "graded" : null,
