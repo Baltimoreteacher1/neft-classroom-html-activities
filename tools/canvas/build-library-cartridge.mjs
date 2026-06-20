@@ -39,6 +39,7 @@ import { execSync } from "child_process";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 import { selectLibrary, norm } from "./lib/library-select.mjs";
+import { validateCartridgeDir } from "./validate-cartridge.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, "../..");
@@ -277,6 +278,17 @@ const suffix = [
   MODE === "graded" ? "graded" : null,
 ].filter(Boolean).join("-");
 const outName = suffix ? `neft-library-${suffix}.imscc` : "neft-library.imscc";
+// Self-validate the staged package BEFORE shipping (mirrors build-course.mjs's
+// answer-key guard). A structural defect aborts the build rather than producing
+// a broken .imscc.
+const check = validateCartridgeDir(stage);
+if (!check.ok) {
+  console.error(`\n✗ ABORTED: staged cartridge failed validation (package NOT written):`);
+  for (const e of check.errors) console.error(`  ✗ ${e}`);
+  console.error(`  Inspect the staged dir: ${stage}`);
+  process.exit(1);
+}
+
 const outFile = resolve(repoRoot, "canvas-packages", outName);
 rmSync(outFile, { force: true });
 execSync(`cd "${stage}" && zip -r -q -X "${outFile}" . -x ".*"`);
@@ -303,6 +315,7 @@ writeFileSync(
 rmSync(stage, { recursive: true, force: true });
 
 console.log(`\n✓ Library Common Cartridge: ${outFile}`);
+console.log(`  Validated:  ✓ structure clean (${check.stats.manifestHrefs} hrefs, ${check.stats.moduleItems} module items resolve)`);
 console.log(`  Items:    ${items.length}  (mode=${MODE})`);
 console.log(`  Modules:  ${orderedModules.length}`);
 for (const m of orderedModules) console.log(`    • ${m.title.padEnd(34)} ${m.items.length}`);

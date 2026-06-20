@@ -121,8 +121,21 @@ per-item work — add content, regenerate, rebuild.
 
 ## Verifying a package
 
-`tools/` ships no live-Canvas test (that needs a real LMS), but a package is
-structurally checkable: unzip it, confirm `imsmanifest.xml` is well-formed, and
-that every `href` and module `identifierref` resolves to a real file/resource.
-The generators mirror the proven XML format of the existing, Canvas-tested
-`build-course.mjs`.
+`build-library-cartridge.mjs` **self-validates** every package before it ships
+(via `tools/canvas/validate-cartridge.mjs`) — a structural defect aborts the
+build instead of writing a broken `.imscc`, mirroring how `build-course.mjs`
+guards answer keys.
+
+To check existing packages by hand:
+
+```bash
+npm run validate:canvas                       # all canvas-packages/*.imscc
+node tools/canvas/validate-cartridge.mjs <pkg.imscc | staged-dir>
+```
+
+It confirms `imsmanifest.xml` is well-formed, every `href` and module
+`identifierref` resolves, no template token is left unfilled, and every page
+carries a live link. The validator itself is covered by
+`tools/canvas/validate-cartridge.test.mjs` (positive + corruption cases). A
+live-Canvas import test still needs a real LMS; the generators mirror the proven
+XML format of the existing, Canvas-tested `build-course.mjs`.
