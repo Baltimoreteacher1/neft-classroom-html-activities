@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/assets/math-mobile.css">
     <meta
       name="description"
       content="MCAP Homework Practice Studio | Grade 6 Math Review. Explore interactive domain review modules, timed practice self-checks, and adaptive Maryland state prep."
@@ -734,6 +735,119 @@
         .canvas-panel {
           box-shadow: none !important;
           border: 1px solid #777 !important;
+        }
+      }
+
+      /* ============================================================
+         Responsive layout (additive, mobile-first overrides)
+         Targets this page's own selectors only.
+         ============================================================ */
+
+      /* ---- Tablet: <= 900px ---- */
+      @media (max-width: 900px) {
+        /* Ratio Scales: stack stage above controls */
+        .sim-workspace {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+        }
+        .sim-workspace .canvas-panel,
+        .sim-workspace .control-panel {
+          width: 100%;
+          max-width: 100%;
+        }
+
+        /* Graded Homework Sheet: stack sidebar above content */
+        .test-panel-layout {
+          grid-template-columns: 1fr !important;
+        }
+
+        /* Ratio SVG stage stays centered and fluid */
+        #ratio-visual {
+          max-width: 100%;
+          height: auto;
+        }
+      }
+
+      /* ---- Phone: <= 640px ---- */
+      @media (max-width: 640px) {
+        /* Tighter hero padding + heading on phones */
+        .hero {
+          padding: 20px;
+        }
+        .hero h1 {
+          font-size: 1.7rem;
+        }
+        .hero p.tagline {
+          font-size: 1rem;
+        }
+
+        /* Single-column vocabulary cards */
+        .vocab-grid {
+          grid-template-columns: 1fr;
+        }
+
+        /* Cards: trim large padding + heading sizes */
+        .card {
+          padding: 16px;
+        }
+        .card h2 {
+          font-size: 1.35rem;
+        }
+        .card h3 {
+          font-size: 1.1rem;
+        }
+
+        /* Full-width primary action buttons */
+        .btn {
+          width: 100%;
+          justify-content: center;
+        }
+        .btn-teal {
+          width: 100%;
+        }
+
+        /* Tab bar already scrolls; reduce button padding to fit more */
+        .tab-btn {
+          padding: 9px 14px;
+          font-size: 0.85rem;
+        }
+
+        /* Test progress header: wrap label / track / count */
+        .test-progress {
+          flex-wrap: wrap;
+          gap: 8px;
+          padding: 14px 16px;
+        }
+        .progress-track {
+          flex-basis: 100%;
+          margin: 8px 0;
+          order: 3;
+        }
+
+        /* Scorecard padding + score size on small screens */
+        .score-card {
+          padding: 20px;
+        }
+        .score-big {
+          font-size: 2.6rem;
+        }
+
+        /* Keep floating widget from crowding the viewport edge */
+        .lang-widget {
+          bottom: 12px;
+          right: 12px;
+          flex-wrap: wrap;
+          justify-content: flex-end;
+        }
+        .float-btn {
+          padding: 10px 16px;
+          font-size: 0.85rem;
+        }
+
+        /* Ratio visual container: allow horizontal scroll if needed */
+        .sim-workspace .canvas-panel {
+          overflow-x: auto;
         }
       }
     </style>
