@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/assets/math-mobile.css">
   <meta name="description" content="Publisher-grade mathematical simulation lab. Plot coordinates in real-time to analyze proportional reasoning and equivalent ratios.">
   <title>6.EE.C.9 Proportional Reasoning Lab</title>
   
@@ -308,7 +309,29 @@
       background: #fee2e2;
       color: #991b1b;
     }
-  
+
+    /* RESPONSIVE (tablet/phone) */
+    @media (max-width: 900px) {
+      .lab-shell { padding: 16px; gap: 16px; }
+      .lab-header { padding: 16px 18px; }
+      .main-layout { grid-template-columns: 1fr; gap: 16px; }
+      .glass-card { padding: 18px; }
+      .lab-title h1 { font-size: 1.4rem; }
+    }
+
+    @media (max-width: 640px) {
+      .lab-shell { padding: 12px; }
+      .lab-header { flex-direction: column; align-items: flex-start; gap: 8px; padding: 14px; }
+      .lab-title h1 { font-size: 1.2rem; gap: 8px; }
+      .glass-card { padding: 14px; gap: 16px; }
+      .mixer-workspace { grid-template-columns: 1fr; gap: 16px; }
+      .card-heading { flex-direction: column; align-items: flex-start; gap: 6px; }
+      .graph-viewport { padding: 6px; overflow-x: auto; }
+      #coordinatePlane { max-width: 100%; height: auto; }
+      .signals-panel { max-height: 240px; }
+      table { font-size: 0.82rem; }
+    }
+
 @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

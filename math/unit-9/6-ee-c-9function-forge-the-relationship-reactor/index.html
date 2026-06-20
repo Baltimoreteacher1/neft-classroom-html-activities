@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/assets/math-mobile.css">
   <meta name="description" content="Publisher-grade interactive mathematics game. Solve algebraic equations to stabilize the Relationship Reactor core.">
   <title>6.EE.C.9 Function Forge · The Relationship Reactor</title>
   
@@ -398,8 +399,25 @@
       .main-grid {
         grid-template-columns: 1fr;
       }
+      .reactor-shell { padding: 16px; gap: 16px; }
+      .hud-header { padding: 14px 18px; }
+      .control-panel, .core-viewport { padding: 18px; }
     }
-  
+
+    @media (max-width: 640px) {
+      .reactor-shell { padding: 12px; }
+      .hud-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .hud-metrics { gap: 16px; width: 100%; }
+      .brand-title h1 { font-size: 1.3rem; }
+      .main-grid { gap: 16px; }
+      .control-panel, .core-viewport { padding: 14px; }
+      .keyboard-grid { grid-template-columns: repeat(5, 1fr); gap: 6px; }
+      .key { padding: 10px; font-size: 1rem; }
+      .formula-display { font-size: 1.3rem; padding: 12px 14px; }
+      .data-table-wrap { overflow-x: auto; }
+      .button-row { flex-wrap: wrap; }
+    }
+
 @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

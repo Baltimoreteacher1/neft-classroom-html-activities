@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/assets/math-mobile.css">
   <meta name="description" content="Publisher-grade mathematical sorting studio. Master independent and dependent variables through interactive card sorting.">
   <title>Independent vs. Dependent Variables Studio</title>
   
@@ -391,7 +392,27 @@
         display: none !important;
       }
     }
-  
+
+    /* RESPONSIVE (tablet/phone) */
+    @media (max-width: 900px) {
+      .studio-shell { padding: 16px; gap: 16px; }
+      .studio-header { padding: 16px 18px; }
+      .studio-title h1 { font-size: 1.35rem; }
+      .deck-viewport { padding: 18px; }
+    }
+
+    @media (max-width: 640px) {
+      .studio-shell { padding: 12px; }
+      .studio-header { flex-direction: column; align-items: flex-start; gap: 12px; padding: 14px; }
+      .hud-metrics { gap: 16px; width: 100%; }
+      .studio-title h1 { font-size: 1.2rem; }
+      .sorting-canvas { grid-template-columns: 1fr; gap: 16px; }
+      .sorting-bin { min-height: 180px; padding: 16px; }
+      .deck-viewport { padding: 14px; min-height: 0; }
+      .control-row { flex-direction: column; }
+      .button-row { flex-wrap: wrap; }
+    }
+
 @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

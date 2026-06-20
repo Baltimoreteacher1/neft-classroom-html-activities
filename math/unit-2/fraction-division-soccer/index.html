@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/assets/math-mobile.css">
     <meta name="description" content="Fraction Division Soccer League: An interactive mathematics game. Model fraction division visually using soccer passes and score goals on a fraction scale pitch.">
     <title>Fraction Division Soccer League | Visual Fractions Game</title>
     <!-- Google Fonts -->
@@ -581,6 +582,95 @@
             margin-top: 40px;
             background: rgba(2, 5, 2, 0.8);
             font-family: var(--font-display);
+        }
+
+        /* ===== Responsive: tablets ===== */
+        @media (max-width: 900px) {
+            header {
+                padding: 14px 18px;
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+            .logo-title {
+                font-size: 1.35rem;
+            }
+            .header-buttons {
+                flex-wrap: wrap;
+            }
+            .app-grid {
+                padding: 0 16px;
+                margin: 16px auto;
+                gap: 16px;
+            }
+            .pitch-inputs-row {
+                grid-template-columns: 1fr;
+            }
+            .diagnostics-panel {
+                width: min(330px, calc(100vw - 32px));
+            }
+        }
+
+        /* ===== Responsive: phones ===== */
+        @media (max-width: 640px) {
+            header {
+                padding: 12px 14px;
+            }
+            .logo-icon {
+                font-size: 1.6rem;
+            }
+            .logo-title {
+                font-size: 1.15rem;
+            }
+            .header-buttons {
+                width: 100%;
+                gap: 8px;
+            }
+            .header-buttons .btn {
+                flex: 1 1 auto;
+                justify-content: center;
+                padding: 9px 12px;
+                font-size: 0.82rem;
+            }
+            .app-grid {
+                padding: 0 12px;
+                gap: 14px;
+            }
+            .glass-panel {
+                padding: 16px;
+            }
+            .panel-title {
+                font-size: 1.1rem;
+            }
+            .algorithm-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                padding: 14px;
+            }
+            .operator-sign {
+                line-height: 1;
+            }
+            .algorithm-console > div[style*="space-between"] {
+                flex-wrap: wrap;
+            }
+            .algorithm-console > div[style*="space-between"] .btn {
+                flex: 1 1 auto;
+                justify-content: center;
+            }
+            /* Keep SVG pitch readable: let the fixed-aspect board scroll instead of distorting */
+            .svg-container {
+                overflow-x: auto;
+                max-width: 100%;
+            }
+            .viewport-svg {
+                min-width: 520px;
+                height: 300px;
+            }
+            .diagnostics-panel {
+                left: 12px;
+                right: 12px;
+                bottom: 12px;
+                width: auto;
+            }
         }
     </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

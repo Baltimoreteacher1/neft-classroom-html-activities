@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/math-mobile.css">
     <title>MCAP Interactive Review Arena</title>
     <link rel="stylesheet" href="/assets/shared.css" />
     <style>
@@ -90,6 +91,15 @@
       .slider-input {
         width: 100%;
         accent-color: var(--teal);
+      }
+      /* --- responsive tablet/phone refinements (additive) --- */
+      .viewport-svg-element { max-width: 100%; height: auto; }
+      @media (max-width: 640px) {
+        .arena-viewport { padding: 14px; min-height: 0; }
+        .controls-row { flex-direction: column; align-items: stretch; padding: 12px; }
+        .slider-container { min-width: 0; }
+        .domain-menu { flex-direction: row; flex-wrap: wrap; }
+        .domain-btn { flex: 1 1 140px; }
       }
     </style>
   </head>
