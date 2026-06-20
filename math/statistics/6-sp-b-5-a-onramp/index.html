@@ -52,7 +52,7 @@
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
   <!-- nsr-injected:end -->
 </head>
-<body>
+<body data-onramp-ok="✅ Yes — n is just the count of all the data values." data-onramp-retry="Count every value one by one — don't add the values, count how many there are. Try again.">
   <main>
     <header class="hero">
       <span class="tag">On-Ramp · Grade 6 · 6.SP.B.5.A</span>
@@ -138,35 +138,9 @@
   </main>
 
   <script src="/assets/app.js"></script>
-  <script>
-    (() => {
-      let done = 0;
-      const counter = document.querySelector("[data-done]");
-      document.querySelectorAll("[data-q]").forEach((q) => {
-        const fb = q.querySelector(".fb");
-        let answered = false;
-        q.querySelectorAll(".choice").forEach((btn) => {
-          btn.addEventListener("click", () => {
-            const right = btn.hasAttribute("data-correct");
-            if (right) {
-              btn.classList.add("correct");
-              fb.textContent = "✅ Yes — n is just the count of all the data values.";
-              fb.className = "fb show ok";
-              q.querySelectorAll(".choice").forEach((b) => (b.disabled = true));
-              if (!answered) { answered = true; counter.textContent = ++done; }
-            } else {
-              btn.classList.add("wrong");
-              fb.textContent = "Count every value one by one — don't add the values, count how many there are. Try again.";
-              fb.className = "fb show no";
-              btn.disabled = true;
-            }
-          });
-        });
-      });
-    })();
-  </script>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js" defer></script>
   <!-- nsr-injected:end -->
+  <script src="/assets/onramp-quiz.js" defer></script>
 </body>
 </html>
