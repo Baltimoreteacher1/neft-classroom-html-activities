@@ -20,6 +20,7 @@ import {
   isTeacherMode,
 } from "./teacher-mode.js";
 import { t, stackHtml, phaseName } from "./i18n.js";
+import { PHASE_TIME_ESTIMATES } from "./content-enrichment.js";
 import "@engine/styles/design-system.css";
 import "@engine/styles/themes.css";
 
@@ -391,7 +392,7 @@ function showIdentityScreen(root, config) {
       const when = s.lastSaved
         ? new Date(s.lastSaved).toLocaleDateString()
         : "";
-      btn.innerHTML = `<strong>${escHtml(s.name)}</strong> ${s.period ? `· P${escHtml(s.period)}` : ""} · ${s.phasesCompleted}/6 phases ${when ? `· ${when}` : ""}`;
+      btn.innerHTML = `<strong>${escHtml(s.name)}</strong> ${s.period ? `· P${escHtml(s.period)}` : ""} · ${s.phasesCompleted}/${PHASE_TIME_ESTIMATES.length} phases ${when ? `· ${when}` : ""}`;
       btn.addEventListener("click", () => {
         nameInput.value = s.name;
         periodInput.value = s.period;
