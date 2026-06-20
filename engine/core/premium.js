@@ -100,7 +100,10 @@ export function getBadgeDefs() {
 export function buildLessonCoverExtras(config, savedProgress) {
   const vocabCount = config.vocabulary?.length || 0;
   const problemCount = countPracticeProblems(config);
-  const pct = savedProgress ? Math.round((savedProgress.phasesCompleted / 6) * 100) : 0;
+  const phaseCount = PHASE_TIME_ESTIMATES.length;
+  const pct = savedProgress
+    ? Math.round((savedProgress.phasesCompleted / phaseCount) * 100)
+    : 0;
 
   const phaseChips = PHASE_TIME_ESTIMATES.map(
     (p, i) =>
@@ -116,7 +119,7 @@ export function buildLessonCoverExtras(config, savedProgress) {
     <div class="cover-stats-row">
       <span class="cover-stat"><strong>${vocabCount}</strong> ${stackHtml(t("vocabWords", "en"), t("vocabWords", "es"))}</span>
       <span class="cover-stat"><strong>${problemCount}</strong> ${stackHtml(t("practiceItems", "en"), t("practiceItems", "es"))}</span>
-      <span class="cover-stat"><strong>6</strong> ${stackHtml(t("phases", "en"), t("phases", "es"))}</span>
+      <span class="cover-stat"><strong>${phaseCount}</strong> ${stackHtml(t("phases", "en"), t("phases", "es"))}</span>
     </div>
     ${
       pct > 0
@@ -210,10 +213,13 @@ export function buildPhaseTransitionMeta(state, phaseIdx, phaseName, xp, stars) 
 /** Printable student summary for Reflect phase. */
 export function buildPrintableSummary(state, config) {
   const s = state.get();
+  // Reflect is phase index 4 (5-phase layout after the vocab phase was removed).
+  // The Reflect renderer saves these under phase 4, so read them from 4 — reading
+  // the legacy index 5 always came back empty.
   const learned =
-    state.getResponse(5, "one_thing_learned") || state.getResponse(5, "reflect_3") || "";
+    state.getResponse(4, "one_thing_learned") || state.getResponse(4, "reflect_3") || "";
   const confidence =
-    state.getResponse(5, "confidence") || state.getResponse(5, "self-assess") || "";
+    state.getResponse(4, "confidence") || state.getResponse(4, "self-assess") || "";
 
   const wrap = document.createElement("section");
   wrap.className = "printable-summary card";
