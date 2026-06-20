@@ -225,11 +225,84 @@
   var startedAt = Date.now();
   var sentHashes = {};
 
+  /* -------------------- Canvas completion code (math only) -------------------- */
+  /* The student-facing completion code is the same one the lesson engine shows.
+   * It is computed entirely client-side, so — unlike the gradebook POST below —
+   * it works on the public site even when no ingest key is configured. We only
+   * surface it for MATH activities (the ones with matching Canvas assignments),
+   * detected by a math CCSS standard on the score event or a math URL root. */
+  var CANVAS_CODE_UI_SRC = "/assets/canvas-code-ui.js";
+  function ensureCanvasCodeUI() {
+    if (global.NeftCanvasCodeUI) return Promise.resolve(global.NeftCanvasCodeUI);
+    return new Promise(function (resolve) {
+      var s = document.querySelector('script[src="' + CANVAS_CODE_UI_SRC + '"]');
+      if (!s) {
+        s = document.createElement("script");
+        s.src = CANVAS_CODE_UI_SRC;
+        document.body.appendChild(s);
+      }
+      s.addEventListener(
+        "load",
+        function () {
+          resolve(global.NeftCanvasCodeUI || null);
+        },
+        { once: true },
+      );
+      s.addEventListener(
+        "error",
+        function () {
+          resolve(null);
+        },
+        { once: true },
+      );
+      if (global.NeftCanvasCodeUI) resolve(global.NeftCanvasCodeUI);
+    });
+  }
+  function isMathContext(payload) {
+    try {
+      var std = String((payload && payload.standard) || "");
+      if (/^\s*\d\.(NS|RP|EE|G|SP|NF|OA|MD)\b/i.test(std)) return true;
+      var p = String(global.location.pathname || "");
+      return /(^|\/)(math|games|math-lab-missions)(\/|$)/i.test(p);
+    } catch (e) {
+      return false;
+    }
+  }
+  function maybeShowCanvasCode(payload) {
+    try {
+      if (global.NT_DISABLE_CANVAS_CODE) return;
+      if (!isMathContext(payload)) return;
+      // Idempotent: the engine (lessons) may have already shown the same modal.
+      if (document.getElementById("nt-canvas-code")) return;
+      var p = payload || {};
+      var id = resolveIdentity(p.studentName, p.classPeriod);
+      var score = p.score != null ? p.score : p.problemsCorrect;
+      var maxScore = p.maxScore != null ? p.maxScore : p.problemsAttempted;
+      var data = {
+        studentName: id.studentName,
+        classPeriod: id.classPeriod,
+        activityId: p.activityId || activityId(),
+        activityTitle: activityTitle(p.activityTitle),
+        score: score,
+        maxScore: maxScore,
+        percent: p.percent,
+        stars: p.stars,
+      };
+      ensureCanvasCodeUI().then(function (ui) {
+        if (ui && typeof ui.show === "function") ui.show(data);
+      });
+    } catch (e) {
+      /* never break the activity */
+    }
+  }
+
   /* Core send used by the auto-wraps and the public API. */
   function send(payload) {
     try {
-      if (!configured(bridge.ingestKey)) return; // inert until key pasted
       payload = payload || {};
+      // Show the student their Canvas code regardless of gradebook config.
+      maybeShowCanvasCode(payload);
+      if (!configured(bridge.ingestKey)) return; // gradebook POST is inert until key pasted
       var id = resolveIdentity(payload.studentName, payload.classPeriod);
       var aId = payload.activityId || activityId();
       var score = payload.score != null ? payload.score : payload.problemsCorrect;

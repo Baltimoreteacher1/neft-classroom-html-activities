@@ -6,10 +6,16 @@ Goal: **enterprise / educational-gaming-company quality** — not a 3D quiz wrap
 ## Hard rules (do not break)
 
 - **Edit in place only.** Touch only `games/3d/unit-N/game.js` and `games/3d/unit-N/index.html`. Do NOT rename/move/delete files or folders.
-- **Keep the module contract.** `game.js` must `export default { id, vocab, totalSteps?, createGame(ctx) }`. The engine (`engine3d/game-base.js`) mounts it. `createGame(ctx)` returns `{ start(), dispose() }`.
+- **Keep the module contract.** `game.js` must `export default { id, standard, vocab, learningTargets?, levels?, totalSteps?, createGame(ctx) }`. The engine (`engine3d/game-base.js`) mounts it and stamps `standard` onto every score row. `createGame(ctx)` returns `{ start(), dispose() }`.
+- **Single source of truth per game.** Declare the CCSS `standard` (e.g. `"6.RP.A.1-3"`), `learningTargets[]`, and a `levels` object (`{0,1,2}`) whose round/order entries each carry a `tag` (the misconceptionTag). `makeLevel(level)` reads from this declarative config — do not duplicate the math inline. A validator can then assert every game exposes `vocab`, a `standard`, and Level 0/1/2 round sets.
+- **Report misconceptions.** On every scored step call `onScore(points, { misconceptionTag })` (correct = positive points, miss = negative). The engine forwards the tag + standard to `/api/scores` so the results pipeline can show WHICH sub-skill failed, not just the score.
 - **Preserve the math.** Keep the unit's standard(s), theme, and learning targets from the existing `game.js`. You may expand/clean the problem set, but it must stay curriculum-correct for the listed CCSS standard.
 - **Vocab-first** (engine enforces): keep a strong `vocab` array — `{ term, definition, emoji }`, kid-friendly ESOL-level definitions. Vocab shows before play automatically.
-- **Levels = Level 1 (support) and Level 2 (enrichment).** NEVER label content "ESOL". Level 1 = scaffolds/hints/smaller numbers; Level 2 = enrichment/larger numbers/multi-step. More rounds per level than the old version (aim 6–8 rounds/level).
+- **Levels = Level 0 (most-supported / IEP), Level 1 (support), and Level 2 (enrichment).** Scheme is **L0 < L1 < L2**, matching the 2D math tier standard. NEVER label content "ESOL".
+  - **Level 0 (most-supported / IEP):** smallest numbers, persistent on-screen hints (hints stay up the whole round), **no timer pressure** (disable or greatly lengthen any countdown), fewest rounds (aim 3–4), most lives/forgiveness.
+  - **Level 1 (support):** scaffolds/hints/smaller numbers; aim 5–8 rounds.
+  - **Level 2 (enrichment):** larger numbers/multi-step; aim 6–8 rounds; harder than Level 1.
+  - The engine renders all three level buttons automatically (`engine3d/levels.js`); each game's `makeLevel(level)` MUST handle `level === 0` with the supports above.
 - Respect `feel.reducedMotion`: gate idle animation/particles/shake behind it.
 - Keep keyboard + on-screen touch controls and `announce()`/`caption()` accessibility.
 

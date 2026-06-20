@@ -317,5 +317,13 @@
     if (window.PK && typeof window.PK.initProjectTabs === "function") {
       window.PK.initProjectTabs();
     }
+    // Wire shared Read-Aloud (TTS). Pages call PK.initLevel themselves, so the
+    // injected Level-0 button is already wired; TTS has no per-page init, so do
+    // it here. Persist the preference per page path.
+    if (window.PK && typeof window.PK.initTts === "function") {
+      window.PK.initTts({
+        storageKey: "pk-tts:" + (location.pathname || "project"),
+      });
+    }
   });
 })();

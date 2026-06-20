@@ -2,13 +2,24 @@
 /**
  * generate-worksheets.mjs — print-ready practice worksheets, one per lesson.
  *
- * Each lesson gets lessons/<id>/worksheet.html containing THREE print sections:
- *   • Version A  — built-in support (word bank, worked example, sentence frames,
- *                  extra workspace). Sourced from practice.approaching.
+ * Each lesson gets lessons/<id>/worksheet.html with up to FOUR practice pages
+ * (gated on each pool being non-empty) plus a matching Answer Key per page:
+ *   • Level 0    — most-supported (3-4 gentlest items, word bank + worked
+ *                  example + sentence frames on every problem). From the easiest
+ *                  slice of practice.approaching with an extra-scaffold banner.
+ *   • Version A  — built-in support (word bank, worked example, sentence frames).
+ *                  Sourced from practice.approaching.
  *   • Version B  — on-level practice. Sourced from practice.onLevel.
- *   • Answer Key — both versions.
- * Labels are intentionally neutral ("Version A" / "Version B") — no level/ESOL
- * wording is shown to students.
+ *   • Challenge  — enrichment. Sourced from practice.extending.
+ * This mirrors the repo-wide L0 < L1 < L2 tiering. Labels are intentionally
+ * neutral ("Level 0 / Version A / Version B / Challenge") — no IEP/ESOL wording
+ * is shown to students.
+ *
+ * Answer keys are misconception-aware: multiple-choice keys append a "Watch for"
+ * cue from the item's watchFor/distractorRationale or the lesson's shared
+ * practice.commonMistake; open-response keys surface sampleAnswer + keywords;
+ * error-analysis keys use the canonical errorStep + correctWork + explanation
+ * schema (see ERROR_ANALYSIS_SCHEMA below).
  *
  * Source of truth: each lessons/<id>/config.json (practice tiers + vocabulary).
  * Re-run after editing configs:  npm run generate-worksheets
@@ -20,6 +31,21 @@ import { fileURLToPath } from "node:url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
 const LESSONS = join(ROOT, "lessons");
+
+/**
+ * ERROR_ANALYSIS_SCHEMA — canonical config shape for `type: "error-analysis"`
+ * practice items, shared by generate-worksheets.mjs, generate-homework.mjs, and
+ * generate-homework-html.mjs so the same config produces consistent keys:
+ *   {
+ *     type: "error-analysis",
+ *     title: string,                 // student-facing prompt heading
+ *     workedExample: [{ label, work }],
+ *     errorStep: number,             // 0-based index into workedExample (the wrong step)
+ *     correctWork: string,           // the corrected calculation / fix
+ *     explanation?: string           // optional: WHY the step is wrong (misconception)
+ *   }
+ * Legacy fields `correction`/`it.explanation`-as-fix are NOT read anymore.
+ */
 
 /* ---------- helpers ------------------------------------------------------- */
 const esc = (s) =>
@@ -46,16 +72,22 @@ function workBox(label = "Show your work") {
 }
 
 /* ---------- per-problem print renderers ----------------------------------- */
-function renderMC(it, n, key) {
+function renderMC(it, n, key, commonMistake) {
   const opts = (it.choices || [])
     .map((c, i) => {
       const correct = key && i === it.correctIndex;
       return `<li class="ws-opt${correct ? " ws-correct" : ""}"><span class="ws-bub">${letters[i]}</span>${esc(c)}</li>`;
     })
     .join("");
-  return `<p class="ws-stem">${esc(it.stem)}</p><ol class="ws-opts">${opts}</ol>${
-    key && it.explanation ? `<p class="ws-keynote">${esc(it.explanation)}</p>` : ""
-  }`;
+  let notes = "";
+  if (key) {
+    if (it.explanation) notes += `<p class="ws-keynote">${esc(it.explanation)}</p>`;
+    // Misconception-aware teacher cue: prefer an item-level watch-for, else the
+    // lesson's shared commonMistake. Distinct styling so it reads as a warning.
+    const watch = it.watchFor || it.distractorRationale || commonMistake;
+    if (watch) notes += `<p class="ws-watch"><b>Watch for:</b> ${esc(watch)}</p>`;
+  }
+  return `<p class="ws-stem">${esc(it.stem)}</p><ol class="ws-opts">${opts}</ol>${notes}`;
 }
 
 function renderMatching(it, n, key) {
@@ -83,10 +115,21 @@ function renderErrorAnalysis(it, n, key) {
         `<li><span class="ws-step-n">${i + 1}</span><span class="ws-step-l">${esc(s.label)}</span><span class="ws-step-w">${esc(s.work)}</span></li>`,
     )
     .join("");
+  // Canonical error-analysis schema (see ERROR_ANALYSIS_SCHEMA): errorStep
+  // (0-based index of the wrong step) + correctWork (the fix) + explanation
+  // (why it's wrong). Build a misconception-aware key from those fields.
+  let keyHtml = "";
+  if (key) {
+    const parts = [];
+    if (typeof it.errorStep === "number") parts.push(`The mistake is in Step ${it.errorStep + 1}.`);
+    if (it.correctWork) parts.push(`Correct work: ${it.correctWork}`);
+    if (it.explanation) parts.push(it.explanation);
+    keyHtml = `<p class="ws-keynote">${esc(parts.join(" ") || "See worked solution.")}</p>`;
+  }
   return `<p class="ws-stem">${esc(it.title || "Find the mistake")}</p>
   <ol class="ws-steps">${steps}</ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
-  ${key ? `<p class="ws-keynote">${esc(it.explanation || it.correction || "See worked solution.")}</p>` : blankLines(3)}`;
+  ${key ? keyHtml : blankLines(3)}`;
 }
 
 function renderFillTable(it, n, key) {
@@ -112,7 +155,19 @@ function renderFillTable(it, n, key) {
 function renderOpen(it, n, key, supported) {
   const frame =
     supported && it.sentenceFrame ? `<p class="ws-frame">${esc(it.sentenceFrame)}</p>` : "";
-  return `<p class="ws-stem">${esc(it.prompt)}</p>${frame}${key ? `<p class="ws-keynote">Answers vary — look for correct reasoning.</p>` : blankLines(4)}`;
+  let keyHtml = "";
+  if (key) {
+    // Actionable rubric instead of a generic "answers vary": surface a sample
+    // answer and the look-for keywords the teacher should check against.
+    const parts = [];
+    if (it.sampleAnswer) parts.push(`Sample: ${it.sampleAnswer}`);
+    if (Array.isArray(it.keywords) && it.keywords.length)
+      parts.push(`Look for: ${it.keywords.join(", ")}.`);
+    keyHtml = parts.length
+      ? `<p class="ws-keynote">${esc(parts.join(" "))}</p>`
+      : `<p class="ws-keynote">Answers vary — look for correct reasoning.</p>`;
+  }
+  return `<p class="ws-stem">${esc(it.prompt)}</p>${frame}${key ? keyHtml : blankLines(4)}`;
 }
 
 function renderSort(it, n, key) {
@@ -133,12 +188,12 @@ function renderGeneric(it, n, key) {
   return `<p class="ws-stem">${esc(stem)}</p>${key ? "" : workBox()}`;
 }
 
-function renderProblem(it, n, { key = false, supported = false } = {}) {
+function renderProblem(it, n, { key = false, supported = false, commonMistake = "" } = {}) {
   if (!it || !it.type) return renderGeneric(it || {}, n, key);
   let body;
   switch (it.type) {
     case "multiple-choice":
-      body = renderMC(it, n, key);
+      body = renderMC(it, n, key, commonMistake);
       break;
     case "matching-game":
     case "matching":
@@ -217,30 +272,60 @@ function pageHeader(cfg, versionLabel, sub) {
   </header>`;
 }
 
-function versionPage(cfg, problems, { label, sub, supported, key }) {
-  const items = problems.map((p, i) => renderProblem(p, i + 1, { supported, key })).join("");
+function versionPage(cfg, problems, { label, sub, supported, key, extraScaffold }) {
+  const commonMistake = key ? cfg.practice?.commonMistake || "" : "";
+  const items = problems
+    .map((p, i) => renderProblem(p, i + 1, { supported, key, commonMistake }))
+    .join("");
   const scaffolds = supported && !key ? wordBank(cfg.vocabulary) + workedExample(cfg) : "";
+  // Level 0 (most-supported) page leads with an extra-scaffold banner so the
+  // teacher knows every item is paired with a word bank, worked model, and
+  // sentence frames.
+  const banner =
+    extraScaffold && !key
+      ? `<p class="ws-scaffold-note">🧩 Extra support: use the word bank and the worked example. A sentence starter is given under each problem.</p>`
+      : "";
   return `<section class="ws-page">
     ${pageHeader(cfg, key ? label + " — Answer Key" : label, sub)}
     ${scaffolds}
+    ${banner}
     <ol class="ws-problems">${items}</ol>
   </section>`;
 }
 
 /* ---------- full document ------------------------------------------------- */
 function buildWorksheet(cfg) {
-  const A = (cfg.practice?.approaching || []).filter((p) => p && p.type);
-  const B = (cfg.practice?.onLevel || []).filter((p) => p && p.type);
+  const printable = (pool) => (pool || []).filter((p) => p && p.type);
+  const approaching = printable(cfg.practice?.approaching);
+  const onLevel = printable(cfg.practice?.onLevel);
+  const extending = printable(cfg.practice?.extending);
+  // Level 0 (most-supported): the 3-4 gentlest approaching items, every one
+  // paired with word bank + worked example + sentence frames. Drawn from
+  // approaching so it stays the easiest tier (L0 < L1 < L2).
+  const levelZero = approaching.slice(0, 4);
   const title = esc(cfg.title || cfg.lessonId);
-  const subA = "Practice — Version A";
-  const subB = "Practice — Version B";
 
-  const pages = [
-    versionPage(cfg, A, { label: "Version A", sub: subA, supported: true, key: false }),
-    versionPage(cfg, B, { label: "Version B", sub: subB, supported: false, key: false }),
-    versionPage(cfg, A, { label: "Version A", sub: "Answer Key", supported: true, key: true }),
-    versionPage(cfg, B, { label: "Version B", sub: "Answer Key", supported: false, key: true }),
-  ].join("\n");
+  // One page definition per tier. Each is gated on its own pool being
+  // non-empty, so a lesson with only some tiers still produces a valid sheet
+  // instead of being skipped wholesale.
+  const tiers = [
+    {
+      pool: levelZero,
+      label: "Level 0",
+      sub: "Practice — Level 0",
+      supported: true,
+      extraScaffold: true,
+    },
+    { pool: approaching, label: "Version A", sub: "Practice — Version A", supported: true },
+    { pool: onLevel, label: "Version B", sub: "Practice — Version B", supported: false },
+    { pool: extending, label: "Challenge", sub: "Practice — Challenge", supported: false },
+  ].filter((t) => t.pool.length);
+
+  const practicePages = tiers.map((t) => versionPage(cfg, t.pool, { ...t, key: false }));
+  const keyPages = tiers.map((t) =>
+    versionPage(cfg, t.pool, { ...t, sub: "Answer Key", key: true }),
+  );
+  const pages = [...practicePages, ...keyPages].join("\n");
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -289,6 +374,8 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
 .ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
 .ws-correct{font-weight:700;color:var(--teal);}
 .ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-watch{margin:4px 0 0;color:#9a4a12;font-size:12px;background:#fff3e6;border-left:3px solid #e08a3c;padding:5px 10px;border-radius:0 8px 8px 0;}
+.ws-scaffold-note{margin:0 0 14px;background:var(--soft);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:600;color:var(--navy);font-size:12.5px;}
 .ws-match{display:flex;gap:24px;flex-wrap:wrap;}
 .ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
 .ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
@@ -341,9 +428,13 @@ function main() {
       skipped++;
       continue;
     }
-    const hasA = (cfg.practice?.approaching || []).some((p) => p && p.type);
-    const hasB = (cfg.practice?.onLevel || []).some((p) => p && p.type);
-    if (!hasA || !hasB) {
+    // Emit a worksheet if ANY practice tier has printable problems — each page
+    // is gated independently inside buildWorksheet, so a lesson with only one
+    // populated tier still gets a usable (single-version) sheet.
+    const hasAny = ["approaching", "onLevel", "extending"].some((tier) =>
+      (cfg.practice?.[tier] || []).some((p) => p && p.type),
+    );
+    if (!hasAny) {
       skipped++;
       continue;
     }

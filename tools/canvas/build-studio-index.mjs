@@ -47,5 +47,9 @@ const out = {
 const outFile = resolve(repoRoot, "teacher-tools", "canvas-studio", "library.json");
 writeFileSync(outFile, JSON.stringify(out, null, 2) + "\n");
 console.log(`✓ Canvas Studio library: ${items.length} items, ${modules.length} modules`);
-console.log(`  Types: ${Object.entries(byType).map(([t, n]) => `${t}×${n}`).join(", ")}`);
+console.log(
+  `  Types: ${Object.entries(byType)
+    .map(([t, n]) => `${t}×${n}`)
+    .join(", ")}`,
+);
 console.log(`  Wrote teacher-tools/canvas-studio/library.json`);

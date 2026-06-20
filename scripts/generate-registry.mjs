@@ -55,12 +55,9 @@ function readTitle(file) {
 // legacy codes resolve to the current codes without renaming load-bearing folders.
 const XWALK = (() => {
   try {
-    const x = JSON.parse(
-      readFileSync(join(ROOT, "data", "standards-crosswalk-2025.json"), "utf8"),
-    );
+    const x = JSON.parse(readFileSync(join(ROOT, "data", "standards-crosswalk-2025.json"), "utf8"));
     const m = {};
-    for (const e of x.entries || [])
-      if (e.oldId && e.newId) m[e.oldId] = e.newId;
+    for (const e of x.entries || []) if (e.oldId && e.newId) m[e.oldId] = e.newId;
     return m;
   } catch {
     return {};

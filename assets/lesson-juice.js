@@ -32,10 +32,7 @@
   var STORE_KEY = "ntj:v1"; // distinct from nsr:/nt_/gfx
   var reduce = false;
   try {
-    reduce = !!(
-      window.matchMedia &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    );
+    reduce = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   } catch (e) {}
 
   /* ── Tiny safe helpers ── */
@@ -48,9 +45,7 @@
   }
   function $all(sel, root) {
     try {
-      return Array.prototype.slice.call(
-        (root || document).querySelectorAll(sel),
-      );
+      return Array.prototype.slice.call((root || document).querySelectorAll(sel));
     } catch (e) {
       return [];
     }
@@ -60,8 +55,7 @@
     if (cls) n.className = cls;
     if (attrs)
       for (var k in attrs)
-        if (Object.prototype.hasOwnProperty.call(attrs, k))
-          n.setAttribute(k, attrs[k]);
+        if (Object.prototype.hasOwnProperty.call(attrs, k)) n.setAttribute(k, attrs[k]);
     return n;
   }
   function isMuted() {
@@ -69,9 +63,7 @@
   }
   function pageSlug() {
     try {
-      return (location.pathname || "lesson")
-        .replace(/[^a-z0-9]+/gi, "-")
-        .replace(/^-|-$/g, "");
+      return (location.pathname || "lesson").replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "");
     } catch (e) {
       return "lesson";
     }
@@ -113,10 +105,7 @@
       osc.type = type || "sine";
       osc.frequency.setValueAtTime(freq, ac.currentTime + start);
       g.gain.setValueAtTime(0.0001, ac.currentTime + start);
-      g.gain.exponentialRampToValueAtTime(
-        gainPeak,
-        ac.currentTime + start + 0.012,
-      );
+      g.gain.exponentialRampToValueAtTime(gainPeak, ac.currentTime + start + 0.012);
       g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + start + dur);
       osc.connect(g);
       g.connect(ac.destination);
@@ -160,12 +149,8 @@
         if (t.name) theme.name = String(t.name);
         if (t.emoji) theme.emoji = String(t.emoji);
         if (t.color && /^#?[0-9a-f]{3,8}$/i.test(String(t.color))) {
-          theme.color =
-            String(t.color).charAt(0) === "#" ? String(t.color) : "#" + t.color;
-          document.documentElement.style.setProperty(
-            "--ntj-accent",
-            theme.color,
-          );
+          theme.color = String(t.color).charAt(0) === "#" ? String(t.color) : "#" + t.color;
+          document.documentElement.style.setProperty("--ntj-accent", theme.color);
         }
       }
     } catch (e) {}
@@ -288,10 +273,7 @@
     window.NT_MUTED = !isMuted();
     if (nodes.mute) {
       nodes.mute.setAttribute("aria-pressed", isMuted() ? "true" : "false");
-      nodes.mute.setAttribute(
-        "aria-label",
-        isMuted() ? "Unmute sounds" : "Mute sounds",
-      );
+      nodes.mute.setAttribute("aria-label", isMuted() ? "Unmute sounds" : "Mute sounds");
       nodes.mute.textContent = isMuted() ? "🔇" : "🔊";
     }
     if (isMuted() && window.speechSynthesis) {
@@ -381,9 +363,7 @@
 
   /* ── Progress + XP rendering ── */
   function renderHud() {
-    var pct = state.total
-      ? Math.round((state.completed / state.total) * 100)
-      : 0;
+    var pct = state.total ? Math.round((state.completed / state.total) * 100) : 0;
     if (nodes.arcFill) {
       var off = ARC_C * (1 - pct / 100);
       nodes.arcFill.setAttribute("stroke-dashoffset", String(off));
@@ -394,13 +374,7 @@
     if (nodes.xp) nodes.xp.textContent = state.xp + " XP";
   }
   function popStat(node) {
-    if (
-      reduce ||
-      !node ||
-      !window.GameFX ||
-      typeof window.GameFX.pop !== "function"
-    )
-      return;
+    if (reduce || !node || !window.GameFX || typeof window.GameFX.pop !== "function") return;
     try {
       window.GameFX.pop(node);
     } catch (e) {}
@@ -529,10 +503,7 @@
       }
     } catch (e) {}
     try {
-      if (
-        window.NeftSaveResume &&
-        typeof window.NeftSaveResume.getTeacherSummary === "function"
-      ) {
+      if (window.NeftSaveResume && typeof window.NeftSaveResume.getTeacherSummary === "function") {
         var s = window.NeftSaveResume.getTeacherSummary();
         if (s && s.studentName) return String(s.studentName);
       }
@@ -566,9 +537,7 @@
         emoji +
         "</div>" +
         "<h2>Lesson Mastered!</h2>" +
-        (name
-          ? '<div class="ntj-cert-name">' + escapeHtml(name) + "</div>"
-          : "") +
+        (name ? '<div class="ntj-cert-name">' + escapeHtml(name) + "</div>" : "") +
         "<p>You completed every problem in " +
         escapeHtml(title) +
         ".</p>" +
@@ -621,8 +590,7 @@
     });
     // Reconcile completed with counted map (handles restored store).
     var n = 0;
-    for (var k in state.counted)
-      if (Object.prototype.hasOwnProperty.call(state.counted, k)) n++;
+    for (var k in state.counted) if (Object.prototype.hasOwnProperty.call(state.counted, k)) n++;
     state.completed = Math.min(state.total, Math.max(state.completed, n));
   }
 
@@ -632,13 +600,7 @@
       var obs = new MutationObserver(function (muts) {
         for (var i = 0; i < muts.length; i++) {
           var t = muts[i].target;
-          if (
-            !t ||
-            t.nodeType !== 1 ||
-            !t.classList ||
-            !t.classList.contains("q-card")
-          )
-            continue;
+          if (!t || t.nodeType !== 1 || !t.classList || !t.classList.contains("q-card")) continue;
           if (t.classList.contains("correct")) {
             creditCorrect(t);
           } else if (t.classList.contains("incorrect")) {
@@ -671,8 +633,7 @@
         state.level = levelForXp(state.xp);
         state.bestStreak = +stored.bestStreak || 0;
         state.certShown = !!stored.certShown;
-        if (stored.counted && typeof stored.counted === "object")
-          state.counted = stored.counted;
+        if (stored.counted && typeof stored.counted === "object") state.counted = stored.counted;
       }
 
       buildHud();

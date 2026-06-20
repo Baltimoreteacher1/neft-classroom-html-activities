@@ -20,10 +20,14 @@
   "use strict";
 
   const clean = (s) => (s == null ? "" : String(s).trim());
-  const firstSentence = (s) =>
-    clean(s)
-      .replace(/\s+/g, " ")
-      .split(/(?<=[.!?])\s/)[0];
+  const firstSentence = (s) => {
+    const cleaned = clean(s).replace(/\s+/g, " ");
+    const match = cleaned.match(/[.!?](?:\s|$)/);
+    if (match) {
+      return cleaned.slice(0, match.index + 1);
+    }
+    return cleaned;
+  };
 
   function deriveICan(objective, topic) {
     let o = clean(objective);

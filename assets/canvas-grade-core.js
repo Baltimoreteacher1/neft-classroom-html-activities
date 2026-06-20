@@ -99,8 +99,7 @@
       keys[norm(p[1] + p[0])] = 1;
     } else {
       var w = s.split(/\s+/);
-      if (w.length >= 2)
-        keys[norm(w[w.length - 1] + w.slice(0, -1).join(""))] = 1;
+      if (w.length >= 2) keys[norm(w[w.length - 1] + w.slice(0, -1).join(""))] = 1;
     }
     delete keys[""];
     return Object.keys(keys);
@@ -118,8 +117,7 @@
   /** Find roster index for a free-form name, or -1. */
   function matchIndex(lookup, name) {
     var keys = nameKeys(name);
-    for (var i = 0; i < keys.length; i++)
-      if (keys[i] in lookup) return lookup[keys[i]];
+    for (var i = 0; i < keys.length; i++) if (keys[i] in lookup) return lookup[keys[i]];
     return -1;
   }
 
@@ -190,9 +188,7 @@
    * NAME (a stable string), so it survives roster reordering. */
   function loadManualMap() {
     try {
-      return (
-        JSON.parse(global.localStorage.getItem(MANUAL_MAP_KEY) || "{}") || {}
-      );
+      return JSON.parse(global.localStorage.getItem(MANUAL_MAP_KEY) || "{}") || {};
     } catch (e) {
       return {};
     }
@@ -223,9 +219,7 @@
    * straight from "fetch" to "download". Pure key/value over localStorage. */
   function loadSettings() {
     try {
-      return (
-        JSON.parse(global.localStorage.getItem(SETTINGS_KEY) || "{}") || {}
-      );
+      return JSON.parse(global.localStorage.getItem(SETTINGS_KEY) || "{}") || {};
     } catch (e) {
       return {};
     }
@@ -296,21 +290,10 @@
   }
 
   /** Build a minimal Canvas-import grid from the roster + grades. */
-  function buildImportCsv(
-    roster,
-    assignmentName,
-    pointsPossible,
-    gradeByIndex,
-  ) {
+  function buildImportCsv(roster, assignmentName, pointsPossible, gradeByIndex) {
     var out = [
       ["Student", "ID", "SIS Login ID", "Section", assignmentName],
-      [
-        "    Points Possible",
-        "",
-        "",
-        "",
-        pointsPossible != null ? String(pointsPossible) : "",
-      ],
+      ["    Points Possible", "", "", "", pointsPossible != null ? String(pointsPossible) : ""],
     ];
     roster.forEach(function (stu, i) {
       out.push([

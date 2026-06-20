@@ -102,7 +102,11 @@ export function moduleOf(item) {
     case "Bridge":
       return { key: "review", title: "Review & Bridges", order: 430 };
   }
-  if (p.startsWith("/esol-reading-writing/") || p.startsWith("/graphic-novels/") || p.startsWith("/reading"))
+  if (
+    p.startsWith("/esol-reading-writing/") ||
+    p.startsWith("/graphic-novels/") ||
+    p.startsWith("/reading")
+  )
     return { key: "reading-writing", title: "Reading & Writing", order: 300 };
   if (p.startsWith("/esol") || p.startsWith("/wida") || p.startsWith("/access"))
     return { key: "esol", title: "ESOL & WIDA ACCESS", order: 310 };
@@ -116,14 +120,21 @@ export function moduleOf(item) {
  * @returns { items:[{title,url,activityType,standard,module}], modules:[{key,title,order,items:[]}] }
  */
 export function selectLibrary(repoRoot, opts = {}) {
-  const { typeFilter = null, sectionFilter = null, limit = 0, includePrivate = false, selectUrls = null } = opts;
+  const {
+    typeFilter = null,
+    sectionFilter = null,
+    limit = 0,
+    includePrivate = false,
+    selectUrls = null,
+  } = opts;
   const registry = JSON.parse(readFileSync(resolve(repoRoot, "data/registry.json"), "utf8"));
   const all = Array.isArray(registry.activities) ? registry.activities : [];
   const privatePaths = loadPrivatePaths(repoRoot);
 
   let items = all.filter((it) => isStudentSafe(it, privatePaths, includePrivate));
   if (typeFilter) items = items.filter((i) => i.activityType === typeFilter);
-  if (sectionFilter) items = items.filter((i) => norm(i.url).includes(String(sectionFilter).toLowerCase()));
+  if (sectionFilter)
+    items = items.filter((i) => norm(i.url).includes(String(sectionFilter).toLowerCase()));
   // Exact selection (from the Studio): keep only these urls, in the registry's
   // own order so module grouping stays stable.
   if (Array.isArray(selectUrls) && selectUrls.length) {
@@ -144,7 +155,8 @@ export function selectLibrary(repoRoot, opts = {}) {
   const modMap = new Map();
   const enriched = items.map((it) => {
     const m = moduleOf(it);
-    if (!modMap.has(m.key)) modMap.set(m.key, { key: m.key, title: m.title, order: m.order, items: [] });
+    if (!modMap.has(m.key))
+      modMap.set(m.key, { key: m.key, title: m.title, order: m.order, items: [] });
     const row = {
       title: it.title,
       url: it.url,
@@ -156,6 +168,8 @@ export function selectLibrary(repoRoot, opts = {}) {
     modMap.get(m.key).items.push(row);
     return row;
   });
-  const modules = [...modMap.values()].sort((a, b) => a.order - b.order || a.title.localeCompare(b.title));
+  const modules = [...modMap.values()].sort(
+    (a, b) => a.order - b.order || a.title.localeCompare(b.title),
+  );
   return { items: enriched, modules };
 }

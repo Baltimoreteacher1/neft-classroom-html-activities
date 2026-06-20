@@ -23,9 +23,9 @@ const [target, titleArg] = process.argv.slice(2);
 
 if (!target) {
   console.error(
-    "Usage: node tools/scorm/build-scorm.mjs <lessonId | /path/ | url> [\"Title\"]\n" +
+    'Usage: node tools/scorm/build-scorm.mjs <lessonId | /path/ | url> ["Title"]\n' +
       "  Examples:\n" +
-      "    node tools/scorm/build-scorm.mjs 1-3 \"Unit 1 Lesson 3\"   # a lesson\n" +
+      '    node tools/scorm/build-scorm.mjs 1-3 "Unit 1 Lesson 3"   # a lesson\n' +
       "    node tools/scorm/build-scorm.mjs /ratio-color-mixer/      # any activity\n" +
       "    node tools/scorm/build-scorm.mjs https://eduwonderlab.com/fractions-soccer/",
   );
@@ -50,7 +50,7 @@ const lessonUrl = isUrl
 // Stable id/slug for filenames + the SCORM manifest identifier.
 const lessonId = isLessonId
   ? target
-  : (new URL(lessonUrl).pathname.split("/").filter(Boolean).pop() || "activity");
+  : new URL(lessonUrl).pathname.split("/").filter(Boolean).pop() || "activity";
 const title = titleArg || (isLessonId ? `Lesson ${target}` : lessonId);
 
 const tplDir = resolve(__dirname, "template");

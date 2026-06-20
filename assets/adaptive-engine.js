@@ -46,10 +46,7 @@
    * ----------------------------------------------------------------------- */
   function reduceMotion() {
     try {
-      return !!(
-        window.matchMedia &&
-        window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      );
+      return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
     } catch (e) {
       return false;
     }
@@ -66,9 +63,7 @@
   }
   function $all(sel, root) {
     try {
-      return Array.prototype.slice.call(
-        (root || document).querySelectorAll(sel),
-      );
+      return Array.prototype.slice.call((root || document).querySelectorAll(sel));
     } catch (e) {
       return [];
     }
@@ -83,10 +78,7 @@
   }
   function track(event) {
     try {
-      if (
-        window.NTtelemetry &&
-        typeof window.NTtelemetry.track === "function"
-      ) {
+      if (window.NTtelemetry && typeof window.NTtelemetry.track === "function") {
         // NTtelemetry.track(name, props): callers pass a single {event, ...}
         // object, so split it into the event-name string + the object as props.
         var name = event && typeof event === "object" ? event.event : event;
@@ -213,8 +205,7 @@
   function hintLadderFor(item) {
     var tag = misconceptionFor(item.qid);
     if (tag && HINT_LADDERS[tag]) return { tag: tag, hints: HINT_LADDERS[tag] };
-    if (item.kind === "fill")
-      return { tag: tag, hints: HINT_LADDERS["place-value"] };
+    if (item.kind === "fill") return { tag: tag, hints: HINT_LADDERS["place-value"] };
     return { tag: tag, hints: HINT_LADDERS["default"] };
   }
 
@@ -364,15 +355,7 @@
       var hasMc = !!$(".mc-btn[data-val]", card);
       var hasTf = !!$(".tf-btn[data-val]", card);
       var hasDrag = !!$(".drag-zone[data-cat]", card);
-      var kind = hasFill
-        ? "fill"
-        : hasMc
-          ? "mc"
-          : hasTf
-            ? "tf"
-            : hasDrag
-              ? "drag"
-              : "other";
+      var kind = hasFill ? "fill" : hasMc ? "mc" : hasTf ? "tf" : hasDrag ? "drag" : "other";
       var checkBtn = $(".check-btn", card);
       var skillId = skillForCard(card, qid);
       engine.items.push({
@@ -402,8 +385,7 @@
       if ($(".fill-input.is-wrong", card)) return "incorrect";
       var fills = $all(".fill-input.is-correct", card);
       var totalFills = $all(".fill-input[data-answer]", card);
-      if (totalFills.length && fills.length === totalFills.length)
-        return "correct";
+      if (totalFills.length && fills.length === totalFills.length) return "correct";
     } catch (e) {
       /* ignore */
     }
@@ -567,11 +549,7 @@
         p.className = "lp-hint";
         p.textContent = "Hint " + (step + 1) + ": " + ladder.hints[step];
         live.appendChild(p);
-        if (
-          !reduce &&
-          window.GameFX &&
-          typeof window.GameFX.pop === "function"
-        ) {
+        if (!reduce && window.GameFX && typeof window.GameFX.pop === "function") {
           try {
             window.GameFX.pop(p);
           } catch (e) {
@@ -613,10 +591,7 @@
       clearHelp(card);
       try {
         var focusTarget =
-          $(".mc-btn", card) ||
-          $(".tf-btn", card) ||
-          $(".fill-input", card) ||
-          item.checkBtn;
+          $(".mc-btn", card) || $(".tf-btn", card) || $(".fill-input", card) || item.checkBtn;
         if (focusTarget && focusTarget.focus) focusTarget.focus();
       } catch (e) {
         /* ignore */
@@ -658,8 +633,7 @@
       });
       if (item.checkBtn) {
         // MCQ/TF check buttons start disabled until a fresh selection.
-        if (item.kind === "mc" || item.kind === "tf")
-          item.checkBtn.disabled = true;
+        if (item.kind === "mc" || item.kind === "tf") item.checkBtn.disabled = true;
       }
     } catch (e) {
       /* never break the lesson */
@@ -815,8 +789,7 @@
     function settle(correct) {
       live.textContent = correct
         ? "Correct — nice retrieval!"
-        : "Not quite. " +
-          (data.hint || "Think back to how you solved this before.");
+        : "Not quite. " + (data.hint || "Think back to how you solved this before.");
       track({
         event: "item_attempt",
         activity: activityId(),

@@ -6,6 +6,21 @@
 // and ESOL-aware (plain language, no "ESOL" labels).
 //
 // Consumed by scripts/generate-mcap-packets.mjs.
+//
+// OPTIONAL DIFFERENTIATION + FEEDBACK FIELDS (rendered only when present, so the
+// schema stays backward-compatible):
+//
+//   skill.tiers = {
+//     L1: { frames: [ "sentence-frame string", ... ] },    // Level 1 support
+//     L2: { extend: [ "extension/challenge string", ... ] } // Level 2 enrichment
+//   }
+//   Rendered as "Level 1 - Support" / "Level 2 - Enrichment" blocks. Never label
+//   these "ESOL"; they are scaffolding levels, not language labels.
+//
+//   mcapItem.rationales = [ "why choice A tempts", "why B", ... ]   // one entry
+//     per choice, aligned to choices[] by index. The entry for the correct choice
+//     may be "" or null. Rendered in the teacher answer key so feedback is
+//     misconception-targeted, not just "the answer is X".
 
 export const DOMAINS = [
   {
@@ -56,9 +71,24 @@ export const DOMAINS = [
           { problem: "A parking lot has 15 cars and 5 trucks. Write the ratio of trucks to all vehicles.", answer: "5:20" },
           { problem: "True or false: the ratio 2:5 means the same thing as 5:2.", answer: "False (order matters)" }
         ],
+        tiers: {
+          L1: {
+            frames: [
+              "The ratio of ____ to ____ is ____ : ____.",
+              "First I count the ____. Then I count the ____. Order matters, so I write the first group first.",
+              "Part-to-whole means I add the groups to get the total first: ____ + ____ = ____."
+            ]
+          },
+          L2: {
+            extend: [
+              "A bag has red, blue, and green marbles in the ratio 2:3:5. Explain why 'red to all marbles' is 2:10, not 2:5.",
+              "Write two different real-world part-to-part ratios that both simplify to 3:2, and explain how you know they are equivalent."
+            ]
+          }
+        },
         mcapItems: [
-          { type: "multiple-choice", prompt: "A tank has 8 goldfish and 3 guppies. What is the ratio of guppies to goldfish?", choices: ["8:3", "3:8", "3:11", "8:11"], answer: "B", why: "Guppies come first (3), then goldfish (8)." },
-          { type: "multiple-choice", prompt: "A choir has 6 sopranos and 9 altos. Which statement is correct?", choices: ["Sopranos to total is 6:9", "Altos to total is 9:15", "Sopranos to altos is 9:6", "Total is 9 singers"], answer: "B", why: "Total is 6+9=15, so altos to total is 9:15." },
+          { type: "multiple-choice", prompt: "A tank has 8 goldfish and 3 guppies. What is the ratio of guppies to goldfish?", choices: ["8:3", "3:8", "3:11", "8:11"], answer: "B", why: "Guppies come first (3), then goldfish (8).", rationales: ["Reversed the order — this is goldfish to guppies, not guppies to goldfish.", null, "Used the total (3:11) instead of guppies to goldfish; this is a part-to-whole ratio.", "Used goldfish to total (8:11); the question asked for a part-to-part ratio."] },
+          { type: "multiple-choice", prompt: "A choir has 6 sopranos and 9 altos. Which statement is correct?", choices: ["Sopranos to total is 6:9", "Altos to total is 9:15", "Sopranos to altos is 9:6", "Total is 9 singers"], answer: "B", why: "Total is 6+9=15, so altos to total is 9:15.", rationales: ["Used altos (9) as the total instead of 6+9=15; part-to-whole needs the whole.", null, "Reversed the order — sopranos to altos is 6:9, not 9:6.", "Confused one group (9 altos) with the total number of singers (15)."] },
           { type: "short", prompt: "A bowl has 5 limes and 7 lemons. Write the ratio of lemons to limes using a colon.", answer: "7:5", why: "Lemons (7) first, then limes (5)." }
         ]
       },
