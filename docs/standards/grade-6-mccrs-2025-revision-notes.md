@@ -120,17 +120,35 @@ Old codes are the current repo taxonomy (`data/standards-taxonomy.json`).
 
 ---
 
-## Execution plan once the source is available
+## Execution — staged and ready (one command once codes are known)
 
-1. Replace `data/standards-taxonomy.json` with the revised domains/codes/wording;
-   keep an `oldCode`/`crosswalk` field on each entry so legacy links stay traceable.
-2. Sweep the 74 `lessons/<id>/config.json` `standard` fields old→new (scripted,
-   using the confirmed crosswalk), plus the standalone-activity tags.
-3. Regenerate the spine: content-graph → coverage → curriculum manifest →
-   search index. Re-run `npm run validate` and `npm run audit`.
-4. Recompute coverage gaps under the new codes and confirm the Unit 0 lessons
-   still fill them; re-tag the Unit 0 lessons to the new codes.
-5. Review diff, commit, push.
+The re-code is automated and safe. Tooling is already committed:
+
+- `scripts/apply-standards-crosswalk.mjs` — does the re-code.
+- `data/standards-crosswalk-2025.json` — the editable old→new map (47 entries),
+  generated from the live taxonomy. `newDomain` is pre-filled where confirmed
+  (AT, GR); NS/SP are marked `<CONFIRM>`. Every `newId` is `null` until filled.
+
+Steps:
+
+1. Fill `data/standards-crosswalk-2025.json`: for each entry set `newId`
+   (e.g. `"6.AT.A.1"`) and resolve any `<CONFIRM>` `newDomain`, copying verbatim
+   from the authoritative crosswalk PDF. Re-init the skeleton anytime with
+   `npm run standards-crosswalk:init`.
+2. Dry-run report (shows what's still unresolved / what will change):
+   `npm run standards-crosswalk`.
+3. Apply (guarded — refuses while anything is unresolved):
+   `npm run standards-crosswalk:apply`. This rewrites
+   `data/standards-taxonomy.json` (new ids, keeps `oldId` + domain map) and
+   sweeps every `lessons/<id>/config.json` `standard` field old→new.
+4. Regenerate the spine and verify:
+   `npm run generate-curriculum-manifest && npm run validate && npm run audit`
+   (plus the content-graph / coverage / search-index generators).
+5. Recompute coverage gaps under the new codes, re-tag the Unit 0 lessons
+   (`math/unit-0/`) to the new codes, review the diff, commit, push.
+
+The deterministic taxonomy↔lesson code transform (`6.RP.A.3.A` ⇄ `6.RP.3a`) is
+handled by the script, so filling `newId` is the only manual step.
 
 ---
 
