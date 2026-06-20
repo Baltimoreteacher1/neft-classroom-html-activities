@@ -35,7 +35,9 @@ function json(obj, status = 200) {
 
 // Loose validation of a resume code: PREFIX-SUFFIX, safe characters only.
 function validCode(code) {
-  return typeof code === "string" && /^[A-Z0-9]{1,12}-[A-Z0-9]{3,8}$/.test(code);
+  return (
+    typeof code === "string" && /^[A-Z0-9]{1,12}-[A-Z0-9]{3,8}$/.test(code)
+  );
 }
 
 function clamp(s, n) {
@@ -111,7 +113,10 @@ async function storeTelemetry(env, body) {
         section,
         clamp(e && (e.type || e.event || e.kind), 40),
         clamp(JSON.stringify(e), 2000),
-        (e && typeof (e.at || e.ts) === "string" && (e.at || e.ts).slice(0, 30)) || nowIso,
+        (e &&
+          typeof (e.at || e.ts) === "string" &&
+          (e.at || e.ts).slice(0, 30)) ||
+          nowIso,
       ),
     );
   await env.DB.batch(batch);
@@ -123,7 +128,8 @@ async function storeTelemetry(env, body) {
 
 function teacherAuthorized(env, request, url) {
   if (!env.TEACHER_KEY) return "not-configured";
-  const key = url.searchParams.get("key") || request.headers.get("x-teacher-key") || "";
+  const key =
+    url.searchParams.get("key") || request.headers.get("x-teacher-key") || "";
   return key === env.TEACHER_KEY ? "ok" : "unauthorized";
 }
 
@@ -181,17 +187,22 @@ function xmlEsc(v) {
 // Excel and Google Sheets with MULTIPLE named tabs, zero dependencies, no zip.
 function sheetXml(name, headers, rows) {
   const cell = (v, forceText) => {
-    const num = !forceText && v !== "" && v != null && Number.isFinite(Number(v));
+    const num =
+      !forceText && v !== "" && v != null && Number.isFinite(Number(v));
     const type = num ? "Number" : "String";
     const val = num ? Number(v) : xmlEsc(v);
     return `<Cell><Data ss:Type="${type}">${val}</Data></Cell>`;
   };
-  const headRow = "<Row>" + headers.map((h) => cell(h, true)).join("") + "</Row>";
+  const headRow =
+    "<Row>" + headers.map((h) => cell(h, true)).join("") + "</Row>";
   const bodyRows = rows
     .map((r) => "<Row>" + r.map((c) => cell(c, false)).join("") + "</Row>")
     .join("");
   return (
-    `<Worksheet ss:Name="${xmlEsc(name)}"><Table>` + headRow + bodyRows + "</Table></Worksheet>"
+    `<Worksheet ss:Name="${xmlEsc(name)}"><Table>` +
+    headRow +
+    bodyRows +
+    "</Table></Worksheet>"
   );
 }
 
@@ -297,7 +308,14 @@ async function upsert(db, body, isCreate) {
                 section = COALESCE(NULLIF(?, ''), section)
           WHERE save_code = ?`,
       )
-      .bind(stateJson, progress, nowIso, clamp(body.studentName, 60), clamp(body.section, 40), code)
+      .bind(
+        stateJson,
+        progress,
+        nowIso,
+        clamp(body.studentName, 60),
+        clamp(body.section, 40),
+        code,
+      )
       .run();
     if (!res.meta || res.meta.changes === 0) {
       await upsert(db, body, true);
@@ -336,18 +354,27 @@ export async function onRequest(context) {
           {
             ok: false,
             error: "not-configured",
-            message: "Set the TEACHER_KEY env var to enable the mastery dashboard.",
+            message:
+              "Set the TEACHER_KEY env var to enable the mastery dashboard.",
           },
           503,
         );
       }
       const url = new URL(request.url);
-      const key = url.searchParams.get("key") || request.headers.get("x-teacher-key") || "";
-      if (key !== env.TEACHER_KEY) return json({ ok: false, error: "unauthorized" }, 401);
-      if (!env.DB) return json({ ok: false, error: "backend-not-configured" }, 503);
+      const key =
+        url.searchParams.get("key") ||
+        request.headers.get("x-teacher-key") ||
+        "";
+      if (key !== env.TEACHER_KEY)
+        return json({ ok: false, error: "unauthorized" }, 401);
+      if (!env.DB)
+        return json({ ok: false, error: "backend-not-configured" }, 503);
       try {
         await ensureTelemetrySchema(env.DB);
-        const limit = Math.min(Number(url.searchParams.get("limit")) || 2000, 5000);
+        const limit = Math.min(
+          Number(url.searchParams.get("limit")) || 2000,
+          5000,
+        );
         const rows = await env.DB.prepare(
           `SELECT lesson_slug, lesson_title, standard, student_name, section,
                   event_type, payload_json, created_at
@@ -375,7 +402,10 @@ export async function onRequest(context) {
         });
         return json({ ok: true, count: events.length, events });
       } catch (err) {
-        return json({ ok: false, error: "server-error", message: String(err) }, 500);
+        return json(
+          { ok: false, error: "server-error", message: String(err) },
+          500,
+        );
       }
     }
     // POST = fire-and-forget ingest: accept (204) regardless of D1 so the client
@@ -401,12 +431,15 @@ export async function onRequest(context) {
         {
           ok: false,
           error: "not-configured",
-          message: "Set the TEACHER_KEY env var on the Pages project to enable the gradebook.",
+          message:
+            "Set the TEACHER_KEY env var on the Pages project to enable the gradebook.",
         },
         503,
       );
-    if (auth === "unauthorized") return json({ ok: false, error: "unauthorized" }, 401);
-    if (!env.DB) return json({ ok: false, error: "backend-not-configured" }, 503);
+    if (auth === "unauthorized")
+      return json({ ok: false, error: "unauthorized" }, 401);
+    if (!env.DB)
+      return json({ ok: false, error: "backend-not-configured" }, 503);
 
     try {
       await ensureSchema(env.DB);
@@ -414,26 +447,74 @@ export async function onRequest(context) {
 
       // Bulk roster sync: assign names/classes/grades/notes to save codes.
       // Body: { rows: [{ saveCode, studentName?, section?, grade?, note? }] }
+      //   - Real student save codes are updated in place.
+      //   - Codes that do not exist yet (e.g. manually-added students with a
+      //     synthetic "MAN-XXXX" code, or names imported ahead of a student's
+      //     first save) are inserted as a placeholder roster row. When the real
+      //     student later hits /create|/save, their state fills in but the
+      //     teacher-entered name/class is preserved (that route only touches
+      //     state/progress on conflict).
+      // Body alt: { delete: [saveCode, ...] } removes manual-only rows. Never
+      //     touches a row with real activity progress — only activity_id='manual'.
       if (seg === "roster" && method === "POST") {
         const body = await request.json().catch(() => null);
+
+        // --- Delete (manual rows only) -------------------------------------
+        const del = (body && Array.isArray(body.delete) && body.delete) || [];
+        if (del.length) {
+          let removed = 0;
+          const dstmt = env.DB.prepare(
+            "DELETE FROM student_progress WHERE save_code = ? AND activity_id = 'manual'",
+          );
+          const dbatch = [];
+          for (const c of del.slice(0, 2000)) {
+            const code = String(c || "").toUpperCase();
+            if (!validCode(code)) continue;
+            dbatch.push(dstmt.bind(code));
+            removed++;
+          }
+          if (dbatch.length) await env.DB.batch(dbatch);
+          return json({ ok: true, removed });
+        }
+
+        // --- Upsert names/classes/grades/notes -----------------------------
         const rows = (body && Array.isArray(body.rows) && body.rows) || [];
         let updated = 0;
+        const nowIso = new Date().toISOString();
         const stmt = env.DB.prepare(
-          `UPDATE student_progress SET
-             student_name = COALESCE(NULLIF(?, ' '), student_name),
-             section      = COALESCE(NULLIF(?, ' '), section),
-             manual_grade = COALESCE(NULLIF(?, ' '), manual_grade),
-             teacher_note = COALESCE(NULLIF(?, ' '), teacher_note)
-           WHERE save_code = ?`,
+          `INSERT INTO student_progress
+             (save_code, activity_id, activity_title, student_name, section,
+              state_json, progress_percent, manual_grade, teacher_note,
+              created_at, updated_at)
+           VALUES (?, 'manual', 'Manual entry', NULLIF(?, ' '), NULLIF(?, ' '),
+                   '{}', 0, NULLIF(?, ' '), NULLIF(?, ' '), ?, ?)
+           ON CONFLICT(save_code) DO UPDATE SET
+             student_name = COALESCE(excluded.student_name, student_name),
+             section      = COALESCE(excluded.section, section),
+             manual_grade = COALESCE(excluded.manual_grade, manual_grade),
+             teacher_note = COALESCE(excluded.teacher_note, teacher_note)`,
         );
         const batch = [];
         for (const r of rows.slice(0, 2000)) {
-          const code = (r && r.saveCode ? String(r.saveCode) : "").toUpperCase();
+          const code = (
+            r && r.saveCode ? String(r.saveCode) : ""
+          ).toUpperCase();
           if (!validCode(code)) continue;
           // " " sentinel = field omitted → keep existing value. An explicit
-          // empty string overwrites (clears) the field.
+          // empty string overwrites (clears) the field. NULLIF maps the
+          // sentinel to NULL so COALESCE on conflict keeps the old value.
           const f = (v) => (v === undefined ? " " : clamp(v, 300));
-          batch.push(stmt.bind(f(r.studentName), f(r.section), f(r.grade), f(r.note), code));
+          batch.push(
+            stmt.bind(
+              code,
+              f(r.studentName),
+              f(r.section),
+              f(r.grade),
+              f(r.note),
+              nowIso,
+              nowIso,
+            ),
+          );
           updated++;
         }
         if (batch.length) await env.DB.batch(batch);
@@ -466,17 +547,21 @@ export async function onRequest(context) {
           return new Response(rowsToCsv(ROSTER_HEADERS, rows), {
             headers: {
               "Content-Type": "text/csv; charset=utf-8",
-              "Content-Disposition": 'attachment; filename="neft-save-codes.csv"',
+              "Content-Disposition":
+                'attachment; filename="neft-save-codes.csv"',
               "Access-Control-Allow-Origin": "*",
             },
           });
         if (format === "xls")
           return new Response(
-            workbookXls([{ name: "Save Codes", headers: ROSTER_HEADERS, rows }]),
+            workbookXls([
+              { name: "Save Codes", headers: ROSTER_HEADERS, rows },
+            ]),
             {
               headers: {
                 "Content-Type": "application/vnd.ms-excel; charset=utf-8",
-                "Content-Disposition": 'attachment; filename="neft-save-codes.xls"',
+                "Content-Disposition":
+                  'attachment; filename="neft-save-codes.xls"',
                 "Access-Control-Allow-Origin": "*",
               },
             },
@@ -485,10 +570,15 @@ export async function onRequest(context) {
       }
 
       // seg === "grades": pivot students (rows) × activities (columns).
+      // Manually-added students (MAN- codes) are placeholders with no real
+      // activity: they keep their row (so the class roster is complete) but
+      // their "Manual entry" never becomes a graded column.
+      const isManual = (r) =>
+        typeof r.code === "string" && r.code.indexOf("MAN-") === 0;
       const activities = [];
       const seenAct = new Set();
       for (const r of records) {
-        if (r.activity && !seenAct.has(r.activity)) {
+        if (r.activity && !isManual(r) && !seenAct.has(r.activity)) {
           seenAct.add(r.activity);
           activities.push(r.activity);
         }
@@ -502,22 +592,31 @@ export async function onRequest(context) {
             section: r.section || "",
             cells: {},
           });
+        if (isManual(r) || !r.activity) continue;
         // cell = manual grade ?? extracted score ?? progress percent
         const cellVal =
-          r.grade !== "" && r.grade != null ? r.grade : r.score != null ? r.score : r.progress;
+          r.grade !== "" && r.grade != null
+            ? r.grade
+            : r.score != null
+              ? r.score
+              : r.progress;
         byStudent.get(sid).cells[r.activity] = cellVal;
       }
       const gradeHeaders = ["Student Name", "Class", ...activities, "Average"];
       const gradeRows = [];
       for (const s of byStudent.values()) {
-        const cells = activities.map((a) => (s.cells[a] == null ? "" : s.cells[a]));
+        const cells = activities.map((a) =>
+          s.cells[a] == null ? "" : s.cells[a],
+        );
         // Average numeric cells only; blanks and letter grades are skipped
         // (Number("") === 0 would otherwise drag the average down).
         const nums = cells
           .filter((c) => c !== "" && c != null)
           .map(Number)
           .filter((n) => Number.isFinite(n));
-        const avg = nums.length ? Math.round(nums.reduce((a, b) => a + b, 0) / nums.length) : "";
+        const avg = nums.length
+          ? Math.round(nums.reduce((a, b) => a + b, 0) / nums.length)
+          : "";
         gradeRows.push([s.name, s.section, ...cells, avg]);
       }
       if (format === "csv")
@@ -541,7 +640,8 @@ export async function onRequest(context) {
           {
             headers: {
               "Content-Type": "application/vnd.ms-excel; charset=utf-8",
-              "Content-Disposition": 'attachment; filename="neft-gradebook.xls"',
+              "Content-Disposition":
+                'attachment; filename="neft-gradebook.xls"',
               "Access-Control-Allow-Origin": "*",
             },
           },
@@ -553,7 +653,10 @@ export async function onRequest(context) {
         rows: gradeRows,
       });
     } catch (err) {
-      return json({ ok: false, error: "server-error", message: String(err) }, 500);
+      return json(
+        { ok: false, error: "server-error", message: String(err) },
+        500,
+      );
     }
   }
 
@@ -574,9 +677,13 @@ export async function onRequest(context) {
     await ensureSchema(env.DB);
 
     if (seg === "load" && method === "GET") {
-      const code = (new URL(request.url).searchParams.get("code") || "").toUpperCase();
+      const code = (
+        new URL(request.url).searchParams.get("code") || ""
+      ).toUpperCase();
       if (!validCode(code)) return json({ ok: false, error: "bad-code" }, 400);
-      const row = await env.DB.prepare("SELECT * FROM student_progress WHERE save_code = ?")
+      const row = await env.DB.prepare(
+        "SELECT * FROM student_progress WHERE save_code = ?",
+      )
         .bind(code)
         .first();
       if (!row) return json({ ok: false, error: "not-found" }, 404);
@@ -585,13 +692,17 @@ export async function onRequest(context) {
 
     if ((seg === "create" || seg === "save") && method === "POST") {
       const body = await request.json().catch(() => null);
-      if (!body || !validCode(body.saveCode)) return json({ ok: false, error: "bad-payload" }, 400);
+      if (!body || !validCode(body.saveCode))
+        return json({ ok: false, error: "bad-payload" }, 400);
       const updatedAt = await upsert(env.DB, body, seg === "create");
       return json({ ok: true, saveCode: body.saveCode, updatedAt });
     }
 
     return json({ ok: false, error: "not-found", route: seg }, 404);
   } catch (err) {
-    return json({ ok: false, error: "server-error", message: String(err) }, 500);
+    return json(
+      { ok: false, error: "server-error", message: String(err) },
+      500,
+    );
   }
 }
