@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="/assets/shared.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>On-Ramp 6.SP.B.4 — Displaying Data (Dot Plots, Histograms, Box Plots)</title>
+  <style>
+    :root { --navy:#1a2e42; --teal:#2d7a72; --amber:#c9922c; --terra:#b5614e; --cream:#faf8f3;
+      --ice:#e8f3f7; --muted:#5b6773; --green:#1f6640; --green-bg:#e8f6ed; --red:#7a1e1e; --red-bg:#fdf0f0;
+      --warn-bg:#fff4de; --line:#d8dfdc; --r:16px; --r-sm:10px; }
+    main { max-width:880px; margin:0 auto; padding:24px 18px 64px; }
+    .hero { background:linear-gradient(135deg,var(--navy),var(--teal)); color:#fff; border-radius:var(--r); padding:26px 24px; box-shadow:0 12px 36px rgba(26,46,66,.18); }
+    .hero .tag { display:inline-block; background:rgba(255,255,255,.18); border-radius:999px; padding:4px 12px; font-size:.82rem; letter-spacing:.04em; }
+    .hero h1 { margin:12px 0 6px; font-size:1.55rem; line-height:1.2; } .hero .goal { margin:0; font-size:1.05rem; opacity:.95; }
+    .card { background:#fff; border:1px solid var(--line); border-radius:var(--r); padding:20px 22px; margin:18px 0; box-shadow:0 4px 14px rgba(26,46,66,.06); }
+    .card h2 { margin:0 0 10px; color:var(--navy); font-size:1.2rem; }
+    .frames { background:var(--ice); border-left:5px solid var(--teal); border-radius:var(--r-sm); padding:14px 16px; }
+    .frames ul { margin:8px 0 0; padding-left:18px; } .frames li { margin:6px 0; }
+    .word { display:inline-block; background:var(--warn-bg); border:1px solid var(--amber); border-radius:8px; padding:2px 8px; margin:3px; font-weight:600; color:#6b4a06; }
+    .dotplot { background:var(--cream); border:1px solid var(--line); border-radius:var(--r-sm); padding:14px 16px; font-family:ui-monospace,monospace; line-height:1.5; }
+    .dotplot .dots { color:var(--teal); font-size:1.15rem; letter-spacing:2px; }
+    .q { margin:14px 0; } .q p.prompt { font-weight:600; margin:0 0 10px; }
+    .choices { display:flex; flex-wrap:wrap; gap:10px; }
+    .choice { min-height:44px; padding:10px 16px; border:2px solid var(--line); background:var(--cream); border-radius:12px; font-size:1rem; cursor:pointer; transition:.15s; }
+    .choice:hover { border-color:var(--teal); } .choice:focus-visible { outline:3px solid var(--amber); outline-offset:2px; }
+    .choice.correct { background:var(--green-bg); border-color:var(--green); color:var(--green); }
+    .choice.wrong { background:var(--red-bg); border-color:var(--red); color:var(--red); }
+    .fb { margin:10px 0 0; padding:10px 14px; border-radius:var(--r-sm); display:none; font-weight:500; }
+    .fb.show { display:block; } .fb.ok { background:var(--green-bg); color:var(--green); } .fb.no { background:var(--warn-bg); color:#6b4a06; }
+    .reflect textarea { width:100%; min-height:90px; border:2px solid var(--line); border-radius:var(--r-sm); padding:12px; font:inherit; resize:vertical; }
+    .reflect textarea:focus-visible { outline:3px solid var(--amber); outline-offset:1px; border-color:var(--teal); }
+    .progress { font-size:.9rem; color:var(--muted); }
+    footer { text-align:center; color:var(--muted); font-size:.85rem; margin-top:28px; }
+  </style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+<body>
+  <main>
+    <header class="hero">
+      <span class="tag">On-Ramp · Grade 6 · 6.SP.B.4</span>
+      <h1>Displaying Data: Dot Plots, Histograms &amp; Box Plots</h1>
+      <p class="goal"><strong>I can</strong> name common data displays and read a simple dot plot.</p>
+    </header>
+
+    <section class="card">
+      <h2>📘 Word Bank + Sentence Frames</h2>
+      <p><span class="word">dot plot</span><span class="word">histogram</span><span class="word">box plot</span><span class="word">data display</span><span class="word">frequency (how many)</span></p>
+      <div class="frames">
+        <ul>
+          <li><strong>Dot plot:</strong> one dot for each data value, stacked above a number.</li>
+          <li><strong>Histogram:</strong> bars showing how many values fall in each interval (no gaps).</li>
+          <li><strong>Box plot:</strong> a box showing the middle half of the data, with "whiskers".</li>
+          <li>Frame: "In the dot plot, the value ____ appears ____ times."</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>👀 See It: A Worked Example</h2>
+      <p>Pets per student (each ● is one student):</p>
+      <div class="dotplot" aria-label="Dot plot of pets per student">
+        0 │ <span class="dots">● ●</span><br>
+        1 │ <span class="dots">● ● ● ●</span><br>
+        2 │ <span class="dots">● ● ●</span><br>
+        3 │ <span class="dots">●</span>
+      </div>
+      <p>The most common value is <strong>1 pet</strong> (4 dots). One student has 3 pets.</p>
+    </section>
+
+    <section class="card">
+      <h2>✏️ Your Turn (use the dot plot above)</h2>
+      <p class="progress"><span data-done>0</span> of 3 checks complete</p>
+      <div class="q" data-q>
+        <p class="prompt">1. How many students have exactly 2 pets?</p>
+        <div class="choices"><button class="choice">2</button><button class="choice" data-correct>3</button><button class="choice">4</button></div>
+        <p class="fb"></p>
+      </div>
+      <div class="q" data-q>
+        <p class="prompt">2. Which display uses bars with no gaps to show how many values fall in each interval?</p>
+        <div class="choices"><button class="choice" data-correct>Histogram</button><button class="choice">Dot plot</button></div>
+        <p class="fb"></p>
+      </div>
+      <div class="q" data-q>
+        <p class="prompt">3. Which value appears MOST often in the dot plot?</p>
+        <div class="choices"><button class="choice">0</button><button class="choice" data-correct>1</button><button class="choice">3</button></div>
+        <p class="fb"></p>
+      </div>
+    </section>
+
+    <section class="card reflect">
+      <h2>💬 Explain Your Thinking</h2>
+      <p>Describe what the dot plot tells you:</p>
+      <label for="reflect" class="frames" style="display:block">"The most common value is ____. I know because ____________________."</label>
+      <textarea id="reflect" name="reflect-6spb4" placeholder="Describe the data display…"></textarea>
+    </section>
+
+    <footer>Mr. Neft's Classroom · ESOL Math On-Ramp · © <span data-current-year></span></footer>
+  </main>
+  <script src="/assets/app.js"></script>
+  <script>
+    (() => { let done=0; const counter=document.querySelector("[data-done]");
+      document.querySelectorAll("[data-q]").forEach((q)=>{ const fb=q.querySelector(".fb"); let answered=false;
+        q.querySelectorAll(".choice").forEach((btn)=>{ btn.addEventListener("click",()=>{
+          if(btn.hasAttribute("data-correct")){ btn.classList.add("correct"); fb.textContent="✅ Right — you read the display carefully."; fb.className="fb show ok";
+            q.querySelectorAll(".choice").forEach(b=>b.disabled=true); if(!answered){answered=true; counter.textContent=++done;} }
+          else { btn.classList.add("wrong"); fb.textContent="Count the dots above that value, or match the display to its name. Try again."; fb.className="fb show no"; btn.disabled=true; } }); }); }); })();
+  </script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>

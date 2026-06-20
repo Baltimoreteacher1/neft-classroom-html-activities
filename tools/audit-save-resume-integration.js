@@ -55,6 +55,8 @@ const SKIP_TOPLEVEL = new Set([
   "assets",
   "docs",
   "curriculum",
+  "personal", // private (event planning, family pages) — not classroom activities
+  "futures", // concept/demo/roadmap pages — not student activities
 ]);
 const SKIP_FILE_RE = /(^|[/\\])(404|sitemap|robots)\b/i;
 // Teacher-facing pages (any nested ".../teacher/..." path) have no student

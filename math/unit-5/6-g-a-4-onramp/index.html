@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="/assets/shared.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>On-Ramp 6.G.A.4 — Nets &amp; Surface Area (Unfold the Box, Add the Faces)</title>
+  <style>
+    :root { --navy:#1a2e42; --teal:#2d7a72; --amber:#c9922c; --terra:#b5614e; --cream:#faf8f3;
+      --ice:#e8f3f7; --muted:#5b6773; --green:#1f6640; --green-bg:#e8f6ed; --red:#7a1e1e; --red-bg:#fdf0f0;
+      --warn-bg:#fff4de; --line:#d8dfdc; --r:16px; --r-sm:10px; }
+    main { max-width:880px; margin:0 auto; padding:24px 18px 64px; }
+    .hero { background:linear-gradient(135deg,var(--navy),var(--terra)); color:#fff; border-radius:var(--r); padding:26px 24px; box-shadow:0 12px 36px rgba(26,46,66,.18); }
+    .hero .tag { display:inline-block; background:rgba(255,255,255,.18); border-radius:999px; padding:4px 12px; font-size:.82rem; letter-spacing:.04em; }
+    .hero h1 { margin:12px 0 6px; font-size:1.55rem; line-height:1.2; } .hero .goal { margin:0; font-size:1.05rem; opacity:.95; }
+    .card { background:#fff; border:1px solid var(--line); border-radius:var(--r); padding:20px 22px; margin:18px 0; box-shadow:0 4px 14px rgba(26,46,66,.06); }
+    .card h2 { margin:0 0 10px; color:var(--navy); font-size:1.2rem; }
+    .frames { background:var(--ice); border-left:5px solid var(--teal); border-radius:var(--r-sm); padding:14px 16px; }
+    .frames ul { margin:8px 0 0; padding-left:18px; } .frames li { margin:6px 0; }
+    .word { display:inline-block; background:var(--warn-bg); border:1px solid var(--amber); border-radius:8px; padding:2px 8px; margin:3px; font-weight:600; color:#6b4a06; }
+    .net { display:grid; grid-template-columns:repeat(4,46px); grid-template-rows:repeat(3,46px); gap:3px; justify-content:center; margin:14px 0; }
+    .net .f { background:var(--ice); border:2px solid var(--teal); border-radius:6px; display:flex; align-items:center; justify-content:center; font-weight:700; color:var(--teal); }
+    .net .e { visibility:hidden; }
+    .q { margin:14px 0; } .q p.prompt { font-weight:600; margin:0 0 10px; }
+    .choices { display:flex; flex-wrap:wrap; gap:10px; }
+    .choice { min-height:44px; padding:10px 16px; border:2px solid var(--line); background:var(--cream); border-radius:12px; font-size:1rem; cursor:pointer; transition:.15s; }
+    .choice:hover { border-color:var(--teal); } .choice:focus-visible { outline:3px solid var(--amber); outline-offset:2px; }
+    .choice.correct { background:var(--green-bg); border-color:var(--green); color:var(--green); }
+    .choice.wrong { background:var(--red-bg); border-color:var(--red); color:var(--red); }
+    .fb { margin:10px 0 0; padding:10px 14px; border-radius:var(--r-sm); display:none; font-weight:500; }
+    .fb.show { display:block; } .fb.ok { background:var(--green-bg); color:var(--green); } .fb.no { background:var(--warn-bg); color:#6b4a06; }
+    .reflect textarea { width:100%; min-height:90px; border:2px solid var(--line); border-radius:var(--r-sm); padding:12px; font:inherit; resize:vertical; }
+    .reflect textarea:focus-visible { outline:3px solid var(--amber); outline-offset:1px; border-color:var(--teal); }
+    .progress { font-size:.9rem; color:var(--muted); }
+    footer { text-align:center; color:var(--muted); font-size:.85rem; margin-top:28px; }
+  </style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+<body>
+  <main>
+    <header class="hero">
+      <span class="tag">On-Ramp · Grade 6 · 6.G.A.4</span>
+      <h1>Nets &amp; Surface Area: Unfold the Box, Add the Faces</h1>
+      <p class="goal"><strong>I can</strong> use a net to find the surface area of a 3-D figure by adding up its faces.</p>
+    </header>
+
+    <section class="card">
+      <h2>📘 Word Bank + Sentence Frames</h2>
+      <p><span class="word">net (unfolded shape)</span><span class="word">face</span><span class="word">surface area</span><span class="word">area = L × W</span></p>
+      <div class="frames">
+        <ul>
+          <li>A <strong>net</strong> is a 3-D shape "unfolded" flat so you can see every face.</li>
+          <li><strong>Surface area</strong> = the area of <em>all the faces added together</em>.</li>
+          <li>Frame: "There are ____ faces. I add their areas: ____ = ____ square units."</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>👀 See It: A Worked Example</h2>
+      <p>This net folds into a cube. Each face is a 2 × 2 square (area = 4):</p>
+      <div class="net" aria-hidden="true">
+        <div class="e"></div><div class="f">4</div><div class="e"></div><div class="e"></div>
+        <div class="f">4</div><div class="f">4</div><div class="f">4</div><div class="f">4</div>
+        <div class="e"></div><div class="f">4</div><div class="e"></div><div class="e"></div>
+      </div>
+      <p>A cube has <strong>6 faces</strong>. Surface area = 6 × 4 = <strong>24 square units</strong>.</p>
+    </section>
+
+    <section class="card">
+      <h2>✏️ Your Turn</h2>
+      <p class="progress"><span data-done>0</span> of 3 checks complete</p>
+      <div class="q" data-q>
+        <p class="prompt">1. A cube has how many faces?</p>
+        <div class="choices"><button class="choice">4</button><button class="choice" data-correct>6</button><button class="choice">8</button></div>
+        <p class="fb"></p>
+      </div>
+      <div class="q" data-q>
+        <p class="prompt">2. Each face of a cube has area 9. What is the surface area?</p>
+        <div class="choices"><button class="choice">15</button><button class="choice" data-correct>54</button><button class="choice">9</button></div>
+        <p class="fb"></p>
+      </div>
+      <div class="q" data-q>
+        <p class="prompt">3. Surface area means…</p>
+        <div class="choices"><button class="choice" data-correct>the areas of all faces added together</button><button class="choice">the space inside the box</button></div>
+        <p class="fb"></p>
+      </div>
+    </section>
+
+    <section class="card reflect">
+      <h2>💬 Explain Your Thinking</h2>
+      <p>Explain how a net helps you find surface area:</p>
+      <label for="reflect" class="frames" style="display:block">"A net helps because ____________________. To find surface area, I ____________________."</label>
+      <textarea id="reflect" name="reflect-6ga4" placeholder="Explain nets and surface area…"></textarea>
+    </section>
+
+    <footer>Mr. Neft's Classroom · ESOL Math On-Ramp · © <span data-current-year></span></footer>
+  </main>
+  <script src="/assets/app.js"></script>
+  <script>
+    (() => { let done=0; const counter=document.querySelector("[data-done]");
+      document.querySelectorAll("[data-q]").forEach((q)=>{ const fb=q.querySelector(".fb"); let answered=false;
+        q.querySelectorAll(".choice").forEach((btn)=>{ btn.addEventListener("click",()=>{
+          if(btn.hasAttribute("data-correct")){ btn.classList.add("correct"); fb.textContent="✅ Right — add up every face you can see in the net."; fb.className="fb show ok";
+            q.querySelectorAll(".choice").forEach(b=>b.disabled=true); if(!answered){answered=true; counter.textContent=++done;} }
+          else { btn.classList.add("wrong"); fb.textContent="Count the faces, find each area, then add them all. Try again."; fb.className="fb show no"; btn.disabled=true; } }); }); }); })();
+  </script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+</body>
+</html>
