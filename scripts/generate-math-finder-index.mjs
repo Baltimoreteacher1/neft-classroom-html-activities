@@ -160,6 +160,28 @@ function strandFor(standards) {
   return null;
 }
 
+/**
+ * Keyword → strand fallback for cross-unit support pages (intervention,
+ * manipulatives, remediation, reading) that carry no standard but whose slug or
+ * title names a clear topic. Order matters — first match wins. Used only when no
+ * standard-derived strand was found; never assigns a unit (these span units).
+ */
+const STRAND_KEYWORDS = [
+  [/ratio|unit[-\s]?rate|\brate(s)?\b|percent|proportion/, "Ratios & Rates"],
+  [/expression|equation|inequalit|algebra[-\s]?tile|distributive|variable|exponent|propert/, "Expressions & Equations"],
+  [/area|volume|surface|geometry|perimeter|polygon|\bprism|\bnet(s)?\b|trapezoid|triangle/, "Geometry"],
+  [/statistic|\bdata\b|\bmean\b|median|\bmode\b|\bmad\b|deviation|histogram|box[-\s]?plot|distribution/, "Statistics & Probability"],
+  [/fraction|decimal|integer|number[-\s]?line|place[-\s]?value|factor|multiple|\bprime|\bgcf\b|\blcm\b|coordinate|plotter|divis|whole[-\s]?number|number[-\s]?operations|rational/, "Number System"],
+];
+
+function strandFromText(url, title) {
+  const text = `${url} ${title}`.toLowerCase();
+  for (const [re, strand] of STRAND_KEYWORDS) {
+    if (re.test(text)) return strand;
+  }
+  return null;
+}
+
 /** Derive the canonical unit number from the URL where possible. */
 function unitFor(url) {
   let m = /\/lessons\/(\d{1,2})-\d/.exec(url);
@@ -223,6 +245,7 @@ for (const a of registry.activities) {
     if (unit == null) unit = curated.unit;
     if (!strand) strand = curated.strand;
   }
+  if (!strand) strand = strandFromText(url, a.title || "");
   const type = a.activityType || "Activity";
   records.push({
     title: a.title || url,

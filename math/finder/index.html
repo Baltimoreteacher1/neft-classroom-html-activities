@@ -23,6 +23,7 @@
       .chip:focus-visible { outline: 3px solid #1a6fb5; outline-offset: 1px; }
       .chip[aria-pressed="true"] { background: #1a6fb5; border-color: #1a6fb5; color: #fff; }
       .unit-chip[aria-pressed="true"] { background: #2c7a4b; border-color: #2c7a4b; }
+      .strand-chip[aria-pressed="true"] { background: #6a3fb5; border-color: #6a3fb5; }
       .finder-meta { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; margin: 14px 2px 4px; }
       .finder-count { font-size: 14px; color: #5e6e7e; font-weight: 700; }
       .teacher-toggle { font-size: 14px; color: #5e6e7e; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
@@ -71,6 +72,11 @@
           <button class="chip" data-filter="Review" aria-pressed="false">Review</button>
         </div>
 
+        <div class="finder-row" id="strand-chips" role="group" aria-label="Filter by strand">
+          <span class="row-label">Strand</span>
+          <button class="chip strand-chip" data-strand="all" aria-pressed="true">All</button>
+        </div>
+
         <div class="finder-row" id="unit-chips" role="group" aria-label="Filter by unit">
           <span class="row-label">Unit</span>
           <button class="chip unit-chip" data-unit="all" aria-pressed="true">All</button>
@@ -101,7 +107,7 @@
         Bridge: "Bridge", Hub: "Hub"
       };
 
-      var state = { type: "all", unit: "all", q: "", teacher: false };
+      var state = { type: "all", unit: "all", strand: "all", q: "", teacher: false };
       var DATA = [];
       var grid = document.getElementById("results");
       var countEl = document.getElementById("finder-count");
@@ -131,6 +137,7 @@
           if (r.teacher && !state.teacher) return;
           if (state.type !== "all" && r.type !== state.type) return;
           if (state.unit !== "all" && String(r.unit) !== state.unit) return;
+          if (state.strand !== "all" && r.strand !== state.strand) return;
           if (q && haystack(r).indexOf(q) === -1) return;
           shown++;
           var tags = [];
@@ -153,7 +160,9 @@
         countEl.textContent =
           shown + " of " + DATA.length + " activit" + (shown === 1 ? "y" : "ies");
         noRes.hidden = shown !== 0;
-        var dirty = state.type !== "all" || state.unit !== "all" || state.q !== "" || state.teacher;
+        var dirty =
+          state.type !== "all" || state.unit !== "all" || state.strand !== "all" ||
+          state.q !== "" || state.teacher;
         clearBtn.hidden = !dirty;
       }
 
@@ -172,6 +181,22 @@
         });
       }
 
+      function buildStrandChips() {
+        var strands = {};
+        DATA.forEach(function (r) { if (r.strand) strands[r.strand] = true; });
+        var order = ["Number System", "Ratios & Rates", "Expressions & Equations", "Geometry", "Statistics & Probability"];
+        var present = order.filter(function (s) { return strands[s]; });
+        var wrap = document.getElementById("strand-chips");
+        present.forEach(function (s) {
+          var b = document.createElement("button");
+          b.className = "chip strand-chip";
+          b.dataset.strand = s;
+          b.setAttribute("aria-pressed", "false");
+          b.textContent = s;
+          wrap.appendChild(b);
+        });
+      }
+
       function pressGroup(container, attr, value) {
         Array.prototype.forEach.call(container.querySelectorAll(".chip"), function (c) {
           c.setAttribute("aria-pressed", c.dataset[attr] === value ? "true" : "false");
@@ -182,6 +207,12 @@
         var btn = e.target.closest(".chip"); if (!btn) return;
         state.type = btn.dataset.filter;
         pressGroup(this, "filter", state.type);
+        render();
+      });
+      document.getElementById("strand-chips").addEventListener("click", function (e) {
+        var btn = e.target.closest(".chip"); if (!btn) return;
+        state.strand = btn.dataset.strand;
+        pressGroup(this, "strand", state.strand);
         render();
       });
       document.getElementById("unit-chips").addEventListener("click", function (e) {
@@ -195,11 +226,12 @@
         state.teacher = this.checked; render();
       });
       clearBtn.addEventListener("click", function () {
-        state = { type: "all", unit: "all", q: "", teacher: false };
+        state = { type: "all", unit: "all", strand: "all", q: "", teacher: false };
         searchEl.value = "";
         document.getElementById("teacher-toggle").checked = false;
         pressGroup(document.getElementById("type-chips"), "filter", "all");
         pressGroup(document.getElementById("unit-chips"), "unit", "all");
+        pressGroup(document.getElementById("strand-chips"), "strand", "all");
         render();
         searchEl.focus();
       });
@@ -213,6 +245,7 @@
       var params = new URLSearchParams(location.search);
       if (params.get("q")) { state.q = params.get("q"); searchEl.value = state.q; }
       if (params.get("type")) { state.type = params.get("type"); }
+      if (params.get("strand")) { state.strand = params.get("strand"); }
 
       fetch("/data/math-finder-index.json")
         .then(function (r) { return r.json(); })
@@ -225,8 +258,10 @@
             if ((a.unit || 99) !== (b.unit || 99)) return (a.unit || 99) - (b.unit || 99);
             return a.title.localeCompare(b.title);
           });
+          buildStrandChips();
           buildUnitChips();
           if (state.type !== "all") pressGroup(document.getElementById("type-chips"), "filter", state.type);
+          if (state.strand !== "all") pressGroup(document.getElementById("strand-chips"), "strand", state.strand);
           render();
         })
         .catch(function () {

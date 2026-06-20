@@ -113,10 +113,13 @@ the strongest one(s) relevant to what you changed:
 | `npm run generate-support-pages`              | Generates missing family/teacher-notes/student-help pages from lesson configs (skips `<!-- hand-edited -->`).             | Repairing missing lesson support pages.                                                     |
 | `node tools/audit-save-resume-integration.js` | Audits Save/Resume wiring across activities.                                                                              | Any change near activity state, Save, or Resume.                                            |
 
-> **Note:** This repo has **no `npm run lint` and no `npm test`** scripts. Do not
-> invent them. The equivalents here are `npm run validate`, `npm run audit`, the
-> Save/Resume audit, `npm run build`, and manual browser smoke tests via
-> `npm run preview`. If you add a new check, document it in this table.
+> **Note:** The **primary** checks for content/HTML/link work are `npm run
+> validate`, `npm run audit`, the Save/Resume audit, `npm run build`, and manual
+> browser smoke tests via `npm run preview`. The repo also has Biome-based
+> `npm run lint` / `npm run check` / `npm run format` and a JS test runner
+> (`npm run test` → `tools/run-tests.mjs`, plus `npm run e2e` for Playwright,
+> combined as `npm run qa`) — these are most relevant when you touch JS, not
+> static HTML/content. If you add a new check, document it in this table.
 
 If `node_modules` is missing, run `npm ci` first (or `npm install` if no
 lockfile match), then run the checks.
