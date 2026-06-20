@@ -376,7 +376,9 @@
      ---------------------------------------------------------------------- */
   function updateDecSolver() {
     const fb = $("decFeedback");
-    if (fb) fb.style.display = "none";
+    // Reset via the class (CSS hides .feedback-box). An inline display:none
+    // would beat the .correct/.wrong rules and keep the box hidden forever.
+    if (fb) fb.className = "feedback-box";
   }
 
   function checkDecimalSolver() {
@@ -460,7 +462,9 @@
     const b = parseInt($("ratioBInput").value, 10);
     const k = parseInt($("scaleSlider").value, 10);
 
-    if (isNaN(a) || isNaN(b) || a <= 0 || b <= 0) return;
+    // Cap base terms: drawRatioVisual renders (a+b)*k circles, so unbounded
+    // input could spawn thousands of SVG nodes and freeze the tab.
+    if (isNaN(a) || isNaN(b) || a <= 0 || b <= 0 || a > 20 || b > 20) return;
 
     $("scaleVal").textContent = k + "x";
     $("ratioBaseVal").textContent = `${a} : ${b}`;
