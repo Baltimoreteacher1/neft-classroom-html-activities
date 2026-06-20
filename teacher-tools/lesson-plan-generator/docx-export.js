@@ -239,6 +239,8 @@
   /* ---------- TEACHER-FACING body ---------- */
   function teacherBody(plan, k) {
     const h = plan.header;
+    const t = plan.timing || {};
+    const at = (n) => (n ? ` · ${n}` : ""); // time chip suffix for headings
     const out = [];
     out.push(k.H1(h.title));
     out.push(
@@ -252,6 +254,40 @@
         ]
           .filter(Boolean)
           .join("   |   "),
+      ),
+    );
+
+    // Lesson at a Glance (the 5-second scan read)
+    const stdCodes = h.standards
+      .map((s) => s.code || s.desc)
+      .filter(Boolean)
+      .join(", ");
+    const flowStr = (h.pacing || [])
+      .map(([name, t]) => `${name} ${t}`)
+      .join("  →  ");
+    const glanceRow = (label, val) =>
+      new k.Paragraph({
+        children: [
+          new k.TextRun({ text: label + ": ", bold: true, size: 20 }),
+          new k.TextRun({ text: String(val == null ? "" : val), size: 20 }),
+        ],
+        spacing: { after: 60 },
+      });
+    out.push(
+      k.callout(
+        [
+          glanceRow("I Can", h.iCan),
+          glanceRow("Essential Question", h.essentialQuestion),
+          stdCodes ? glanceRow("Standard(s)", stdCodes) : null,
+          new k.Paragraph({
+            children: [
+              new k.TextRun({ text: "Flow: ", bold: true, size: 20 }),
+              new k.TextRun({ text: flowStr, size: 20 }),
+            ],
+            spacing: { after: 0 },
+          }),
+        ].filter(Boolean),
+        "Lesson at a Glance",
       ),
     );
 
@@ -329,7 +365,7 @@
     );
 
     // 4 · Do Now
-    out.push(k.H2("4 · Do Now / Warm-Up (3–5 min)"));
+    out.push(k.H2("4 · Do Now / Warm-Up" + at(t.doNow)));
     out.push(k.P(plan.doNow.directions, { italics: true }));
     out.push(
       k.table(
@@ -343,7 +379,7 @@
     );
 
     // 5 · Mini-Lesson
-    out.push(k.H2("5 · Mini-Lesson / Direct Instruction"));
+    out.push(k.H2("5 · Mini-Lesson / Direct Instruction" + at(t.mini)));
     out.push(k.P(plan.mini.teacherExplanation));
     out.push(k.P(plan.mini.gradualRelease, { italics: true }));
     out.push(k.H3("Student notes"));
@@ -371,7 +407,7 @@
     );
 
     // 6 · Guided
-    out.push(k.H2("6 · Guided Practice"));
+    out.push(k.H2("6 · Guided Practice" + at(t.guided)));
     out.push(
       k.table(
         ["#", "Problem", "Answer", "Teacher prompt"],
@@ -390,7 +426,7 @@
 
     // 7 · Collaborative
     const c = plan.collaborative;
-    out.push(k.H2("7 · Collaborative / Partner Activity"));
+    out.push(k.H2("7 · Collaborative / Partner Activity" + at(t.collaborative)));
     out.push(
       k.runs([
         { t: "Student directions: ", b: true },
@@ -413,7 +449,7 @@
     );
 
     // 8 · Independent
-    out.push(k.H2("8 · Independent Practice"));
+    out.push(k.H2("8 · Independent Practice" + at(t.independent)));
     out.push(
       k.table(
         ["#", "Type", "Problem", "Answer key"],
@@ -441,7 +477,7 @@
 
     // 9 · Writing / TWR
     const w = plan.writing;
-    out.push(k.H2("9 · Writing / TWR Connection"));
+    out.push(k.H2("9 · Writing / TWR Connection" + at(t.writing)));
     out.push(k.runs([{ t: "Kernel sentence: ", b: true }, { t: w.kernel }]));
     out.push(
       k.table(
@@ -501,7 +537,7 @@
     out.push(...k.bullets(cf.decisionPoints));
 
     // 12 · Exit Ticket
-    out.push(k.H2("12 · Exit Ticket"));
+    out.push(k.H2("12 · Exit Ticket" + at(t.exit)));
     out.push(
       k.table(
         ["#", "Question", "Answer key"],

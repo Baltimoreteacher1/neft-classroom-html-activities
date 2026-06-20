@@ -516,12 +516,22 @@
       .join("") +
     "</ul>";
   const kv = (label, val) =>
-    `<p><strong>${esc(label)}:</strong> ${esc(val)}</p>`;
+    `<p class="lp-kv"><strong>${esc(label)}:</strong> ${esc(val)}</p>`;
+  // Scannable callout for "what the teacher actually does / decides" lines.
+  const note = (label, val) =>
+    `<p class="lp-note"><strong>${esc(label)}:</strong> ${esc(val)}</p>`;
+  const noteList = (label, arr) =>
+    `<div class="lp-note"><strong>${esc(label)}:</strong>` + ul(arr) + `</div>`;
 
   function renderPlanHtml(plan) {
     const h = plan.header;
-    const sec = (n, title, inner) =>
-      `<section class="lp-block"><h2 class="lp-sec">${n} · ${esc(title)}</h2>${inner}</section>`;
+    // Optional 4th arg = a time chip shown on the section heading.
+    const sec = (n, title, inner, time) =>
+      `<section class="lp-block"><h2 class="lp-sec">${n} · ${esc(title)}` +
+      (time
+        ? `<span class="lp-time"><span aria-hidden="true">⏱</span> ${esc(time)}</span>`
+        : "") +
+      `</h2>${inner}</section>`;
     const rows = [];
 
     rows.push(
@@ -535,6 +545,30 @@
         ]
           .filter(Boolean)
           .join(" &nbsp;|&nbsp; ")}</p>`,
+    );
+
+    // ---- Lesson at a Glance (scan band: the 5-second read) ----
+    const stdCodes = h.standards
+      .map((s) => s.code || s.desc)
+      .filter(Boolean)
+      .join(", ");
+    const flow = (h.pacing || [])
+      .map(
+        ([name, t]) =>
+          `<span class="flow-step">${esc(name)} <em>${esc(t)}</em></span>`,
+      )
+      .join('<span class="flow-arrow" aria-hidden="true">→</span>');
+    rows.push(
+      `<section class="lp-glance">` +
+        `<div class="glance-grid">` +
+        `<div><span class="glance-label">I Can</span>${esc(h.iCan)}</div>` +
+        `<div><span class="glance-label">Essential Question</span>${esc(h.essentialQuestion)}</div>` +
+        (stdCodes
+          ? `<div><span class="glance-label">Standard(s)</span>${esc(stdCodes)}</div>`
+          : "") +
+        `</div>` +
+        (flow ? `<div class="lp-flow">${flow}</div>` : "") +
+        `</section>`,
     );
 
     // 1 Header
@@ -599,13 +633,14 @@
     rows.push(
       sec(
         4,
-        "Do Now / Warm-Up (3–5 min)",
+        "Do Now / Warm-Up",
         `<p><em>${esc(plan.doNow.directions)}</em></p>` +
           tableHtml(
             ["Level", "Question", "Answer key"],
             plan.doNow.items.map((it) => [it.level, it.q, it.a]),
           ) +
-          kv("Teacher move", plan.doNow.teacherMove),
+          note("Teacher move", plan.doNow.teacherMove),
+        plan.timing && plan.timing.doNow,
       ),
     );
 
@@ -625,6 +660,7 @@
           ul(m.worked.thinkAloud.map((t) => `“${t}”`)) +
           kv("Common mistake", m.worked.commonMistake) +
           kv("Correction", m.worked.correction),
+        plan.timing && plan.timing.mini,
       ),
     );
 
@@ -637,9 +673,10 @@
           ["#", "Problem", "Answer", "Teacher prompt"],
           plan.guided.items.map((it, i) => [i + 1, it.q, it.a, it.prompt]),
         ) +
-          `<p><em>${esc(plan.guided.turnAndTalk)}</em></p>` +
+          note("Turn & Talk", plan.guided.turnAndTalk) +
           "<p><strong>Sentence starters:</strong></p>" +
           ul(plan.guided.sentenceStarters),
+        plan.timing && plan.timing.guided,
       ),
     );
 
@@ -655,6 +692,7 @@
           "<p><strong>Discussion prompts:</strong></p>" +
           ul(c.discussionPrompts) +
           kv("Written response (TWR)", c.twrWritten),
+        plan.timing && plan.timing.collaborative,
       ),
     );
 
@@ -669,6 +707,7 @@
         ) +
           kv("Show your thinking", plan.independent.showThinking) +
           kv("Extension", plan.independent.extension),
+        plan.timing && plan.timing.independent,
       ),
     );
 
@@ -685,6 +724,7 @@
           ul(w.frames) +
           kv("Word bank", w.wordBank.join(", ")) +
           kv("Expected response", w.expected),
+        plan.timing && plan.timing.writing,
       ),
     );
 
@@ -724,8 +764,7 @@
             ["Independent practice", cf.independent],
           ],
         ) +
-          "<p><strong>Teacher decision points:</strong></p>" +
-          ul(cf.decisionPoints),
+          noteList("Teacher decision points", cf.decisionPoints),
       ),
     );
 
@@ -739,7 +778,8 @@
           plan.exit.items.map((it, i) => [i + 1, it.q, it.a]),
         ) +
           kv("Confidence / reflection", plan.exit.confidence.q) +
-          kv("Tomorrow, based on results", plan.exit.tomorrow),
+          note("Tomorrow, based on results", plan.exit.tomorrow),
+        plan.timing && plan.timing.exit,
       ),
     );
 
@@ -765,8 +805,8 @@
       sec(
         14,
         "Printable Student Version",
-        "<p>A clean, answer-free student handout (with response space) is generated automatically and included as the second part of the downloaded Word document — ready to print or upload to Canvas.</p>" +
-          "<p class='muted small'>It mirrors the Do Now, notes, guided & independent practice, writing, and exit ticket above, without teacher notes or answer keys.</p>",
+        "<p>A clean, answer-free student handout (with response space) is added as part 2 of the downloaded Word doc — ready to print or post to Canvas.</p>" +
+          "<p class='muted small'>Mirrors the Do Now, notes, practice, writing, and exit ticket above — no teacher notes or answer keys. See the <strong>Student Handout</strong> tab to preview it.</p>",
       ),
     );
 
@@ -903,6 +943,11 @@ xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-
   th,td{border:1px solid #000;padding:6px 8px;text-align:left;vertical-align:top;}
   th{background:#eef2f6;}
   ul,ol{margin:5px 0;padding-left:22px;}
+  .lp-glance{background:#f0fdfa;border:1px solid #99f6e4;padding:8px 12px;margin:0 0 14px;}
+  .glance-label{display:block;font-size:8pt;font-weight:bold;text-transform:uppercase;color:#115e59;}
+  .lp-flow{margin-top:8px;font-size:9.5pt;font-weight:bold;}
+  .lp-time{float:right;font-size:9pt;font-weight:bold;color:#115e59;}
+  .lp-note{background:#f1f5f9;border-left:3px solid #0f766e;padding:6px 10px;margin:8px 0;}
 </style></head><body>${body}</body></html>`;
   }
 
@@ -925,6 +970,10 @@ xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-
       `*${[h.date && "Date: " + h.date, h.grade, h.course, h.unit && "Unit: " + h.unit, h.length].filter(Boolean).join(" · ")}*`,
       "",
     );
+    const flowStr = (h.pacing || [])
+      .map(([name, t]) => `${name} ${t}`)
+      .join(" → ");
+    if (flowStr) L.push(`**At a glance:** ${flowStr}`, "");
     L.push("## Lesson Header");
     L.push(
       `- Standards: ${h.standards.map((s) => (s.code ? s.code + " — " : "") + (s.desc || "")).join("; ")}`,
