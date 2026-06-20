@@ -59,7 +59,8 @@
       }
       function lsSet(k, v) {
         try {
-          if (v) localStorage.setItem(k, v);
+          // Allow "" so a name/section can be explicitly cleared, not just set.
+          if (v != null) localStorage.setItem(k, v);
         } catch (e) {}
       }
       function jGet(k) {

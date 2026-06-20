@@ -70,12 +70,13 @@
       alias: "",
       section: "",
     };
-    // Prefill from the shared site-wide identity if this kit has none yet, so a
-    // name typed in a lesson carries over without retyping.
-    if (!s.alias && !s.section && window.NeftIdentity) {
+    // Fill any field this kit is missing from the shared site-wide identity, so
+    // a name or class typed in a lesson carries over without retyping.
+    if ((!s.alias || !s.section) && window.NeftIdentity) {
       var shared = window.NeftIdentity.get();
-      if (shared && (shared.name || shared.section)) {
-        return { alias: shared.name, section: shared.section };
+      if (shared) {
+        if (!s.alias && shared.name) s.alias = shared.name;
+        if (!s.section && shared.section) s.section = shared.section;
       }
     }
     return s;

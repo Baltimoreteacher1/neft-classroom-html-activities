@@ -143,12 +143,15 @@
       "identity-get",
       null,
     );
-    if (local && (local.name || local.section)) return local;
-    // Fall back to the site-wide shared identity, so a name typed on a lesson
-    // cover screen or in an activity kit prefills here too — never retyped.
-    if (window.NeftIdentity) {
+    if (!local) local = { name: "", section: "" };
+    // Fill any missing field from the site-wide shared identity, so a name typed
+    // on a lesson cover screen or in an activity kit prefills here — never retyped.
+    if ((!local.name || !local.section) && window.NeftIdentity) {
       var shared = window.NeftIdentity.get();
-      if (shared && (shared.name || shared.section)) return shared;
+      if (shared) {
+        if (!local.name && shared.name) local.name = shared.name;
+        if (!local.section && shared.section) local.section = shared.section;
+      }
     }
     return local;
   }

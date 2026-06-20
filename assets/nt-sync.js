@@ -31,6 +31,7 @@
 
   var QUEUE_KEY = "nt_sync_queue"; // nt_ prefix preserved
   var REF_KEY = "nt_student_ref";
+  var ANON_KEY = "nt_anon_id"; // stable per-device id, shared with NeftIdentity
   var cfg = global.NT_SYNC || {};
   var flushing = false;
 
@@ -72,7 +73,20 @@
     } catch (e) {}
     if (r) return r;
     if (global.NeftIdentity) return global.NeftIdentity.studentId();
-    return "anon";
+    // No shared identity on this page: use a stable per-device anon id so each
+    // device stays distinct (not the shared "anon"). Stored under its own key,
+    // NOT REF_KEY, so it never gets read back as a real student name.
+    var anon = "";
+    try {
+      anon = localStorage.getItem(ANON_KEY) || "";
+    } catch (e) {}
+    if (!anon) {
+      anon = "anon-" + uuid().slice(0, 8);
+      try {
+        localStorage.setItem(ANON_KEY, anon);
+      } catch (e) {}
+    }
+    return anon;
   }
 
   /* Enqueue a privacy-safe result. Synchronous; returns immediately. */
