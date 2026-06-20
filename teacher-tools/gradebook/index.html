@@ -1,0 +1,857 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gradebook &amp; Save Codes · Neft Teacher</title>
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="/assets/favicon.svg" />
+    <style>
+      :root {
+        --bg: #0f1623;
+        --panel: #18233a;
+        --panel-2: #1f2d49;
+        --line: #2c3c5e;
+        --ink: #eaf0fb;
+        --muted: #9fb0cf;
+        --accent: #4f8bff;
+        --good: #2fbf71;
+        --warn: #e0a32e;
+        --bad: #e5564b;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.5 system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+      }
+      header {
+        padding: 18px 24px;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+      }
+      header h1 {
+        font-size: 20px;
+        margin: 0;
+      }
+      header .sub {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .spacer {
+        flex: 1;
+      }
+      main {
+        padding: 22px;
+        max-width: 1280px;
+        margin: 0 auto;
+      }
+      button,
+      .btn {
+        font: inherit;
+        cursor: pointer;
+        border: 1px solid var(--line);
+        background: var(--panel-2);
+        color: var(--ink);
+        border-radius: 8px;
+        padding: 8px 14px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      button.primary,
+      .btn.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+      button.good {
+        background: var(--good);
+        border-color: var(--good);
+        color: #04220f;
+      }
+      button:focus-visible,
+      input:focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 2px;
+      }
+      input,
+      select {
+        font: inherit;
+        background: #0c1320;
+        color: var(--ink);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 8px 12px;
+      }
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 14px;
+        margin-bottom: 20px;
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px 16px;
+      }
+      .card .n {
+        font-size: 26px;
+        font-weight: 700;
+      }
+      .card .l {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .toolbar {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+      .tabs {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 14px;
+      }
+      .tab {
+        padding: 8px 16px;
+        border-radius: 8px 8px 0 0;
+        background: transparent;
+        border: 1px solid transparent;
+        color: var(--muted);
+      }
+      .tab[aria-selected="true"] {
+        background: var(--panel);
+        border-color: var(--line);
+        border-bottom-color: var(--panel);
+        color: var(--ink);
+      }
+      .table-wrap {
+        overflow: auto;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: var(--panel);
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 14px;
+      }
+      th,
+      td {
+        padding: 8px 10px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        white-space: nowrap;
+      }
+      th {
+        position: sticky;
+        top: 0;
+        background: var(--panel-2);
+        z-index: 1;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        color: var(--muted);
+      }
+      tbody tr:hover {
+        background: rgba(79, 139, 255, 0.07);
+      }
+      td.edit input {
+        width: 100%;
+        min-width: 90px;
+        padding: 5px 8px;
+        border-color: transparent;
+        background: transparent;
+      }
+      td.edit input:focus {
+        border-color: var(--accent);
+        background: #0c1320;
+      }
+      .code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-weight: 700;
+        color: #8ab4f8;
+      }
+      .bar {
+        position: relative;
+        width: 80px;
+        height: 8px;
+        border-radius: 6px;
+        background: #0c1320;
+        overflow: hidden;
+        display: inline-block;
+        vertical-align: middle;
+      }
+      .bar > i {
+        position: absolute;
+        inset: 0 auto 0 0;
+        background: var(--accent);
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .pill {
+        display: inline-block;
+        padding: 2px 9px;
+        border-radius: 999px;
+        background: var(--panel-2);
+        border: 1px solid var(--line);
+        font-size: 12px;
+      }
+      .gate {
+        max-width: 460px;
+        margin: 60px auto;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 28px;
+      }
+      .gate h2 {
+        margin: 0 0 6px;
+      }
+      .gate p {
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .gate .row {
+        display: flex;
+        gap: 8px;
+        margin-top: 14px;
+      }
+      .gate input {
+        flex: 1;
+      }
+      .toast {
+        position: fixed;
+        bottom: 18px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--panel-2);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 16px;
+        opacity: 0;
+        transition: opacity 0.2s;
+        pointer-events: none;
+        z-index: 9;
+      }
+      .toast.show {
+        opacity: 1;
+      }
+      .hidden {
+        display: none !important;
+      }
+      .help {
+        font-size: 13px;
+        color: var(--muted);
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-bottom: 16px;
+      }
+      .help code {
+        background: #0c1320;
+        padding: 1px 6px;
+        border-radius: 5px;
+      }
+      a {
+        color: var(--accent);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>📊 Gradebook &amp; Save Codes</h1>
+      <span class="sub" id="subline">Live student progress · Neft Teacher</span>
+      <span class="spacer"></span>
+      <a class="btn" href="/curriculum/">← Hub</a>
+      <button id="signout" class="hidden">Sign out</button>
+    </header>
+
+    <!-- Teacher key gate -->
+    <section class="gate" id="gate">
+      <h2>Teacher access</h2>
+      <p>
+        Enter your teacher key to view live save codes and grades. The key is
+        the <code>TEACHER_KEY</code> set on the Cloudflare Pages project. It is
+        remembered on this device only.
+      </p>
+      <div class="row">
+        <input
+          id="keyInput"
+          type="password"
+          placeholder="Teacher key"
+          autocomplete="off"
+        />
+        <button class="primary" id="keyGo">Open</button>
+      </div>
+      <p id="gateMsg" style="color: var(--bad)"></p>
+    </section>
+
+    <main id="app" class="hidden">
+      <div class="help">
+        <strong>How it works.</strong> Every save code a student creates appears
+        here automatically. Type each student's <strong>name</strong> and
+        <strong>class</strong> next to their code — it saves instantly and
+        powers the Grades tab. Use <strong>Download Excel</strong> for an
+        offline workbook (Save Codes + Grades tabs), or fill names into that
+        file and <strong>Import</strong> it back to sync in bulk.
+      </div>
+
+      <div class="cards" id="stats"></div>
+
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" aria-selected="true" data-tab="roster">
+          Save Codes &amp; Roster
+        </button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="grades">
+          Grades (by activity)
+        </button>
+      </div>
+
+      <div class="toolbar">
+        <input id="search" placeholder="Search name, code, activity…" />
+        <select id="classFilter">
+          <option value="">All classes</option>
+        </select>
+        <span class="spacer"></span>
+        <button id="refresh">↻ Refresh</button>
+        <button class="good" id="dlXls">⬇ Download Excel</button>
+        <button id="dlCsv">⬇ CSV</button>
+        <button class="primary" id="importBtn">⬆ Import names</button>
+        <input id="importFile" type="file" accept=".csv,.xls,.txt" hidden />
+      </div>
+
+      <div class="table-wrap">
+        <table id="rosterTable">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Student Name</th>
+              <th>Class</th>
+              <th>Activity</th>
+              <th>Progress</th>
+              <th>Score</th>
+              <th>Grade</th>
+              <th>Note</th>
+              <th>Last Saved</th>
+            </tr>
+          </thead>
+          <tbody id="rosterBody"></tbody>
+        </table>
+      </div>
+
+      <div class="table-wrap hidden" id="gradesWrap">
+        <table id="gradesTable">
+          <thead id="gradesHead"></thead>
+          <tbody id="gradesBody"></tbody>
+        </table>
+      </div>
+    </main>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+      (function () {
+        "use strict";
+        var LS_KEY = "neft.teacher.key";
+        var API = "/api/progress";
+        var key = localStorage.getItem(LS_KEY) || "";
+        var records = []; // roster records from server
+        var dirty = {}; // saveCode -> pending field changes
+        var saveTimer = null;
+        var currentTab = "roster";
+
+        var $ = function (id) {
+          return document.getElementById(id);
+        };
+        function toast(msg) {
+          var t = $("toast");
+          t.textContent = msg;
+          t.classList.add("show");
+          clearTimeout(t._t);
+          t._t = setTimeout(function () {
+            t.classList.remove("show");
+          }, 1800);
+        }
+        function esc(s) {
+          return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
+            return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+          });
+        }
+        function authHeaders() {
+          return { "x-teacher-key": key, "Content-Type": "application/json" };
+        }
+
+        // --- Gate ------------------------------------------------------------
+        function showApp() {
+          $("gate").classList.add("hidden");
+          $("app").classList.remove("hidden");
+          $("signout").classList.remove("hidden");
+        }
+        function showGate(msg) {
+          $("gate").classList.remove("hidden");
+          $("app").classList.add("hidden");
+          $("signout").classList.add("hidden");
+          if (msg) $("gateMsg").textContent = msg;
+        }
+        $("keyGo").addEventListener("click", function () {
+          key = $("keyInput").value.trim();
+          if (!key) return;
+          localStorage.setItem(LS_KEY, key);
+          load();
+        });
+        $("keyInput").addEventListener("keydown", function (e) {
+          if (e.key === "Enter") $("keyGo").click();
+        });
+        $("signout").addEventListener("click", function () {
+          localStorage.removeItem(LS_KEY);
+          key = "";
+          showGate("");
+        });
+
+        // --- Load roster -----------------------------------------------------
+        function load() {
+          if (!key) {
+            showGate("");
+            return;
+          }
+          fetch(API + "/roster?key=" + encodeURIComponent(key), {
+            headers: authHeaders(),
+          })
+            .then(function (r) {
+              if (r.status === 401) throw new Error("Wrong teacher key.");
+              if (r.status === 503)
+                throw new Error(
+                  "Gradebook not enabled on the server (TEACHER_KEY / D1 not set).",
+                );
+              return r.json();
+            })
+            .then(function (data) {
+              if (!data || !data.ok) throw new Error("Could not load data.");
+              records = data.records || [];
+              showApp();
+              renderStats();
+              renderClassFilter();
+              render();
+            })
+            .catch(function (err) {
+              showGate(err.message || "Error loading data.");
+            });
+        }
+
+        // --- Stats -----------------------------------------------------------
+        function renderStats() {
+          var codes = records.length;
+          var named = records.filter(function (r) {
+            return r.name;
+          }).length;
+          var classes = {};
+          var progSum = 0,
+            progN = 0;
+          var today = new Date().toISOString().slice(0, 10);
+          var activeToday = 0;
+          records.forEach(function (r) {
+            if (r.section) classes[r.section] = 1;
+            if (typeof r.progress === "number") {
+              progSum += r.progress;
+              progN++;
+            }
+            if (r.updatedAt && r.updatedAt.slice(0, 10) === today)
+              activeToday++;
+          });
+          var avg = progN ? Math.round(progSum / progN) : 0;
+          var html = [
+            ["Save codes", codes],
+            ["Named", named + " / " + codes],
+            ["Classes", Object.keys(classes).length],
+            ["Avg progress", avg + "%"],
+            ["Active today", activeToday],
+          ]
+            .map(function (c) {
+              return (
+                '<div class="card"><div class="n">' +
+                c[1] +
+                '</div><div class="l">' +
+                c[0] +
+                "</div></div>"
+              );
+            })
+            .join("");
+          $("stats").innerHTML = html;
+        }
+
+        function renderClassFilter() {
+          var classes = {};
+          records.forEach(function (r) {
+            if (r.section) classes[r.section] = 1;
+          });
+          var sel = $("classFilter");
+          var cur = sel.value;
+          sel.innerHTML =
+            '<option value="">All classes</option>' +
+            Object.keys(classes)
+              .sort()
+              .map(function (c) {
+                return '<option value="' + esc(c) + '">' + esc(c) + "</option>";
+              })
+              .join("");
+          sel.value = cur;
+        }
+
+        // --- Filtering -------------------------------------------------------
+        function filtered() {
+          var q = $("search").value.trim().toLowerCase();
+          var cls = $("classFilter").value;
+          return records.filter(function (r) {
+            if (cls && r.section !== cls) return false;
+            if (!q) return true;
+            return (
+              (r.code + " " + r.name + " " + r.section + " " + r.activity)
+                .toLowerCase()
+                .indexOf(q) !== -1
+            );
+          });
+        }
+
+        // --- Render roster table --------------------------------------------
+        function render() {
+          if (currentTab === "grades") {
+            renderGrades();
+            return;
+          }
+          var rows = filtered();
+          var html = rows
+            .map(function (r) {
+              var prog = typeof r.progress === "number" ? r.progress : 0;
+              return (
+                "<tr data-code='" +
+                esc(r.code) +
+                "'>" +
+                "<td class='code'>" +
+                esc(r.code) +
+                "</td>" +
+                "<td class='edit'><input data-f='name' value='" +
+                esc(r.name) +
+                "' placeholder='Add name…'></td>" +
+                "<td class='edit'><input data-f='section' value='" +
+                esc(r.section) +
+                "' placeholder='Class…'></td>" +
+                "<td>" +
+                esc(r.activity) +
+                "</td>" +
+                "<td><span class='bar'><i style='width:" +
+                prog +
+                "%'></i></span> <span class='muted'>" +
+                prog +
+                "%</span></td>" +
+                "<td>" +
+                (r.score == null ? "<span class='muted'>—</span>" : r.score) +
+                "</td>" +
+                "<td class='edit'><input data-f='grade' value='" +
+                esc(r.grade) +
+                "' placeholder='—' style='max-width:80px'></td>" +
+                "<td class='edit'><input data-f='note' value='" +
+                esc(r.note) +
+                "' placeholder='…'></td>" +
+                "<td class='muted'>" +
+                (r.updatedAt
+                  ? r.updatedAt.replace("T", " ").slice(0, 16)
+                  : "") +
+                "</td>" +
+                "</tr>"
+              );
+            })
+            .join("");
+          $("rosterBody").innerHTML =
+            html ||
+            "<tr><td colspan='9' class='muted' style='padding:24px;text-align:center'>No save codes yet. They appear here the moment a student starts work.</td></tr>";
+        }
+
+        // Inline edit → queue change, debounce-save
+        $("rosterBody").addEventListener("input", function (e) {
+          var inp = e.target;
+          if (inp.tagName !== "INPUT") return;
+          var tr = inp.closest("tr");
+          var code = tr.getAttribute("data-code");
+          var field = inp.getAttribute("data-f");
+          if (!dirty[code]) dirty[code] = { saveCode: code };
+          var map = { name: "studentName", section: "section" };
+          dirty[code][map[field] || field] = inp.value;
+          // reflect into local record so other views stay in sync
+          var rec = records.find(function (x) {
+            return x.code === code;
+          });
+          if (rec) rec[field] = inp.value;
+          queueSave();
+        });
+
+        function queueSave() {
+          clearTimeout(saveTimer);
+          saveTimer = setTimeout(flushSave, 700);
+        }
+        function flushSave() {
+          var rows = Object.keys(dirty).map(function (c) {
+            return dirty[c];
+          });
+          if (!rows.length) return;
+          dirty = {};
+          fetch(API + "/roster?key=" + encodeURIComponent(key), {
+            method: "POST",
+            headers: authHeaders(),
+            body: JSON.stringify({ rows: rows }),
+          })
+            .then(function (r) {
+              return r.json();
+            })
+            .then(function (d) {
+              if (d && d.ok) {
+                toast("Saved " + d.updated + " ✓");
+                renderStats();
+                renderClassFilter();
+              } else toast("Save failed");
+            })
+            .catch(function () {
+              toast("Save failed (offline?)");
+            });
+        }
+
+        // --- Grades pivot ----------------------------------------------------
+        function renderGrades() {
+          fetch(API + "/grades?key=" + encodeURIComponent(key), {
+            headers: authHeaders(),
+          })
+            .then(function (r) {
+              return r.json();
+            })
+            .then(function (d) {
+              if (!d || !d.ok) {
+                $("gradesBody").innerHTML =
+                  "<tr><td class='muted'>No grades yet.</td></tr>";
+                return;
+              }
+              var cls = $("classFilter").value;
+              $("gradesHead").innerHTML =
+                "<tr>" +
+                d.headers
+                  .map(function (h) {
+                    return "<th>" + esc(h) + "</th>";
+                  })
+                  .join("") +
+                "</tr>";
+              var rows = d.rows.filter(function (row) {
+                return !cls || row[1] === cls;
+              });
+              $("gradesBody").innerHTML =
+                rows
+                  .map(function (row) {
+                    return (
+                      "<tr>" +
+                      row
+                        .map(function (cell, i) {
+                          var c = cell === "" || cell == null ? "—" : cell;
+                          return (
+                            "<td" +
+                            (i < 2 ? "" : " style='text-align:center'") +
+                            (c === "—" ? " class='muted'" : "") +
+                            ">" +
+                            esc(c) +
+                            "</td>"
+                          );
+                        })
+                        .join("") +
+                      "</tr>"
+                    );
+                  })
+                  .join("") ||
+                "<tr><td class='muted' style='padding:20px'>No data for this class.</td></tr>";
+            });
+        }
+
+        // --- Tabs ------------------------------------------------------------
+        document.querySelectorAll(".tab").forEach(function (t) {
+          t.addEventListener("click", function () {
+            document.querySelectorAll(".tab").forEach(function (x) {
+              x.setAttribute("aria-selected", "false");
+            });
+            t.setAttribute("aria-selected", "true");
+            currentTab = t.getAttribute("data-tab");
+            $("rosterTable").parentElement.classList.toggle(
+              "hidden",
+              currentTab !== "roster",
+            );
+            $("gradesWrap").classList.toggle("hidden", currentTab !== "grades");
+            render();
+          });
+        });
+
+        // --- Toolbar ---------------------------------------------------------
+        $("search").addEventListener("input", render);
+        $("classFilter").addEventListener("change", render);
+        $("refresh").addEventListener("click", load);
+
+        $("dlXls").addEventListener("click", function () {
+          var seg = currentTab === "grades" ? "grades" : "roster";
+          window.location.href =
+            API + "/" + seg + "?key=" + encodeURIComponent(key) + "&format=xls";
+        });
+        $("dlCsv").addEventListener("click", function () {
+          var seg = currentTab === "grades" ? "grades" : "roster";
+          window.location.href =
+            API + "/" + seg + "?key=" + encodeURIComponent(key) + "&format=csv";
+        });
+
+        // --- Import (CSV or Excel-2003 XML) ----------------------------------
+        $("importBtn").addEventListener("click", function () {
+          $("importFile").click();
+        });
+        $("importFile").addEventListener("change", function (e) {
+          var file = e.target.files[0];
+          if (!file) return;
+          var reader = new FileReader();
+          reader.onload = function () {
+            var rows = parseImport(String(reader.result));
+            if (!rows.length) {
+              toast("No rows found (need a Save Code column).");
+              return;
+            }
+            fetch(API + "/roster?key=" + encodeURIComponent(key), {
+              method: "POST",
+              headers: authHeaders(),
+              body: JSON.stringify({ rows: rows }),
+            })
+              .then(function (r) {
+                return r.json();
+              })
+              .then(function (d) {
+                if (d && d.ok) {
+                  toast("Imported " + d.updated + " rows ✓");
+                  load();
+                } else toast("Import failed");
+              })
+              .catch(function () {
+                toast("Import failed");
+              });
+          };
+          reader.readAsText(file);
+          e.target.value = "";
+        });
+
+        // Map header label -> our field key
+        function fieldFor(h) {
+          h = h.toLowerCase();
+          if (h.indexOf("code") !== -1) return "saveCode";
+          if (h.indexOf("name") !== -1) return "studentName";
+          if (h.indexOf("class") !== -1 || h.indexOf("section") !== -1)
+            return "section";
+          if (h.indexOf("grade") !== -1) return "grade";
+          if (h.indexOf("note") !== -1) return "note";
+          return null;
+        }
+
+        function parseImport(text) {
+          // Excel 2003 XML (the .xls we export) → extract per-row cells.
+          if (
+            text.indexOf("urn:schemas-microsoft-com:office:spreadsheet") !== -1
+          )
+            return parseXmlSheet(text);
+          return parseCsv(text);
+        }
+
+        function parseCsv(text) {
+          text = text.replace(/^﻿/, "");
+          var lines = text.split(/\r?\n/).filter(function (l) {
+            return l.trim();
+          });
+          if (lines.length < 2) return [];
+          var headers = splitCsvLine(lines[0]).map(fieldFor);
+          var out = [];
+          for (var i = 1; i < lines.length; i++) {
+            var cells = splitCsvLine(lines[i]);
+            var row = {};
+            headers.forEach(function (f, idx) {
+              if (f) row[f] = (cells[idx] || "").trim();
+            });
+            if (row.saveCode) out.push(row);
+          }
+          return out;
+        }
+
+        function splitCsvLine(line) {
+          var out = [],
+            cur = "",
+            q = false;
+          for (var i = 0; i < line.length; i++) {
+            var c = line[i];
+            if (q) {
+              if (c === '"' && line[i + 1] === '"') {
+                cur += '"';
+                i++;
+              } else if (c === '"') q = false;
+              else cur += c;
+            } else if (c === '"') q = true;
+            else if (c === ",") {
+              out.push(cur);
+              cur = "";
+            } else cur += c;
+          }
+          out.push(cur);
+          return out;
+        }
+
+        function parseXmlSheet(text) {
+          var doc = new DOMParser().parseFromString(text, "text/xml");
+          var rowsEl = doc.getElementsByTagName("Row");
+          if (!rowsEl.length) return [];
+          function cellsOf(rowEl) {
+            var cs = rowEl.getElementsByTagName("Cell");
+            var vals = [];
+            for (var i = 0; i < cs.length; i++) {
+              var d = cs[i].getElementsByTagName("Data")[0];
+              vals.push(d ? d.textContent : "");
+            }
+            return vals;
+          }
+          var headers = cellsOf(rowsEl[0]).map(fieldFor);
+          var out = [];
+          for (var r = 1; r < rowsEl.length; r++) {
+            var cells = cellsOf(rowsEl[r]);
+            var row = {};
+            headers.forEach(function (f, idx) {
+              if (f) row[f] = (cells[idx] || "").trim();
+            });
+            if (row.saveCode) out.push(row);
+          }
+          return out;
+        }
+
+        // --- Boot + autorefresh ---------------------------------------------
+        if (key) load();
+        else showGate("");
+        setInterval(function () {
+          if (key && !$("app").classList.contains("hidden")) {
+            // Only silent-refresh roster when there are no pending edits.
+            if (!Object.keys(dirty).length && currentTab === "roster") load();
+          }
+        }, 30000);
+      })();
+    </script>
+  </body>
+</html>
