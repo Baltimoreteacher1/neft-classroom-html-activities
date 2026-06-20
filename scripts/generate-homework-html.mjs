@@ -21,6 +21,7 @@ import {
   HOMEWORK_TABS_JS,
 } from "./homework-guided-notes.mjs";
 import { HOMEWORK_GAME_JS } from "./homework-games.mjs";
+import { detectVisualTopic } from "./homework-alignment.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -239,7 +240,176 @@ function lessonConfigs() {
   return out;
 }
 
-function renderProblem(it, pIdx) {
+// ---------------------------------------------------------------------------
+// Family-homework problem scaffolding
+// Every Quick Check problem gets clear step-by-step guidance, a visual model to
+// reason with, and room to show work — on screen (saved) and in print.
+// ---------------------------------------------------------------------------
+
+// Topic-aware one-liners woven into the step guide (bilingual + what to draw).
+const TOPIC_GUIDE = {
+  exponents: {
+    en: "Write the base, then multiply it by itself once for each exponent.",
+    es: "Escribe la base y multiplícala por sí misma una vez por cada exponente.",
+    draw: "Show the repeated multiplication (example: 2³ = 2 × 2 × 2).",
+    drawEs: "Muestra la multiplicación repetida (ejemplo: 2³ = 2 × 2 × 2).",
+  },
+  ratios: {
+    en: "Find the unit rate or use a ratio table to scale up or down.",
+    es: "Halla la tasa unitaria o usa una tabla de razones para escalar.",
+    draw: "Fill the ratio table — keep both rows multiplying by the same number.",
+    drawEs: "Llena la tabla de razones — multiplica ambas filas por el mismo número.",
+  },
+  area: {
+    en: "Count or multiply the units that cover the shape (base × height).",
+    es: "Cuenta o multiplica las unidades que cubren la figura (base × altura).",
+    draw: "Outline the shape on the grid and count the square units inside.",
+    drawEs: "Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.",
+  },
+  volume: {
+    en: "Multiply length × width × height to fill the box with unit cubes.",
+    es: "Multiplica largo × ancho × alto para llenar la caja con cubos.",
+    draw: "Label the prism with its length, width, and height.",
+    drawEs: "Rotula el prisma con su largo, ancho y alto.",
+  },
+  "surface-area": {
+    en: "Find the area of every face, then add them all together.",
+    es: "Halla el área de cada cara y luego súmalas todas.",
+    draw: "Label each face of the prism, then write its area.",
+    drawEs: "Rotula cada cara del prisma y escribe su área.",
+  },
+  "coordinate-plane": {
+    en: "Start at (0, 0). Move right/left for x, then up/down for y.",
+    es: "Empieza en (0, 0). Muévete a los lados para x, luego arriba/abajo para y.",
+    draw: "Plot each point on the grid and label it (x, y).",
+    drawEs: "Marca cada punto en la cuadrícula y rotúlalo (x, y).",
+  },
+  "number-line": {
+    en: "Place each number on the line — order tells you which is greater.",
+    es: "Coloca cada número en la recta — el orden dice cuál es mayor.",
+    draw: "Mark the numbers on the number line in order.",
+    drawEs: "Marca los números en la recta numérica en orden.",
+  },
+  fractions: {
+    en: "Use a common denominator, or a number line, before you compare or add.",
+    es: "Usa un denominador común, o una recta numérica, antes de comparar o sumar.",
+    draw: "Split the number line into equal parts to show the fractions.",
+    drawEs: "Divide la recta numérica en partes iguales para mostrar las fracciones.",
+  },
+  decimals: {
+    en: "Line up the decimal points and keep each digit in its place value.",
+    es: "Alinea los puntos decimales y mantén cada dígito en su valor posicional.",
+    draw: "Mark the decimals on the number line between the whole numbers.",
+    drawEs: "Marca los decimales en la recta numérica entre los enteros.",
+  },
+  equations: {
+    en: "Keep both sides equal — do the same thing to undo the operation.",
+    es: "Mantén ambos lados iguales — haz lo mismo para deshacer la operación.",
+    draw: "Picture a balance: what you do to one side, do to the other.",
+    drawEs: "Imagina una balanza: lo que haces a un lado, hazlo al otro.",
+  },
+  inequalities: {
+    en: "Solve like an equation, then shade the side that makes it true.",
+    es: "Resuelve como una ecuación y luego sombrea el lado que es verdadero.",
+    draw: "On the number line, use an open/closed circle and shade the solutions.",
+    drawEs: "En la recta, usa un círculo abierto/cerrado y sombrea las soluciones.",
+  },
+  expressions: {
+    en: "Combine like terms; substitute the value, then follow the order of operations.",
+    es: "Combina términos semejantes; sustituye el valor y sigue el orden de operaciones.",
+    draw: "Box each term so you can see what to combine.",
+    drawEs: "Encierra cada término para ver qué combinar.",
+  },
+  statistics: {
+    en: "Organize the data first, then find the center or spread you need.",
+    es: "Organiza los datos primero, luego halla el centro o la dispersión.",
+    draw: "Plot each data value above the number line.",
+    drawEs: "Marca cada valor de datos sobre la recta numérica.",
+  },
+  factors: {
+    en: "List factors or multiples in order so none are missed.",
+    es: "Enumera factores o múltiplos en orden para no olvidar ninguno.",
+    draw: "Make a factor list or a tree to break the number apart.",
+    drawEs: "Haz una lista de factores o un árbol para descomponer el número.",
+  },
+  fallback: {
+    en: "Take it one step at a time and show how you got each number.",
+    es: "Hazlo paso a paso y muestra cómo obtuviste cada número.",
+    draw: "Draw a quick model — a picture, a number line, or a table.",
+    drawEs: "Dibuja un modelo rápido — un dibujo, una recta numérica o una tabla.",
+  },
+};
+
+// Blank, annotatable manipulatives (families draw on / print). Static by design.
+const SVG_NUMBER_LINE = `<svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/>${[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => { const x = 30 + i * 33; return `<line x1="${x}" y1="28" x2="${x}" y2="40" stroke="#12355b" stroke-width="1.5"/>`; }).join("")}</svg>`;
+
+const SVG_GRID = `<svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/>${Array.from({ length: 14 }, (_, i) => `<line x1="${10 + (i + 1) * 20}" y1="10" x2="${10 + (i + 1) * 20}" y2="150" stroke="#d6e2ee" stroke-width="1"/>`).join("")}${Array.from({ length: 6 }, (_, i) => `<line x1="10" y1="${10 + (i + 1) * 20}" x2="310" y2="${10 + (i + 1) * 20}" stroke="#d6e2ee" stroke-width="1"/>`).join("")}</svg>`;
+
+const SVG_COORD = `<svg viewBox="0 0 200 200" class="hw-visual-svg" role="img" aria-label="Blank four-quadrant coordinate grid">${Array.from({ length: 9 }, (_, i) => `<line x1="${20 + i * 20}" y1="20" x2="${20 + i * 20}" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="${20 + i * 20}" x2="180" y2="${20 + i * 20}" stroke="#d6e2ee" stroke-width="1"/>`).join("")}<line x1="100" y1="16" x2="100" y2="184" stroke="#12355b" stroke-width="2"/><line x1="16" y1="100" x2="184" y2="100" stroke="#12355b" stroke-width="2"/><polygon points="100,16 96,26 104,26" fill="#12355b"/><polygon points="184,100 174,96 174,104" fill="#12355b"/></svg>`;
+
+const SVG_RATIO_TABLE = `<svg viewBox="0 0 320 110" class="hw-visual-svg" role="img" aria-label="Blank ratio table"><rect x="10" y="15" width="300" height="80" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="10" y1="55" x2="310" y2="55" stroke="#12355b" stroke-width="1.5"/>${[85, 160, 235].map((x) => `<line x1="${x}" y1="15" x2="${x}" y2="95" stroke="#12355b" stroke-width="1.5"/>`).join("")}</svg>`;
+
+const SVG_PRISM = `<svg viewBox="0 0 220 140" class="hw-visual-svg" role="img" aria-label="Rectangular prism to label"><rect x="40" y="45" width="110" height="70" fill="#ffffff" stroke="#12355b" stroke-width="2"/><polygon points="40,45 75,20 185,20 150,45" fill="#eef5f4" stroke="#12355b" stroke-width="2"/><polyline points="150,45 185,20 185,90 150,115" fill="none" stroke="#12355b" stroke-width="2"/><line x1="150" y1="115" x2="185" y2="90" stroke="#12355b" stroke-width="2"/></svg>`;
+
+const SVG_BALANCE = `<svg viewBox="0 0 220 130" class="hw-visual-svg" role="img" aria-label="Balance scale for an equation"><line x1="30" y1="40" x2="190" y2="40" stroke="#12355b" stroke-width="3"/><line x1="110" y1="40" x2="110" y2="110" stroke="#12355b" stroke-width="3"/><polygon points="90,118 130,118 110,110" fill="#12355b"/><path d="M30 40 L14 70 L46 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><path d="M190 40 L174 70 L206 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><text x="110" y="34" text-anchor="middle" font-size="16" fill="#12355b">=</text></svg>`;
+
+const SVG_EXP = `<svg viewBox="0 0 320 70" class="hw-visual-svg" role="img" aria-label="Repeated multiplication boxes">${[0, 1, 2, 3].map((i) => `<rect x="${15 + i * 78}" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/>${i < 3 ? `<text x="${72 + i * 78}" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text>` : ""}`).join("")}</svg>`;
+
+const TOPIC_VISUAL = {
+  exponents: SVG_EXP,
+  ratios: SVG_RATIO_TABLE,
+  area: SVG_GRID,
+  volume: SVG_PRISM,
+  "surface-area": SVG_PRISM,
+  "coordinate-plane": SVG_COORD,
+  "number-line": SVG_NUMBER_LINE,
+  fractions: SVG_NUMBER_LINE,
+  decimals: SVG_NUMBER_LINE,
+  equations: SVG_BALANCE,
+  inequalities: SVG_NUMBER_LINE,
+  expressions: SVG_GRID,
+  statistics: SVG_NUMBER_LINE,
+  factors: SVG_GRID,
+  fallback: SVG_GRID,
+};
+
+function topicGuide(topic) {
+  return TOPIC_GUIDE[topic] || TOPIC_GUIDE.fallback;
+}
+
+// Collapsible "How to solve it" routine — visible guidance, bilingual.
+function renderStepGuide(topic) {
+  const g = topicGuide(topic);
+  return `
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">${esc(g.draw)}</span><span class="lang-es" lang="es">${esc(g.drawEs)}</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">${esc(g.en)}</span><span class="lang-es" lang="es">${esc(g.es)}</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>`;
+}
+
+// Visual model + "show your work" space. Persists (saveState) and prints with lines.
+function renderWorkspace(topic, pIdx) {
+  const g = topicGuide(topic);
+  const visual = TOPIC_VISUAL[topic] || SVG_GRID;
+  return `
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: ${esc(g.draw)}</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: ${esc(g.drawEs)}</span></div>
+          <div class="hw-visual-frame">${visual}</div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_${pIdx}"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_${pIdx}" name="work_${pIdx}" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>`;
+}
+
+function renderProblem(it, pIdx, topic = "fallback") {
   const type = it.type;
   let problemSubtype = "";
 
@@ -582,6 +752,10 @@ function renderProblem(it, pIdx) {
   }
 
   const displayType = problemSubtype || type;
+  const computational = ["multiple-choice", "fill-table", "error-analysis", "open-response"].includes(
+    type,
+  );
+  const scaffold = renderStepGuide(topic) + (computational ? renderWorkspace(topic, pIdx) : "");
   return `
     <section class="problem-section card" id="problem_${pIdx}" data-problem-type="${type}"${problemSubtype ? ` data-problem-subtype="${problemSubtype}"` : ""}>
       <div class="problem-header-row">
@@ -590,6 +764,7 @@ function renderProblem(it, pIdx) {
       </div>
       <div class="problem-hint-row">${renderProblemHintButton(it)}</div>
       ${content}
+      ${scaffold}
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(${pIdx})" aria-label="Check answer for problem ${pIdx + 1}">
           ✓ Check This Problem / Revisar
@@ -605,10 +780,11 @@ function generateHtml(lessonId, config) {
   const vocab = config.vocabulary || [];
 
   const selected = selectProblems(config.practice || {}, config);
+  const topic = detectVisualTopic(config);
 
   const welcomeHtml = renderWelcomeBanner(config, lessonId);
   const quickCheckIntroHtml = renderQuickCheckIntro();
-  const problemsHtml = selected.map((p, idx) => renderProblem(p, idx)).join("\n");
+  const problemsHtml = selected.map((p, idx) => renderProblem(p, idx, topic)).join("\n");
 
   const tabPanels = [
     renderLearnTab(config),
@@ -1146,6 +1322,83 @@ header.homework-header h1 {
   color: var(--navy);
   margin: 0 0 18px 0;
   line-height: 1.45;
+}
+
+/* ---- Family scaffolding: step guide, visual model, show-your-work ---- */
+.hw-step-guide {
+  margin: 14px 0;
+  border: 1.5px solid var(--teal);
+  border-radius: 12px;
+  background: var(--teal-light);
+  overflow: hidden;
+}
+.hw-step-guide > summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 11px 16px;
+  font-family: "Outfit", sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--navy);
+  background: rgba(31, 166, 162, 0.16);
+}
+.hw-step-guide > summary::-webkit-details-marker { display: none; }
+.hw-step-guide > summary::after { content: " ▾"; color: var(--teal); }
+.hw-step-guide[open] > summary::after { content: " ▴"; }
+.hw-steps {
+  margin: 0;
+  padding: 12px 18px 14px 34px;
+  display: grid;
+  gap: 9px;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--navy);
+}
+.hw-steps li { padding-left: 4px; }
+.hw-steps strong { color: var(--navy); }
+
+.hw-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  margin: 14px 0 4px;
+}
+@media (min-width: 640px) {
+  .hw-workspace { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+}
+.hw-visual-caption, .hw-work-label {
+  display: block;
+  font-family: "Outfit", sans-serif;
+  font-weight: 700;
+  font-size: 13.5px;
+  color: var(--navy);
+  margin-bottom: 6px;
+}
+.hw-visual-frame {
+  border: 1.5px dashed #9bb6cf;
+  border-radius: 12px;
+  background: #fbfdff;
+  padding: 8px;
+  text-align: center;
+}
+.hw-visual-svg { width: 100%; height: auto; max-height: 180px; }
+.hw-work-input {
+  width: 100%;
+  min-height: 96px;
+  resize: vertical;
+  line-height: 28px;
+  background-color: #fbfdff;
+  background-image: repeating-linear-gradient(#fbfdff 0, #fbfdff 27px, #d6e2ee 27px, #d6e2ee 28px);
+  font-family: inherit;
+}
+
+@media print {
+  .hw-step-guide { break-inside: avoid; border-color: #888; background: #fff; }
+  .hw-step-guide > summary { background: #f0f0f0; }
+  .hw-step-guide[open] > summary::after, .hw-step-guide > summary::after { content: ""; }
+  .hw-workspace { break-inside: avoid; }
+  .hw-work-input { min-height: 130px; border: 1px solid #888; }
+  .hw-visual-frame { border-color: #888; }
 }
 
 /* Custom styled inputs, checkboxes, and select dropdowns */

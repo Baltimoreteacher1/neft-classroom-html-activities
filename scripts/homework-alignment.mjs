@@ -260,17 +260,18 @@ export function selectAlignedQuickCheckProblems(practice = {}, config = {}) {
     }))
     .sort((a, b) => b.align + b.typeBoost + b.tierBoost - (a.align + a.typeBoost + a.tierBoost));
 
+  const TARGET = 4;
   const positive = ranked.filter((r) => r.align >= 0);
-  const picked = (positive.length ? positive : ranked).slice(0, 2).map((r) => r.p);
+  const picked = (positive.length ? positive : ranked).slice(0, TARGET).map((r) => r.p);
 
-  if (picked.length < 2) {
+  if (picked.length < TARGET) {
     for (const p of pool) {
-      if (picked.length >= 2) break;
+      if (picked.length >= TARGET) break;
       if (!picked.includes(p)) picked.push(p);
     }
   }
 
-  return picked.slice(0, 2);
+  return picked.slice(0, TARGET);
 }
 
 export function detectVisualMismatch(config, html) {
