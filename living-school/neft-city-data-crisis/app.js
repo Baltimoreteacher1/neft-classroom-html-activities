@@ -238,6 +238,66 @@
       olWhichRight: "✅ Yes! The mean jumped (11.3 → 12.2) but the median barely moved. Outliers pull the mean more.",
       olWhichWrong: "Look again: compare how much each value changed.",
       olDone: "🌟 Enrichment complete! You showed how an outlier affects the mean more than the median.",
+      // --- sort feedback ---
+      sortPlaceAll1: "Place all ", sortPlaceAll2: " numbers first. You have ",
+      sortPerfect: "✅ Perfect! The data is sorted least → greatest. Calculations unlocked!",
+      sortCheckOrder: "Check the order. The numbers should go from least to greatest. Look at the highlighted spot.",
+      // --- calc feedback ---
+      calcTypeFirst: "Type your answer first.",
+      calcCorrect: "✅ Correct! Nice work.",
+      calcSolvedFb: "✓ Correct!",
+      calcHintOpen: " A hint is now open below. 💡",
+      // mean misses
+      calcMeanTotal: "That's the total. Now divide by the number of values (20).",
+      calcMeanDecimal: "Close! Did you forget the decimal? Try dividing more exactly.",
+      calcMeanGeneric: "Not yet. Mean = total ÷ number of values. Total is 226.",
+      // median misses
+      calcMedianMean: "That's the mean, not the median. The median is the middle of the sorted list.",
+      calcMedianClose: "Close. Look again at the 10th and 11th numbers in the sorted list.",
+      calcMedianGeneric: "Not yet. The median is the middle value after sorting.",
+      // mode misses
+      calcModeOne: "There is more than one mode here. Look for every number that ties for most.",
+      calcModeGeneric: "Not yet. Find every number that appears the most times.",
+      // range misses
+      calcRangeAdd: "That looks like greatest + least. Range uses subtraction: greatest − least.",
+      calcRangeGeneric: "Not yet. Range = greatest − least (17 − 7).",
+      calcGenericMiss: "Not quite — try again.",
+      // --- graph feedback ---
+      graphMatch: "✅ Your histogram matches the data! Interpretation questions unlocked.",
+      graphCheckRed: "Check the red bars. Count again from the sorted data.",
+      graphTotal1: "Your bars add up to ", graphTotal2: ", but there are 20 visitors. Recount each interval.",
+      // --- interp feedback ---
+      interpGreat: "✅ Great reading of the data! The Decision Room is open.",
+      interpScore1: "You have ", interpScore2: " of ", interpScore3: " multiple-choice answers correct.",
+      interpNeedSentence: " Also write at least one full sentence in the response box.",
+      interpTryAgain: " Look at the highlighted answers and try again.",
+      interpWriteQ: "In one sentence: what is the biggest thing your graph shows? (written response)",
+      interpWritePlaceholder: "Type one sentence about your graph…",
+      // --- decision feedback ---
+      decPick: "Pick a recommendation (A, B, C, or D) first.",
+      decWords1: "Write at least 18 words of evidence. You have ", decWords2: ".",
+      decConvinced: "✅ The city council is convinced! Heading to City Reaction…",
+      decRevise: "🏛️ The city council is not convinced yet. Look back at the data and revise your recommendation. (Hint: the data shows medium waits at the busiest times — adding capacity helps.)",
+      // --- news feedback ---
+      newsWords1: "Write at least 35 words. You have ", newsWords2: ".",
+      newsPublished: "✅ Published! Generating your Proof-of-Learning Passport…",
+      // --- XP toasts ---
+      xpDataSorted: "Data sorted!",
+      xpSolved: " solved!",
+      xpHistogram: "Histogram built!",
+      xpInterpreted: "Graph interpreted!",
+      xpAccepted: "Recommendation accepted!",
+      xpRevisionNeeded: "Revision needed",
+      xpNewsPublished: "News published!",
+      // --- nav / misc ---
+      lockedStep: "🔒 Finish the current step first!",
+      resetConfirm: "Reset the whole mission? This clears all your work on this device.",
+      downloaded: "⬇️ Progress downloaded",
+      wordsLabel: " words", needLabel: " (need ", needClose: ")",
+      hintBtn: "Hint",
+      chipPlaced1: ", placed. Click to remove.", chipPool1: ". Click to place in sorted line.",
+      barFor1: "Bar for ", barFor2: " minutes",
+      decrease1: "Decrease ", decrease2: " bar", increase1: "Increase ", increase2: " bar",
     },
     es: {
       startReady: "¡Listo! Presiona el botón para comenzar.",
@@ -262,6 +322,66 @@
       olWhichRight: "✅ ¡Sí! La media saltó (11.3 → 12.2) pero la mediana casi no cambió. Los valores atípicos jalan más a la media.",
       olWhichWrong: "Mira otra vez: compara cuánto cambió cada valor.",
       olDone: "🌟 ¡Ampliación completa! Mostraste cómo un valor atípico afecta más a la media que a la mediana.",
+      // --- sort feedback ---
+      sortPlaceAll1: "Primero coloca los ", sortPlaceAll2: " números. Tienes ",
+      sortPerfect: "✅ ¡Perfecto! Los datos están ordenados de menor → mayor. ¡Cálculos desbloqueados!",
+      sortCheckOrder: "Revisa el orden. Los números deben ir de menor a mayor. Mira el lugar resaltado.",
+      // --- calc feedback ---
+      calcTypeFirst: "Escribe tu respuesta primero.",
+      calcCorrect: "✅ ¡Correcto! Buen trabajo.",
+      calcSolvedFb: "✓ ¡Correcto!",
+      calcHintOpen: " Ahora hay una pista abierta abajo. 💡",
+      // mean misses
+      calcMeanTotal: "Ese es el total. Ahora divide entre el número de valores (20).",
+      calcMeanDecimal: "¡Casi! ¿Olvidaste el decimal? Intenta dividir con más exactitud.",
+      calcMeanGeneric: "Aún no. Media = total ÷ número de valores. El total es 226.",
+      // median misses
+      calcMedianMean: "Esa es la media, no la mediana. La mediana es el medio de la lista ordenada.",
+      calcMedianClose: "Casi. Mira otra vez el 10.º y el 11.º número de la lista ordenada.",
+      calcMedianGeneric: "Aún no. La mediana es el valor del medio después de ordenar.",
+      // mode misses
+      calcModeOne: "Aquí hay más de una moda. Busca cada número que empate por aparecer más veces.",
+      calcModeGeneric: "Aún no. Halla cada número que aparece más veces.",
+      // range misses
+      calcRangeAdd: "Eso parece mayor + menor. El rango usa resta: mayor − menor.",
+      calcRangeGeneric: "Aún no. Rango = mayor − menor (17 − 7).",
+      calcGenericMiss: "No del todo — inténtalo otra vez.",
+      // --- graph feedback ---
+      graphMatch: "✅ ¡Tu histograma coincide con los datos! Preguntas de interpretación desbloqueadas.",
+      graphCheckRed: "Revisa las barras rojas. Cuenta otra vez con los datos ordenados.",
+      graphTotal1: "Tus barras suman ", graphTotal2: ", pero hay 20 visitantes. Vuelve a contar cada intervalo.",
+      // --- interp feedback ---
+      interpGreat: "✅ ¡Buena lectura de los datos! La Sala de Decisiones está abierta.",
+      interpScore1: "Tienes ", interpScore2: " de ", interpScore3: " respuestas de opción múltiple correctas.",
+      interpNeedSentence: " También escribe al menos una oración completa en el cuadro de respuesta.",
+      interpTryAgain: " Mira las respuestas resaltadas e inténtalo otra vez.",
+      interpWriteQ: "En una oración: ¿qué es lo más importante que muestra tu gráfica? (respuesta escrita)",
+      interpWritePlaceholder: "Escribe una oración sobre tu gráfica…",
+      // --- decision feedback ---
+      decPick: "Primero elige una recomendación (A, B, C o D).",
+      decWords1: "Escribe al menos 18 palabras de evidencia. Tienes ", decWords2: ".",
+      decConvinced: "✅ ¡El concejo de la ciudad está convencido! Pasando a la Reacción de la Ciudad…",
+      decRevise: "🏛️ El concejo de la ciudad aún no está convencido. Vuelve a mirar los datos y revisa tu recomendación. (Pista: los datos muestran esperas medianas en las horas más concurridas — agregar capacidad ayuda.)",
+      // --- news feedback ---
+      newsWords1: "Escribe al menos 35 palabras. Tienes ", newsWords2: ".",
+      newsPublished: "✅ ¡Publicado! Generando tu Pasaporte de Aprendizaje…",
+      // --- XP toasts ---
+      xpDataSorted: "¡Datos ordenados!",
+      xpSolved: " resuelto!",
+      xpHistogram: "¡Histograma construido!",
+      xpInterpreted: "¡Gráfica interpretada!",
+      xpAccepted: "¡Recomendación aceptada!",
+      xpRevisionNeeded: "Se necesita revisión",
+      xpNewsPublished: "¡Noticia publicada!",
+      // --- nav / misc ---
+      lockedStep: "🔒 ¡Termina el paso actual primero!",
+      resetConfirm: "¿Reiniciar toda la misión? Esto borra todo tu trabajo en este dispositivo.",
+      downloaded: "⬇️ Progreso descargado",
+      wordsLabel: " palabras", needLabel: " (faltan ", needClose: ")",
+      hintBtn: "Pista",
+      chipPlaced1: ", colocado. Haz clic para quitar.", chipPool1: ". Haz clic para colocar en la fila ordenada.",
+      barFor1: "Barra de ", barFor2: " minutos",
+      decrease1: "Bajar la barra de ", decrease2: "", increase1: "Subir la barra de ", increase2: "",
     },
   };
 
@@ -348,10 +468,14 @@
     // Repaint JS-generated, language-aware content (all read from state -> idempotent).
     buildVocab();
     renderBriefing();
+    renderSort();
     renderCalc();
     renderGraph();
     renderDecisionStarters();
     renderNewsSupports();
+    // refresh word-count labels so "words / need N" follows the language
+    if ($("#decisionCount")) updateCount("#decisionCount", state.decision.text, 18);
+    if ($("#newsCount")) updateCount("#newsCount", state.news.text, 35);
     if (state.current === "reaction") renderReaction();
     if (state.current === "passport") renderPassport();
   }
@@ -389,7 +513,7 @@
   function go(stepId) {
     const idx = stepIndex(stepId);
     if (idx > state.maxStep) {
-      toast("🔒 Finish the current step first!");
+      toast(t("lockedStep"));
       return;
     }
     state.current = stepId;
@@ -535,7 +659,7 @@
     b.type = "button";
     b.textContent = n;
     b.setAttribute("role", "listitem");
-    b.setAttribute("aria-label", inTray ? `${n}, placed. Click to remove.` : `${n}. Click to place in sorted line.`);
+    b.setAttribute("aria-label", inTray ? `${n}${t("chipPlaced1")}` : `${n}${t("chipPool1")}`);
     return b;
   }
 
@@ -543,23 +667,23 @@
     const fb = $("#sortFeedback");
     const tray = state.sort.tray;
     if (tray.length < DATASET.length) {
-      setFeedback(fb, "no", `Place all ${DATASET.length} numbers first. You have ${tray.length}.`);
+      setFeedback(fb, "no", `${t("sortPlaceAll1")}${DATASET.length}${t("sortPlaceAll2")}${tray.length}.`);
       return;
     }
     const correct = tray.every((n, i) => n === SORTED[i]);
     if (correct) {
       state.sort.solved = true;
       save();
-      setFeedback(fb, "ok", "✅ Perfect! The data is sorted least → greatest. Calculations unlocked!");
+      setFeedback(fb, "ok", t("sortPerfect"));
       markSortSolved();
-      awardXp("Data sorted!");
+      awardXp(t("xpDataSorted"));
     } else {
       // find first out-of-order index for targeted hint
       let firstBad = tray.findIndex((n, i) => n !== SORTED[i]);
       $$("#sortTray .num-chip").forEach((c, i) => {
         c.classList.toggle("bad", i >= firstBad);
       });
-      setFeedback(fb, "no", "Check the order. The numbers should go from least to greatest. Look at the highlighted spot.");
+      setFeedback(fb, "no", t("sortCheckOrder"));
     }
   }
 
@@ -573,11 +697,12 @@
 
   /* ============================ 3. DATA LAB — CALCULATIONS ============================ */
   const CALC_DEFS = [
-    { key: "mean", nameKey: "meanName", placeholder: "e.g. 11.3", hint: "Add all 20 numbers (total = 226). Then divide: 226 ÷ 20.", aria: "Mean answer" },
-    { key: "median", nameKey: "medianName", placeholder: "e.g. 11", hint: "With 20 sorted numbers, look at the 10th and 11th. They are both 11, so the median is 11.", aria: "Median answer" },
-    { key: "mode", nameKey: "modeName", placeholder: "e.g. 9, 10, 12", hint: "Count each number. 9 appears 3 times, 10 appears 3 times, 12 appears 3 times. Three modes!", aria: "Mode answer" },
-    { key: "range", nameKey: "rangeName", placeholder: "e.g. 10", hint: "Greatest − least = 17 − 7.", aria: "Range answer" },
+    { key: "mean", nameKey: "meanName", placeholder: "e.g. 11.3", hint: "Add all 20 numbers (total = 226). Then divide: 226 ÷ 20.", hintEs: "Suma los 20 números (total = 226). Luego divide: 226 ÷ 20.", aria: "Mean answer" },
+    { key: "median", nameKey: "medianName", placeholder: "e.g. 11", hint: "With 20 sorted numbers, look at the 10th and 11th. They are both 11, so the median is 11.", hintEs: "Con 20 números ordenados, mira el 10.º y el 11.º. Ambos son 11, así que la mediana es 11.", aria: "Median answer" },
+    { key: "mode", nameKey: "modeName", placeholder: "e.g. 9, 10, 12", hint: "Count each number. 9 appears 3 times, 10 appears 3 times, 12 appears 3 times. Three modes!", hintEs: "Cuenta cada número. El 9 aparece 3 veces, el 10 aparece 3 veces, el 12 aparece 3 veces. ¡Tres modas!", aria: "Mode answer" },
+    { key: "range", nameKey: "rangeName", placeholder: "e.g. 10", hint: "Greatest − least = 17 − 7.", hintEs: "Mayor − menor = 17 − 7.", aria: "Range answer" },
   ];
+  const calcHint = (def) => (state.lang === "es" ? def.hintEs : def.hint);
 
   function renderCalc() {
     // keep the Step-2 lock tag in sync with language + solved state
@@ -601,10 +726,10 @@
           <input type="text" inputmode="decimal" id="input-${def.key}" value="${escapeAttr(c.value)}"
             placeholder="${def.placeholder}" aria-label="${def.aria}" ${c.solved ? "disabled" : ""} />
           <button class="btn-primary" type="button" id="check-${def.key}" ${c.solved ? "disabled" : ""}>${t("check")}</button>
-          <button class="btn-hint" type="button" id="hint-${def.key}">💡 Hint</button>
+          <button class="btn-hint" type="button" id="hint-${def.key}">💡 ${t("hintBtn")}</button>
         </div>
         <p class="feedback" id="fb-${def.key}" role="status" aria-live="polite"></p>
-        <div class="hintcard ${c.hint ? "show" : ""}" id="hintcard-${def.key}">💡 ${def.hint}</div>
+        <div class="hintcard ${c.hint ? "show" : ""}" id="hintcard-${def.key}">💡 ${calcHint(def)}</div>
       `;
       grid.appendChild(row);
 
@@ -617,7 +742,7 @@
         $(`#hintcard-${def.key}`).classList.add("show");
       });
 
-      if (c.solved) setFeedback($(`#fb-${def.key}`), "ok", "✓ Correct!");
+      if (c.solved) setFeedback($(`#fb-${def.key}`), "ok", t("calcSolvedFb"));
     });
     refreshDataLabGate();
   }
@@ -627,18 +752,18 @@
     const fb = $(`#fb-${key}`);
     const raw = $(`#input-${key}`).value.trim();
     c.value = raw;
-    if (raw === "") { setFeedback(fb, "no", "Type your answer first."); save(); return; }
+    if (raw === "") { setFeedback(fb, "no", t("calcTypeFirst")); save(); return; }
 
     const ok = validateCalc(key, raw);
     if (ok) {
       c.solved = true;
       save();
-      setFeedback(fb, "ok", "✅ Correct! Nice work.");
+      setFeedback(fb, "ok", t("calcCorrect"));
       $(`#state-${key}`).textContent = t("solved");
       $(`#state-${key}`).classList.add("solved");
       $(`#input-${key}`).disabled = true;
       $(`#check-${key}`).disabled = true;
-      awardXp(`${t(CALC_DEFS.find((d) => d.key === key).nameKey).split(" ")[0]} solved!`);
+      awardXp(`${t(CALC_DEFS.find((d) => d.key === key).nameKey).split(" ")[0]}${t("xpSolved")}`);
       refreshDataLabGate();
     } else {
       c.attempts++;
@@ -647,7 +772,7 @@
       if (c.attempts >= 2) {
         c.hint = true;
         $(`#hintcard-${key}`).classList.add("show");
-        setFeedback(fb, "tip", `${msg} A hint is now open below. 💡`);
+        setFeedback(fb, "tip", `${msg}${t("calcHintOpen")}`);
       } else {
         setFeedback(fb, "no", msg);
       }
@@ -670,25 +795,25 @@
   function calcMissMessage(key, raw) {
     const v = parseFloat(raw.replace(/,/g, ".").replace(/[^0-9.\-]/g, ""));
     if (key === "mean") {
-      if (Math.abs(v - 226) < 0.5) return "That's the total. Now divide by the number of values (20).";
-      if (Math.abs(v - 11) < 0.001) return "Close! Did you forget the decimal? Try dividing more exactly.";
-      return "Not yet. Mean = total ÷ number of values. Total is 226.";
+      if (Math.abs(v - 226) < 0.5) return t("calcMeanTotal");
+      if (Math.abs(v - 11) < 0.001) return t("calcMeanDecimal");
+      return t("calcMeanGeneric");
     }
     if (key === "median") {
-      if (Math.abs(v - 11.3) < 0.05) return "That's the mean, not the median. The median is the middle of the sorted list.";
-      if (Math.abs(v - 10) < 0.001) return "Close. Look again at the 10th and 11th numbers in the sorted list.";
-      return "Not yet. The median is the middle value after sorting.";
+      if (Math.abs(v - 11.3) < 0.05) return t("calcMedianMean");
+      if (Math.abs(v - 10) < 0.001) return t("calcMedianClose");
+      return t("calcMedianGeneric");
     }
     if (key === "mode") {
       const nums = (raw.match(/\d+/g) || []).map(Number);
-      if (nums.length === 1) return "There is more than one mode here. Look for every number that ties for most.";
-      return "Not yet. Find every number that appears the most times.";
+      if (nums.length === 1) return t("calcModeOne");
+      return t("calcModeGeneric");
     }
     if (key === "range") {
-      if (Math.abs(v - 24) < 0.001) return "That looks like greatest + least. Range uses subtraction: greatest − least.";
-      return "Not yet. Range = greatest − least (17 − 7).";
+      if (Math.abs(v - 24) < 0.001) return t("calcRangeAdd");
+      return t("calcRangeGeneric");
     }
-    return "Not quite — try again.";
+    return t("calcGenericMiss");
   }
 
   function refreshDataLabGate() {
@@ -707,12 +832,12 @@
       col.className = "hbar-col";
       col.innerHTML = `
         <div class="hbar-track" id="track-${i}" role="slider" tabindex="0"
-             aria-label="Bar for ${label} minutes" aria-valuemin="0" aria-valuemax="${HISTO.max}" aria-valuenow="${state.graph.bars[i]}">
+             aria-label="${t("barFor1")}${label}${t("barFor2")}" aria-valuemin="0" aria-valuemax="${HISTO.max}" aria-valuenow="${state.graph.bars[i]}">
           <div class="hbar" id="bar-${i}"><span class="hbar-val" id="barval-${i}">${state.graph.bars[i]}</span></div>
         </div>
         <div class="hbar-controls">
-          <button class="hbar-btn" type="button" id="minus-${i}" aria-label="Decrease ${label} bar">−</button>
-          <button class="hbar-btn" type="button" id="plus-${i}" aria-label="Increase ${label} bar">+</button>
+          <button class="hbar-btn" type="button" id="minus-${i}" aria-label="${t("decrease1")}${label}${t("decrease2")}">−</button>
+          <button class="hbar-btn" type="button" id="plus-${i}" aria-label="${t("increase1")}${label}${t("increase2")}">+</button>
         </div>
         <span class="hbar-label">${label}</span>
         <span class="hbar-tick">${t("minutes")}</span>
@@ -774,56 +899,77 @@
     if (allRight) {
       state.graph.solved = true;
       save();
-      setFeedback(fb, "ok", "✅ Your histogram matches the data! Interpretation questions unlocked.");
+      setFeedback(fb, "ok", t("graphMatch"));
       $("#interpBlock").classList.remove("locked");
       $("#interpLockTag").textContent = t("unlocked");
       $("#interpLockTag").classList.add("unlocked");
-      awardXp("Histogram built!");
+      awardXp(t("xpHistogram"));
     } else {
       const total = state.graph.bars.reduce((a, b) => a + b, 0);
-      let hint = "Check the red bars. Count again from the sorted data.";
-      if (total !== 20) hint = `Your bars add up to ${total}, but there are 20 visitors. Recount each interval.`;
+      let hint = t("graphCheckRed");
+      if (total !== 20) hint = `${t("graphTotal1")}${total}${t("graphTotal2")}`;
       setFeedback(fb, "no", hint);
     }
   }
 
   /* ---- interpretation ---- */
+  // Options carry a stable key plus en/es labels; matching compares the key,
+  // never the display text, so it works in either language.
   const INTERP = [
     {
-      id: "most", q: "Which interval has the most visitors?",
-      opts: ["7–9", "10–12", "13–15", "16–18"], answer: "10–12",
+      id: "most", qEn: "Which interval has the most visitors?", qEs: "¿Qué intervalo tiene más visitantes?",
+      opts: [
+        { key: "a", en: "7–9", es: "7–9" },
+        { key: "b", en: "10–12", es: "10–12" },
+        { key: "c", en: "13–15", es: "13–15" },
+        { key: "d", en: "16–18", es: "16–18" },
+      ], answerKey: "b",
     },
     {
-      id: "tell", q: "What does this tell us about the wait times?",
-      opts: ["Most people waited a medium amount of time", "Everyone waited the same", "Nobody waited long"], answer: "Most people waited a medium amount of time",
+      id: "tell", qEn: "What does this tell us about the wait times?", qEs: "¿Qué nos dice esto sobre los tiempos de espera?",
+      opts: [
+        { key: "a", en: "Most people waited a medium amount of time", es: "La mayoría esperó un tiempo mediano" },
+        { key: "b", en: "Everyone waited the same", es: "Todos esperaron lo mismo" },
+        { key: "c", en: "Nobody waited long", es: "Nadie esperó mucho" },
+      ], answerKey: "a",
     },
     {
-      id: "length", q: "Are most waits short, medium, or long?",
-      opts: ["Short", "Medium", "Long"], answer: "Medium",
+      id: "length", qEn: "Are most waits short, medium, or long?", qEs: "¿La mayoría de las esperas son cortas, medianas o largas?",
+      opts: [
+        { key: "a", en: "Short", es: "Cortas" },
+        { key: "b", en: "Medium", es: "Medianas" },
+        { key: "c", en: "Long", es: "Largas" },
+      ], answerKey: "b",
     },
     {
-      id: "attention", q: "What should the city pay attention to?",
-      opts: ["The long lines at the busiest times", "Closing the arena", "Nothing at all"], answer: "The long lines at the busiest times",
+      id: "attention", qEn: "What should the city pay attention to?", qEs: "¿A qué debe prestar atención la ciudad?",
+      opts: [
+        { key: "a", en: "The long lines at the busiest times", es: "Las filas largas en las horas más concurridas" },
+        { key: "b", en: "Closing the arena", es: "Cerrar el estadio" },
+        { key: "c", en: "Nothing at all", es: "Nada en absoluto" },
+      ], answerKey: "a",
     },
   ];
+  const interpQ = (q) => (state.lang === "es" ? q.qEs : q.qEn);
+  const optLabel = (opt) => (state.lang === "es" ? opt.es : opt.en);
 
   function renderInterp() {
     const wrap = $("#interpQuestions");
-    if (wrap.dataset.built === "1") { restoreInterpUI(); return; }
     wrap.innerHTML = "";
     INTERP.forEach((q) => {
       const div = document.createElement("div");
       div.className = "interp-q";
-      div.innerHTML = `<p>${q.q}</p><div class="opt-row" id="opts-${q.id}"></div>`;
+      div.innerHTML = `<p>${interpQ(q)}</p><div class="opt-row" id="opts-${q.id}"></div>`;
       wrap.appendChild(div);
       q.opts.forEach((opt) => {
         const b = document.createElement("button");
         b.className = "opt";
         b.type = "button";
-        b.textContent = opt;
-        b.setAttribute("aria-pressed", String(state.interp.answers[q.id] === opt));
+        b.dataset.key = opt.key;
+        b.textContent = optLabel(opt);
+        b.setAttribute("aria-pressed", String(state.interp.answers[q.id] === opt.key));
         b.addEventListener("click", () => {
-          state.interp.answers[q.id] = opt;
+          state.interp.answers[q.id] = opt.key;
           $$(`#opts-${q.id} .opt`).forEach((o) => o.setAttribute("aria-pressed", String(o === b)));
           save();
         });
@@ -833,27 +979,16 @@
     // short written response
     const writeDiv = document.createElement("div");
     writeDiv.className = "interp-q";
-    writeDiv.innerHTML = `<p>In one sentence: what is the biggest thing your graph shows? (written response)</p>`;
+    writeDiv.innerHTML = `<p>${t("interpWriteQ")}</p>`;
     const ta = document.createElement("textarea");
     ta.className = "writebox";
     ta.rows = 2;
     ta.id = "interpWritten";
-    ta.placeholder = "Type one sentence about your graph…";
+    ta.placeholder = t("interpWritePlaceholder");
     ta.value = state.interp.written;
     ta.addEventListener("input", (e) => { state.interp.written = e.target.value; save(); });
     writeDiv.appendChild(ta);
     wrap.appendChild(writeDiv);
-    wrap.dataset.built = "1";
-  }
-
-  function restoreInterpUI() {
-    INTERP.forEach((q) => {
-      $$(`#opts-${q.id} .opt`).forEach((o) =>
-        o.setAttribute("aria-pressed", String(state.interp.answers[q.id] === o.textContent))
-      );
-    });
-    const ta = $("#interpWritten");
-    if (ta) ta.value = state.interp.written;
   }
 
   function checkInterp() {
@@ -861,26 +996,26 @@
     let correctCount = 0;
     INTERP.forEach((q) => {
       const picked = state.interp.answers[q.id];
-      const right = picked === q.answer;
+      const right = picked === q.answerKey;
       if (right) correctCount++;
       $$(`#opts-${q.id} .opt`).forEach((o) => {
         o.classList.remove("correct", "wrong");
-        if (o.textContent === picked) o.classList.add(right ? "correct" : "wrong");
-        if (o.textContent === q.answer) o.classList.add("correct");
+        if (o.dataset.key === picked) o.classList.add(right ? "correct" : "wrong");
+        if (o.dataset.key === q.answerKey) o.classList.add("correct");
       });
     });
     const written = wordCount(state.interp.written) >= 3;
     if (correctCount === INTERP.length && written) {
       state.interp.solved = true;
       save();
-      setFeedback(fb, "ok", "✅ Great reading of the data! The Decision Room is open.");
+      setFeedback(fb, "ok", t("interpGreat"));
       $("#toDecisionBtn").disabled = false;
       unlock("decision");
-      awardXp("Graph interpreted!");
+      awardXp(t("xpInterpreted"));
     } else {
-      let msg = `You have ${correctCount} of ${INTERP.length} multiple-choice answers correct.`;
-      if (!written) msg += " Also write at least one full sentence in the response box.";
-      else msg += " Look at the highlighted answers and try again.";
+      let msg = `${t("interpScore1")}${correctCount}${t("interpScore2")}${INTERP.length}${t("interpScore3")}`;
+      if (!written) msg += t("interpNeedSentence");
+      else msg += t("interpTryAgain");
       setFeedback(fb, "no", msg);
     }
   }
@@ -934,29 +1069,29 @@
   function submitDecision() {
     const fb = $("#decisionFeedback");
     const wc = wordCount(state.decision.text);
-    if (!state.decision.choice) { setFeedback(fb, "no", "Pick a recommendation (A, B, C, or D) first."); return; }
-    if (wc < 18) { setFeedback(fb, "no", `Write at least 18 words of evidence. You have ${wc}.`); return; }
+    if (!state.decision.choice) { setFeedback(fb, "no", t("decPick")); return; }
+    if (wc < 18) { setFeedback(fb, "no", `${t("decWords1")}${wc}${t("decWords2")}`); return; }
 
     state.decision.submitted = true;
 
     if (state.decision.choice === BEST_CHOICE) {
       state.decision.accepted = true;
       save();
-      setFeedback(fb, "ok", "✅ The city council is convinced! Heading to City Reaction…");
+      setFeedback(fb, "ok", t("decConvinced"));
       computeScore();
       unlock("reaction");
-      awardXp("Recommendation accepted!");
+      awardXp(t("xpAccepted"));
       setTimeout(() => go("reaction"), 700);
     } else {
       // revision event
       state.decision.accepted = false;
       state.decision.revisions++;
       save();
-      setFeedback(fb, "no", "🏛️ The city council is not convinced yet. Look back at the data and revise your recommendation. (Hint: the data shows medium waits at the busiest times — adding capacity helps.)");
+      setFeedback(fb, "no", t("decRevise"));
       // still let them see a (revise) reaction so the loop is visible
       computeScore();
       unlock("reaction");
-      awardXp("Revision needed");
+      awardXp(t("xpRevisionNeeded"));
       setTimeout(() => go("reaction"), 900);
     }
   }
@@ -1180,12 +1315,12 @@
   function submitNews() {
     const fb = $("#newsFeedback");
     const wc = wordCount(state.news.text);
-    if (wc < 35) { setFeedback(fb, "no", `Write at least 35 words. You have ${wc}.`); return; }
+    if (wc < 35) { setFeedback(fb, "no", `${t("newsWords1")}${wc}${t("newsWords2")}`); return; }
     state.news.submitted = true;
     save();
-    setFeedback(fb, "ok", "✅ Published! Generating your Proof-of-Learning Passport…");
+    setFeedback(fb, "ok", t("newsPublished"));
     unlock("passport");
-    awardXp("News published!");
+    awardXp(t("xpNewsPublished"));
     setTimeout(() => go("passport"), 700);
   }
 
@@ -1300,11 +1435,11 @@
     a.remove();
     // Delay revocation so slower browsers (Firefox/Safari/mobile) finish the fetch.
     setTimeout(() => URL.revokeObjectURL(url), 100);
-    toast("⬇️ Progress downloaded");
+    toast(t("downloaded"));
   }
 
   function resetMission() {
-    if (!confirm("Reset the whole mission? This clears all your work on this device.")) return;
+    if (!confirm(t("resetConfirm"))) return;
     try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
     state = defaultState();
     save();
@@ -1454,7 +1589,7 @@
   function updateCount(sel, text, min) {
     const el = $(sel);
     const n = wordCount(text);
-    el.textContent = `${n} words` + (n >= min ? " ✓" : ` (need ${min})`);
+    el.textContent = `${n}${t("wordsLabel")}` + (n >= min ? " ✓" : `${t("needLabel")}${min}${t("needClose")}`);
     el.classList.toggle("ok", n >= min);
   }
   function insertText(taSel, snippet, stateKey, field) {

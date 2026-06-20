@@ -263,6 +263,82 @@
       olWhichRight: "✅ Yes! The points share the same y, so the distance is |5| + |−5| = 10 units.",
       olWhichWrong: "Look again: both points have the same y, and they sit on opposite sides of the y-axis.",
       olDone: "🌟 Enrichment complete! You reflected across the y-axis and measured distance with absolute value.",
+
+      // --- toasts / nav ---
+      finishFirst: "🔒 Finish the current step first!",
+      ariaLocked: " (locked)",
+      hint: "💡 Hint",
+      correctShort: "✓ Correct!",
+      defaultName: "Student",
+      defaultRole: "City Team",
+
+      // --- XP toasts ---
+      xpOrdered: "Integers ordered!",
+      xpCompared: "Comparison solved!",
+      xpPlotted: "Grid plotted!",
+      xpReflected: "Reflected & measured!",
+      xpRecAccepted: "Recommendation accepted!",
+      xpRevision: "Revision needed",
+      xpNews: "News published!",
+      toastDownloaded: "⬇️ Progress downloaded",
+
+      // --- sort (integer ordering) ---
+      sortPlaceAll1: "Place all ", sortPlaceAll2: " elevations first. You have ",
+      sortOk: "✅ Perfect! The elevations are ordered least → greatest. Compare questions unlocked!",
+      sortBad: "Check the order. Remember: more negative means lower. The smallest number goes first.",
+      chipPlaced: ", placed. Click to remove.",
+      chipPool: ". Click to place in ordered line.",
+
+      // --- compare (calc) ---
+      calcTypeFirst: "Type your answer first.",
+      calcOk: "✅ Correct! Nice work.",
+      calcHintOpen: " A hint is now open below. 💡",
+      missLowerNeg2: "Careful: −2 is closer to zero, so it is higher. −8 is deeper below sea level.",
+      missLower: "Not yet. The lower number is the one further below sea level (more negative).",
+      missLowestHigh: "That is the highest, not the lowest. The lowest is the most negative number.",
+      missLowestZero: "0 is sea level, not the lowest. Look for the most negative number.",
+      missLowest: "Not yet. The lowest elevation is the most negative number: look at the start of your ordered line.",
+      missHighestLow: "That is the lowest, not the highest. The highest is the greatest number.",
+      missHighest: "Not yet. The highest elevation is the greatest number: look at the end of your ordered line.",
+      missGeneric: "Not quite — try again.",
+      hintLower: "−8 is further below sea level than −2, so −8 is the lower number.",
+      hintLowest: "The lowest elevation is the most negative number in your ordered line: −8.",
+      hintHighest: "The highest elevation is the greatest number, at the end of your ordered line: 7.",
+      ariaLower: "Lower of -8 and -2",
+      ariaLowest: "Lowest elevation",
+      ariaHighest: "Highest elevation",
+
+      // --- grid plotting ---
+      gridPlaceAll1: "Place all ", gridPlaceAll2: " sensors first. You have ",
+      gridOk: "✅ Every sensor is in the right spot! Reflect & measure unlocked.",
+      gridBad: "Some pins are off. Check the red pins: count x left/right first, then y up/down.",
+      sensorPlaceAt1: "place at (", sensorPlaceAt2: ")",
+      sensorPlaced: "✓ placed ",
+
+      // --- reflect & distance ---
+      interpReflectX: 'Reflect S1 (3, 2) across the <strong>x-axis</strong>. New point = ?',
+      interpReflectY: 'Reflect S1 (3, 2) across the <strong>y-axis</strong>. New point = ?',
+      interpDistance: 'A flood line runs straight down from S1 (3, 2) to a drain at (3, −5). What is the <strong>distance</strong> between them? Use absolute value: |2 − (−5)|.',
+      ariaRxX: "Reflect across x-axis, new x", ariaRxY: "Reflect across x-axis, new y",
+      ariaRyX: "Reflect across y-axis, new x", ariaRyY: "Reflect across y-axis, new y",
+      ariaDist: "Distance in units",
+      interpOk: "✅ Reflections and distance are correct! The Decision Room is open.",
+      interpIssueX: "Across the x-axis, keep x the same and flip the sign of y: (3, 2) → (3, −2).",
+      interpIssueY: "Across the y-axis, keep y the same and flip the sign of x: (3, 2) → (−3, 2).",
+      interpIssueDist: "Distance: |2 − (−5)| = |7| = 7 units.",
+
+      // --- decision ---
+      decPickFirst: "Pick a recommendation (A, B, C, or D) first.",
+      decWords1: "Write at least 18 words of evidence. You have ", decWords2: ".",
+      decAccepted: "✅ The city council is convinced! Heading to City Reaction…",
+      decRevise: "🏛️ The city council is not convinced yet. Look back at the elevations and revise. (Hint: water collects at the LOWEST point — elevation −8.)",
+
+      // --- news ---
+      newsWords1: "Write at least 35 words. You have ", newsWords2: ".",
+      newsPublished: "✅ Published! Generating your Proof-of-Learning Passport…",
+
+      // --- reset ---
+      resetConfirm: "Reset the whole mission? This clears all your work on this device.",
     },
     es: {
       startReady: "¡Listo! Presiona el botón para comenzar.",
@@ -291,6 +367,82 @@
       olWhichRight: "✅ ¡Sí! Los puntos comparten la misma y, así que la distancia es |5| + |−5| = 10 unidades.",
       olWhichWrong: "Mira otra vez: ambos puntos tienen la misma y y están en lados opuestos del eje y.",
       olDone: "🌟 ¡Ampliación completa! Reflejaste en el eje y y mediste la distancia con valor absoluto.",
+
+      // --- toasts / nav ---
+      finishFirst: "🔒 ¡Primero termina el paso actual!",
+      ariaLocked: " (bloqueado)",
+      hint: "💡 Pista",
+      correctShort: "✓ ¡Correcto!",
+      defaultName: "Estudiante",
+      defaultRole: "Equipo de la Ciudad",
+
+      // --- XP toasts ---
+      xpOrdered: "¡Enteros ordenados!",
+      xpCompared: "¡Comparación resuelta!",
+      xpPlotted: "¡Cuadrícula completada!",
+      xpReflected: "¡Reflejado y medido!",
+      xpRecAccepted: "¡Recomendación aceptada!",
+      xpRevision: "Se necesita revisión",
+      xpNews: "¡Noticia publicada!",
+      toastDownloaded: "⬇️ Progreso descargado",
+
+      // --- sort (integer ordering) ---
+      sortPlaceAll1: "Primero coloca las ", sortPlaceAll2: " elevaciones. Tienes ",
+      sortOk: "✅ ¡Perfecto! Las elevaciones están ordenadas de menor → mayor. ¡Preguntas de comparación desbloqueadas!",
+      sortBad: "Revisa el orden. Recuerda: más negativo significa más bajo. El número más pequeño va primero.",
+      chipPlaced: ", colocado. Haz clic para quitar.",
+      chipPool: ". Haz clic para colocar en la fila ordenada.",
+
+      // --- compare (calc) ---
+      calcTypeFirst: "Primero escribe tu respuesta.",
+      calcOk: "✅ ¡Correcto! Buen trabajo.",
+      calcHintOpen: " Una pista está abierta abajo. 💡",
+      missLowerNeg2: "Cuidado: −2 está más cerca de cero, así que es más alto. −8 está más profundo bajo el nivel del mar.",
+      missLower: "Aún no. El número menor es el que está más profundo bajo el nivel del mar (más negativo).",
+      missLowestHigh: "Esa es la más alta, no la más baja. La más baja es el número más negativo.",
+      missLowestZero: "0 es el nivel del mar, no la más baja. Busca el número más negativo.",
+      missLowest: "Aún no. La elevación más baja es el número más negativo: mira el inicio de tu fila ordenada.",
+      missHighestLow: "Esa es la más baja, no la más alta. La más alta es el número mayor.",
+      missHighest: "Aún no. La elevación más alta es el número mayor: mira el final de tu fila ordenada.",
+      missGeneric: "No del todo — inténtalo de nuevo.",
+      hintLower: "−8 está más profundo bajo el nivel del mar que −2, así que −8 es el número menor.",
+      hintLowest: "La elevación más baja es el número más negativo de tu fila ordenada: −8.",
+      hintHighest: "La elevación más alta es el número mayor, al final de tu fila ordenada: 7.",
+      ariaLower: "Menor de -8 y -2",
+      ariaLowest: "Elevación más baja",
+      ariaHighest: "Elevación más alta",
+
+      // --- grid plotting ---
+      gridPlaceAll1: "Primero coloca los ", gridPlaceAll2: " sensores. Tienes ",
+      gridOk: "✅ ¡Cada sensor está en el lugar correcto! Reflejar y medir desbloqueado.",
+      gridBad: "Algunos puntos están mal. Revisa los puntos rojos: cuenta x izquierda/derecha primero, luego y arriba/abajo.",
+      sensorPlaceAt1: "colocar en (", sensorPlaceAt2: ")",
+      sensorPlaced: "✓ colocado ",
+
+      // --- reflect & distance ---
+      interpReflectX: 'Refleja S1 (3, 2) a través del <strong>eje x</strong>. Nuevo punto = ?',
+      interpReflectY: 'Refleja S1 (3, 2) a través del <strong>eje y</strong>. Nuevo punto = ?',
+      interpDistance: 'Una línea de inundación baja recta desde S1 (3, 2) hasta un desagüe en (3, −5). ¿Cuál es la <strong>distancia</strong> entre ellos? Usa el valor absoluto: |2 − (−5)|.',
+      ariaRxX: "Reflejar en el eje x, nueva x", ariaRxY: "Reflejar en el eje x, nueva y",
+      ariaRyX: "Reflejar en el eje y, nueva x", ariaRyY: "Reflejar en el eje y, nueva y",
+      ariaDist: "Distancia en unidades",
+      interpOk: "✅ ¡Las reflexiones y la distancia son correctas! La Sala de Decisiones está abierta.",
+      interpIssueX: "A través del eje x, mantén la x igual y cambia el signo de y: (3, 2) → (3, −2).",
+      interpIssueY: "A través del eje y, mantén la y igual y cambia el signo de x: (3, 2) → (−3, 2).",
+      interpIssueDist: "Distancia: |2 − (−5)| = |7| = 7 unidades.",
+
+      // --- decision ---
+      decPickFirst: "Primero elige una recomendación (A, B, C o D).",
+      decWords1: "Escribe al menos 18 palabras de evidencia. Tienes ", decWords2: ".",
+      decAccepted: "✅ ¡El concejo de la ciudad está convencido! Yendo a la Reacción de la Ciudad…",
+      decRevise: "🏛️ El concejo de la ciudad aún no está convencido. Mira otra vez las elevaciones y revisa. (Pista: el agua se junta en el punto MÁS BAJO — elevación −8.)",
+
+      // --- news ---
+      newsWords1: "Escribe al menos 35 palabras. Tienes ", newsWords2: ".",
+      newsPublished: "✅ ¡Publicado! Generando tu Pasaporte de Aprendizaje…",
+
+      // --- reset ---
+      resetConfirm: "¿Reiniciar toda la misión? Esto borra todo tu trabajo en este dispositivo.",
     },
   };
 
@@ -425,7 +577,7 @@
   function go(stepId) {
     const idx = stepIndex(stepId);
     if (idx > state.maxStep) {
-      toast("🔒 Finish the current step first!");
+      toast(t("finishFirst"));
       return;
     }
     state.current = stepId;
@@ -456,7 +608,7 @@
       li.innerHTML = `<span class="ps-num" aria-hidden="true">${i < state.maxStep ? "✓" : i + 1}</span><span class="ps-label">${step.label}</span>`;
       li.setAttribute("role", "button");
       li.tabIndex = locked ? -1 : 0;
-      li.setAttribute("aria-label", `${step.label}${locked ? " (locked)" : ""}`);
+      li.setAttribute("aria-label", `${step.label}${locked ? t("ariaLocked") : ""}`);
       if (!locked) {
         li.addEventListener("click", () => go(step.id));
         li.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(step.id); } });
@@ -572,7 +724,7 @@
     b.type = "button";
     b.textContent = fmtInt(n);
     b.setAttribute("role", "listitem");
-    b.setAttribute("aria-label", inTray ? `${n}, placed. Click to remove.` : `${n}. Click to place in ordered line.`);
+    b.setAttribute("aria-label", inTray ? `${n}${t("chipPlaced")}` : `${n}${t("chipPool")}`);
     return b;
   }
 
@@ -580,23 +732,23 @@
     const fb = $("#sortFeedback");
     const tray = state.sort.tray;
     if (tray.length < DATASET.length) {
-      setFeedback(fb, "no", `Place all ${DATASET.length} elevations first. You have ${tray.length}.`);
+      setFeedback(fb, "no", `${t("sortPlaceAll1")}${DATASET.length}${t("sortPlaceAll2")}${tray.length}.`);
       return;
     }
     const correct = tray.every((n, i) => n === SORTED[i]);
     if (correct) {
       state.sort.solved = true;
       save();
-      setFeedback(fb, "ok", "✅ Perfect! The elevations are ordered least → greatest. Compare questions unlocked!");
+      setFeedback(fb, "ok", t("sortOk"));
       markSortSolved();
-      awardXp("Integers ordered!");
+      awardXp(t("xpOrdered"));
     } else {
       // find first out-of-order index for targeted hint
       let firstBad = tray.findIndex((n, i) => n !== SORTED[i]);
       $$("#sortTray .num-chip").forEach((c, i) => {
         c.classList.toggle("bad", i >= firstBad);
       });
-      setFeedback(fb, "no", "Check the order. Remember: more negative means lower. The smallest number goes first.");
+      setFeedback(fb, "no", t("sortBad"));
     }
   }
 
@@ -611,11 +763,11 @@
   /* ============================ 3. SENSOR LAB — COMPARE ============================ */
   const CALC_DEFS = [
     { key: "lower", nameKey: "qLowerName", placeholder: "e.g. -8", answer: LOWEST,
-      hint: "−8 is further below sea level than −2, so −8 is the lower number.", aria: "Lower of -8 and -2" },
+      hintKey: "hintLower", ariaKey: "ariaLower" },
     { key: "lowest", nameKey: "qLowestName", placeholder: "e.g. -8", answer: LOWEST,
-      hint: "The lowest elevation is the most negative number in your ordered line: −8.", aria: "Lowest elevation" },
+      hintKey: "hintLowest", ariaKey: "ariaLowest" },
     { key: "highest", nameKey: "qHighestName", placeholder: "e.g. 7", answer: HIGHEST,
-      hint: "The highest elevation is the greatest number, at the end of your ordered line: 7.", aria: "Highest elevation" },
+      hintKey: "hintHighest", ariaKey: "ariaHighest" },
   ];
 
   function renderCalc() {
@@ -638,12 +790,12 @@
         </div>
         <div class="calc-input-row">
           <input type="text" inputmode="numeric" id="input-${def.key}" value="${escapeAttr(c.value)}"
-            placeholder="${def.placeholder}" aria-label="${def.aria}" ${c.solved ? "disabled" : ""} />
+            placeholder="${def.placeholder}" aria-label="${escapeAttr(t(def.ariaKey))}" ${c.solved ? "disabled" : ""} />
           <button class="btn-primary" type="button" id="check-${def.key}" ${c.solved ? "disabled" : ""}>${t("check")}</button>
-          <button class="btn-hint" type="button" id="hint-${def.key}">💡 Hint</button>
+          <button class="btn-hint" type="button" id="hint-${def.key}">${t("hint")}</button>
         </div>
         <p class="feedback" id="fb-${def.key}" role="status" aria-live="polite"></p>
-        <div class="hintcard ${c.hint ? "show" : ""}" id="hintcard-${def.key}">💡 ${def.hint}</div>
+        <div class="hintcard ${c.hint ? "show" : ""}" id="hintcard-${def.key}">💡 ${t(def.hintKey)}</div>
       `;
       grid.appendChild(row);
 
@@ -656,7 +808,7 @@
         $(`#hintcard-${def.key}`).classList.add("show");
       });
 
-      if (c.solved) setFeedback($(`#fb-${def.key}`), "ok", "✓ Correct!");
+      if (c.solved) setFeedback($(`#fb-${def.key}`), "ok", t("correctShort"));
     });
     refreshDataLabGate();
   }
@@ -666,18 +818,18 @@
     const fb = $(`#fb-${key}`);
     const raw = $(`#input-${key}`).value.trim();
     c.value = raw;
-    if (raw === "") { setFeedback(fb, "no", "Type your answer first."); save(); return; }
+    if (raw === "") { setFeedback(fb, "no", t("calcTypeFirst")); save(); return; }
 
     const ok = validateCalc(key, raw);
     if (ok) {
       c.solved = true;
       save();
-      setFeedback(fb, "ok", "✅ Correct! Nice work.");
+      setFeedback(fb, "ok", t("calcOk"));
       $(`#state-${key}`).textContent = t("solved");
       $(`#state-${key}`).classList.add("solved");
       $(`#input-${key}`).disabled = true;
       $(`#check-${key}`).disabled = true;
-      awardXp("Comparison solved!");
+      awardXp(t("xpCompared"));
       refreshDataLabGate();
     } else {
       c.attempts++;
@@ -686,7 +838,7 @@
       if (c.attempts >= 2) {
         c.hint = true;
         $(`#hintcard-${key}`).classList.add("show");
-        setFeedback(fb, "tip", `${msg} A hint is now open below. 💡`);
+        setFeedback(fb, "tip", `${msg}${t("calcHintOpen")}`);
       } else {
         setFeedback(fb, "no", msg);
       }
@@ -704,19 +856,19 @@
   function calcMissMessage(key, raw) {
     const v = parseInt0(raw);
     if (key === "lower") {
-      if (v === -2) return "Careful: −2 is closer to zero, so it is higher. −8 is deeper below sea level.";
-      return "Not yet. The lower number is the one further below sea level (more negative).";
+      if (v === -2) return t("missLowerNeg2");
+      return t("missLower");
     }
     if (key === "lowest") {
-      if (v === HIGHEST) return "That is the highest, not the lowest. The lowest is the most negative number.";
-      if (v === 0) return "0 is sea level, not the lowest. Look for the most negative number.";
-      return "Not yet. The lowest elevation is the most negative number: look at the start of your ordered line.";
+      if (v === HIGHEST) return t("missLowestHigh");
+      if (v === 0) return t("missLowestZero");
+      return t("missLowest");
     }
     if (key === "highest") {
-      if (v === LOWEST) return "That is the lowest, not the highest. The highest is the greatest number.";
-      return "Not yet. The highest elevation is the greatest number: look at the end of your ordered line.";
+      if (v === LOWEST) return t("missHighestLow");
+      return t("missHighest");
     }
-    return "Not quite — try again.";
+    return t("missGeneric");
   }
 
   function refreshDataLabGate() {
@@ -766,8 +918,8 @@
       b.setAttribute("aria-pressed", String(state.activeSensor === s.id));
       b.innerHTML = `
         <span class="s-tag">${s.id}</span>
-        <span class="s-target">place at (${fmtInt(s.x)}, ${fmtInt(s.y)})</span>
-        <span class="s-status">${done ? "✓ placed " + parens(placedAt) : ""}</span>`;
+        <span class="s-target">${t("sensorPlaceAt1")}${fmtInt(s.x)}, ${fmtInt(s.y)}${t("sensorPlaceAt2")}</span>
+        <span class="s-status">${done ? t("sensorPlaced") + parens(placedAt) : ""}</span>`;
       b.addEventListener("click", () => {
         state.activeSensor = s.id;
         save();
@@ -830,7 +982,7 @@
     const fb = $("#graphFeedback");
     const placedCount = Object.keys(state.graph.placed).length;
     if (placedCount < SENSORS.length) {
-      setFeedback(fb, "no", `Place all ${SENSORS.length} sensors first. You have ${placedCount}.`);
+      setFeedback(fb, "no", `${t("gridPlaceAll1")}${SENSORS.length}${t("gridPlaceAll2")}${placedCount}.`);
       return;
     }
     let allRight = true;
@@ -845,43 +997,43 @@
     if (allRight) {
       state.graph.solved = true;
       save();
-      setFeedback(fb, "ok", "✅ Every sensor is in the right spot! Reflect & measure unlocked.");
+      setFeedback(fb, "ok", t("gridOk"));
       $("#interpBlock").classList.remove("locked");
       $("#interpBlock").setAttribute("aria-disabled", "false");
       $("#interpLockTag").textContent = t("unlocked");
       $("#interpLockTag").classList.add("unlocked");
-      awardXp("Grid plotted!");
+      awardXp(t("xpPlotted"));
     } else {
-      setFeedback(fb, "no", "Some pins are off. Check the red pins: count x left/right first, then y up/down.");
+      setFeedback(fb, "no", t("gridBad"));
     }
   }
 
   /* ---- reflect + distance ---- */
   function renderInterp() {
     const wrap = $("#interpQuestions");
-    if (wrap.dataset.built === "1") { restoreInterpUI(); return; }
+    if (wrap.dataset.built === "1") { applyInterpLang(); restoreInterpUI(); return; }
     wrap.innerHTML = "";
 
     const pair = document.createElement("div");
     pair.className = "task-pair";
     pair.innerHTML = `
       <div class="interp-q">
-        <p>Reflect S1 (3, 2) across the <strong>x-axis</strong>. New point = ?</p>
+        <p id="interp-rx-q"></p>
         <div class="coord-input-row">
           <span class="paren">(</span>
-          <input type="text" inputmode="numeric" id="rx-x" placeholder="x" aria-label="Reflect across x-axis, new x" />
+          <input type="text" inputmode="numeric" id="rx-x" placeholder="x" />
           <span class="comma">,</span>
-          <input type="text" inputmode="numeric" id="rx-y" placeholder="y" aria-label="Reflect across x-axis, new y" />
+          <input type="text" inputmode="numeric" id="rx-y" placeholder="y" />
           <span class="paren">)</span>
         </div>
       </div>
       <div class="interp-q">
-        <p>Reflect S1 (3, 2) across the <strong>y-axis</strong>. New point = ?</p>
+        <p id="interp-ry-q"></p>
         <div class="coord-input-row">
           <span class="paren">(</span>
-          <input type="text" inputmode="numeric" id="ry-x" placeholder="x" aria-label="Reflect across y-axis, new x" />
+          <input type="text" inputmode="numeric" id="ry-x" placeholder="x" />
           <span class="comma">,</span>
-          <input type="text" inputmode="numeric" id="ry-y" placeholder="y" aria-label="Reflect across y-axis, new y" />
+          <input type="text" inputmode="numeric" id="ry-y" placeholder="y" />
           <span class="paren">)</span>
         </div>
       </div>`;
@@ -890,13 +1042,13 @@
     const distDiv = document.createElement("div");
     distDiv.className = "interp-q";
     distDiv.innerHTML = `
-      <p>A flood line runs straight down from S1 (3, 2) to a drain at (3, −5).
-         What is the <strong>distance</strong> between them? Use absolute value: |2 − (−5)|.</p>
+      <p id="interp-dist-q"></p>
       <div class="coord-input-row">
-        <input type="text" inputmode="numeric" id="dist-in" placeholder="e.g. 7" aria-label="Distance in units" />
-        <span class="comma">${t("units")}</span>
+        <input type="text" inputmode="numeric" id="dist-in" placeholder="e.g. 7" />
+        <span class="comma" id="interp-units"></span>
       </div>`;
     wrap.appendChild(distDiv);
+    applyInterpLang();
 
     // wire inputs to state
     $("#rx-x").addEventListener("input", (e) => { state.interp.reflectX = setPairPart(state.interp.reflectX, 0, e.target.value); save(); });
@@ -907,6 +1059,21 @@
 
     wrap.dataset.built = "1";
     restoreInterpUI();
+  }
+
+  // Keep the reflect/distance prompts, aria labels, and units in the active language.
+  function applyInterpLang() {
+    const rxq = $("#interp-rx-q"), ryq = $("#interp-ry-q"), dq = $("#interp-dist-q"), un = $("#interp-units");
+    if (rxq) rxq.innerHTML = t("interpReflectX");
+    if (ryq) ryq.innerHTML = t("interpReflectY");
+    if (dq) dq.innerHTML = t("interpDistance");
+    if (un) un.textContent = t("units");
+    const rxx = $("#rx-x"), rxy = $("#rx-y"), ryx = $("#ry-x"), ryy = $("#ry-y"), di = $("#dist-in");
+    if (rxx) rxx.setAttribute("aria-label", t("ariaRxX"));
+    if (rxy) rxy.setAttribute("aria-label", t("ariaRxY"));
+    if (ryx) ryx.setAttribute("aria-label", t("ariaRyX"));
+    if (ryy) ryy.setAttribute("aria-label", t("ariaRyY"));
+    if (di) di.setAttribute("aria-label", t("ariaDist"));
   }
 
   // store reflect answers as "x|y" pair strings so each input persists independently
@@ -941,16 +1108,16 @@
     if (rxOk && ryOk && dOk) {
       state.interp.solved = true;
       save();
-      setFeedback(fb, "ok", "✅ Reflections and distance are correct! The Decision Room is open.");
+      setFeedback(fb, "ok", t("interpOk"));
       $("#toDecisionBtn").disabled = false;
       unlock("decision");
-      awardXp("Reflected & measured!");
+      awardXp(t("xpReflected"));
       return;
     }
     const issues = [];
-    if (!rxOk) issues.push("Across the x-axis, keep x the same and flip the sign of y: (3, 2) → (3, −2).");
-    if (!ryOk) issues.push("Across the y-axis, keep y the same and flip the sign of x: (3, 2) → (−3, 2).");
-    if (!dOk) issues.push("Distance: |2 − (−5)| = |7| = 7 units.");
+    if (!rxOk) issues.push(t("interpIssueX"));
+    if (!ryOk) issues.push(t("interpIssueY"));
+    if (!dOk) issues.push(t("interpIssueDist"));
     setFeedback(fb, "no", issues.join(" "));
   }
 
@@ -1003,29 +1170,29 @@
   function submitDecision() {
     const fb = $("#decisionFeedback");
     const wc = wordCount(state.decision.text);
-    if (!state.decision.choice) { setFeedback(fb, "no", "Pick a recommendation (A, B, C, or D) first."); return; }
-    if (wc < 18) { setFeedback(fb, "no", `Write at least 18 words of evidence. You have ${wc}.`); return; }
+    if (!state.decision.choice) { setFeedback(fb, "no", t("decPickFirst")); return; }
+    if (wc < 18) { setFeedback(fb, "no", `${t("decWords1")}${wc}${t("decWords2")}`); return; }
 
     state.decision.submitted = true;
 
     if (state.decision.choice === BEST_CHOICE) {
       state.decision.accepted = true;
       save();
-      setFeedback(fb, "ok", "✅ The city council is convinced! Heading to City Reaction…");
+      setFeedback(fb, "ok", t("decAccepted"));
       computeScore();
       unlock("reaction");
-      awardXp("Recommendation accepted!");
+      awardXp(t("xpRecAccepted"));
       setTimeout(() => go("reaction"), 700);
     } else {
       // revision event
       state.decision.accepted = false;
       state.decision.revisions++;
       save();
-      setFeedback(fb, "no", "🏛️ The city council is not convinced yet. Look back at the elevations and revise. (Hint: water collects at the LOWEST point — elevation −8.)");
+      setFeedback(fb, "no", t("decRevise"));
       // still let them see a (revise) reaction so the loop is visible
       computeScore();
       unlock("reaction");
-      awardXp("Revision needed");
+      awardXp(t("xpRevision"));
       setTimeout(() => go("reaction"), 900);
     }
   }
@@ -1265,12 +1432,12 @@
   function submitNews() {
     const fb = $("#newsFeedback");
     const wc = wordCount(state.news.text);
-    if (wc < 35) { setFeedback(fb, "no", `Write at least 35 words. You have ${wc}.`); return; }
+    if (wc < 35) { setFeedback(fb, "no", `${t("newsWords1")}${wc}${t("newsWords2")}`); return; }
     state.news.submitted = true;
     save();
-    setFeedback(fb, "ok", "✅ Published! Generating your Proof-of-Learning Passport…");
+    setFeedback(fb, "ok", t("newsPublished"));
     unlock("passport");
-    awardXp("News published!");
+    awardXp(t("xpNews"));
     setTimeout(() => go("passport"), 700);
   }
 
@@ -1291,8 +1458,8 @@
   }
 
   function renderPassport() {
-    $("#ppName").textContent = state.name || "Student";
-    $("#ppRole").textContent = state.role || "City Team";
+    $("#ppName").textContent = state.name || t("defaultName");
+    $("#ppRole").textContent = state.role || t("defaultRole");
     const tier = state.outcomeTier || "medium";
     $("#ppOutcome").textContent = tier === "good" ? t("ppApproved")
       : tier === "medium" ? t("ppReview") : t("ppRevise");
@@ -1409,11 +1576,11 @@
     a.remove();
     // Delay revocation so slower browsers (Firefox/Safari/mobile) finish the fetch.
     setTimeout(() => URL.revokeObjectURL(url), 100);
-    toast("⬇️ Progress downloaded");
+    toast(t("toastDownloaded"));
   }
 
   function resetMission() {
-    if (!confirm("Reset the whole mission? This clears all your work on this device.")) return;
+    if (!confirm(t("resetConfirm"))) return;
     try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
     state = defaultState();
     save();
