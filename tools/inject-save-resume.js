@@ -72,6 +72,9 @@ const SKIP_TOPLEVEL = new Set([
   "assets",
   "docs",
   "curriculum", // curriculum hub/index pages, not activities
+  "personal", // private (event planning, family pages) — not classroom activities
+  "futures", // concept/demo/roadmap pages — not student activities
+  "access-teacher", // teacher-facing surface
 ]);
 
 // Filename patterns that are not student-facing activities.

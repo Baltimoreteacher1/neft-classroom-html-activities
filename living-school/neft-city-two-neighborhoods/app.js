@@ -252,6 +252,59 @@
       madRight: "✅ Yes! Northside's values stretch from 10 to 30, so they sit farther from the mean — a bigger MAD. Riverbend is bunched up.",
       madWrong: "Look again: which neighborhood has the bigger range and IQR? More spread means a bigger MAD.",
       madDone: "🌟 Enrichment complete! You connected IQR and range to another spread measure, the MAD.",
+      // navigation / toasts
+      navLocked: "🔒 Finish the current step first!",
+      progressDownloaded: "⬇️ Progress downloaded",
+      // XP toast labels
+      xpRecAccepted: "Recommendation accepted!",
+      xpRevisionNeeded: "Revision needed",
+      xpSpreadInterpreted: "Spread interpreted!",
+      xpNewsPublished: "News published!",
+      // data lab feedback
+      typeAnswerFirst: "Type your answer first.",
+      calcCorrect: "✅ Correct!",
+      hintOpenBelow: "A hint is now open below. 💡",
+      // calc misconception messages
+      missIqrAdd: "IQR uses subtraction: Q3 − Q1, not addition.",
+      missIqrRange: "That's the range. IQR is Q3 − Q1 (the middle half).",
+      missIqrNot: "Not yet. IQR = Q3 − Q1.",
+      missRangeAdd: "Range uses subtraction: max − min.",
+      missRangeIqr: "That's the IQR. Range is max − min.",
+      missRangeNot: "Not yet. Range = max − min.",
+      missMedian: "Not yet. With 11 values, the median is the 6th sorted value.",
+      missQ1: "Not yet. Q1 is the median of the lower 5 values.",
+      missQ3: "Not yet. Q3 is the median of the upper 5 values.",
+      missMin: "Not yet. The minimum is the smallest value (the first one).",
+      missMax: "Not yet. The maximum is the largest value (the last one).",
+      missGeneric: "Not quite — try again.",
+      // box-plot marker labels
+      bpMin: "min", bpQ1: "Q1", bpMed: "med", bpQ3: "Q3", bpMax: "max",
+      // interpretation
+      interpConsistentQ: "Which neighborhood is more consistent (less spread out)?",
+      interpBiggerIqrQ: "Which neighborhood has the bigger IQR?",
+      interpSmallIqrQ: "What does a small IQR tell us?",
+      interpOptSame: "They are the same",
+      interpOptCloser: "The data is closer together / more predictable",
+      interpOptSpread: "The data is more spread out",
+      interpOptHigher: "The average is higher",
+      interpWriteQ: "In one sentence: how do the box plots help you compare the spread? (written response)",
+      interpWritePh: "Type one sentence about the spread…",
+      interpSuccess: "✅ Great reading of the spread! The Decision Room is open.",
+      interpCount1: "You have ", interpCount2: " of ", interpCount3: " multiple-choice answers correct.",
+      interpNeedWritten: " Also write at least one full sentence in the response box.",
+      interpTryAgain: " Look at the highlighted answers and try again.",
+      // decision
+      decPickFirst: "Pick a recommendation (A, B, C, or D) first.",
+      decNeedWords1: "Write at least 18 words of evidence. You have ", decNeedWords2: ".",
+      decAccepted: "✅ The city council is convinced! Heading to City Reaction…",
+      decRevise: "🏛️ The city council is not convinced yet. Look back at the spread and revise your recommendation. (Hint: the bigger IQR and range show the least predictable commutes.)",
+      // news
+      newsNeedWords1: "Write at least 35 words. You have ", newsNeedWords2: ".",
+      newsPublished: "✅ Published! Generating your Proof-of-Learning Passport…",
+      // passport fallbacks
+      ppDefaultName: "Student", ppDefaultRole: "City Team",
+      // reset
+      resetConfirm: "Reset the whole mission? This clears all your work on this device.",
     },
     es: {
       startReady: "¡Listo! Presiona el botón para comenzar.",
@@ -277,6 +330,59 @@
       madRight: "✅ ¡Sí! Los valores de Northside van de 10 a 30, así que están más lejos de la media — un MAD mayor. Riverbend está agrupado.",
       madWrong: "Mira otra vez: ¿qué vecindario tiene el rango y el IQR mayores? Más dispersión significa un MAD mayor.",
       madDone: "🌟 ¡Ampliación completa! Conectaste el IQR y el rango con otra medida de dispersión, el MAD.",
+      // navigation / toasts
+      navLocked: "🔒 ¡Termina el paso actual primero!",
+      progressDownloaded: "⬇️ Progreso descargado",
+      // XP toast labels
+      xpRecAccepted: "¡Recomendación aceptada!",
+      xpRevisionNeeded: "Se necesita revisión",
+      xpSpreadInterpreted: "¡Dispersión interpretada!",
+      xpNewsPublished: "¡Noticia publicada!",
+      // data lab feedback
+      typeAnswerFirst: "Escribe tu respuesta primero.",
+      calcCorrect: "✅ ¡Correcto!",
+      hintOpenBelow: "Hay una pista abierta abajo. 💡",
+      // calc misconception messages
+      missIqrAdd: "El IQR usa resta: Q3 − Q1, no la suma.",
+      missIqrRange: "Ese es el rango. El IQR es Q3 − Q1 (la mitad central).",
+      missIqrNot: "Aún no. IQR = Q3 − Q1.",
+      missRangeAdd: "El rango usa resta: máx − mín.",
+      missRangeIqr: "Ese es el IQR. El rango es máx − mín.",
+      missRangeNot: "Aún no. Rango = máx − mín.",
+      missMedian: "Aún no. Con 11 valores, la mediana es el 6.º valor ordenado.",
+      missQ1: "Aún no. Q1 es la mediana de los 5 valores inferiores.",
+      missQ3: "Aún no. Q3 es la mediana de los 5 valores superiores.",
+      missMin: "Aún no. El mínimo es el valor más pequeño (el primero).",
+      missMax: "Aún no. El máximo es el valor más grande (el último).",
+      missGeneric: "No del todo — inténtalo otra vez.",
+      // box-plot marker labels
+      bpMin: "mín", bpQ1: "Q1", bpMed: "med", bpQ3: "Q3", bpMax: "máx",
+      // interpretation
+      interpConsistentQ: "¿Qué vecindario es más consistente (menos disperso)?",
+      interpBiggerIqrQ: "¿Qué vecindario tiene el IQR mayor?",
+      interpSmallIqrQ: "¿Qué nos dice un IQR pequeño?",
+      interpOptSame: "Son iguales",
+      interpOptCloser: "Los datos están más juntos / son más predecibles",
+      interpOptSpread: "Los datos están más dispersos",
+      interpOptHigher: "El promedio es mayor",
+      interpWriteQ: "En una oración: ¿cómo te ayudan los diagramas de caja a comparar la dispersión? (respuesta escrita)",
+      interpWritePh: "Escribe una oración sobre la dispersión…",
+      interpSuccess: "✅ ¡Gran lectura de la dispersión! La Sala de Decisiones está abierta.",
+      interpCount1: "Tienes ", interpCount2: " de ", interpCount3: " respuestas de opción múltiple correctas.",
+      interpNeedWritten: " También escribe al menos una oración completa.",
+      interpTryAgain: " Mira las respuestas resaltadas e inténtalo otra vez.",
+      // decision
+      decPickFirst: "Elige una recomendación (A, B, C o D) primero.",
+      decNeedWords1: "Escribe al menos 18 palabras de evidencia. Tienes ", decNeedWords2: ".",
+      decAccepted: "✅ ¡El concejo está convencido! Yendo a la Reacción de la Ciudad…",
+      decRevise: "🏛️ El concejo no está convencido aún. Mira la dispersión otra vez y revisa tu recomendación. (Pista: el IQR y el rango mayores muestran los viajes menos predecibles.)",
+      // news
+      newsNeedWords1: "Escribe al menos 35 palabras. Tienes ", newsNeedWords2: ".",
+      newsPublished: "✅ ¡Publicado! Generando tu Pasaporte de Aprendizaje…",
+      // passport fallbacks
+      ppDefaultName: "Estudiante", ppDefaultRole: "Equipo de la Ciudad",
+      // reset
+      resetConfirm: "¿Reiniciar toda la misión? Esto borra todo tu trabajo en este dispositivo.",
     },
   };
 
@@ -404,7 +510,7 @@
   function go(stepId) {
     const idx = stepIndex(stepId);
     if (idx > state.maxStep) {
-      toast("🔒 Finish the current step first!");
+      toast(t("navLocked"));
       return;
     }
     state.current = stepId;
@@ -577,7 +683,7 @@
     const fb = $(`#fb-${hoodKey}-${statKey}`);
     const raw = $(`#in-${hoodKey}-${statKey}`).value.trim();
     c.value = raw;
-    if (raw === "") { setFeedback(fb, "no", state.lang === "es" ? "Escribe tu respuesta primero." : "Type your answer first."); save(); return; }
+    if (raw === "") { setFeedback(fb, "no", t("typeAnswerFirst")); save(); return; }
 
     const want = HOODS[hoodKey][statKey];
     const v = parseFloat(raw.replace(/,/g, ".").replace(/[^0-9.\-]/g, ""));
@@ -586,12 +692,12 @@
     if (ok) {
       c.solved = true;
       save();
-      setFeedback(fb, "ok", state.lang === "es" ? "✅ ¡Correcto!" : "✅ Correct!");
+      setFeedback(fb, "ok", t("calcCorrect"));
       $(`#st-${hoodKey}-${statKey}`).textContent = t("solved");
       $(`#st-${hoodKey}-${statKey}`).classList.add("solved");
       $(`#in-${hoodKey}-${statKey}`).disabled = true;
       $(`#ck-${hoodKey}-${statKey}`).disabled = true;
-      awardXp(`${HOODS[hoodKey].name}: ${t(STAT_DEFS.find((d) => d.key === statKey).nameKey)} ✓`);
+      awardXp(`${HOODS[hoodKey].name}: ${t(STAT_DEFS.find((d) => d.key === statKey).nameKey)} ✓`); // hood name + translated stat name
       refreshDataLabGate();
     } else {
       c.attempts++;
@@ -600,7 +706,7 @@
       if (c.attempts >= 2) {
         c.hint = true;
         $(`#hc-${hoodKey}-${statKey}`).classList.add("show");
-        setFeedback(fb, "tip", `${msg} ${state.lang === "es" ? "Hay una pista abierta abajo. 💡" : "A hint is now open below. 💡"}`);
+        setFeedback(fb, "tip", `${msg} ${t("hintOpenBelow")}`);
       } else {
         setFeedback(fb, "no", msg);
       }
@@ -610,23 +716,22 @@
   // Targeted, misconception-aware feedback (generated locally).
   function calcMissMessage(hoodKey, statKey, v) {
     const h = HOODS[hoodKey];
-    const es = state.lang === "es";
     if (statKey === "iqr") {
-      if (Math.abs(v - (h.q3 + h.q1)) < 0.001) return es ? "El IQR usa resta: Q3 − Q1, no la suma." : "IQR uses subtraction: Q3 − Q1, not addition.";
-      if (Math.abs(v - h.range) < 0.001) return es ? "Ese es el rango. El IQR es Q3 − Q1 (la mitad central)." : "That's the range. IQR is Q3 − Q1 (the middle half).";
-      return es ? "Aún no. IQR = Q3 − Q1." : "Not yet. IQR = Q3 − Q1.";
+      if (Math.abs(v - (h.q3 + h.q1)) < 0.001) return t("missIqrAdd");
+      if (Math.abs(v - h.range) < 0.001) return t("missIqrRange");
+      return t("missIqrNot");
     }
     if (statKey === "range") {
-      if (Math.abs(v - (h.max + h.min)) < 0.001) return es ? "El rango usa resta: máx − mín." : "Range uses subtraction: max − min.";
-      if (Math.abs(v - h.iqr) < 0.001) return es ? "Ese es el IQR. El rango es máx − mín." : "That's the IQR. Range is max − min.";
-      return es ? "Aún no. Rango = máx − mín." : "Not yet. Range = max − min.";
+      if (Math.abs(v - (h.max + h.min)) < 0.001) return t("missRangeAdd");
+      if (Math.abs(v - h.iqr) < 0.001) return t("missRangeIqr");
+      return t("missRangeNot");
     }
-    if (statKey === "median") return es ? "Aún no. Con 11 valores, la mediana es el 6.º valor ordenado." : "Not yet. With 11 values, the median is the 6th sorted value.";
-    if (statKey === "q1") return es ? "Aún no. Q1 es la mediana de los 5 valores inferiores." : "Not yet. Q1 is the median of the lower 5 values.";
-    if (statKey === "q3") return es ? "Aún no. Q3 es la mediana de los 5 valores superiores." : "Not yet. Q3 is the median of the upper 5 values.";
-    if (statKey === "min") return es ? "Aún no. El mínimo es el valor más pequeño (el primero)." : "Not yet. The minimum is the smallest value (the first one).";
-    if (statKey === "max") return es ? "Aún no. El máximo es el valor más grande (el último)." : "Not yet. The maximum is the largest value (the last one).";
-    return es ? "No del todo — inténtalo otra vez." : "Not quite — try again.";
+    if (statKey === "median") return t("missMedian");
+    if (statKey === "q1") return t("missQ1");
+    if (statKey === "q3") return t("missQ3");
+    if (statKey === "min") return t("missMin");
+    if (statKey === "max") return t("missMax");
+    return t("missGeneric");
   }
 
   function allCalcSolved() {
@@ -671,11 +776,11 @@
           <div class="bp-median" style="left:${pMed}%"></div>
           <div class="bp-marker" style="left:${pMin}%"></div>
           <div class="bp-marker" style="left:${pMax}%"></div>
-          <div class="bp-label bot" style="left:${pMin}%">min ${h.min}</div>
-          <div class="bp-label top" style="left:${pQ1}%">Q1 ${h.q1}</div>
-          <div class="bp-label med top" style="left:${pMed}%">med ${h.median}</div>
-          <div class="bp-label top" style="left:${pQ3}%">Q3 ${h.q3}</div>
-          <div class="bp-label bot" style="left:${pMax}%">max ${h.max}</div>
+          <div class="bp-label bot" style="left:${pMin}%">${t("bpMin")} ${h.min}</div>
+          <div class="bp-label top" style="left:${pQ1}%">${t("bpQ1")} ${h.q1}</div>
+          <div class="bp-label med top" style="left:${pMed}%">${t("bpMed")} ${h.median}</div>
+          <div class="bp-label top" style="left:${pQ3}%">${t("bpQ3")} ${h.q3}</div>
+          <div class="bp-label bot" style="left:${pMax}%">${t("bpMax")} ${h.max}</div>
         </div>
         <div class="bp-scale">${SCALE.ticks.map((tk) => `<span class="bp-tick" style="left:${pos(tk)}%">${tk}</span>`).join("")}</div>
         <p class="bp-scale-label">${t("minutes")}</p>
@@ -707,54 +812,63 @@
   }
 
   /* ---- interpretation (gated MC + written) ---- */
-  function interpDefs() {
-    const es = state.lang === "es";
-    return [
-      {
-        id: "consistent",
-        q: es ? "¿Qué vecindario es más consistente (menos disperso)?" : "Which neighborhood is more consistent (less spread out)?",
-        opts: ["Northside", "Riverbend", es ? "Son iguales" : "They are the same"],
-        answer: "Riverbend",
-      },
-      {
-        id: "biggeriqr",
-        q: es ? "¿Qué vecindario tiene el IQR mayor?" : "Which neighborhood has the bigger IQR?",
-        opts: ["Northside", "Riverbend", es ? "Son iguales" : "They are the same"],
-        answer: "Northside",
-      },
-      {
-        id: "smalliqr",
-        q: es ? "¿Qué nos dice un IQR pequeño?" : "What does a small IQR tell us?",
-        opts: [
-          es ? "Los datos están más juntos / son más predecibles" : "The data is closer together / more predictable",
-          es ? "Los datos están más dispersos" : "The data is more spread out",
-          es ? "El promedio es mayor" : "The average is higher",
-        ],
-        answer: es ? "Los datos están más juntos / son más predecibles" : "The data is closer together / more predictable",
-      },
-    ];
-  }
+  // Stable, language-independent definitions. Each option carries a `key`
+  // (stored in state + used for matching) plus en/es labels (rendered by lang).
+  // answerKey holds the correct option key so toggling language never breaks
+  // matching and the saved selection persists across toggles.
+  const INTERP_DEFS = [
+    {
+      id: "consistent",
+      qKey: "interpConsistentQ",
+      opts: [
+        { key: "Northside", en: "Northside", es: "Northside" },
+        { key: "Riverbend", en: "Riverbend", es: "Riverbend" },
+        { key: "same", en: STR.en.interpOptSame, es: STR.es.interpOptSame },
+      ],
+      answerKey: "Riverbend",
+    },
+    {
+      id: "biggeriqr",
+      qKey: "interpBiggerIqrQ",
+      opts: [
+        { key: "Northside", en: "Northside", es: "Northside" },
+        { key: "Riverbend", en: "Riverbend", es: "Riverbend" },
+        { key: "same", en: STR.en.interpOptSame, es: STR.es.interpOptSame },
+      ],
+      answerKey: "Northside",
+    },
+    {
+      id: "smalliqr",
+      qKey: "interpSmallIqrQ",
+      opts: [
+        { key: "closer", en: STR.en.interpOptCloser, es: STR.es.interpOptCloser },
+        { key: "spread", en: STR.en.interpOptSpread, es: STR.es.interpOptSpread },
+        { key: "higher", en: STR.en.interpOptHigher, es: STR.es.interpOptHigher },
+      ],
+      answerKey: "closer",
+    },
+  ];
+  const optLabel = (opt) => (state.lang === "es" ? opt.es : opt.en);
 
   function renderInterp() {
     const wrap = $("#interpQuestions");
     if (!wrap) return;
-    const defs = interpDefs();
     wrap.innerHTML = "";
-    defs.forEach((q) => {
+    INTERP_DEFS.forEach((q) => {
       const div = document.createElement("div");
       div.className = "interp-q";
-      div.innerHTML = `<p>${q.q}</p><div class="opt-row" id="opts-${q.id}"></div>`;
+      div.innerHTML = `<p>${t(q.qKey)}</p><div class="opt-row" id="opts-${q.id}"></div>`;
       wrap.appendChild(div);
       const optWrap = $(`#opts-${q.id}`, div);
       q.opts.forEach((opt) => {
         const b = document.createElement("button");
         b.className = "opt";
         b.type = "button";
-        b.textContent = opt;
-        b.dataset.val = opt;
-        b.setAttribute("aria-pressed", String(state.interp.answers[q.id] === opt));
+        b.textContent = optLabel(opt); // label by language
+        b.dataset.key = opt.key;       // match by stable key
+        b.setAttribute("aria-pressed", String(state.interp.answers[q.id] === opt.key));
         b.addEventListener("click", () => {
-          state.interp.answers[q.id] = opt;
+          state.interp.answers[q.id] = opt.key;
           $$(`#opts-${q.id} .opt`).forEach((o) => o.setAttribute("aria-pressed", String(o === b)));
           save();
         });
@@ -764,15 +878,12 @@
     // short written response
     const writeDiv = document.createElement("div");
     writeDiv.className = "interp-q";
-    const prompt = state.lang === "es"
-      ? "En una oración: ¿cómo te ayudan los diagramas de caja a comparar la dispersión? (respuesta escrita)"
-      : "In one sentence: how do the box plots help you compare the spread? (written response)";
-    writeDiv.innerHTML = `<p>${prompt}</p>`;
+    writeDiv.innerHTML = `<p>${t("interpWriteQ")}</p>`;
     const ta = document.createElement("textarea");
     ta.className = "writebox";
     ta.rows = 2;
     ta.id = "interpWritten";
-    ta.placeholder = state.lang === "es" ? "Escribe una oración sobre la dispersión…" : "Type one sentence about the spread…";
+    ta.placeholder = t("interpWritePh");
     ta.value = state.interp.written;
     ta.addEventListener("input", (e) => { state.interp.written = e.target.value; save(); });
     writeDiv.appendChild(ta);
@@ -783,32 +894,28 @@
 
   function checkInterp() {
     const fb = $("#interpFeedback");
-    const defs = interpDefs();
     let correctCount = 0;
-    defs.forEach((q) => {
-      const picked = state.interp.answers[q.id];
-      const right = picked === q.answer;
+    INTERP_DEFS.forEach((q) => {
+      const picked = state.interp.answers[q.id]; // stored stable key
+      const right = picked === q.answerKey;
       if (right) correctCount++;
       $$(`#opts-${q.id} .opt`).forEach((o) => {
         o.classList.remove("correct", "wrong");
-        if (o.dataset.val === picked) o.classList.add(right ? "correct" : "wrong");
-        if (o.dataset.val === q.answer) o.classList.add("correct");
+        if (o.dataset.key === picked) o.classList.add(right ? "correct" : "wrong");
+        if (o.dataset.key === q.answerKey) o.classList.add("correct");
       });
     });
     const written = wordCount(state.interp.written) >= 3;
-    if (correctCount === defs.length && written) {
+    if (correctCount === INTERP_DEFS.length && written) {
       state.interp.solved = true;
       save();
-      setFeedback(fb, "ok", state.lang === "es" ? "✅ ¡Gran lectura de la dispersión! La Sala de Decisiones está abierta." : "✅ Great reading of the spread! The Decision Room is open.");
+      setFeedback(fb, "ok", t("interpSuccess"));
       $("#toDecisionBtn").disabled = false;
       unlock("decision");
-      awardXp("Spread interpreted!");
+      awardXp(t("xpSpreadInterpreted"));
     } else {
-      let msg = state.lang === "es"
-        ? `Tienes ${correctCount} de ${defs.length} respuestas de opción múltiple correctas.`
-        : `You have ${correctCount} of ${defs.length} multiple-choice answers correct.`;
-      if (!written) msg += state.lang === "es" ? " También escribe al menos una oración completa." : " Also write at least one full sentence in the response box.";
-      else msg += state.lang === "es" ? " Mira las respuestas resaltadas e inténtalo otra vez." : " Look at the highlighted answers and try again.";
+      let msg = t("interpCount1") + correctCount + t("interpCount2") + INTERP_DEFS.length + t("interpCount3");
+      msg += written ? t("interpTryAgain") : t("interpNeedWritten");
       setFeedback(fb, "no", msg);
     }
   }
@@ -861,29 +968,27 @@
   function submitDecision() {
     const fb = $("#decisionFeedback");
     const wc = wordCount(state.decision.text);
-    if (!state.decision.choice) { setFeedback(fb, "no", state.lang === "es" ? "Elige una recomendación (A, B, C o D) primero." : "Pick a recommendation (A, B, C, or D) first."); return; }
-    if (wc < 18) { setFeedback(fb, "no", (state.lang === "es" ? `Escribe al menos 18 palabras de evidencia. Tienes ${wc}.` : `Write at least 18 words of evidence. You have ${wc}.`)); return; }
+    if (!state.decision.choice) { setFeedback(fb, "no", t("decPickFirst")); return; }
+    if (wc < 18) { setFeedback(fb, "no", t("decNeedWords1") + wc + t("decNeedWords2")); return; }
 
     state.decision.submitted = true;
 
     if (state.decision.choice === BEST_CHOICE) {
       state.decision.accepted = true;
       save();
-      setFeedback(fb, "ok", state.lang === "es" ? "✅ ¡El concejo está convencido! Yendo a la Reacción de la Ciudad…" : "✅ The city council is convinced! Heading to City Reaction…");
+      setFeedback(fb, "ok", t("decAccepted"));
       computeScore();
       unlock("reaction");
-      awardXp("Recommendation accepted!");
+      awardXp(t("xpRecAccepted"));
       setTimeout(() => go("reaction"), 700);
     } else {
       state.decision.accepted = false;
       state.decision.revisions++;
       save();
-      setFeedback(fb, "no", state.lang === "es"
-        ? "🏛️ El concejo no está convencido aún. Mira la dispersión otra vez y revisa. (Pista: el IQR y el rango mayores muestran los viajes menos predecibles.)"
-        : "🏛️ The city council is not convinced yet. Look back at the spread and revise your recommendation. (Hint: the bigger IQR and range show the least predictable commutes.)");
+      setFeedback(fb, "no", t("decRevise"));
       computeScore();
       unlock("reaction");
-      awardXp("Revision needed");
+      awardXp(t("xpRevisionNeeded"));
       setTimeout(() => go("reaction"), 900);
     }
   }
@@ -1079,12 +1184,12 @@
   function submitNews() {
     const fb = $("#newsFeedback");
     const wc = wordCount(state.news.text);
-    if (wc < 35) { setFeedback(fb, "no", (state.lang === "es" ? `Escribe al menos 35 palabras. Tienes ${wc}.` : `Write at least 35 words. You have ${wc}.`)); return; }
+    if (wc < 35) { setFeedback(fb, "no", t("newsNeedWords1") + wc + t("newsNeedWords2")); return; }
     state.news.submitted = true;
     save();
-    setFeedback(fb, "ok", state.lang === "es" ? "✅ ¡Publicado! Generando tu Pasaporte de Aprendizaje…" : "✅ Published! Generating your Proof-of-Learning Passport…");
+    setFeedback(fb, "ok", t("newsPublished"));
     unlock("passport");
-    awardXp("News published!");
+    awardXp(t("xpNewsPublished"));
     setTimeout(() => go("passport"), 700);
   }
 
@@ -1102,8 +1207,8 @@
   }
 
   function renderPassport() {
-    $("#ppName").textContent = state.name || "Student";
-    $("#ppRole").textContent = state.role || "City Team";
+    $("#ppName").textContent = state.name || t("ppDefaultName");
+    $("#ppRole").textContent = state.role || t("ppDefaultRole");
     const tier = state.outcomeTier || "medium";
     $("#ppOutcome").textContent = tier === "good" ? t("ppApproved")
       : tier === "medium" ? t("ppReview") : t("ppRevise");
@@ -1195,11 +1300,11 @@
     a.click();
     a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 100);
-    toast("⬇️ Progress downloaded");
+    toast(t("progressDownloaded"));
   }
 
   function resetMission() {
-    if (!confirm("Reset the whole mission? This clears all your work on this device.")) return;
+    if (!confirm(t("resetConfirm"))) return;
     try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
     state = defaultState();
     save();

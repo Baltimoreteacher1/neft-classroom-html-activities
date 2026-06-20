@@ -6,6 +6,9 @@
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
+    <meta name="theme-color" content="#205fa6" />
+    <meta name="color-scheme" content="light" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta
       name="description"
       content="Math Workbench — an interactive whiteboard for Grade 6 math. Draggable numbers and symbols, freehand writing, separator and cross-out lines, 2D and 3D shapes, and a full formula reference for PreK–6 math."
@@ -2271,11 +2274,31 @@
         updateUndoButtons();
         persist();
       }
+      // Advance the id counter past anything we just loaded so freshly
+      // stamped objects can never reuse a restored object's id (which would
+      // make select / duplicate / delete act on the wrong element).
+      function seedUidFromObjects(objs) {
+        let maxN = 0;
+        for (const o of objs || []) {
+          const m = /^o(\d+)_/.exec(o && o.id);
+          if (m) maxN = Math.max(maxN, +m[1]);
+        }
+        if (maxN >= uid) uid = maxN + 1;
+      }
       function applySnap(snap) {
-        const d = JSON.parse(snap);
-        state.strokes = d.strokes || [];
-        state.objects = d.objects || [];
-        state.bg = d.bg || "blank";
+        let d;
+        try {
+          d = JSON.parse(snap);
+        } catch (e) {
+          d = null;
+        }
+        // Defend against corrupt or partially-written saved state so a single
+        // bad localStorage value can never white-screen the workbench.
+        if (!d || typeof d !== "object") d = {};
+        state.strokes = Array.isArray(d.strokes) ? d.strokes : [];
+        state.objects = Array.isArray(d.objects) ? d.objects : [];
+        state.bg = typeof d.bg === "string" ? d.bg : "blank";
+        seedUidFromObjects(state.objects);
         renderAll();
       }
       function flushPendingHistory() {
@@ -2312,19 +2335,36 @@
       /* ----------------------- Persistence ----------------------- */
       const LS_KEY = "neft.mathWorkbench.v1";
       let saveTimer = null;
+      function writeNow() {
+        const pill = $("#savePill");
+        try {
+          localStorage.setItem(LS_KEY, snapshot());
+          if (pill) pill.textContent = "Saved";
+          return true;
+        } catch (e) {
+          if (pill) pill.textContent = "Not saved";
+          return false;
+        }
+      }
       function persist() {
         const pill = $("#savePill");
-        pill.textContent = "Saving…";
+        if (pill) pill.textContent = "Saving…";
         clearTimeout(saveTimer);
-        saveTimer = setTimeout(() => {
-          try {
-            localStorage.setItem(LS_KEY, snapshot());
-            pill.textContent = "Saved";
-          } catch (e) {
-            pill.textContent = "Not saved";
-          }
-        }, 350);
+        saveTimer = setTimeout(writeNow, 350);
       }
+      // Commit any debounced save immediately on exit so the last strokes are
+      // never lost when a student closes the tab or switches apps.
+      function flushSave() {
+        if (saveTimer) {
+          clearTimeout(saveTimer);
+          saveTimer = null;
+          writeNow();
+        }
+      }
+      window.addEventListener("pagehide", flushSave);
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "hidden") flushSave();
+      });
       function restore() {
         try {
           const raw = localStorage.getItem(LS_KEY);
@@ -2349,8 +2389,14 @@
         if (state.bg === "coord") buildCoordBg();
       }
       function renderCanvas() {
-        const r = workspace.getBoundingClientRect();
-        ctx.clearRect(0, 0, r.width, r.height);
+        // Clear by the canvas's own device-pixel size (fast, never triggers
+        // layout) instead of querying the workspace rect — this runs on every
+        // highlighter pointermove frame. Reset the transform just for the
+        // clear, then restore the DPR transform set in sizeCanvas().
+        ctx.save();
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.restore();
         for (const st of state.strokes) drawStroke(st);
       }
       function drawStroke(st) {
@@ -2375,34 +2421,59 @@
 
       /* ----------------------- Drawing interaction ----------------------- */
       let drawing = null;
-      function localPt(e) {
-        const r = workspace.getBoundingClientRect();
+      function ptFromRect(e, r) {
         return { x: e.clientX - r.left, y: e.clientY - r.top };
+      }
+      function localPt(e) {
+        return ptFromRect(e, workspace.getBoundingClientRect());
       }
       canvas.addEventListener("pointerdown", (e) => {
         if (document.body.dataset.draw !== "1") return;
         canvas.setPointerCapture(e.pointerId);
-        const p = localPt(e);
+        // Measure the workspace once and reuse it for the whole stroke. The
+        // pointer is captured and nothing mutates layout mid-gesture, so this
+        // avoids a getBoundingClientRect() (a synchronous layout query) on
+        // every pointermove — and on every coalesced sample within it.
+        const rect = workspace.getBoundingClientRect();
+        const p = ptFromRect(e, rect);
         if (tool === "eraser") {
           eraseAt(p);
-          drawing = { erase: true };
+          drawing = { erase: true, rect };
           return;
         }
         const color = tool === "highlighter" ? hiColor : penColor;
         const size =
           tool === "highlighter" ? Math.max(penSize * 3, 14) : penSize;
-        drawing = { tool, color, size, pts: [p] };
+        drawing = { tool, color, size, pts: [p], rect };
       });
       canvas.addEventListener("pointermove", (e) => {
         if (!drawing) return;
-        const p = localPt(e);
+        const rect = drawing.rect;
         if (drawing.erase) {
-          eraseAt(p);
+          eraseAt(ptFromRect(e, rect));
           return;
         }
-        drawing.pts.push(p);
-        // incremental draw
-        drawStroke(drawing);
+        // Capture coalesced samples so fast strokes on a stylus / touch screen
+        // stay smooth instead of rendering as long straight chords.
+        const events =
+          typeof e.getCoalescedEvents === "function"
+            ? e.getCoalescedEvents()
+            : null;
+        if (events && events.length) {
+          for (const ce of events) drawing.pts.push(ptFromRect(ce, rect));
+        } else {
+          drawing.pts.push(ptFromRect(e, rect));
+        }
+        if (drawing.tool === "highlighter") {
+          // A highlighter is semi-transparent: re-stroking the whole growing
+          // path each frame (the cheap pen path) would re-multiply the alpha
+          // and darken the ink to near-opaque. Repaint committed strokes, then
+          // lay down the in-progress stroke once for a correct single pass.
+          renderCanvas();
+          drawStroke(drawing);
+        } else {
+          drawStroke(drawing);
+        }
       });
       function endDraw() {
         if (!drawing) return;

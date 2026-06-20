@@ -264,6 +264,85 @@
       olWhichRight: "✅ Yes! $50 vs $40 — Salsa Stop saves $10 on 25 tacos because $1.60 < $2.00 per taco.",
       olWhichWrong: "Look again: compare the two totals ($50 and $40).",
       olDone: "🌟 Enrichment complete! You scaled the unit rates and found the bigger savings.",
+
+      // navigation / progress
+      lockedStep: "🔒 Finish the current step first!",
+      lockedSuffix: " (locked)",
+
+      // price lab
+      hintLabel: "💡 Hint",
+      typeFirst: "Type your answer first.",
+      correctNice: "✅ Correct! Nice work.",
+      correctShort: "✓ Correct!",
+      hintOpened: "A hint is now open below. 💡",
+      hintCalcA: "Taco Town: $6 ÷ 3 tacos = $2.00 per taco.",
+      hintCalcB: "Salsa Stop: $8 ÷ 5 tacos = $1.60 per taco.",
+      ariaCalcA: "Taco Town unit rate", ariaCalcB: "Salsa Stop unit rate",
+      xpRateA: "Taco Town rate solved!",
+      xpRateB: "Salsa Stop rate solved!",
+      // calc miss messages (A = Taco Town)
+      missA6: "That's the total price for 3 tacos. Now divide by 3 tacos to get one taco.",
+      missA3: "That's the number of tacos. Divide dollars by tacos: $6 ÷ 3.",
+      missAinv: "Careful — you divided tacos by dollars. Unit rate is dollars ÷ tacos: $6 ÷ 3.",
+      missA: "Not yet. Unit rate = dollars ÷ tacos. Taco Town: $6 ÷ 3.",
+      missB8: "That's the total price for 5 tacos. Now divide by 5 tacos to get one taco.",
+      missB5: "That's the number of tacos. Divide dollars by tacos: $8 ÷ 5.",
+      missBinv: "Careful — you divided tacos by dollars. Unit rate is dollars ÷ tacos: $8 ÷ 5.",
+      missB: "Not yet. Unit rate = dollars ÷ tacos. Salsa Stop: $8 ÷ 5.",
+      missDefault: "Not quite — try again.",
+
+      // ratio table
+      tacosLabel: "Tacos", dollarsLabel: "Dollars",
+      tableAria: "Dollars for {n} tacos",
+      tableFillAll: "Fill in every missing dollar amount, then check.",
+      tableOk: "✅ Great ratio table! Each taco is $1.60. The double number line is unlocked.",
+      tableWrong: "Check the red cells. Each taco costs $1.60, so multiply tacos × $1.60.",
+      xpTable: "Ratio table complete!",
+
+      // double number line
+      dnlTacos: "tacos",
+      dnlAria: "Dollars for {n} tacos",
+      dnlDecAria: "Decrease dollars for {n} tacos",
+      dnlIncAria: "Increase dollars for {n} tacos",
+      dnlOk: "✅ Your double number line matches $1.60 per taco! Interpretation unlocked.",
+      dnlWrong: "Check the red marks. 5 tacos → $8, then add $8 each time: $16 and $24.",
+      xpDnl: "Number line built!",
+
+      // interpretation
+      interpQLess: "Which truck costs less per taco?",
+      interpQTen: "If you buy 10 tacos, how much cheaper is Salsa Stop than Taco Town?",
+      interpQValue: "Which truck is the better value?",
+      optTacoTownPrice: "Taco Town ($2.00)", optSalsaStopPrice: "Salsa Stop ($1.60)", optSame: "They cost the same",
+      opt2cheaper: "$2 cheaper", opt4cheaper: "$4 cheaper", opt6cheaper: "$6 cheaper",
+      optTacoTown: "Taco Town", optSalsaStop: "Salsa Stop", optCannotTell: "Cannot tell",
+      interpWriteQ: "Why is unit rate useful for comparing deals? (written response)",
+      interpWritePh: "Type one sentence about unit rate…",
+      interpOk: "✅ Great reading of the rates! The Decision Room is open.",
+      interpScore: "You have {n} of {total} multiple-choice answers correct.",
+      interpNeedWritten: " Also write at least one full sentence in the response box.",
+      interpTryAgain: " Look at the highlighted answers and try again.",
+      xpInterp: "Rates interpreted!",
+
+      // decision
+      decPick: "Pick a recommendation (A, B, C, or D) first.",
+      decWords: "Write at least 18 words of evidence. You have {n}.",
+      decAccepted: "✅ The city council is convinced! Heading to City Reaction…",
+      decRevise: "🏛️ The city council is not convinced yet. Look back at your unit rates and revise. (Hint: Salsa Stop is $1.60/taco, which is lower than Taco Town's $2.00/taco.)",
+      xpDecAccepted: "Recommendation accepted!",
+      xpDecRevise: "Revision needed",
+
+      // news
+      newsWords: "Write at least 35 words. You have {n}.",
+      newsPublished: "✅ Published! Generating your Proof-of-Learning Passport…",
+      xpNews: "News published!",
+
+      // passport
+      ppStudent: "Student", ppTeam: "City Team",
+      downloaded: "⬇️ Progress downloaded",
+      wordsLabel: "words", wordsNeed: "need",
+
+      // reset
+      resetConfirm: "Reset the whole mission? This clears all your work on this device.",
     },
     es: {
       startReady: "¡Listo! Presiona el botón para comenzar.",
@@ -288,7 +367,93 @@
       olWhichRight: "✅ ¡Sí! $50 vs $40 — Salsa Stop ahorra $10 en 25 tacos porque $1.60 < $2.00 por taco.",
       olWhichWrong: "Mira otra vez: compara los dos totales ($50 y $40).",
       olDone: "🌟 ¡Ampliación completa! Escalaste las tasas unitarias y hallaste el mayor ahorro.",
+
+      // navigation / progress
+      lockedStep: "🔒 ¡Termina el paso actual primero!",
+      lockedSuffix: " (bloqueado)",
+
+      // price lab
+      hintLabel: "💡 Pista",
+      typeFirst: "Escribe tu respuesta primero.",
+      correctNice: "✅ ¡Correcto! Buen trabajo.",
+      correctShort: "✓ ¡Correcto!",
+      hintOpened: "Ahora hay una pista abierta abajo. 💡",
+      hintCalcA: "Taco Town: $6 ÷ 3 tacos = $2.00 por taco.",
+      hintCalcB: "Salsa Stop: $8 ÷ 5 tacos = $1.60 por taco.",
+      ariaCalcA: "Tasa unitaria de Taco Town", ariaCalcB: "Tasa unitaria de Salsa Stop",
+      xpRateA: "¡Tasa de Taco Town resuelta!",
+      xpRateB: "¡Tasa de Salsa Stop resuelta!",
+      // calc miss messages (A = Taco Town)
+      missA6: "Ese es el precio total de 3 tacos. Ahora divide entre 3 tacos para hallar el precio de un taco.",
+      missA3: "Ese es el número de tacos. Divide los dólares entre los tacos: $6 ÷ 3.",
+      missAinv: "Cuidado — dividiste los tacos entre los dólares. La tasa unitaria es dólares ÷ tacos: $6 ÷ 3.",
+      missA: "Aún no. Tasa unitaria = dólares ÷ tacos. Taco Town: $6 ÷ 3.",
+      missB8: "Ese es el precio total de 5 tacos. Ahora divide entre 5 tacos para hallar el precio de un taco.",
+      missB5: "Ese es el número de tacos. Divide los dólares entre los tacos: $8 ÷ 5.",
+      missBinv: "Cuidado — dividiste los tacos entre los dólares. La tasa unitaria es dólares ÷ tacos: $8 ÷ 5.",
+      missB: "Aún no. Tasa unitaria = dólares ÷ tacos. Salsa Stop: $8 ÷ 5.",
+      missDefault: "No del todo — inténtalo otra vez.",
+
+      // ratio table
+      tacosLabel: "Tacos", dollarsLabel: "Dólares",
+      tableAria: "Dólares por {n} tacos",
+      tableFillAll: "Llena cada monto de dólares que falta y luego revisa.",
+      tableOk: "✅ ¡Excelente tabla de razones! Cada taco cuesta $1.60. Se desbloqueó la doble recta numérica.",
+      tableWrong: "Revisa las celdas rojas. Cada taco cuesta $1.60, así que multiplica tacos × $1.60.",
+      xpTable: "¡Tabla de razones completa!",
+
+      // double number line
+      dnlTacos: "tacos",
+      dnlAria: "Dólares por {n} tacos",
+      dnlDecAria: "Disminuir los dólares de {n} tacos",
+      dnlIncAria: "Aumentar los dólares de {n} tacos",
+      dnlOk: "✅ ¡Tu doble recta numérica coincide con $1.60 por taco! Se desbloqueó la interpretación.",
+      dnlWrong: "Revisa las marcas rojas. 5 tacos → $8, luego suma $8 cada vez: $16 y $24.",
+      xpDnl: "¡Recta numérica construida!",
+
+      // interpretation
+      interpQLess: "¿Cuál camión cuesta menos por taco?",
+      interpQTen: "Si compras 10 tacos, ¿cuánto más barato es Salsa Stop que Taco Town?",
+      interpQValue: "¿Cuál camión es el mejor valor?",
+      optTacoTownPrice: "Taco Town ($2.00)", optSalsaStopPrice: "Salsa Stop ($1.60)", optSame: "Cuestan lo mismo",
+      opt2cheaper: "$2 más barato", opt4cheaper: "$4 más barato", opt6cheaper: "$6 más barato",
+      optTacoTown: "Taco Town", optSalsaStop: "Salsa Stop", optCannotTell: "No se puede saber",
+      interpWriteQ: "¿Por qué la tasa unitaria es útil para comparar ofertas? (respuesta escrita)",
+      interpWritePh: "Escribe una oración sobre la tasa unitaria…",
+      interpOk: "✅ ¡Buena lectura de las tasas! La Sala de Decisiones está abierta.",
+      interpScore: "Tienes {n} de {total} respuestas de opción múltiple correctas.",
+      interpNeedWritten: " También escribe al menos una oración completa en el cuadro de respuesta.",
+      interpTryAgain: " Mira las respuestas resaltadas e inténtalo otra vez.",
+      xpInterp: "¡Tasas interpretadas!",
+
+      // decision
+      decPick: "Elige una recomendación (A, B, C o D) primero.",
+      decWords: "Escribe al menos 18 palabras de evidencia. Tienes {n}.",
+      decAccepted: "✅ ¡El concejo de la ciudad está convencido! Yendo a la Reacción de la Ciudad…",
+      decRevise: "🏛️ El concejo de la ciudad aún no está convencido. Vuelve a mirar tus tasas unitarias y revisa. (Pista: Salsa Stop cuesta $1.60/taco, lo cual es más bajo que los $2.00/taco de Taco Town.)",
+      xpDecAccepted: "¡Recomendación aceptada!",
+      xpDecRevise: "Se necesita revisión",
+
+      // news
+      newsWords: "Escribe al menos 35 palabras. Tienes {n}.",
+      newsPublished: "✅ ¡Publicado! Generando tu Pasaporte de Aprendizaje…",
+      xpNews: "¡Noticias publicadas!",
+
+      // passport
+      ppStudent: "Estudiante", ppTeam: "Equipo de la Ciudad",
+      downloaded: "⬇️ Progreso descargado",
+      wordsLabel: "palabras", wordsNeed: "faltan",
+
+      // reset
+      resetConfirm: "¿Reiniciar toda la misión? Esto borra todo tu trabajo en este dispositivo.",
     },
+  };
+
+  // Replace {n}, {total}, etc. placeholders in a t() string with values.
+  const fmt = (key, vars) => {
+    let s = t(key);
+    for (const k in vars) s = s.replace("{" + k + "}", vars[k]);
+    return s;
   };
 
   const STORAGE_KEY = "neftcity_foodtrucks_v1";
@@ -380,6 +545,9 @@
     renderGraph();
     renderDecisionStarters();
     renderNewsSupports();
+    // refresh word counters so "words"/"need" labels follow the language
+    if ($("#decisionCount")) updateCount("#decisionCount", state.decision.text, 18);
+    if ($("#newsCount")) updateCount("#newsCount", state.news.text, 35);
     if (state.current === "reaction") renderReaction();
     if (state.current === "passport") renderPassport();
   }
@@ -417,7 +585,7 @@
   function go(stepId) {
     const idx = stepIndex(stepId);
     if (idx > state.maxStep) {
-      toast("🔒 Finish the current step first!");
+      toast(t("lockedStep"));
       return;
     }
     state.current = stepId;
@@ -448,7 +616,7 @@
       li.innerHTML = `<span class="ps-num" aria-hidden="true">${i < state.maxStep ? "✓" : i + 1}</span><span class="ps-label">${step.label}</span>`;
       li.setAttribute("role", "button");
       li.tabIndex = locked ? -1 : 0;
-      li.setAttribute("aria-label", `${step.label}${locked ? " (locked)" : ""}`);
+      li.setAttribute("aria-label", `${step.label}${locked ? t("lockedSuffix") : ""}`);
       if (!locked) {
         li.addEventListener("click", () => go(step.id));
         li.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(step.id); } });
@@ -519,8 +687,8 @@
 
   /* ============================ 3. PRICE LAB — UNIT RATES ============================ */
   const CALC_DEFS = [
-    { key: "unitA", nameKey: "unitAName", placeholder: "e.g. 2.00", hint: "Taco Town: $6 ÷ 3 tacos = $2.00 per taco.", aria: "Taco Town unit rate" },
-    { key: "unitB", nameKey: "unitBName", placeholder: "e.g. 1.60", hint: "Salsa Stop: $8 ÷ 5 tacos = $1.60 per taco.", aria: "Salsa Stop unit rate" },
+    { key: "unitA", nameKey: "unitAName", placeholder: "e.g. 2.00", hintKey: "hintCalcA", ariaKey: "ariaCalcA" },
+    { key: "unitB", nameKey: "unitBName", placeholder: "e.g. 1.60", hintKey: "hintCalcB", ariaKey: "ariaCalcB" },
   ];
 
   function renderCalc() {
@@ -538,12 +706,12 @@
         </div>
         <div class="calc-input-row">
           <input type="text" inputmode="decimal" id="input-${def.key}" value="${escapeAttr(c.value)}"
-            placeholder="${def.placeholder}" aria-label="${def.aria}" ${c.solved ? "disabled" : ""} />
+            placeholder="${def.placeholder}" aria-label="${escapeAttr(t(def.ariaKey))}" ${c.solved ? "disabled" : ""} />
           <button class="btn-primary" type="button" id="check-${def.key}" ${c.solved ? "disabled" : ""}>${t("check")}</button>
-          <button class="btn-hint" type="button" id="hint-${def.key}">💡 Hint</button>
+          <button class="btn-hint" type="button" id="hint-${def.key}">${t("hintLabel")}</button>
         </div>
         <p class="feedback" id="fb-${def.key}" role="status" aria-live="polite"></p>
-        <div class="hintcard ${c.hint ? "show" : ""}" id="hintcard-${def.key}">💡 ${def.hint}</div>
+        <div class="hintcard ${c.hint ? "show" : ""}" id="hintcard-${def.key}">💡 ${t(def.hintKey)}</div>
       `;
       grid.appendChild(row);
 
@@ -556,7 +724,7 @@
         $(`#hintcard-${def.key}`).classList.add("show");
       });
 
-      if (c.solved) setFeedback($(`#fb-${def.key}`), "ok", "✓ Correct!");
+      if (c.solved) setFeedback($(`#fb-${def.key}`), "ok", t("correctShort"));
     });
     refreshDataLabGate();
   }
@@ -566,18 +734,18 @@
     const fb = $(`#fb-${key}`);
     const raw = $(`#input-${key}`).value.trim();
     c.value = raw;
-    if (raw === "") { setFeedback(fb, "no", "Type your answer first."); save(); return; }
+    if (raw === "") { setFeedback(fb, "no", t("typeFirst")); save(); return; }
 
     const ok = validateCalc(key, raw);
     if (ok) {
       c.solved = true;
       save();
-      setFeedback(fb, "ok", "✅ Correct! Nice work.");
+      setFeedback(fb, "ok", t("correctNice"));
       $(`#state-${key}`).textContent = t("solved");
       $(`#state-${key}`).classList.add("solved");
       $(`#input-${key}`).disabled = true;
       $(`#check-${key}`).disabled = true;
-      awardXp(key === "unitA" ? "Taco Town rate solved!" : "Salsa Stop rate solved!");
+      awardXp(t(key === "unitA" ? "xpRateA" : "xpRateB"));
       refreshDataLabGate();
     } else {
       c.attempts++;
@@ -586,7 +754,7 @@
       if (c.attempts >= 2) {
         c.hint = true;
         $(`#hintcard-${key}`).classList.add("show");
-        setFeedback(fb, "tip", `${msg} A hint is now open below. 💡`);
+        setFeedback(fb, "tip", `${msg} ${t("hintOpened")}`);
       } else {
         setFeedback(fb, "no", msg);
       }
@@ -604,18 +772,18 @@
   function calcMissMessage(key, raw) {
     const v = parseMoney(raw);
     if (key === "unitA") {
-      if (Math.abs(v - 6) < 0.01) return "That's the total price for 3 tacos. Now divide by 3 tacos to get one taco.";
-      if (Math.abs(v - 3) < 0.01) return "That's the number of tacos. Divide dollars by tacos: $6 ÷ 3.";
-      if (Math.abs(v - 0.5) < 0.01) return "Careful — you divided tacos by dollars. Unit rate is dollars ÷ tacos: $6 ÷ 3.";
-      return "Not yet. Unit rate = dollars ÷ tacos. Taco Town: $6 ÷ 3.";
+      if (Math.abs(v - 6) < 0.01) return t("missA6");
+      if (Math.abs(v - 3) < 0.01) return t("missA3");
+      if (Math.abs(v - 0.5) < 0.01) return t("missAinv");
+      return t("missA");
     }
     if (key === "unitB") {
-      if (Math.abs(v - 8) < 0.01) return "That's the total price for 5 tacos. Now divide by 5 tacos to get one taco.";
-      if (Math.abs(v - 5) < 0.01) return "That's the number of tacos. Divide dollars by tacos: $8 ÷ 5.";
-      if (Math.abs(v - 0.625) < 0.01) return "Careful — you divided tacos by dollars. Unit rate is dollars ÷ tacos: $8 ÷ 5.";
-      return "Not yet. Unit rate = dollars ÷ tacos. Salsa Stop: $8 ÷ 5.";
+      if (Math.abs(v - 8) < 0.01) return t("missB8");
+      if (Math.abs(v - 5) < 0.01) return t("missB5");
+      if (Math.abs(v - 0.625) < 0.01) return t("missBinv");
+      return t("missB");
     }
-    return "Not quite — try again.";
+    return t("missDefault");
   }
 
   function refreshDataLabGate() {
@@ -642,7 +810,7 @@
         const editIdx = TABLE_EDIT_ROWS.indexOf(i);
         const val = state.table.cells[editIdx] || "";
         dollarCells += `<td><input type="text" inputmode="decimal" id="rt-${i}" data-edit="${editIdx}"
-          value="${escapeAttr(val)}" placeholder="$?" aria-label="Dollars for ${r.tacos} tacos" ${state.table.solved ? "disabled" : ""} /></td>`;
+          value="${escapeAttr(val)}" placeholder="$?" aria-label="${escapeAttr(fmt("tableAria", { n: r.tacos }))}" ${state.table.solved ? "disabled" : ""} /></td>`;
       }
     });
     table.innerHTML = `
@@ -650,8 +818,8 @@
         <tr><th>Salsa Stop</th>${RATIO.rows.map(() => "<th></th>").join("")}</tr>
       </thead>
       <tbody>
-        <tr><td class="rt-label">${state.lang === "es" ? "Tacos" : "Tacos"}</td>${tacosCells}</tr>
-        <tr><td class="rt-label">${state.lang === "es" ? "Dólares" : "Dollars"}</td>${dollarCells}</tr>
+        <tr><td class="rt-label">${t("tacosLabel")}</td>${tacosCells}</tr>
+        <tr><td class="rt-label">${t("dollarsLabel")}</td>${dollarCells}</tr>
       </tbody>`;
 
     // wire inputs
@@ -679,15 +847,15 @@
       input.classList.add(right ? "cell-correct" : "cell-wrong");
       if (!right) allRight = false;
     });
-    if (anyBlank) { setFeedback(fb, "no", "Fill in every missing dollar amount, then check."); return; }
+    if (anyBlank) { setFeedback(fb, "no", t("tableFillAll")); return; }
     if (allRight) {
       state.table.solved = true;
       save();
-      setFeedback(fb, "ok", "✅ Great ratio table! Each taco is $1.60. The double number line is unlocked.");
+      setFeedback(fb, "ok", t("tableOk"));
       unlockDnl();
-      awardXp("Ratio table complete!");
+      awardXp(t("xpTable"));
     } else {
-      setFeedback(fb, "no", "Check the red cells. Each taco costs $1.60, so multiply tacos × $1.60.");
+      setFeedback(fb, "no", t("tableWrong"));
     }
   }
 
@@ -719,14 +887,14 @@
       col.innerHTML = `
         <span class="dnl-taco">${tacos}</span>
         <span class="dnl-tick" aria-hidden="true"></span>
-        <span class="dnl-mid">tacos</span>
+        <span class="dnl-mid">${t("dnlTacos")}</span>
         <span class="dnl-dollar-tick" aria-hidden="true"></span>
         <input type="text" inputmode="numeric" class="dnl-input" id="dnl-${i}"
           value="${fixed ? "0" : (state.graph.dollars[i] || state.graph.dollars[i] === 0 ? state.graph.dollars[i] : "")}"
-          aria-label="Dollars for ${tacos} tacos" ${fixed || state.graph.solved ? "disabled" : ""} />
+          aria-label="${escapeAttr(fmt("dnlAria", { n: tacos }))}" ${fixed || state.graph.solved ? "disabled" : ""} />
         <div class="dnl-controls">
-          <button class="dnl-btn" type="button" id="dnl-minus-${i}" aria-label="Decrease dollars for ${tacos} tacos" ${fixed || state.graph.solved ? "disabled" : ""}>−</button>
-          <button class="dnl-btn" type="button" id="dnl-plus-${i}" aria-label="Increase dollars for ${tacos} tacos" ${fixed || state.graph.solved ? "disabled" : ""}>+</button>
+          <button class="dnl-btn" type="button" id="dnl-minus-${i}" aria-label="${escapeAttr(fmt("dnlDecAria", { n: tacos }))}" ${fixed || state.graph.solved ? "disabled" : ""}>−</button>
+          <button class="dnl-btn" type="button" id="dnl-plus-${i}" aria-label="${escapeAttr(fmt("dnlIncAria", { n: tacos }))}" ${fixed || state.graph.solved ? "disabled" : ""}>+</button>
         </div>
       `;
       wrap.appendChild(col);
@@ -784,14 +952,14 @@
     if (allRight) {
       state.graph.solved = true;
       save();
-      setFeedback(fb, "ok", "✅ Your double number line matches $1.60 per taco! Interpretation unlocked.");
+      setFeedback(fb, "ok", t("dnlOk"));
       $("#interpBlock").classList.remove("locked");
       $("#interpBlock").setAttribute("aria-disabled", "false");
       $("#interpLockTag").textContent = t("unlocked");
       $("#interpLockTag").classList.add("unlocked");
-      awardXp("Number line built!");
+      awardXp(t("xpDnl"));
     } else {
-      setFeedback(fb, "no", "Check the red marks. 5 tacos → $8, then add $8 each time: $16 and $24.");
+      setFeedback(fb, "no", t("dnlWrong"));
     }
   }
 
@@ -804,39 +972,61 @@
   }
 
   /* ---- interpretation ---- */
+  // Options carry a stable `key` plus per-language labels; selection is stored
+  // and compared by key, so toggling language never breaks matching.
   const INTERP = [
     {
-      id: "less", q: "Which truck costs less per taco?",
-      opts: ["Taco Town ($2.00)", "Salsa Stop ($1.60)", "They cost the same"], answer: "Salsa Stop ($1.60)",
+      id: "less", qKey: "interpQLess",
+      opts: [
+        { key: "ttPrice", labelKey: "optTacoTownPrice" },
+        { key: "ssPrice", labelKey: "optSalsaStopPrice" },
+        { key: "same", labelKey: "optSame" },
+      ],
+      answerKey: "ssPrice",
     },
     {
-      id: "ten", q: "If you buy 10 tacos, how much cheaper is Salsa Stop than Taco Town?",
-      opts: ["$2 cheaper", "$4 cheaper", "$6 cheaper"], answer: "$4 cheaper",
+      id: "ten", qKey: "interpQTen",
+      opts: [
+        { key: "c2", labelKey: "opt2cheaper" },
+        { key: "c4", labelKey: "opt4cheaper" },
+        { key: "c6", labelKey: "opt6cheaper" },
+      ],
+      answerKey: "c4",
     },
     {
-      id: "value", q: "Which truck is the better value?",
-      opts: ["Taco Town", "Salsa Stop", "Cannot tell"], answer: "Salsa Stop",
+      id: "value", qKey: "interpQValue",
+      opts: [
+        { key: "tt", labelKey: "optTacoTown" },
+        { key: "ss", labelKey: "optSalsaStop" },
+        { key: "cant", labelKey: "optCannotTell" },
+      ],
+      answerKey: "ss",
     },
   ];
 
+  // Rebuilt on every render so option labels track the current language;
+  // selection persists because it is stored/compared by stable opt.key.
   function renderInterp() {
     const wrap = $("#interpQuestions");
     if (!wrap) return;
-    if (wrap.dataset.built === "1") { restoreInterpUI(); return; }
+    // Preserve any in-progress written text from the live DOM before rebuilding.
+    const liveTa = $("#interpWritten");
+    if (liveTa) state.interp.written = liveTa.value;
     wrap.innerHTML = "";
     INTERP.forEach((q) => {
       const div = document.createElement("div");
       div.className = "interp-q";
-      div.innerHTML = `<p>${q.q}</p><div class="opt-row" id="opts-${q.id}"></div>`;
+      div.innerHTML = `<p>${t(q.qKey)}</p><div class="opt-row" id="opts-${q.id}"></div>`;
       wrap.appendChild(div);
       q.opts.forEach((opt) => {
         const b = document.createElement("button");
         b.className = "opt";
         b.type = "button";
-        b.textContent = opt;
-        b.setAttribute("aria-pressed", String(state.interp.answers[q.id] === opt));
+        b.textContent = t(opt.labelKey);
+        b.dataset.optKey = opt.key;
+        b.setAttribute("aria-pressed", String(state.interp.answers[q.id] === opt.key));
         b.addEventListener("click", () => {
-          state.interp.answers[q.id] = opt;
+          state.interp.answers[q.id] = opt.key;
           $$(`#opts-${q.id} .opt`).forEach((o) => o.setAttribute("aria-pressed", String(o === b)));
           save();
         });
@@ -846,27 +1036,16 @@
     // short written response
     const writeDiv = document.createElement("div");
     writeDiv.className = "interp-q";
-    writeDiv.innerHTML = `<p>Why is unit rate useful for comparing deals? (written response)</p>`;
+    writeDiv.innerHTML = `<p>${t("interpWriteQ")}</p>`;
     const ta = document.createElement("textarea");
     ta.className = "writebox";
     ta.rows = 2;
     ta.id = "interpWritten";
-    ta.placeholder = "Type one sentence about unit rate…";
+    ta.placeholder = t("interpWritePh");
     ta.value = state.interp.written;
     ta.addEventListener("input", (e) => { state.interp.written = e.target.value; save(); });
     writeDiv.appendChild(ta);
     wrap.appendChild(writeDiv);
-    wrap.dataset.built = "1";
-  }
-
-  function restoreInterpUI() {
-    INTERP.forEach((q) => {
-      $$(`#opts-${q.id} .opt`).forEach((o) =>
-        o.setAttribute("aria-pressed", String(state.interp.answers[q.id] === o.textContent))
-      );
-    });
-    const ta = $("#interpWritten");
-    if (ta) ta.value = state.interp.written;
   }
 
   function checkInterp() {
@@ -874,26 +1053,26 @@
     let correctCount = 0;
     INTERP.forEach((q) => {
       const picked = state.interp.answers[q.id];
-      const right = picked === q.answer;
+      const right = picked === q.answerKey;
       if (right) correctCount++;
       $$(`#opts-${q.id} .opt`).forEach((o) => {
         o.classList.remove("correct", "wrong");
-        if (o.textContent === picked) o.classList.add(right ? "correct" : "wrong");
-        if (o.textContent === q.answer) o.classList.add("correct");
+        if (o.dataset.optKey === picked) o.classList.add(right ? "correct" : "wrong");
+        if (o.dataset.optKey === q.answerKey) o.classList.add("correct");
       });
     });
     const written = wordCount(state.interp.written) >= 3;
     if (correctCount === INTERP.length && written) {
       state.interp.solved = true;
       save();
-      setFeedback(fb, "ok", "✅ Great reading of the rates! The Decision Room is open.");
+      setFeedback(fb, "ok", t("interpOk"));
       $("#toDecisionBtn").disabled = false;
       unlock("decision");
-      awardXp("Rates interpreted!");
+      awardXp(t("xpInterp"));
     } else {
-      let msg = `You have ${correctCount} of ${INTERP.length} multiple-choice answers correct.`;
-      if (!written) msg += " Also write at least one full sentence in the response box.";
-      else msg += " Look at the highlighted answers and try again.";
+      let msg = fmt("interpScore", { n: correctCount, total: INTERP.length });
+      if (!written) msg += t("interpNeedWritten");
+      else msg += t("interpTryAgain");
       setFeedback(fb, "no", msg);
     }
   }
@@ -947,29 +1126,29 @@
   function submitDecision() {
     const fb = $("#decisionFeedback");
     const wc = wordCount(state.decision.text);
-    if (!state.decision.choice) { setFeedback(fb, "no", "Pick a recommendation (A, B, C, or D) first."); return; }
-    if (wc < 18) { setFeedback(fb, "no", `Write at least 18 words of evidence. You have ${wc}.`); return; }
+    if (!state.decision.choice) { setFeedback(fb, "no", t("decPick")); return; }
+    if (wc < 18) { setFeedback(fb, "no", fmt("decWords", { n: wc })); return; }
 
     state.decision.submitted = true;
 
     if (state.decision.choice === BEST_CHOICE) {
       state.decision.accepted = true;
       save();
-      setFeedback(fb, "ok", "✅ The city council is convinced! Heading to City Reaction…");
+      setFeedback(fb, "ok", t("decAccepted"));
       computeScore();
       unlock("reaction");
-      awardXp("Recommendation accepted!");
+      awardXp(t("xpDecAccepted"));
       setTimeout(() => go("reaction"), 700);
     } else {
       // revision event
       state.decision.accepted = false;
       state.decision.revisions++;
       save();
-      setFeedback(fb, "no", "🏛️ The city council is not convinced yet. Look back at your unit rates and revise. (Hint: Salsa Stop is $1.60/taco, which is lower than Taco Town's $2.00/taco.)");
+      setFeedback(fb, "no", t("decRevise"));
       // still let them see a (revise) reaction so the loop is visible
       computeScore();
       unlock("reaction");
-      awardXp("Revision needed");
+      awardXp(t("xpDecRevise"));
       setTimeout(() => go("reaction"), 900);
     }
   }
@@ -1203,19 +1382,19 @@
   function submitNews() {
     const fb = $("#newsFeedback");
     const wc = wordCount(state.news.text);
-    if (wc < 35) { setFeedback(fb, "no", `Write at least 35 words. You have ${wc}.`); return; }
+    if (wc < 35) { setFeedback(fb, "no", fmt("newsWords", { n: wc })); return; }
     state.news.submitted = true;
     save();
-    setFeedback(fb, "ok", "✅ Published! Generating your Proof-of-Learning Passport…");
+    setFeedback(fb, "ok", t("newsPublished"));
     unlock("passport");
-    awardXp("News published!");
+    awardXp(t("xpNews"));
     setTimeout(() => go("passport"), 700);
   }
 
   /* ============================ 8. PASSPORT ============================ */
   function renderPassport() {
-    $("#ppName").textContent = state.name || "Student";
-    $("#ppRole").textContent = state.role || "City Team";
+    $("#ppName").textContent = state.name || t("ppStudent");
+    $("#ppRole").textContent = state.role || t("ppTeam");
     const tier = state.outcomeTier || "medium";
     $("#ppOutcome").textContent = tier === "good" ? t("ppApproved")
       : tier === "medium" ? t("ppReview") : t("ppRevise");
@@ -1326,11 +1505,11 @@
     a.remove();
     // Delay revocation so slower browsers (Firefox/Safari/mobile) finish the fetch.
     setTimeout(() => URL.revokeObjectURL(url), 100);
-    toast("⬇️ Progress downloaded");
+    toast(t("downloaded"));
   }
 
   function resetMission() {
-    if (!confirm("Reset the whole mission? This clears all your work on this device.")) return;
+    if (!confirm(t("resetConfirm"))) return;
     try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
     state = defaultState();
     save();
@@ -1480,7 +1659,7 @@
   function updateCount(sel, text, min) {
     const el = $(sel);
     const n = wordCount(text);
-    el.textContent = `${n} words` + (n >= min ? " ✓" : ` (need ${min})`);
+    el.textContent = `${n} ${t("wordsLabel")}` + (n >= min ? " ✓" : ` (${t("wordsNeed")} ${min})`);
     el.classList.toggle("ok", n >= min);
   }
   function insertText(taSel, snippet, stateKey, field) {
