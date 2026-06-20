@@ -1601,28 +1601,37 @@
   
       
       function runWhatIf() {
-        const v = parseFloat($("whatIfVal").value);
-        let sample = worldSample();
-        const customSize = $("a-price") ? num("a-price") : NaN;
-        if (!isNaN(customSize) && customSize > 0) {
-          sample = [...sample, customSize];
-        }
-        if (isNaN(v)) {
-          $("whatIfBox").textContent = "Enter a number first.";
+        const ap = num("a-price"),
+          au = num("a-units"),
+          bp = num("b-price"),
+          bu = num("b-units");
+        const cp = parseFloat($("c-price").value);
+        const cu = parseFloat($("c-units").value);
+        if ([ap, au, bp, bu].some((x) => isNaN(x) || x <= 0)) {
+          $("whatIfBox").textContent =
+            "First fill in Package A and B price and units in Part 1.";
           return;
         }
-        const before = PK.mean(sample);
-        const after = PK.mean(sample.concat([v]));
-        
-        let beforeStr = true ? "$" + before.toFixed(2) : before.toFixed(2) + "";
-        let afterStr = true ? "$" + after.toFixed(2) : after.toFixed(2) + "";
-        let vStr = true ? "$" + v.toFixed(2) : v + "";
-
+        if (isNaN(cp) || cp <= 0 || isNaN(cu) || cu <= 0) {
+          $("whatIfBox").textContent =
+            "Enter Package C price and units (both greater than 0).";
+          return;
+        }
+        const r = (x) => Math.round(x * 1000) / 1000;
+        const rates = [
+          ["A", ap / au],
+          ["B", bp / bu],
+          ["C", cp / cu],
+        ];
+        const best = rates.reduce((m, x) => (x[1] < m[1] ? x : m));
         PK.whatIf(
           "whatIfBox",
-          { average: beforeStr },
-          { average: afterStr },
-          "Adding a value of " + vStr + " to the sample:"
+          { "A $/unit": "$" + r(ap / au), "B $/unit": "$" + r(bp / bu) },
+          {
+            "C $/unit": "$" + r(cp / cu),
+            "best buy": "Package " + best[0] + " ($" + r(best[1]) + "/unit)",
+          },
+          "Lower unit price wins — add Package C and see if it beats A and B:",
         );
       }
   

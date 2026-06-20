@@ -2556,32 +2556,39 @@
       }
 
       function runWhatIf() {
-        const v = parseFloat($("whatIfVal").value);
-        let sample = worldSample();
-        const customSize = $("worldSize") ? num("worldSize") : NaN;
-        if (!isNaN(customSize) && customSize > 0) {
-          sample = [...sample, customSize];
-        }
-        if (isNaN(v)) {
-          $("whatIfBox").textContent = "Enter a number first.";
+        const l = num("t-length"),
+          w = num("t-width"),
+          h = num("t-height");
+        const rate = num("gc-rate");
+        const dim = $("whatIfDim").value;
+        if ([l, w, h].some((x) => isNaN(x) || x <= 0)) {
+          $("whatIfBox").textContent =
+            "First enter your tank length, width, and height in Part 1.";
           return;
         }
-        const before = PK.mean(sample);
-        const after = PK.mean(sample.concat([v]));
-
-        let beforeStr = false
-          ? "$" + before.toFixed(2)
-          : before.toFixed(2) + " cu in";
-        let afterStr = false
-          ? "$" + after.toFixed(2)
-          : after.toFixed(2) + " cu in";
-        let vStr = false ? "$" + v.toFixed(2) : v + " cu in";
-
+        const r = (x) => Math.round(x * 100) / 100;
+        // Open-top tank: glass = lw + 2lh + 2wh (no lid).
+        const glass = (L, W, H) => L * W + 2 * L * H + 2 * W * H;
+        let nl = l,
+          nw = w,
+          nh = h;
+        if (dim === "l") nl += 1;
+        else if (dim === "w") nw += 1;
+        else nh += 1;
+        const before = glass(l, w, h);
+        const after = glass(nl, nw, nh);
+        const names = { l: "length", w: "width", h: "height" };
+        const beforeObj = { glass: r(before) + " sq in" };
+        const afterObj = { glass: r(after) + " sq in" };
+        if (!isNaN(rate) && rate > 0) {
+          beforeObj.cost = "$" + r(before * rate);
+          afterObj.cost = "$" + r(after * rate);
+        }
         PK.whatIf(
           "whatIfBox",
-          { average: beforeStr },
-          { average: afterStr },
-          "Adding a value of " + vStr + " to the sample:",
+          beforeObj,
+          afterObj,
+          "Add 1 inch to the " + names[dim] + ":",
         );
       }
 

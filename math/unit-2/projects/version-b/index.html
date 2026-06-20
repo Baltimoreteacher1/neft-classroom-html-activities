@@ -2342,32 +2342,22 @@
       }
 
       function runWhatIf() {
-        const v = parseFloat($("whatIfVal").value);
-        let sample = worldSample();
-        const customSize = $("worldSize") ? num("worldSize") : NaN;
-        if (!isNaN(customSize) && customSize > 0) {
-          sample = [...sample, customSize];
-        }
-        if (isNaN(v)) {
-          $("whatIfBox").textContent = "Enter a number first.";
+        const len = parseFloat($("wi-length").value);
+        const cut = parseFloat($("wi-cut").value);
+        if (isNaN(len) || len <= 0 || isNaN(cut) || cut <= 0) {
+          $("whatIfBox").textContent =
+            "Enter a material length and a cut size — both greater than 0.";
           return;
         }
-        const before = PK.mean(sample);
-        const after = PK.mean(sample.concat([v]));
-
-        let beforeStr = false
-          ? "$" + before.toFixed(2)
-          : before.toFixed(2) + " in";
-        let afterStr = false
-          ? "$" + after.toFixed(2)
-          : after.toFixed(2) + " in";
-        let vStr = false ? "$" + v.toFixed(2) : v + " in";
-
+        const r = (x) => Math.round(x * 100) / 100;
+        const half = cut / 2;
         PK.whatIf(
           "whatIfBox",
-          { average: beforeStr },
-          { average: afterStr },
-          "Adding a value of " + vStr + " to the sample:",
+          { "cut size": cut + " ft", pieces: r(len / cut) },
+          { "cut size": half + " ft", pieces: r(len / half) },
+          "Length of " +
+            len +
+            " ft ÷ cut size = pieces. Cut the piece size in half → twice as many pieces:",
         );
       }
 

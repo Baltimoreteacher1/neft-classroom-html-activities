@@ -2513,32 +2513,27 @@
       }
 
       function runWhatIf() {
-        const v = parseFloat($("whatIfVal").value);
-        let sample = worldSample();
-        const customSize = $("worldSize") ? num("worldSize") : NaN;
-        if (!isNaN(customSize) && customSize > 0) {
-          sample = [...sample, customSize];
-        }
-        if (isNaN(v)) {
-          $("whatIfBox").textContent = "Enter a number first.";
+        const b1 = num("p1-b1");
+        const b2 = num("p1-b2");
+        const h = num("p1-h");
+        const add = parseFloat($("whatIfAdd").value);
+        if ([b1, b2, h].some((x) => isNaN(x) || x <= 0)) {
+          $("whatIfBox").textContent =
+            "First enter base 1, base 2, and height for your plot in Part 1.";
           return;
         }
-        const before = PK.mean(sample);
-        const after = PK.mean(sample.concat([v]));
-
-        let beforeStr = false
-          ? "$" + before.toFixed(2)
-          : before.toFixed(2) + " ft";
-        let afterStr = false
-          ? "$" + after.toFixed(2)
-          : after.toFixed(2) + " ft";
-        let vStr = false ? "$" + v.toFixed(2) : v + " ft";
-
+        if (isNaN(add)) {
+          $("whatIfBox").textContent =
+            "Enter how many feet to add to base 1 (b₁).";
+          return;
+        }
+        const r = (x) => Math.round(x * 100) / 100;
+        const area = (x) => ((x + b2) / 2) * h;
         PK.whatIf(
           "whatIfBox",
-          { average: beforeStr },
-          { average: afterStr },
-          "Adding a value of " + vStr + " to the sample:",
+          { "b₁": b1 + " ft", area: r(area(b1)) + " sq ft" },
+          { "b₁": r(b1 + add) + " ft", area: r(area(b1 + add)) + " sq ft" },
+          "Add " + add + " ft to base 1 (b₂=" + b2 + " ft, height=" + h + " ft):",
         );
       }
 

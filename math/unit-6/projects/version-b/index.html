@@ -1640,28 +1640,20 @@
       /* ---- What-If: add one more month ---- */
       
       function runWhatIf() {
-        const v = parseFloat($("whatIfVal").value);
-        let sample = worldSample();
-        const customSize = $("cost-p") ? num("cost-p") : NaN;
-        if (!isNaN(customSize) && customSize > 0) {
-          sample = [...sample, customSize];
-        }
-        if (isNaN(v)) {
-          $("whatIfBox").textContent = "Enter a number first.";
+        const p = num("cost-p");
+        const fee = num("cost-fee");
+        const n = num("cost-n");
+        if (isNaN(p) || isNaN(fee) || isNaN(n)) {
+          $("whatIfBox").textContent =
+            "First enter your price p, setup fee, and months n in Part 1.";
           return;
         }
-        const before = PK.mean(sample);
-        const after = PK.mean(sample.concat([v]));
-        
-        let beforeStr = true ? "$" + before.toFixed(2) : before.toFixed(2) + "";
-        let afterStr = true ? "$" + after.toFixed(2) : after.toFixed(2) + "";
-        let vStr = true ? "$" + v.toFixed(2) : v + "";
-
+        const r = (x) => Math.round(x * 100) / 100;
         PK.whatIf(
           "whatIfBox",
-          { average: beforeStr },
-          { average: afterStr },
-          "Adding a value of " + vStr + " to the sample:"
+          { months: n, cost: "$" + r(p * n + fee) },
+          { months: n + 1, cost: "$" + r(p * (n + 1) + fee) },
+          "Add one more month (cost = $" + p + "·n + $" + fee + " setup):",
         );
       }
   

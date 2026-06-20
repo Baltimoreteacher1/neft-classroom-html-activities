@@ -2253,32 +2253,38 @@
       }
 
       function runWhatIf() {
-        const v = parseFloat($("whatIfVal").value);
-        let sample = worldSample();
-        const customSize = $("v-length") ? num("v-length") : NaN;
-        if (!isNaN(customSize) && customSize > 0) {
-          sample = [...sample, customSize];
-        }
-        if (isNaN(v)) {
-          $("whatIfBox").textContent = "Enter a number first.";
+        const l = num("v-length"),
+          w = num("v-width"),
+          h = num("v-height");
+        const rate = num("cost-rate");
+        const dim = $("whatIfDim").value;
+        if ([l, w, h].some((x) => isNaN(x) || x <= 0)) {
+          $("whatIfBox").textContent =
+            "First enter your box length, width, and height in Part 1.";
           return;
         }
-        const before = PK.mean(sample);
-        const after = PK.mean(sample.concat([v]));
-
-        let beforeStr = false
-          ? "$" + before.toFixed(2)
-          : before.toFixed(2) + " cubits";
-        let afterStr = false
-          ? "$" + after.toFixed(2)
-          : after.toFixed(2) + " cubits";
-        let vStr = false ? "$" + v.toFixed(2) : v + " cubits";
-
+        const r = (x) => Math.round(x * 100) / 100;
+        const SA = (L, W, H) => 2 * (L * W + L * H + W * H);
+        let nl = l,
+          nw = w,
+          nh = h;
+        if (dim === "l") nl += 1;
+        else if (dim === "w") nw += 1;
+        else nh += 1;
+        const before = SA(l, w, h);
+        const after = SA(nl, nw, nh);
+        const names = { l: "length", w: "width", h: "height" };
+        const beforeObj = { SA: r(before) + " sq in" };
+        const afterObj = { SA: r(after) + " sq in" };
+        if (!isNaN(rate) && rate > 0) {
+          beforeObj.cost = "$" + r(before * rate);
+          afterObj.cost = "$" + r(after * rate);
+        }
         PK.whatIf(
           "whatIfBox",
-          { average: beforeStr },
-          { average: afterStr },
-          "Adding a value of " + vStr + " to the sample:",
+          beforeObj,
+          afterObj,
+          "Add 1 inch to the " + names[dim] + ":",
         );
       }
 

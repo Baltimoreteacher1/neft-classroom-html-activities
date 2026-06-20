@@ -1801,28 +1801,20 @@
       /* ---- What-If: add one more coin ---- */
       
       function runWhatIf() {
-        const v = parseFloat($("whatIfVal").value);
-        let sample = worldSample();
-        const customSize = $("exp-base") ? num("exp-base") : NaN;
-        if (!isNaN(customSize) && customSize > 0) {
-          sample = [...sample, customSize];
-        }
-        if (isNaN(v)) {
-          $("whatIfBox").textContent = "Enter a number first.";
+        const rate = num("coin-r");
+        const k = num("coin-k");
+        const c = num("coin-c");
+        if (isNaN(rate) || isNaN(k) || isNaN(c)) {
+          $("whatIfBox").textContent =
+            "First enter your rate r, bonus k, and coins c in Part 1.";
           return;
         }
-        const before = PK.mean(sample);
-        const after = PK.mean(sample.concat([v]));
-        
-        let beforeStr = true ? "$" + before.toFixed(2) : before.toFixed(2) + "";
-        let afterStr = true ? "$" + after.toFixed(2) : after.toFixed(2) + "";
-        let vStr = true ? "$" + v.toFixed(2) : v + "";
-
+        const r = (x) => Math.round(x * 100) / 100;
         PK.whatIf(
           "whatIfBox",
-          { average: beforeStr },
-          { average: afterStr },
-          "Adding a value of " + vStr + " to the sample:"
+          { coins: c, score: r(rate * c + k) },
+          { coins: c + 1, score: r(rate * (c + 1) + k) },
+          "Add one more coin (score = " + rate + "·c + " + k + "):",
         );
       }
   

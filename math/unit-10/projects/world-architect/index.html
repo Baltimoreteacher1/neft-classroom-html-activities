@@ -2465,10 +2465,14 @@
       }
 
       function sentenceStarterButtons(targetId) {
-        return SENTENCE_STARTERS.map(
-          (starter) =>
-            `<button type="button" class="starter-chip" draggable="true" ondragstart="dragStarter(event, ${JSON.stringify(starter)})" onclick="insertStarter('${targetId}', ${JSON.stringify(starter)})">${escapeHtml(starter.trim())}...</button>`,
-        ).join("");
+        const tid = escapeHtml(targetId);
+        return SENTENCE_STARTERS.map((starter) => {
+          // HTML-escape the JSON so embedded quotes survive inside the
+          // double-quoted inline handler attributes (the browser decodes
+          // &quot; back to " when it compiles the handler).
+          const arg = escapeHtml(JSON.stringify(starter));
+          return `<button type="button" class="starter-chip" draggable="true" ondragstart="dragStarter(event, ${arg})" onclick="insertStarter('${tid}', ${arg})">${escapeHtml(starter.trim())}...</button>`;
+        }).join("");
       }
       function dragStarter(event, starter) {
         event.dataTransfer.setData("text/plain", starter);
@@ -3068,7 +3072,6 @@
       <td>${escapeHtml(r.substitution || "—")}</td>
     </tr>`;
           })
-          .join("")
           .join("");
 
         $("submit-period").value = state.student.period
@@ -3157,9 +3160,7 @@
   <style>body{font-family:Arial,sans-serif;line-height:1.45;margin:32px;color:#222} h1{color:#1C2E42} .box{border:2px solid #1C2E42;border-radius:12px;padding:18px}
 @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
 </style></head>
-  <body><h1>World Architect Geometry Challenge Submission</h1><div class="box">${escaped}</div>  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
+  <body><h1>World Architect Geometry Challenge Submission</h1><div class="box">${escaped}</div>
 </body></html>`;
       }
       function safeFilename() {
@@ -3318,6 +3319,9 @@
       init();
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
   </body>
