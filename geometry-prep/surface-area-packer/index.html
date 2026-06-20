@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/assets/math-mobile.css">
   <meta name="description" content="Surface Area Cyber-Packer: An interactive cyberpunk geometry sandbox. Adjust dimensions, unfold 3D net structures, and calculate surface areas dynamically.">
   <title>Surface Area Cyber-Packer | Neft Studio</title>
 
@@ -748,6 +749,89 @@
     }
   
 @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+
+    /* ── Responsive: tablet (≤900px) ── */
+    @media (max-width: 900px) {
+      .breadcrumb { margin: 16px 16px 0; flex-wrap: wrap; }
+      .hero { padding: 24px; margin: 16px; }
+      .hero h1 { font-size: 1.85rem; }
+      .hero-row { flex-direction: column; }
+      .hero-stats { flex-wrap: wrap; }
+
+      /* Stack sidebar above the workspace, full width */
+      .studio-shell {
+        grid-template-columns: 1fr;
+        padding: 0 16px 48px;
+        gap: 20px;
+      }
+      .sidebar-wrapper {
+        position: static;
+        top: auto;
+      }
+
+      /* Sliders: collapse 3-col to 2-col */
+      .net-controllers { grid-template-columns: repeat(2, 1fr); }
+
+      /* TWR lanes: 3-col to single column stack */
+      .twr-lanes { grid-template-columns: 1fr; }
+
+      /* SVG viewport stays fluid; let it scroll if it needs min width */
+      .model-viewport { min-height: 300px; overflow: auto; }
+
+      .diag-overlay {
+        width: auto;
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
+      }
+    }
+
+    /* ── Responsive: phone (≤640px) ── */
+    @media (max-width: 640px) {
+      .breadcrumb { margin: 12px 12px 0; font-size: 0.8rem; }
+      .hero { padding: 18px; margin: 12px; border-radius: var(--radius-md); }
+      .hero h1 { font-size: 1.5rem; }
+      .hero p { font-size: 0.9rem; }
+
+      /* Full-width hero buttons */
+      .hero-stats { flex-direction: column; align-items: stretch; }
+      .hero-stats .cyber-btn { width: 100%; justify-content: center; }
+
+      .studio-shell { padding: 0 12px 36px; gap: 16px; }
+      .sidebar-wrapper { padding: 18px; }
+      .glass-panel { padding: 18px; gap: 18px; }
+      .glossary-card,
+      .writing-reporter { padding: 18px; }
+
+      /* Single-column everything */
+      .net-controllers { grid-template-columns: 1fr; padding: 16px; gap: 16px; }
+      .hud-checklist { grid-template-columns: 1fr; }
+
+      /* Panel headers wrap so reset button drops below heading */
+      .panel-meta { flex-direction: column; align-items: stretch; gap: 12px; }
+      .panel-meta h3 { font-size: 1.05rem; }
+      .panel-meta .cyber-btn { width: 100%; justify-content: center; }
+
+      /* Glossary language tabs wrap */
+      .glossary-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+      .glossary-lang-tabs { flex-wrap: wrap; }
+
+      /* Report actions full-width submit */
+      .report-actions { justify-content: stretch; }
+      .report-actions .cyber-btn { width: 100%; justify-content: center; }
+
+      /* Keep the SVG stage usable: fit width, scroll if it hits min size */
+      .model-viewport { min-height: 240px; overflow: auto; }
+      .model-viewport svg { min-width: 480px; }
+
+      .diag-overlay {
+        left: 8px;
+        right: 8px;
+        bottom: 8px;
+        font-size: 0.72rem;
+      }
+    }
+
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">

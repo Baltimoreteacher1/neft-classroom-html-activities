@@ -1,0 +1,92 @@
+/* =========================================================================
+   math-mobile.css — tablet & phone safety net for EduWonderLab math activities
+   -------------------------------------------------------------------------
+   Linked EARLY (right after the <meta viewport> tag) in every math activity so
+   it acts as a low-precedence FALLBACK: any activity that already ships its own
+   responsive styling overrides these rules, while activities that were built
+   desktop-only inherit a sane mobile baseline. No !important, low specificity.
+
+   Goals:
+   - never let a page render wider than the device (kills horizontal scroll /
+     "tiny zoomed-out" pages on phones)
+   - keep media (images, svg, canvas, video, iframes, tables) inside the screen
+   - keep tap targets and form text large enough on small screens (>=44px,
+     16px inputs to stop iOS focus-zoom)
+   ========================================================================= */
+
+/* Predictable sizing everywhere (most activities already do this; harmless). */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  /* Stop mobile Safari/Chrome from inflating text after orientation change. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Long words / URLs shouldn't push the layout wider than the screen. */
+body {
+  overflow-wrap: break-word;
+}
+
+/* Fluid replaced elements: scale down to fit, keep aspect ratio. */
+img,
+svg,
+video,
+canvas,
+iframe,
+object,
+embed {
+  max-width: 100%;
+}
+
+img,
+svg,
+video {
+  height: auto;
+}
+
+/* Canvas-based interactives: fit width but preserve the drawing ratio. */
+canvas {
+  height: auto;
+}
+
+/* ---- Phone & small-tablet baseline ------------------------------------- */
+@media (max-width: 640px) {
+  /* Wide data tables become horizontally scrollable instead of overflowing
+     the page. (Page styles that set their own table display win over this.) */
+  table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Preformatted blocks / code wrap instead of forcing horizontal scroll. */
+  pre,
+  code {
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  /* Comfortable touch targets. */
+  button,
+  a.button,
+  .btn,
+  [role="button"],
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"] {
+    min-height: 44px;
+  }
+
+  /* 16px text on inputs prevents iOS from auto-zooming the page on focus. */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
