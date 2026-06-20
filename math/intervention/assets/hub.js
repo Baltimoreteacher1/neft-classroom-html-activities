@@ -92,6 +92,17 @@
     const search = $("#topic-search");
     const chips = $$(".filter-chip");
     let activeDomain = "all";
+
+    // Screen-reader live region announcing how many topics match.
+    let live = $("#topic-live");
+    if (!live) {
+      live = document.createElement("p");
+      live.id = "topic-live";
+      live.setAttribute("aria-live", "polite");
+      live.className = "sr-only";
+      (grid.parentNode || grid).insertBefore(live, grid);
+    }
+
     function apply() {
       const q = (search ? search.value : "").trim().toLowerCase();
       let shown = 0;
@@ -106,8 +117,19 @@
       });
       const empty = $("#no-results");
       if (empty) empty.hidden = shown > 0;
+      live.textContent =
+        shown === 0
+          ? "No topics match your search."
+          : shown + (shown === 1 ? " topic shown." : " topics shown.");
     }
-    if (search) search.addEventListener("input", apply);
+
+    // Debounce keystrokes so the live region is not over-announced.
+    let searchTimer = null;
+    if (search)
+      search.addEventListener("input", () => {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(apply, 200);
+      });
     chips.forEach((chip) =>
       chip.addEventListener("click", () => {
         chips.forEach((c) => c.setAttribute("aria-pressed", "false"));
