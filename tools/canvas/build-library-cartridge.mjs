@@ -337,10 +337,29 @@ if (SPLIT) {
   const built = [];
   for (const m of orderedModules) {
     const r = emit([m], [...filterSuffix, moduleSlug(m), modeSuffix]);
-    built.push(r);
+    built.push({ ...r, title: m.title });
     console.log(`    • ${m.title.padEnd(34)} ${String(r.itemCount).padStart(3)}  →  ${r.outName}`);
   }
   console.log(`\n  ${built.length} packages in canvas-packages/, each self-validated ✓`);
+
+  // Printable rollout sheet — which file to import for each section, in order.
+  const modeLine =
+    MODE === "graded"
+      ? "Each item is a text-entry assignment; students paste a completion code (decode it in **Canvas Grades**, `/teacher-tools/canvas-grades/`)."
+      : "Each item is a page linking to the live activity; publish what you teach.";
+  const indexMd =
+    `# Canvas rollout — per-section import sheet\n\n` +
+    `Generated from \`data/registry.json\` · mode: **${MODE}** · ${built.length} sections.\n\n` +
+    `Import one section at a time, the week you teach it:\n` +
+    `**Canvas → Settings → Import Course Content → "Common Cartridge 1.x Package" → upload → Import.**\n` +
+    `Everything imports UNPUBLISHED. ${modeLine}\n\n` +
+    `| # | Section | Items | Package to import |\n| - | --- | ---: | --- |\n` +
+    built.map((r, i) => `| ${i + 1} | ${r.title} | ${r.itemCount} | \`${r.outName}\` |`).join("\n") +
+    `\n\n_Re-run \`npm run library-cartridge -- --split\` after \`npm run generate-registry\` to refresh as the library grows._\n`;
+  const indexFile = resolve(repoRoot, "canvas-packages", "INDEX.md");
+  writeFileSync(indexFile, indexMd);
+  console.log(`  Rollout sheet: ${indexFile}`);
+
   console.log(`\nImport each section on its own: Canvas → Settings → Import Course Content →`);
   console.log(`  "Common Cartridge 1.x Package" → upload → Import. All UNPUBLISHED.`);
 } else {
