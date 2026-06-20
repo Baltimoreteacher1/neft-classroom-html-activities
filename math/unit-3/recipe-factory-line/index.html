@@ -6,6 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
+    <link rel="stylesheet" href="/assets/math-mobile.css">
     <title>Recipe Factory — Scale the Ratio | Neft Teacher</title>
     <meta
       name="description"
@@ -389,7 +390,29 @@
         font-weight: 700;
         font-size: 0.9rem;
       }
-    
+
+      /* ── Responsive: tablet ── */
+      @media (max-width: 900px) {
+        .hud { gap: 8px; padding: 8px 12px; }
+        .stage { padding: 0 10px 10px; }
+        .controls { gap: 6px; }
+        .level-row { gap: 12px; }
+      }
+
+      /* ── Responsive: phone ── */
+      @media (max-width: 640px) {
+        .hud { gap: 6px; padding: 8px 10px; }
+        .pill { font-size: 0.78rem; padding: 5px 10px; }
+        .ticket { padding: 12px; }
+        /* Collapse the 3-col control grid so add/remove cells stay tappable */
+        .controls { grid-template-columns: 1fr 1fr; }
+        .controls .cell .btn { padding: 14px 6px; font-size: 1rem; }
+        .level-row { flex-direction: column; align-items: stretch; }
+        .level-btn { width: 100%; max-width: 100%; }
+        .center-pad { padding: 16px; }
+        .beltwrap { min-height: 130px; }
+      }
+
 @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
 </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

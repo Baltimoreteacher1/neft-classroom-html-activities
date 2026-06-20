@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/assets/math-mobile.css">
     <meta
       name="description"
       content="Geometry Prep Studio | Grade 6 Math Readiness. Visual notes, 3D unit cube stacking simulation, coordinate plane plotter, and adaptive self-check."
@@ -822,6 +823,127 @@
           animation-duration: 0.001ms !important;
           animation-iteration-count: 1 !important;
           transition-duration: 0.001ms !important;
+        }
+      }
+
+      /* ===== Responsive: tablet (<=900px) — additive ===== */
+      @media (max-width: 900px) {
+        .hero {
+          padding: clamp(20px, 4vw, 32px);
+          gap: 18px;
+        }
+        /* Wide multi-column target grid -> 2 columns on tablet */
+        .target-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        /* Vocab cards: allow tighter min so they don't force wide rows */
+        .vocab-grid {
+          grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        }
+        /* Let the test-progress row wrap instead of squashing the track */
+        .test-progress {
+          flex-wrap: wrap;
+          gap: 10px;
+        }
+        .test-progress .progress-track {
+          flex: 1 1 100%;
+          margin: 6px 0;
+          order: 3;
+        }
+        /* Keep interactive SVG stages fully visible inside their box */
+        .canvas-box {
+          min-height: 280px;
+        }
+        .canvas-box svg {
+          width: 100%;
+          height: auto;
+        }
+      }
+
+      /* ===== Responsive: phone (<=640px) — additive, single column ===== */
+      @media (max-width: 640px) {
+        .hero {
+          padding: 18px;
+          border-top-width: 4px;
+        }
+        .hero h1 {
+          font-size: clamp(1.6rem, 7vw, 2.2rem);
+        }
+        .hero p.tagline {
+          font-size: 1rem;
+        }
+        /* Single-column layouts everywhere */
+        .grid-2,
+        .grid-3,
+        .sim-workspace {
+          grid-template-columns: 1fr;
+          gap: 16px;
+        }
+        .target-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .vocab-grid {
+          grid-template-columns: 1fr;
+        }
+        /* Reduce oversized paddings */
+        .card,
+        .test-card {
+          padding: 16px;
+        }
+        .card h2 {
+          font-size: 1.35rem;
+        }
+        .canvas-panel,
+        .calc-board {
+          padding: 14px;
+        }
+        /* Tab bar already scrolls horizontally; tighten for phones */
+        nav.tab-nav {
+          margin: 14px 0;
+        }
+        .tab-btn {
+          padding: 9px 14px;
+          font-size: 0.85rem;
+        }
+        /* Stack the graded-test progress header */
+        .test-progress {
+          flex-direction: column;
+          align-items: stretch;
+          text-align: center;
+        }
+        .test-progress .progress-track {
+          margin: 8px 0;
+        }
+        /* Full-width answer options and stacked option content */
+        .q-options {
+          gap: 8px;
+        }
+        .q-option {
+          padding: 12px 14px;
+        }
+        /* Floating language/reset widget: stack and span the width */
+        .lang-widget {
+          left: 12px;
+          right: 12px;
+          bottom: 12px;
+          flex-direction: column;
+        }
+        .lang-widget .float-btn {
+          width: 100%;
+          justify-content: center;
+        }
+        /* Interactive SVG stage: fluid container, scroll if it needs min size */
+        .canvas-box {
+          min-height: 240px;
+          padding: 6px;
+          overflow: auto;
+        }
+        .canvas-box svg {
+          width: 100%;
+          height: auto;
+        }
+        .score-big {
+          font-size: 2.6rem;
         }
       }
     </style>

@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/assets/math-mobile.css">
   <meta name="description" content="Tangram Polygon Architect: An interactive drafting studio decomposing composite polygons into rectangles and triangles to find area.">
   <title>Tangram Polygon Architect | Neft Studio</title>
 
@@ -724,7 +725,52 @@
         max-height: none;
       }
     }
-  
+
+    /* ── Responsive: tablet (≤900px) ── */
+    @media (max-width: 900px) {
+      .breadcrumb { margin: 16px 16px 0; }
+      .hero { padding: 24px; margin: 16px; }
+      .hero h1 { font-size: 1.8rem; }
+      .hero-row { gap: 16px; }
+      .hero-stats { flex-wrap: wrap; }
+      .studio-shell { grid-template-columns: 1fr; padding: 0 16px 48px; gap: 20px; }
+      .sidebar-wrapper { position: static; max-height: none; }
+      .glass-panel { padding: 20px; }
+      .blueprint-split { grid-template-columns: 1fr; }
+      .twr-lanes { grid-template-columns: 1fr 1fr; }
+      .hud-checklist { grid-template-columns: 1fr; }
+      .diag-overlay { width: auto; left: 16px; right: 16px; }
+    }
+
+    /* ── Responsive: phone (≤640px) ── */
+    @media (max-width: 640px) {
+      .breadcrumb { margin: 12px 12px 0; flex-wrap: wrap; }
+      .hero { padding: 18px; margin: 12px; border-radius: var(--radius-md); }
+      .hero h1 { font-size: 1.5rem; }
+      .hero p { font-size: 0.9rem; }
+      .hero-row { flex-direction: column; }
+      .hero-stats { flex-direction: column; align-items: stretch; gap: 10px; }
+      .hero-stats .cyber-btn { width: 100%; justify-content: center; }
+      .studio-shell { padding: 0 12px 40px; gap: 16px; }
+      .glass-panel { padding: 16px; }
+      .panel-meta { flex-direction: column; align-items: stretch; gap: 12px; }
+      .panel-meta .cyber-btn { width: 100%; justify-content: center; }
+      .blueprint-split { gap: 16px; }
+      /* Keep interactive SVG stage usable: fluid width, scroll if it needs more */
+      .model-viewport { min-height: 0; overflow: auto; }
+      .model-viewport svg { width: 100%; height: auto; min-width: 280px; }
+      .drafting-table { padding: 14px; }
+      .comp-inputs { flex-wrap: wrap; }
+      .comp-input { width: 44px; }
+      .comp-input.result-box { width: 56px; }
+      .twr-lanes { grid-template-columns: 1fr; }
+      .writing-reporter, .glossary-card { padding: 16px; }
+      .writing-reporter .cyber-btn { width: 100%; justify-content: center; }
+      .glossary-header { flex-wrap: wrap; gap: 10px; }
+      .diag-overlay { left: 8px; right: 8px; bottom: 8px; width: auto; font-size: 0.72rem; }
+      .vocab-chip .tooltip-bubble { width: 200px; }
+    }
+
 @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
