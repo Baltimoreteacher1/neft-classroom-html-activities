@@ -2065,6 +2065,8 @@ ${helpModalHtml}
 </div>
 
 <script>
+window.LESSON_ID = "${escAttr(lessonId)}";
+window.LESSON_TITLE = "${escAttr(title)}";
 ${HOMEWORK_TABS_JS}
 ${HOMEWORK_GAME_JS}
 // Sound engine

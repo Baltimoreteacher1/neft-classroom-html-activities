@@ -44,18 +44,14 @@
   }
   function $all(sel, root) {
     try {
-      return Array.prototype.slice.call(
-        (root || document).querySelectorAll(sel),
-      );
+      return Array.prototype.slice.call((root || document).querySelectorAll(sel));
     } catch (e) {
       return [];
     }
   }
   function txt(el) {
     try {
-      return (el && el.textContent ? el.textContent : "")
-        .replace(/\s+/g, " ")
-        .trim();
+      return (el && el.textContent ? el.textContent : "").replace(/\s+/g, " ").trim();
     } catch (e) {
       return "";
     }
@@ -136,8 +132,7 @@
   function ensureSkipLink() {
     if ($("#" + SKIP_ID)) return;
     try {
-      var target =
-        $("main") || $("[role=main]") || $(".main") || $("main.main");
+      var target = $("main") || $("[role=main]") || $(".main") || $("main.main");
       if (!target) return;
       if (!target.id) target.id = "lp-main-content";
       var link = document.createElement("a");
@@ -159,13 +154,11 @@
       });
       link.addEventListener("click", function () {
         try {
-          if (!target.hasAttribute("tabindex"))
-            target.setAttribute("tabindex", "-1");
+          if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
           target.focus();
         } catch (e) {}
       });
-      if (document.body)
-        document.body.insertBefore(link, document.body.firstChild);
+      if (document.body) document.body.insertBefore(link, document.body.firstChild);
     } catch (e) {
       /* ignore */
     }
@@ -190,10 +183,7 @@
       try {
         if (!hasName(btn)) {
           var v = btn.getAttribute("data-val");
-          setName(
-            btn,
-            v === "true" ? "True" : v === "false" ? "False" : "Answer option",
-          );
+          setName(btn, v === "true" ? "True" : v === "false" ? "False" : "Answer option");
         }
         btn.setAttribute(DONE_ATTR, "1");
       } catch (e) {}
@@ -239,14 +229,14 @@
 
     // Generic safety net: any button/[role=button] with no name at all gets a
     // last-resort label so axe doesn't flag it (rare; usually icon-only).
-    $all(
-      "button:not([" + DONE_ATTR + "]), [role=button]:not([" + DONE_ATTR + "])",
-    ).forEach(function (el) {
-      try {
-        if (!hasName(el)) setName(el, "Button");
-        el.setAttribute(DONE_ATTR, "1");
-      } catch (e) {}
-    });
+    $all("button:not([" + DONE_ATTR + "]), [role=button]:not([" + DONE_ATTR + "])").forEach(
+      function (el) {
+        try {
+          if (!hasName(el)) setName(el, "Button");
+          el.setAttribute(DONE_ATTR, "1");
+        } catch (e) {}
+      },
+    );
   }
 
   // ---- focus management on grading ----------------------------------------
@@ -258,8 +248,7 @@
       var obs = new MutationObserver(function (muts) {
         for (var i = 0; i < muts.length; i++) {
           var t = muts[i].target;
-          if (!t || t.nodeType !== 1 || typeof t.className !== "string")
-            continue;
+          if (!t || t.nodeType !== 1 || typeof t.className !== "string") continue;
           if (!/\bq-card\b/.test(t.className)) continue;
           if (/\bcorrect\b/.test(t.className)) {
             var s = $(".q-status", t);
@@ -289,11 +278,7 @@
       var idx = cards.indexOf(card);
       for (var i = idx + 1; i < cards.length; i++) {
         if (/\b(correct|incorrect)\b/.test(cards[i].className)) continue;
-        var ctl =
-          $(
-            ".mc-btn, .tf-btn, input.fill-input, .check-btn, .drag-item",
-            cards[i],
-          ) || null;
+        var ctl = $(".mc-btn, .tf-btn, input.fill-input, .check-btn, .drag-item", cards[i]) || null;
         if (ctl) {
           if (
             !ctl.hasAttribute("tabindex") &&

@@ -156,25 +156,52 @@ function popoverScript() {
   return `<script>
   (function () {
     var pop = null;
-    function ensure(){ if(pop) return pop; pop=document.createElement('div'); pop.className='nt-popover';
+    var overlay = null;
+    function ensure(){ 
+      if(pop) return pop; 
+      pop=document.createElement('div'); 
+      pop.className='nt-popover';
       pop.innerHTML='<button type="button" class="nt-pop-close" aria-label="Close">×</button><img alt="" /><h4></h4><p></p>';
-      document.body.appendChild(pop); pop.querySelector('.nt-pop-close').addEventListener('click', hide); return pop; }
-    function hide(){ if(pop) pop.classList.remove('open'); }
-    function show(btn){ var p=ensure(), img=p.querySelector('img'), src=btn.getAttribute('data-img')||'';
+      overlay=document.createElement('div');
+      overlay.className='nt-popover-overlay';
+      document.body.appendChild(overlay);
+      document.body.appendChild(pop); 
+      pop.querySelector('.nt-pop-close').addEventListener('click', hide); 
+      overlay.addEventListener('click', hide);
+      return pop; 
+    }
+    function hide(){ 
+      if(pop) pop.classList.remove('open'); 
+      if(overlay) overlay.classList.remove('active');
+    }
+    function show(btn){ 
+      var p=ensure(), img=p.querySelector('img'), src=btn.getAttribute('data-img')||'';
       if(src){ img.src=src; img.style.display=''; img.onerror=function(){img.style.display='none';}; } else { img.style.display='none'; }
-      p.querySelector('h4').textContent=btn.getAttribute('data-term')||'';
-      p.querySelector('p').textContent=btn.getAttribute('data-def')||'';
+      var term = btn.getAttribute('data-term') || '';
+      var termEs = btn.getAttribute('data-term-es') || '';
+      var def = btn.getAttribute('data-def') || '';
+      var defEs = btn.getAttribute('data-def-es') || '';
+      p.querySelector('h4').innerHTML = term + (termEs ? ' <span class="es-term">/ ' + termEs + '</span>' : '');
+      p.querySelector('p').innerHTML = '<span class="def-en">' + def + '</span>' + (defEs ? '<span class="def-es">' + defEs + '</span>' : '');
       p.classList.add('open');
-      var r=btn.getBoundingClientRect(), pw=p.offsetWidth, ph=p.offsetHeight, top=r.bottom+8, left=r.left;
-      if(left+pw>window.innerWidth-8) left=window.innerWidth-pw-8; if(left<8) left=8;
-      if(top+ph>window.innerHeight-8) top=r.top-ph-8; if(top<8) top=8;
-      p.style.left=left+'px'; p.style.top=top+'px'; }
+      if (window.innerWidth <= 640) {
+        if(overlay) overlay.classList.add('active');
+      } else {
+        if(overlay) overlay.classList.remove('active');
+        var r=btn.getBoundingClientRect(), pw=p.offsetWidth, ph=p.offsetHeight, top=r.bottom+8, left=r.left;
+        if(left+pw>window.innerWidth-8) left=window.innerWidth-pw-8; if(left<8) left=8;
+        if(top+ph>window.innerHeight-8) top=r.top-ph-8; if(top<8) top=8;
+        p.style.left=left+'px'; p.style.top=top+'px'; 
+      }
+    }
     document.addEventListener('click', function(e){
       var btn=e.target.closest?e.target.closest('[data-popover]'):null;
       if(btn){ e.preventDefault(); show(btn); return; }
       if(pop && !e.target.closest('.nt-popover')) hide();
     });
     document.addEventListener('keydown', function(e){ if(e.key==='Escape') hide(); });
+    window.addEventListener('resize', hide);
+    window.addEventListener('scroll', hide, { passive: true });
   })();
 </script>`;
 }
@@ -214,8 +241,10 @@ function popoverize(text, vocab) {
     if (!re.test(out)) return;
     out = out.replace(re, (m, g1) => {
       const img = resolveVocabImage(item.term, item.image).replace(/^\//, "../../");
+      const termEsAttr = item.termEs ? ` data-term-es="${esc(item.termEs)}"` : "";
+      const defEsAttr = item.definitionEs ? ` data-def-es="${esc(item.definitionEs)}"` : "";
       tokens.push(
-        `<button type="button" class="li-pop" data-popover data-term="${esc(item.term)}" data-def="${esc(item.definition)}" data-img="${esc(img)}" aria-label="What does ${esc(item.term)} mean?">${g1}<span class="li-pop-i" aria-hidden="true">ⓘ</span></button>`,
+        `<button type="button" class="li-pop" data-popover data-term="${esc(item.term)}"${termEsAttr} data-def="${esc(item.definition)}"${defEsAttr} data-img="${esc(img)}" aria-label="What does ${esc(item.term)} mean?">${g1}<span class="li-pop-i" aria-hidden="true">ⓘ</span></button>`,
       );
       used.add(item.term);
       return MARK_A + (tokens.length - 1) + MARK_B;
@@ -598,7 +627,9 @@ function guidedNotesFill(cfg = {}) {
     .map((v) => {
       const imgSrc = resolveVocabImage(v.term, v.image).replace(/^\//, "../../");
       const def = esc(v.definition || "Tap to learn this word.");
-      return `<button type="button" class="gn-bank-word" data-popover data-term="${esc(v.term)}" data-def="${def}" data-img="${esc(imgSrc)}" aria-label="Show the meaning and picture for ${esc(v.term)}">${esc(v.term)}<span class="gn-info" aria-hidden="true">ⓘ</span></button>`;
+      const termEsAttr = v.termEs ? ` data-term-es="${esc(v.termEs)}"` : "";
+      const defEsAttr = v.definitionEs ? ` data-def-es="${esc(v.definitionEs)}"` : "";
+      return `<button type="button" class="gn-bank-word" data-popover data-term="${esc(v.term)}"${termEsAttr} data-def="${def}"${defEsAttr} data-img="${esc(imgSrc)}" aria-label="Show the meaning and picture for ${esc(v.term)}">${esc(v.term)}<span class="gn-info" aria-hidden="true">ⓘ</span></button>`;
     })
     .join("");
 
@@ -1185,14 +1216,31 @@ header.packet .meta{color:var(--muted);font-size:14px;margin:0;}
 .li-pop:hover{color:var(--navy);}
 .li-pop-i{font-size:.7em;vertical-align:super;margin-left:1px;opacity:.8;}
 .li-pop-demo{color:var(--teal);font-weight:700;text-decoration:underline;text-decoration-style:dotted;}
-.nt-popover{position:fixed;z-index:9999;max-width:280px;background:#fff;border:2px solid var(--teal);
-  border-radius:14px;box-shadow:0 12px 32px rgba(18,53,91,.22);padding:14px 16px;display:none;}
-.nt-popover.open{display:block;}
+.nt-popover-overlay{position:fixed;inset:0;z-index:9998;background:rgba(18,53,91,0.4);opacity:0;transition:opacity 0.2s ease;pointer-events:none;}
+.nt-popover-overlay.active{opacity:1;pointer-events:auto;}
+.nt-popover{position:fixed;z-index:9999;max-width:290px;background:rgba(255,255,255,0.96);border:1.5px solid rgba(31,166,162,0.45);
+  border-radius:14px;box-shadow:0 12px 32px rgba(18,53,91,.18), 0 1px 3px rgba(0,0,0,0.05);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  padding:16px;opacity:0;transform:scale(0.95) translateY(5px);transition:opacity 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);pointer-events:none;}
+.nt-popover.open{opacity:1;transform:scale(1) translateY(0);pointer-events:auto;}
 .nt-popover img{display:block;width:100%;max-height:150px;object-fit:contain;border-radius:8px;background:#f0faf8;margin-bottom:10px;}
 .nt-popover h4{margin:0 0 6px;color:var(--navy);font-size:18px;font-family:Outfit,system-ui,sans-serif;}
+.nt-popover h4 .es-term{font-weight:400;color:var(--muted);font-size:0.95em;}
 .nt-popover p{margin:0;font-size:15px;line-height:1.5;color:var(--ink);}
+.nt-popover p .def-en{display:block;}
+.nt-popover p .def-es{display:block;margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);font-style:italic;color:var(--muted);font-size:14px;}
 .nt-popover .nt-pop-close{position:absolute;top:6px;right:8px;border:none;background:transparent;font-size:20px;line-height:1;color:var(--muted);cursor:pointer;}
-@media print{.li-pop{color:#000;}.li-pop-i,.nt-popover{display:none!important;}}
+@media (max-width: 640px) {
+  .nt-popover {
+    position: fixed; bottom: 0; left: 0 !important; right: 0 !important; top: auto !important;
+    max-width: 100% !important; width: 100% !important; border-radius: 20px 20px 0 0 !important;
+    border: none !important; border-top: 1.5px solid rgba(31, 166, 162, 0.3) !important;
+    box-shadow: 0 -8px 30px rgba(18, 53, 91, 0.15) !important;
+    transform: translateY(100%); transition: transform 0.25s cubic-bezier(0.32, 0.94, 0.6, 1);
+    background: #ffffff; padding: 24px 20px 30px;
+  }
+  .nt-popover.open { transform: translateY(0); }
+}
+@media print{.li-pop{color:#000;}.li-pop-i,.nt-popover,.nt-popover-overlay{display:none!important;}}
 .li-steps-fill>li{padding-bottom:20px;}
 .li-input{display:block;width:100%;margin-top:10px;border:0;border-bottom:2px solid var(--teal);
   padding:7px 4px;font:inherit;font-size:16px;color:var(--navy);background:transparent;}
@@ -1800,15 +1848,32 @@ ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
   /* Tap-to-define word-bank pop-ups (with picture) */
   .gn-bank-word{cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
   .gn-info{font-size:12px;color:var(--teal);font-weight:700;}
-  .nt-popover{position:fixed;z-index:9999;max-width:280px;background:#fff;border:2px solid var(--teal);
-    border-radius:14px;box-shadow:0 12px 32px rgba(18,53,91,.22);padding:14px 16px;display:none;}
-  .nt-popover.open{display:block;}
+  .nt-popover-overlay{position:fixed;inset:0;z-index:9998;background:rgba(18,53,91,0.4);opacity:0;transition:opacity 0.2s ease;pointer-events:none;}
+  .nt-popover-overlay.active{opacity:1;pointer-events:auto;}
+  .nt-popover{position:fixed;z-index:9999;max-width:290px;background:rgba(255,255,255,0.96);border:1.5px solid rgba(31,166,162,0.45);
+    border-radius:14px;box-shadow:0 12px 32px rgba(18,53,91,.18), 0 1px 3px rgba(0,0,0,0.05);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    padding:16px;opacity:0;transform:scale(0.95) translateY(5px);transition:opacity 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);pointer-events:none;}
+  .nt-popover.open{opacity:1;transform:scale(1) translateY(0);pointer-events:auto;}
   .nt-popover img{display:block;width:100%;max-height:150px;object-fit:contain;border-radius:8px;
     background:#f0faf8;margin-bottom:10px;}
   .nt-popover h4{margin:0 0 6px;color:var(--navy);font-size:17px;font-family:Outfit,system-ui,sans-serif;}
+  .nt-popover h4 .es-term{font-weight:400;color:var(--muted);font-size:0.95em;}
   .nt-popover p{margin:0;font-size:14.5px;line-height:1.5;color:var(--ink);}
+  .nt-popover p .def-en{display:block;}
+  .nt-popover p .def-es{display:block;margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);font-style:italic;color:var(--muted);font-size:14px;}
   .nt-popover .nt-pop-close{position:absolute;top:6px;right:8px;border:none;background:transparent;
     font-size:20px;line-height:1;color:var(--muted);cursor:pointer;}
+  @media (max-width: 640px) {
+    .nt-popover {
+      position: fixed; bottom: 0; left: 0 !important; right: 0 !important; top: auto !important;
+      max-width: 100% !important; width: 100% !important; border-radius: 20px 20px 0 0 !important;
+      border: none !important; border-top: 1.5px solid rgba(31, 166, 162, 0.3) !important;
+      box-shadow: 0 -8px 30px rgba(18, 53, 91, 0.15) !important;
+      transform: translateY(100%); transition: transform 0.25s cubic-bezier(0.32, 0.94, 0.6, 1);
+      background: #ffffff; padding: 24px 20px 30px;
+    }
+    .nt-popover.open { transform: translateY(0); }
+  }
   /* Larger, clearer Watch & Try worked visuals */
   .notes-gr-step .wk-problem{font-size:15.5px;line-height:1.6;background:#f7fafc;border-radius:8px;padding:8px 12px;}
   .notes-gr-step .wk-steps .wk-step{font-size:15px;line-height:1.7;margin:7px 0;}
@@ -1862,7 +1927,7 @@ ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
     .gn-num{background:#000;}
     .gn-blank{border-bottom-color:#000;}
     .gn-subhead,.gn-directions{color:#000;}
-    .nt-popover{display:none!important;}
+    .nt-popover,.nt-popover-overlay{display:none!important;}
     .ss-item{border-color:#000;border-left-color:#000;break-inside:avoid;}
     .ss-grip,.ss-move{display:none;}
   }
@@ -1930,35 +1995,52 @@ ${autoSaveScript(`nt-notes:${esc(id)}`)}
   // Tap-to-define word-bank pop-ups (term + plain meaning + picture).
   (function () {
     var pop = null;
+    var overlay = null;
     function ensurePop() {
       if (pop) return pop;
       pop = document.createElement('div');
       pop.className = 'nt-popover';
       pop.innerHTML = '<button type="button" class="nt-pop-close" aria-label="Close">×</button>' +
         '<img alt="" /><h4></h4><p></p>';
+      overlay = document.createElement('div');
+      overlay.className = 'nt-popover-overlay';
+      document.body.appendChild(overlay);
       document.body.appendChild(pop);
       pop.querySelector('.nt-pop-close').addEventListener('click', hidePop);
+      overlay.addEventListener('click', hidePop);
       return pop;
     }
-    function hidePop() { if (pop) pop.classList.remove('open'); }
+    function hidePop() { 
+      if (pop) pop.classList.remove('open'); 
+      if (overlay) overlay.classList.remove('active');
+    }
     function showPop(btn) {
       var p = ensurePop();
       var img = p.querySelector('img');
       var src = btn.getAttribute('data-img') || '';
       if (src) { img.src = src; img.style.display = ''; img.onerror = function () { img.style.display = 'none'; }; }
       else { img.style.display = 'none'; }
-      p.querySelector('h4').textContent = btn.getAttribute('data-term') || '';
-      p.querySelector('p').textContent = btn.getAttribute('data-def') || '';
+      var term = btn.getAttribute('data-term') || '';
+      var termEs = btn.getAttribute('data-term-es') || '';
+      var def = btn.getAttribute('data-def') || '';
+      var defEs = btn.getAttribute('data-def-es') || '';
+      p.querySelector('h4').innerHTML = term + (termEs ? ' <span class="es-term">/ ' + termEs + '</span>' : '');
+      p.querySelector('p').innerHTML = '<span class="def-en">' + def + '</span>' + (defEs ? '<span class="def-es">' + defEs + '</span>' : '');
       p.classList.add('open');
-      var r = btn.getBoundingClientRect();
-      var top = r.bottom + 8, left = r.left;
-      var pw = p.offsetWidth, ph = p.offsetHeight;
-      if (left + pw > window.innerWidth - 8) left = window.innerWidth - pw - 8;
-      if (left < 8) left = 8;
-      if (top + ph > window.innerHeight - 8) top = r.top - ph - 8;
-      if (top < 8) top = 8;
-      p.style.left = left + 'px';
-      p.style.top = top + 'px';
+      if (window.innerWidth <= 640) {
+        if (overlay) overlay.classList.add('active');
+      } else {
+        if (overlay) overlay.classList.remove('active');
+        var r = btn.getBoundingClientRect();
+        var top = r.bottom + 8, left = r.left;
+        var pw = p.offsetWidth, ph = p.offsetHeight;
+        if (left + pw > window.innerWidth - 8) left = window.innerWidth - pw - 8;
+        if (left < 8) left = 8;
+        if (top + ph > window.innerHeight - 8) top = r.top - ph - 8;
+        if (top < 8) top = 8;
+        p.style.left = left + 'px';
+        p.style.top = top + 'px';
+      }
     }
     document.addEventListener('click', function (e) {
       var btn = e.target.closest ? e.target.closest('[data-popover]') : null;
@@ -1966,6 +2048,8 @@ ${autoSaveScript(`nt-notes:${esc(id)}`)}
       if (pop && !e.target.closest('.nt-popover')) hidePop();
     });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hidePop(); });
+    window.addEventListener('resize', hidePop);
+    window.addEventListener('scroll', hidePop, { passive: true });
   })();
 
   // Interactive "put the steps in order" — drag, ▲▼ buttons, or keyboard.

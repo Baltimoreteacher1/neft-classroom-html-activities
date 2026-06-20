@@ -262,36 +262,343 @@ function stuckTips(config) {
   const custom = config.familyNotes?.stuckTips;
   if (custom) return custom;
 
-  return {
+  const topic = detectVisualTopic(config);
+  
+  const tipsByTopic = {
+    ratios: {
+      say: [
+        {
+          en: "Let's make a ratio table. How do we get from the first batch to the second?",
+          es: "Hagamos una tabla de razones. ¿Cómo pasamos de la primera tanda a la segunda?"
+        },
+        {
+          en: "If we double one ingredient, what must we do to the other to keep the taste the same?",
+          es: "Si duplicamos un ingrediente, ¿qué debemos hacer al otro para mantener el mismo sabor?"
+        },
+        {
+          en: "Are we multiplying or dividing both numbers by the same value?",
+          es: "¿Estamos multiplicando o dividiendo ambos números por el mismo valor?"
+        }
+      ],
+      dontSay: [
+        {
+          en: "Just add the same number to both columns.",
+          es: "Solo suma el mismo número a ambas columnas."
+        },
+        {
+          en: "Cross multiply and divide.",
+          es: "Multiplica en cruz y divide."
+        },
+        {
+          en: "Don't write down the units, they don't matter.",
+          es: "No escribas las unidades, no importan."
+        }
+      ]
+    },
+    exponents: {
+      say: [
+        {
+          en: "Remember, 3⁴ means 3 is multiplied 4 times: 3 × 3 × 3 × 3. What is the base?",
+          es: "Recuerda, 3⁴ significa que 3 se multiplica 4 veces: 3 × 3 × 3 × 3. ¿Cuál es la base?"
+        },
+        {
+          en: "Let's write it out as a multiplication chain first.",
+          es: "Escribámoslo como una cadena de multiplicación primero."
+        },
+        {
+          en: "How does the exponent compare to adding 3 four times?",
+          es: "¿Cómo se compara el exponente con sumar 3 cuatro veces?"
+        }
+      ],
+      dontSay: [
+        {
+          en: "3⁴ is just 3 × 4.",
+          es: "3⁴ es solo 3 × 4."
+        },
+        {
+          en: "The exponent is the number you multiply the base by.",
+          es: "El exponente es el número por el que multiplicas la base."
+        },
+        {
+          en: "It doesn't matter what order you multiply.",
+          es: "No importa en qué orden multipliques."
+        }
+      ]
+    },
+    equations: {
+      say: [
+        {
+          en: "An equation is like a balanced scale. If we do something to one side, what must we do to the other?",
+          es: "Una ecuación es como una balanza equilibrada. Si hacemos algo a un lado, ¿qué debemos hacer al otro?"
+        },
+        {
+          en: "What operation undoes addition? What operation undoes multiplication?",
+          es: "¿Qué operación deshace la suma? ¿Qué operación deshace la multiplicación?"
+        },
+        {
+          en: "Let's read the equation like a story: 'some number x plus 5 is 12'. What is the hidden number?",
+          es: "Leamos la ecuación como una historia: 'un número x más 5 es 12'. ¿Cuál es el número oculto?"
+        }
+      ],
+      dontSay: [
+        {
+          en: "Move the number to the other side and change the sign.",
+          es: "Mueve el número al otro lado y cambia el signo."
+        },
+        {
+          en: "Just guess and check until it works.",
+          es: "Solo adivina y prueba hasta que funcione."
+        },
+        {
+          en: "Leave the variable on whatever side it started without balancing.",
+          es: "Deja la variable en el lado que comenzó sin equilibrar."
+        }
+      ]
+    },
+    inequalities: {
+      say: [
+        {
+          en: "Does the boundary circle need to be open (not included) or closed (included)?",
+          es: "¿El círculo del límite debe estar abierto (no incluido) o cerrado (incluido)?"
+        },
+        {
+          en: "Let's test a number like 0 or 10. Does it make the inequality true?",
+          es: "Probemos un número como 0 o 10. ¿Hace que la desigualdad sea verdadera?"
+        },
+        {
+          en: "Which direction should we shade to show all possible answers?",
+          es: "¿En qué dirección debemos sombrear para mostrar todas las respuestas posibles?"
+        }
+      ],
+      dontSay: [
+        {
+          en: "The arrow always points the same way as the inequality sign.",
+          es: "La flecha siempre apunta en la misma dirección que el signo de desigualdad."
+        },
+        {
+          en: "There is only one single correct answer.",
+          es: "Solo hay una única respuesta correcta."
+        },
+        {
+          en: "An inequality is exactly the same as an equation.",
+          es: "Una desigualdad es exactamente lo mismo que una ecuación."
+        }
+      ]
+    },
+    expressions: {
+      say: [
+        {
+          en: "What is the difference between a variable (letter) and a coefficient (number multiplied by it)?",
+          es: "¿Cuál es la diferencia entre una variable (letra) y un coeficiente (número multiplicado por ella)?"
+        },
+        {
+          en: "Can we group the terms that look alike (like terms)?",
+          es: "¿Podemos agrupar los términos que se parecen (términos semejantes)?"
+        },
+        {
+          en: "Let's substitute a number for the variable and evaluate it.",
+          es: "Sustituyamos un número en la variable y evaluémoslo."
+        }
+      ],
+      dontSay: [
+        {
+          en: "Just combine 3x and 5 to get 8x.",
+          es: "Solo combina 3x y 5 para obtener 8x."
+        },
+        {
+          en: "Solve for x.",
+          es: "Resuelve para x."
+        },
+        {
+          en: "Variables are just placeholder symbols that don't represent values.",
+          es: "Las variables son solo símbolos de marcador de posición que no representan valores."
+        }
+      ]
+    },
+    area: {
+      say: [
+        {
+          en: "Let's identify the base and the height. Are they perpendicular (forming a 90-degree L-shape)?",
+          es: "Identifiquemos la base y la altura. ¿Son perpendiculares (formando una L de 90 grados)?"
+        },
+        {
+          en: "For a triangle, why do we divide the base × height by 2? How does it relate to a rectangle?",
+          es: "Para un triángulo, ¿por qué dividimos la base × altura entre 2? ¿Cómo se relaciona con un rectángulo?"
+        },
+        {
+          en: "Can we decompose this composite shape into smaller rectangles or triangles?",
+          es: "¿Podemos descomponer esta figura compuesta en rectángulos o triángulos más pequeños?"
+        }
+      ],
+      dontSay: [
+        {
+          en: "Use the slanted side as the height.",
+          es: "Usa el lado inclinado como la altura."
+        },
+        {
+          en: "Area is just adding all the sides together.",
+          es: "El área es solo sumar todos los lados."
+        },
+        {
+          en: "You always multiply by 1/2 for every shape.",
+          es: "Siempre multiplicas por 1/2 para cada figura."
+        }
+      ]
+    },
+    volume: {
+      say: [
+        {
+          en: "Let's count how many cubes fit in the bottom layer first, then multiply by how many layers tall it is.",
+          es: "Contemos cuántos cubos caben en la capa inferior primero, luego multipliquemos por cuántas capas de altura tiene."
+        },
+        {
+          en: "Volume is the space inside. How does base area relate to the length × width?",
+          es: "El volumen es el espacio interior. ¿Cómo se relaciona el área de la base con el largo × ancho?"
+        },
+        {
+          en: "What units do we use for volume? (Cubic units like in³).",
+          es: "¿Qué unidades usamos para el volumen? (Unidades cúbicas como in³)."
+        }
+      ],
+      dontSay: [
+        {
+          en: "Just add length, width, and height.",
+          es: "Solo suma el largo, el ancho y la altura."
+        },
+        {
+          en: "Area and volume are the same thing.",
+          es: "El área y el volumen son lo mismo."
+        },
+        {
+          en: "Use square units for volume.",
+          es: "Usa unidades cuadradas para el volumen."
+        }
+      ]
+    },
+    fractions: {
+      say: [
+        {
+          en: "How many halves are in 3 wholes? Let's draw 3 circles and cut each in half.",
+          es: "¿Cuántos medios hay en 3 enteros? Dibujemos 3 círculos y cortemos cada uno a la mitad."
+        },
+        {
+          en: "What does the reciprocal mean? How does dividing by a fraction relate to multiplying by its reciprocal?",
+          es: "¿Qué significa el recíproco? ¿Cómo se relaciona dividir por una fracción con multiplicar por su recíproco?"
+        },
+        {
+          en: "Can we write a story problem for this, like sharing food?",
+          es: "¿Contamos una historia para esto, como compartir comida?"
+        }
+      ],
+      dontSay: [
+        {
+          en: "Just flip and multiply without thinking why.",
+          es: "Solo voltea y multiplica sin pensar por qué."
+        },
+        {
+          en: "The answer must always be smaller when you divide.",
+          es: "La respuesta siempre debe ser menor cuando divides."
+        },
+        {
+          en: "Cross multiply the numerators directly.",
+          es: "Multiplica en cruz los numeradores directamente."
+        }
+      ]
+    },
+    decimals: {
+      say: [
+        {
+          en: "Let's line up the decimal points. Why is place value important here?",
+          es: "Alineemos los puntos decimales. ¿Por qué es importante el valor posicional aquí?"
+        },
+        {
+          en: "If we multiply 0.5 by 0.2, what is a reasonable estimate? Is it larger or smaller than the factors?",
+          es: "Si multiplicamos 0.5 por 0.2, ¿cuál es una estimación razonable? ¿Es mayor o menor que los factores?"
+        },
+        {
+          en: "Let's think of decimals as money (cents). What is $1.50 plus $0.25?",
+          es: "Pensemos en los decimales como dinero (centavos). ¿Cuánto es $1.50 más $0.25?"
+        }
+      ],
+      dontSay: [
+        {
+          en: "Line up the numbers to the right like in whole numbers.",
+          es: "Alinea los números a la derecha como en los números enteros."
+        },
+        {
+          en: "Just drop the decimal point down anywhere.",
+          es: "Solo baja el punto decimal en cualquier lugar."
+        },
+        {
+          en: "Adding zeros at the end changes the value.",
+          es: "Agregar ceros al final cambia el valor."
+        }
+      ]
+    },
+    factors: {
+      say: [
+        {
+          en: "Let's build a factor tree. What are two numbers that multiply to this number?",
+          es: "Hagamos un árbol de factores. ¿Cuáles son dos números que multiplicados dan este número?"
+        },
+        {
+          en: "Is this number prime (only 1 and itself) or composite (has other factors)?",
+          es: "¿Este número es primo (solo 1 y sí mismo) o compuesto (tiene otros factores)?"
+        },
+        {
+          en: "What is the Greatest Common Factor? What is the largest factor they share?",
+          es: "¿Cuál es el Máximo Común Divisor? ¿Cuál es el factor más grande que comparten?"
+        }
+      ],
+      dontSay: [
+        {
+          en: "Multiples and factors are the same.",
+          es: "Los múltiplos y los factores son lo mismo."
+        },
+        {
+          en: "Every odd number is prime.",
+          es: "Todo número impar es primo."
+        },
+        {
+          en: "Prime numbers always end in odd digits except 2.",
+          es: "Los números primos siempre terminan en dígitos impares excepto el 2."
+        }
+      ]
+    }
+  };
+
+  const pick = tipsByTopic[topic] || {
     say: [
       {
         en: "What do you already know that could help?",
-        es: "¿Qué ya sabes que podría ayudarte?",
+        es: "¿Qué ya sabes que podría ayudarte?"
       },
       {
         en: "Can you draw a picture or table for this?",
-        es: "¿Puedes dibujar un dibujo o una tabla para esto?",
+        es: "¿Puedes dibujar un dibujo o una tabla para esto?"
       },
       {
         en: "Let's check one step at a time — no rush.",
-        es: "Revisemos un paso a la vez — sin prisa.",
-      },
+        es: "Revisemos un paso a la vez — sin prisa."
+      }
     ],
     dontSay: [
       {
         en: "That's wrong — let me just tell you.",
-        es: "Está mal — déjame decírtelo yo.",
+        es: "Está mal — déjame decírtelo yo."
       },
       {
         en: "I was never good at math either.",
-        es: "Yo tampoco era bueno en matemáticas.",
+        es: "Yo tampoco era bueno en matemáticas."
       },
       {
         en: "This should be easy.",
-        es: "Esto debería ser fácil.",
-      },
-    ],
+        es: "Esto debería ser fácil."
+      }
+    ]
   };
+
+  return pick;
 }
 
 function conceptVisualSvg(config) {
@@ -527,6 +834,22 @@ export function renderWelcomeBanner(config, lessonId) {
         <span class="lang-en"><strong>English:</strong> You don't need to be a math expert. This page helps you <em>guide</em> your student — with pictures, steps, and words in both languages.</span>
         <span class="lang-es" lang="es"><strong>Español:</strong> No necesitas ser experto en matemáticas. Esta página te ayuda a <em>guiar</em> a tu estudiante — con dibujos, pasos y palabras en dos idiomas.</span>
       </p>
+      
+      <!-- Modern language mode selector -->
+      <div class="lang-selector-card">
+        <span class="lang-selector-title">Language / Idioma:</span>
+        <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector">
+          <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')">
+            🇺🇸🇪🇸 Bilingual / Bilíngüe
+          </button>
+          <button type="button" class="lang-toggle-btn" data-lang-mode="en" onclick="setLanguageMode('en')">
+            🇺🇸 English Only
+          </button>
+          <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')">
+            🇪🇸 Solo Español
+          </button>
+        </div>
+      </div>
     </header>`;
 }
 
@@ -683,6 +1006,93 @@ export function renderCelebration() {
         <span class="lang-en">Answers save automatically on this device. Tap <strong>Check This Problem</strong> anytime.</span>
         <span class="lang-es" lang="es">Las respuestas se guardan solas en este dispositivo. Toquen <strong>Revisar esta pregunta</strong> cuando quieran.</span>
       </p>
+
+      <div class="parent-signoff-container card-ish">
+        <h3 class="signoff-title">✍️ Parent Sign-off & Feedback / Firma del padre y comentarios</h3>
+        
+        <!-- Active Form -->
+        <div id="signoff_form_wrapper">
+          <div class="signoff-field checkbox-field">
+            <label class="checkbox-label">
+              <input type="checkbox" id="parent_reviewed_checkbox" onchange="toggleSignoffSubmitBtn()" />
+              <span class="lang-en">I reviewed this homework with my student tonight.</span>
+              <span class="lang-es" lang="es">Revisé esta tarea con mi estudiante esta noche.</span>
+            </label>
+          </div>
+          
+          <div class="signoff-field text-field">
+            <label for="parent_name_input">
+              <span class="lang-en">Parent/Guardian Name:</span>
+              <span class="lang-es" lang="es">Nombre del padre/tutor:</span>
+            </label>
+            <input type="text" id="parent_name_input" placeholder="e.g. Maria Lopez" oninput="toggleSignoffSubmitBtn()" />
+          </div>
+
+          <div class="signoff-field textarea-field">
+            <label for="parent_note_input">
+              <span class="lang-en">Note to Teacher (optional):</span>
+              <span class="lang-es" lang="es">Nota para el maestro (opcional):</span>
+            </label>
+            <textarea id="parent_note_input" rows="3" placeholder="e.g. Student did great with equations but struggled with drawing the number line."></textarea>
+          </div>
+
+          <button type="button" id="submit_signoff_btn" class="signoff-submit-btn" disabled onclick="saveParentSignoff()">
+            <span class="lang-en">Confirm & Save / Confirmar y Guardar</span>
+          </button>
+        </div>
+
+        <!-- Confirmed View -->
+        <div id="signoff_confirmed_wrapper" hidden>
+          <div class="certificate-badge">
+            <div class="cert-check">🏆</div>
+            <div class="cert-info">
+              <h4 class="cert-header">
+                <span class="lang-en">Homework Review Verified!</span>
+                <span class="lang-es" lang="es">¡Revisión de tarea verificada!</span>
+              </h4>
+              <p class="cert-detail"><strong id="display_parent_name"></strong></p>
+              <p class="cert-date"><span class="lang-en">Signed on:</span><span class="lang-es" lang="es">Firmado el:</span> <span id="display_signoff_date"></span></p>
+              <div id="display_parent_note_box" class="cert-note-box" hidden>
+                <p class="cert-note-title"><strong>Note to teacher / Nota para el maestro:</strong></p>
+                <p id="display_parent_note" class="cert-note-content"></p>
+              </div>
+            </div>
+          </div>
+          <div class="cert-actions">
+            <button type="button" class="btn btn-secondary print-cert-btn" onclick="window.print()">
+              <span class="lang-en">🖨️ Print Certificate / Imprimir certificado</span>
+            </button>
+            <button type="button" class="edit-signoff-btn" onclick="editParentSignoff()">
+              <span class="lang-en">Edit sign-off / Editar firma</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Print-Only Certificate Layout -->
+      <div class="print-only-certificate" id="print_only_certificate">
+        <div class="print-cert-header">
+          <h2>EDU WONDERLAB MATH</h2>
+          <h3>Family Math Night Completion Certificate</h3>
+        </div>
+        <div class="print-cert-body">
+          <p>This certifies that the homework for <strong><span id="print_lesson_title"></span></strong> was completed and reviewed collaboratively.</p>
+          <div class="print-cert-signatures">
+            <div class="print-sig-block">
+              <p class="sig-line" id="print_parent_name"></p>
+              <p class="sig-label">Parent/Guardian Signature</p>
+            </div>
+            <div class="print-sig-block">
+              <p class="sig-line" id="print_signoff_date"></p>
+              <p class="sig-label">Date</p>
+            </div>
+          </div>
+          <div class="print-cert-note" id="print_parent_note_wrapper" style="display:none;">
+            <p class="note-heading"><strong>Parent Note to Teacher:</strong></p>
+            <p id="print_parent_note" class="note-body"></p>
+          </div>
+        </div>
+      </div>
     </section>`;
 }
 
@@ -974,6 +1384,136 @@ function triggerCelebration() {
   document.querySelector('.section-celebrate')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
+function setLanguageMode(mode) {
+  try { localStorage.setItem('hw_lang_mode', mode); } catch(e) {}
+  document.body.classList.remove('lang-mode-bilingual', 'lang-mode-en', 'lang-mode-es');
+  document.body.classList.add('lang-mode-' + mode);
+  document.querySelectorAll('.lang-toggle-btn').forEach(function(btn) {
+    const active = btn.getAttribute('data-lang-mode') === mode;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+}
+
+function toggleSignoffSubmitBtn() {
+  const checkbox = document.getElementById('parent_reviewed_checkbox');
+  const nameInput = document.getElementById('parent_name_input');
+  const submitBtn = document.getElementById('submit_signoff_btn');
+  if (checkbox && nameInput && submitBtn) {
+    submitBtn.disabled = !(checkbox.checked && nameInput.value.trim().length > 0);
+  }
+}
+
+function saveParentSignoff() {
+  const nameVal = document.getElementById('parent_name_input')?.value.trim();
+  const noteVal = document.getElementById('parent_note_input')?.value.trim();
+  const checked = document.getElementById('parent_reviewed_checkbox')?.checked;
+  const lessonId = window.LESSON_ID || 'general';
+  const lessonTitle = window.LESSON_TITLE || 'Tonight\'s Lesson';
+  
+  if (!checked || !nameVal) return;
+  
+  const signoffDate = new Date().toLocaleDateString(undefined, { 
+    year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' 
+  });
+  
+  const payload = {
+    parentName: nameVal,
+    note: noteVal,
+    date: signoffDate,
+    lessonTitle: lessonTitle
+  };
+  
+  try {
+    localStorage.setItem('hw_parent_signoff_' + lessonId, JSON.stringify(payload));
+  } catch(e) {}
+  
+  updateSignoffUI(payload);
+}
+
+function updateSignoffUI(data) {
+  const nameEl = document.getElementById('display_parent_name');
+  if (nameEl) nameEl.textContent = data.parentName;
+  
+  const dateEl = document.getElementById('display_signoff_date');
+  if (dateEl) dateEl.textContent = data.date;
+  
+  const noteBox = document.getElementById('display_parent_note_box');
+  const noteEl = document.getElementById('display_parent_note');
+  if (noteBox && noteEl) {
+    if (data.note) {
+      noteEl.textContent = data.note;
+      noteBox.hidden = false;
+    } else {
+      noteBox.hidden = true;
+    }
+  }
+  
+  const formWrap = document.getElementById('signoff_form_wrapper');
+  const confWrap = document.getElementById('signoff_confirmed_wrapper');
+  if (formWrap) formWrap.hidden = true;
+  if (confWrap) confWrap.hidden = false;
+  
+  const printTitle = document.getElementById('print_lesson_title');
+  if (printTitle) printTitle.textContent = data.lessonTitle;
+  
+  const printName = document.getElementById('print_parent_name');
+  if (printName) printName.textContent = data.parentName;
+  
+  const printDate = document.getElementById('print_signoff_date');
+  if (printDate) printDate.textContent = data.date.split(' at ')[0];
+  
+  const printNoteWrapper = document.getElementById('print_parent_note_wrapper');
+  const printNote = document.getElementById('print_parent_note');
+  if (printNoteWrapper && printNote) {
+    if (data.note) {
+      printNote.textContent = data.note;
+      printNoteWrapper.style.display = 'block';
+    } else {
+      printNoteWrapper.style.display = 'none';
+    }
+  }
+  
+  const printCert = document.getElementById('print_only_certificate');
+  if (printCert) printCert.classList.add('is-signed');
+}
+
+function editParentSignoff() {
+  const formWrap = document.getElementById('signoff_form_wrapper');
+  const confWrap = document.getElementById('signoff_confirmed_wrapper');
+  if (formWrap) formWrap.hidden = false;
+  if (confWrap) confWrap.hidden = true;
+  
+  const printCert = document.getElementById('print_only_certificate');
+  if (printCert) printCert.classList.remove('is-signed');
+}
+
+function restoreParentSignoff() {
+  try {
+    const langMode = localStorage.getItem('hw_lang_mode') || 'bilingual';
+    setLanguageMode(langMode);
+  } catch(e) {
+    setLanguageMode('bilingual');
+  }
+
+  const lessonId = window.LESSON_ID || 'general';
+  try {
+    const saved = localStorage.getItem('hw_parent_signoff_' + lessonId);
+    if (saved) {
+      const data = JSON.parse(saved);
+      const nameInput = document.getElementById('parent_name_input');
+      const noteInput = document.getElementById('parent_note_input');
+      const checkbox = document.getElementById('parent_reviewed_checkbox');
+      if (nameInput) nameInput.value = data.parentName || '';
+      if (noteInput) noteInput.value = data.note || '';
+      if (checkbox) checkbox.checked = true;
+      toggleSignoffSubmitBtn();
+      
+      updateSignoffUI(data);
+    }
+  } catch(e) {}
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   syncHomeworkChromeHeights();
   window.addEventListener('resize', syncHomeworkChromeHeights);
@@ -985,6 +1525,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (last && document.getElementById('hw_tab_' + last)) switchHomeworkTab(last);
     else switchHomeworkTab('learn');
   } catch(e) {}
+  restoreParentSignoff();
 });
 `;
 
@@ -1330,12 +1871,350 @@ body.help-modal-open { overflow: hidden; }
 }
 .problem-hint-row { margin: 8px 0 12px; }
 
+/* Language mode overrides */
+body.lang-mode-en .lang-es,
+body.lang-mode-en .welcome-title-es,
+body.lang-mode-en .tab-es,
+body.lang-mode-en .vocab-es,
+body.lang-mode-en .vocab-def-es,
+body.lang-mode-en .ext-title-es,
+body.lang-mode-en [lang="es"],
+body.lang-mode-en .bilingual-col.lang-es {
+  display: none !important;
+}
+
+body.lang-mode-es .lang-en,
+body.lang-mode-es .welcome-title-en,
+body.lang-mode-es .tab-en,
+body.lang-mode-es .vocab-def,
+body.lang-mode-es .ext-title-en,
+body.lang-mode-es .learning-big:not([lang="es"]),
+body.lang-mode-es .learning-sub:not([lang="es"]),
+body.lang-mode-es .bilingual-col.lang-en {
+  display: none !important;
+}
+
+body.lang-mode-en .bilingual-grid,
+body.lang-mode-es .bilingual-grid {
+  grid-template-columns: 1fr !important;
+}
+
+/* Premium language selector card styles */
+.lang-selector-card {
+  margin-top: 18px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-md);
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.lang-selector-title {
+  font-family: var(--font-display);
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--white);
+}
+.lang-selector-buttons {
+  display: flex;
+  gap: 8px;
+}
+.lang-toggle-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: var(--white);
+  padding: 6px 14px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.lang-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: var(--white);
+}
+.lang-toggle-btn.active {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: var(--white);
+  box-shadow: 0 4px 12px rgba(31, 166, 162, 0.35);
+}
+@media (max-width: 640px) {
+  .lang-selector-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .lang-selector-buttons {
+    flex-direction: column;
+  }
+  .lang-toggle-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* Parent Sign-off container styling */
+.parent-signoff-container {
+  margin-top: 24px;
+  padding: 24px;
+  background: var(--white);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 30px rgba(18, 53, 91, 0.06);
+  text-align: left;
+}
+.signoff-title {
+  margin: 0 0 16px;
+  font-family: var(--font-display);
+  font-size: 17px;
+  color: var(--navy);
+  font-weight: 800;
+  border-bottom: 2px solid var(--teal-light);
+  padding-bottom: 8px;
+}
+.signoff-field {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.signoff-field label {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy);
+}
+.checkbox-field {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 10px;
+}
+.checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 14.5px;
+  line-height: 1.4;
+  color: var(--ink);
+}
+.checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: var(--teal);
+  cursor: pointer;
+}
+.signoff-field input[type="text"],
+.signoff-field textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 14px;
+  background: var(--cream);
+  color: var(--ink);
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+.signoff-field input[type="text"]:focus,
+.signoff-field textarea:focus {
+  outline: none;
+  border-color: var(--teal);
+  background: var(--white);
+}
+.signoff-submit-btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 800;
+  background: var(--teal);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.signoff-submit-btn:disabled {
+  background: var(--line);
+  color: var(--muted);
+  cursor: not-allowed;
+}
+.signoff-submit-btn:not(:disabled):hover {
+  background: var(--navy);
+  box-shadow: 0 4px 15px rgba(18, 53, 91, 0.15);
+}
+
+/* Certificate View */
+.certificate-badge {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  background: var(--teal-light);
+  border: 2px solid var(--teal);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.cert-check {
+  font-size: 40px;
+  line-height: 1;
+}
+.cert-info {
+  flex-grow: 1;
+}
+.cert-header {
+  margin: 0 0 4px;
+  font-family: var(--font-display);
+  font-size: 16px;
+  color: var(--teal);
+  font-weight: 800;
+}
+.cert-detail {
+  font-size: 17px;
+  color: var(--navy);
+  margin: 0 0 2px;
+}
+.cert-date {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0;
+}
+.cert-note-box {
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: var(--white);
+  border-left: 3px solid var(--coral);
+  border-radius: var(--radius-xs);
+  text-align: left;
+}
+.cert-note-title {
+  margin: 0 0 4px;
+  font-size: 12px;
+  color: var(--coral);
+}
+.cert-note-content {
+  margin: 0;
+  font-size: 13.5px;
+  font-style: italic;
+  color: var(--ink);
+}
+.cert-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.print-cert-btn {
+  background: var(--navy);
+  color: var(--white);
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+}
+.print-cert-btn:hover {
+  background: var(--teal);
+}
+.edit-signoff-btn {
+  color: var(--muted);
+  font-size: 13px;
+  text-decoration: underline;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.edit-signoff-btn:hover {
+  color: var(--coral);
+}
+
+/* Print Certificate specific layout */
+.print-only-certificate {
+  display: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .homework-tab-btn, .hw-game-choice-btn, .help-pop-btn { transition: none; }
 }
 @media print {
-  .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn { display: none !important; }
+  .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn, .parent-signoff-container { display: none !important; }
   .tab-panel-inner[hidden] { display: block !important; page-break-inside: avoid; }
   body { padding-bottom: 0; }
+  
+  .print-only-certificate.is-signed {
+    display: block !important;
+    margin-top: 40px;
+    padding: 24px;
+    border: 4px double var(--navy) !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    text-align: center;
+    page-break-inside: avoid;
+  }
+  .print-cert-header h2 {
+    font-family: var(--font-display);
+    font-size: 15px;
+    letter-spacing: 0.1em;
+    color: var(--muted) !important;
+    margin: 0 0 6px;
+  }
+  .print-cert-header h3 {
+    font-family: var(--font-display);
+    font-size: 22px;
+    color: var(--navy) !important;
+    margin: 0 0 20px;
+  }
+  .print-cert-body p {
+    font-size: 15px;
+    color: var(--ink) !important;
+    margin-bottom: 30px;
+  }
+  .print-cert-signatures {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 30px;
+  }
+  .print-sig-block {
+    width: 40%;
+    text-align: center;
+  }
+  .sig-line {
+    font-family: 'Outfit', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--navy) !important;
+    border-bottom: 1.5px solid var(--ink);
+    padding-bottom: 6px;
+    margin-bottom: 6px;
+    min-height: 28px;
+  }
+  .sig-label {
+    font-size: 11px;
+    color: var(--muted) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .print-cert-note {
+    text-align: left;
+    background: #f9f9f9;
+    padding: 12px 16px;
+    border-left: 4px solid var(--coral);
+    border-radius: 4px;
+  }
+  .print-cert-note .note-heading {
+    font-size: 12px;
+    color: var(--coral) !important;
+    margin: 0 0 4px;
+  }
+  .print-cert-note .note-body {
+    font-size: 13.5px;
+    font-style: italic;
+    margin: 0;
+  }
 }
 `;
