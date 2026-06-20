@@ -77,16 +77,30 @@ for (const url of GAMES) {
     });
 
     await page.goto(url, { waitUntil: "load", timeout: 30_000 });
-    // Allow Phaser to boot, generate textures, and start the first scene.
+    // Allow the game engine to boot, build textures, and start the first scene.
     await page.waitForTimeout(2500);
 
-    const phaserType = await page.evaluate(
-      () => typeof (window as unknown as { Phaser?: unknown }).Phaser,
+    // Most games are Phaser (canvas); a few use a DOM-based 2D engine. Verify
+    // each "rendered something" with an engine-appropriate signal rather than
+    // assuming Phaser everywhere.
+    const phaserLoaded = await page.evaluate(
+      () => typeof (window as unknown as { Phaser?: unknown }).Phaser !== "undefined",
     );
-    expect(phaserType, `Phaser did not load on ${url}`).not.toBe("undefined");
-
     const canvasCount = await page.locator("canvas").count();
-    expect(canvasCount, `no <canvas> rendered on ${url}`).toBeGreaterThan(0);
+    const bodyTextLen = await page.evaluate(
+      () => (document.body?.innerText || "").trim().length,
+    );
+
+    if (phaserLoaded || canvasCount > 0) {
+      // Canvas-engine game: a rendering surface must exist.
+      expect(canvasCount, `no <canvas> rendered on ${url}`).toBeGreaterThan(0);
+    } else {
+      // DOM-engine game: the page must not be blank (real content rendered).
+      expect(
+        bodyTextLen,
+        `page appears blank (no canvas, no DOM content) on ${url}`,
+      ).toBeGreaterThan(40);
+    }
 
     expect(pageErrors, `uncaught error(s) on ${url}`).toEqual([]);
     expect(badResponses, `broken same-origin asset(s) on ${url}`).toEqual([]);
