@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="/assets/shared.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>On-Ramp 6.SP.B.5.A — How Many Observations? (Reporting n)</title>
+  <style>
+    :root {
+      --navy: #1a2e42; --teal: #2d7a72; --amber: #c9922c; --terra: #b5614e;
+      --cream: #faf8f3; --ice: #e8f3f7; --ink: #1c1c1c; --muted: #5b6773;
+      --green: #1f6640; --green-bg: #e8f6ed; --red: #7a1e1e; --red-bg: #fdf0f0;
+      --warn-bg: #fff4de; --line: #d8dfdc; --r: 16px; --r-sm: 10px;
+    }
+    main { max-width: 880px; margin: 0 auto; padding: 24px 18px 64px; }
+    .hero { background: linear-gradient(135deg, var(--navy), var(--teal)); color: #fff;
+      border-radius: var(--r); padding: 26px 24px; box-shadow: 0 12px 36px rgba(26,46,66,.18); }
+    .hero .tag { display: inline-block; background: rgba(255,255,255,.18); border-radius: 999px;
+      padding: 4px 12px; font-size: .82rem; letter-spacing: .04em; }
+    .hero h1 { margin: 12px 0 6px; font-size: 1.55rem; line-height: 1.2; }
+    .hero .goal { margin: 0; font-size: 1.05rem; opacity: .95; }
+    .card { background: #fff; border: 1px solid var(--line); border-radius: var(--r);
+      padding: 20px 22px; margin: 18px 0; box-shadow: 0 4px 14px rgba(26,46,66,.06); }
+    .card h2 { margin: 0 0 10px; color: var(--navy); font-size: 1.2rem; }
+    .frames { background: var(--ice); border-left: 5px solid var(--teal); border-radius: var(--r-sm); padding: 14px 16px; }
+    .frames ul { margin: 8px 0 0; padding-left: 18px; } .frames li { margin: 6px 0; }
+    .word { display: inline-block; background: var(--warn-bg); border: 1px solid var(--amber);
+      border-radius: 8px; padding: 2px 8px; margin: 3px; font-weight: 600; color: #6b4a06; }
+    .dotplot { background: var(--cream); border: 1px solid var(--line); border-radius: var(--r-sm);
+      padding: 16px; font-family: ui-monospace, monospace; line-height: 1.4; }
+    .dotplot .row { white-space: pre; }
+    .dotplot .dots { color: var(--teal); font-size: 1.2rem; letter-spacing: 2px; }
+    .q { margin: 14px 0; }
+    .q p.prompt { font-weight: 600; margin: 0 0 10px; }
+    .choices { display: flex; flex-wrap: wrap; gap: 10px; }
+    .choice { min-height: 44px; padding: 10px 16px; border: 2px solid var(--line); background: var(--cream);
+      border-radius: 12px; font-size: 1rem; cursor: pointer; transition: .15s; }
+    .choice:hover { border-color: var(--teal); }
+    .choice:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
+    .choice.correct { background: var(--green-bg); border-color: var(--green); color: var(--green); }
+    .choice.wrong { background: var(--red-bg); border-color: var(--red); color: var(--red); }
+    .fb { margin: 10px 0 0; padding: 10px 14px; border-radius: var(--r-sm); display: none; font-weight: 500; }
+    .fb.show { display: block; } .fb.ok { background: var(--green-bg); color: var(--green); }
+    .fb.no { background: var(--warn-bg); color: #6b4a06; }
+    .reflect textarea { width: 100%; min-height: 90px; border: 2px solid var(--line); border-radius: var(--r-sm);
+      padding: 12px; font: inherit; resize: vertical; }
+    .reflect textarea:focus-visible { outline: 3px solid var(--amber); outline-offset: 1px; border-color: var(--teal); }
+    .progress { font-size: .9rem; color: var(--muted); }
+    footer { text-align: center; color: var(--muted); font-size: .85rem; margin-top: 28px; }
+  </style>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
+  <!-- nsr-injected:end -->
+</head>
+<body data-onramp-ok="✅ Yes — n is just the count of all the data values." data-onramp-retry="Count every value one by one — don't add the values, count how many there are. Try again.">
+  <main>
+    <header class="hero">
+      <span class="tag">On-Ramp · Grade 6 · 6.SP.B.5.A</span>
+      <h1>How Many Did We Measure? Reporting the Number of Observations</h1>
+      <p class="goal"><strong>I can</strong> report how many data values were collected (called <em>n</em>).</p>
+    </header>
+
+    <section class="card">
+      <h2>📘 Word Bank + Sentence Frames</h2>
+      <p>
+        <span class="word">data value</span>
+        <span class="word">observation</span>
+        <span class="word">number of observations (n)</span>
+        <span class="word">data set</span>
+      </p>
+      <div class="frames">
+        <strong>The idea:</strong> Each thing we measured or counted is one <em>observation</em>.
+        The total count of observations is called <strong>n</strong>.
+        <ul>
+          <li>To find n, <strong>count every data value</strong> (count every dot, every number).</li>
+          <li>Frame: "We collected ____ observations, so <strong>n = ____</strong>."</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>👀 See It: A Worked Example</h2>
+      <p>Students were asked: "How many pets do you have?" Each <strong>●</strong> is one student's answer:</p>
+      <div class="dotplot" aria-label="Dot plot of pets per student">
+        <div class="row">0 pets:  <span class="dots">● ●</span></div>
+        <div class="row">1 pet :  <span class="dots">● ● ● ●</span></div>
+        <div class="row">2 pets:  <span class="dots">● ● ●</span></div>
+        <div class="row">3 pets:  <span class="dots">●</span></div>
+      </div>
+      <p>Count all the dots: 2 + 4 + 3 + 1 = <strong>10</strong>. So <strong>n = 10</strong> students were surveyed.</p>
+    </section>
+
+    <section class="card">
+      <h2>✏️ Your Turn — A new data set</h2>
+      <p>Minutes of reading last night: <strong>15, 20, 20, 30, 10, 25, 20, 0</strong></p>
+      <p class="progress"><span data-done>0</span> of 3 checks complete</p>
+
+      <div class="q" data-q>
+        <p class="prompt">1. How many observations (n) are in this data set?</p>
+        <div class="choices">
+          <button class="choice">7</button>
+          <button class="choice" data-correct>8</button>
+          <button class="choice">20</button>
+        </div>
+        <p class="fb"></p>
+      </div>
+
+      <div class="q" data-q>
+        <p class="prompt">2. What does <strong>n</strong> count?</p>
+        <div class="choices">
+          <button class="choice" data-correct>The number of data values collected</button>
+          <button class="choice">The largest value in the data</button>
+        </div>
+        <p class="fb"></p>
+      </div>
+
+      <div class="q" data-q>
+        <p class="prompt">3. In the pets dot plot above, what was n?</p>
+        <div class="choices">
+          <button class="choice">3</button>
+          <button class="choice" data-correct>10</button>
+          <button class="choice">4</button>
+        </div>
+        <p class="fb"></p>
+      </div>
+    </section>
+
+    <section class="card reflect">
+      <h2>💬 Explain Your Thinking</h2>
+      <p>Tell a partner how you found n:</p>
+      <label for="reflect" class="frames" style="display:block">
+        "To find n, I ____________________. In this data set, n = ____."
+      </label>
+      <textarea id="reflect" name="reflect-6spb5a" placeholder="Explain how you counted the observations…"></textarea>
+    </section>
+
+    <footer>Mr. Neft's Classroom · ESOL Math On-Ramp · © <span data-current-year></span></footer>
+  </main>
+
+  <script src="/assets/app.js"></script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+  <!-- nsr-injected:end -->
+  <script src="/assets/onramp-quiz.js" defer></script>
+</body>
+</html>

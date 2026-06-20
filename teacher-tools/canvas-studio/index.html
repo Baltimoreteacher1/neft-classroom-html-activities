@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Canvas Studio · Neft Teacher</title>
+    <style>
+      :root {
+        --navy: #12355b;
+        --teal: #387f84;
+        --amber: #f2a93b;
+        --ink: #0f172a;
+        --muted: #64748b;
+        --line: #e2e8f0;
+        --bg: #f1f5f9;
+        --ok: #15803d;
+        --warn: #b45309;
+        --card: #fff;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        line-height: 1.55;
+      }
+      header {
+        background: linear-gradient(135deg, var(--navy), var(--teal));
+        color: #fff;
+        padding: 30px 20px 26px;
+      }
+      header .wrap { max-width: 1180px; margin: 0 auto; }
+      header h1 { margin: 0 0 6px; font-size: 27px; letter-spacing: -0.01em; }
+      header p { margin: 0; opacity: 0.92; font-size: 15px; max-width: 70ch; }
+      .stamp { margin-top: 10px; font-size: 12px; opacity: 0.78; }
+      main {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 22px 20px 80px;
+        display: grid;
+        grid-template-columns: 1fr 360px;
+        gap: 22px;
+        align-items: start;
+      }
+      @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+      .panel {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 18px 20px;
+        margin: 0 0 18px;
+      }
+      .panel h2 {
+        margin: 0 0 10px;
+        font-size: 18px;
+        color: var(--navy);
+        display: flex;
+        align-items: center;
+        gap: 9px;
+      }
+      .stats { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 4px; }
+      .stat {
+        background: #f8fafc;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 10px 14px;
+        min-width: 92px;
+      }
+      .stat b { display: block; font-size: 22px; color: var(--navy); line-height: 1.1; }
+      .stat span { font-size: 12px; color: var(--muted); }
+      .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 4px 0 0; }
+      #q {
+        flex: 1;
+        min-width: 200px;
+        padding: 11px 14px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        font-size: 14px;
+      }
+      .chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+      .chip {
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--ink);
+        border-radius: 999px;
+        padding: 6px 13px;
+        font-size: 13px;
+        cursor: pointer;
+        font-weight: 600;
+      }
+      .chip[aria-pressed="true"] { background: var(--navy); color: #fff; border-color: var(--navy); }
+      .chip .n { opacity: 0.6; font-weight: 500; margin-left: 5px; }
+      .chip[aria-pressed="true"] .n { opacity: 0.85; }
+      .modgroup { margin: 16px 0 0; }
+      .modhead {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 9px 12px;
+        background: #eef2f7;
+        border-radius: 10px;
+        cursor: pointer;
+        user-select: none;
+      }
+      .modhead h3 { margin: 0; font-size: 14px; color: var(--navy); }
+      .modhead .meta { font-size: 12px; color: var(--muted); display: flex; gap: 12px; align-items: center; }
+      .modhead button {
+        font-size: 12px; border: 1px solid var(--line); background: #fff;
+        border-radius: 8px; padding: 4px 9px; cursor: pointer; color: var(--navy); font-weight: 600;
+      }
+      ul.items { list-style: none; margin: 6px 0 0; padding: 0; }
+      ul.items li {
+        display: flex; gap: 10px; align-items: flex-start;
+        padding: 8px 12px; border-bottom: 1px solid #f1f5f9;
+      }
+      ul.items li:hover { background: #f8fafc; }
+      ul.items input { margin-top: 4px; width: 16px; height: 16px; accent-color: var(--teal); }
+      .it-title { font-size: 14px; font-weight: 600; }
+      .it-sub { font-size: 12px; color: var(--muted); }
+      .it-sub a { color: var(--teal); text-decoration: none; }
+      .it-sub a:hover { text-decoration: underline; }
+      .tag {
+        font-size: 10px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase;
+        padding: 2px 7px; border-radius: 999px; background: #e0e7ff; color: #3730a3; white-space: nowrap;
+      }
+      .tag.Game { background: #fef3c7; color: #92400e; }
+      .tag.Project { background: #dcfce7; color: #166534; }
+      .tag.Lesson { background: #dbeafe; color: #1e40af; }
+      .tag.Assessment { background: #fee2e2; color: #991b1b; }
+      /* sticky export rail */
+      .rail { position: sticky; top: 18px; }
+      .rail .panel { margin-bottom: 16px; }
+      .pathbtns { display: flex; flex-direction: column; gap: 8px; margin: 4px 0 0; }
+      .pathbtn {
+        text-align: left; border: 1px solid var(--line); background: #fff; border-radius: 12px;
+        padding: 11px 13px; cursor: pointer; font: inherit;
+      }
+      .pathbtn[aria-pressed="true"] { border-color: var(--teal); box-shadow: 0 0 0 2px rgba(56,127,132,.18); background: #f0fdfa; }
+      .pathbtn b { display: block; font-size: 14px; color: var(--navy); }
+      .pathbtn span { font-size: 12px; color: var(--muted); }
+      .cmd {
+        font-family: ui-monospace, Menlo, monospace; font-size: 13px; background: #0f172a; color: #e2e8f0;
+        border-radius: 10px; padding: 12px 13px; white-space: pre-wrap; word-break: break-word; margin: 10px 0 8px;
+      }
+      .copybtn {
+        background: var(--navy); color: #fff; border: 0; border-radius: 10px; padding: 9px 15px;
+        font-weight: 700; cursor: pointer; font-size: 13px;
+      }
+      ol.steps { margin: 10px 0 0; padding-left: 20px; font-size: 13px; color: #334155; }
+      ol.steps li { margin: 4px 0; }
+      .selcount { font-size: 13px; color: var(--muted); margin: 2px 0 0; }
+      .selcount b { color: var(--navy); }
+      .foot { font-size: 12px; color: var(--muted); margin-top: 6px; }
+      .foot code { background: #f1f5f9; padding: 1px 5px; border-radius: 5px; font-size: 11px; }
+      .empty { color: var(--muted); font-size: 14px; padding: 16px; text-align: center; }
+      a.inline { color: var(--teal); }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="wrap">
+        <h1>🎓 Canvas Studio</h1>
+        <p>
+          Push your whole EduWonderLab library into Canvas — every lesson, activity, game, and
+          project, plus anything you add later. Browse, pick what you want, and copy the one command
+          that builds the import package. <strong>No SCORM and no admin required.</strong>
+        </p>
+        <div class="stamp" id="stamp"></div>
+      </div>
+    </header>
+
+    <main>
+      <div class="left">
+        <div class="panel">
+          <h2>📚 Your library</h2>
+          <div class="stats" id="stats"></div>
+          <div class="controls">
+            <input id="q" type="search" placeholder="Search activities, standards, titles…" aria-label="Search library" />
+          </div>
+          <div class="chips" id="typechips"></div>
+        </div>
+
+        <div class="panel">
+          <h2>✅ Choose what to send to Canvas</h2>
+          <p class="selcount" id="selcount">Loading library…</p>
+          <div id="list"></div>
+        </div>
+      </div>
+
+      <aside class="rail">
+        <div class="panel">
+          <h2>🚀 Build your package</h2>
+          <p class="foot" style="margin-top:0">Pick a grading path, then run the command in your repo terminal.</p>
+          <div class="pathbtns" id="paths">
+            <button class="pathbtn" data-path="link" aria-pressed="true">
+              <b>Links (no grading)</b>
+              <span>Organized Canvas modules linking to live activities. Simplest — publish what you want.</span>
+            </button>
+            <button class="pathbtn" data-path="graded">
+              <b>Completion codes (graded)</b>
+              <span>Each item becomes a text-entry assignment. Students paste a code; decode it with the Canvas Grades tool. No SCORM.</span>
+            </button>
+            <button class="pathbtn" data-path="quizzes">
+              <b>Auto-graded quizzes (QTI)</b>
+              <span>Native Canvas quizzes built from lesson questions — grade themselves. Lessons only.</span>
+            </button>
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;margin:12px 0 2px;font-size:13px;color:var(--ink);cursor:pointer;">
+            <input type="checkbox" id="split" style="width:16px;height:16px;accent-color:var(--teal);" />
+            One importable package <strong>per section</strong> (roll out week by week)
+          </label>
+          <div class="cmd" id="cmd">npm run library-cartridge</div>
+          <button class="copybtn" id="copy">Copy command</button>
+          <button class="copybtn" id="download" style="background: var(--teal); margin-left: 8px;">
+            ⬇ Selection file
+          </button>
+          <p class="foot" id="cmdnote"></p>
+        </div>
+
+        <div class="panel">
+          <h2>📥 Import into Canvas</h2>
+          <ol class="steps" id="importsteps"></ol>
+        </div>
+
+        <div class="panel">
+          <h2>🔑 How grading works</h2>
+          <p class="foot" style="margin-top:0">
+            <strong>Completion codes</strong> are minted by each activity and decoded into your gradebook with the
+            <a class="inline" href="/teacher-tools/canvas-grades/">Canvas Grades</a> tool — pure text entry, nothing to install.
+            <strong>QTI quizzes</strong> grade themselves. <strong>Live links</strong> need no grading at all.
+          </p>
+          <p class="foot">
+            <em>SCORM is optional</em> — the live-activity auto-grade path only works if your district has enabled the Canvas SCORM tool. You don't need it for any of the above.
+          </p>
+          <p class="foot">
+            🧩 <a class="inline" href="/teacher-tools/canvas-studio/bridge-example/">See a working reference activity →</a>
+            — the one-script-tag pattern for adding a completion code to any activity.
+          </p>
+        </div>
+      </aside>
+    </main>
+
+    <script>
+      const state = { data: null, type: "all", q: "", path: "link" };
+
+      fetch("./library.json", { cache: "no-store" })
+        .then((r) => r.json())
+        .then((d) => { state.data = d; render(); })
+        .catch(() => {
+          document.getElementById("selcount").textContent =
+            "Couldn't load library.json. Run: npm run canvas-studio";
+        });
+
+      function esc(s) {
+        return String(s == null ? "" : s).replace(/[&<>"']/g, (c) =>
+          ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+      }
+
+      function render() {
+        const d = state.data;
+        if (!d) return;
+        document.getElementById("stamp").textContent =
+          (d.generatedAt ? "Snapshot " + d.generatedAt + " · " : "") +
+          "Source: registry.json · regenerate with npm run generate-registry";
+
+        // stats
+        document.getElementById("stats").innerHTML =
+          stat(d.totals.items, "activities") +
+          stat(d.totals.modules, "Canvas modules") +
+          stat(d.byType.Lesson || 0, "lessons") +
+          stat((d.byType.Game || 0) + (d.byType.Project || 0), "games + projects");
+
+        // type chips
+        const types = Object.entries(d.byType).sort((a, b) => b[1] - a[1]);
+        document.getElementById("typechips").innerHTML =
+          chip("all", "All types", d.totals.items) +
+          types.map(([t, n]) => chip(t, t, n)).join("");
+        document.querySelectorAll("#typechips .chip").forEach((c) =>
+          c.addEventListener("click", () => { state.type = c.dataset.type; render(); }));
+
+        renderList();
+        renderPaths();
+      }
+
+      function stat(n, label) {
+        return `<div class="stat"><b>${n}</b><span>${esc(label)}</span></div>`;
+      }
+      function chip(type, label, n) {
+        const on = state.type === type;
+        return `<button class="chip" data-type="${esc(type)}" aria-pressed="${on}">${esc(label)}<span class="n">${n}</span></button>`;
+      }
+
+      function filtered() {
+        const q = state.q.trim().toLowerCase();
+        return state.data.items.filter((it) => {
+          if (state.type !== "all" && it.type !== state.type) return false;
+          if (state.path === "quizzes" && it.type !== "Lesson") return false;
+          if (q) {
+            const hay = (it.title + " " + (it.standard || "") + " " + it.module + " " + it.url).toLowerCase();
+            if (!hay.includes(q)) return false;
+          }
+          return true;
+        });
+      }
+
+      function renderList() {
+        const items = filtered();
+        const byMod = new Map();
+        for (const it of items) {
+          if (!byMod.has(it.module)) byMod.set(it.module, []);
+          byMod.get(it.module).push(it);
+        }
+        const order = state.data.modules.map((m) => m.title);
+        const mods = [...byMod.keys()].sort((a, b) => order.indexOf(a) - order.indexOf(b));
+
+        const list = document.getElementById("list");
+        if (!items.length) {
+          list.innerHTML = `<p class="empty">No activities match. Try clearing the search or type filter.</p>`;
+          updateCount();
+          return;
+        }
+        list.innerHTML = mods
+          .map((m) => {
+            const rows = byMod.get(m);
+            return `<div class="modgroup">
+              <div class="modhead">
+                <h3>${esc(m)}</h3>
+                <div class="meta"><span>${rows.length} item${rows.length === 1 ? "" : "s"}</span>
+                  <button data-mod="${esc(m)}" data-act="all">Select all</button>
+                  <button data-mod="${esc(m)}" data-act="none">Clear</button>
+                </div>
+              </div>
+              <ul class="items">
+                ${rows.map((it) => `
+                  <li>
+                    <input type="checkbox" class="pick" data-url="${esc(it.url)}" />
+                    <div>
+                      <div class="it-title">${esc(it.title)}</div>
+                      <div class="it-sub">
+                        <span class="tag ${esc(it.type)}">${esc(it.type)}</span>
+                        ${it.standard ? " · " + esc(it.standard) : ""} ·
+                        <a href="${esc(it.url)}" target="_blank" rel="noopener">open ↗</a>
+                      </div>
+                    </div>
+                  </li>`).join("")}
+              </ul>
+            </div>`;
+          })
+          .join("");
+
+        list.querySelectorAll(".pick").forEach((c) => c.addEventListener("change", updateCount));
+        list.querySelectorAll(".modhead button").forEach((b) =>
+          b.addEventListener("click", () => {
+            const on = b.dataset.act === "all";
+            b.closest(".modgroup").querySelectorAll(".pick").forEach((c) => (c.checked = on));
+            updateCount();
+          }));
+        updateCount();
+      }
+
+      function selectedUrls() {
+        return [...document.querySelectorAll(".pick:checked")].map((c) => c.dataset.url);
+      }
+
+      function updateCount() {
+        const n = selectedUrls().length;
+        const shown = filtered().length;
+        document.getElementById("selcount").innerHTML =
+          `<b>${n}</b> selected · showing <b>${shown}</b>` +
+          (state.type !== "all" ? ` ${esc(state.type)}` : "") + ` of ${state.data.totals.items}`;
+        renderCommand();
+      }
+
+      function renderPaths() {
+        document.querySelectorAll("#paths .pathbtn").forEach((b) => {
+          b.setAttribute("aria-pressed", b.dataset.path === state.path);
+          b.onclick = () => {
+            state.path = b.dataset.path;
+            document.querySelectorAll("#paths .pathbtn").forEach((x) =>
+              x.setAttribute("aria-pressed", x.dataset.path === state.path));
+            renderList();
+            renderCommand();
+            renderImportSteps();
+          };
+        });
+        renderCommand();
+        renderImportSteps();
+      }
+
+      function renderCommand() {
+        const cmdEl = document.getElementById("cmd");
+        const note = document.getElementById("cmdnote");
+        const dl = document.getElementById("download");
+        const splitEl = document.getElementById("split");
+        if (!cmdEl) return;
+        const type = state.type !== "all" ? state.type : null;
+        const n = selectedUrls().length;
+        const split = !!(splitEl && splitEl.checked);
+
+        if (state.path === "quizzes") {
+          cmdEl.textContent = "npm run course -- --quizzes-only";
+          note.innerHTML = "Builds <code>neft-quizzes.zip</code> — native auto-graded quizzes from lesson questions. Append a unit number (e.g. <code>npm run course -- 1 --quizzes-only</code>) to scope it.";
+          if (dl) dl.style.display = "none";
+          if (splitEl) splitEl.closest("label").style.display = "none";
+          return;
+        }
+        if (dl) dl.style.display = "";
+        if (splitEl) splitEl.closest("label").style.display = n > 0 ? "none" : "flex";
+
+        const modeWord = state.path === "graded" ? "completion-code assignments" : "live-link pages";
+        const gradedFlag = state.path === "graded" ? " --mode=graded" : "";
+
+        if (n > 0) {
+          // Exact selection → download a file, build precisely those items.
+          cmdEl.textContent = "npm run library-cartridge -- --select=canvas-selection.json" + gradedFlag;
+          note.innerHTML =
+            `Builds an <code>.imscc</code> of your <b>${n} selected item${n === 1 ? "" : "s"}</b> as ${modeWord}. ` +
+            `Click <b>⬇ Selection file</b>, save <code>canvas-selection.json</code> to your repo root, then run the command.`;
+          if (dl) dl.disabled = false;
+          return;
+        }
+
+        // Nothing checked → fall back to whole-library / type-filtered export.
+        const flags = [];
+        if (state.path === "graded") flags.push("--mode=graded");
+        if (type) flags.push(`--type=${type}`);
+        if (split) flags.push("--split");
+        cmdEl.textContent = "npm run library-cartridge" + (flags.length ? " -- " + flags.join(" ") : "");
+        note.innerHTML =
+          `Builds ${split ? "<b>one <code>.imscc</code> per section</b>" : "an <code>.imscc</code>"} of your ${type ? esc(type) + " items" : "whole library"} as ${modeWord}. ` +
+          (split ? "Import each section on its own week to week. " : "") +
+          `<em>Tick items above to export an exact selection instead.</em>`;
+        if (dl) dl.disabled = true;
+      }
+
+      function downloadSelection() {
+        const urls = selectedUrls();
+        if (!urls.length) return;
+        const byUrl = new Map(state.data.items.map((it) => [it.url, it]));
+        const payload = {
+          generatedAt: new Date().toISOString(),
+          source: "Canvas Studio",
+          count: urls.length,
+          urls,
+          items: urls.map((u) => {
+            const it = byUrl.get(u) || {};
+            return { url: u, title: it.title || u, type: it.type || null, module: it.module || null };
+          }),
+        };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "canvas-selection.json";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+        const btn = document.getElementById("download");
+        btn.textContent = "Downloaded ✓";
+        setTimeout(() => (btn.textContent = "⬇ Selection file"), 1500);
+      }
+
+      function renderImportSteps() {
+        const steps = state.path === "quizzes"
+          ? [
+              "In Canvas: Settings → Import Course Content.",
+              'Content Type → "QTI .zip file".',
+              "Upload neft-quizzes.zip from canvas-packages/ → Import.",
+              "Everything imports UNPUBLISHED. Publish the quizzes you want.",
+            ]
+          : [
+              "In Canvas: Settings → Import Course Content.",
+              'Content Type → "Common Cartridge 1.x Package".',
+              "Upload the .imscc from canvas-packages/ → Import.",
+              "Modules import UNPUBLISHED. Publish module-by-module as you teach.",
+              state.path === "graded"
+                ? "Grade with the Canvas Grades tool: paste student codes to decode scores."
+                : "Links open the live activities; progress auto-saves for students.",
+            ];
+        document.getElementById("importsteps").innerHTML = steps.map((s) => `<li>${esc(s)}</li>`).join("");
+      }
+
+      document.getElementById("q").addEventListener("input", (e) => {
+        state.q = e.target.value;
+        renderList();
+      });
+      document.getElementById("copy").addEventListener("click", () => {
+        const txt = document.getElementById("cmd").textContent;
+        const btn = document.getElementById("copy");
+        (navigator.clipboard ? navigator.clipboard.writeText(txt) : Promise.reject())
+          .then(() => { btn.textContent = "Copied ✓"; setTimeout(() => (btn.textContent = "Copy command"), 1500); })
+          .catch(() => {});
+      });
+      document.getElementById("download").addEventListener("click", downloadSelection);
+      document.getElementById("split").addEventListener("change", renderCommand);
+    </script>
+  </body>
+</html>
