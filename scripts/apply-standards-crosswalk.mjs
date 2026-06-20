@@ -190,11 +190,13 @@ tax.standards = tax.standards.map((s) => {
   if (!e) return s;
   return { id: e.newId, domain: e.newDomain, label: s.label, oldId: s.id };
 });
-tax.domains = (() => {
+if (xwalk.domains) {
+  tax.domains = xwalk.domains;
+} else {
   const d = {};
   for (const e of xwalk.entries) d[e.newDomain] = d[e.newDomain] || e.newDomain;
-  return Object.assign({}, tax.domains, d);
-})();
+  tax.domains = Object.assign({}, tax.domains, d);
+}
 tax._note = `${tax._note} | Re-coded to 2025 Maryland MCCRS via standards-crosswalk-2025.json on ${new Date().toISOString().slice(0, 10)}.`;
 writeFileSync(TAX_PATH, JSON.stringify(tax, null, 2) + "\n");
 
@@ -222,7 +224,33 @@ for (const d of readdirSync(LESSONS_DIR)) {
   changed++;
 }
 
-console.log(`\n✓ Applied. Taxonomy re-coded; ${changed} lesson configs updated.`);
+// 3) tagging (data/_tagging/merged.json) — full-code standard per URL; drives content-graph
+const MERGED_PATH = join(root, "data", "_tagging", "merged.json");
+let taggedChanged = 0;
+const unmappedTags = new Set();
+if (existsSync(MERGED_PATH)) {
+  const mraw = loadJSON(MERGED_PATH);
+  const arr = Array.isArray(mraw) ? mraw : mraw.merged || [];
+  const NON_MATH = new Set(["NON_MATH", "MIXED", "FOUNDATIONAL", "", null, undefined]);
+  for (const t of arr) {
+    const s = t.standard;
+    if (NON_MATH.has(s)) continue;
+    const e = byOldId[s];
+    if (e) {
+      t.standard = e.newId;
+      taggedChanged++;
+    } else if (/^6\.(RP|NS|EE|G|SP)\./.test(String(s))) {
+      unmappedTags.add(s);
+    }
+  }
+  writeFileSync(MERGED_PATH, JSON.stringify(mraw, null, 1) + "\n");
+}
+
 console.log(
-  "Next: npm run generate-curriculum-manifest && npm run validate && npm run audit",
+  `\n✓ Applied. Taxonomy re-coded; ${changed} lesson configs and ${taggedChanged} tags updated.`,
+);
+if (unmappedTags.size)
+  console.log(`⚠ unmapped tag codes (left as-is): ${[...unmappedTags].join(", ")}`);
+console.log(
+  "Next: regenerate registry → content-graph → coverage → manifest → search-index, then validate + audit.",
 );

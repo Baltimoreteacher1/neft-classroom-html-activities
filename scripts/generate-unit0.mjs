@@ -33,7 +33,7 @@ const esc = (s) =>
 const LESSONS = [
   {
     slug: "compare-rational-numbers-number-line",
-    standard: "6.NS.C.7.A",
+    standard: "6.NOS.C.8.a",
     title: "Comparing Rational Numbers on the Number Line",
     emoji: "↔️",
     objective:
@@ -68,7 +68,7 @@ const LESSONS = [
   },
   {
     slug: "order-rational-numbers-in-context",
-    standard: "6.NS.C.7.B",
+    standard: "6.NOS.C.8.b",
     title: "Writing & Explaining Order in Real-World Contexts",
     emoji: "🌡️",
     objective:
@@ -102,7 +102,7 @@ const LESSONS = [
   },
   {
     slug: "absolute-value-vs-order",
-    standard: "6.NS.C.7.D",
+    standard: "6.NOS.C.8.c",
     title: "Absolute Value vs. Order",
     emoji: "📏",
     objective:
@@ -138,7 +138,7 @@ const LESSONS = [
   },
   {
     slug: "parts-of-an-expression",
-    standard: "6.EE.A.2.B",
+    standard: "6.AT.B.6.b",
     title: "Naming the Parts of an Expression",
     emoji: "🧩",
     objective:
@@ -175,7 +175,7 @@ const LESSONS = [
   },
   {
     slug: "number-of-observations",
-    standard: "6.SP.B.5.A",
+    standard: "6.DS.B.6.a",
     title: "Summarizing Data: Number of Observations",
     emoji: "🔢",
     objective:
@@ -206,7 +206,7 @@ const LESSONS = [
   },
   {
     slug: "describe-attribute-and-units",
-    standard: "6.SP.B.5.B",
+    standard: "6.DS.B.6.b",
     title: "Summarizing Data: Attribute & Units",
     emoji: "🏷️",
     objective:
@@ -238,6 +238,80 @@ const LESSONS = [
       { type: "mc", q: "Best tool to measure 'length of each fish caught'?", choices: ["a ruler/measuring tape", "a thermometer", "a stopwatch"], answer: "a ruler/measuring tape", hint: "Length is measured with a ruler or tape." },
     ],
     exit: "For the data set 'lengths of fish caught', name the attribute, a tool you could use to measure it, and appropriate units.",
+  },
+  {
+    slug: "write-and-solve-inequalities",
+    standard: "6.AT.C.10",
+    title: "Writing & Solving One-Step Inequalities",
+    emoji: "⚖️",
+    objective:
+      "I can write and solve one-step inequalities for a context and show the solution set on a number line.",
+    languageObjective:
+      "I can describe a solution set using the words at least, at most, more than, and less than.",
+    vocab: [
+      ["Inequality", "A statement comparing values with >, <, ≥, or ≤."],
+      ["Solution set", "All the values that make an inequality true."],
+      ["Open / closed circle", "Open ○ for > or < (not included); closed ● for ≥ or ≤ (included)."],
+    ],
+    teach: [
+      "An inequality usually has <strong>many</strong> solutions. Solve it like an equation: undo the operation on both sides.",
+      "Example: x + 3 &gt; 7 → x &gt; 4. The solution set is every number greater than 4.",
+      "Graph it: <strong>open circle</strong> at 4 (4 is not included) with an arrow pointing right. Use a <strong>closed circle</strong> for ≥ or ≤.",
+      "Watch the words: 'at least' means ≥, 'at most' means ≤, 'more than' means &gt;, 'fewer/less than' means &lt;.",
+    ],
+    example: {
+      prompt: "Write and solve: 'A number n plus 5 is at least 12.'",
+      work: [
+        "'At least 12' means ≥ 12, so n + 5 ≥ 12.",
+        "Subtract 5 from both sides: n ≥ 7.",
+        "Graph: closed circle at 7, arrow to the right.",
+      ],
+    },
+    practice: [
+      { type: "input", q: "Solve:  x + 4 > 9   (write like  x > 5 )", answer: "x > 5", hint: "Subtract 4 from both sides.", normalize: true },
+      { type: "input", q: "Solve:  3x ≤ 12   (write like  x <= 4 )", answer: "x <= 4", hint: "Divide both sides by 3.", normalize: true },
+      { type: "mc", q: "The graph of  x > 2  uses a(n) ___ circle at 2.", choices: ["open", "closed"], answer: "open", hint: "> and < do not include the endpoint." },
+      { type: "mc", q: "'A number is at least 10' translates to…", choices: ["n ≥ 10", "n > 10", "n ≤ 10"], answer: "n ≥ 10", hint: "'At least' includes the value, so ≥." },
+      { type: "mc", q: "Is x = 6 a solution of  x + 1 > 6 ?", choices: ["Yes", "No"], answer: "Yes", hint: "6 + 1 = 7, and 7 > 6 is true." },
+    ],
+    exit: "Write and solve a one-step inequality for 'twice a number is less than 8,' then describe its graph (circle type and direction).",
+  },
+  {
+    slug: "language-of-probability",
+    standard: "6.DS.A.2",
+    title: "The Language of Probability",
+    emoji: "🎲",
+    objective:
+      "I can use probability words (certain, likely, unlikely, impossible, equally likely) to describe the chance of an outcome.",
+    languageObjective:
+      "I can describe likelihood using the words certain, likely, unlikely, and impossible.",
+    vocab: [
+      ["Certain", "Will always happen (probability 1)."],
+      ["Impossible", "Can never happen (probability 0)."],
+      ["Likely / Unlikely", "Probably will / probably will not happen."],
+      ["Equally likely", "Two outcomes have the same chance."],
+    ],
+    teach: [
+      "We use probability words to describe how likely an outcome is, from <strong>impossible</strong> to <strong>certain</strong>.",
+      "If almost all outcomes give a result, it is <strong>likely</strong>; if very few do, it is <strong>unlikely</strong>.",
+      "When two outcomes have the same chance (like heads vs. tails on a fair coin), they are <strong>equally likely</strong>.",
+      "These words help predict which responses will be more or less common when you collect data.",
+    ],
+    example: {
+      prompt: "A spinner is mostly blue with a small red slice and no green. Describe landing on each color.",
+      work: [
+        "Blue: likely (it covers most of the spinner).",
+        "Red: unlikely (only a small slice).",
+        "Green: impossible (there is no green).",
+      ],
+    },
+    practice: [
+      { type: "mc", q: "Rolling a 7 on a standard 1–6 number cube is…", choices: ["impossible", "certain", "likely"], answer: "impossible", hint: "A 1–6 cube has no 7." },
+      { type: "mc", q: "The sun rising tomorrow is…", choices: ["certain", "unlikely", "impossible"], answer: "certain", hint: "It always happens." },
+      { type: "mc", q: "A bag has 9 red and 1 blue marble. Drawing red is…", choices: ["likely", "unlikely", "impossible"], answer: "likely", hint: "Most marbles are red." },
+      { type: "mc", q: "Flipping heads on a fair coin, compared to tails, is…", choices: ["equally likely", "more likely", "impossible"], answer: "equally likely", hint: "A fair coin has two equal outcomes." },
+    ],
+    exit: "Name one certain event, one impossible event, and one likely event from your day, and explain each choice.",
   },
 ];
 
@@ -319,7 +393,7 @@ const DOC_CSS = `
 
 /* Per-lesson teaching metadata (specific, not generic — keyed by standard). */
 const META = {
-  "6.NS.C.7.A": {
+  "6.NOS.C.8.a": {
     misconception:
       "Students compare the digits and conclude −8 > −3 because 8 > 3, instead of comparing position on the number line.",
     teachTip:
@@ -327,7 +401,7 @@ const META = {
     familyHelp:
       "Ask your child to compare two negative numbers (like −2 and −9) and explain which is greater — the one farther right on a number line wins.",
   },
-  "6.NS.C.7.B": {
+  "6.NOS.C.8.b": {
     misconception:
       "Students read 'a bigger debt' as 'a greater number,' so they may claim −50 > −20 because 50 > 20.",
     teachTip:
@@ -335,7 +409,7 @@ const META = {
     familyHelp:
       "Talk about real negatives — temperatures below zero, or money owed — and ask which value is greater and what that means in the situation.",
   },
-  "6.NS.C.7.D": {
+  "6.NOS.C.8.c": {
     misconception:
       "Students confuse 'greater value' with 'greater absolute value,' especially for negative numbers.",
     teachTip:
@@ -343,7 +417,7 @@ const META = {
     familyHelp:
       "Ask: which is the lower number, −7 or −2? Then ask which is farther from zero. They have different answers — that's the whole idea.",
   },
-  "6.EE.A.2.B": {
+  "6.AT.B.6.b": {
     misconception:
       "Students miscount terms (treating 3x as two terms) or call the variable the coefficient.",
     teachTip:
@@ -351,7 +425,7 @@ const META = {
     familyHelp:
       "Have your child point to the terms and name the coefficient in an expression like 4x + 7.",
   },
-  "6.SP.B.5.A": {
+  "6.DS.B.6.a": {
     misconception:
       "Students forget to count repeated values, or confuse n (how many) with the largest value (how big).",
     teachTip:
@@ -359,13 +433,29 @@ const META = {
     familyHelp:
       "Give your child a short list of numbers and ask how many values there are — remind them to count repeats too.",
   },
-  "6.SP.B.5.B": {
+  "6.DS.B.6.b": {
     misconception:
       "Students name the data set itself instead of the attribute, or leave out the units.",
     teachTip:
       "Ask three questions every time: what was measured? how was it measured? in what units?",
     familyHelp:
       "Pick any data around the house (heights, temperatures, minutes) and ask: what is being measured, how, and in what units?",
+  },
+  "6.AT.C.10": {
+    misconception:
+      "Students treat an inequality like an equation with one answer, or use the wrong circle (open vs. closed) when graphing.",
+    teachTip:
+      "Stress the solution is a set, not one number; tie open/closed circles to whether the endpoint is included (> < open, ≥ ≤ closed).",
+    familyHelp:
+      "Ask your child to read an inequality like x > 5 out loud ('x is greater than 5') and name three numbers that work.",
+  },
+  "6.DS.A.2": {
+    misconception:
+      "Students confuse 'unlikely' with 'impossible' (or 'likely' with 'certain') — treating a small chance as no chance.",
+    teachTip:
+      "Anchor the four words on a 0-to-1 likelihood line: impossible at 0, certain at 1, with likely/unlikely in between.",
+    familyHelp:
+      "Around the house, ask whether everyday events are certain, likely, unlikely, or impossible (e.g., 'Will it rain indoors?').",
   },
 };
 

@@ -1,10 +1,24 @@
-# Grade 6 Math Standards — 2025 Maryland MCCRS Revision (planning notes)
+# Grade 6 Math Standards — 2025 Maryland MCCRS Revision
 
-**Status: research + plan. NOT yet applied to the curriculum.**
-The canonical taxonomy (`data/standards-taxonomy.json`) and the `standard` field
-on the 74 lesson configs are still on the **old CCSS-based codes** and have NOT
-been changed. This file records what we confirmed about the revision and exactly
-what is needed to finish the re-code safely.
+**Status: APPLIED (verified from the official crosswalk PDF).**
+The canonical taxonomy (`data/standards-taxonomy.json`), all lesson `config.json`
+`standard` fields, and the tagging (`data/_tagging/merged.json`) have been
+re-coded to the 2025 Maryland MCCRS Grade 6 codes, and the generated spine
+(registry, content-graph, coverage, manifest, search index, catalog, launch
+manifest) was regenerated. The verified old→new map lives in
+`data/standards-crosswalk-2025.json`; the re-code is reproducible via
+`npm run standards-crosswalk:apply`.
+
+**New domains:** AT (Algebraic Thinking, ← RP+EE), NOS (Number & Operation Sense,
+← NS), GR (Geometric Reasoning & Measurement, ← G), DS (Reasoning with Data and
+Statistics, ← SP).
+
+**Two genuinely new 2025 standards** (no 2010 predecessor) were added to the
+taxonomy and given Unit 0 lessons: `6.AT.C.10` (write/solve one-variable
+inequalities) and `6.DS.A.2` (language of probability).
+
+The notes below are retained as the record of how the revision was researched
+and verified.
 
 ---
 
