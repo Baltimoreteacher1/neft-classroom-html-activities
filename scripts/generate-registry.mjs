@@ -51,10 +51,34 @@ function readTitle(file) {
   }
 }
 
-// Pull a Common Core-style standard code out of a title, e.g. "6.RP.A.1".
+// Old->new standard crosswalk (2025 Maryland MCCRS). Lets folder/title-derived
+// legacy codes resolve to the current codes without renaming load-bearing folders.
+const XWALK = (() => {
+  try {
+    const x = JSON.parse(
+      readFileSync(join(ROOT, "data", "standards-crosswalk-2025.json"), "utf8"),
+    );
+    const m = {};
+    for (const e of x.entries || [])
+      if (e.oldId && e.newId) m[e.oldId] = e.newId;
+    return m;
+  } catch {
+    return {};
+  }
+})();
+
+// Old domain -> new domain (2025), for cluster-level / malformed legacy codes
+// that have no exact crosswalk entry (e.g. "6.G.A", "6.SP.A").
+const DOMAIN_XWALK = { RP: "AT", EE: "AT", NS: "NOS", G: "GR", SP: "DS" };
+
+// Pull a Common Core-style standard code out of a title, e.g. "6.RP.A.1",
+// then translate it to the current 2025 code: exact crosswalk first, else a
+// domain-level rewrite so at least the domain matches the revised standards.
 function standardFrom(title) {
   const m = title && title.match(/\b6\.[A-Z]{1,3}(?:\.[A-Z0-9]+)*\b/);
-  return m ? m[0] : null;
+  if (!m) return null;
+  if (XWALK[m[0]]) return XWALK[m[0]];
+  return m[0].replace(/^6\.(RP|EE|NS|G|SP)\b/, (_, d) => `6.${DOMAIN_XWALK[d]}`);
 }
 
 // URL for an index.html (folder URL) or a standalone .html file.
