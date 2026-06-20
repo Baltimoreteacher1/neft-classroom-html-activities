@@ -17,7 +17,8 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 function mapItem(i) {
   const out = { q: i.prompt, answer: i.answer, options: i.options };
   if (i.explain) out.explain = i.explain;
-  if (i.misconceptions && typeof i.misconceptions === "object") out.misconceptions = i.misconceptions;
+  if (i.misconceptions && typeof i.misconceptions === "object")
+    out.misconceptions = i.misconceptions;
   return out;
 }
 

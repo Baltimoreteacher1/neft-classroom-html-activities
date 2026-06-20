@@ -405,15 +405,32 @@ function skillBody(skill, { includeWorkLines = true } = {}) {
 
   // Differentiation tiers (rendered only when authored). Level 1 = support
   // (sentence frames), Level 2 = enrichment (extension tasks). Never "ESOL".
-  if (skill.tiers && skill.tiers.L1 && Array.isArray(skill.tiers.L1.frames) && skill.tiers.L1.frames.length) {
+  if (
+    skill.tiers &&
+    skill.tiers.L1 &&
+    Array.isArray(skill.tiers.L1.frames) &&
+    skill.tiers.L1.frames.length
+  ) {
     out.push(
       calloutBox(
         [
           new Paragraph({
             spacing: { after: 30 },
             children: [
-              new TextRun({ text: "Level 1 — Support", bold: true, color: PURPLE, size: 20, font: "Calibri" }),
-              new TextRun({ text: "   Sentence frames to help you start", italics: true, color: MUTED, size: 18, font: "Calibri" }),
+              new TextRun({
+                text: "Level 1 — Support",
+                bold: true,
+                color: PURPLE,
+                size: 20,
+                font: "Calibri",
+              }),
+              new TextRun({
+                text: "   Sentence frames to help you start",
+                italics: true,
+                color: MUTED,
+                size: 18,
+                font: "Calibri",
+              }),
             ],
           }),
           ...skill.tiers.L1.frames.map((f) => bullet(f)),
@@ -423,15 +440,32 @@ function skillBody(skill, { includeWorkLines = true } = {}) {
     );
     out.push(spacer());
   }
-  if (skill.tiers && skill.tiers.L2 && Array.isArray(skill.tiers.L2.extend) && skill.tiers.L2.extend.length) {
+  if (
+    skill.tiers &&
+    skill.tiers.L2 &&
+    Array.isArray(skill.tiers.L2.extend) &&
+    skill.tiers.L2.extend.length
+  ) {
     out.push(
       calloutBox(
         [
           new Paragraph({
             spacing: { after: 30 },
             children: [
-              new TextRun({ text: "Level 2 — Enrichment", bold: true, color: AMBER, size: 20, font: "Calibri" }),
-              new TextRun({ text: "   Stretch your thinking", italics: true, color: MUTED, size: 18, font: "Calibri" }),
+              new TextRun({
+                text: "Level 2 — Enrichment",
+                bold: true,
+                color: AMBER,
+                size: 20,
+                font: "Calibri",
+              }),
+              new TextRun({
+                text: "   Stretch your thinking",
+                italics: true,
+                color: MUTED,
+                size: 18,
+                font: "Calibri",
+              }),
             ],
           }),
           ...skill.tiers.L2.extend.map((f) => bullet(f)),
@@ -845,8 +879,7 @@ function htmlPacket(skill) {
         const distractors = it.rationales
           .map((r, ci) => (r ? `<li><b>${choiceLetter(ci)}:</b> ${esc(r)}</li>` : ""))
           .join("");
-        if (distractors)
-          cell += `<ul class="distractors">${distractors}</ul>`;
+        if (distractors) cell += `<ul class="distractors">${distractors}</ul>`;
       }
       return `<tr><td>Item ${i + 1} · ${esc(skill.code)}</td><td>${cell}</td></tr>`;
     }),

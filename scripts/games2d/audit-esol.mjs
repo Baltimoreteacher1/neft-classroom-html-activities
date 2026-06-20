@@ -57,7 +57,8 @@ function walk(dir, out) {
       continue;
     }
     if (st.isDirectory()) walk(full, out);
-    else if (name.toLowerCase().endsWith(".html") || name.toLowerCase().endsWith(".js")) out.push(full);
+    else if (name.toLowerCase().endsWith(".html") || name.toLowerCase().endsWith(".js"))
+      out.push(full);
   }
 }
 
@@ -85,7 +86,9 @@ for (const file of gameFiles) {
 }
 
 if (offenders.length) {
-  console.error(`✗ Forbidden "ESOL" label found in ${offenders.length} place(s) — use "Level 1"/"Level 2":`);
+  console.error(
+    `✗ Forbidden "ESOL" label found in ${offenders.length} place(s) — use "Level 1"/"Level 2":`,
+  );
   for (const o of offenders) console.error(`  ${o.file}:${o.line}  ${o.text}`);
   process.exit(1);
 }

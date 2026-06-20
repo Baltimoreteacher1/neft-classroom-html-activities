@@ -180,25 +180,19 @@ export async function onRequest(context) {
     // POST /api/scores  -> record a score event.
     if (method === "POST" && (seg === "" || seg === "report")) {
       const body = await request.json().catch(() => null);
-      if (!body || !body.gameId)
-        return json({ ok: false, error: "bad-payload" }, 400);
+      if (!body || !body.gameId) return json({ ok: false, error: "bad-payload" }, 400);
       const ts = await insertEvent(env.DB, body);
       return json({ ok: true, ts });
     }
 
     // GET /api/scores?gameId=ID -> recent events for a game (teacher view).
     if (method === "GET" && seg === "") {
-      const gameId = clamp(
-        new URL(request.url).searchParams.get("gameId") || "",
-        120,
-      );
+      const gameId = clamp(new URL(request.url).searchParams.get("gameId") || "", 120);
       const stmt = gameId
         ? env.DB.prepare(
             "SELECT * FROM game_scores WHERE game_id = ? ORDER BY id DESC LIMIT 200",
           ).bind(gameId)
-        : env.DB.prepare(
-            "SELECT * FROM game_scores ORDER BY id DESC LIMIT 200",
-          );
+        : env.DB.prepare("SELECT * FROM game_scores ORDER BY id DESC LIMIT 200");
       const { results } = await stmt.all();
       return json({ ok: true, events: (results || []).map(rowToEvent) });
     }
@@ -206,8 +200,7 @@ export async function onRequest(context) {
     // POST /api/scores/progress -> upsert the per-game progress mirror.
     if (method === "POST" && seg === "progress") {
       const body = await request.json().catch(() => null);
-      if (!body || !body.gameId)
-        return json({ ok: false, error: "bad-payload" }, 400);
+      if (!body || !body.gameId) return json({ ok: false, error: "bad-payload" }, 400);
       const ts = await upsertProgress(env.DB, body);
       return json({ ok: true, ts });
     }
@@ -235,9 +228,6 @@ export async function onRequest(context) {
 
     return json({ ok: false, error: "not-found", route: seg }, 404);
   } catch (err) {
-    return json(
-      { ok: false, error: "server-error", message: String(err) },
-      500,
-    );
+    return json({ ok: false, error: "server-error", message: String(err) }, 500);
   }
 }

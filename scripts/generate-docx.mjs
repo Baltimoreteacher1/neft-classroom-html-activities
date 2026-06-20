@@ -840,7 +840,12 @@ function distractorWhyLines(it) {
     out.push(
       para(
         [
-          new TextRun({ text: `${choiceLetter(j)})  why this is wrong:  `, bold: true, color: AMBER, size: 18 }),
+          new TextRun({
+            text: `${choiceLetter(j)})  why this is wrong:  `,
+            bold: true,
+            color: AMBER,
+            size: 18,
+          }),
           new TextRun({ text: note, italics: true, color: MUTED, size: 18 }),
         ],
         { indent: { left: 420 }, spacing: { after: 30 } },
@@ -923,7 +928,12 @@ function answerKeyBlock(cfg, worked, excludeStems = new Set()) {
             new TextRun({ text: `${num}.  `, bold: true, size: 21 }),
             new TextRun({ text: ans || "Answers vary.", size: 21 }),
             it.explanation
-              ? new TextRun({ text: `  — ${it.explanation}`, italics: true, color: MUTED, size: 19 })
+              ? new TextRun({
+                  text: `  — ${it.explanation}`,
+                  italics: true,
+                  color: MUTED,
+                  size: 19,
+                })
               : new TextRun(""),
           ]),
         );

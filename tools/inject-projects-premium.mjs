@@ -57,7 +57,7 @@ function addTabsAssets(html) {
    "ask for smaller numbers") so it is always pedagogically correct regardless
    of each page's unique math. Idempotent via marker comments.
    -------------------------------------------------------------------------- */
-const L0_BTN_MARK = "data-level-btn=\"level-0\"";
+const L0_BTN_MARK = 'data-level-btn="level-0"';
 const TTS_BTN_MARK = "data-tts-toggle";
 const L0_CARD_MARK = "pk-l0-injected";
 

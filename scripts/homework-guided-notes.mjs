@@ -263,339 +263,339 @@ function stuckTips(config) {
   if (custom) return custom;
 
   const topic = detectVisualTopic(config);
-  
+
   const tipsByTopic = {
     ratios: {
       say: [
         {
           en: "Let's make a ratio table. How do we get from the first batch to the second?",
-          es: "Hagamos una tabla de razones. ¿Cómo pasamos de la primera tanda a la segunda?"
+          es: "Hagamos una tabla de razones. ¿Cómo pasamos de la primera tanda a la segunda?",
         },
         {
           en: "If we double one ingredient, what must we do to the other to keep the taste the same?",
-          es: "Si duplicamos un ingrediente, ¿qué debemos hacer al otro para mantener el mismo sabor?"
+          es: "Si duplicamos un ingrediente, ¿qué debemos hacer al otro para mantener el mismo sabor?",
         },
         {
           en: "Are we multiplying or dividing both numbers by the same value?",
-          es: "¿Estamos multiplicando o dividiendo ambos números por el mismo valor?"
-        }
+          es: "¿Estamos multiplicando o dividiendo ambos números por el mismo valor?",
+        },
       ],
       dontSay: [
         {
           en: "Just add the same number to both columns.",
-          es: "Solo suma el mismo número a ambas columnas."
+          es: "Solo suma el mismo número a ambas columnas.",
         },
         {
           en: "Cross multiply and divide.",
-          es: "Multiplica en cruz y divide."
+          es: "Multiplica en cruz y divide.",
         },
         {
           en: "Don't write down the units, they don't matter.",
-          es: "No escribas las unidades, no importan."
-        }
-      ]
+          es: "No escribas las unidades, no importan.",
+        },
+      ],
     },
     exponents: {
       say: [
         {
           en: "Remember, 3⁴ means 3 is multiplied 4 times: 3 × 3 × 3 × 3. What is the base?",
-          es: "Recuerda, 3⁴ significa que 3 se multiplica 4 veces: 3 × 3 × 3 × 3. ¿Cuál es la base?"
+          es: "Recuerda, 3⁴ significa que 3 se multiplica 4 veces: 3 × 3 × 3 × 3. ¿Cuál es la base?",
         },
         {
           en: "Let's write it out as a multiplication chain first.",
-          es: "Escribámoslo como una cadena de multiplicación primero."
+          es: "Escribámoslo como una cadena de multiplicación primero.",
         },
         {
           en: "How does the exponent compare to adding 3 four times?",
-          es: "¿Cómo se compara el exponente con sumar 3 cuatro veces?"
-        }
+          es: "¿Cómo se compara el exponente con sumar 3 cuatro veces?",
+        },
       ],
       dontSay: [
         {
           en: "3⁴ is just 3 × 4.",
-          es: "3⁴ es solo 3 × 4."
+          es: "3⁴ es solo 3 × 4.",
         },
         {
           en: "The exponent is the number you multiply the base by.",
-          es: "El exponente es el número por el que multiplicas la base."
+          es: "El exponente es el número por el que multiplicas la base.",
         },
         {
           en: "It doesn't matter what order you multiply.",
-          es: "No importa en qué orden multipliques."
-        }
-      ]
+          es: "No importa en qué orden multipliques.",
+        },
+      ],
     },
     equations: {
       say: [
         {
           en: "An equation is like a balanced scale. If we do something to one side, what must we do to the other?",
-          es: "Una ecuación es como una balanza equilibrada. Si hacemos algo a un lado, ¿qué debemos hacer al otro?"
+          es: "Una ecuación es como una balanza equilibrada. Si hacemos algo a un lado, ¿qué debemos hacer al otro?",
         },
         {
           en: "What operation undoes addition? What operation undoes multiplication?",
-          es: "¿Qué operación deshace la suma? ¿Qué operación deshace la multiplicación?"
+          es: "¿Qué operación deshace la suma? ¿Qué operación deshace la multiplicación?",
         },
         {
           en: "Let's read the equation like a story: 'some number x plus 5 is 12'. What is the hidden number?",
-          es: "Leamos la ecuación como una historia: 'un número x más 5 es 12'. ¿Cuál es el número oculto?"
-        }
+          es: "Leamos la ecuación como una historia: 'un número x más 5 es 12'. ¿Cuál es el número oculto?",
+        },
       ],
       dontSay: [
         {
           en: "Move the number to the other side and change the sign.",
-          es: "Mueve el número al otro lado y cambia el signo."
+          es: "Mueve el número al otro lado y cambia el signo.",
         },
         {
           en: "Just guess and check until it works.",
-          es: "Solo adivina y prueba hasta que funcione."
+          es: "Solo adivina y prueba hasta que funcione.",
         },
         {
           en: "Leave the variable on whatever side it started without balancing.",
-          es: "Deja la variable en el lado que comenzó sin equilibrar."
-        }
-      ]
+          es: "Deja la variable en el lado que comenzó sin equilibrar.",
+        },
+      ],
     },
     inequalities: {
       say: [
         {
           en: "Does the boundary circle need to be open (not included) or closed (included)?",
-          es: "¿El círculo del límite debe estar abierto (no incluido) o cerrado (incluido)?"
+          es: "¿El círculo del límite debe estar abierto (no incluido) o cerrado (incluido)?",
         },
         {
           en: "Let's test a number like 0 or 10. Does it make the inequality true?",
-          es: "Probemos un número como 0 o 10. ¿Hace que la desigualdad sea verdadera?"
+          es: "Probemos un número como 0 o 10. ¿Hace que la desigualdad sea verdadera?",
         },
         {
           en: "Which direction should we shade to show all possible answers?",
-          es: "¿En qué dirección debemos sombrear para mostrar todas las respuestas posibles?"
-        }
+          es: "¿En qué dirección debemos sombrear para mostrar todas las respuestas posibles?",
+        },
       ],
       dontSay: [
         {
           en: "The arrow always points the same way as the inequality sign.",
-          es: "La flecha siempre apunta en la misma dirección que el signo de desigualdad."
+          es: "La flecha siempre apunta en la misma dirección que el signo de desigualdad.",
         },
         {
           en: "There is only one single correct answer.",
-          es: "Solo hay una única respuesta correcta."
+          es: "Solo hay una única respuesta correcta.",
         },
         {
           en: "An inequality is exactly the same as an equation.",
-          es: "Una desigualdad es exactamente lo mismo que una ecuación."
-        }
-      ]
+          es: "Una desigualdad es exactamente lo mismo que una ecuación.",
+        },
+      ],
     },
     expressions: {
       say: [
         {
           en: "What is the difference between a variable (letter) and a coefficient (number multiplied by it)?",
-          es: "¿Cuál es la diferencia entre una variable (letra) y un coeficiente (número multiplicado por ella)?"
+          es: "¿Cuál es la diferencia entre una variable (letra) y un coeficiente (número multiplicado por ella)?",
         },
         {
           en: "Can we group the terms that look alike (like terms)?",
-          es: "¿Podemos agrupar los términos que se parecen (términos semejantes)?"
+          es: "¿Podemos agrupar los términos que se parecen (términos semejantes)?",
         },
         {
           en: "Let's substitute a number for the variable and evaluate it.",
-          es: "Sustituyamos un número en la variable y evaluémoslo."
-        }
+          es: "Sustituyamos un número en la variable y evaluémoslo.",
+        },
       ],
       dontSay: [
         {
           en: "Just combine 3x and 5 to get 8x.",
-          es: "Solo combina 3x y 5 para obtener 8x."
+          es: "Solo combina 3x y 5 para obtener 8x.",
         },
         {
           en: "Solve for x.",
-          es: "Resuelve para x."
+          es: "Resuelve para x.",
         },
         {
           en: "Variables are just placeholder symbols that don't represent values.",
-          es: "Las variables son solo símbolos de marcador de posición que no representan valores."
-        }
-      ]
+          es: "Las variables son solo símbolos de marcador de posición que no representan valores.",
+        },
+      ],
     },
     area: {
       say: [
         {
           en: "Let's identify the base and the height. Are they perpendicular (forming a 90-degree L-shape)?",
-          es: "Identifiquemos la base y la altura. ¿Son perpendiculares (formando una L de 90 grados)?"
+          es: "Identifiquemos la base y la altura. ¿Son perpendiculares (formando una L de 90 grados)?",
         },
         {
           en: "For a triangle, why do we divide the base × height by 2? How does it relate to a rectangle?",
-          es: "Para un triángulo, ¿por qué dividimos la base × altura entre 2? ¿Cómo se relaciona con un rectángulo?"
+          es: "Para un triángulo, ¿por qué dividimos la base × altura entre 2? ¿Cómo se relaciona con un rectángulo?",
         },
         {
           en: "Can we decompose this composite shape into smaller rectangles or triangles?",
-          es: "¿Podemos descomponer esta figura compuesta en rectángulos o triángulos más pequeños?"
-        }
+          es: "¿Podemos descomponer esta figura compuesta en rectángulos o triángulos más pequeños?",
+        },
       ],
       dontSay: [
         {
           en: "Use the slanted side as the height.",
-          es: "Usa el lado inclinado como la altura."
+          es: "Usa el lado inclinado como la altura.",
         },
         {
           en: "Area is just adding all the sides together.",
-          es: "El área es solo sumar todos los lados."
+          es: "El área es solo sumar todos los lados.",
         },
         {
           en: "You always multiply by 1/2 for every shape.",
-          es: "Siempre multiplicas por 1/2 para cada figura."
-        }
-      ]
+          es: "Siempre multiplicas por 1/2 para cada figura.",
+        },
+      ],
     },
     volume: {
       say: [
         {
           en: "Let's count how many cubes fit in the bottom layer first, then multiply by how many layers tall it is.",
-          es: "Contemos cuántos cubos caben en la capa inferior primero, luego multipliquemos por cuántas capas de altura tiene."
+          es: "Contemos cuántos cubos caben en la capa inferior primero, luego multipliquemos por cuántas capas de altura tiene.",
         },
         {
           en: "Volume is the space inside. How does base area relate to the length × width?",
-          es: "El volumen es el espacio interior. ¿Cómo se relaciona el área de la base con el largo × ancho?"
+          es: "El volumen es el espacio interior. ¿Cómo se relaciona el área de la base con el largo × ancho?",
         },
         {
           en: "What units do we use for volume? (Cubic units like in³).",
-          es: "¿Qué unidades usamos para el volumen? (Unidades cúbicas como in³)."
-        }
+          es: "¿Qué unidades usamos para el volumen? (Unidades cúbicas como in³).",
+        },
       ],
       dontSay: [
         {
           en: "Just add length, width, and height.",
-          es: "Solo suma el largo, el ancho y la altura."
+          es: "Solo suma el largo, el ancho y la altura.",
         },
         {
           en: "Area and volume are the same thing.",
-          es: "El área y el volumen son lo mismo."
+          es: "El área y el volumen son lo mismo.",
         },
         {
           en: "Use square units for volume.",
-          es: "Usa unidades cuadradas para el volumen."
-        }
-      ]
+          es: "Usa unidades cuadradas para el volumen.",
+        },
+      ],
     },
     fractions: {
       say: [
         {
           en: "How many halves are in 3 wholes? Let's draw 3 circles and cut each in half.",
-          es: "¿Cuántos medios hay en 3 enteros? Dibujemos 3 círculos y cortemos cada uno a la mitad."
+          es: "¿Cuántos medios hay en 3 enteros? Dibujemos 3 círculos y cortemos cada uno a la mitad.",
         },
         {
           en: "What does the reciprocal mean? How does dividing by a fraction relate to multiplying by its reciprocal?",
-          es: "¿Qué significa el recíproco? ¿Cómo se relaciona dividir por una fracción con multiplicar por su recíproco?"
+          es: "¿Qué significa el recíproco? ¿Cómo se relaciona dividir por una fracción con multiplicar por su recíproco?",
         },
         {
           en: "Can we write a story problem for this, like sharing food?",
-          es: "¿Contamos una historia para esto, como compartir comida?"
-        }
+          es: "¿Contamos una historia para esto, como compartir comida?",
+        },
       ],
       dontSay: [
         {
           en: "Just flip and multiply without thinking why.",
-          es: "Solo voltea y multiplica sin pensar por qué."
+          es: "Solo voltea y multiplica sin pensar por qué.",
         },
         {
           en: "The answer must always be smaller when you divide.",
-          es: "La respuesta siempre debe ser menor cuando divides."
+          es: "La respuesta siempre debe ser menor cuando divides.",
         },
         {
           en: "Cross multiply the numerators directly.",
-          es: "Multiplica en cruz los numeradores directamente."
-        }
-      ]
+          es: "Multiplica en cruz los numeradores directamente.",
+        },
+      ],
     },
     decimals: {
       say: [
         {
           en: "Let's line up the decimal points. Why is place value important here?",
-          es: "Alineemos los puntos decimales. ¿Por qué es importante el valor posicional aquí?"
+          es: "Alineemos los puntos decimales. ¿Por qué es importante el valor posicional aquí?",
         },
         {
           en: "If we multiply 0.5 by 0.2, what is a reasonable estimate? Is it larger or smaller than the factors?",
-          es: "Si multiplicamos 0.5 por 0.2, ¿cuál es una estimación razonable? ¿Es mayor o menor que los factores?"
+          es: "Si multiplicamos 0.5 por 0.2, ¿cuál es una estimación razonable? ¿Es mayor o menor que los factores?",
         },
         {
           en: "Let's think of decimals as money (cents). What is $1.50 plus $0.25?",
-          es: "Pensemos en los decimales como dinero (centavos). ¿Cuánto es $1.50 más $0.25?"
-        }
+          es: "Pensemos en los decimales como dinero (centavos). ¿Cuánto es $1.50 más $0.25?",
+        },
       ],
       dontSay: [
         {
           en: "Line up the numbers to the right like in whole numbers.",
-          es: "Alinea los números a la derecha como en los números enteros."
+          es: "Alinea los números a la derecha como en los números enteros.",
         },
         {
           en: "Just drop the decimal point down anywhere.",
-          es: "Solo baja el punto decimal en cualquier lugar."
+          es: "Solo baja el punto decimal en cualquier lugar.",
         },
         {
           en: "Adding zeros at the end changes the value.",
-          es: "Agregar ceros al final cambia el valor."
-        }
-      ]
+          es: "Agregar ceros al final cambia el valor.",
+        },
+      ],
     },
     factors: {
       say: [
         {
           en: "Let's build a factor tree. What are two numbers that multiply to this number?",
-          es: "Hagamos un árbol de factores. ¿Cuáles son dos números que multiplicados dan este número?"
+          es: "Hagamos un árbol de factores. ¿Cuáles son dos números que multiplicados dan este número?",
         },
         {
           en: "Is this number prime (only 1 and itself) or composite (has other factors)?",
-          es: "¿Este número es primo (solo 1 y sí mismo) o compuesto (tiene otros factores)?"
+          es: "¿Este número es primo (solo 1 y sí mismo) o compuesto (tiene otros factores)?",
         },
         {
           en: "What is the Greatest Common Factor? What is the largest factor they share?",
-          es: "¿Cuál es el Máximo Común Divisor? ¿Cuál es el factor más grande que comparten?"
-        }
+          es: "¿Cuál es el Máximo Común Divisor? ¿Cuál es el factor más grande que comparten?",
+        },
       ],
       dontSay: [
         {
           en: "Multiples and factors are the same.",
-          es: "Los múltiplos y los factores son lo mismo."
+          es: "Los múltiplos y los factores son lo mismo.",
         },
         {
           en: "Every odd number is prime.",
-          es: "Todo número impar es primo."
+          es: "Todo número impar es primo.",
         },
         {
           en: "Prime numbers always end in odd digits except 2.",
-          es: "Los números primos siempre terminan en dígitos impares excepto el 2."
-        }
-      ]
-    }
+          es: "Los números primos siempre terminan en dígitos impares excepto el 2.",
+        },
+      ],
+    },
   };
 
   const pick = tipsByTopic[topic] || {
     say: [
       {
         en: "What do you already know that could help?",
-        es: "¿Qué ya sabes que podría ayudarte?"
+        es: "¿Qué ya sabes que podría ayudarte?",
       },
       {
         en: "Can you draw a picture or table for this?",
-        es: "¿Puedes dibujar un dibujo o una tabla para esto?"
+        es: "¿Puedes dibujar un dibujo o una tabla para esto?",
       },
       {
         en: "Let's check one step at a time — no rush.",
-        es: "Revisemos un paso a la vez — sin prisa."
-      }
+        es: "Revisemos un paso a la vez — sin prisa.",
+      },
     ],
     dontSay: [
       {
         en: "That's wrong — let me just tell you.",
-        es: "Está mal — déjame decírtelo yo."
+        es: "Está mal — déjame decírtelo yo.",
       },
       {
         en: "I was never good at math either.",
-        es: "Yo tampoco era bueno en matemáticas."
+        es: "Yo tampoco era bueno en matemáticas.",
       },
       {
         en: "This should be easy.",
-        es: "Esto debería ser fácil."
-      }
-    ]
+        es: "Esto debería ser fácil.",
+      },
+    ],
   };
 
   return pick;
@@ -1409,7 +1409,7 @@ function saveParentSignoff() {
   const noteVal = document.getElementById('parent_note_input')?.value.trim();
   const checked = document.getElementById('parent_reviewed_checkbox')?.checked;
   const lessonId = window.LESSON_ID || 'general';
-  const lessonTitle = window.LESSON_TITLE || 'Tonight\'s Lesson';
+  const lessonTitle = window.LESSON_TITLE || "Tonight's Lesson";
   
   if (!checked || !nameVal) return;
   

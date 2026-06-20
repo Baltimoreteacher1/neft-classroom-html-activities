@@ -29,7 +29,11 @@ const DOMAINS = {
     color: "#1FA6A2",
   },
   "the-number-system": { icon: "🔢", name: domainName("the-number-system"), color: "#6B4FA0" },
-  "expressions-equations": { icon: "✖️", name: domainName("expressions-equations"), color: "#12355B" },
+  "expressions-equations": {
+    icon: "✖️",
+    name: domainName("expressions-equations"),
+    color: "#12355B",
+  },
   geometry: { icon: "📐", name: domainName("geometry"), color: "#B97A12" },
   statistics: { icon: "📊", name: domainName("statistics"), color: "#C0392B" },
 };

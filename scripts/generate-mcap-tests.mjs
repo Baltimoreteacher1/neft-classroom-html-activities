@@ -800,7 +800,9 @@ function main() {
     writeFileSync(file, pageHtml(test.num, test.storageKey, { saveResume }));
     written++;
   }
-  console.log(`✓ MCAP interactive practice tests generated: ${written} pages (240 items from the shared bank)`);
+  console.log(
+    `✓ MCAP interactive practice tests generated: ${written} pages (240 items from the shared bank)`,
+  );
 }
 
 main();

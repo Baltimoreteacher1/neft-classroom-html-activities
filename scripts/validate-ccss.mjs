@@ -32,7 +32,9 @@ for (const id of readdirSync(lessonsDir)) {
 const missing = [...used.keys()].filter((s) => !isKnownStandard(s));
 
 if (missing.length) {
-  console.error("validate-ccss: FAIL — standards used by lessons but missing from data/ccss-standards.json:");
+  console.error(
+    "validate-ccss: FAIL — standards used by lessons but missing from data/ccss-standards.json:",
+  );
   for (const s of missing) console.error(`  ${s}  (used by: ${used.get(s).join(", ")})`);
   console.error("Add these to data/ccss-standards.json.");
   process.exit(1);

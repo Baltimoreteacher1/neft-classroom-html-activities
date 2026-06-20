@@ -73,10 +73,15 @@ if (SELECT_FILE) {
     SELECT_URLS = Array.isArray(parsed) ? parsed : Array.isArray(parsed.urls) ? parsed.urls : [];
   } catch {
     // tolerate a plain newline/comma list
-    SELECT_URLS = raw.split(/[\n,]+/).map((s) => s.trim()).filter(Boolean);
+    SELECT_URLS = raw
+      .split(/[\n,]+/)
+      .map((s) => s.trim())
+      .filter(Boolean);
   }
 } else if (SELECT_INLINE) {
-  SELECT_URLS = SELECT_INLINE.split(",").map((s) => s.trim()).filter(Boolean);
+  SELECT_URLS = SELECT_INLINE.split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
 }
 if (SELECT_URLS && !SELECT_URLS.length) {
   console.error("Selection is empty — nothing to build.");
@@ -107,7 +112,9 @@ if (SELECT_URLS) {
   const got = new Set(items.map((i) => norm(i.url)));
   const missing = SELECT_URLS.map(norm).filter((u) => !got.has(u));
   if (missing.length)
-    console.warn(`⚠ ${missing.length} selected url(s) not in the current library (skipped):\n  ${missing.slice(0, 8).join("\n  ")}`);
+    console.warn(
+      `⚠ ${missing.length} selected url(s) not in the current library (skipped):\n  ${missing.slice(0, 8).join("\n  ")}`,
+    );
 }
 
 /* ---------- staging ---------- */
@@ -354,7 +361,9 @@ if (SPLIT) {
     `**Canvas → Settings → Import Course Content → "Common Cartridge 1.x Package" → upload → Import.**\n` +
     `Everything imports UNPUBLISHED. ${modeLine}\n\n` +
     `| # | Section | Items | Package to import |\n| - | --- | ---: | --- |\n` +
-    built.map((r, i) => `| ${i + 1} | ${r.title} | ${r.itemCount} | \`${r.outName}\` |`).join("\n") +
+    built
+      .map((r, i) => `| ${i + 1} | ${r.title} | ${r.itemCount} | \`${r.outName}\` |`)
+      .join("\n") +
     `\n\n_Re-run \`npm run library-cartridge -- --split\` after \`npm run generate-registry\` to refresh as the library grows._\n`;
   const indexFile = resolve(repoRoot, "canvas-packages", "INDEX.md");
   writeFileSync(indexFile, indexMd);
@@ -365,13 +374,21 @@ if (SPLIT) {
 } else {
   const r = emit(orderedModules, [...filterSuffix, modeSuffix]);
   console.log(`\n✓ Library Common Cartridge: ${r.outFile}`);
-  console.log(`  Validated:  ✓ structure clean (${r.stats.manifestHrefs} hrefs, ${r.stats.moduleItems} module items resolve)`);
+  console.log(
+    `  Validated:  ✓ structure clean (${r.stats.manifestHrefs} hrefs, ${r.stats.moduleItems} module items resolve)`,
+  );
   console.log(`  Items:    ${r.itemCount}  (mode=${MODE})`);
   console.log(`  Modules:  ${orderedModules.length}`);
   for (const m of orderedModules) console.log(`    • ${m.title.padEnd(34)} ${m.items.length}`);
   if (TYPE_FILTER || SECTION_FILTER || LIMIT)
-    console.log(`  Filters:  ${[TYPE_FILTER && `type=${TYPE_FILTER}`, SECTION_FILTER && `section=${SECTION_FILTER}`, LIMIT && `limit=${LIMIT}`].filter(Boolean).join(", ")}`);
+    console.log(
+      `  Filters:  ${[TYPE_FILTER && `type=${TYPE_FILTER}`, SECTION_FILTER && `section=${SECTION_FILTER}`, LIMIT && `limit=${LIMIT}`].filter(Boolean).join(", ")}`,
+    );
   console.log(`  Inventory: ${r.outFile.replace(/\.imscc$/, ".manifest.json")}`);
-  console.log(`\nImport: Canvas → Settings → Import Course Content → "Common Cartridge 1.x Package" → upload → Import.`);
-  console.log(`Everything imports UNPUBLISHED. ${MODE === "graded" ? "Assignments use completion-code (online text entry)." : "Pages link to the live activities."}`);
+  console.log(
+    `\nImport: Canvas → Settings → Import Course Content → "Common Cartridge 1.x Package" → upload → Import.`,
+  );
+  console.log(
+    `Everything imports UNPUBLISHED. ${MODE === "graded" ? "Assignments use completion-code (online text entry)." : "Pages link to the live activities."}`,
+  );
 }

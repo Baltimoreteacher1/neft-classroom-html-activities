@@ -71,8 +71,7 @@
     if (cfg.brief) {
       var brief = document.createElement("div");
       brief.className =
-        "pk-mission-brief" +
-        (cfg.brief.theme ? " pk-mission-" + cfg.brief.theme : "");
+        "pk-mission-brief" + (cfg.brief.theme ? " pk-mission-" + cfg.brief.theme : "");
       if (cfg.brief.title) {
         var bt = document.createElement("h3");
         bt.textContent = cfg.brief.title;
@@ -97,16 +96,11 @@
       section.appendChild(brief);
     }
 
-    if (
-      cfg.fieldNotes &&
-      Array.isArray(cfg.fieldNotes.fields) &&
-      cfg.fieldNotes.fields.length
-    ) {
+    if (cfg.fieldNotes && Array.isArray(cfg.fieldNotes.fields) && cfg.fieldNotes.fields.length) {
       var fnWrap = document.createElement("div");
       fnWrap.className = "pk-field-notes";
       var fnTitle = document.createElement("h3");
-      fnTitle.textContent =
-        cfg.fieldNotes.title || "Field Notes — Record What You Find";
+      fnTitle.textContent = cfg.fieldNotes.title || "Field Notes — Record What You Find";
       fnWrap.appendChild(fnTitle);
       if (cfg.fieldNotes.intro) {
         var fnIntro = document.createElement("p");
@@ -125,10 +119,7 @@
         var fid = f.id || "fn-" + idx;
         lbl.setAttribute("for", fid);
         lbl.innerHTML =
-          '<span class="pk-fn-num">' +
-          (idx + 1) +
-          "</span> " +
-          escapeHtml(f.label || "Data point");
+          '<span class="pk-fn-num">' + (idx + 1) + "</span> " + escapeHtml(f.label || "Data point");
         meta.appendChild(lbl);
         if (f.source) {
           var src = document.createElement("span");
@@ -184,8 +175,7 @@
         ta.id = workId;
         ta.setAttribute("data-save", "");
         ta.rows = 3;
-        ta.placeholder =
-          "Show your work. Cite the Field Note # you used and write the math.";
+        ta.placeholder = "Show your work. Cite the Field Note # you used and write the math.";
         card.appendChild(ta);
         if (t.level2) {
           var l2 = document.createElement("div");
@@ -206,10 +196,7 @@
       section.appendChild(mtWrap);
     }
 
-    if (
-      Array.isArray(cfg.investigationChecklist) &&
-      cfg.investigationChecklist.length
-    ) {
+    if (Array.isArray(cfg.investigationChecklist) && cfg.investigationChecklist.length) {
       var ckWrap = document.createElement("div");
       ckWrap.className = "pk-inv-checklist";
       var ckTitle = document.createElement("h3");
@@ -294,8 +281,7 @@
   function injectResearchPhase() {
     if (document.querySelector(".pk-research-phase")) return;
     var wrap =
-      document.querySelector(".pk .wrap, body.pk .wrap") ||
-      document.querySelector(".wrap");
+      document.querySelector(".pk .wrap, body.pk .wrap") || document.querySelector(".wrap");
     if (!wrap) return;
 
     var research = buildResearchPhase();
@@ -304,9 +290,7 @@
     var phases =
       window.PK && typeof window.PK.collectWrapPhases === "function"
         ? window.PK.collectWrapPhases(wrap)
-        : Array.prototype.slice.call(
-            wrap.querySelectorAll(":scope > section.phase"),
-          );
+        : Array.prototype.slice.call(wrap.querySelectorAll(":scope > section.phase"));
     if (!phases.length) return;
 
     var vocabPhase = phases[0];
@@ -319,9 +303,7 @@
     }
 
     var last = phases[phases.length - 1];
-    var isRubric = /rubric|how you are scored|scored/i.test(
-      last.textContent.slice(0, 120),
-    );
+    var isRubric = /rubric|how you are scored|scored/i.test(last.textContent.slice(0, 120));
     if (isRubric) {
       wrap.insertBefore(research, last);
     } else {

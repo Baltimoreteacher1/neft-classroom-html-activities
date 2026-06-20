@@ -47,9 +47,13 @@
         },
         { once: true },
       );
-      s.addEventListener("error", function () {
-        resolve(null);
-      }, { once: true });
+      s.addEventListener(
+        "error",
+        function () {
+          resolve(null);
+        },
+        { once: true },
+      );
       if (global.NeftCanvasCodec) resolve(global.NeftCanvasCodec);
     });
   }
@@ -96,9 +100,7 @@
     if (document.getElementById(MODAL_ID)) return; // once per completion
 
     var previouslyFocused =
-      document.activeElement && document.activeElement.focus
-        ? document.activeElement
-        : null;
+      document.activeElement && document.activeElement.focus ? document.activeElement : null;
 
     var card = document.createElement("div");
     card.id = MODAL_ID;

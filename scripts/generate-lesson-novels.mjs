@@ -102,9 +102,7 @@ function buildCast(novel) {
   let sawNarrator = false;
 
   for (const act of novel.acts || []) {
-    const lines = (act.dialogue || []).concat(
-      act.interlude ? [act.interlude] : [],
-    );
+    const lines = (act.dialogue || []).concat(act.interlude ? [act.interlude] : []);
     for (const l of lines) {
       const key = slug(l.who);
       if (cast[key]) continue;
@@ -195,8 +193,7 @@ function mapAct(act, idx, cast) {
   // A caption line maps to whatever speaker key was created for its display name
   // (buildCast turns cap:true lines into narrator-role cast entries under that
   // name's slug). Fall back to any narrator-role key, else "you".
-  const narratorKey =
-    Object.keys(cast).find((k) => cast[k].role === "narrator") || "you";
+  const narratorKey = Object.keys(cast).find((k) => cast[k].role === "narrator") || "you";
   const beats = (act.dialogue || []).map((l) => {
     const beat = {
       who: castKeyFor(cast, l.who, l.cap ? narratorKey : "you"),
@@ -254,9 +251,7 @@ function mapAct(act, idx, cast) {
 function pickAsker(cast) {
   const companion = Object.keys(cast).find((k) => cast[k].role === "companion");
   if (companion) return companion;
-  const protagonist = Object.keys(cast).find(
-    (k) => cast[k].role === "protagonist",
-  );
+  const protagonist = Object.keys(cast).find((k) => cast[k].role === "protagonist");
   return protagonist || Object.keys(cast)[0];
 }
 
@@ -298,13 +293,7 @@ function buildStory(group, novel, lessons) {
       title: novel.title,
       standard: group.standard || "",
       readingStandard: "RL.6.1",
-      assessment:
-        "Graphic Novel " +
-        group.groupId +
-        " #" +
-        novel.tier +
-        ": " +
-        novel.title,
+      assessment: "Graphic Novel " + group.groupId + " #" + novel.tier + ": " + novel.title,
       artBase: `../_art/lessons/${group.groupId}/`,
       home: "../index.html",
     },
@@ -341,10 +330,7 @@ function transformGroup(group) {
   const written = [];
   for (const novel of group.novels) {
     const story = buildStory(group, novel, lessons);
-    const file = path.join(
-      STORIES_DIR,
-      `lesson-${group.groupId}-${novel.tier}.story.js`,
-    );
+    const file = path.join(STORIES_DIR, `lesson-${group.groupId}-${novel.tier}.story.js`);
     fs.writeFileSync(file, serializeStory(story, group, novel.tier), "utf8");
     written.push({ file, tier: novel.tier });
     console.log(`  wrote ${path.relative(ROOT, file)}`);
@@ -376,9 +362,7 @@ function main() {
   const target = only ? groups.filter((g) => g.groupId === only) : groups;
 
   if (only && target.length === 0) {
-    console.error(
-      `No group with groupId "${only}" (or it is not flagged generate:true).`,
-    );
+    console.error(`No group with groupId "${only}" (or it is not flagged generate:true).`);
     process.exit(1);
   }
 

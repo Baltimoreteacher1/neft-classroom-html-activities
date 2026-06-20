@@ -76,12 +76,16 @@ function main() {
   }
 
   if (failures.length) {
-    console.error(`validate-pdf-tagged: FAIL — ${failures.length} issue(s) across ${total} PDF(s):`);
+    console.error(
+      `validate-pdf-tagged: FAIL — ${failures.length} issue(s) across ${total} PDF(s):`,
+    );
     for (const f of failures) console.error(`  - ${f}`);
     process.exit(1);
   }
 
-  console.log(`validate-pdf-tagged: PASS — ${total} notes PDF(s) are tagged, marked, and language-stamped.`);
+  console.log(
+    `validate-pdf-tagged: PASS — ${total} notes PDF(s) are tagged, marked, and language-stamped.`,
+  );
 }
 
 main();

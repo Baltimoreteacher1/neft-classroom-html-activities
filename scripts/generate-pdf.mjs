@@ -27,14 +27,7 @@
 // and exits 0 (so the build is never blocked); the HTML/DOCX downloads still
 // work and the PDF link will resolve once a binary is available.
 
-import {
-  readdirSync,
-  existsSync,
-  mkdirSync,
-  rmSync,
-  readFileSync,
-  writeFileSync,
-} from "node:fs";
+import { readdirSync, existsSync, mkdirSync, rmSync, readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { spawn } from "node:child_process";
@@ -145,10 +138,7 @@ function hashFor(srcHtml, levelKey) {
 // setLevel logic re-applies the forced tier on load instead of falling back.
 function injectLevel(html, levelKey) {
   let out = html.replace(/<html\s+lang="en"\s*>/i, `<html lang="en" class="level-${levelKey}">`);
-  out = out.replace(
-    /localStorage\.getItem\('notes-level'\)\s*\|\|\s*'l2'/g,
-    `'${levelKey}'`,
-  );
+  out = out.replace(/localStorage\.getItem\('notes-level'\)\s*\|\|\s*'l2'/g, `'${levelKey}'`);
   return out;
 }
 
@@ -172,10 +162,7 @@ function stampAccessibility(outPath, title) {
   // catalog looks like: <</Type /Catalog ... >>. Inject /Lang + /MarkInfo right
   // after "/Type /Catalog" if not already present.
   if (!/\/Lang\s*\(/.test(text)) {
-    text = text.replace(
-      /(\/Type\s*\/Catalog)/,
-      `$1 /Lang(${DOC_LANG}) /MarkInfo<</Marked true>>`,
-    );
+    text = text.replace(/(\/Type\s*\/Catalog)/, `$1 /Lang(${DOC_LANG}) /MarkInfo<</Marked true>>`);
   }
 
   // Stamp the title into the Info dictionary if Chrome left it empty.
@@ -284,8 +271,7 @@ async function renderAllVariants(chrome, { id, srcHtml, baseName, outDir, manife
     }
 
     attempted++;
-    const renderHtml =
-      variant.level == null ? srcHtml : injectLevel(srcHtml, variant.level);
+    const renderHtml = variant.level == null ? srcHtml : injectLevel(srcHtml, variant.level);
 
     // Render from a temp HTML that lives in the lesson dir so relative asset
     // URLs (images, etc.) still resolve against the original location.

@@ -101,9 +101,7 @@ export function buildLessonCoverExtras(config, savedProgress) {
   const vocabCount = config.vocabulary?.length || 0;
   const problemCount = countPracticeProblems(config);
   const phaseCount = PHASE_TIME_ESTIMATES.length;
-  const pct = savedProgress
-    ? Math.round((savedProgress.phasesCompleted / phaseCount) * 100)
-    : 0;
+  const pct = savedProgress ? Math.round((savedProgress.phasesCompleted / phaseCount) * 100) : 0;
 
   const phaseChips = PHASE_TIME_ESTIMATES.map(
     (p, i) =>

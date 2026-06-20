@@ -241,12 +241,20 @@
         s.src = CANVAS_CODE_UI_SRC;
         document.body.appendChild(s);
       }
-      s.addEventListener("load", function () {
-        resolve(global.NeftCanvasCodeUI || null);
-      }, { once: true });
-      s.addEventListener("error", function () {
-        resolve(null);
-      }, { once: true });
+      s.addEventListener(
+        "load",
+        function () {
+          resolve(global.NeftCanvasCodeUI || null);
+        },
+        { once: true },
+      );
+      s.addEventListener(
+        "error",
+        function () {
+          resolve(null);
+        },
+        { once: true },
+      );
       if (global.NeftCanvasCodeUI) resolve(global.NeftCanvasCodeUI);
     });
   }

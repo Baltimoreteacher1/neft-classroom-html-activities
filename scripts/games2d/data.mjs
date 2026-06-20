@@ -56,7 +56,8 @@ export const GAMES_2D = {
       {
         tag: "added-instead-of-scaled",
         trigger: "Student adds the same number to each part instead of multiplying.",
-        feedback: "Equivalent ratios MULTIPLY both parts by the same number — adding changes the taste.",
+        feedback:
+          "Equivalent ratios MULTIPLY both parts by the same number — adding changes the taste.",
       },
       {
         tag: "scaled-one-part",
@@ -65,8 +66,16 @@ export const GAMES_2D = {
       },
     ],
     tiers: {
-      1: { label: "Level 1", sub: "Support", desc: "Small ratios · always shows the rule · 5 lives" },
-      2: { label: "Level 2", sub: "Challenge", desc: "Scaling & missing values · less help · 3 lives" },
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Small ratios · always shows the rule · 5 lives",
+      },
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Scaling & missing values · less help · 3 lives",
+      },
     },
   },
 
@@ -109,8 +118,16 @@ export const GAMES_2D = {
       },
     ],
     tiers: {
-      1: { label: "Level 1", sub: "Support", desc: "Smaller numbers · slower fall · more time to sort" },
-      2: { label: "Level 2", sub: "Challenge", desc: "Bigger numbers · faster fall · GCF & LCM rounds" },
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Smaller numbers · slower fall · more time to sort",
+      },
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Bigger numbers · faster fall · GCF & LCM rounds",
+      },
     },
   },
 
@@ -139,7 +156,8 @@ export const GAMES_2D = {
       {
         tag: "swapped-variables",
         trigger: "Student treats the output as the input.",
-        feedback: "The dependent variable DEPENDS on the independent one — find the input first, then apply the rule.",
+        feedback:
+          "The dependent variable DEPENDS on the independent one — find the input first, then apply the rule.",
       },
       {
         tag: "order-of-operations",
@@ -148,8 +166,16 @@ export const GAMES_2D = {
       },
     ],
     tiers: {
-      1: { label: "Level 1", sub: "Support", desc: "One-step rules · slower asteroids · the table is shown" },
-      2: { label: "Level 2", sub: "Challenge", desc: "Two-step rules · faster asteroids · find the rule yourself" },
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "One-step rules · slower asteroids · the table is shown",
+      },
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Two-step rules · faster asteroids · find the rule yourself",
+      },
     },
   },
 
@@ -158,17 +184,45 @@ export const GAMES_2D = {
     ccss: "6.EE.B.7",
     title: "Equation Forge",
     vocab: [
-      { term: "equation", defn: "A math sentence saying two things are equal, like 2x + 3 = 11.", img: "" },
-      { term: "balance / equal", defn: "Both sides weigh the same. Whatever you do to one side, do to the other.", img: "" },
-      { term: "isolate the variable", defn: "Get x alone on one side so you can read its value.", img: "" },
-      { term: "inverse operation", defn: "The opposite move that undoes another: subtract undoes add; divide undoes multiply.", img: "" },
+      {
+        term: "equation",
+        defn: "A math sentence saying two things are equal, like 2x + 3 = 11.",
+        img: "",
+      },
+      {
+        term: "balance / equal",
+        defn: "Both sides weigh the same. Whatever you do to one side, do to the other.",
+        img: "",
+      },
+      {
+        term: "isolate the variable",
+        defn: "Get x alone on one side so you can read its value.",
+        img: "",
+      },
+      {
+        term: "inverse operation",
+        defn: "The opposite move that undoes another: subtract undoes add; divide undoes multiply.",
+        img: "",
+      },
     ],
     misconceptions: [
-      { tag: "one-side-only", trigger: "Changes one side without doing the same to the other.", feedback: "Keep it balanced — do the SAME thing to BOTH sides every time." },
-      { tag: "subtract-before-divide", trigger: "Divides while a constant is still added on the variable side.", feedback: "Undo adding/subtracting FIRST, then divide to split the groups." },
+      {
+        tag: "one-side-only",
+        trigger: "Changes one side without doing the same to the other.",
+        feedback: "Keep it balanced — do the SAME thing to BOTH sides every time.",
+      },
+      {
+        tag: "subtract-before-divide",
+        trigger: "Divides while a constant is still added on the variable side.",
+        feedback: "Undo adding/subtracting FIRST, then divide to split the groups.",
+      },
     ],
     tiers: {
-      1: { label: "Level 1", sub: "Support", desc: "One-step equations · the rule is shown · 5 lives" },
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "One-step equations · the rule is shown · 5 lives",
+      },
       2: { label: "Level 2", sub: "Challenge", desc: "Two-step equations · less help · 3 lives" },
     },
   },
@@ -178,634 +232,683 @@ export const GAMES_2D = {
     ccss: "6.RP.A.2",
     title: "Unit Rate Factory",
     vocab: [
-      { term: "rate", defn: "A comparison of two amounts with different units, like $6 for 3 pounds.", img: "" },
-      { term: "unit rate", defn: "The price (or amount) for ONE: divide to get it. $6 for 3 = $2 each.", img: "" },
-      { term: "per", defn: "The word that signals a unit rate: miles per hour, dollars per item.", img: "" },
+      {
+        term: "rate",
+        defn: "A comparison of two amounts with different units, like $6 for 3 pounds.",
+        img: "",
+      },
+      {
+        term: "unit rate",
+        defn: "The price (or amount) for ONE: divide to get it. $6 for 3 = $2 each.",
+        img: "",
+      },
+      {
+        term: "per",
+        defn: "The word that signals a unit rate: miles per hour, dollars per item.",
+        img: "",
+      },
     ],
     misconceptions: [
-      { tag: "did-not-divide", trigger: "Uses the total price instead of the unit rate.", feedback: "Unit rate means PER ONE — divide the price by the quantity." },
-      { tag: "divided-backward", trigger: "Divides quantity by price instead of price by quantity.", feedback: "For price per item, divide DOLLARS ÷ ITEMS, not items ÷ dollars." },
+      {
+        tag: "did-not-divide",
+        trigger: "Uses the total price instead of the unit rate.",
+        feedback: "Unit rate means PER ONE — divide the price by the quantity.",
+      },
+      {
+        tag: "divided-backward",
+        trigger: "Divides quantity by price instead of price by quantity.",
+        feedback: "For price per item, divide DOLLARS ÷ ITEMS, not items ÷ dollars.",
+      },
     ],
     tiers: {
-      1: { label: "Level 1", sub: "Support", desc: "Whole-number unit rates · the division is shown · 5 lives" },
-      2: { label: "Level 2", sub: "Challenge", desc: "Bigger numbers · figure the rate yourself · 3 lives" },
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Whole-number unit rates · the division is shown · 5 lives",
+      },
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Bigger numbers · figure the rate yourself · 3 lives",
+      },
     },
   },
 
   // ── Fraction Dungeon (6-1game) — 6.NS.1 ──
   "6-1game": {
-    "ccss": "6.NS.1",
-    "title": "Fraction Dungeon",
-    "vocab": [
+    ccss: "6.NS.1",
+    title: "Fraction Dungeon",
+    vocab: [
       {
-        "term": "unit fraction",
-        "defn": "A fraction with 1 on top, like 1/4. A ¾-ft board is three of these ¼ pieces joined together."
+        term: "unit fraction",
+        defn: "A fraction with 1 on top, like 1/4. A ¾-ft board is three of these ¼ pieces joined together.",
       },
       {
-        "term": "quotient",
-        "defn": "The answer to a division problem. Here it is how many boards fit: corridor length ÷ board length."
+        term: "quotient",
+        defn: "The answer to a division problem. Here it is how many boards fit: corridor length ÷ board length.",
       },
       {
-        "term": "dividing by a fraction",
-        "defn": "Asking 'how many of THIS smaller length fit inside that length?' The smaller the board, the MORE boards fit."
-      }
+        term: "dividing by a fraction",
+        defn: "Asking 'how many of THIS smaller length fit inside that length?' The smaller the board, the MORE boards fit.",
+      },
     ],
-    "misconceptions": [
+    misconceptions: [
       {
-        "tag": "overhang",
-        "trigger": "Lays one too many boards so the last one sticks past the wall.",
-        "feedback": "That board overhangs the wall. Pull it back — you only count boards that fit INSIDE the corridor."
+        tag: "overhang",
+        trigger: "Lays one too many boards so the last one sticks past the wall.",
+        feedback:
+          "That board overhangs the wall. Pull it back — you only count boards that fit INSIDE the corridor.",
       },
       {
-        "tag": "gap-open-early",
-        "trigger": "Opens the door while bare floor (a gap) is still showing.",
-        "feedback": "There's still bare floor left. Keep laying boards until the corridor is filled exactly — no gap."
-      }
+        tag: "gap-open-early",
+        trigger: "Opens the door while bare floor (a gap) is still showing.",
+        feedback:
+          "There's still bare floor left. Keep laying boards until the corridor is filled exactly — no gap.",
+      },
     ],
-    "tiers": {
-      "1": {
-        "label": "Level 1",
-        "sub": "Support",
-        "desc": "Whole-number corridors · the grid shows each board's spot · 5 lives"
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Whole-number corridors · the grid shows each board's spot · 5 lives",
       },
-      "2": {
-        "label": "Level 2",
-        "sub": "Challenge",
-        "desc": "Mixed-number corridors · figure out the fit yourself · 3 lives"
-      }
-    }
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Mixed-number corridors · figure out the fit yourself · 3 lives",
+      },
+    },
   },
 
   // ── Parallelogram Builder (parallelogramandrhombusgame) — 6.G.A.1 ──
-  "parallelogramandrhombusgame": {
-    "ccss": "6.G.A.1",
-    "title": "Parallelogram Builder",
-    "vocab": [
+  parallelogramandrhombusgame: {
+    ccss: "6.G.A.1",
+    title: "Parallelogram Builder",
+    vocab: [
       {
-        "term": "base",
-        "defn": "One side of a parallelogram, measured straight across the bottom. You multiply it by the height to get the area."
+        term: "base",
+        defn: "One side of a parallelogram, measured straight across the bottom. You multiply it by the height to get the area.",
       },
       {
-        "term": "height",
-        "defn": "The straight up-and-down distance between the base and the opposite side — it makes a right angle with the base, not the slanted edge."
+        term: "height",
+        defn: "The straight up-and-down distance between the base and the opposite side — it makes a right angle with the base, not the slanted edge.",
       },
       {
-        "term": "parallelogram",
-        "defn": "A four-sided shape whose opposite sides are parallel. Slide (shear) a rectangle sideways and you get one with the SAME area."
-      }
+        term: "parallelogram",
+        defn: "A four-sided shape whose opposite sides are parallel. Slide (shear) a rectangle sideways and you get one with the SAME area.",
+      },
     ],
-    "misconceptions": [
+    misconceptions: [
       {
-        "tag": "slant-as-height",
-        "trigger": "Multiplies the base by the slanted side instead of the perpendicular height.",
-        "feedback": "Area uses the perpendicular height, not the slanted side. Count the rows of squares going straight up."
+        tag: "slant-as-height",
+        trigger: "Multiplies the base by the slanted side instead of the perpendicular height.",
+        feedback:
+          "Area uses the perpendicular height, not the slanted side. Count the rows of squares going straight up.",
       },
       {
-        "tag": "area-changes-when-sheared",
-        "trigger": "Thinks shearing the rectangle changes how many unit squares there are.",
-        "feedback": "Shearing only slides the squares sideways — none are added or removed, so base × height stays the same."
-      }
+        tag: "area-changes-when-sheared",
+        trigger: "Thinks shearing the rectangle changes how many unit squares there are.",
+        feedback:
+          "Shearing only slides the squares sideways — none are added or removed, so base × height stays the same.",
+      },
     ],
-    "tiers": {
-      "1": {
-        "label": "Level 1",
-        "sub": "Support",
-        "desc": "Smaller base & height · formula and square-count scaffold shown · 5 lives"
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Smaller base & height · formula and square-count scaffold shown · 5 lives",
       },
-      "2": {
-        "label": "Level 2",
-        "sub": "Challenge",
-        "desc": "Bigger base & height · less help, trickier distractors · 3 lives"
-      }
-    }
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Bigger base & height · less help, trickier distractors · 3 lives",
+      },
+    },
   },
 
   // ── Function Tower (6-ee-9gamereview) — 6.EE.C.9 ──
   "6-ee-9gamereview": {
-    "ccss": "6.EE.C.9",
-    "title": "Function Tower",
-    "vocab": [
+    ccss: "6.EE.C.9",
+    title: "Function Tower",
+    vocab: [
       {
-        "term": "independent variable",
-        "defn": "The input you choose — here it's x. You pick x, and y depends on it."
+        term: "independent variable",
+        defn: "The input you choose — here it's x. You pick x, and y depends on it.",
       },
       {
-        "term": "dependent variable",
-        "defn": "The output that depends on the input — here it's y. Find y from the rule."
+        term: "dependent variable",
+        defn: "The output that depends on the input — here it's y. Find y from the rule.",
       },
       {
-        "term": "rule (equation)",
-        "defn": "How to get y from x, like y = 2·x + 1: multiply x by 2, then add 1."
-      }
+        term: "rule (equation)",
+        defn: "How to get y from x, like y = 2·x + 1: multiply x by 2, then add 1.",
+      },
     ],
-    "misconceptions": [
+    misconceptions: [
       {
-        "tag": "forgot-constant",
-        "trigger": "Multiplies m·x but forgets to add b.",
-        "feedback": "Don't stop at m·x — the rule also says + b. Add the constant too."
+        tag: "forgot-constant",
+        trigger: "Multiplies m·x but forgets to add b.",
+        feedback: "Don't stop at m·x — the rule also says + b. Add the constant too.",
       },
       {
-        "tag": "added-before-multiplying",
-        "trigger": "Adds b to x first, then multiplies (order of operations).",
-        "feedback": "Multiply m·x FIRST, then add b. Times before plus."
-      }
+        tag: "added-before-multiplying",
+        trigger: "Adds b to x first, then multiplies (order of operations).",
+        feedback: "Multiply m·x FIRST, then add b. Times before plus.",
+      },
     ],
-    "tiers": {
-      "1": {
-        "label": "Level 1",
-        "sub": "Support",
-        "desc": "Smaller numbers · the substitution is shown · 5 lives"
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Smaller numbers · the substitution is shown · 5 lives",
       },
-      "2": {
-        "label": "Level 2",
-        "sub": "Challenge",
-        "desc": "Bigger numbers · compute y on your own · 3 lives"
-      }
-    }
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Bigger numbers · compute y on your own · 3 lives",
+      },
+    },
   },
 
   // ── Smart Shopper (6-rp-a-3game) — 6.RP.A.3 ──
   "6-rp-a-3game": {
-    "ccss": "6.RP.A.3",
-    "title": "Smart Shopper",
-    "vocab": [
+    ccss: "6.RP.A.3",
+    title: "Smart Shopper",
+    vocab: [
       {
-        "term": "unit price",
-        "defn": "The cost of ONE item. Divide the total price by how many you get: $12 for 4 = $3 each."
+        term: "unit price",
+        defn: "The cost of ONE item. Divide the total price by how many you get: $12 for 4 = $3 each.",
       },
       {
-        "term": "better buy",
-        "defn": "The deal with the LOWER unit price — you pay less for each item."
+        term: "better buy",
+        defn: "The deal with the LOWER unit price — you pay less for each item.",
       },
       {
-        "term": "percent off",
-        "defn": "A discount. 25% off means you subtract 25% of the price. 25% of $40 = $10, so you pay $30."
-      }
+        term: "percent off",
+        defn: "A discount. 25% off means you subtract 25% of the price. 25% of $40 = $10, so you pay $30.",
+      },
     ],
-    "misconceptions": [
+    misconceptions: [
       {
-        "tag": "compared-totals",
-        "trigger": "Compares total prices instead of the price per item.",
-        "feedback": "A bigger total can still be the better buy. Find the price for ONE item first: price ÷ quantity."
+        tag: "compared-totals",
+        trigger: "Compares total prices instead of the price per item.",
+        feedback:
+          "A bigger total can still be the better buy. Find the price for ONE item first: price ÷ quantity.",
       },
       {
-        "tag": "added-instead-of-subtract",
-        "trigger": "Adds the percent or forgets to subtract the discount.",
-        "feedback": "Percent OFF is a discount: find the percent of the price, then SUBTRACT it from the price."
-      }
+        tag: "added-instead-of-subtract",
+        trigger: "Adds the percent or forgets to subtract the discount.",
+        feedback:
+          "Percent OFF is a discount: find the percent of the price, then SUBTRACT it from the price.",
+      },
     ],
-    "tiers": {
-      "1": {
-        "label": "Level 1",
-        "sub": "Support",
-        "desc": "Whole-dollar unit prices · the division is shown · 5 lives"
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Whole-dollar unit prices · the division is shown · 5 lives",
       },
-      "2": {
-        "label": "Level 2",
-        "sub": "Challenge",
-        "desc": "Prices with cents · percent-off discounts · 3 lives"
-      }
-    }
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Prices with cents · percent-off discounts · 3 lives",
+      },
+    },
   },
 
   // ── Mars Rover (6-ee-c-9martiangame) — 6.EE.C.9 ──
   "6-ee-c-9martiangame": {
-    "ccss": "6.EE.C.9",
-    "title": "Mars Rover",
-    "vocab": [
+    ccss: "6.EE.C.9",
+    title: "Mars Rover",
+    vocab: [
       {
-        "term": "independent variable",
-        "defn": "The input you are given — here it's x, the value you plug into the rule."
+        term: "independent variable",
+        defn: "The input you are given — here it's x, the value you plug into the rule.",
       },
       {
-        "term": "dependent variable",
-        "defn": "The output you compute — here it's y, the drive distance the rule produces from x."
+        term: "dependent variable",
+        defn: "The output you compute — here it's y, the drive distance the rule produces from x.",
       },
       {
-        "term": "evaluate an expression",
-        "defn": "Put the value of x into the rule and do the math to find y. Multiply first, then add."
-      }
+        term: "evaluate an expression",
+        defn: "Put the value of x into the rule and do the math to find y. Multiply first, then add.",
+      },
     ],
-    "misconceptions": [
+    misconceptions: [
       {
-        "tag": "ignored-constant",
-        "trigger": "Drives m·x but forgets to add the constant b.",
-        "feedback": "Don't forget the + part of the rule. After multiplying, ADD the constant."
+        tag: "ignored-constant",
+        trigger: "Drives m·x but forgets to add the constant b.",
+        feedback: "Don't forget the + part of the rule. After multiplying, ADD the constant.",
       },
       {
-        "tag": "order-of-operations",
-        "trigger": "Adds before multiplying, e.g. (x + b) then ·m.",
-        "feedback": "Multiply m by x FIRST, then add b. Multiplication comes before addition."
-      }
+        tag: "order-of-operations",
+        trigger: "Adds before multiplying, e.g. (x + b) then ·m.",
+        feedback: "Multiply m by x FIRST, then add b. Multiplication comes before addition.",
+      },
     ],
-    "tiers": {
-      "1": {
-        "label": "Level 1",
-        "sub": "Support",
-        "desc": "Smaller numbers · step-by-step rule shown · 5 lives"
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Smaller numbers · step-by-step rule shown · 5 lives",
       },
-      "2": {
-        "label": "Level 2",
-        "sub": "Challenge",
-        "desc": "Bigger numbers · work it out yourself · 3 lives"
-      }
-    }
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Bigger numbers · work it out yourself · 3 lives",
+      },
+    },
   },
 
   // ── Variable Velocity (6-ee-c-9variablevelocitygame) — 6.EE.C.9 ──
   "6-ee-c-9variablevelocitygame": {
-    "ccss": "6.EE.C.9",
-    "title": "Variable Velocity",
-    "vocab": [
+    ccss: "6.EE.C.9",
+    title: "Variable Velocity",
+    vocab: [
       {
-        "term": "independent variable",
-        "defn": "The input you are given (here, x). You plug it into the rule — it does not depend on anything else."
+        term: "independent variable",
+        defn: "The input you are given (here, x). You plug it into the rule — it does not depend on anything else.",
       },
       {
-        "term": "dependent variable",
-        "defn": "The output (here, y). Its value depends on the rule and the x you put in."
+        term: "dependent variable",
+        defn: "The output (here, y). Its value depends on the rule and the x you put in.",
       },
       {
-        "term": "evaluate",
-        "defn": "To find the value of an expression by substituting a number for the variable, then doing the math (multiply before you add)."
-      }
+        term: "evaluate",
+        defn: "To find the value of an expression by substituting a number for the variable, then doing the math (multiply before you add).",
+      },
     ],
-    "misconceptions": [
+    misconceptions: [
       {
-        "tag": "skips-multiplication",
-        "trigger": "Student adds m + x + b instead of multiplying m·x first.",
-        "feedback": "Multiply m·x BEFORE you add b. Order of operations: times before plus."
+        tag: "skips-multiplication",
+        trigger: "Student adds m + x + b instead of multiplying m·x first.",
+        feedback: "Multiply m·x BEFORE you add b. Order of operations: times before plus.",
       },
       {
-        "tag": "drops-constant",
-        "trigger": "Student computes m·x but forgets to add the constant b.",
-        "feedback": "After m·x, don't forget the + b. The constant shifts every lane up."
-      }
+        tag: "drops-constant",
+        trigger: "Student computes m·x but forgets to add the constant b.",
+        feedback: "After m·x, don't forget the + b. The constant shifts every lane up.",
+      },
     ],
-    "tiers": {
-      "1": {
-        "label": "Level 1",
-        "sub": "Support",
-        "desc": "Smaller numbers · steps shown · 5 lives"
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Smaller numbers · steps shown · 5 lives",
       },
-      "2": {
-        "label": "Level 2",
-        "sub": "Challenge",
-        "desc": "Bigger numbers · work it out yourself · 3 lives"
-      }
-    }
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Bigger numbers · work it out yourself · 3 lives",
+      },
+    },
   },
 
   // ── Expression Arena (variablecomparisongame) — 6.EE.B.5 ──
-  "variablecomparisongame": {
-    "ccss": "6.EE.B.5",
-    "title": "Expression Arena",
-    "vocab": [
+  variablecomparisongame: {
+    ccss: "6.EE.B.5",
+    title: "Expression Arena",
+    vocab: [
       {
-        "term": "expression",
-        "defn": "A math phrase with numbers, a variable, and operations, like 3x + 2. It has no equals sign."
+        term: "expression",
+        defn: "A math phrase with numbers, a variable, and operations, like 3x + 2. It has no equals sign.",
       },
       {
-        "term": "evaluate",
-        "defn": "To find the value of an expression by putting a number in for the variable and doing the math."
+        term: "evaluate",
+        defn: "To find the value of an expression by putting a number in for the variable and doing the math.",
       },
       {
-        "term": "substitute",
-        "defn": "To swap the variable for its number — replace every x with the value you are given."
-      }
+        term: "substitute",
+        defn: "To swap the variable for its number — replace every x with the value you are given.",
+      },
     ],
-    "misconceptions": [
+    misconceptions: [
       {
-        "tag": "skip-multiply",
-        "trigger": "Adds the coefficient and x instead of multiplying (reads 3x as 3 + x).",
-        "feedback": "3x means 3 TIMES x. Multiply the coefficient by x first, then add or subtract."
+        tag: "skip-multiply",
+        trigger: "Adds the coefficient and x instead of multiplying (reads 3x as 3 + x).",
+        feedback: "3x means 3 TIMES x. Multiply the coefficient by x first, then add or subtract.",
       },
       {
-        "tag": "compare-coefficients",
-        "trigger": "Compares the two expressions by their coefficients instead of their evaluated values.",
-        "feedback": "You can't tell which is bigger from the numbers in front. Plug in x and compare the RESULTS."
-      }
+        tag: "compare-coefficients",
+        trigger:
+          "Compares the two expressions by their coefficients instead of their evaluated values.",
+        feedback:
+          "You can't tell which is bigger from the numbers in front. Plug in x and compare the RESULTS.",
+      },
     ],
-    "tiers": {
-      "1": {
-        "label": "Level 1",
-        "sub": "Support",
-        "desc": "Smaller numbers · the substitution is shown · 5 lives"
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Smaller numbers · the substitution is shown · 5 lives",
       },
-      "2": {
-        "label": "Level 2",
-        "sub": "Challenge",
-        "desc": "Bigger numbers · evaluate it yourself · 3 lives"
-      }
-    }
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Bigger numbers · evaluate it yourself · 3 lives",
+      },
+    },
   },
 
   // ── Variable Voyage (game-variable-voyage) — 6.EE.A.2 ──
   "game-variable-voyage": {
-    "ccss": "6.EE.A.2",
-    "title": "Variable Voyage",
-    "vocab": [
+    ccss: "6.EE.A.2",
+    title: "Variable Voyage",
+    vocab: [
       {
-        "term": "variable",
-        "defn": "A letter like n that stands for a number you don't know yet, until you are told its value."
+        term: "variable",
+        defn: "A letter like n that stands for a number you don't know yet, until you are told its value.",
       },
       {
-        "term": "substitute",
-        "defn": "To swap the variable for its number — replace every n with the value you are given."
+        term: "substitute",
+        defn: "To swap the variable for its number — replace every n with the value you are given.",
       },
       {
-        "term": "order of operations",
-        "defn": "The rule for which step comes first: multiply and divide BEFORE you add or subtract."
-      }
+        term: "order of operations",
+        defn: "The rule for which step comes first: multiply and divide BEFORE you add or subtract.",
+      },
     ],
-    "misconceptions": [
+    misconceptions: [
       {
-        "tag": "add-before-multiply",
-        "trigger": "Fires the + or − node before the × node in an expression like 2 × n + 5.",
-        "feedback": "Multiply before you add. In 2 × n + 5, do 2 × n first, THEN add 5."
+        tag: "add-before-multiply",
+        trigger: "Fires the + or − node before the × node in an expression like 2 × n + 5.",
+        feedback: "Multiply before you add. In 2 × n + 5, do 2 × n first, THEN add 5.",
       },
       {
-        "tag": "partial-substitution",
-        "trigger": "Tries to fire an operation while a variable slot is still empty.",
-        "feedback": "Substitute first: every n slot needs the value before any operation can run."
-      }
+        tag: "partial-substitution",
+        trigger: "Tries to fire an operation while a variable slot is still empty.",
+        feedback: "Substitute first: every n slot needs the value before any operation can run.",
+      },
     ],
-    "tiers": {
-      "1": {
-        "label": "Level 1",
-        "sub": "Support",
-        "desc": "Smaller numbers · worked-out scaffold shown · 5 fuel cells"
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Smaller numbers · worked-out scaffold shown · 5 fuel cells",
       },
-      "2": {
-        "label": "Level 2",
-        "sub": "Challenge",
-        "desc": "Bigger numbers · two variable slots · 3 fuel cells"
-      }
-    }
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Bigger numbers · two variable slots · 3 fuel cells",
+      },
+    },
   },
 
   // ── Equation Leap (cloudflare-pages-game-for-6-ee-9) — 6.EE.B.7 ──
   "cloudflare-pages-game-for-6-ee-9": {
-    "ccss": "6.EE.B.7",
-    "title": "Equation Leap",
-    "vocab": [
+    ccss: "6.EE.B.7",
+    title: "Equation Leap",
+    vocab: [
       {
-        "term": "equation",
-        "defn": "A math sentence saying two amounts are equal, like x + 3 = 8. Your job is to find the value of x that makes it true."
+        term: "equation",
+        defn: "A math sentence saying two amounts are equal, like x + 3 = 8. Your job is to find the value of x that makes it true.",
       },
       {
-        "term": "solve",
-        "defn": "To find the value of the variable. You undo what is done to x by doing the OPPOSITE operation to both sides."
+        term: "solve",
+        defn: "To find the value of the variable. You undo what is done to x by doing the OPPOSITE operation to both sides.",
       },
       {
-        "term": "inverse operation",
-        "defn": "The opposite move: subtraction undoes addition, and division undoes multiplication. Use it to get x by itself."
-      }
+        term: "inverse operation",
+        defn: "The opposite move: subtraction undoes addition, and division undoes multiplication. Use it to get x by itself.",
+      },
     ],
-    "misconceptions": [
+    misconceptions: [
       {
-        "tag": "wrong-operation",
-        "trigger": "Adds (or multiplies) instead of using the inverse to undo it.",
-        "feedback": "Undo with the OPPOSITE. If it says +3, subtract 3 from both sides; if it says 2x, divide both sides by 2."
+        tag: "wrong-operation",
+        trigger: "Adds (or multiplies) instead of using the inverse to undo it.",
+        feedback:
+          "Undo with the OPPOSITE. If it says +3, subtract 3 from both sides; if it says 2x, divide both sides by 2.",
       },
       {
-        "tag": "one-side-only",
-        "trigger": "Changes only one side of the equation, breaking the balance.",
-        "feedback": "Whatever you do to one side, do to BOTH sides so the equation stays balanced."
-      }
+        tag: "one-side-only",
+        trigger: "Changes only one side of the equation, breaking the balance.",
+        feedback: "Whatever you do to one side, do to BOTH sides so the equation stays balanced.",
+      },
     ],
-    "tiers": {
-      "1": {
-        "label": "Level 1",
-        "sub": "Support",
-        "desc": "Smaller numbers · solving steps shown · 5 lives"
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Smaller numbers · solving steps shown · 5 lives",
       },
-      "2": {
-        "label": "Level 2",
-        "sub": "Challenge",
-        "desc": "Bigger numbers · solve it on your own · 3 lives"
-      }
-    }
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Bigger numbers · solve it on your own · 3 lives",
+      },
+    },
   },
 
   // ── Stat Lab (6-sp-a-1game-2) — 6.SP.A.1 ──
   "6-sp-a-1game-2": {
-    "ccss": "6.SP.A.1",
-    "title": "Stat Lab",
-    "vocab": [
+    ccss: "6.SP.A.1",
+    title: "Stat Lab",
+    vocab: [
       {
-        "term": "statistical question",
-        "defn": "A question you answer by collecting data that VARIES — different people or things give different answers (like 'How tall are the students in our class?')."
+        term: "statistical question",
+        defn: "A question you answer by collecting data that VARIES — different people or things give different answers (like 'How tall are the students in our class?').",
       },
       {
-        "term": "variability",
-        "defn": "How spread out the answers are. Lots of different answers = lots of variability. One repeated answer = none."
+        term: "variability",
+        defn: "How spread out the answers are. Lots of different answers = lots of variability. One repeated answer = none.",
       },
       {
-        "term": "non-statistical question",
-        "defn": "A question with one fixed answer — everyone reports the same thing (like 'How tall is our classroom door?'). No variability."
-      }
+        term: "non-statistical question",
+        defn: "A question with one fixed answer — everyone reports the same thing (like 'How tall is our classroom door?'). No variability.",
+      },
     ],
-    "misconceptions": [
+    misconceptions: [
       {
-        "tag": "topic-not-variability",
-        "trigger": "Calls a question statistical because it sounds 'sciency' or has numbers, even when every answer is the same.",
-        "feedback": "A question is statistical only if the answers VARY. If every poller lands in the same bar, it has one answer — not statistical."
+        tag: "topic-not-variability",
+        trigger:
+          "Calls a question statistical because it sounds 'sciency' or has numbers, even when every answer is the same.",
+        feedback:
+          "A question is statistical only if the answers VARY. If every poller lands in the same bar, it has one answer — not statistical.",
       },
       {
-        "tag": "single-thing",
-        "trigger": "Treats a question about ONE person or ONE object as statistical.",
-        "feedback": "One thing has one answer. To make it statistical, ask about a whole GROUP so the answers can spread out."
-      }
+        tag: "single-thing",
+        trigger: "Treats a question about ONE person or ONE object as statistical.",
+        feedback:
+          "One thing has one answer. To make it statistical, ask about a whole GROUP so the answers can spread out.",
+      },
     ],
-    "tiers": {
-      "1": {
-        "label": "Level 1",
-        "sub": "Support",
-        "desc": "Clear-cut questions · 8 pollers · guided edits · 5 lives"
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Clear-cut questions · 8 pollers · guided edits · 5 lives",
       },
-      "2": {
-        "label": "Level 2",
-        "sub": "Challenge",
-        "desc": "Subtler questions · 16 pollers · freer edits · 3 lives"
-      }
-    }
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Subtler questions · 16 pollers · freer edits · 3 lives",
+      },
+    },
   },
 
   // ── Stat Manager (mean-median-mode-game) — 6.SP.B.5 ──
   "mean-median-mode-game": {
-    "ccss": "6.SP.B.5",
-    "title": "Stat Manager",
-    "vocab": [
+    ccss: "6.SP.B.5",
+    title: "Stat Manager",
+    vocab: [
       {
-        "term": "mean",
-        "defn": "The average. Add up all the values, then divide by how many values there are."
+        term: "mean",
+        defn: "The average. Add up all the values, then divide by how many values there are.",
       },
       {
-        "term": "median",
-        "defn": "The middle value once the numbers are lined up smallest to largest. With an even count, it's the average of the two middle ones."
+        term: "median",
+        defn: "The middle value once the numbers are lined up smallest to largest. With an even count, it's the average of the two middle ones.",
       },
       {
-        "term": "data set",
-        "defn": "The whole group of numbers you collected, like the points a player scored in each game."
-      }
+        term: "data set",
+        defn: "The whole group of numbers you collected, like the points a player scored in each game.",
+      },
     ],
-    "misconceptions": [
+    misconceptions: [
       {
-        "tag": "mean-wrong-direction",
-        "trigger": "Raises a bar to lower the mean (or lowers one to raise it).",
-        "feedback": "To raise the mean, make values BIGGER. To lower it, make them smaller. Watch the live number move."
+        tag: "mean-wrong-direction",
+        trigger: "Raises a bar to lower the mean (or lowers one to raise it).",
+        feedback:
+          "To raise the mean, make values BIGGER. To lower it, make them smaller. Watch the live number move.",
       },
       {
-        "tag": "median-not-sorted",
-        "trigger": "Treats the middle bar on screen as the median without sorting.",
-        "feedback": "The median is the middle value AFTER sorting smallest to largest — not just the middle bar on screen."
-      }
+        tag: "median-not-sorted",
+        trigger: "Treats the middle bar on screen as the median without sorting.",
+        feedback:
+          "The median is the middle value AFTER sorting smallest to largest — not just the middle bar on screen.",
+      },
     ],
-    "tiers": {
-      "1": {
-        "label": "Level 1",
-        "sub": "Support",
-        "desc": "Smaller numbers · steps of 1 · target hint shown · 5 lives"
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Smaller numbers · steps of 1 · target hint shown · 5 lives",
       },
-      "2": {
-        "label": "Level 2",
-        "sub": "Challenge",
-        "desc": "Bigger numbers · less help · add and remove values · 3 lives"
-      }
-    }
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Bigger numbers · less help · add and remove values · 3 lives",
+      },
+    },
   },
 
   // ── Deep Dive Fractions (6-ns-a-1game) — 6.NS.A.1 ──
   "6-ns-a-1game": {
-    "ccss": "6.NS.A.1",
-    "title": "Deep Dive Fractions",
-    "vocab": [
+    ccss: "6.NS.A.1",
+    title: "Deep Dive Fractions",
+    vocab: [
       {
-        "term": "dividend",
-        "defn": "The whole amount you are measuring out — the big distance you need to dive (the a/b in a/b ÷ c/d)."
+        term: "dividend",
+        defn: "The whole amount you are measuring out — the big distance you need to dive (the a/b in a/b ÷ c/d).",
       },
       {
-        "term": "divisor",
-        "defn": "The size of each equal group or jump — the small fraction you measure with (the c/d in a/b ÷ c/d)."
+        term: "divisor",
+        defn: "The size of each equal group or jump — the small fraction you measure with (the c/d in a/b ÷ c/d).",
       },
       {
-        "term": "quotient",
-        "defn": "The answer to a division: how many equal jumps of the divisor fit exactly into the dividend."
-      }
+        term: "quotient",
+        defn: "The answer to a division: how many equal jumps of the divisor fit exactly into the dividend.",
+      },
     ],
-    "misconceptions": [
+    misconceptions: [
       {
-        "tag": "divide-shrinks",
-        "trigger": "Expects the answer to be smaller, so stops with too few jumps.",
-        "feedback": "Dividing by a fraction less than 1 gives MORE, not fewer — keep adding jumps until you reach the goal."
+        tag: "divide-shrinks",
+        trigger: "Expects the answer to be smaller, so stops with too few jumps.",
+        feedback:
+          "Dividing by a fraction less than 1 gives MORE, not fewer — keep adding jumps until you reach the goal.",
       },
       {
-        "tag": "overshoot",
-        "trigger": "Adds jumps past the goal line and thinks it still counts.",
-        "feedback": "You went past the goal. The quotient is the number of jumps that land EXACTLY on the goal, not over it."
-      }
+        tag: "overshoot",
+        trigger: "Adds jumps past the goal line and thinks it still counts.",
+        feedback:
+          "You went past the goal. The quotient is the number of jumps that land EXACTLY on the goal, not over it.",
+      },
     ],
-    "tiers": {
-      "1": {
-        "label": "Level 1",
-        "sub": "Support",
-        "desc": "Same-denominator fractions · jump labels shown · 5 air"
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Same-denominator fractions · jump labels shown · 5 air",
       },
-      "2": {
-        "label": "Level 2",
-        "sub": "Challenge",
-        "desc": "Unlike denominators & bigger answers · less help · 3 air"
-      }
-    }
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Unlike denominators & bigger answers · less help · 3 air",
+      },
+    },
   },
 
   // ── Asteroid Miner (6-ns-b-2game) — 6.NS.B.2 ──
   "6-ns-b-2game": {
-    "ccss": "6.NS.B.2",
-    "title": "Asteroid Miner",
-    "vocab": [
+    ccss: "6.NS.B.2",
+    title: "Asteroid Miner",
+    vocab: [
       {
-        "term": "dividend",
-        "defn": "The total amount you are splitting up. Here it's the ore inside the asteroid that you need to mine out."
+        term: "dividend",
+        defn: "The total amount you are splitting up. Here it's the ore inside the asteroid that you need to mine out.",
       },
       {
-        "term": "divisor",
-        "defn": "The size of each equal group. Here it's how many miners are in one crew — you load the ore one crew at a time."
+        term: "divisor",
+        defn: "The size of each equal group. Here it's how many miners are in one crew — you load the ore one crew at a time.",
       },
       {
-        "term": "partial quotient",
-        "defn": "A chunk of the answer. Each blast loads several crews at once; add up all your blasts to get the full quotient."
-      }
+        term: "partial quotient",
+        defn: "A chunk of the answer. Each blast loads several crews at once; add up all your blasts to get the full quotient.",
+      },
     ],
-    "misconceptions": [
+    misconceptions: [
       {
-        "tag": "over-subtract",
-        "trigger": "Tries to load more crews than there is ore for, pushing the ore below zero.",
-        "feedback": "You can't take out more ore than is left. Try fewer crews so the ore stays at zero or above."
+        tag: "over-subtract",
+        trigger: "Tries to load more crews than there is ore for, pushing the ore below zero.",
+        feedback:
+          "You can't take out more ore than is left. Try fewer crews so the ore stays at zero or above.",
       },
       {
-        "tag": "ignore-place-value",
-        "trigger": "Loads only one crew at a time when a big multiple (like 10 or 40 crews) would fit, dragging the run out.",
-        "feedback": "Think bigger! Estimate how many whole crews fit at once — using tens saves blasts and hull."
-      }
+        tag: "ignore-place-value",
+        trigger:
+          "Loads only one crew at a time when a big multiple (like 10 or 40 crews) would fit, dragging the run out.",
+        feedback:
+          "Think bigger! Estimate how many whole crews fit at once — using tens saves blasts and hull.",
+      },
     ],
-    "tiers": {
-      "1": {
-        "label": "Level 1",
-        "sub": "Support",
-        "desc": "2-digit ore ÷ 1-digit crew · multiplication strip shown · 5 hull"
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "2-digit ore ÷ 1-digit crew · multiplication strip shown · 5 hull",
       },
-      "2": {
-        "label": "Level 2",
-        "sub": "Challenge",
-        "desc": "3–4-digit ore ÷ 2-digit crew · estimate it yourself · 3 hull"
-      }
-    }
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "3–4-digit ore ÷ 2-digit crew · estimate it yourself · 3 hull",
+      },
+    },
   },
 
   // ── Decimal Kitchen (6-ns-b-3game) — 6.NS.B.3 ──
   "6-ns-b-3game": {
-    "ccss": "6.NS.B.3",
-    "title": "Decimal Kitchen",
-    "vocab": [
+    ccss: "6.NS.B.3",
+    title: "Decimal Kitchen",
+    vocab: [
       {
-        "term": "decimal",
-        "defn": "A number with a point that shows parts smaller than one, like 1.75 — that is 1 whole and 75 hundredths."
+        term: "decimal",
+        defn: "A number with a point that shows parts smaller than one, like 1.75 — that is 1 whole and 75 hundredths.",
       },
       {
-        "term": "tenths place",
-        "defn": "The first digit after the decimal point. In 1.75 the 7 means 7 tenths (0.7)."
+        term: "tenths place",
+        defn: "The first digit after the decimal point. In 1.75 the 7 means 7 tenths (0.7).",
       },
       {
-        "term": "line up the decimal points",
-        "defn": "When you add or subtract decimals, stack the points so tenths match tenths and hundredths match hundredths."
-      }
+        term: "line up the decimal points",
+        defn: "When you add or subtract decimals, stack the points so tenths match tenths and hundredths match hundredths.",
+      },
     ],
-    "misconceptions": [
+    misconceptions: [
       {
-        "tag": "place-value-misalign",
-        "trigger": "Stops on the wrong mark by treating 0.5 and 0.05 as the same size.",
-        "feedback": "Watch the place value: 0.5 is five tenths but 0.05 is five hundredths — much smaller. Count the marks carefully."
+        tag: "place-value-misalign",
+        trigger: "Stops on the wrong mark by treating 0.5 and 0.05 as the same size.",
+        feedback:
+          "Watch the place value: 0.5 is five tenths but 0.05 is five hundredths — much smaller. Count the marks carefully.",
       },
       {
-        "tag": "ignore-overpour",
-        "trigger": "Pours past the target line and serves an overflowing cup.",
-        "feedback": "You poured PAST the mark — the cup spills over the line. Pour back down so the level sits exactly on the dashed target."
-      }
+        tag: "ignore-overpour",
+        trigger: "Pours past the target line and serves an overflowing cup.",
+        feedback:
+          "You poured PAST the mark — the cup spills over the line. Pour back down so the level sits exactly on the dashed target.",
+      },
     ],
-    "tiers": {
-      "1": {
-        "label": "Level 1",
-        "sub": "Support",
-        "desc": "Tenths ruler · add & subtract · big pour buttons · 5 lives"
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Tenths ruler · add & subtract · big pour buttons · 5 lives",
       },
-      "2": {
-        "label": "Level 2",
-        "sub": "Challenge",
-        "desc": "Hundredths ruler · all four operations · exact match · 3 lives"
-      }
-    }
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Hundredths ruler · all four operations · exact match · 3 lives",
+      },
+    },
   },
 };
 

@@ -188,9 +188,7 @@
    * NAME (a stable string), so it survives roster reordering. */
   function loadManualMap() {
     try {
-      return (
-        JSON.parse(global.localStorage.getItem(MANUAL_MAP_KEY) || "{}") || {}
-      );
+      return JSON.parse(global.localStorage.getItem(MANUAL_MAP_KEY) || "{}") || {};
     } catch (e) {
       return {};
     }
@@ -221,9 +219,7 @@
    * straight from "fetch" to "download". Pure key/value over localStorage. */
   function loadSettings() {
     try {
-      return (
-        JSON.parse(global.localStorage.getItem(SETTINGS_KEY) || "{}") || {}
-      );
+      return JSON.parse(global.localStorage.getItem(SETTINGS_KEY) || "{}") || {};
     } catch (e) {
       return {};
     }

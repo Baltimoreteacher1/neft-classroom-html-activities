@@ -21,8 +21,7 @@ const banner =
   " * Source of truth: scripts/games2d/data.mjs\n" +
   " * Regenerate: npm run generate-games2d-data */\n";
 
-const body =
-  "window.Games2DData = " + JSON.stringify(GAMES_2D, null, 2) + ";\n";
+const body = "window.Games2DData = " + JSON.stringify(GAMES_2D, null, 2) + ";\n";
 
 writeFileSync(OUT, banner + body);
 
