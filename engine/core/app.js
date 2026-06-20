@@ -394,8 +394,16 @@ function showIdentityScreen(root, config) {
     const name = nameInput.value.trim();
     if (!name) return;
     const studentId = normalizeStudentId(name);
+    const period = periodInput.value.trim();
+    // Share the typed identity site-wide so grade sync, the save-code gradebook,
+    // and curriculum progress sync all pick it up without the student retyping.
+    try {
+      window.NeftIdentity?.set({ name, section: period });
+    } catch {
+      /* identity is an enhancement — never block launching the lesson */
+    }
     screen.remove();
-    initMainApp(root, config, studentId, name, periodInput.value.trim());
+    initMainApp(root, config, studentId, name, period);
   }
 
   setTimeout(() => nameInput.focus(), 100);

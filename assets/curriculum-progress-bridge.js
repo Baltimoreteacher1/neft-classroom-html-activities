@@ -22,15 +22,25 @@
     }
   }
 
-  /** Pseudonymous student key — roster number or alias, not legal name. */
+  /** Stable student key — the alias/handle the student typed, not a legal name. */
   function studentKey() {
     if (window.CURRICULUM_SYNC && window.CURRICULUM_SYNC.studentKey) {
       return String(window.CURRICULUM_SYNC.studentKey);
+    }
+    // Prefer the shared identity when present (set in lessons / activities).
+    if (window.NeftIdentity) {
+      var name = window.NeftIdentity.get().name;
+      if (name) return name;
     }
     var ref = localStorage.getItem(REF_KEY);
     if (ref) return ref.trim();
     var st = readJson(STUDENT_KEY, {});
     if (st && st.alias) return String(st.alias).trim();
+    // Pick up identity written by grade sync / save-resume on this device.
+    var ep = (localStorage.getItem("edupulse_student_name") || "").trim();
+    if (ep) return ep;
+    var nsr = readJson("nsr:identity", {});
+    if (nsr && nsr.name) return String(nsr.name).trim();
     return "";
   }
 
@@ -38,8 +48,16 @@
     if (window.CURRICULUM_SYNC && window.CURRICULUM_SYNC.section) {
       return String(window.CURRICULUM_SYNC.section);
     }
+    if (window.NeftIdentity) {
+      var sec = window.NeftIdentity.get().section;
+      if (sec) return sec;
+    }
     var st = readJson(STUDENT_KEY, {});
-    return (st && st.section) || "";
+    if (st && st.section) return st.section;
+    var ep = (localStorage.getItem("edupulse_class_period") || "").trim();
+    if (ep) return ep;
+    var nsr = readJson("nsr:identity", {});
+    return (nsr && nsr.section) || "";
   }
 
   function unitIdFromLesson(lessonId) {

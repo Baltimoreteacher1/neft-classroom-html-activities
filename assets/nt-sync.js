@@ -31,6 +31,7 @@
 
   var QUEUE_KEY = "nt_sync_queue"; // nt_ prefix preserved
   var REF_KEY = "nt_student_ref";
+  var ANON_KEY = "nt_anon_id"; // stable per-device id, shared with NeftIdentity
   var cfg = global.NT_SYNC || {};
   var flushing = false;
 
@@ -56,22 +57,36 @@
     } catch (e) {}
   }
 
-  /* student_ref: a roster number or self-chosen handle — NEVER the real name. */
+  /* student_ref: the alias/handle the student already typed elsewhere. Seamless
+   * by design — no mid-activity prompt. Prefers the shared site-wide identity,
+   * then any stored handle, then a stable per-device id (teacher maps it later
+   * via the gradebook, exactly like save codes). */
   function studentRef() {
     if (cfg.student_ref) return String(cfg.student_ref);
+    if (global.NeftIdentity) {
+      var name = global.NeftIdentity.get().name;
+      if (name) return name;
+    }
     var r = "";
     try {
       r = localStorage.getItem(REF_KEY) || "";
     } catch (e) {}
-    if (!r) {
-      r = (global.prompt("Enter your class number or handle (NOT your name):", "") || "").trim();
-      if (r) {
-        try {
-          localStorage.setItem(REF_KEY, r);
-        } catch (e) {}
-      }
+    if (r) return r;
+    if (global.NeftIdentity) return global.NeftIdentity.studentId();
+    // No shared identity on this page: use a stable per-device anon id so each
+    // device stays distinct (not the shared "anon"). Stored under its own key,
+    // NOT REF_KEY, so it never gets read back as a real student name.
+    var anon = "";
+    try {
+      anon = localStorage.getItem(ANON_KEY) || "";
+    } catch (e) {}
+    if (!anon) {
+      anon = "anon-" + uuid().slice(0, 8);
+      try {
+        localStorage.setItem(ANON_KEY, anon);
+      } catch (e) {}
     }
-    return r || "anon";
+    return anon;
   }
 
   /* Enqueue a privacy-safe result. Synchronous; returns immediately. */
