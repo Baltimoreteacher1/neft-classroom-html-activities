@@ -41,10 +41,17 @@ export function deriveLaunchBeats(config) {
   }));
 }
 
-/** Phase time breakdown for cover screen pacing guide. */
+/**
+ * Phase time breakdown for the cover screen + teacher pacing guide.
+ *
+ * Order and icons MUST stay aligned with app.js `phaseConfigs` and i18n
+ * `phaseName(0..4)`: Launch, Explore, Practice, Connect, Reflect. Consumers label
+ * each row by index via `phaseName(i)`, so an extra entry shifts every label.
+ * (The old "Vocab" phase was removed — vocabulary now lives in its own tab — so
+ * it is intentionally not listed here.)
+ */
 export const PHASE_TIME_ESTIMATES = [
   { name: "Launch", icon: "🚀", minutes: 6 },
-  { name: "Vocab", icon: "📖", minutes: 8 },
   { name: "Explore", icon: "🔍", minutes: 8 },
   { name: "Practice", icon: "✏️", minutes: 15 },
   { name: "Connect", icon: "🌎", minutes: 5 },

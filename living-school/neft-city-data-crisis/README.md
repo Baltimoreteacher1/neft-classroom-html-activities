@@ -33,6 +33,22 @@ answers, and writing are saved to **localStorage** so a student can close the ta
 - 3D-styled histogram blocks students raise/lower with `+ / −`, click, or arrow keys
 - A tilting 3D Proof-of-Learning passport card
 
+### Bilingual (English / Español) support
+- **🌐 toggle** in the header switches directions, labels, buttons, goals, and
+  writing supports (sentence starters & frames) between English and Spanish.
+- The **Vocabulary helper is always bilingual** (English + Español side by side).
+- Choice persists in `localStorage`. Interpretation answer choices and detailed
+  coaching feedback stay in English on purpose (answer-matching + scope); the
+  data layer makes adding more translations straightforward.
+
+### Outlier enrichment mini-mission
+- An optional **"🔬 Enrichment Challenge: The Outlier"** appears on the City
+  Reaction screen. A 21st visitor waits **30 minutes**; students recompute the
+  **mean** (256 ÷ 21 ≈ 12.2) and **median** (still 11) and discover that an
+  outlier pulls the **mean** much more than the **median**.
+- Fully optional — it never gates progression — and is the exact extension the
+  Teacher View suggests for students ready for more.
+
 ---
 
 ## The math (answer key)

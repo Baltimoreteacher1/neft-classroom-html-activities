@@ -1,0 +1,49 @@
+name: Games smoke test
+
+# Headless-browser smoke test for the Grade 6 math games. Uses the repo's
+# Playwright harness (playwright.config.ts builds the site and serves dist/),
+# boots each game in Chromium, and checks it renders a canvas with no uncaught
+# errors or broken same-origin assets. Runs on PRs that touch the games and on
+# demand. Informative — it does not gate the Cloudflare deploy (which builds
+# from main independently).
+
+on:
+  pull_request:
+    paths:
+      - "math/**"
+      - "games/vendor/**"
+      - "assets/**"
+      - "shared/save-resume/**"
+      - "tests/games-smoke.spec.ts"
+      - "playwright.config.ts"
+      - ".github/workflows/games-smoke-test.yml"
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium for Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Run games smoke test
+        run: npx playwright test tests/games-smoke.spec.ts
+
+      - name: Upload Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

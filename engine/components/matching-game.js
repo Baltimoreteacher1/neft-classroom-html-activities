@@ -161,7 +161,12 @@ export function renderMatchingGame(container, { pairs, columns, label, onComplet
         stars === 3 ? "Flawless!" : stars === 2 ? "Nice work!" : "Keep practicing!"
       }`,
     );
-    if (onComplete) onComplete(pairs.length, attemptCount);
+    // finishGame only runs once every pair is correctly matched, so completion
+    // always means success. Report correct === total; the wrong-attempt count
+    // only drives the star/efficiency message above, not the grade. (Passing
+    // attemptCount here made graders that test `correct === total` mark any
+    // completed-but-imperfect match as incorrect.)
+    if (onComplete) onComplete(pairs.length, pairs.length);
   }
 
   // `columns` is accepted for backward compatibility; the two-column matcher
