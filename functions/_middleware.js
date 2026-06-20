@@ -29,7 +29,11 @@ export async function onRequest(context) {
 
   // APIs and lesson config JSON have their own auth / are fetched by external
   // automation (e.g. the Apps Script slide generator). Never gate them here.
-  if (p.startsWith("/api/") || p.endsWith("/config.json")) return next();
+  if (
+    (p.startsWith("/api/") && p !== "/api/ai/ready-lesson") ||
+    p.endsWith("/config.json")
+  )
+    return next();
 
   // Teacher-only surfaces that STAY behind the password. These substrings cover
   // every teacher directory in the repo:
@@ -37,6 +41,7 @@ export async function onRequest(context) {
   //   teacher-data-dashboard, dashboard, */dashboard (class/curriculum/games),
   //   math/unit-N/projects/answer-key, and any /admin surface.
   const isTeacherSurface =
+    p === "/api/ai/ready-lesson" ||
     p.includes("teacher") ||
     p.includes("dashboard") ||
     p.includes("answer-key") ||

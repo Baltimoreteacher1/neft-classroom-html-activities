@@ -29,6 +29,7 @@
     dropzone: $("dropzone"),
     fileStatus: $("fileStatus"),
     generateBtn: $("generateBtn"),
+    offlineGenerateBtn: $("offlineGenerateBtn"),
     sampleBtn: $("sampleBtn"),
     clearBtn: $("clearBtn"),
     themeBtn: $("themeBtn"),
@@ -362,6 +363,55 @@
       sped: v(els.fSped),
       notes: v(els.fNotes),
     };
+  }
+
+  function safeAiFields(fields) {
+    return {
+      date: fields.date,
+      grade: fields.grade,
+      course: fields.course,
+      unit: fields.unit,
+      focus: fields.focus,
+      standards: fields.standards,
+      length: fields.length,
+      skill: fields.skill,
+      wida: fields.wida,
+    };
+  }
+
+  async function requestAiPlan(sourceText, fields) {
+    const response = await fetch("/api/ai/ready-lesson", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        sourceText,
+        sourceName: uploadedExtract
+          ? uploadedExtract.name
+          : "Pasted lesson source",
+        fields: safeAiFields(fields),
+      }),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.plan) {
+      throw new Error(data.error || "The AI lesson service did not respond.");
+    }
+    return data.plan;
+  }
+
+  function applyPrivateLocalNotes(plan, fields) {
+    if (fields.sped) {
+      plan.differentiation.sped.push(`Teacher-entered support: ${fields.sped}`);
+    }
+    if (fields.notes) {
+      plan.teacherNotes.extra = [
+        plan.teacherNotes.extra,
+        fields.notes,
+      ]
+        .filter(Boolean)
+        .join(" ");
+    }
+    return plan;
   }
 
   /* ===================== QA HARNESS ===================== */
@@ -763,6 +813,9 @@
 
   /* ===================== MAIN ===================== */
   async function generate() {
+    const originalLabel = els.generateBtn.textContent;
+    els.generateBtn.disabled = true;
+    els.generateBtn.textContent = "Building with AI…";
     resetPipeline();
     els.outputCard.hidden = true;
     els.downloadDocxBtn.disabled = true;
@@ -785,13 +838,24 @@
           "Paste your slide text / notes, or upload a .pptx/.pdf/.docx/.txt.",
         ],
       });
+      els.generateBtn.disabled = false;
+      els.generateBtn.textContent = originalLabel;
       return;
     }
     setStage("preflight", "done");
 
     setStage("extract", "running");
     await tick();
-    const rawSource = typed || (hasUpload ? uploadedExtract.text : "");
+    const rawSource =
+      typed ||
+      (hasUpload ? uploadedExtract.text : "") ||
+      [
+        fields.unit && `Unit: ${fields.unit}`,
+        fields.focus && `Lesson focus: ${fields.focus}`,
+        fields.standards && `Standards: ${fields.standards}`,
+      ]
+        .filter(Boolean)
+        .join("\n");
     setStage("extract", "done");
 
     setStage("map", "running");
@@ -803,11 +867,22 @@
     await tick();
     let plan;
     try {
-      const content = window.LPGContent.build(map, fields);
-      plan = window.LPGModel.build(map, fields, content);
+      plan = applyPrivateLocalNotes(
+        await requestAiPlan(rawSource, fields),
+        fields,
+      );
     } catch (e) {
       setStage("build", "fail");
-      renderQA(null, { message: "Build error: " + e.message });
+      renderQA(null, {
+        message: "AI build error: " + e.message,
+        fixes: [
+          "Try again in a moment.",
+          "Confirm the uploaded file produced readable text.",
+          "Use the offline template button if you need a plan immediately.",
+        ],
+      });
+      els.generateBtn.disabled = false;
+      els.generateBtn.textContent = originalLabel;
       return;
     }
     setStage("build", "done");
@@ -820,6 +895,40 @@
     setStage("finalqa", checks.some((c) => !c.pass) ? "fail" : "done");
     renderQA(checks, null);
 
+    lastPlan = plan;
+    els.lessonOutput.innerHTML = renderPlanHtml(plan);
+    els.downloadDocxBtn.disabled = false;
+    els.outputCard.hidden = false;
+    els.outputCard.scrollIntoView({ behavior: "smooth", block: "start" });
+    els.generateBtn.disabled = false;
+    els.generateBtn.textContent = originalLabel;
+  }
+
+  async function generateOffline() {
+    const fields = gatherFields();
+    const rawSource =
+      els.sourceText.value.trim() ||
+      [
+        fields.unit && `Unit: ${fields.unit}`,
+        fields.focus && `Lesson focus: ${fields.focus}`,
+        fields.standards && `Standards: ${fields.standards}`,
+      ]
+        .filter(Boolean)
+        .join("\n");
+    if (!rawSource) {
+      renderQA(null, {
+        message: "Add a topic, standard, pasted source, or uploaded file first.",
+      });
+      els.statusCard.hidden = false;
+      return;
+    }
+    resetPipeline();
+    STAGES.forEach((stage) => setStage(stage, "done"));
+    const map = buildContentMap(rawSource);
+    const content = window.LPGContent.build(map, fields);
+    const plan = window.LPGModel.build(map, fields, content);
+    const checks = runQA(plan);
+    renderQA(checks, null);
     lastPlan = plan;
     els.lessonOutput.innerHTML = renderPlanHtml(plan);
     els.downloadDocxBtn.disabled = false;
@@ -935,6 +1044,7 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
   /* ===================== WIRING ===================== */
   function wire() {
     els.generateBtn.addEventListener("click", generate);
+    els.offlineGenerateBtn.addEventListener("click", generateOffline);
 
     els.sampleBtn.addEventListener("click", () => {
       els.sourceText.value = SAMPLE;
