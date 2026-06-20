@@ -57,6 +57,12 @@
           if (btn.hasAttribute("data-correct")) {
             complete(q, idx, false);
             refreshCount();
+            // Button clicks don't fire input/change, so the engine never sees a
+            // dirty edit — force a save so completion persists even if the
+            // student leaves before touching the reflection. No-ops (no-session)
+            // until a session is started.
+            var sr = window.NeftSaveResume;
+            if (sr && typeof sr.save === "function") sr.save("quiz-progress");
           } else {
             btn.classList.add("wrong");
             btn.disabled = true;
