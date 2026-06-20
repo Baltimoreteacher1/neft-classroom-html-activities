@@ -135,7 +135,7 @@
       .slice(0, 40);
   }
   function getIdentity() {
-    return safe(
+    var local = safe(
       function () {
         var raw = localStorage.getItem(IDENTITY_KEY);
         return raw ? JSON.parse(raw) : null;
@@ -143,6 +143,14 @@
       "identity-get",
       null,
     );
+    if (local && (local.name || local.section)) return local;
+    // Fall back to the site-wide shared identity, so a name typed on a lesson
+    // cover screen or in an activity kit prefills here too — never retyped.
+    if (window.NeftIdentity) {
+      var shared = window.NeftIdentity.get();
+      if (shared && (shared.name || shared.section)) return shared;
+    }
+    return local;
   }
   function setIdentity(name, section) {
     var id = {
@@ -154,6 +162,10 @@
     safe(function () {
       localStorage.setItem(IDENTITY_KEY, JSON.stringify(id));
     }, "identity-set");
+    // Share outward so grade sync + curriculum progress sync use the same name.
+    safe(function () {
+      if (window.NeftIdentity) window.NeftIdentity.set({ name: id.name, section: id.section });
+    }, "identity-share");
     return id;
   }
   function clearIdentity() {

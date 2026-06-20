@@ -66,12 +66,19 @@
 
   /* ---------- student identity ---------- */
   function getStudent() {
-    return (
-      readJSON(STUDENT_KEY, { alias: "", section: "" }) || {
-        alias: "",
-        section: "",
+    var s = readJSON(STUDENT_KEY, { alias: "", section: "" }) || {
+      alias: "",
+      section: "",
+    };
+    // Prefill from the shared site-wide identity if this kit has none yet, so a
+    // name typed in a lesson carries over without retyping.
+    if (!s.alias && !s.section && window.NeftIdentity) {
+      var shared = window.NeftIdentity.get();
+      if (shared && (shared.name || shared.section)) {
+        return { alias: shared.name, section: shared.section };
       }
-    );
+    }
+    return s;
   }
   function setStudent(s) {
     var cur = getStudent();
@@ -80,6 +87,10 @@
       section: (s && s.section != null ? s.section : cur.section) || "",
     };
     writeJSON(STUDENT_KEY, next);
+    // Share outward so grade sync + curriculum progress sync use the same name.
+    try {
+      if (window.NeftIdentity) window.NeftIdentity.set({ name: next.alias, section: next.section });
+    } catch (e) {}
     syncIdentityBar();
     return next;
   }

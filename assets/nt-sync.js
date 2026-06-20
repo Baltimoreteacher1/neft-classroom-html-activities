@@ -56,22 +56,23 @@
     } catch (e) {}
   }
 
-  /* student_ref: a roster number or self-chosen handle — NEVER the real name. */
+  /* student_ref: the alias/handle the student already typed elsewhere. Seamless
+   * by design — no mid-activity prompt. Prefers the shared site-wide identity,
+   * then any stored handle, then a stable per-device id (teacher maps it later
+   * via the gradebook, exactly like save codes). */
   function studentRef() {
     if (cfg.student_ref) return String(cfg.student_ref);
+    if (global.NeftIdentity) {
+      var name = global.NeftIdentity.get().name;
+      if (name) return name;
+    }
     var r = "";
     try {
       r = localStorage.getItem(REF_KEY) || "";
     } catch (e) {}
-    if (!r) {
-      r = (global.prompt("Enter your class number or handle (NOT your name):", "") || "").trim();
-      if (r) {
-        try {
-          localStorage.setItem(REF_KEY, r);
-        } catch (e) {}
-      }
-    }
-    return r || "anon";
+    if (r) return r;
+    if (global.NeftIdentity) return global.NeftIdentity.studentId();
+    return "anon";
   }
 
   /* Enqueue a privacy-safe result. Synchronous; returns immediately. */
