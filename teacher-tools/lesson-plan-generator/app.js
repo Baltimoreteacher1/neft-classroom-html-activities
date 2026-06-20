@@ -94,7 +94,7 @@
     const li = els.pipeline.querySelector(`[data-stage="${stage}"]`);
     if (li) li.className = state;
   }
-  const tick = () => new Promise((r) => setTimeout(r, 80));
+  const tick = () => new Promise((r) => setTimeout(r, 12));
 
   /* ===================== SOURCE EXTRACTION ===================== */
   async function extractPptx(arrayBuffer) {
@@ -107,16 +107,22 @@
         return na - nb;
       });
     if (!slideFiles.length) throw new Error("No slides found in the .pptx.");
-    const parts = [];
-    for (const name of slideFiles) {
+    let loaded = 0;
+    const promises = slideFiles.map(async (name) => {
       const xml = await zip.files[name].async("string");
       const runs = [...xml.matchAll(/<a:t>([\s\S]*?)<\/a:t>/g)].map((m) =>
         decodeXml(m[1]),
       );
       const n = (name.match(/slide(\d+)/) || [])[1];
       const text = runs.join(" ").replace(/\s+/g, " ").trim();
-      if (text) parts.push(`--- Slide ${n} ---\n${text}`);
-    }
+      loaded++;
+      els.fileStatus.textContent = `Reading slide ${loaded} of ${slideFiles.length}…`;
+      return { n, text };
+    });
+    const results = await Promise.all(promises);
+    const parts = results
+      .filter((r) => r.text)
+      .map((r) => `--- Slide ${r.n} ---\n${r.text}`);
     return parts.join("\n\n");
   }
 
@@ -152,8 +158,9 @@
     }
     const doc = await pdfjs.getDocument({ data: new Uint8Array(arrayBuffer) })
       .promise;
-    const out = [];
-    for (let p = 1; p <= doc.numPages; p++) {
+    let loaded = 0;
+    const pagesRange = Array.from({ length: doc.numPages }, (_, i) => i + 1);
+    const pagePromises = pagesRange.map(async (p) => {
       const page = await doc.getPage(p);
       const content = await page.getTextContent();
       const txt = content.items
@@ -161,8 +168,14 @@
         .join(" ")
         .replace(/\s+/g, " ")
         .trim();
-      if (txt) out.push(`--- Page ${p} ---\n${txt}`);
-    }
+      loaded++;
+      els.fileStatus.textContent = `Reading page ${loaded} of ${doc.numPages}…`;
+      return { p, txt };
+    });
+    const pageResults = await Promise.all(pagePromises);
+    const out = pageResults
+      .filter((r) => r.txt)
+      .map((r) => `--- Page ${r.p} ---\n${r.txt}`);
     const text = out.join("\n\n");
     if (!text)
       throw new Error(
@@ -242,7 +255,7 @@
       .filter(Boolean);
     const SENT = "␟";
     const segText = text
-      .replace(/([.!?])\s+(?=[^0-9])/g, "$1" + SENT)
+      .replace(/(?<!\b[A-Za-z]\.)(?<!\b[a-z]{1,3}\.)(?<!\b\d+\.[A-Z]\.\d+)([.!?])\s+(?=[A-Z])/g, "$1" + SENT)
       .replace(/[\r\n]+/g, SENT)
       .replace(/[;•]/g, SENT);
     const segments = segText
@@ -821,10 +834,13 @@
     renderQA(checks, null);
 
     lastPlan = plan;
-    els.lessonOutput.innerHTML = renderPlanHtml(plan);
+    renderCurrentTab();
     els.downloadDocxBtn.disabled = false;
     els.outputCard.hidden = false;
     els.outputCard.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    // Save to history
+    saveToHistory(fields, rawSource);
   }
 
   /* ===================== EXPORTS ===================== */
@@ -1025,7 +1041,232 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
         "text/markdown",
       );
     });
+
+    // Wire output tabs
+    const tabTeacher = $("tabTeacher");
+    const tabStudent = $("tabStudent");
+    if (tabTeacher && tabStudent) {
+      tabTeacher.addEventListener("click", () => {
+        currentTab = "teacher";
+        tabTeacher.classList.add("active");
+        tabStudent.classList.remove("active");
+        renderCurrentTab();
+      });
+      tabStudent.addEventListener("click", () => {
+        currentTab = "student";
+        tabStudent.classList.add("active");
+        tabTeacher.classList.remove("active");
+        renderCurrentTab();
+      });
+    }
+
+    // Render history on load
+    renderHistoryRow();
   }
+
+  /* ===================== STUDENT HANDOUT PREVIEW ===================== */
+  function renderStudentHandoutHtml(plan) {
+    const h = plan.header;
+    const out = [];
+
+    out.push(`<div class="student-handout-preview">`);
+    out.push(`<h1>Student Version — ${esc(h.title)}</h1>`);
+    out.push(
+      `<div class="student-meta">Name: _______________________ &nbsp;&nbsp;&nbsp;&nbsp; Date: ${esc(h.date || "____________")}</div>`
+    );
+    out.push(`<p><strong>Objective:</strong> ${esc(h.iCan)}</p>`);
+    out.push(`<p><strong>Essential Question:</strong> ${esc(h.essentialQuestion)}</p>`);
+
+    // Do Now
+    out.push(`<h2>Do Now</h2>`);
+    out.push(`<p class="student-instructions">${esc(plan.doNow.directions)}</p>`);
+    plan.doNow.items.forEach((it, i) => {
+      out.push(`<p>${i + 1}. (${esc(it.level)}) ${esc(it.q)}</p>`);
+      out.push(`<div class="student-response-lines"></div>`);
+    });
+
+    // Notes
+    out.push(`<h2>Class Notes</h2>`);
+    out.push(`<ul class="student-bullet-list">`);
+    plan.mini.studentNotes.forEach((n) => out.push(`<li>${esc(n)}</li>`));
+    out.push(`</ul>`);
+    out.push(`<p><strong>Worked Example:</strong> ${esc(plan.mini.worked.problem)}</p>`);
+    out.push(`<div class="student-response-box"></div>`);
+
+    // Guided Practice
+    out.push(`<h2>Guided Practice</h2>`);
+    plan.guided.items.forEach((it, i) => {
+      out.push(`<p>${i + 1}. ${esc(it.q)}</p>`);
+      out.push(`<div class="student-response-lines"></div>`);
+    });
+    out.push(
+      `<p><strong>Sentence starters:</strong></p><ul class="student-bullet-list">` +
+        plan.guided.sentenceStarters.map((s) => `<li>${esc(s)}</li>`).join("") +
+        `</ul>`
+    );
+
+    // Partner Activity
+    out.push(`<h2>Partner Activity</h2>`);
+    out.push(`<p>${esc(plan.collaborative.studentDirections)}</p>`);
+    out.push(`<p><strong>Write together:</strong> ${esc(plan.collaborative.twrWritten)}</p>`);
+    out.push(`<div class="student-response-box"></div>`);
+
+    // Independent Practice
+    out.push(`<h2>Independent Practice</h2>`);
+    plan.independent.items.forEach((it, i) => {
+      out.push(`<p>${i + 1}. (${esc(it.type)}) ${esc(it.q)}</p>`);
+      out.push(`<div class="student-response-lines"></div>`);
+    });
+    out.push(`<p><strong>Show your thinking:</strong> ${esc(plan.independent.showThinking)}</p>`);
+    out.push(`<div class="student-response-box"></div>`);
+
+    // Writing
+    out.push(`<h2>Writing (TWR)</h2>`);
+    out.push(`<p><strong>Kernel sentence:</strong> ${esc(plan.writing.kernel)}</p>`);
+    out.push(`<p>Complete the sentence using <em>because</em>, <em>but</em>, and <em>so</em>:</p>`);
+    out.push(`<p>• Because: __________________________________________________________________</p>`);
+    out.push(`<p>• But: ______________________________________________________________________</p>`);
+    out.push(`<p>• So: _______________________________________________________________________</p>`);
+    out.push(
+      `<p class="student-instructions">Word bank: ${esc(plan.writing.wordBank.join(", "))}</p>`
+    );
+    out.push(`<div class="student-response-box"></div>`);
+
+    // Exit Ticket
+    out.push(`<h2>Exit Ticket</h2>`);
+    plan.exit.items.forEach((it, i) => {
+      out.push(`<p>${i + 1}. ${esc(it.q)}</p>`);
+      out.push(`<div class="student-response-lines"></div>`);
+    });
+    out.push(`<p>${esc(plan.exit.confidence.q)}</p>`);
+    out.push(`<div class="student-response-lines"></div>`);
+
+    out.push(`</div>`);
+    return out.join("\n");
+  }
+
+  let currentTab = "teacher";
+
+  function renderCurrentTab() {
+    if (!lastPlan) return;
+    if (currentTab === "teacher") {
+      els.lessonOutput.innerHTML = renderPlanHtml(lastPlan);
+    } else {
+      els.lessonOutput.innerHTML = renderStudentHandoutHtml(lastPlan);
+    }
+  }
+
+  /* ===================== HISTORY MANAGER ===================== */
+  const HIST_KEY = "nt_lpg_history_v1";
+
+  function getHistory() {
+    try {
+      const data = localStorage.getItem(HIST_KEY);
+      return data ? JSON.parse(data) : [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  function saveHistory(list) {
+    try {
+      localStorage.setItem(HIST_KEY, JSON.stringify(list.slice(0, 10)));
+    } catch (_) {}
+  }
+
+  function saveToHistory(fields, rawSource) {
+    const list = getHistory();
+    const title = fields.topic || fields.focus || "Untitled Lesson";
+    const date = fields.date || new Date().toISOString().slice(0, 10);
+    const standard = fields.standards || "";
+
+    const entry = {
+      id: Date.now().toString(),
+      title,
+      date,
+      standard,
+      fields,
+      source: rawSource,
+      uploadedExtract: uploadedExtract
+    };
+
+    const filtered = list.filter((item) => item.title !== title);
+    filtered.unshift(entry);
+
+    saveHistory(filtered);
+    renderHistoryRow();
+  }
+
+  function deleteHistory(id, e) {
+    if (e) e.stopPropagation();
+    const list = getHistory();
+    const filtered = list.filter((item) => item.id !== id);
+    saveHistory(filtered);
+    renderHistoryRow();
+  }
+
+  function loadHistory(id) {
+    const list = getHistory();
+    const entry = list.find((item) => item.id === id);
+    if (!entry) return;
+
+    els.fDate.value = entry.fields.date || "";
+    els.fGrade.value = entry.fields.grade || "";
+    els.fCourse.value = entry.fields.course || "";
+    els.fUnit.value = entry.fields.unit || "";
+    els.fFocus.value = entry.fields.focus || "";
+    els.fStandards.value = entry.fields.standards || "";
+    els.fLength.value = entry.fields.length || "";
+    els.fSkill.value = entry.fields.skill || "";
+    els.fWida.value = entry.fields.wida || "";
+    els.fSped.value = entry.fields.sped || "";
+    els.fNotes.value = entry.fields.notes || "";
+
+    if (entry.source) {
+      els.sourceText.value = entry.source;
+    }
+
+    if (entry.uploadedExtract) {
+      uploadedExtract = entry.uploadedExtract;
+      els.fileStatus.className = "file-status ok";
+      els.fileStatus.innerHTML = `<span class="extract-ok">Loaded:</span> ${esc(uploadedExtract.name)}`;
+    } else {
+      uploadedExtract = null;
+      els.fileStatus.textContent = "";
+    }
+
+    generate();
+  }
+
+  function renderHistoryRow() {
+    const list = getHistory();
+    const row = $("historyRow");
+    const chips = $("historyChips");
+    if (!row || !chips) return;
+
+    if (list.length === 0) {
+      row.hidden = true;
+      return;
+    }
+
+    row.hidden = false;
+    chips.innerHTML = list
+      .map((item) => {
+        const displayTitle =
+          item.title.length > 25 ? item.title.slice(0, 25) + "…" : item.title;
+        const desc = item.standard
+          ? `${displayTitle} (${item.standard.split(" ")[0]})`
+          : displayTitle;
+        return `<div class="history-chip" onclick="window.__LPG_LOAD_HIST__('${item.id}')" title="Click to load: ${esc(item.title)}">
+        <span>🕒 ${esc(desc)}</span>
+        <button type="button" class="delete-hist-btn" onclick="window.__LPG_DEL_HIST__('${item.id}', event)" title="Delete saved lesson">×</button>
+      </div>`;
+      })
+      .join("");
+  }
+
+  window.__LPG_LOAD_HIST__ = loadHistory;
+  window.__LPG_DEL_HIST__ = deleteHistory;
 
   window.__LPG__ = { buildContentMap, gatherFields, runQA, renderPlanHtml };
 

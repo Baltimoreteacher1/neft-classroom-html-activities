@@ -34,10 +34,12 @@ if (!arg) {
   process.exit(1);
 }
 
-const manifest = JSON.parse(readFileSync(resolve(repoRoot, "data/curriculum-manifest.json"), "utf8"));
-const lessons = (Array.isArray(manifest.lessons) ? manifest.lessons : Object.values(manifest.lessons)).filter(
-  (l) => l && l.id && !l.flagship,
+const manifest = JSON.parse(
+  readFileSync(resolve(repoRoot, "data/curriculum-manifest.json"), "utf8"),
 );
+const lessons = (
+  Array.isArray(manifest.lessons) ? manifest.lessons : Object.values(manifest.lessons)
+).filter((l) => l && l.id && !l.flagship);
 const allUnits = [...new Set(lessons.map((l) => Number(l.unit)))].sort((a, b) => a - b);
 const units = arg === "all" ? allUnits : [Number(arg)];
 if (arg !== "all" && !allUnits.includes(Number(arg))) {
@@ -46,8 +48,18 @@ if (arg !== "all" && !allUnits.includes(Number(arg))) {
 }
 
 const UNSUPPORTED = new Set([
-  "drag-sort", "drag-and-drop", "sequence", "ordering", "sorting", "error-analysis",
-  "fill-blank", "fill-in-the-blank", "short-answer", "open-response", "number-line", "graphing",
+  "drag-sort",
+  "drag-and-drop",
+  "sequence",
+  "ordering",
+  "sorting",
+  "error-analysis",
+  "fill-blank",
+  "fill-in-the-blank",
+  "short-answer",
+  "open-response",
+  "number-line",
+  "graphing",
 ]);
 function quizCount(id) {
   const p = resolve(repoRoot, "lessons", id, "config.json");
@@ -58,11 +70,24 @@ function quizCount(id) {
   } catch {
     return 0;
   }
-  let mc = 0, match = 0;
+  let mc = 0,
+    match = 0;
   (function walk(o) {
     if (o && typeof o === "object") {
-      if (o.type === "multiple-choice" && Array.isArray(o.choices) && o.choices.length >= 2 && Number.isInteger(o.correctIndex)) mc++;
-      else if (o.type === "matching-game" && Array.isArray(o.pairs) && o.pairs.length >= 2 && o.pairs.every((x) => x && x.term != null && x.match != null)) match++;
+      if (
+        o.type === "multiple-choice" &&
+        Array.isArray(o.choices) &&
+        o.choices.length >= 2 &&
+        Number.isInteger(o.correctIndex)
+      )
+        mc++;
+      else if (
+        o.type === "matching-game" &&
+        Array.isArray(o.pairs) &&
+        o.pairs.length >= 2 &&
+        o.pairs.every((x) => x && x.term != null && x.match != null)
+      )
+        match++;
       for (const k in o) walk(o[k]);
     }
   })(cfg);
@@ -86,7 +111,9 @@ function moveInto(dir, name) {
 }
 
 function buildUnit(u) {
-  const uLessons = lessons.filter((l) => Number(l.unit) === u).sort((a, b) => Number(a.lesson) - Number(b.lesson));
+  const uLessons = lessons
+    .filter((l) => Number(l.unit) === u)
+    .sort((a, b) => Number(a.lesson) - Number(b.lesson));
   const dir = resolve(pkgDir, `unit-${u}`);
   rmSync(dir, { recursive: true, force: true });
   mkdirSync(dir, { recursive: true });
@@ -103,10 +130,14 @@ function buildUnit(u) {
   };
 
   // lesson links + quiz titles
-  const links = uLessons.map((l) => `Unit ${l.unit} Lesson ${l.lesson} — ${l.title}\n  ${SITE}/lessons/${l.id}/`);
+  const links = uLessons.map(
+    (l) => `Unit ${l.unit} Lesson ${l.lesson} — ${l.title}\n  ${SITE}/lessons/${l.id}/`,
+  );
   const quizTitles = uLessons
     .filter((l) => quizCount(l.id) > 0)
-    .map((l) => `Unit ${l.unit} Lesson ${l.lesson} Check: ${l.title}  (${quizCount(l.id)} questions)`);
+    .map(
+      (l) => `Unit ${l.unit} Lesson ${l.lesson} Check: ${l.title}  (${quizCount(l.id)} questions)`,
+    );
   writeFileSync(resolve(dir, "lesson-links.txt"), links.join("\n\n") + "\n");
   writeFileSync(resolve(dir, "quiz-titles.txt"), quizTitles.join("\n") + "\n");
 
@@ -182,7 +213,10 @@ ${quizTitles.length ? quizTitles.map((t) => `- ${t}`).join("\n") : "- (none — 
 console.log(`Building unit pack(s): ${units.join(", ")}\n`);
 for (const u of units) {
   const r = buildUnit(u);
-  const built = Object.entries(r.got).filter(([, v]) => v).map(([k]) => k).join(", ");
+  const built = Object.entries(r.got)
+    .filter(([, v]) => v)
+    .map(([k]) => k)
+    .join(", ");
   console.log(`✓ unit-${u}/  — ${r.lessons} lessons, ${r.quizzes} quizzes, packages: ${built}`);
 }
 console.log(`\nDone. Folders under canvas-packages/unit-<N>/`);

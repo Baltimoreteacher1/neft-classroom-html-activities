@@ -209,7 +209,8 @@ function parseQuizItems(xml) {
         const respident = lm[1];
         const term = stripTags(lm[2]);
         const body = lm[3];
-        const labRe = /<response_label ident="(m\d+)">\s*<material>\s*<mattext[^>]*>([\s\S]*?)<\/mattext>/g;
+        const labRe =
+          /<response_label ident="(m\d+)">\s*<material>\s*<mattext[^>]*>([\s\S]*?)<\/mattext>/g;
         let opt;
         while ((opt = labRe.exec(body))) {
           if (!(opt[1] in optionText)) optionText[opt[1]] = stripTags(opt[2]);
@@ -329,10 +330,7 @@ function validatePackage(courseDir) {
           if (t.correctIdent == null)
             fail(where, `matching term "${p.term}" has no correct option marked`);
           else if (t.correctText !== p.match.trim())
-            fail(
-              where,
-              `matching "${p.term}" → "${t.correctText}" but source says → "${p.match}"`,
-            );
+            fail(where, `matching "${p.term}" → "${t.correctText}" but source says → "${p.match}"`);
         });
       }
     });

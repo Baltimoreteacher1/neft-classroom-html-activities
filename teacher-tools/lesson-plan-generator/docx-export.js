@@ -42,12 +42,18 @@
       BorderStyle,
     } = d;
 
-    const border = { style: BorderStyle.SINGLE, size: 8, color: "000000" };
+    const border = { style: BorderStyle.SINGLE, size: 4, color: "CBD5E1" };
     const cellBorders = {
       top: border,
       bottom: border,
       left: border,
       right: border,
+    };
+    const cellMargins = {
+      top: 120,
+      bottom: 120,
+      left: 180,
+      right: 180,
     };
 
     const txt = (s) => String(s == null ? "" : s);
@@ -119,7 +125,8 @@
     const cell = (content, opts = {}) =>
       new TableCell({
         borders: cellBorders,
-        shading: opts.head ? { fill: GREY } : undefined,
+        margins: cellMargins,
+        shading: opts.head ? { fill: TEAL } : (opts.shading ? { fill: opts.shading } : undefined),
         width: opts.width
           ? { size: opts.width, type: WidthType.PERCENTAGE }
           : undefined,
@@ -127,7 +134,12 @@
           typeof c === "string"
             ? new Paragraph({
                 children: [
-                  new TextRun({ text: txt(c), size: 20, bold: !!opts.head }),
+                  new TextRun({
+                    text: txt(c),
+                    size: 20,
+                    bold: !!opts.head,
+                    color: opts.head ? "FFFFFF" : undefined
+                  }),
                 ],
               })
             : c,
@@ -145,15 +157,68 @@
             ),
           }),
           ...rows.map(
-            (r) =>
+            (r, rowIndex) =>
               new TableRow({
                 children: r.map((c, i) =>
-                  cell(c, { width: widths && widths[i] }),
+                  cell(c, {
+                    width: widths && widths[i],
+                    shading: rowIndex % 2 === 1 ? "F8FAFC" : undefined
+                  }),
                 ),
               }),
           ),
         ],
       });
+
+    const callout = (content, title) => {
+      const calloutBorders = {
+        top: { style: BorderStyle.NONE, size: 0, color: "auto" },
+        bottom: { style: BorderStyle.NONE, size: 0, color: "auto" },
+        left: { style: BorderStyle.SINGLE, size: 24, color: TEAL },
+        right: { style: BorderStyle.NONE, size: 0, color: "auto" },
+      };
+      
+      const children = [];
+      if (title) {
+        children.push(new Paragraph({
+          children: [new TextRun({ text: txt(title), bold: true, size: 22, color: TEAL })],
+          spacing: { after: 60 }
+        }));
+      }
+      
+      const contentList = Array.isArray(content) ? content : [content];
+      contentList.forEach(c => {
+        if (typeof c === "string") {
+          children.push(new Paragraph({
+            children: [new TextRun({ text: txt(c), size: 20 })],
+            spacing: { after: 40 }
+          }));
+        } else {
+          children.push(c);
+        }
+      });
+      
+      if (children.length > 0 && children[children.length - 1].spacing) {
+        children[children.length - 1].spacing.after = 0;
+      }
+
+      return new Table({
+        width: { size: 100, type: WidthType.PERCENTAGE },
+        rows: [
+          new TableRow({
+            children: [
+              new TableCell({
+                borders: calloutBorders,
+                margins: { top: 140, bottom: 140, left: 200, right: 140 },
+                shading: { fill: "F8FAFC" },
+                children: children
+              })
+            ]
+          })
+        ],
+        spacing: { before: 120, after: 120 }
+      });
+    };
 
     return {
       H1,
@@ -165,6 +230,7 @@
       pageBreak,
       table,
       sub,
+      callout,
       TextRun,
       Paragraph,
     };
@@ -215,10 +281,32 @@
     // 2 · Teacher Snapshot
     const s = plan.snapshot;
     out.push(k.H2("2 · Teacher Snapshot"));
-    out.push(k.runs([{ t: "Learning today: ", b: true }, { t: s.learning }]));
-    out.push(k.runs([{ t: "Why it matters: ", b: true }, { t: s.why }]));
     out.push(
-      k.runs([{ t: "By the end, students can: ", b: true }, { t: s.byEnd }]),
+      k.callout(
+        [
+          new k.Paragraph({
+            children: [
+              new k.TextRun({ text: "Learning today: ", bold: true, size: 20 }),
+              new k.TextRun({ text: s.learning, size: 20 }),
+            ],
+            spacing: { after: 60 }
+          }),
+          new k.Paragraph({
+            children: [
+              new k.TextRun({ text: "Why it matters: ", bold: true, size: 20 }),
+              new k.TextRun({ text: s.why, size: 20 }),
+            ],
+            spacing: { after: 60 }
+          }),
+          new k.Paragraph({
+            children: [
+              new k.TextRun({ text: "By the end, students can: ", bold: true, size: 20 }),
+              new k.TextRun({ text: s.byEnd, size: 20 }),
+            ],
+            spacing: { after: 0 }
+          }),
+        ]
+      )
     );
     out.push(k.H3("Anticipated misconceptions"));
     out.push(...k.bullets(s.misconceptions));

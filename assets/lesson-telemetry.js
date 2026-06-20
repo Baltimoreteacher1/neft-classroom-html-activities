@@ -99,12 +99,8 @@
   function deriveSlug() {
     if (CFG.lessonSlug) return String(CFG.lessonSlug);
     try {
-      var p = location.pathname
-        .replace(/index\.html?$/i, "")
-        .replace(/^\/+|\/+$/g, "");
-      return p
-        ? p.replace(/[^A-Za-z0-9._/-]+/g, "-").replace(/\//g, "-")
-        : "lesson";
+      var p = location.pathname.replace(/index\.html?$/i, "").replace(/^\/+|\/+$/g, "");
+      return p ? p.replace(/[^A-Za-z0-9._/-]+/g, "-").replace(/\//g, "-") : "lesson";
     } catch (e) {
       return "lesson";
     }
@@ -134,9 +130,7 @@
   var TITLE = deriveTitle();
   var SESSION_ID = (function () {
     try {
-      return (
-        Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8)
-      );
+      return Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
     } catch (e) {
       return "s0";
     }
@@ -152,12 +146,7 @@
     if (!ENABLED || !event) return;
     try {
       var rec = {
-        id:
-          SESSION_ID +
-          ":" +
-          Date.now() +
-          ":" +
-          Math.random().toString(36).slice(2, 6),
+        id: SESSION_ID + ":" + Date.now() + ":" + Math.random().toString(36).slice(2, 6),
         event: String(event).slice(0, 60),
         lessonSlug: SLUG,
         standard: STANDARD,
@@ -362,8 +351,7 @@
         var obs = new MutationObserver(function (muts) {
           for (var i = 0; i < muts.length; i++) {
             var t = muts[i].target;
-            if (!t || t.nodeType !== 1 || typeof t.className !== "string")
-              continue;
+            if (!t || t.nodeType !== 1 || typeof t.className !== "string") continue;
             if (!/\bq-card\b/.test(t.className)) continue;
             if (/\bcorrect\b/.test(t.className)) {
               track("item_attempt", {
