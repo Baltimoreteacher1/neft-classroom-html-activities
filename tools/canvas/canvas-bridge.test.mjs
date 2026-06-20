@@ -97,7 +97,21 @@ function makeDom({ search = "", percent = 100, name = "Alex K", section = "Perio
   ok("SCORM launch suppresses the popup (score goes to the SCO)");
 }
 
-/* ---- 4. auto-watch fires once when progress reaches the threshold ---- */
+/* ---- 4. explicit identity override (activity passes its own name field) ---- */
+{
+  const dom = makeDom({ name: "", section: "" }); // save/resume has no identity
+  const w = dom.window;
+  w.eval(bridgeSrc);
+  w.NeftCanvasBridge.complete(80, { studentName: "Jordan P", classPeriod: "Block 2" });
+  await tick();
+  const code = w.document.getElementById("nt-canvas-bridge-code").querySelector("#nt-cb-input").value;
+  const decoded = w.NeftCanvasCodec.decode(code);
+  assert.equal(decoded.payload.n, "Jordan P", "name override carried into the code");
+  assert.equal(decoded.payload.p, "Block 2", "class period override carried into the code");
+  ok("complete() accepts explicit identity (works without save/resume wiring)");
+}
+
+/* ---- 5. auto-watch fires once when progress reaches the threshold ---- */
 await new Promise((done) => {
   const dom = makeDom({ percent: 100 });
   const w = dom.window;
@@ -111,4 +125,4 @@ await new Promise((done) => {
   }, 1800);
 });
 
-console.log(`\n✅ canvas-bridge behavior: ${passed}/4 checks passed`);
+console.log(`\n✅ canvas-bridge behavior: ${passed}/5 checks passed`);

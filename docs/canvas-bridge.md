@@ -90,9 +90,20 @@ do. Configure before it loads:
 </script>
 ```
 
-API: `NeftCanvasBridge.complete(percent)`, `.reportScore(percent)`,
-`.isScormLaunch()`, `.reset()`. Every path is wrapped so it can never break the
-host activity.
+If the activity has its own name field (no save/resume), pass identity directly:
+
+```js
+NeftCanvasBridge.complete(score, { studentName: nameInput.value, classPeriod: periodInput.value });
+```
+
+API: `NeftCanvasBridge.complete(percent, { studentName, classPeriod, force })`,
+`.reportScore(percent)`, `.isScormLaunch()`, `.reset()`. Every path is wrapped
+so it can never break the host activity.
+
+**Working reference:** `teacher-tools/canvas-studio/bridge-example/` is a
+complete, self-contained activity that uses this pattern (configure → load →
+`complete()` on finish). Copy it. Behavior is covered by
+`tools/canvas/canvas-bridge.test.mjs` (run via `npm test`).
 
 ## Import into Canvas
 

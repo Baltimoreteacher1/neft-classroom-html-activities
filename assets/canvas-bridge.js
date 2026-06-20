@@ -186,12 +186,19 @@
 
   /**
    * Fire a completion: report the SCORM score and (outside SCORM) show the code.
-   * Idempotent per page load unless reset() is called.
+   * Idempotent per page load unless reset() (or opts.force) is used.
+   *
+   * @param {number} [percent]  0–100; falls back to save/resume progress, then 100.
+   * @param {object} [opts]     { studentName, classPeriod, force }. studentName /
+   *                            classPeriod override what save/resume reports, so an
+   *                            activity with its own name field can pass it directly.
    */
   function complete(percent, opts) {
     if (fired && !(opts && opts.force)) return;
     fired = true;
     var id = identity();
+    var studentName = opts && opts.studentName != null ? opts.studentName : id.studentName;
+    var classPeriod = opts && opts.classPeriod != null ? opts.classPeriod : id.classPeriod;
     var pct = typeof percent === "number" ? percent : id.percent;
     if (typeof pct !== "number") pct = 100; // an explicit complete() with no data = done
     pct = Math.max(0, Math.min(100, Math.round(pct)));
@@ -203,8 +210,8 @@
       if (!codec) return;
       var code = safe(function () {
         return codec.encode({
-          studentName: id.studentName,
-          classPeriod: id.classPeriod,
+          studentName: studentName,
+          classPeriod: classPeriod,
           activityId: activityId(),
           activityTitle: activityTitle(),
           score: pct,
@@ -213,7 +220,7 @@
           stars: 0,
         });
       }, null);
-      if (code) renderCode(code, !String(id.studentName || "").trim());
+      if (code) renderCode(code, !String(studentName || "").trim());
     });
   }
 
