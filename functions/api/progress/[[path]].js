@@ -122,6 +122,132 @@ async function storeTelemetry(env, body) {
   await env.DB.batch(batch);
 }
 
+// --- Teacher admin (roster / grades export) --------------------------------
+// All routes below are gated by env.TEACHER_KEY, mirroring the telemetry GET
+// pattern. Student data is never world-readable: no key → 503, wrong key → 401.
+
+function teacherAuthorized(env, request, url) {
+  if (!env.TEACHER_KEY) return "not-configured";
+  const key =
+    url.searchParams.get("key") || request.headers.get("x-teacher-key") || "";
+  return key === env.TEACHER_KEY ? "ok" : "unauthorized";
+}
+
+// Add the teacher-editable columns once. SQLite has no "ADD COLUMN IF NOT
+// EXISTS", so we ALTER and swallow the "duplicate column" error. Idempotent.
+async function ensureAdminColumns(db) {
+  for (const ddl of [
+    "ALTER TABLE student_progress ADD COLUMN manual_grade TEXT",
+    "ALTER TABLE student_progress ADD COLUMN teacher_note TEXT",
+  ]) {
+    try {
+      await db.prepare(ddl).run();
+    } catch (e) {
+      /* column already exists — fine */
+    }
+  }
+}
+
+// Best-effort score extraction from the activity state blob. The save-resume
+// engine records marked scores under a few common shapes; fall back to null.
+function scoreFromState(state) {
+  if (!state || typeof state !== "object") return null;
+  const cand = [state.score, state.percent, state.percentCorrect, state.grade];
+  for (const c of cand) {
+    const n = Number(c);
+    if (Number.isFinite(n)) return Math.round(n);
+  }
+  if (Number.isFinite(Number(state.correct)) && Number(state.total) > 0) {
+    return Math.round((Number(state.correct) / Number(state.total)) * 100);
+  }
+  return null;
+}
+
+function csvCell(v) {
+  const s = v == null ? "" : String(v);
+  return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+}
+
+function rowsToCsv(headers, rows) {
+  const head = headers.map(csvCell).join(",");
+  const body = rows.map((r) => r.map(csvCell).join(",")).join("\n");
+  // Leading BOM so Excel opens UTF-8 names (accents) correctly.
+  return "﻿" + head + "\n" + body + "\n";
+}
+
+function xmlEsc(v) {
+  return String(v == null ? "" : v)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+// Excel 2003 SpreadsheetML — a single .xls XML file that opens natively in
+// Excel and Google Sheets with MULTIPLE named tabs, zero dependencies, no zip.
+function sheetXml(name, headers, rows) {
+  const cell = (v, forceText) => {
+    const num =
+      !forceText && v !== "" && v != null && Number.isFinite(Number(v));
+    const type = num ? "Number" : "String";
+    const val = num ? Number(v) : xmlEsc(v);
+    return `<Cell><Data ss:Type="${type}">${val}</Data></Cell>`;
+  };
+  const headRow =
+    "<Row>" + headers.map((h) => cell(h, true)).join("") + "</Row>";
+  const bodyRows = rows
+    .map((r) => "<Row>" + r.map((c) => cell(c, false)).join("") + "</Row>")
+    .join("");
+  return (
+    `<Worksheet ss:Name="${xmlEsc(name)}"><Table>` +
+    headRow +
+    bodyRows +
+    "</Table></Worksheet>"
+  );
+}
+
+function workbookXls(sheets) {
+  return (
+    '<?xml version="1.0"?>\n<?mso-application progid="Excel.Sheet"?>\n' +
+    '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" ' +
+    'xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">' +
+    sheets.map((s) => sheetXml(s.name, s.headers, s.rows)).join("") +
+    "</Workbook>"
+  );
+}
+
+const ROSTER_HEADERS = [
+  "Save Code",
+  "Student Name",
+  "Class",
+  "Activity",
+  "Progress %",
+  "Score %",
+  "Grade",
+  "Note",
+  "Last Saved",
+];
+
+function rosterRowValues(r) {
+  let state = {};
+  try {
+    state = JSON.parse(r.state_json || "{}");
+  } catch (e) {
+    state = {};
+  }
+  return {
+    code: r.save_code,
+    name: r.student_name || "",
+    section: r.section || "",
+    activity: r.activity_title || r.activity_id || "",
+    progress: r.progress_percent == null ? "" : r.progress_percent,
+    score: scoreFromState(state),
+    grade: r.manual_grade || "",
+    note: r.teacher_note || "",
+    updatedAt: r.updated_at || "",
+  };
+}
+
 function recordFromRow(row) {
   let state = {};
   try {
@@ -201,6 +327,7 @@ async function upsert(db, body, isCreate) {
 export async function onRequest(context) {
   const { request, env, params } = context;
   const method = request.method.toUpperCase();
+  const url = new URL(request.url);
 
   if (method === "OPTIONS") {
     return new Response(null, { status: 204, headers: JSON_HEADERS });
@@ -293,6 +420,200 @@ export async function onRequest(context) {
       // Swallow — telemetry must never fail loudly.
     }
     return new Response(null, { status: 204, headers: JSON_HEADERS });
+  }
+
+  // --- Teacher admin routes (roster + grades export/import) ----------------
+  // Gated by TEACHER_KEY. Closed by default so student data is never exposed.
+  if (seg === "roster" || seg === "grades") {
+    const auth = teacherAuthorized(env, request, url);
+    if (auth === "not-configured")
+      return json(
+        {
+          ok: false,
+          error: "not-configured",
+          message:
+            "Set the TEACHER_KEY env var on the Pages project to enable the gradebook.",
+        },
+        503,
+      );
+    if (auth === "unauthorized")
+      return json({ ok: false, error: "unauthorized" }, 401);
+    if (!env.DB)
+      return json({ ok: false, error: "backend-not-configured" }, 503);
+
+    try {
+      await ensureSchema(env.DB);
+      await ensureAdminColumns(env.DB);
+
+      // Bulk roster sync: assign names/classes/grades/notes to save codes.
+      // Body: { rows: [{ saveCode, studentName?, section?, grade?, note? }] }
+      if (seg === "roster" && method === "POST") {
+        const body = await request.json().catch(() => null);
+        const rows = (body && Array.isArray(body.rows) && body.rows) || [];
+        let updated = 0;
+        const stmt = env.DB.prepare(
+          `UPDATE student_progress SET
+             student_name = COALESCE(NULLIF(?, ' '), student_name),
+             section      = COALESCE(NULLIF(?, ' '), section),
+             manual_grade = COALESCE(NULLIF(?, ' '), manual_grade),
+             teacher_note = COALESCE(NULLIF(?, ' '), teacher_note)
+           WHERE save_code = ?`,
+        );
+        const batch = [];
+        for (const r of rows.slice(0, 2000)) {
+          const code = (
+            r && r.saveCode ? String(r.saveCode) : ""
+          ).toUpperCase();
+          if (!validCode(code)) continue;
+          // " " sentinel = field omitted → keep existing value. An explicit
+          // empty string overwrites (clears) the field.
+          const f = (v) => (v === undefined ? " " : clamp(v, 300));
+          batch.push(
+            stmt.bind(
+              f(r.studentName),
+              f(r.section),
+              f(r.grade),
+              f(r.note),
+              code,
+            ),
+          );
+          updated++;
+        }
+        if (batch.length) await env.DB.batch(batch);
+        return json({ ok: true, updated });
+      }
+
+      // GET roster (all save codes) or grades (pivot). format=csv|xls|json.
+      const all = await env.DB.prepare(
+        `SELECT * FROM student_progress ORDER BY section, student_name, save_code`,
+      ).all();
+      const records = (all.results || []).map(rosterRowValues);
+      const format = (url.searchParams.get("format") || "json").toLowerCase();
+
+      const rosterMatrix = (recs) =>
+        recs.map((r) => [
+          r.code,
+          r.name,
+          r.section,
+          r.activity,
+          r.progress,
+          r.score == null ? "" : r.score,
+          r.grade,
+          r.note,
+          r.updatedAt,
+        ]);
+
+      if (seg === "roster") {
+        const rows = rosterMatrix(records);
+        if (format === "csv")
+          return new Response(rowsToCsv(ROSTER_HEADERS, rows), {
+            headers: {
+              "Content-Type": "text/csv; charset=utf-8",
+              "Content-Disposition":
+                'attachment; filename="neft-save-codes.csv"',
+              "Access-Control-Allow-Origin": "*",
+            },
+          });
+        if (format === "xls")
+          return new Response(
+            workbookXls([
+              { name: "Save Codes", headers: ROSTER_HEADERS, rows },
+            ]),
+            {
+              headers: {
+                "Content-Type": "application/vnd.ms-excel; charset=utf-8",
+                "Content-Disposition":
+                  'attachment; filename="neft-save-codes.xls"',
+                "Access-Control-Allow-Origin": "*",
+              },
+            },
+          );
+        return json({ ok: true, count: records.length, records });
+      }
+
+      // seg === "grades": pivot students (rows) × activities (columns).
+      const activities = [];
+      const seenAct = new Set();
+      for (const r of records) {
+        if (r.activity && !seenAct.has(r.activity)) {
+          seenAct.add(r.activity);
+          activities.push(r.activity);
+        }
+      }
+      const byStudent = new Map();
+      for (const r of records) {
+        const sid = (r.section || "—") + "" + (r.name || r.code);
+        if (!byStudent.has(sid))
+          byStudent.set(sid, {
+            name: r.name || "(unnamed)",
+            section: r.section || "",
+            cells: {},
+          });
+        // cell = manual grade ?? extracted score ?? progress percent
+        const cellVal =
+          r.grade !== "" && r.grade != null
+            ? r.grade
+            : r.score != null
+              ? r.score
+              : r.progress;
+        byStudent.get(sid).cells[r.activity] = cellVal;
+      }
+      const gradeHeaders = ["Student Name", "Class", ...activities, "Average"];
+      const gradeRows = [];
+      for (const s of byStudent.values()) {
+        const cells = activities.map((a) =>
+          s.cells[a] == null ? "" : s.cells[a],
+        );
+        // Average numeric cells only; blanks and letter grades are skipped
+        // (Number("") === 0 would otherwise drag the average down).
+        const nums = cells
+          .filter((c) => c !== "" && c != null)
+          .map(Number)
+          .filter((n) => Number.isFinite(n));
+        const avg = nums.length
+          ? Math.round(nums.reduce((a, b) => a + b, 0) / nums.length)
+          : "";
+        gradeRows.push([s.name, s.section, ...cells, avg]);
+      }
+      if (format === "csv")
+        return new Response(rowsToCsv(gradeHeaders, gradeRows), {
+          headers: {
+            "Content-Type": "text/csv; charset=utf-8",
+            "Content-Disposition": 'attachment; filename="neft-grades.csv"',
+            "Access-Control-Allow-Origin": "*",
+          },
+        });
+      if (format === "xls")
+        return new Response(
+          workbookXls([
+            { name: "Grades", headers: gradeHeaders, rows: gradeRows },
+            {
+              name: "Save Codes",
+              headers: ROSTER_HEADERS,
+              rows: rosterMatrix(records),
+            },
+          ]),
+          {
+            headers: {
+              "Content-Type": "application/vnd.ms-excel; charset=utf-8",
+              "Content-Disposition":
+                'attachment; filename="neft-gradebook.xls"',
+              "Access-Control-Allow-Origin": "*",
+            },
+          },
+        );
+      return json({
+        ok: true,
+        activities,
+        headers: gradeHeaders,
+        rows: gradeRows,
+      });
+    } catch (err) {
+      return json(
+        { ok: false, error: "server-error", message: String(err) },
+        500,
+      );
+    }
   }
 
   // All data routes require the D1 binding. Absent -> graceful 503.
