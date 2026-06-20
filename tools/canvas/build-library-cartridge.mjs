@@ -111,10 +111,11 @@ if (SELECT_URLS) {
 }
 
 /* ---------- staging ---------- */
-const stage = resolve(repoRoot, "canvas-packages", "_librarystage");
-rmSync(stage, { recursive: true, force: true });
-mkdirSync(resolve(stage, "course_settings"), { recursive: true });
-mkdirSync(resolve(stage, "wiki_content"), { recursive: true });
+// --split emits one independently-importable cartridge per module (per unit /
+// section) instead of one combined package — how teachers actually roll out by
+// the week. Each split package is staged + validated + zipped on its own.
+const SPLIT = args.includes("--split");
+const stageRoot = resolve(repoRoot, "canvas-packages", "_librarystage");
 
 const slug = (s) =>
   String(s)
@@ -166,54 +167,68 @@ const assignmentSettingsXml = (it, ident, pos, groupRef) =>
   <workflow_state>unpublished</workflow_state>
 </assignment>`;
 
-const resources = [];
-const moduleMeta = []; // { id, title, order, items:[{idref,title,kind}] }
-const sidecar = []; // human-readable inventory of what shipped
-let pos = 0;
+/**
+ * Stage, validate, and zip ONE cartridge from a list of modules.
+ * @param {Array} modulesList  modules (each { key, title, order, items })
+ * @param {string[]} suffixParts  filename suffix segments
+ * @returns {{ outFile:string, itemCount:number, stats:object }}
+ */
+function emit(modulesList, suffixParts) {
+  const stage = stageRoot;
+  rmSync(stage, { recursive: true, force: true });
+  mkdirSync(resolve(stage, "course_settings"), { recursive: true });
+  mkdirSync(resolve(stage, "wiki_content"), { recursive: true });
 
-for (const mod of orderedModules) {
-  const groupId = "g_" + mod.key.replace(/[^a-z0-9]+/gi, "_");
-  const modItems = [];
-  for (const it of mod.items) {
-    pos += 1;
-    const base = slug(it.url || it.title) + "_" + pos;
-    const url = it.url.startsWith("http") ? it.url : `${SITE}${norm(it.url)}`;
+  const resources = [];
+  const moduleMeta = []; // { id, title, order, items:[{idref,title,kind}] }
+  const sidecar = []; // human-readable inventory of what shipped
+  let pos = 0;
+  let itemCount = 0;
 
-    if (MODE === "graded") {
-      const ident = "neftlib_" + base;
-      const dir = ident;
-      mkdirSync(resolve(stage, dir), { recursive: true });
-      writeFileSync(resolve(stage, dir, `${ident}.html`), assignmentHtml(it, url));
-      writeFileSync(
-        resolve(stage, dir, "assignment_settings.xml"),
-        assignmentSettingsXml(it, ident, pos, groupId),
-      );
-      resources.push(
-        `    <resource identifier="res_${ident}" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="${dir}/${ident}.html">\n` +
-          `      <file href="${dir}/${ident}.html"/>\n` +
-          `      <file href="${dir}/assignment_settings.xml"/>\n` +
-          `    </resource>`,
-      );
-      modItems.push({ idref: `res_${ident}`, title: it.title, kind: "Assignment" });
-    } else {
-      const pageId = "page_" + base;
-      const pageFile = `wiki_content/${pageId}.html`;
-      writeFileSync(resolve(stage, pageFile), pageHtml(it, url, pageId));
-      resources.push(
-        `    <resource identifier="${pageId}" type="webcontent" href="${pageFile}"><file href="${pageFile}"/></resource>`,
-      );
-      modItems.push({ idref: pageId, title: it.title, kind: "WikiPage" });
+  for (const mod of modulesList) {
+    const groupId = "g_" + mod.key.replace(/[^a-z0-9]+/gi, "_");
+    const modItems = [];
+    for (const it of mod.items) {
+      pos += 1;
+      itemCount += 1;
+      const base = slug(it.url || it.title) + "_" + pos;
+      const url = it.url.startsWith("http") ? it.url : `${SITE}${norm(it.url)}`;
+
+      if (MODE === "graded") {
+        const ident = "neftlib_" + base;
+        const dir = ident;
+        mkdirSync(resolve(stage, dir), { recursive: true });
+        writeFileSync(resolve(stage, dir, `${ident}.html`), assignmentHtml(it, url));
+        writeFileSync(
+          resolve(stage, dir, "assignment_settings.xml"),
+          assignmentSettingsXml(it, ident, pos, groupId),
+        );
+        resources.push(
+          `    <resource identifier="res_${ident}" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="${dir}/${ident}.html">\n` +
+            `      <file href="${dir}/${ident}.html"/>\n` +
+            `      <file href="${dir}/assignment_settings.xml"/>\n` +
+            `    </resource>`,
+        );
+        modItems.push({ idref: `res_${ident}`, title: it.title, kind: "Assignment" });
+      } else {
+        const pageId = "page_" + base;
+        const pageFile = `wiki_content/${pageId}.html`;
+        writeFileSync(resolve(stage, pageFile), pageHtml(it, url, pageId));
+        resources.push(
+          `    <resource identifier="${pageId}" type="webcontent" href="${pageFile}"><file href="${pageFile}"/></resource>`,
+        );
+        modItems.push({ idref: pageId, title: it.title, kind: "WikiPage" });
+      }
+      sidecar.push({ module: mod.title, title: it.title, type: it.activityType, url });
     }
-    sidecar.push({ module: mod.title, title: it.title, type: it.activityType, url });
+    moduleMeta.push({ id: groupId, title: mod.title, order: mod.order, items: modItems });
   }
-  moduleMeta.push({ id: groupId, title: mod.title, order: mod.order, items: modItems });
-}
 
-/* ---------- assignment groups (graded mode only) ---------- */
-if (MODE === "graded") {
-  writeFileSync(
-    resolve(stage, "course_settings", "assignment_groups.xml"),
-    `<?xml version="1.0" encoding="UTF-8"?>
+  /* ---------- assignment groups (graded mode only) ---------- */
+  if (MODE === "graded") {
+    writeFileSync(
+      resolve(stage, "course_settings", "assignment_groups.xml"),
+      `<?xml version="1.0" encoding="UTF-8"?>
 <assignmentGroups xmlns="http://canvas.instructure.com/xsd/cccv1p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://canvas.instructure.com/xsd/cccv1p0 https://canvas.instructure.com/xsd/cccv1p0.xsd">
 ${moduleMeta
   .map(
@@ -222,13 +237,13 @@ ${moduleMeta
   )
   .join("\n")}
 </assignmentGroups>`,
-  );
-}
+    );
+  }
 
-/* ---------- modules ---------- */
-writeFileSync(
-  resolve(stage, "course_settings", "module_meta.xml"),
-  `<?xml version="1.0" encoding="UTF-8"?>
+  /* ---------- modules ---------- */
+  writeFileSync(
+    resolve(stage, "course_settings", "module_meta.xml"),
+    `<?xml version="1.0" encoding="UTF-8"?>
 <modules xmlns="http://canvas.instructure.com/xsd/cccv1p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://canvas.instructure.com/xsd/cccv1p0 https://canvas.instructure.com/xsd/cccv1p0.xsd">
 ${moduleMeta
   .map((m, mi) => {
@@ -242,22 +257,22 @@ ${moduleMeta
   })
   .join("\n")}
 </modules>`,
-);
+  );
 
-writeFileSync(
-  resolve(stage, "course_settings", "canvas_export.txt"),
-  "Canvas Common Cartridge export — EduWonderLab full library (modules of live activities).\n",
-);
+  writeFileSync(
+    resolve(stage, "course_settings", "canvas_export.txt"),
+    "Canvas Common Cartridge export — EduWonderLab library (modules of live activities).\n",
+  );
 
-/* ---------- manifest ---------- */
-const courseSettingsFiles = [
-  `      <file href="course_settings/module_meta.xml"/>`,
-  `      <file href="course_settings/canvas_export.txt"/>`,
-];
-if (MODE === "graded")
-  courseSettingsFiles.unshift(`      <file href="course_settings/assignment_groups.xml"/>`);
+  /* ---------- manifest ---------- */
+  const courseSettingsFiles = [
+    `      <file href="course_settings/module_meta.xml"/>`,
+    `      <file href="course_settings/canvas_export.txt"/>`,
+  ];
+  if (MODE === "graded")
+    courseSettingsFiles.unshift(`      <file href="course_settings/assignment_groups.xml"/>`);
 
-const manifestXml = `<?xml version="1.0" encoding="UTF-8"?>
+  const manifestXml = `<?xml version="1.0" encoding="UTF-8"?>
 <manifest identifier="neft-library-cartridge" xmlns="http://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1" xmlns:lom="http://ltsc.ieee.org/xsd/imsccv1p1/LOM/resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1 http://www.imsglobal.org/profile/cc/ccv1p1/ccv1p1_imscp_v1p2_v1p0.xsd">
   <metadata><schema>IMS Common Cartridge</schema><schemaversion>1.1.0</schemaversion></metadata>
   <organizations><organization identifier="org_1" structure="rooted-hierarchy"><item identifier="root"/></organization></organizations>
@@ -268,59 +283,76 @@ ${courseSettingsFiles.join("\n")}
     </resource>
   </resources>
 </manifest>`;
-writeFileSync(resolve(stage, "imsmanifest.xml"), manifestXml);
+  writeFileSync(resolve(stage, "imsmanifest.xml"), manifestXml);
 
-/* ---------- zip ---------- */
-const suffix = [
+  /* ---------- self-validate BEFORE shipping (mirrors build-course's guard) ---------- */
+  const check = validateCartridgeDir(stage);
+  if (!check.ok) {
+    console.error(`\n✗ ABORTED: staged cartridge failed validation (package NOT written):`);
+    for (const e of check.errors) console.error(`  ✗ ${e}`);
+    console.error(`  Inspect the staged dir: ${stage}`);
+    process.exit(1);
+  }
+
+  /* ---------- zip ---------- */
+  const suffix = suffixParts.filter(Boolean).join("-");
+  const outName = suffix ? `neft-library-${suffix}.imscc` : "neft-library.imscc";
+  const outFile = resolve(repoRoot, "canvas-packages", outName);
+  rmSync(outFile, { force: true });
+  execSync(`cd "${stage}" && zip -r -q -X "${outFile}" . -x ".*"`);
+
+  // human-readable sidecar (what shipped, by module)
+  const sidecarFile = outFile.replace(/\.imscc$/, ".manifest.json");
+  writeFileSync(
+    sidecarFile,
+    JSON.stringify(
+      {
+        generatedFrom: "data/registry.json",
+        site: SITE,
+        mode: MODE,
+        filters: { type: TYPE_FILTER, section: SECTION_FILTER, limit: LIMIT || null, split: SPLIT },
+        totals: { items: itemCount, modules: modulesList.length },
+        modules: modulesList.map((m) => ({ title: m.title, count: m.items.length })),
+        items: sidecar,
+      },
+      null,
+      2,
+    ) + "\n",
+  );
+
+  rmSync(stage, { recursive: true, force: true });
+  return { outFile, outName, itemCount, stats: check.stats };
+}
+
+const modeSuffix = MODE === "graded" ? "graded" : null;
+const filterSuffix = [
   SELECT_URLS ? "selection" : null,
   TYPE_FILTER ? TYPE_FILTER.toLowerCase() : null,
   SECTION_FILTER ? SECTION_FILTER.toLowerCase() : null,
-  MODE === "graded" ? "graded" : null,
-].filter(Boolean).join("-");
-const outName = suffix ? `neft-library-${suffix}.imscc` : "neft-library.imscc";
-// Self-validate the staged package BEFORE shipping (mirrors build-course.mjs's
-// answer-key guard). A structural defect aborts the build rather than producing
-// a broken .imscc.
-const check = validateCartridgeDir(stage);
-if (!check.ok) {
-  console.error(`\n✗ ABORTED: staged cartridge failed validation (package NOT written):`);
-  for (const e of check.errors) console.error(`  ✗ ${e}`);
-  console.error(`  Inspect the staged dir: ${stage}`);
-  process.exit(1);
+];
+const moduleSlug = (m) => m.key.replace(/[^a-z0-9]+/gi, "-").replace(/^-+|-+$/g, "");
+
+if (SPLIT) {
+  console.log(`\n✓ Per-section cartridges (mode=${MODE}) — one importable package each:`);
+  const built = [];
+  for (const m of orderedModules) {
+    const r = emit([m], [...filterSuffix, moduleSlug(m), modeSuffix]);
+    built.push(r);
+    console.log(`    • ${m.title.padEnd(34)} ${String(r.itemCount).padStart(3)}  →  ${r.outName}`);
+  }
+  console.log(`\n  ${built.length} packages in canvas-packages/, each self-validated ✓`);
+  console.log(`\nImport each section on its own: Canvas → Settings → Import Course Content →`);
+  console.log(`  "Common Cartridge 1.x Package" → upload → Import. All UNPUBLISHED.`);
+} else {
+  const r = emit(orderedModules, [...filterSuffix, modeSuffix]);
+  console.log(`\n✓ Library Common Cartridge: ${r.outFile}`);
+  console.log(`  Validated:  ✓ structure clean (${r.stats.manifestHrefs} hrefs, ${r.stats.moduleItems} module items resolve)`);
+  console.log(`  Items:    ${r.itemCount}  (mode=${MODE})`);
+  console.log(`  Modules:  ${orderedModules.length}`);
+  for (const m of orderedModules) console.log(`    • ${m.title.padEnd(34)} ${m.items.length}`);
+  if (TYPE_FILTER || SECTION_FILTER || LIMIT)
+    console.log(`  Filters:  ${[TYPE_FILTER && `type=${TYPE_FILTER}`, SECTION_FILTER && `section=${SECTION_FILTER}`, LIMIT && `limit=${LIMIT}`].filter(Boolean).join(", ")}`);
+  console.log(`  Inventory: ${r.outFile.replace(/\.imscc$/, ".manifest.json")}`);
+  console.log(`\nImport: Canvas → Settings → Import Course Content → "Common Cartridge 1.x Package" → upload → Import.`);
+  console.log(`Everything imports UNPUBLISHED. ${MODE === "graded" ? "Assignments use completion-code (online text entry)." : "Pages link to the live activities."}`);
 }
-
-const outFile = resolve(repoRoot, "canvas-packages", outName);
-rmSync(outFile, { force: true });
-execSync(`cd "${stage}" && zip -r -q -X "${outFile}" . -x ".*"`);
-
-// human-readable sidecar (what shipped, by module)
-const sidecarFile = outFile.replace(/\.imscc$/, ".manifest.json");
-writeFileSync(
-  sidecarFile,
-  JSON.stringify(
-    {
-      generatedFrom: "data/registry.json",
-      site: SITE,
-      mode: MODE,
-      filters: { type: TYPE_FILTER, section: SECTION_FILTER, limit: LIMIT || null },
-      totals: { items: items.length, modules: orderedModules.length },
-      modules: orderedModules.map((m) => ({ title: m.title, count: m.items.length })),
-      items: sidecar,
-    },
-    null,
-    2,
-  ) + "\n",
-);
-
-rmSync(stage, { recursive: true, force: true });
-
-console.log(`\n✓ Library Common Cartridge: ${outFile}`);
-console.log(`  Validated:  ✓ structure clean (${check.stats.manifestHrefs} hrefs, ${check.stats.moduleItems} module items resolve)`);
-console.log(`  Items:    ${items.length}  (mode=${MODE})`);
-console.log(`  Modules:  ${orderedModules.length}`);
-for (const m of orderedModules) console.log(`    • ${m.title.padEnd(34)} ${m.items.length}`);
-if (TYPE_FILTER || SECTION_FILTER || LIMIT)
-  console.log(`  Filters:  ${[TYPE_FILTER && `type=${TYPE_FILTER}`, SECTION_FILTER && `section=${SECTION_FILTER}`, LIMIT && `limit=${LIMIT}`].filter(Boolean).join(", ")}`);
-console.log(`  Inventory: ${sidecarFile}`);
-console.log(`\nImport: Canvas → Settings → Import Course Content → "Common Cartridge 1.x Package" → upload → Import.`);
-console.log(`Everything imports UNPUBLISHED. ${MODE === "graded" ? "Assignments use completion-code (online text entry)." : "Pages link to the live activities."}`);

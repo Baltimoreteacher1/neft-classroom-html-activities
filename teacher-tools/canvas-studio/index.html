@@ -208,6 +208,10 @@
               <span>Native Canvas quizzes built from lesson questions — grade themselves. Lessons only.</span>
             </button>
           </div>
+          <label style="display:flex;align-items:center;gap:8px;margin:12px 0 2px;font-size:13px;color:var(--ink);cursor:pointer;">
+            <input type="checkbox" id="split" style="width:16px;height:16px;accent-color:var(--teal);" />
+            One importable package <strong>per section</strong> (roll out week by week)
+          </label>
           <div class="cmd" id="cmd">npm run library-cartridge</div>
           <button class="copybtn" id="copy">Copy command</button>
           <button class="copybtn" id="download" style="background: var(--teal); margin-left: 8px;">
@@ -390,17 +394,21 @@
         const cmdEl = document.getElementById("cmd");
         const note = document.getElementById("cmdnote");
         const dl = document.getElementById("download");
+        const splitEl = document.getElementById("split");
         if (!cmdEl) return;
         const type = state.type !== "all" ? state.type : null;
         const n = selectedUrls().length;
+        const split = !!(splitEl && splitEl.checked);
 
         if (state.path === "quizzes") {
           cmdEl.textContent = "npm run course -- --quizzes-only";
           note.innerHTML = "Builds <code>neft-quizzes.zip</code> — native auto-graded quizzes from lesson questions. Append a unit number (e.g. <code>npm run course -- 1 --quizzes-only</code>) to scope it.";
           if (dl) dl.style.display = "none";
+          if (splitEl) splitEl.closest("label").style.display = "none";
           return;
         }
         if (dl) dl.style.display = "";
+        if (splitEl) splitEl.closest("label").style.display = n > 0 ? "none" : "flex";
 
         const modeWord = state.path === "graded" ? "completion-code assignments" : "live-link pages";
         const gradedFlag = state.path === "graded" ? " --mode=graded" : "";
@@ -419,9 +427,11 @@
         const flags = [];
         if (state.path === "graded") flags.push("--mode=graded");
         if (type) flags.push(`--type=${type}`);
+        if (split) flags.push("--split");
         cmdEl.textContent = "npm run library-cartridge" + (flags.length ? " -- " + flags.join(" ") : "");
         note.innerHTML =
-          `Builds an <code>.imscc</code> of your ${type ? esc(type) + " items" : "whole library"} as ${modeWord}. ` +
+          `Builds ${split ? "<b>one <code>.imscc</code> per section</b>" : "an <code>.imscc</code>"} of your ${type ? esc(type) + " items" : "whole library"} as ${modeWord}. ` +
+          (split ? "Import each section on its own week to week. " : "") +
           `<em>Tick items above to export an exact selection instead.</em>`;
         if (dl) dl.disabled = true;
       }
@@ -485,6 +495,7 @@
           .catch(() => {});
       });
       document.getElementById("download").addEventListener("click", downloadSelection);
+      document.getElementById("split").addEventListener("change", renderCommand);
     </script>
   </body>
 </html>

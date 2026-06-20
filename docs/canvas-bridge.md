@@ -48,7 +48,15 @@ npm run library-cartridge -- --mode=graded        # completion-code assignments
 npm run library-cartridge -- --limit=25           # small smoke-test package
 npm run library-cartridge -- --select=canvas-selection.json   # exact picks from the Studio
 npm run library-cartridge -- --select-urls=/lessons/1-1/,/netfold-3d/   # inline picks
+npm run library-cartridge -- --split             # one importable package PER section
 ```
+
+### Per-section split
+
+`--split` emits one independently-importable, self-validated cartridge per
+module (`neft-library-unit-3.imscc`, `neft-library-games.imscc`, …) instead of
+one combined course — how teachers roll out week by week. Combines with
+`--mode=graded`.
 
 ### Exact selection from Canvas Studio
 
