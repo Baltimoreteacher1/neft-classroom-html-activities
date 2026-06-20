@@ -279,6 +279,9 @@
       if (isScormLaunch()) return;
       if (global.NT_DISABLE_CANVAS_CODE) return;
       if (document.getElementById(MODAL_ID)) return; // already shown
+      // Defer to the standalone canvas-bridge popup if it already rendered one,
+      // so an activity that wires both systems never stacks two code modals.
+      if (document.getElementById("nt-canvas-bridge-code")) return;
       ensureCodec().then(function (codec) {
         if (!codec) return;
         var code = codec.encode(norm);
