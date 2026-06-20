@@ -98,6 +98,11 @@
 
   /* ===================== SOURCE EXTRACTION ===================== */
   async function extractPptx(arrayBuffer) {
+    if (typeof JSZip === "undefined") {
+      throw new Error(
+        "Slide reader library (jszip) failed to load. Copy the slide text and paste it into the text box instead."
+      );
+    }
     const zip = await JSZip.loadAsync(arrayBuffer);
     const slideFiles = Object.keys(zip.files)
       .filter((n) => /^ppt\/slides\/slide\d+\.xml$/.test(n))
@@ -120,7 +125,7 @@
       results.push({ n, text });
       els.fileStatus.textContent = `Reading slide ${i + 1} of ${slideFiles.length}…`;
       if (i % 3 === 0) {
-        await new Promise((r) => requestAnimationFrame(r));
+        await yieldCpu();
       }
     }
     const parts = results
@@ -174,7 +179,7 @@
       results.push({ p, txt });
       els.fileStatus.textContent = `Reading page ${p} of ${doc.numPages}…`;
       if (p % 2 === 0) {
-        await new Promise((r) => requestAnimationFrame(r));
+        await yieldCpu();
       }
     }
     const out = results
@@ -197,11 +202,31 @@
       .replace(/&amp;/g, "&");
   }
 
+  const yieldCpu = () =>
+    new Promise((resolve) => {
+      if (document.hidden) {
+        setTimeout(resolve, 0);
+      } else {
+        requestAnimationFrame(resolve);
+      }
+    });
+
+  function setFileReading(reading) {
+    if (reading) {
+      els.generateBtn.disabled = true;
+      els.generateBtn.textContent = "Reading file...";
+    } else {
+      els.generateBtn.disabled = false;
+      els.generateBtn.textContent = "✦ Generate Lesson Plan";
+    }
+  }
+
   async function handleFile(file) {
     const name = file.name || "file";
     const lower = name.toLowerCase();
     els.fileStatus.className = "file-status";
     els.fileStatus.textContent = `Reading "${name}"…`;
+    setFileReading(true);
     try {
       let text = "";
       let kind = "";
@@ -223,15 +248,17 @@
       uploadedExtract = { text, name, kind };
       els.fileStatus.className = "file-status ok";
       els.fileStatus.innerHTML =
-        `<strong>${escapeHtml(name)}</strong> (${kind})<br>` +
+        `<strong>${esc(name)}</strong> (${kind})<br>` +
         `<span class="extract-ok">Extracted ✓ (${text.length.toLocaleString()} characters)</span> — review the text below, then click Generate.`;
       els.sourceText.value = text;
     } catch (e) {
       uploadedExtract = null;
       els.fileStatus.className = "file-status bad";
-      els.fileStatus.innerHTML = `<strong>Could not read this file:</strong> ${escapeHtml(
+      els.fileStatus.innerHTML = `<strong>Could not read this file:</strong> ${esc(
         e.message,
       )}`;
+    } finally {
+      setFileReading(false);
     }
   }
 
@@ -257,15 +284,19 @@
       .split("\n")
       .map((l) => l.trim())
       .filter(Boolean);
-    const SENT = "␟";
-    const segText = text
-      .replace(/(?<!\b[A-Za-z]\.)(?<!\b[a-z]{1,3}\.)(?<!\b\d+\.[A-Z]\.\d+)([.!?])\s+(?=[A-Z])/g, "$1" + SENT)
-      .replace(/[\r\n]+/g, SENT)
-      .replace(/[;•]/g, SENT);
-    const segments = segText
-      .split(SENT)
-      .map((s) => s.replace(/^[.!?\s]+/, "").trim())
-      .filter(Boolean);
+
+    const segments = [];
+    const rawSegs = text.split(/[\n;•]+/);
+    for (const rSeg of rawSegs) {
+      const trimmed = rSeg.trim();
+      if (!trimmed) continue;
+      // Split sentences lookbehind-free: period-space followed by capital letter
+      const parts = trimmed.split(/\.\s+(?=[A-Z])/);
+      for (const p of parts) {
+        const cleaned = p.trim().replace(/^[.!?\s]+/, "");
+        if (cleaned) segments.push(cleaned);
+      }
+    }
 
     const grab = (re, segRe) => {
       const sr = segRe || re;
@@ -1184,6 +1215,14 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
     const date = fields.date || new Date().toISOString().slice(0, 10);
     const standard = fields.standards || "";
 
+    let strippedUpload = null;
+    if (uploadedExtract) {
+      strippedUpload = {
+        name: uploadedExtract.name,
+        kind: uploadedExtract.kind
+      };
+    }
+
     const entry = {
       id: Date.now().toString(),
       title,
@@ -1191,7 +1230,7 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
       standard,
       fields,
       source: rawSource,
-      uploadedExtract: uploadedExtract
+      uploadedExtract: strippedUpload
     };
 
     const filtered = list.filter((item) => item.title !== title);
@@ -1231,7 +1270,11 @@ Mini-lesson: Model finding miles per hour from a ratio of miles to hours; think-
     }
 
     if (entry.uploadedExtract) {
-      uploadedExtract = entry.uploadedExtract;
+      uploadedExtract = {
+        name: entry.uploadedExtract.name,
+        kind: entry.uploadedExtract.kind,
+        text: entry.source || ""
+      };
       els.fileStatus.className = "file-status ok";
       els.fileStatus.innerHTML = `<span class="extract-ok">Loaded:</span> ${esc(uploadedExtract.name)}`;
     } else {
