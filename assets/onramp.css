@@ -1,0 +1,67 @@
+/* =============================================================================
+ * onramp.css — shared styling for Mr. Neft's ESOL Level-0 on-ramps and Level-2
+ * enrichment activities. Pairs with /assets/shared.css and /assets/onramp-quiz.js.
+ * Hero variant: add class "challenge" to <header class="hero"> for enrichment.
+ * ========================================================================== */
+:root {
+  --or-navy: #1a2e42; --or-teal: #2d7a72; --or-amber: #c9922c; --or-terra: #b5614e;
+  --or-cream: #faf8f3; --or-ice: #e8f3f7; --or-ink: #1c1c1c; --or-muted: #5b6773;
+  --or-green: #1f6640; --or-green-bg: #e8f6ed; --or-red: #7a1e1e; --or-red-bg: #fdf0f0;
+  --or-warn-bg: #fff4de; --or-line: #d8dfdc; --or-r: 16px; --or-r-sm: 10px;
+}
+main { max-width: 880px; margin: 0 auto; padding: 24px 18px 64px; }
+.hero { background: linear-gradient(135deg, var(--or-navy), var(--or-teal)); color: #fff;
+  border-radius: var(--or-r); padding: 26px 24px; box-shadow: 0 12px 36px rgba(26,46,66,.18); }
+.hero.challenge { background: linear-gradient(135deg, #3a1d52, var(--or-amber)); }
+.hero .tag { display: inline-block; background: rgba(255,255,255,.18); border-radius: 999px;
+  padding: 4px 12px; font-size: .82rem; letter-spacing: .04em; }
+.hero h1 { margin: 12px 0 6px; font-size: 1.55rem; line-height: 1.2; }
+.hero .goal { margin: 0; font-size: 1.05rem; opacity: .95; }
+.card { background: #fff; border: 1px solid var(--or-line); border-radius: var(--or-r);
+  padding: 20px 22px; margin: 18px 0; box-shadow: 0 4px 14px rgba(26,46,66,.06); }
+.card h2 { margin: 0 0 10px; color: var(--or-navy); font-size: 1.2rem; }
+.frames { background: var(--or-ice); border-left: 5px solid var(--or-teal);
+  border-radius: var(--or-r-sm); padding: 14px 16px; }
+.frames ul { margin: 8px 0 0; padding-left: 18px; } .frames li { margin: 6px 0; }
+.challengebox { background: #f6effa; border-left: 5px solid #6b3fa0; border-radius: var(--or-r-sm); padding: 14px 16px; }
+.word { display: inline-block; background: var(--or-warn-bg); border: 1px solid var(--or-amber);
+  border-radius: 8px; padding: 2px 8px; margin: 3px; font-weight: 600; color: #6b4a06; }
+.calc { text-align: center; font-size: 1.2rem; background: var(--or-cream); border: 1px solid var(--or-line);
+  border-radius: var(--or-r-sm); padding: 14px; margin: 10px 0; }
+.twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 560px) { .twocol { grid-template-columns: 1fr; } }
+.twocol .box { background: var(--or-cream); border: 1px solid var(--or-line); border-radius: var(--or-r-sm); padding: 14px 16px; }
+.twocol .box h3 { margin: 0 0 6px; font-size: 1rem; color: var(--or-terra); }
+table.t { width: 100%; border-collapse: collapse; margin: 6px 0; }
+table.t th, table.t td { border: 1px solid var(--or-line); padding: 8px 10px; text-align: left; }
+table.t th { background: var(--or-ice); color: var(--or-navy); }
+table.t.center th, table.t.center td { text-align: center; }
+.lists { background: var(--or-cream); border: 1px solid var(--or-line); border-radius: var(--or-r-sm);
+  padding: 12px 16px; font-family: ui-monospace, monospace; }
+.hl { background: #fde9b9; border-radius: 4px; padding: 0 4px; font-weight: 700; }
+.numline { position: relative; height: 70px; margin: 22px 6px 6px; }
+.numline .axis { position: absolute; top: 34px; left: 0; right: 0; height: 4px; background: var(--or-navy); border-radius: 4px; }
+.numline .tick { position: absolute; top: 22px; width: 2px; height: 28px; background: var(--or-muted); transform: translateX(-50%); }
+.numline .lbl { position: absolute; top: 50px; transform: translateX(-50%); font-size: .85rem; color: var(--or-muted); }
+.numline .dot { position: absolute; top: 24px; width: 20px; height: 20px; border-radius: 50%;
+  transform: translate(-50%, -50%); border: 3px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,.25); }
+.dotplot { background: var(--or-cream); border: 1px solid var(--or-line); border-radius: var(--or-r-sm);
+  padding: 14px 16px; font-family: ui-monospace, monospace; line-height: 1.5; }
+.dotplot .dots { color: var(--or-teal); font-size: 1.15rem; letter-spacing: 2px; }
+.q { margin: 14px 0; } .q p.prompt { font-weight: 600; margin: 0 0 10px; }
+.choices { display: flex; flex-wrap: wrap; gap: 10px; }
+.choice { min-height: 44px; padding: 10px 16px; border: 2px solid var(--or-line); background: var(--or-cream);
+  border-radius: 12px; font-size: 1rem; cursor: pointer; transition: .15s; }
+.choice:hover:not(:disabled) { border-color: var(--or-teal); }
+.choice:disabled { cursor: not-allowed; }
+.choice:focus-visible { outline: 3px solid var(--or-amber); outline-offset: 2px; }
+.choice.correct { background: var(--or-green-bg); border-color: var(--or-green); color: var(--or-green); }
+.choice.wrong { background: var(--or-red-bg); border-color: var(--or-red); color: var(--or-red); }
+.fb { margin: 10px 0 0; padding: 10px 14px; border-radius: var(--or-r-sm); display: none; font-weight: 500; }
+.fb.show { display: block; } .fb.ok { background: var(--or-green-bg); color: var(--or-green); }
+.fb.no { background: var(--or-warn-bg); color: #6b4a06; }
+.reflect textarea { width: 100%; min-height: 90px; border: 2px solid var(--or-line); border-radius: var(--or-r-sm);
+  padding: 12px; font: inherit; resize: vertical; }
+.reflect textarea:focus-visible { outline: 3px solid var(--or-amber); outline-offset: 1px; border-color: var(--or-teal); }
+.progress { font-size: .9rem; color: var(--or-muted); }
+footer { text-align: center; color: var(--or-muted); font-size: .85rem; margin-top: 28px; }
