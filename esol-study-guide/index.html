@@ -762,7 +762,6 @@
                 <p style="font-size:0.82rem; color:var(--gray-400); margin-bottom:12px;">Administer student progress states and generate report card portfolios.</p>
                 <div style="display:flex; gap:10px; flex-wrap:wrap;">
                     <button class="btn btn-secondary" onclick="resetAllProgress()" style="font-size:0.8rem; font-family:var(--font-display);">🗑️ Reset All Scores</button>
-                    <button class="btn btn-primary" onclick="masterAllProgress()" style="background:linear-gradient(135deg, var(--accent), #d97706); box-shadow:0 4px 14px rgba(245,158,11,0.35); font-size:0.8rem; font-family:var(--font-display);">🎓 Master All Modules</button>
                 </div>
             </div>
         </div>
@@ -1518,8 +1517,8 @@
             const panel = document.getElementById('teacher-panel');
             const lock = document.getElementById('teacher-lock-trigger');
             if (panel.style.display === 'none') {
-                const pass = prompt(STATE.language === 'en' ? "Enter Teacher Access Code (default is 'admin'):" : "Ingrese el código de acceso del maestro (por defecto es 'admin'):");
-                if (pass === 'admin' || pass === '') {
+                const pass = prompt(STATE.language === 'en' ? "Enter Teacher Access Code:" : "Ingrese el código de acceso del maestro:");
+                if (pass === 'admin') {
                     panel.style.display = 'block';
                     lock.innerText = '🔓';
                     lock.style.opacity = '1';
@@ -1545,19 +1544,6 @@
                 transitionState({ completedTopics: [], notes: {} });
                 alert(STATE.language === 'en' ? "All progress reset successfully." : "Todo el progreso se ha restablecido con éxito.");
             }
-        }
-
-        function masterAllProgress() {
-            const allTopics = Object.keys(STUDY_GUIDE_DB);
-            STATE.completedTopics = allTopics;
-            localStorage.setItem('esol_study_guide_state', JSON.stringify({
-                completedTopics: STATE.completedTopics,
-                notes: STATE.notes || {},
-                language: STATE.language,
-                currentTopicId: STATE.currentTopicId
-            }));
-            transitionState({ completedTopics: allTopics });
-            alert(STATE.language === 'en' ? "All modules marked as completed!" : "¡Todos los módulos marcados como completados!");
         }
 
         function generateReportCard() {
