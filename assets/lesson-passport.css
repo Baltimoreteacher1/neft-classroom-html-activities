@@ -1,0 +1,382 @@
+/*!
+ * lesson-passport.css — styles for lesson-passport.js (Student Passport).
+ *
+ * Lives top-left — the only free corner on a lesson page (juice owns top-right,
+ * the AI tutor + save bar own bottom-right, focus owns bottom-left). All scoped
+ * under .ntp-* so it never collides with host-lesson styles. Honors
+ * prefers-reduced-motion.
+ */
+
+.ntp-pill,
+.ntp-overlay,
+.ntp-toast {
+  --ntp-accent: #6d5efc;
+  --ntp-accent2: #00c2a8;
+  --ntp-ink: #1d2333;
+  --ntp-bg: #ffffff;
+  --ntp-bg-soft: #f5f6fb;
+  --ntp-border: #e4e6f1;
+  --ntp-prog: 0deg;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
+  box-sizing: border-box;
+}
+.ntp-pill *,
+.ntp-overlay *,
+.ntp-toast * {
+  box-sizing: border-box;
+}
+
+/* ── Floating pill (top-left) ─────────────────────────────────────────────── */
+.ntp-pill {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 9992;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px 5px 5px;
+  border: none;
+  border-radius: 999px;
+  background: var(--ntp-bg);
+  box-shadow: 0 4px 16px rgba(33, 28, 92, 0.18);
+  cursor: pointer;
+  color: var(--ntp-ink);
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+.ntp-pill:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(33, 28, 92, 0.26);
+}
+.ntp-pill:focus-visible {
+  outline: 3px solid var(--ntp-accent);
+  outline-offset: 2px;
+}
+.ntp-pill-ring {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--ntp-accent) var(--ntp-prog),
+    var(--ntp-border) 0
+  );
+  padding: 3px;
+}
+.ntp-pill-avatar {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--ntp-bg-soft);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--ntp-accent);
+  letter-spacing: 0.3px;
+}
+.ntp-pill-meta {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.05;
+}
+.ntp-pill-lvl {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--ntp-ink);
+}
+.ntp-pill-streak {
+  font-size: 11px;
+  font-weight: 700;
+  color: #e8590c;
+  min-height: 13px;
+}
+
+/* ── Overlay + panel ──────────────────────────────────────────────────────── */
+.ntp-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10050;
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 16px;
+  background: rgba(20, 18, 48, 0.42);
+  backdrop-filter: blur(2px);
+  overflow-y: auto;
+}
+.ntp-overlay.is-open {
+  display: flex;
+  animation: ntp-fade 0.2s ease both;
+}
+.ntp-panel {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  background: var(--ntp-bg);
+  color: var(--ntp-ink);
+  border-radius: 20px;
+  padding: 22px 22px 26px;
+  box-shadow: 0 24px 60px rgba(20, 18, 48, 0.45);
+  border-top: 6px solid var(--ntp-accent);
+  animation: ntp-pop 0.24s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+.ntp-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 50%;
+  background: var(--ntp-bg-soft);
+  color: var(--ntp-ink);
+  font-size: 19px;
+  line-height: 1;
+  cursor: pointer;
+}
+.ntp-close:hover {
+  background: var(--ntp-border);
+}
+
+/* Hero */
+.ntp-hero {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.ntp-hero-ring {
+  position: relative;
+  width: 84px;
+  height: 84px;
+  flex: 0 0 84px;
+}
+.ntp-hero-avatar {
+  position: absolute;
+  inset: 12px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--ntp-accent), var(--ntp-accent2));
+  color: #fff;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+.ntp-arc {
+  position: absolute;
+  inset: 0;
+  transform: rotate(-90deg);
+}
+.ntp-arc-bg {
+  fill: none;
+  stroke: var(--ntp-border);
+  stroke-width: 7;
+}
+.ntp-arc-fg {
+  fill: none;
+  stroke: var(--ntp-accent);
+  stroke-width: 7;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.6s ease;
+}
+.ntp-hero-txt {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.ntp-name {
+  font-size: 19px;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ntp-level {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ntp-accent);
+  margin: 1px 0 8px;
+}
+.ntp-xpbar {
+  height: 9px;
+  border-radius: 999px;
+  background: var(--ntp-bg-soft);
+  overflow: hidden;
+  border: 1px solid var(--ntp-border);
+}
+.ntp-xpfill {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--ntp-accent), var(--ntp-accent2));
+  transition: width 0.6s ease;
+}
+.ntp-xpnote {
+  font-size: 11px;
+  color: #6b7185;
+  margin-top: 5px;
+}
+
+/* Stats row */
+.ntp-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.ntp-stat {
+  text-align: center;
+  background: var(--ntp-bg-soft);
+  border: 1px solid var(--ntp-border);
+  border-radius: 14px;
+  padding: 12px 6px;
+}
+.ntp-stat-v {
+  display: block;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--ntp-ink);
+  line-height: 1;
+}
+.ntp-stat-l {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7185;
+  margin-top: 5px;
+}
+
+/* Badges */
+.ntp-badges-h {
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #6b7185;
+  margin-bottom: 10px;
+}
+.ntp-badges {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: 9px;
+}
+.ntp-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 4px;
+  border-radius: 14px;
+  border: 1px solid var(--ntp-border);
+  background: var(--ntp-bg-soft);
+  text-align: center;
+}
+.ntp-badge.is-earned {
+  border-color: var(--ntp-accent);
+  background: linear-gradient(180deg, #fff, #f3f1ff);
+  box-shadow: 0 3px 10px rgba(109, 94, 252, 0.16);
+}
+.ntp-badge.is-locked {
+  opacity: 0.55;
+  filter: grayscale(0.5);
+}
+.ntp-badge-i {
+  font-size: 22px;
+  line-height: 1;
+}
+.ntp-badge-n {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ntp-ink);
+  line-height: 1.15;
+}
+
+/* ── Toasts ───────────────────────────────────────────────────────────────── */
+.ntp-toast {
+  position: fixed;
+  top: 56px;
+  left: 12px;
+  z-index: 10060;
+  max-width: 280px;
+  padding: 11px 16px;
+  border-radius: 14px;
+  background: var(--ntp-ink);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 10px 28px rgba(20, 18, 48, 0.4);
+  transform: translateX(-120%);
+  opacity: 0;
+  transition:
+    transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.2),
+    opacity 0.4s ease;
+}
+.ntp-toast.is-in {
+  transform: translateX(0);
+  opacity: 1;
+}
+.ntp-toast-level {
+  background: linear-gradient(135deg, var(--ntp-accent), #8a5cff);
+}
+.ntp-toast-badge {
+  background: linear-gradient(135deg, #e8590c, #f59f00);
+}
+
+@keyframes ntp-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes ntp-pop {
+  from {
+    transform: translateY(14px) scale(0.96);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ntp-pill,
+  .ntp-overlay.is-open,
+  .ntp-panel,
+  .ntp-xpfill,
+  .ntp-arc-fg,
+  .ntp-toast {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Dark-mode friendliness if the host page opts in */
+@media (prefers-color-scheme: dark) {
+  .ntp-pill,
+  .ntp-panel,
+  .ntp-toast {
+    --ntp-bg: #1d2230;
+    --ntp-bg-soft: #262c3d;
+    --ntp-ink: #eef0f7;
+    --ntp-border: #353c50;
+  }
+  .ntp-badge.is-earned {
+    background: linear-gradient(180deg, #2a3047, #232a40);
+  }
+}
