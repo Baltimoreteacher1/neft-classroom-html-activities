@@ -1090,3 +1090,127 @@ body.high-contrast .vrow {
   text-align: center;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
 }
+
+/* ---------- Exit Ticket Quiz ---------- */
+#card-quiz.card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: var(--shadow);
+  border-top: 4px solid var(--teal);
+}
+.quiz-question {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  line-height: 1.45;
+  color: var(--navy);
+  margin-bottom: 16px;
+}
+.quiz-choices {
+  display: grid;
+  gap: 10px;
+}
+.quiz-choice-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: #fff;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-family: var(--font-main);
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--ink);
+  cursor: pointer;
+  line-height: 1.4;
+  transition: all 0.2s ease;
+}
+.quiz-choice-btn:hover:not(:disabled) {
+  background: var(--paper);
+  border-color: rgba(29, 111, 115, 0.4);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-soft);
+}
+.quiz-choice-btn.correct {
+  background: rgba(46, 117, 89, 0.1) !important;
+  border-color: #2e7559 !important;
+  color: #1e4e3a !important;
+  font-weight: 700;
+  cursor: default;
+}
+.quiz-choice-btn.incorrect {
+  background: rgba(159, 52, 52, 0.08) !important;
+  border-color: var(--red) !important;
+  color: var(--red) !important;
+  font-weight: 700;
+  cursor: default;
+}
+.quiz-choice-btn:disabled:not(.correct):not(.incorrect) {
+  opacity: 0.65;
+  cursor: default;
+}
+.quiz-feedback {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  animation: slideDown 0.25s ease-out;
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.quiz-feedback.correct {
+  background: rgba(46, 117, 89, 0.1);
+  color: #1e4e3a;
+  border: 1px solid rgba(46, 117, 89, 0.2);
+}
+.quiz-feedback.incorrect {
+  background: rgba(159, 52, 52, 0.08);
+  color: var(--red);
+  border: 1px solid rgba(159, 52, 52, 0.15);
+}
+
+/* ---------- Speech Speed Controller ---------- */
+.tools-speed-container {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 10px 12px;
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 8px;
+}
+.tools-speed-label {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+#speakRateSelector {
+  border: 1.5px solid var(--line);
+  background: #fff;
+  font-family: var(--font-main);
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 6px 8px;
+  outline: none;
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+  width: 100%;
+}
+#speakRateSelector:focus {
+  border-color: var(--teal);
+}

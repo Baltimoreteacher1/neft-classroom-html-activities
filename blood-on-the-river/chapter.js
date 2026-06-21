@@ -10,6 +10,9 @@ function esc(s) {
   );
 }
 
+// Speech speed configuration
+window.speakRate = parseFloat(localStorage.getItem("neft_bor_speak_rate") || "0.78");
+
 // Slow, clear read-aloud with visual highlighting.
 window.speakText = function (text, highlightEl, speakBtn) {
   if (!window.speechSynthesis) return;
@@ -21,7 +24,7 @@ window.speakText = function (text, highlightEl, speakBtn) {
 
   const u = new SpeechSynthesisUtterance(text);
   u.lang = "en-US";
-  u.rate = 0.78;
+  u.rate = window.speakRate;
   u.pitch = 1.05;
 
   if (highlightEl && speakBtn) {
@@ -256,6 +259,43 @@ function renderChapter(data) {
     </section>
   `;
 
+  // --- Card 4.7: Exit Ticket Quiz ---
+  let quizCard = "";
+  if (data.quick) {
+    const quizChoiceKey = `neft_bor_quiz_ch${data.chapter}`;
+    const savedAnswer = localStorage.getItem(quizChoiceKey);
+    const choicesHtml = data.quick.choices.map((choice, idx) => {
+      let stateClass = "";
+      let disabledAttr = "";
+      if (savedAnswer !== null) {
+        const ansIdx = parseInt(savedAnswer, 10);
+        if (idx === data.quick.correct) {
+          stateClass = " correct";
+        } else if (idx === ansIdx) {
+          stateClass = " incorrect";
+        }
+        disabledAttr = " disabled";
+      }
+      return `<button class="quiz-choice-btn${stateClass}" type="button" data-choice-idx="${idx}"${disabledAttr}>${esc(choice)}</button>`;
+    }).join("");
+
+    const feedbackHtml = savedAnswer !== null ? `
+      <div class="quiz-feedback correct">
+        ✓ ${esc(data.quick.feedback || "Correct!")}
+      </div>
+    ` : "";
+
+    quizCard = `
+      <section class="card" id="card-quiz">
+        <div class="card-head"><span class="card-icon">📝</span><h2>Chapter Exit Ticket</h2></div>
+        <p class="card-note">Quick Check: Test your understanding of the chapter.</p>
+        <div class="quiz-question">${esc(data.quick.question)}</div>
+        <div class="quiz-choices">${choicesHtml}</div>
+        <div id="quizFeedbackContainer">${feedbackHtml}</div>
+      </section>
+    `;
+  }
+
   // --- Card 5: Illustrated Storyboard ---
   let scenesCard = "";
   if (data.scenes && data.scenes.length) {
@@ -297,6 +337,7 @@ function renderChapter(data) {
       </div>
       <div class="layout-side">
         ${vocabularyCard}
+        ${quizCard}
       </div>
     </div>
     `
@@ -562,7 +603,7 @@ function renderChapter(data) {
   }
   printContainer.innerHTML = printWorksheetHtml;
 
-  bindInteractions();
+  bindInteractions(data);
 }
 
 function renderActiveScene(s, chapterNum) {
@@ -620,7 +661,7 @@ function renderActiveScene(s, chapterNum) {
     </div>`;
 }
 
-function bindInteractions() {
+function bindInteractions(data) {
   const $ = (s) => document.querySelector(s);
   const status = $("#status");
 
@@ -630,6 +671,30 @@ function bindInteractions() {
     status.classList.add("show");
     clearTimeout(show.t);
     show.t = setTimeout(() => status.classList.remove("show"), 1400);
+  }
+
+  // Inject Speech Speed Selector Dynamically
+  const toolsEl = document.querySelector(".tools");
+  if (toolsEl && !document.getElementById("speakRateSelector")) {
+    const rateContainer = document.createElement("div");
+    rateContainer.className = "tools-speed-container";
+    rateContainer.innerHTML = `
+      <label for="speakRateSelector" class="tools-speed-label">Speech Speed</label>
+      <select id="speakRateSelector" aria-label="Speech read aloud speed">
+        <option value="0.58" ${window.speakRate === 0.58 ? 'selected' : ''}>Slower (0.6x)</option>
+        <option value="0.78" ${window.speakRate === 0.78 ? 'selected' : ''}>Standard (0.8x)</option>
+        <option value="1.0" ${window.speakRate === 1.0 ? 'selected' : ''}>Normal (1.0x)</option>
+      </select>
+    `;
+    toolsEl.insertBefore(rateContainer, toolsEl.firstChild);
+
+    const rateSelector = document.getElementById("speakRateSelector");
+    if (rateSelector) {
+      rateSelector.addEventListener("change", (e) => {
+        window.speakRate = parseFloat(e.target.value);
+        localStorage.setItem("neft_bor_speak_rate", e.target.value);
+      });
+    }
   }
 
   // Event Delegation for clicks on page
@@ -649,6 +714,40 @@ function bindInteractions() {
       openLightbox(img.src, img.alt);
     }
   });
+
+  // Exit Ticket Quiz Interactivity
+  if (data.quick) {
+    const quizCardEl = document.getElementById("card-quiz");
+    if (quizCardEl) {
+      const choicesBtns = quizCardEl.querySelectorAll(".quiz-choice-btn");
+      const feedbackContainer = document.getElementById("quizFeedbackContainer");
+      const correctIdx = data.quick.correct;
+
+      choicesBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+          const selectedIdx = parseInt(btn.dataset.choiceIdx, 10);
+          const quizChoiceKey = `neft_bor_quiz_ch${data.chapter}`;
+
+          if (selectedIdx === correctIdx) {
+            localStorage.setItem(quizChoiceKey, selectedIdx);
+            choicesBtns.forEach(b => {
+              b.disabled = true;
+              b.classList.remove("incorrect");
+              if (parseInt(b.dataset.choiceIdx, 10) === correctIdx) {
+                b.classList.add("correct");
+              }
+            });
+            feedbackContainer.innerHTML = `<div class="quiz-feedback correct">✓ ${esc(data.quick.feedback || "Correct!")}</div>`;
+            triggerConfetti();
+          } else {
+            btn.classList.add("incorrect");
+            btn.disabled = true;
+            feedbackContainer.innerHTML = `<div class="quiz-feedback incorrect">✗ Not quite. Try another choice!</div>`;
+          }
+        });
+      });
+    }
+  }
 
   const printBtn = $("#printBtn");
   if (printBtn) printBtn.addEventListener("click", () => window.print());
