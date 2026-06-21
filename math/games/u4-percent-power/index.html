@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Percent Power — Coin Catcher | Math Games</title>
     <meta
       name="description"
@@ -213,8 +213,9 @@
         init() {
           if (!this.ctx)
             try {
-              this.ctx = new (window.AudioContext ||
-                window.webkitAudioContext)();
+              this.ctx = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
             } catch (e) {}
         },
         play(t, f, d, v = 0.18) {
@@ -418,7 +419,8 @@
         // Weighted by level so coverage rises in difficulty.
         let roll;
         if (level <= 2) roll = Math.random() < 0.75 ? 0 : 2;
-        else if (level <= 4) roll = Math.random() < 0.6 ? 1 : Math.random() < 0.5 ? 0 : 2;
+        else if (level <= 4)
+          roll = Math.random() < 0.6 ? 1 : Math.random() < 0.5 ? 0 : 2;
         else roll = randInt(0, 2);
         if (roll === 0) return pctOfNumber();
         if (roll === 1) return salePrice();
@@ -432,8 +434,44 @@
         parent: document.body,
         backgroundColor: "#122413",
         scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-        scene: [BootScene, TitleScene, GameScene, ResultScene],
+        scene: [BootScene, TitleScene, VocabScene, GameScene, ResultScene],
       };
+
+      // ── Vocab gate state (repo rule: term + Level-1 definition + image/emoji
+      // shown BEFORE the first round). Shown by default; skippable only on a
+      // replay within the same page session. ──
+      let ppVocabSeen = false;
+
+      // Key words for THIS game's topic (percent of a number, sale price,
+      // percent↔decimal). Each has a student-facing (Level 1) definition and an
+      // emoji so a visual always shows even with no network/images.
+      const PP_VOCAB = [
+        {
+          term: "Percent",
+          emoji: "％",
+          def: "A part out of 100. 25% means 25 out of every 100.",
+        },
+        {
+          term: "Percent of a number",
+          emoji: "🔢",
+          def: "How big a part is. 50% of 20 is half of 20, which is 10.",
+        },
+        {
+          term: "Discount",
+          emoji: "🏷️",
+          def: "Money taken OFF a price in a sale. 20% off means you pay less.",
+        },
+        {
+          term: "Sale price",
+          emoji: "💲",
+          def: "The price you pay AFTER the discount is taken off.",
+        },
+        {
+          term: "Equivalent decimal",
+          emoji: "🟰",
+          def: "The same value written as a decimal. 25% is the same as 0.25.",
+        },
+      ];
 
       // ── BOOT ──
       function BootScene() {
@@ -533,7 +571,9 @@
         const start = () => {
           SFX.init();
           SFX.coin();
-          this.scene.start("Game");
+          // Show the vocab gate before the first round; on a replay (already
+          // seen this session) jump straight to the game.
+          this.scene.start(ppVocabSeen ? "Game" : "Vocab");
         };
         btn.on("pointerover", () => btn.setFillStyle(0x36a35b));
         btn.on("pointerout", () => btn.setFillStyle(0x2d874b));
@@ -553,6 +593,139 @@
         hub.on("pointerout", () => hub.setColor("#7fae8c"));
         hub.on("pointerdown", () => (window.location.href = "/math/games/"));
         srSay("Percent Power Coin Catcher. Press Start to play.");
+      };
+
+      // ── VOCAB GATE ──
+      // Repo rule: term + Level-1 definition + image/emoji shown BEFORE play.
+      // One card per key word; Back / Next; last card starts the game. No
+      // answers or giveaways are shown here — only the vocabulary.
+      function VocabScene() {
+        return new Phaser.Scene("Vocab");
+      }
+      VocabScene.prototype = Object.create(Phaser.Scene.prototype);
+      VocabScene.prototype.constructor = VocabScene;
+      VocabScene.prototype.init = function () {
+        this.idx = 0;
+      };
+      VocabScene.prototype.create = function () {
+        const cx = W / 2;
+        this.add.rectangle(cx, H / 2, W, H, 0x122413);
+        this.add
+          .text(cx, 70, "WORDS TO KNOW FIRST", {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "34px",
+            color: "#ffd24a",
+            stroke: "#0a160b",
+            strokeThickness: 5,
+          })
+          .setOrigin(0.5);
+
+        // Card surface.
+        this.add
+          .rectangle(cx, 320, 560, 320, 0x0c2532)
+          .setStrokeStyle(2, 0x2d874b);
+
+        this.stepText = this.add
+          .text(cx, 185, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "14px",
+            fontStyle: "bold",
+            color: "#7fae8c",
+          })
+          .setOrigin(0.5);
+        this.emojiText = this.add
+          .text(cx, 250, "", { fontSize: "76px" })
+          .setOrigin(0.5);
+        this.termText = this.add
+          .text(cx, 330, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "32px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        this.defText = this.add
+          .text(cx, 400, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            color: "#bfe0c8",
+            align: "center",
+            wordWrap: { width: 500 },
+          })
+          .setOrigin(0.5);
+
+        // Next / Start button.
+        const nextBtn = this.add
+          .rectangle(cx + 90, 510, 220, 52, 0x2d874b)
+          .setInteractive({ useHandCursor: true });
+        const nextT = this.add
+          .text(cx + 90, 510, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "20px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        nextBtn.on("pointerover", () => nextBtn.setFillStyle(0x36a35b));
+        nextBtn.on("pointerout", () => nextBtn.setFillStyle(0x2d874b));
+        nextBtn.on("pointerdown", () => this.advance());
+        this.nextBtn = nextBtn;
+        this.nextT = nextT;
+
+        // Back button (hidden on the first card).
+        const backBtn = this.add
+          .rectangle(cx - 120, 510, 130, 52, 0x1a3a48)
+          .setInteractive({ useHandCursor: true });
+        const backT = this.add
+          .text(cx - 120, 510, "← Back", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            fontStyle: "bold",
+            color: "#9fc6cf",
+          })
+          .setOrigin(0.5);
+        backBtn.on("pointerover", () => backBtn.setFillStyle(0x244c5c));
+        backBtn.on("pointerout", () => backBtn.setFillStyle(0x1a3a48));
+        backBtn.on("pointerdown", () => this.goBack());
+        this.backBtn = backBtn;
+        this.backT = backT;
+
+        this.input.keyboard.on("keydown-SPACE", () => this.advance());
+        this.input.keyboard.on("keydown-ENTER", () => this.advance());
+        this.input.keyboard.on("keydown-RIGHT", () => this.advance());
+        this.input.keyboard.on("keydown-LEFT", () => this.goBack());
+
+        this.renderCard();
+      };
+      VocabScene.prototype.renderCard = function () {
+        const v = PP_VOCAB[this.idx];
+        const last = this.idx === PP_VOCAB.length - 1;
+        this.stepText.setText(
+          "Key word " + (this.idx + 1) + " of " + PP_VOCAB.length,
+        );
+        this.emojiText.setText(v.emoji);
+        this.termText.setText(v.term);
+        this.defText.setText(v.def);
+        this.nextT.setText(last ? "Start playing ▶" : "Next →");
+        const showBack = this.idx > 0;
+        this.backBtn.setVisible(showBack);
+        this.backT.setVisible(showBack);
+        srSay(v.term + ". " + v.def);
+      };
+      VocabScene.prototype.advance = function () {
+        if (this.idx < PP_VOCAB.length - 1) {
+          this.idx++;
+          this.renderCard();
+        } else {
+          ppVocabSeen = true;
+          this.scene.start("Game");
+        }
+      };
+      VocabScene.prototype.goBack = function () {
+        if (this.idx > 0) {
+          this.idx--;
+          this.renderCard();
+        }
       };
 
       // ── GAME ──
@@ -894,9 +1067,7 @@
 
       GameScene.prototype.updateHUD = function () {
         this.scoreText.setText("Score: " + this.score);
-        this.livesText.setText(
-          this.lives > 0 ? "❤".repeat(this.lives) : "—",
-        );
+        this.livesText.setText(this.lives > 0 ? "❤".repeat(this.lives) : "—");
         this.streakText.setText("Streak: " + this.streak);
         this.levelText.setText("Level " + this.level);
         this.progressText.setText(this.solved + " / " + this.target);
@@ -950,8 +1121,7 @@
           })
           .setOrigin(0.5);
 
-        const starStr =
-          "★".repeat(stars) + "☆".repeat(3 - stars);
+        const starStr = "★".repeat(stars) + "☆".repeat(3 - stars);
         this.add
           .text(cx, 185, starStr, {
             fontFamily: "Segoe UI, sans-serif",
@@ -969,11 +1139,16 @@
           })
           .setOrigin(0.5);
         this.add
-          .text(cx, 295, "Solved " + d.solved + " of " + d.target + " problems", {
-            fontFamily: "Segoe UI, sans-serif",
-            fontSize: "18px",
-            color: "#bfe0c8",
-          })
+          .text(
+            cx,
+            295,
+            "Solved " + d.solved + " of " + d.target + " problems",
+            {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "18px",
+              color: "#bfe0c8",
+            },
+          )
           .setOrigin(0.5);
         this.add
           .text(cx, 325, "High Score: " + hs, {

@@ -1,5 +1,15 @@
 # Math Games Audit — 2026-06-08
 
+> **RE-BASELINED 2026-06-21 (read this first).** A fresh adversarial classification
+> of the 23 audit games found **17 already meet the math-as-mechanic bar**. Only 6
+> still need work: `6-ns-c-6game` (themed-MCQ + answer giveaways — being rebuilt to a
+> click-to-locate Coordinate Hunt) and 5 minor-fix games (`6-ee-9gamereview`,
+> `6-ee-c-9variablevelocitygame`, `6-ns-c-5game`, `6-ns-c-8game`, `6-sp-a-1game`).
+> Separately, the `math/games/u*` **arcade lane-runners** (a family this audit did NOT
+> cover) were missing vocab gates — gates added 2026-06-21. The verdict table below is
+> the 2026-06-08 snapshot and is partly superseded; trust the re-baseline summary for
+> current state.
+
 **Scope:** all 28 `*game*` folders (the 2D/Phaser + DOM games; the `games/3d/`
 WebGL set was overhauled separately on 2026-06-04).
 

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Expression Express — Track Switch | Math Games</title>
     <meta
       name="description"
@@ -214,8 +214,9 @@
         init() {
           if (!this.ctx)
             try {
-              this.ctx = new (window.AudioContext ||
-                window.webkitAudioContext)();
+              this.ctx = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
             } catch (e) {}
         },
         play(t, f, d, v = 0.18) {
@@ -460,8 +461,34 @@
         parent: document.body,
         backgroundColor: "#221636",
         scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-        scene: [BootScene, TitleScene, GameScene, ResultScene],
+        scene: [BootScene, TitleScene, VocabScene, GameScene, ResultScene],
       };
+
+      // ── Vocab gate terms (6.EE.1–4) ─────────────────────────────────────
+      // Term + Level-1 (student-facing) definition + emoji image. Shown BEFORE
+      // the first round so students meet the key words before they play.
+      const VOCAB_TERMS = [
+        {
+          term: "Exponent",
+          emoji: "🔢",
+          def: "A small raised number that tells you how many times to multiply the base by itself. In 4³, the 3 is the exponent.",
+        },
+        {
+          term: "Base",
+          emoji: "🧱",
+          def: "The number being multiplied in a power. In 4³, the 4 is the base, so 4³ means 4 × 4 × 4.",
+        },
+        {
+          term: "Evaluate",
+          emoji: "🟰",
+          def: "To find the value of an expression by doing the math. Evaluating 2³ + 1 gives you 9.",
+        },
+        {
+          term: "Order of Operations",
+          emoji: "📋",
+          def: "The rules for what to solve first: parentheses, then exponents, then multiply/divide, then add/subtract.",
+        },
+      ];
 
       function BootScene() {
         return new Phaser.Scene("Boot");
@@ -573,7 +600,7 @@
         const start = () => {
           SFX.init();
           SFX.switchLane();
-          this.scene.start("Game");
+          this.scene.start("Vocab");
         };
         btn.on("pointerover", () => btn.setFillStyle(0x9050c8));
         btn.on("pointerout", () => btn.setFillStyle(0x7a3fb0));
@@ -593,6 +620,119 @@
         hub.on("pointerout", () => hub.setColor("#a080c0"));
         hub.on("pointerdown", () => (window.location.href = "/math/games/"));
         srSay("Expression Express Track Switch. Press Start to play.");
+      };
+
+      // ── VOCAB GATE SCENE ────────────────────────────────────────────────
+      // Shown once before the first round (Title ▶ Vocab ▶ Game). "Play Again"
+      // from the Result scene goes straight to Game, so the gate is skipped on
+      // replay — students see the words first, then can dive back in.
+      function VocabScene() {
+        return new Phaser.Scene("Vocab");
+      }
+      VocabScene.prototype = Object.create(Phaser.Scene.prototype);
+      VocabScene.prototype.constructor = VocabScene;
+      VocabScene.prototype.create = function () {
+        const cx = W / 2;
+        this.idx = 0;
+        this.add.rectangle(cx, H / 2, W, H, 0x221636);
+        this.add
+          .text(cx, 60, "WORDS TO KNOW FIRST", {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "34px",
+            color: "#b06fd4",
+            stroke: "#140c20",
+            strokeThickness: 5,
+          })
+          .setOrigin(0.5);
+
+        // Card backdrop
+        this.add
+          .rectangle(cx, 318, 560, 340, 0x2e1f46)
+          .setStrokeStyle(3, 0x7a3fb0);
+
+        this.stepText = this.add
+          .text(cx, 168, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "14px",
+            fontStyle: "bold",
+            color: "#a080c0",
+          })
+          .setOrigin(0.5);
+        this.emojiText = this.add
+          .text(cx, 232, "", { fontSize: "84px" })
+          .setOrigin(0.5);
+        this.termText = this.add
+          .text(cx, 308, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "30px",
+            fontStyle: "bold",
+            color: "#e0c8ff",
+          })
+          .setOrigin(0.5);
+        this.defText = this.add
+          .text(cx, 380, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "17px",
+            color: "#e0d0f0",
+            align: "center",
+            wordWrap: { width: 500 },
+          })
+          .setOrigin(0.5);
+
+        // Next / Start button
+        this.btn = this.add
+          .rectangle(cx, 500, 260, 56, 0x7a3fb0)
+          .setInteractive({ useHandCursor: true });
+        this.btnT = this.add
+          .text(cx, 500, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "20px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        const advance = () => {
+          SFX.switchLane && SFX.switchLane();
+          if (this.idx < VOCAB_TERMS.length - 1) {
+            this.idx++;
+            this.renderTerm();
+          } else {
+            this.scene.start("Game");
+          }
+        };
+        this.btn.on("pointerover", () => this.btn.setFillStyle(0x9050c8));
+        this.btn.on("pointerout", () => this.btn.setFillStyle(0x7a3fb0));
+        this.btn.on("pointerdown", advance);
+        this.input.keyboard.on("keydown-SPACE", advance);
+        this.input.keyboard.on("keydown-ENTER", advance);
+        this.input.keyboard.on("keydown-RIGHT", advance);
+
+        // Skip-to-game link (lets fluent students jump in after seeing them appear)
+        const skip = this.add
+          .text(cx, 558, "Skip to game ▶", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "14px",
+            color: "#a080c0",
+          })
+          .setOrigin(0.5)
+          .setInteractive({ useHandCursor: true });
+        skip.on("pointerover", () => skip.setColor("#b06fd4"));
+        skip.on("pointerout", () => skip.setColor("#a080c0"));
+        skip.on("pointerdown", () => this.scene.start("Game"));
+
+        this.renderTerm();
+      };
+      VocabScene.prototype.renderTerm = function () {
+        const t = VOCAB_TERMS[this.idx];
+        const last = this.idx === VOCAB_TERMS.length - 1;
+        this.stepText.setText(
+          "Key word " + (this.idx + 1) + " of " + VOCAB_TERMS.length,
+        );
+        this.emojiText.setText(t.emoji);
+        this.termText.setText(t.term);
+        this.defText.setText(t.def);
+        this.btnT.setText(last ? "ALL ABOARD ▶" : "Next →");
+        srSay(t.term + ". " + t.def);
       };
 
       function GameScene() {

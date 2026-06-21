@@ -3,8 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
-    <title>Volume Blast — Volume of Rectangular Prisms Game | Neft Teacher</title>
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
+    <title>
+      Volume Blast — Volume of Rectangular Prisms Game | Neft Teacher
+    </title>
     <meta
       name="description"
       content="A 2D aim-and-blast game for Grade 6 lessons 10.1-10.5 (6.G.2): compute the volume of a rectangular prism, find a missing dimension, and handle fractional edges, then blast the crate with the correct answer."
@@ -259,9 +261,27 @@
           "missing",
           { l, w, h, V, missing: "h" },
           h,
-          "Volume = " + V + ".  Length = " + l + ", width = " + w + ".  Find the height.",
+          "Volume = " +
+            V +
+            ".  Length = " +
+            l +
+            ", width = " +
+            w +
+            ".  Find the height.",
           "Use h = V ÷ (l × w).",
-          "h = " + V + " ÷ (" + l + " × " + w + ") = " + V + " ÷ " + l * w + " = " + h + ".",
+          "h = " +
+            V +
+            " ÷ (" +
+            l +
+            " × " +
+            w +
+            ") = " +
+            V +
+            " ÷ " +
+            l * w +
+            " = " +
+            h +
+            ".",
         );
       }
 
@@ -278,7 +298,15 @@
           ans,
           "Box " + fmtNum(frac) + " × " + w + " × " + h + ".  Find the volume.",
           "Multiply carefully — one edge is a decimal.",
-          "V = " + fmtNum(frac) + " × " + w + " × " + h + " = " + fmtNum(ans) + " cubic units.",
+          "V = " +
+            fmtNum(frac) +
+            " × " +
+            w +
+            " × " +
+            h +
+            " = " +
+            fmtNum(ans) +
+            " cubic units.",
         );
       }
 
@@ -294,7 +322,9 @@
           guard++;
           let cand;
           if (fracMode) {
-            const step = (Math.random() < 0.5 ? 0.5 : 1) * randInt(1, 4) *
+            const step =
+              (Math.random() < 0.5 ? 0.5 : 1) *
+              randInt(1, 4) *
               (Math.random() < 0.5 ? 1 : -1);
             cand = round2(answer + step);
           } else {
@@ -398,7 +428,14 @@
           g.lineStyle(2, C.prismEdge, 1).strokeRect(-40, -20, 80, 56);
           badge.add(g);
           if (!reducedMotion()) {
-            this.tweens.add({ targets: badge, y: 138, duration: 1600, yoyo: true, repeat: -1, ease: "Sine.inOut" });
+            this.tweens.add({
+              targets: badge,
+              y: 138,
+              duration: 1600,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.inOut",
+            });
           }
 
           this.add
@@ -441,7 +478,11 @@
             .setOrigin(0.5);
 
           this.makeButton(cx, 474, "▶  START GAME", 0x1f7a52, () =>
-            this.scene.start("Game", { level: 0, score: 0, lives: START_LIVES }),
+            this.scene.start("Vocab", {
+              level: 0,
+              score: 0,
+              lives: START_LIVES,
+            }),
           );
           this.add
             .text(
@@ -496,6 +537,202 @@
             window.location.href = "/math/games/";
           });
           return t;
+        }
+        setSR(msg) {
+          const el = document.getElementById("vb-sr");
+          if (el) el.textContent = msg;
+        }
+      }
+
+      // ════════════════════════════════════════════════════════════════════
+      //  VOCAB GATE  ·  Words to know first (shown BEFORE the first round)
+      //  Repo rule: term + Level-1 (student-facing) definition + image/emoji,
+      //  shown BEFORE play. Click through each card, then start the game.
+      // ════════════════════════════════════════════════════════════════════
+      const VOCAB_TERMS = [
+        {
+          term: "Volume",
+          def: "The amount of space inside a 3-D shape — how much it can hold. We measure it in cubic units.",
+          emoji: "🧊",
+        },
+        {
+          term: "Rectangular prism",
+          def: "A box shape with 6 flat rectangle faces, like a cereal box or a crate.",
+          emoji: "📦",
+        },
+        {
+          term: "Cubic units",
+          def: "The unit we count volume in — how many unit cubes fit inside. We write it as u³ (cubed).",
+          emoji: "🔢",
+        },
+        {
+          term: "Dimensions",
+          def: "The three measurements of a box: its length, width, and height.",
+          emoji: "📏",
+        },
+      ];
+
+      class VocabScene extends Phaser.Scene {
+        constructor() {
+          super("Vocab");
+        }
+        init(data) {
+          // carry the run data straight through to the Game scene
+          this.next = {
+            level: data.level || 0,
+            score: data.score || 0,
+            lives: data.lives != null ? data.lives : START_LIVES,
+          };
+          this.index = 0;
+        }
+        create() {
+          this.cameras.main.setBackgroundColor(C.bg);
+          const cx = W / 2;
+
+          this.add
+            .text(cx, 70, "WORDS TO KNOW FIRST", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "30px",
+              fontStyle: "900",
+              color: "#eafff4",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(cx, 108, "Learn these before you blast any crates.", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "16px",
+              color: "#a8d8c4",
+            })
+            .setOrigin(0.5);
+
+          // card panel
+          this.add
+            .rectangle(cx, 330, 560, 330, C.panel)
+            .setStrokeStyle(2, C.panelEdge);
+
+          this.stepT = this.add
+            .text(cx, 196, "", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "13px",
+              fontStyle: "900",
+              color: "#4fd18b",
+            })
+            .setOrigin(0.5);
+          // emoji "image" tile for each term (image/emoji per repo rule)
+          this.mediaBg = this.add
+            .rectangle(cx, 262, 110, 110, 0x123026)
+            .setStrokeStyle(2, C.panelEdge);
+          this.mediaT = this.add
+            .text(cx, 262, "", { fontSize: "64px" })
+            .setOrigin(0.5);
+          this.termT = this.add
+            .text(cx, 348, "", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "30px",
+              fontStyle: "900",
+              color: "#ffcd4d",
+            })
+            .setOrigin(0.5);
+          this.defT = this.add
+            .text(cx, 408, "", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "18px",
+              color: "#eafff4",
+              align: "center",
+              lineSpacing: 6,
+              wordWrap: { width: 500 },
+            })
+            .setOrigin(0.5);
+
+          // progress dots
+          this.dots = VOCAB_TERMS.map((_, n) =>
+            this.add.circle(0, 0, 5, 0x2a5a44).setDepth(2),
+          );
+
+          this.nextBtn = this.add
+            .rectangle(cx, 540, 300, 56, 0x1f7a52)
+            .setStrokeStyle(3, 0xffffff, 0.85)
+            .setInteractive({ useHandCursor: true });
+          this.nextLbl = this.add
+            .text(cx, 540, "", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "22px",
+              fontStyle: "bold",
+              color: "#ffffff",
+            })
+            .setOrigin(0.5);
+          this.nextBtn.on("pointerover", () => this.nextBtn.setScale(1.04));
+          this.nextBtn.on("pointerout", () => this.nextBtn.setScale(1));
+          this.nextBtn.on("pointerdown", () => this.advance());
+          this.input.keyboard.on("keydown-SPACE", () => this.advance());
+          this.input.keyboard.on("keydown-ENTER", () => this.advance());
+          this.input.keyboard.on("keydown-RIGHT", () => this.advance());
+          this.input.keyboard.on("keydown-LEFT", () => this.back());
+
+          const back = this.add
+            .text(cx, 590, "← Back", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "15px",
+              fontStyle: "bold",
+              color: "#7fb8a0",
+            })
+            .setOrigin(0.5)
+            .setInteractive({ useHandCursor: true });
+          back.on("pointerover", () => back.setColor("#4fd18b"));
+          back.on("pointerout", () => back.setColor("#7fb8a0"));
+          back.on("pointerdown", () => this.back());
+          this.backLink = back;
+
+          this.render();
+        }
+        render() {
+          const t = VOCAB_TERMS[this.index];
+          const last = this.index === VOCAB_TERMS.length - 1;
+          this.stepT.setText(
+            "WORD " + (this.index + 1) + " OF " + VOCAB_TERMS.length,
+          );
+          this.mediaT.setText(t.emoji);
+          this.termT.setText(t.term);
+          this.defT.setText(t.def);
+          this.nextLbl.setText(last ? "▶  START GAME" : "Next →");
+          this.backLink.setVisible(this.index > 0);
+          // lay out dots centered
+          const gap = 18;
+          const startX = W / 2 - (gap * (VOCAB_TERMS.length - 1)) / 2;
+          this.dots.forEach((d, n) => {
+            d.x = startX + n * gap;
+            d.y = 484;
+            d.setFillStyle(n === this.index ? 0x4fd18b : 0x2a5a44);
+          });
+          this.setSR(
+            "Word " +
+              (this.index + 1) +
+              " of " +
+              VOCAB_TERMS.length +
+              ". " +
+              t.term +
+              ". " +
+              t.def +
+              (last
+                ? " Press start to play."
+                : " Press next for the next word."),
+          );
+        }
+        advance() {
+          if (this.index < VOCAB_TERMS.length - 1) {
+            this.index++;
+            this.render();
+          } else {
+            this.scene.start("Game", this.next);
+          }
+        }
+        back() {
+          if (this.index > 0) {
+            this.index--;
+            this.render();
+          } else {
+            this.scene.start("Title");
+          }
         }
         setSR(msg) {
           const el = document.getElementById("vb-sr");
@@ -661,8 +898,12 @@
         }
 
         buildCannon() {
-          this.cannon = this.add.container(this.cannonX, this.cannonY).setDepth(6);
-          const base = this.add.circle(0, 6, 26, 0x123026).setStrokeStyle(3, C.cannon);
+          this.cannon = this.add
+            .container(this.cannonX, this.cannonY)
+            .setDepth(6);
+          const base = this.add
+            .circle(0, 6, 26, 0x123026)
+            .setStrokeStyle(3, C.cannon);
           this.barrel = this.add
             .rectangle(0, -22, 16, 46, C.cannon)
             .setOrigin(0.5, 1)
@@ -720,9 +961,19 @@
           const lTxt = missing === "l" ? "?" : "l = " + fmtNum(dims.l);
           const wTxt = "w = " + fmtNum(dims.w);
           const hTxt = missing === "h" ? "h = ?" : "h = " + fmtNum(dims.h);
-          mkLbl(ox + fw / 2, oy + fh + 18, lTxt, missing === "l" ? "#ffcd4d" : "#eafff4");
+          mkLbl(
+            ox + fw / 2,
+            oy + fh + 18,
+            lTxt,
+            missing === "l" ? "#ffcd4d" : "#eafff4",
+          );
           mkLbl(ox + fw + dep + 26, oy + (fh - dep) / 2, wTxt);
-          mkLbl(ox - 26, oy + fh / 2, hTxt, missing === "h" ? "#ffcd4d" : "#eafff4");
+          mkLbl(
+            ox - 26,
+            oy + fh / 2,
+            hTxt,
+            missing === "h" ? "#ffcd4d" : "#eafff4",
+          );
           if (missing === "h") {
             mkLbl(ox + fw / 2, oy + fh / 2, "V = " + fmtNum(dims.V), "#ffcd4d");
           }
@@ -731,16 +982,30 @@
         nextQuestion() {
           this.locked = false;
           this.q = buildQuestion(this.levelIndex);
-          this.tagT.setText("ROUND " + (this.levelIndex + 1) + " · " +
-            (this.q.kind === "whole" ? "V = l × w × h"
-              : this.q.kind === "missing" ? "MISSING DIMENSION" : "FRACTIONAL EDGE"));
+          this.tagT.setText(
+            "ROUND " +
+              (this.levelIndex + 1) +
+              " · " +
+              (this.q.kind === "whole"
+                ? "V = l × w × h"
+                : this.q.kind === "missing"
+                  ? "MISSING DIMENSION"
+                  : "FRACTIONAL EDGE"),
+          );
           this.promptT.setText(this.q.prompt);
           this.hintT.setText(this.q.hint);
           this.drawPrism(this.q.dims, this.q.dims.missing);
-          this.fbText.setText("Aim with ← →, then press Space to fire at the correct crate.");
+          this.fbText.setText(
+            "Aim with ← →, then press Space to fire at the correct crate.",
+          );
           this.spawnCrates();
           this.setSR(
-            this.q.prompt + " " + this.q.hint + " Crates: " + this.q.labels.join(", ") + ".",
+            this.q.prompt +
+              " " +
+              this.q.hint +
+              " Crates: " +
+              this.q.labels.join(", ") +
+              ".",
           );
         }
 
@@ -761,8 +1026,12 @@
               .rectangle(0, 0, 82, 58, C.crate)
               .setStrokeStyle(3, C.panelEdge);
             // crate cross-slats for a wooden look
-            const slatA = this.add.line(0, 0, -41, -29, 41, 29, 0x2a5a44).setLineWidth(1.5);
-            const slatB = this.add.line(0, 0, 41, -29, -41, 29, 0x2a5a44).setLineWidth(1.5);
+            const slatA = this.add
+              .line(0, 0, -41, -29, 41, 29, 0x2a5a44)
+              .setLineWidth(1.5);
+            const slatB = this.add
+              .line(0, 0, 41, -29, -41, 29, 0x2a5a44)
+              .setLineWidth(1.5);
             const lab = this.add
               .text(0, 0, label, {
                 fontFamily: "Segoe UI, sans-serif",
@@ -861,7 +1130,11 @@
           this.shell = s;
           this.aimGfx.clear();
           if (!reducedMotion()) {
-            this.tweens.add({ targets: this.barrel, scaleY: { from: 0.82, to: 1 }, duration: 160 });
+            this.tweens.add({
+              targets: this.barrel,
+              scaleY: { from: 0.82, to: 1 },
+              duration: 160,
+            });
           }
         }
 
@@ -876,17 +1149,25 @@
             this.solved++;
             const gain = 100 + Math.min(this.streak, 5) * 20;
             this.score += gain;
-            this.fbText.setColor("#4fd18b").setText("✓ +" + gain + "   " + this.q.why);
+            this.fbText
+              .setColor("#4fd18b")
+              .setText("✓ +" + gain + "   " + this.q.why);
             this.burst(crate.x, crate.y, C.good);
             this.setSR("Correct. " + this.q.why);
           } else {
             crate.box.setFillStyle(0x5a1c1c).setStrokeStyle(3, C.bad);
             this.streak = 0;
             this.lives--;
-            this.fbText.setColor("#ff8f8f").setText(
-              "✗ That crate was " + crate.label + ". The answer is " +
-                this.q.answerStr + ". " + this.q.why,
-            );
+            this.fbText
+              .setColor("#ff8f8f")
+              .setText(
+                "✗ That crate was " +
+                  crate.label +
+                  ". The answer is " +
+                  this.q.answerStr +
+                  ". " +
+                  this.q.why,
+              );
             this.burst(crate.x, crate.y, C.bad);
             if (!reducedMotion()) this.cameras.main.shake(180, 0.006);
             this.setSR("Not quite. " + this.q.why);
@@ -898,7 +1179,9 @@
         resolveMissShot() {
           // a clean miss costs nothing but lets the student re-aim
           if (this.locked) return;
-          this.fbText.setColor("#ffcd4d").setText("Missed every crate — aim again!");
+          this.fbText
+            .setColor("#ffcd4d")
+            .setText("Missed every crate — aim again!");
           this.setSR("The shell missed. Aim again and fire.");
         }
 
@@ -919,7 +1202,10 @@
             gravityY: 260,
             lifespan: 700,
             quantity: 16,
-            tint: color === C.good ? [0x4fd18b, 0xd4952a, 0x1a6fb5] : [0xff6b6b, 0xc45a3c],
+            tint:
+              color === C.good
+                ? [0x4fd18b, 0xd4952a, 0x1a6fb5]
+                : [0xff6b6b, 0xc45a3c],
           });
           this.time.delayedCall(750, () => p.destroy());
         }
@@ -941,13 +1227,20 @@
           );
           ov.add(
             this.add
-              .text(W / 2, 292, "Volume round " + (this.levelIndex + 1) + " blasted!\n+250 bonus", {
-                fontFamily: "Segoe UI, sans-serif",
-                fontSize: "20px",
-                color: "#eafff4",
-                align: "center",
-                lineSpacing: 6,
-              })
+              .text(
+                W / 2,
+                292,
+                "Volume round " +
+                  (this.levelIndex + 1) +
+                  " blasted!\n+250 bonus",
+                {
+                  fontFamily: "Segoe UI, sans-serif",
+                  fontSize: "20px",
+                  color: "#eafff4",
+                  align: "center",
+                  lineSpacing: 6,
+                },
+              )
               .setOrigin(0.5),
           );
           this.confetti();
@@ -1077,7 +1370,11 @@
             )
             .setOrigin(0.5);
           this.btn(cx - 150, 460, "↻  PLAY AGAIN", 0x1f7a52, () =>
-            this.scene.start("Game", { level: 0, score: 0, lives: START_LIVES }),
+            this.scene.start("Vocab", {
+              level: 0,
+              score: 0,
+              lives: START_LIVES,
+            }),
           );
           this.btn(cx + 150, 460, "🏠  ALL GAMES", 0x355a86, () => {
             window.location.href = "/math/games/";
@@ -1086,7 +1383,11 @@
           if (el)
             el.textContent =
               (this.won ? "Volume mastered" : "Out of lives") +
-              ". Final score " + this.score + ", " + stars + " stars.";
+              ". Final score " +
+              this.score +
+              ", " +
+              stars +
+              " stars.";
         }
         btn(x, y, label, color, cb) {
           const b = this.add
@@ -1115,7 +1416,7 @@
         parent: document.body,
         backgroundColor: "#0a241b",
         scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-        scene: [BootScene, TitleScene, GameScene, ResultScene],
+        scene: [BootScene, TitleScene, VocabScene, GameScene, ResultScene],
       };
       const vbGame = new Phaser.Game(config);
 

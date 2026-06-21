@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Decimal Dash — Lessons 1.4–1.7 Game | Neft Teacher</title>
     <meta
       name="description"
@@ -159,8 +159,9 @@
         init() {
           if (!this.ctx)
             try {
-              this.ctx = new (window.AudioContext ||
-                window.webkitAudioContext)();
+              this.ctx = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
             } catch (e) {}
         },
         play(t, f, d, v = 0.2) {
@@ -309,13 +310,16 @@
           }
           const ans = r2(add ? a + b : a - b);
           const g = buildGates(ans, () => {
-            const w = r2(ans + (randInt(1, 9) / 10) * (Math.random() < 0.5 ? 1 : -1));
+            const w = r2(
+              ans + (randInt(1, 9) / 10) * (Math.random() < 0.5 ? 1 : -1),
+            );
             return w > 0 ? w : r2(ans + randInt(1, 9) / 10);
           });
           return {
             tag: "Add & Subtract Decimals",
             prompt: fmt(a) + (add ? " + " : " − ") + fmt(b),
-            why: fmt(a) + (add ? " + " : " − ") + fmt(b) + " = " + fmt(ans) + ".",
+            why:
+              fmt(a) + (add ? " + " : " − ") + fmt(b) + " = " + fmt(ans) + ".",
             gates: g.labels,
             correctIndex: g.correctIndex,
           };
@@ -323,11 +327,15 @@
         // round 3
         const mul = Math.random() < 0.5;
         if (mul) {
-          const x = r2(randInt(2, 9) / 10 + (Math.random() < 0.5 ? randInt(1, 4) : 0));
+          const x = r2(
+            randInt(2, 9) / 10 + (Math.random() < 0.5 ? randInt(1, 4) : 0),
+          );
           const y = randInt(2, 9);
           const ans = r2(x * y);
           const g = buildGates(ans, () => {
-            const w = r2(ans + (randInt(1, 9) / 10) * (Math.random() < 0.5 ? 1 : -1));
+            const w = r2(
+              ans + (randInt(1, 9) / 10) * (Math.random() < 0.5 ? 1 : -1),
+            );
             return w > 0 ? w : r2(ans + randInt(1, 9) / 10);
           });
           return {
@@ -342,7 +350,9 @@
           const dv = randInt(2, 6);
           const dividend = r2(quo * dv);
           const g = buildGates(quo, () => {
-            const w = r2(quo + (randInt(1, 9) / 10) * (Math.random() < 0.5 ? 1 : -1));
+            const w = r2(
+              quo + (randInt(1, 9) / 10) * (Math.random() < 0.5 ? 1 : -1),
+            );
             return w > 0 ? w : r2(quo + randInt(1, 9) / 10);
           });
           return {
@@ -422,10 +432,15 @@
             })
             .setOrigin(0.5);
           this.add
-            .text(cx, 244, "Lane Runner  ·  Lessons 1.4–1.7  ·  6.NS.2 / 6.NS.3", {
-              fontSize: "15px",
-              color: "#9fc6e0",
-            })
+            .text(
+              cx,
+              244,
+              "Lane Runner  ·  Lessons 1.4–1.7  ·  6.NS.2 / 6.NS.3",
+              {
+                fontSize: "15px",
+                color: "#9fc6e0",
+              },
+            )
             .setOrigin(0.5);
           this.add
             .text(
@@ -436,10 +451,15 @@
             )
             .setOrigin(0.5);
           this.add
-            .text(cx, 356, "← → or A/D to change lanes   ·   tap a lane on touch", {
-              fontSize: "14px",
-              color: "#6b97b3",
-            })
+            .text(
+              cx,
+              356,
+              "← → or A/D to change lanes   ·   tap a lane on touch",
+              {
+                fontSize: "14px",
+                color: "#6b97b3",
+              },
+            )
             .setOrigin(0.5);
 
           const hs = localStorage.getItem(LS_KEY);
@@ -475,7 +495,7 @@
             SFX.init();
             SFX.tick();
             this.cameras.main.fadeOut(300);
-            this.time.delayedCall(300, () => this.scene.start("Game"));
+            this.time.delayedCall(300, () => this.scene.start("Vocab"));
           };
           btn.on("pointerover", () => btn.setFillStyle(0x2080cc));
           btn.on("pointerout", () => btn.setFillStyle(0x1a6fb5));
@@ -496,6 +516,178 @@
           hub.on("pointerdown", () => (window.location.href = "/math/games/"));
 
           this.cameras.main.fadeIn(400);
+        }
+      }
+
+      // ════════════════════════════════════════════════════════════════════
+      // VOCAB GATE — shown BEFORE the first round (Title → Vocab → Game).
+      //   Repo rule: term + student-facing (Level 1) definition + image/emoji
+      //   for each key word, BEFORE play. No giveaways: these define the math
+      //   vocabulary, they do not reveal any answer to a gate.
+      //   On replay the Result scene jumps straight to "Game", so the gate
+      //   shows on first play only (skippable on replay).
+      // ════════════════════════════════════════════════════════════════════
+      const VOCAB_TERMS = [
+        {
+          term: "Quotient",
+          emoji: "➗",
+          def: "The answer you get when you divide. In 48 ÷ 6 = 8, the quotient is 8.",
+        },
+        {
+          term: "Decimal",
+          emoji: "🔢",
+          def: "A number with a dot that shows parts smaller than one, like 3.5 or 0.07.",
+        },
+        {
+          term: "Decimal point",
+          emoji: "📍",
+          def: "The dot in a decimal. Keep the points lined up when you add or subtract.",
+        },
+        {
+          term: "Place value",
+          emoji: "🏷️",
+          def: "What each digit is worth by its spot — tenths, hundredths, ones, tens.",
+        },
+      ];
+
+      class VocabScene extends Phaser.Scene {
+        constructor() {
+          super("Vocab");
+        }
+        init() {
+          this.reduce =
+            window.matchMedia &&
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          this.i = 0;
+        }
+        create() {
+          const cx = W / 2;
+          this.add.rectangle(cx, H / 2, W, H, 0x102338);
+          this.add
+            .text(cx, 70, "WORDS TO KNOW FIRST", {
+              fontSize: "30px",
+              fontFamily: "Impact, sans-serif",
+              color: "#5ad1ff",
+              stroke: "#0a1626",
+              strokeThickness: 5,
+            })
+            .setOrigin(0.5);
+
+          // Card backdrop
+          this.add
+            .rectangle(cx, 320, 560, 360, 0x0a1626, 0.92)
+            .setStrokeStyle(2, 0x1f4a5b);
+
+          this.stepText = this.add
+            .text(cx, 168, "", {
+              fontSize: "13px",
+              color: "#9fc6e0",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          this.emojiText = this.add
+            .text(cx, 232, "", { fontSize: "72px" })
+            .setOrigin(0.5);
+          this.termText = this.add
+            .text(cx, 312, "", {
+              fontSize: "34px",
+              fontStyle: "bold",
+              color: "#d4952a",
+            })
+            .setOrigin(0.5);
+          this.defText = this.add
+            .text(cx, 388, "", {
+              fontSize: "18px",
+              color: "#dff1f0",
+              align: "center",
+              wordWrap: { width: 500 },
+              lineSpacing: 4,
+            })
+            .setOrigin(0.5);
+
+          // Dots
+          this.dots = [];
+          const dn = VOCAB_TERMS.length;
+          for (let n = 0; n < dn; n++) {
+            const dx = cx - ((dn - 1) * 18) / 2 + n * 18;
+            this.dots.push(this.add.circle(dx, 452, 5, 0x33505a));
+          }
+
+          // Back button
+          this.backBtn = this.add
+            .rectangle(cx - 95, 510, 150, 50, 0x223a48)
+            .setInteractive({ useHandCursor: true });
+          this.backTxt = this.add
+            .text(cx - 95, 510, "← Back", {
+              fontSize: "18px",
+              fontStyle: "bold",
+              color: "#9fc6e0",
+            })
+            .setOrigin(0.5);
+          this.backBtn.on("pointerover", () =>
+            this.backBtn.setFillStyle(0x2c4c5c),
+          );
+          this.backBtn.on("pointerout", () =>
+            this.backBtn.setFillStyle(0x223a48),
+          );
+          this.backBtn.on("pointerdown", () => this.go(-1));
+
+          // Next / Start button
+          this.nextBtn = this.add
+            .rectangle(cx + 95, 510, 150, 50, 0x1a6fb5)
+            .setInteractive({ useHandCursor: true });
+          this.nextTxt = this.add
+            .text(cx + 95, 510, "Next →", {
+              fontSize: "18px",
+              fontStyle: "bold",
+              color: "#eaf6ff",
+            })
+            .setOrigin(0.5);
+          this.nextBtn.on("pointerover", () =>
+            this.nextBtn.setFillStyle(0x2080cc),
+          );
+          this.nextBtn.on("pointerout", () =>
+            this.nextBtn.setFillStyle(0x1a6fb5),
+          );
+          this.nextBtn.on("pointerdown", () => this.go(1));
+
+          this.input.keyboard.on("keydown-RIGHT", () => this.go(1));
+          this.input.keyboard.on("keydown-LEFT", () => this.go(-1));
+          this.input.keyboard.on("keydown-SPACE", () => this.go(1));
+          this.input.keyboard.on("keydown-ENTER", () => this.go(1));
+
+          this.render();
+          this.cameras.main.fadeIn(350);
+        }
+        render() {
+          const t = VOCAB_TERMS[this.i];
+          const last = this.i === VOCAB_TERMS.length - 1;
+          this.stepText.setText(
+            "Key word " + (this.i + 1) + " of " + VOCAB_TERMS.length,
+          );
+          this.emojiText.setText(t.emoji);
+          this.termText.setText(t.term);
+          this.defText.setText(t.def);
+          this.nextTxt.setText(last ? "Start driving ▶" : "Next →");
+          this.backBtn.setVisible(this.i > 0);
+          this.backTxt.setVisible(this.i > 0);
+          this.dots.forEach((d, n) =>
+            d.setFillStyle(n === this.i ? 0x5ad1ff : 0x33505a),
+          );
+          srSay(t.term + ". " + t.def);
+        }
+        go(dir) {
+          SFX.init();
+          SFX.tick();
+          const next = this.i + dir;
+          if (next < 0) return;
+          if (next >= VOCAB_TERMS.length) {
+            this.cameras.main.fadeOut(300);
+            this.time.delayedCall(300, () => this.scene.start("Game"));
+            return;
+          }
+          this.i = next;
+          this.render();
         }
       }
 
@@ -589,7 +781,9 @@
 
           // Car
           this.carY = H - 80;
-          this.car = this.add.container(LANE_X[this.lane], this.carY).setDepth(15);
+          this.car = this.add
+            .container(LANE_X[this.lane], this.carY)
+            .setDepth(15);
           const body = this.add.graphics();
           body.fillStyle(0xd43c3c, 1);
           body.fillRoundedRect(-22, -34, 44, 68, 10);
@@ -997,7 +1191,9 @@
           hub.on("pointerout", () => hub.setFillStyle(0x223a48));
           hub.on("pointerdown", () => (window.location.href = "/math/games/"));
 
-          this.input.keyboard.on("keydown-SPACE", () => this.scene.start("Game"));
+          this.input.keyboard.on("keydown-SPACE", () =>
+            this.scene.start("Game"),
+          );
 
           if (won && stars >= 2 && !this.reduce) {
             const p = this.add
@@ -1021,7 +1217,13 @@
         }
       }
 
-      config.scene = [BootScene, TitleScene, GameScene, ResultScene];
+      config.scene = [
+        BootScene,
+        TitleScene,
+        VocabScene,
+        GameScene,
+        ResultScene,
+      ];
       const game = new Phaser.Game(config);
 
       game.events.once("ready", function () {

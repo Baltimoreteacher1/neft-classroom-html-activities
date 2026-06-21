@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="/assets/shared.css" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Temperature Explorer — 6.NS.C.5</title>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
     <script>
@@ -46,12 +46,12 @@
       }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
   <body>
     <div id="game-container"></div>
     <script>
@@ -957,11 +957,12 @@
             .setScrollFactor(0)
             .setDepth(101);
 
-          // Hearts
+          // Hearts (count matches the selected mode's starting lives)
           this.heartIcons = [];
-          for (let i = 0; i < 3; i++) {
+          this.maxLives = this.lives;
+          for (let i = 0; i < this.maxLives; i++) {
             const h = this.add
-              .image(W - 70 + i * 22, 36, "heart")
+              .image(W - 70 - (this.maxLives - 1 - i) * 22, 36, "heart")
               .setScale(1.3)
               .setScrollFactor(0)
               .setDepth(101);
@@ -1222,8 +1223,8 @@
 
           // Calculate dynamic range and steps
           let maxAbs = Math.max(Math.abs(q.ans), 10);
-          q.opts.forEach(o => maxAbs = Math.max(maxAbs, Math.abs(o)));
-          
+          q.opts.forEach((o) => (maxAbs = Math.max(maxAbs, Math.abs(o))));
+
           let qRange = 10;
           let snapStep = 1;
           if (maxAbs > 1000) {
@@ -1275,7 +1276,10 @@
           this.qElements.push(qText);
 
           // Drag Selector (starts at 0)
-          const selectorCont = this.add.container(W / 2, nlY).setDepth(605).setScrollFactor(0);
+          const selectorCont = this.add
+            .container(W / 2, nlY)
+            .setDepth(605)
+            .setScrollFactor(0);
           this.qElements.push(selectorCont);
 
           const pointer = this.add.graphics();
@@ -1285,14 +1289,16 @@
           pointer.strokeCircle(0, 0, 9);
           selectorCont.add(pointer);
 
-          const valText = this.add.text(0, -24, "0", {
-            fontSize: "18px",
-            fontFamily: "Segoe UI, Arial, sans-serif",
-            fontStyle: "bold",
-            color: "#fbbf24",
-            stroke: "#000000",
-            strokeThickness: 3
-          }).setOrigin(0.5);
+          const valText = this.add
+            .text(0, -24, "0", {
+              fontSize: "18px",
+              fontFamily: "Segoe UI, Arial, sans-serif",
+              fontStyle: "bold",
+              color: "#fbbf24",
+              stroke: "#000000",
+              strokeThickness: 3,
+            })
+            .setOrigin(0.5);
           selectorCont.add(valText);
 
           // Make draggable
@@ -1308,28 +1314,29 @@
             sndMove();
           };
 
-          selectorCont.on('drag', (pointer, dragX, dragY) => {
+          selectorCont.on("drag", (pointer, dragX, dragY) => {
             const minX = W / 2 - (tw / 2 - 20);
             const maxX = W / 2 + (tw / 2 - 20);
             const clampedX = Phaser.Math.Clamp(dragX, minX, maxX);
             // Translate position to value snapped to snapStep
-            const rawVal = ((clampedX - (W / 2)) / (tw / 2 - 20)) * qRange;
+            const rawVal = ((clampedX - W / 2) / (tw / 2 - 20)) * qRange;
             const snappedVal = Math.round(rawVal / snapStep) * snapStep;
             updateSelectorFromValue(snappedVal);
           });
 
           // Click zone to position selector
-          const clickZone = this.add.rectangle(W / 2, nlY, tw + 40, 50, 0x000000, 0.001)
+          const clickZone = this.add
+            .rectangle(W / 2, nlY, tw + 40, 50, 0x000000, 0.001)
             .setScrollFactor(0)
             .setDepth(601)
             .setInteractive({ useHandCursor: true });
           this.qElements.push(clickZone);
 
-          clickZone.on('pointerdown', (pointer) => {
+          clickZone.on("pointerdown", (pointer) => {
             const minX = W / 2 - (tw / 2 - 20);
             const maxX = W / 2 + (tw / 2 - 20);
             const clampedX = Phaser.Math.Clamp(pointer.x, minX, maxX);
-            const rawVal = ((clampedX - (W / 2)) / (tw / 2 - 20)) * qRange;
+            const rawVal = ((clampedX - W / 2) / (tw / 2 - 20)) * qRange;
             const snappedVal = Math.round(rawVal / snapStep) * snapStep;
             updateSelectorFromValue(snappedVal);
           });
@@ -1356,10 +1363,18 @@
           const onKeyDown = (event) => {
             if (!this.questionActive) return;
             const currentVal = parseInt(valText.text, 10);
-            if (event.key === "ArrowLeft" || event.key === "a" || event.key === "A") {
+            if (
+              event.key === "ArrowLeft" ||
+              event.key === "a" ||
+              event.key === "A"
+            ) {
               event.preventDefault();
               updateSelectorFromValue(currentVal - snapStep);
-            } else if (event.key === "ArrowRight" || event.key === "d" || event.key === "D") {
+            } else if (
+              event.key === "ArrowRight" ||
+              event.key === "d" ||
+              event.key === "D"
+            ) {
               event.preventDefault();
               updateSelectorFromValue(currentVal + snapStep);
             } else if (event.key === "Enter") {
@@ -1400,7 +1415,7 @@
                   color: "#4ade80",
                   fontStyle: "bold",
                   stroke: "#000000",
-                  strokeThickness: 3
+                  strokeThickness: 3,
                 })
                 .setOrigin(0.5)
                 .setScrollFactor(0)
@@ -1420,16 +1435,21 @@
 
               // Draw correct marker
               const correctX = W / 2 + (q.ans / qRange) * (tw / 2 - 20);
-              const correctMarker = this.add.circle(correctX, nlY, 7, 0x4ade80)
+              const correctMarker = this.add
+                .circle(correctX, nlY, 7, 0x4ade80)
                 .setScrollFactor(0)
                 .setDepth(604);
-              const correctLabel = this.add.text(correctX, nlY + 18, `Correct: ${q.ans}`, {
-                fontSize: "12px",
-                color: "#4ade80",
-                fontStyle: "bold",
-                stroke: "#000000",
-                strokeThickness: 3
-              }).setOrigin(0.5, 0).setDepth(604).setScrollFactor(0);
+              const correctLabel = this.add
+                .text(correctX, nlY + 18, `Correct: ${q.ans}`, {
+                  fontSize: "12px",
+                  color: "#4ade80",
+                  fontStyle: "bold",
+                  stroke: "#000000",
+                  strokeThickness: 3,
+                })
+                .setOrigin(0.5, 0)
+                .setDepth(604)
+                .setScrollFactor(0);
               this.qElements.push(correctMarker, correctLabel);
 
               const fb = this.add
@@ -1438,7 +1458,7 @@
                   color: "#f87171",
                   fontStyle: "bold",
                   stroke: "#000000",
-                  strokeThickness: 3
+                  strokeThickness: 3,
                 })
                 .setOrigin(0.5)
                 .setScrollFactor(0)
@@ -1454,7 +1474,7 @@
                 wordWrap: { width: 540 },
                 align: "center",
                 stroke: "#000000",
-                strokeThickness: 3
+                strokeThickness: 3,
               })
               .setOrigin(0.5)
               .setScrollFactor(0)
@@ -1480,11 +1500,20 @@
           submitBtn.on("pointerout", () => submitBtn.setScale(1.1));
 
           // Guide line
-          const guideTxt = this.add.text(W / 2, 310, "Drag scale pointer or Tap  |  Use ←/→ and ENTER keys", {
-            fontSize: "12px",
-            color: "#94a3b8",
-            fontStyle: "italic"
-          }).setOrigin(0.5).setScrollFactor(0).setDepth(601);
+          const guideTxt = this.add
+            .text(
+              W / 2,
+              310,
+              "Drag scale pointer or Tap  |  Use ←/→ and ENTER keys",
+              {
+                fontSize: "12px",
+                color: "#94a3b8",
+                fontStyle: "italic",
+              },
+            )
+            .setOrigin(0.5)
+            .setScrollFactor(0)
+            .setDepth(601);
           this.qElements.push(guideTxt);
         }
 
@@ -1535,8 +1564,13 @@
           container.push(zLabel);
 
           // Draw tick marks at +/- half range and end points
-          const ticks = [-qRange, -Math.round(qRange / 2), Math.round(qRange / 2), qRange];
-          ticks.forEach(v => {
+          const ticks = [
+            -qRange,
+            -Math.round(qRange / 2),
+            Math.round(qRange / 2),
+            qRange,
+          ];
+          ticks.forEach((v) => {
             const px = W / 2 + (v / qRange) * (tw / 2 - 20);
             const tick = this.add
               .rectangle(px, y, 1, 12, 0x64748b)
@@ -1544,7 +1578,10 @@
               .setDepth(601);
             container.push(tick);
             const lbl = this.add
-              .text(px, y + 16, `${v > 0 ? '+' : ''}${v}`, { fontSize: "10px", color: "#64748b" })
+              .text(px, y + 16, `${v > 0 ? "+" : ""}${v}`, {
+                fontSize: "10px",
+                color: "#64748b",
+              })
               .setOrigin(0.5, 0)
               .setScrollFactor(0)
               .setDepth(601);
@@ -1556,7 +1593,7 @@
             .text(W / 2 - tw / 2, y - 18, "NEGATIVE (-)", {
               fontSize: "10px",
               color: "#38bdf8",
-              fontStyle: "bold"
+              fontStyle: "bold",
             })
             .setScrollFactor(0)
             .setDepth(601);
@@ -1564,7 +1601,7 @@
             .text(W / 2 + tw / 2, y - 18, "POSITIVE (+)", {
               fontSize: "10px",
               color: "#ef4444",
-              fontStyle: "bold"
+              fontStyle: "bold",
             })
             .setOrigin(1, 0)
             .setScrollFactor(0)
@@ -1579,7 +1616,7 @@
           if (this.combo > 1) this.comboText.setText(`${this.combo}x Combo!`);
           else this.comboText.setText("");
 
-          for (let i = 0; i < 3; i++)
+          for (let i = 0; i < this.heartIcons.length; i++)
             this.heartIcons[i].setAlpha(i < this.lives ? 1 : 0.2);
 
           // Thermometer gauge
@@ -1666,7 +1703,16 @@
           this.mode = data.mode || 0;
           this.level = data.level || 1;
           this.score = 0;
-          this.lives = 3;
+          // Mode 0 Explorer: relaxed (more lives, more time)
+          // Mode 1 Challenge: faster (fewer lives, less time)
+          // Mode 2 Survival: endurance (1 life, longest time)
+          const modeConfig = [
+            { lives: 5, time: 90 },
+            { lives: 3, time: 60 },
+            { lives: 1, time: 120 },
+          ];
+          const cfg = modeConfig[this.mode] || modeConfig[0];
+          this.lives = cfg.lives;
           this.combo = 0;
           this.maxCombo = 0;
           this.temperature = 0;
@@ -1675,7 +1721,7 @@
           this.questionsTotal = 0;
           this.questionActive = false;
           this.canMove = true;
-          this.timeLeft = 90 + this.level * 10;
+          this.timeLeft = cfg.time + this.level * 10;
         }
       }
 
@@ -1868,10 +1914,10 @@
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
-</body>
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
 </html>
