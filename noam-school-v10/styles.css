@@ -1,5 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+
 /* Noam School — Focus & Plan
-   Executive-function planner. Calm, low-distraction, fully offline (system fonts only). */
+   Executive-function planner. Calm, low-distraction. */
+h1, h2, h3, h4, h5, h6, .brand h1, .brand p, .btn, .ftitle, .gtitle, .view-title, .section-title, .tabbar button {
+  font-family: "Outfit", "Inter", system-ui, -apple-system, sans-serif;
+}
 
 :root {
   --navy: #1e293b;
@@ -93,11 +98,10 @@ html {
 body {
   margin: 0;
   font-family:
+    "Plus Jakarta Sans",
     "Inter",
     system-ui,
     -apple-system,
-    "Segoe UI",
-    Roboto,
     sans-serif;
   background: linear-gradient(180deg, var(--bg-2), var(--bg));
   background-attachment: fixed;
@@ -330,12 +334,8 @@ html[data-theme="dark"] .btn.primary {
 /* ---- Right Now hero ---- */
 .hero {
   border-radius: var(--radius-lg);
-  background: linear-gradient(
-    135deg,
-    var(--navy-deep),
-    var(--navy) 55%,
-    #0e4b59
-  );
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95)), radial-gradient(circle at top right, var(--teal-bright), transparent 70%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   color: #fff;
   padding: 24px;
   box-shadow: var(--shadow);
@@ -343,8 +343,25 @@ html[data-theme="dark"] .btn.primary {
   position: relative;
   overflow: hidden;
 }
+.hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -50%;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.05), transparent);
+  transform: skewX(-25deg);
+  pointer-events: none;
+  animation: shine 8s infinite linear;
+}
+@keyframes shine {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
 html[data-theme="dark"] .hero {
-  background: linear-gradient(135deg, #08131f, #102438 55%, #0c3a44);
+  background: linear-gradient(135deg, rgba(16, 36, 56, 0.9), rgba(8, 19, 31, 0.95)), radial-gradient(circle at top right, var(--teal-bright), transparent 70%);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 html[data-theme="contrast"] .hero {
   background: #000;
@@ -442,11 +459,18 @@ html[data-theme="contrast"] .hero .now-actions .btn {
   align-items: start;
 }
 .card {
-  background: var(--paper);
-  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--paper) 70%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid color-mix(in srgb, var(--line) 40%, transparent);
   border-radius: var(--radius);
   padding: 16px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.04);
+  transition: border-color var(--motion), box-shadow var(--motion);
+}
+.card:hover {
+  border-color: color-mix(in srgb, var(--teal-bright) 45%, transparent);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
 }
 .card .head {
   display: flex;
@@ -468,11 +492,18 @@ html[data-theme="contrast"] .hero .now-actions .btn {
 
 /* task items */
 .item {
-  border: 1px solid var(--line);
-  background: var(--bg-2);
+  border: 1px solid color-mix(in srgb, var(--line) 40%, transparent);
+  background: color-mix(in srgb, var(--bg-2) 60%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   border-radius: 14px;
   padding: 12px;
   margin: 9px 0;
+  transition: border-color var(--motion), box-shadow var(--motion), transform var(--motion);
+}
+.item:hover {
+  border-color: color-mix(in srgb, var(--teal-bright) 35%, transparent);
+  transform: translateY(-1px);
 }
 html[data-theme="dark"] .item {
   background: rgba(255, 255, 255, 0.03);
@@ -789,20 +820,24 @@ html[data-theme="dark"] .note {
 /* ---- Bottom nav ---- */
 .tabbar {
   position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  width: min(calc(100% - 32px), 640px);
   z-index: 50;
-  background: color-mix(in srgb, var(--paper) 92%, transparent);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  border-top: 1px solid var(--line);
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--paper) 80%, transparent);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid color-mix(in srgb, var(--line) 40%, transparent);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  padding: 6px 12px;
   display: flex;
   justify-content: space-around;
-  padding: 6px max(8px, env(safe-area-inset-left))
-    calc(6px + env(safe-area-inset-bottom));
+  transition: transform var(--motion), background var(--motion);
 }
 .tabbar button {
+  position: relative;
   border: none;
   background: none;
   cursor: pointer;
@@ -817,6 +852,19 @@ html[data-theme="dark"] .note {
   border-radius: 12px;
   min-width: 56px;
   min-height: 48px;
+  transition: color var(--motion), transform var(--motion);
+}
+.tabbar button::after {
+  content: "";
+  position: absolute;
+  bottom: 2px;
+  width: 16px;
+  height: 4px;
+  border-radius: 99px;
+  background: var(--teal);
+  opacity: 0;
+  transition: opacity var(--motion), transform var(--motion);
+  transform: scaleX(0.5);
 }
 .tabbar button .ic {
   font-size: 1.25rem;
@@ -827,6 +875,17 @@ html[data-theme="dark"] .note {
 }
 .tabbar button[aria-current="page"] .ic {
   transform: translateY(-1px);
+}
+.tabbar button[aria-current="page"]::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+.tabbar button:hover {
+  color: var(--teal-bright);
+  transform: scale(1.08);
+}
+.tabbar button:active {
+  transform: scale(0.95);
 }
 
 /* ---- Modal ---- */
@@ -1089,8 +1148,17 @@ html[data-theme="dark"] .toast {
   padding: 16px;
   height: auto;
   border-radius: var(--radius);
-  background: var(--paper);
-  box-shadow: var(--shadow-sm);
+  background: color-mix(in srgb, var(--paper) 70%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid color-mix(in srgb, var(--line) 40%, transparent);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.04);
+  transition: border-color var(--motion), box-shadow var(--motion), transform var(--motion);
+}
+.menu-tile:hover {
+  border-color: color-mix(in srgb, var(--teal-bright) 45%, transparent);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
 }
 .menu-tile .menu-ic {
   font-size: 1.5rem;
@@ -1286,18 +1354,18 @@ html[data-theme="dark"] .cal-day {
 .fab {
   position: fixed;
   right: max(16px, env(safe-area-inset-right));
-  bottom: calc(74px + env(safe-area-inset-bottom));
+  bottom: calc(96px + env(safe-area-inset-bottom));
   z-index: 60;
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  border: none;
-  background: var(--teal);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: linear-gradient(135deg, var(--teal-bright), var(--teal));
   color: #fff;
   font-size: 2rem;
   font-weight: 400;
   line-height: 1;
-  box-shadow: var(--shadow);
+  box-shadow: 0 8px 24px rgba(20, 184, 166, 0.3);
   cursor: pointer;
   display: grid;
   place-items: center;
@@ -1504,7 +1572,7 @@ html[data-theme="dark"] .capture-banner {
     grid-template-columns: 1fr;
   }
   .wrap {
-    padding-bottom: 96px;
+    padding-bottom: 120px;
   }
 }
 @media print {
@@ -1514,4 +1582,81 @@ html[data-theme="dark"] .capture-banner {
   .hero .now-actions {
     display: none;
   }
+}
+
+/* Ambient glow blobs */
+.ambient-glow {
+  position: fixed;
+  width: min(50vw, 450px);
+  height: min(50vw, 450px);
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.12;
+  z-index: -1;
+  pointer-events: none;
+  transition: background var(--motion), transform var(--motion);
+}
+.bg-blob-1 {
+  top: -100px;
+  left: -50px;
+  background: var(--teal);
+}
+.bg-blob-2 {
+  bottom: -100px;
+  right: -50px;
+  background: var(--navy);
+}
+html[data-theme="dark"] .ambient-glow {
+  opacity: 0.16;
+}
+html[data-theme="dark"] .bg-blob-1 {
+  background: var(--teal-bright);
+}
+html[data-theme="dark"] .bg-blob-2 {
+  background: var(--navy);
+}
+
+/* Ambient sound panel in focus overlay */
+.fambient-controls {
+  margin: 16px auto;
+  padding: 12px 18px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  max-width: 480px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+.fambient-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.fambient-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.fambient-buttons .btn {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  transition: all var(--motion);
+}
+.fambient-buttons .btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  transform: translateY(-1px);
+}
+.fambient-buttons .btn[aria-pressed="true"] {
+  background: #ffd790;
+  border-color: #ffd790;
+  color: var(--navy-deep);
+  box-shadow: 0 0 12px rgba(255, 215, 144, 0.4);
 }

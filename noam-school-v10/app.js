@@ -688,6 +688,220 @@
     window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
   }
 
+  // Confetti Particle System
+  function triggerConfetti() {
+    const canvas = document.createElement("canvas");
+    canvas.style.position = "fixed";
+    canvas.style.top = "0";
+    canvas.style.left = "0";
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
+    canvas.style.pointerEvents = "none";
+    canvas.style.zIndex = "9999";
+    document.body.appendChild(canvas);
+
+    const ctx = canvas.getContext("2d");
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    const resizeHandler = () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    };
+    window.addEventListener("resize", resizeHandler);
+
+    const colors = ["#14b8a6", "#3b82f6", "#f59e0b", "#ef4444", "#10b981", "#8b5cf6", "#ec4899"];
+    const particles = [];
+
+    for (let i = 0; i < 80; i++) {
+      particles.push({
+        x: width / 2,
+        y: height + 20,
+        vx: (Math.random() - 0.5) * 12,
+        vy: -Math.random() * 12 - 12,
+        r: Math.random() * 5 + 4,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        rotation: Math.random() * 360,
+        rotationSpeed: (Math.random() - 0.5) * 8,
+        opacity: 1,
+        gravity: 0.35,
+        friction: 0.98
+      });
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+      let alive = false;
+      for (const p of particles) {
+        p.vx *= p.friction;
+        p.vy += p.gravity;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.rotation += p.rotationSpeed;
+        p.opacity -= 0.015;
+
+        if (p.opacity > 0 && p.y < height + 50) {
+          alive = true;
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rotation * Math.PI) / 180);
+          ctx.globalAlpha = p.opacity;
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.r, -p.r, p.r * 2, p.r * 2);
+          ctx.restore();
+        }
+      }
+
+      if (alive) {
+        requestAnimationFrame(animate);
+      } else {
+        window.removeEventListener("resize", resizeHandler);
+        canvas.remove();
+      }
+    }
+    animate();
+  }
+
+  // Web Audio API Procedural Sound Engine
+  let audioCtx = null;
+  let ambientSource = null;
+  let ambientGain = null;
+  let focusTicksTimer = null;
+  let activeSoundType = "none"; // "none" | "rain" | "rumble" | "ticks"
+
+  function initAudio() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === "suspended") {
+      audioCtx.resume();
+    }
+  }
+
+  function createPinkNoiseBuffer(ctx, seconds = 4) {
+    const bufferSize = ctx.sampleRate * seconds;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+    for (let i = 0; i < bufferSize; i++) {
+      const white = Math.random() * 2 - 1;
+      b0 = 0.99886 * b0 + white * 0.0555179;
+      b1 = 0.99332 * b1 + white * 0.0750759;
+      b2 = 0.96900 * b2 + white * 0.1538520;
+      b3 = 0.86650 * b3 + white * 0.3104856;
+      b4 = 0.55000 * b4 + white * 0.5329522;
+      b5 = -0.7616 * b5 - white * 0.0168980;
+      data[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+      data[i] *= 0.11;
+      b6 = white * 0.115926;
+    }
+    return buffer;
+  }
+
+  function createBrownNoiseBuffer(ctx, seconds = 4) {
+    const bufferSize = ctx.sampleRate * seconds;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    let lastOut = 0.0;
+    for (let i = 0; i < bufferSize; i++) {
+      const white = Math.random() * 2 - 1;
+      data[i] = (lastOut + (0.02 * white)) / 1.02;
+      lastOut = data[i];
+      data[i] *= 3.5;
+    }
+    return buffer;
+  }
+
+  function stopAmbientSound() {
+    if (ambientSource) {
+      try { ambientSource.stop(); } catch {}
+      ambientSource.disconnect();
+      ambientSource = null;
+    }
+    if (ambientGain) {
+      ambientGain.disconnect();
+      ambientGain = null;
+    }
+    if (focusTicksTimer) {
+      clearInterval(focusTicksTimer);
+      focusTicksTimer = null;
+    }
+    activeSoundType = "none";
+  }
+
+  function playRain() {
+    stopAmbientSound();
+    initAudio();
+    const buffer = createPinkNoiseBuffer(audioCtx, 4);
+    ambientSource = audioCtx.createBufferSource();
+    ambientSource.buffer = buffer;
+    ambientSource.loop = true;
+
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.value = 1000;
+
+    ambientGain = audioCtx.createGain();
+    ambientGain.gain.value = 0.15;
+
+    ambientSource.connect(filter);
+    filter.connect(ambientGain);
+    ambientGain.connect(audioCtx.destination);
+    ambientSource.start();
+    activeSoundType = "rain";
+  }
+
+  function playRumble() {
+    stopAmbientSound();
+    initAudio();
+    const buffer = createBrownNoiseBuffer(audioCtx, 4);
+    ambientSource = audioCtx.createBufferSource();
+    ambientSource.buffer = buffer;
+    ambientSource.loop = true;
+
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.value = 400;
+
+    ambientGain = audioCtx.createGain();
+    ambientGain.gain.value = 0.22;
+
+    ambientSource.connect(filter);
+    filter.connect(ambientGain);
+    ambientGain.connect(audioCtx.destination);
+    ambientSource.start();
+    activeSoundType = "rumble";
+  }
+
+  function playFocusTicks() {
+    stopAmbientSound();
+    initAudio();
+    activeSoundType = "ticks";
+    function tick() {
+      if (activeSoundType !== "ticks" || !audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "sine";
+      osc.frequency.value = 800;
+      gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.06);
+    }
+    tick();
+    focusTicksTimer = setInterval(tick, 1000);
+  }
+
+  function updateAmbientSoundUI(soundType) {
+    const buttons = document.querySelectorAll("#fAmbientControls button[data-act='focus-sound']");
+    buttons.forEach((btn) => {
+      const isPressed = btn.dataset.arg === soundType;
+      btn.setAttribute("aria-pressed", isPressed ? "true" : "false");
+    });
+  }
+
   function applyAppearance() {
     const s = state.settings;
     const root = document.documentElement;
@@ -1950,6 +2164,8 @@ Due May 31"></textarea>
       }
       this._lastFocus = document.activeElement;
       this.beginPhase("focus");
+      stopAmbientSound();
+      updateAmbientSoundUI("none");
       const ov = $("#focusOverlay");
       ov.classList.add("open");
       this.renderSteps();
@@ -2031,6 +2247,7 @@ Due May 31"></textarea>
         : `<p style="color:rgba(255,255,255,.7);text-align:center">No steps — just do the first small part.</p>`;
     },
     stop() {
+      stopAmbientSound();
       clearInterval(this.timer);
       // Give partial credit for time already focused if they stop early.
       if (this.phase === "focus") {
@@ -2495,8 +2712,8 @@ Due May 31"></textarea>
     startAuto() {
       this.stopAuto();
       if (!state.settings.sync.enabled) return;
-      // ~50s cadence: fresh enough to feel live, light on the KV endpoint.
-      this._interval = setInterval(() => this.autoPull(), 50000);
+      // ~10s cadence: fresh enough to feel live, light on the KV endpoint.
+      this._interval = setInterval(() => this.autoPull(), 10000);
     },
     stopAuto() {
       if (this._interval) {
@@ -3186,6 +3403,7 @@ Due May 31"></textarea>
     });
     save();
     toast("Done! +10 points 🎉");
+    triggerConfetti();
     if (focus.taskId === id) focus.stop();
     else render();
   }
@@ -3335,6 +3553,13 @@ Due May 31"></textarea>
       focus.beginPhase("focus");
     },
     "focus-stop": () => focus.stop(),
+    "focus-sound": (_, arg) => {
+      if (arg === "rain") playRain();
+      else if (arg === "rumble") playRumble();
+      else if (arg === "ticks") playFocusTicks();
+      else stopAmbientSound();
+      updateAmbientSoundUI(arg);
+    },
 
     "guide-start": (id) => guide.start(id),
     "guide-next": () => guide.markCurrent(),
@@ -4001,6 +4226,7 @@ ${name}`;
           state.points += 5;
           bumpActivity("routines");
           toast(`${r.name} complete! +5 🎉`);
+          triggerConfetti();
         }
         save();
         const label = box.parentElement.querySelector(".steptext");
@@ -4013,6 +4239,7 @@ ${name}`;
           if (box.checked) {
             state.points += 1;
             bumpActivity("tasks");
+            triggerConfetti();
           }
           save();
           const label = box.parentElement.querySelector(".steptext");
@@ -4149,6 +4376,12 @@ ${name}`;
       }
     }
     state = normalize(stored);
+    let newlyCreatedSync = false;
+    if (!state.settings.sync.code) {
+      state.settings.sync.code = genSyncCode();
+      state.settings.sync.enabled = true;
+      newlyCreatedSync = true;
+    }
     // Don't push local state to the cloud until after the first pull, so a stale
     // device can't overwrite newer remote data on startup.
     suppressPush = true;
@@ -4195,6 +4428,10 @@ ${name}`;
     // Save any code adopted from a deep link now that pushing is allowed.
     if (linkCode && linkCode.length >= 12) {
       save();
+      await cloud.push();
+    }
+    if (newlyCreatedSync) {
+      save({ touch: false, immediate: true });
       await cloud.push();
     }
 
