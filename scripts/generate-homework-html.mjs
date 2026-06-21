@@ -341,7 +341,14 @@ const TOPIC_GUIDE = {
 };
 
 // Blank, annotatable manipulatives (families draw on / print). Static by design.
-const SVG_NUMBER_LINE = `<svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/>${[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => { const x = 30 + i * 33; return `<line x1="${x}" y1="28" x2="${x}" y2="40" stroke="#12355b" stroke-width="1.5"/>`; }).join("")}</svg>`;
+const SVG_NUMBER_LINE = `<svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/>${[
+  0, 1, 2, 3, 4, 5, 6, 7, 8,
+]
+  .map((i) => {
+    const x = 30 + i * 33;
+    return `<line x1="${x}" y1="28" x2="${x}" y2="40" stroke="#12355b" stroke-width="1.5"/>`;
+  })
+  .join("")}</svg>`;
 
 const SVG_GRID = `<svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/>${Array.from({ length: 14 }, (_, i) => `<line x1="${10 + (i + 1) * 20}" y1="10" x2="${10 + (i + 1) * 20}" y2="150" stroke="#d6e2ee" stroke-width="1"/>`).join("")}${Array.from({ length: 6 }, (_, i) => `<line x1="10" y1="${10 + (i + 1) * 20}" x2="310" y2="${10 + (i + 1) * 20}" stroke="#d6e2ee" stroke-width="1"/>`).join("")}</svg>`;
 
@@ -752,9 +759,12 @@ function renderProblem(it, pIdx, topic = "fallback") {
   }
 
   const displayType = problemSubtype || type;
-  const computational = ["multiple-choice", "fill-table", "error-analysis", "open-response"].includes(
-    type,
-  );
+  const computational = [
+    "multiple-choice",
+    "fill-table",
+    "error-analysis",
+    "open-response",
+  ].includes(type);
   const scaffold = renderStepGuide(topic) + (computational ? renderWorkspace(topic, pIdx) : "");
   return `
     <section class="problem-section card" id="problem_${pIdx}" data-problem-type="${type}"${problemSubtype ? ` data-problem-subtype="${problemSubtype}"` : ""}>

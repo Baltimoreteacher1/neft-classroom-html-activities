@@ -37,8 +37,7 @@
   var prefersReduced = false;
   try {
     prefersReduced =
-      window.matchMedia &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   } catch (e) {
     /* default false */
   }
@@ -109,9 +108,7 @@
     current: null,
     cards: function () {
       try {
-        return Array.prototype.slice.call(
-          document.querySelectorAll(".q-card[data-q]"),
-        );
+        return Array.prototype.slice.call(document.querySelectorAll(".q-card[data-q]"));
       } catch (e) {
         return [];
       }
@@ -197,9 +194,7 @@
         var pct = Math.max(0, Math.min(1, this.remaining / total));
         // Conic ring drains clockwise as time passes.
         this.ringEl.style.background =
-          "conic-gradient(var(--ntf-accent) " +
-          pct * 360 +
-          "deg, var(--ntf-ring-track) 0)";
+          "conic-gradient(var(--ntf-accent) " + pct * 360 + "deg, var(--ntf-ring-track) 0)";
       }
       if (this.btnEl) {
         this.btnEl.textContent = this.running ? "Pause" : "Start";
@@ -365,20 +360,12 @@
     var menu = el("div", "ntf-menu");
     menu.setAttribute("role", "menu");
 
-    var btnFocus = el(
-      "button",
-      "ntf-item",
-      '<span aria-hidden="true">🔦</span> Focus mode',
-    );
+    var btnFocus = el("button", "ntf-item", '<span aria-hidden="true">🔦</span> Focus mode');
     btnFocus.type = "button";
     btnFocus.setAttribute("role", "menuitemcheckbox");
     btnFocus.setAttribute("aria-checked", "false");
 
-    var btnPad = el(
-      "button",
-      "ntf-item",
-      '<span aria-hidden="true">✏️</span> Scratchpad',
-    );
+    var btnPad = el("button", "ntf-item", '<span aria-hidden="true">✏️</span> Scratchpad');
     btnPad.type = "button";
     btnPad.setAttribute("role", "menuitem");
 
@@ -410,11 +397,7 @@
 
     // Scratchpad panel (separate fixed element so it can be dragged free)
     var pad = el("div", "ntf-pad");
-    var padHead = el(
-      "div",
-      "ntf-pad-head",
-      '<span class="ntf-pad-title">Scratchpad</span>',
-    );
+    var padHead = el("div", "ntf-pad-head", '<span class="ntf-pad-title">Scratchpad</span>');
     var padClose = el("button", "ntf-pad-close", "×");
     padClose.type = "button";
     padClose.setAttribute("aria-label", "Close scratchpad");
@@ -506,8 +489,7 @@
       window.NTFocus.__ui = true;
     } catch (e) {
       try {
-        if (window.console && console.warn)
-          console.warn("[lesson-focus] init failed", e);
+        if (window.console && console.warn) console.warn("[lesson-focus] init failed", e);
       } catch (e2) {
         /* never break the lesson */
       }

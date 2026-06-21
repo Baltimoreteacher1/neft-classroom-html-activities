@@ -74,10 +74,7 @@
     writeLS(LS_FILTERS, JSON.stringify(filters));
   }
   function reducedMotion() {
-    return (
-      window.matchMedia &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    );
+    return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
   function bringIntoView(node) {
     node.scrollIntoView({
@@ -285,8 +282,7 @@
       headers: { "x-teacher-key": key },
     }).then(function (r) {
       if (r.status === 401) throw new Error("Wrong teacher key.");
-      if (r.status === 503)
-        throw new Error("Gradebook not enabled on the server yet.");
+      if (r.status === 503) throw new Error("Gradebook not enabled on the server yet.");
       return r.json();
     });
   }
@@ -320,11 +316,7 @@
     card.appendChild(panel);
 
     function setCaret(btn, label, open) {
-      btn.innerHTML =
-        esc(label) +
-        ' <span aria-hidden="true">' +
-        (open ? "▴" : "▾") +
-        "</span>";
+      btn.innerHTML = esc(label) + ' <span aria-hidden="true">' + (open ? "▴" : "▾") + "</span>";
     }
     setCaret(btnCodes, "Saved Codes", false);
     setCaret(btnGrades, "Grades", false);
@@ -395,9 +387,7 @@
     inp.addEventListener("keydown", function (e) {
       if (e.key === "Enter") submit();
     });
-    g.appendChild(
-      el("span", null, "Enter your teacher key to view live data: "),
-    );
+    g.appendChild(el("span", null, "Enter your teacher key to view live data: "));
     g.appendChild(inp);
     g.appendChild(go);
     panel.appendChild(g);
@@ -406,8 +396,7 @@
 
   // ---- Saved Codes view -----------------------------------------------------
   function loadCodes(panel) {
-    panel.innerHTML =
-      '<div class="gbx-msg" role="status">Loading saved codes…</div>';
+    panel.innerHTML = '<div class="gbx-msg" role="status">Loading saved codes…</div>';
     Promise.all([fetchJson("roster"), ensureUnitMap()])
       .then(function (res) {
         var d = res[0];
@@ -508,11 +497,7 @@
         if (u && deriveUnit(r) !== u) return false;
         if (a && r.activity !== a) return false;
         if (c && r.section !== c) return false;
-        if (
-          q &&
-          (r.code + " " + r.name + " " + r.section).toLowerCase().indexOf(q) ===
-            -1
-        )
+        if (q && (r.code + " " + r.name + " " + r.section).toLowerCase().indexOf(q) === -1)
           return false;
         return true;
       });
@@ -523,9 +508,7 @@
         var ax = (x.activity || "").toLowerCase(),
           ay = (y.activity || "").toLowerCase();
         if (ax !== ay) return ax < ay ? -1 : 1;
-        return (x.name || "").toLowerCase() < (y.name || "").toLowerCase()
-          ? -1
-          : 1;
+        return (x.name || "").toLowerCase() < (y.name || "").toLowerCase() ? -1 : 1;
       });
       return rows;
     }
@@ -556,8 +539,7 @@
         return;
       }
       if (!rows.length) {
-        body.innerHTML =
-          '<div class="gbx-msg">No saved codes match these filters.</div>';
+        body.innerHTML = '<div class="gbx-msg">No saved codes match these filters.</div>';
         return;
       }
       var html =
@@ -569,8 +551,7 @@
         var grp = deriveUnit(r) + " · " + (r.activity || "—");
         if (grp !== lastGrp) {
           lastGrp = grp;
-          html +=
-            "<tr class='gbx-grp'><td colspan='5'>" + esc(grp) + "</td></tr>";
+          html += "<tr class='gbx-grp'><td colspan='5'>" + esc(grp) + "</td></tr>";
         }
         html +=
           "<tr><td><button type='button' class='gbx-code' data-copy='" +
@@ -629,8 +610,7 @@
 
   // ---- Grades view ----------------------------------------------------------
   function loadGrades(panel) {
-    panel.innerHTML =
-      '<div class="gbx-msg" role="status">Loading grades…</div>';
+    panel.innerHTML = '<div class="gbx-msg" role="status">Loading grades…</div>';
     fetchJson("grades")
       .then(function (d) {
         if (!d || !d.ok) throw new Error("Could not load grades.");
@@ -686,24 +666,16 @@
       f.cls = selClass.value;
       saveFilters();
       var rows = current();
-      count.textContent =
-        rows.length + " student" + (rows.length === 1 ? "" : "s");
+      count.textContent = rows.length + " student" + (rows.length === 1 ? "" : "s");
       if (!rows.length) {
-        scroll.innerHTML =
-          '<div class="gbx-msg">No grades yet for this class.</div>';
+        scroll.innerHTML = '<div class="gbx-msg">No grades yet for this class.</div>';
         return;
       }
       var html =
         "<table class='gbx-table gbx-frozen'><caption class='gbx-sr'>Grades by assignment</caption><thead><tr>" +
         (d.headers || [])
           .map(function (h, i) {
-            return (
-              "<th scope='col'" +
-              (i >= 2 ? " class='num'" : "") +
-              ">" +
-              esc(h) +
-              "</th>"
-            );
+            return "<th scope='col'" + (i >= 2 ? " class='num'" : "") + ">" + esc(h) + "</th>";
           })
           .join("") +
         "</tr></thead><tbody>";
@@ -713,10 +685,7 @@
           row
             .map(function (cell, i) {
               var v = cell === "" || cell == null ? "—" : cell;
-              var tag =
-                i === 0
-                  ? "th scope='row'"
-                  : "td" + (i >= 2 ? " class='num'" : "");
+              var tag = i === 0 ? "th scope='row'" : "td" + (i >= 2 ? " class='num'" : "");
               var close = i === 0 ? "th" : "td";
               var style = v === "—" ? " style='color:#94a3b8'" : "";
               return "<" + tag + style + ">" + esc(v) + "</" + close + ">";
@@ -773,16 +742,13 @@
     if (!card || card.querySelector(".gbx-toggle")) return;
     if (!card.querySelector(".mf-actions")) return;
     // Group the gradebook/codes card next to the AI Hub card (DOM move only).
-    var aiCard = document.querySelector(
-      ".ai-hub-feature:not(.class-brain-feature)",
-    );
+    var aiCard = document.querySelector(".ai-hub-feature:not(.class-brain-feature)");
     if (aiCard && aiCard !== card && aiCard.parentNode) {
       aiCard.insertAdjacentElement("afterend", card);
     }
     build(card);
   }
 
-  if (document.readyState === "loading")
-    document.addEventListener("DOMContentLoaded", init);
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
 })();

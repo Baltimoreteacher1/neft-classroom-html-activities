@@ -39,9 +39,7 @@
 
   var reduce = false;
   try {
-    reduce =
-      window.matchMedia &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   } catch (e) {}
 
   function muted() {
@@ -95,10 +93,8 @@
         var o = JSON.parse(raw);
         if (o && typeof o === "object") {
           state = Object.assign(defaultState(), o);
-          if (!state.lessons || typeof state.lessons !== "object")
-            state.lessons = {};
-          if (!state.badges || typeof state.badges !== "object")
-            state.badges = {};
+          if (!state.lessons || typeof state.lessons !== "object") state.lessons = {};
+          if (!state.badges || typeof state.badges !== "object") state.badges = {};
         }
       }
     } catch (e) {}
@@ -207,8 +203,7 @@
     },
   ];
   function badgeById(id) {
-    for (var i = 0; i < BADGES.length; i++)
-      if (BADGES[i].id === id) return BADGES[i];
+    for (var i = 0; i < BADGES.length; i++) if (BADGES[i].id === id) return BADGES[i];
     return null;
   }
 
@@ -264,10 +259,7 @@
       }
     } catch (e) {}
     try {
-      if (
-        window.NeftSaveResume &&
-        typeof window.NeftSaveResume.getTeacherSummary === "function"
-      ) {
+      if (window.NeftSaveResume && typeof window.NeftSaveResume.getTeacherSummary === "function") {
         var sm = window.NeftSaveResume.getTeacherSummary();
         if (sm && sm.studentName) return String(sm.studentName);
       }
@@ -336,10 +328,7 @@
   function ingest(event, props) {
     if (event === "item_attempt") {
       // Count a correct first-try item as XP toward the lifetime profile.
-      if (
-        props &&
-        (props.correct === true || props.first_try_correct === true)
-      ) {
+      if (props && (props.correct === true || props.first_try_correct === true)) {
         noteLesson(pageSlug(), null);
         award(XP_CORRECT, "correct");
       } else {
@@ -364,9 +353,7 @@
   function el(tag, cls, attrs) {
     var n = document.createElement(tag);
     if (cls) n.className = cls;
-    if (attrs)
-      for (var k in attrs)
-        if (attrs.hasOwnProperty(k)) n.setAttribute(k, attrs[k]);
+    if (attrs) for (var k in attrs) if (attrs.hasOwnProperty(k)) n.setAttribute(k, attrs[k]);
     return n;
   }
 
@@ -438,10 +425,7 @@
     q(".ntp-xpfill").style.width = Math.round(p * 100) + "%";
     var into = state.xp % XP_PER_LEVEL;
     q(".ntp-xpnote").textContent =
-      state.xp.toLocaleString() +
-      " XP · " +
-      (XP_PER_LEVEL - into) +
-      " to next level";
+      state.xp.toLocaleString() + " XP · " + (XP_PER_LEVEL - into) + " to next level";
     var arc = q(".ntp-arc-fg");
     if (arc) {
       var C = 2 * Math.PI * 52;
@@ -456,13 +440,9 @@
     for (var i = 0; i < BADGES.length; i++) {
       var b = BADGES[i];
       var earned = !!state.badges[b.id];
-      var cell = el(
-        "div",
-        "ntp-badge" + (earned ? " is-earned" : " is-locked"),
-        {
-          title: b.name + " — " + b.desc + (earned ? "" : " (locked)"),
-        },
-      );
+      var cell = el("div", "ntp-badge" + (earned ? " is-earned" : " is-locked"), {
+        title: b.name + " — " + b.desc + (earned ? "" : " (locked)"),
+      });
       cell.innerHTML =
         '<span class="ntp-badge-i">' +
         (earned ? b.icon : "🔒") +
@@ -479,14 +459,12 @@
     var lvl = levelForXp(state.xp);
     if (nodes.avatar) nodes.avatar.textContent = initials(studentName());
     if (nodes.lvl) nodes.lvl.textContent = "Lv " + lvl;
-    if (nodes.streak)
-      nodes.streak.textContent = state.daily > 0 ? "🔥 " + state.daily : "";
+    if (nodes.streak) nodes.streak.textContent = state.daily > 0 ? "🔥 " + state.daily : "";
     if (nodes.pill) {
       var p = levelProgress(state.xp);
       nodes.pill.style.setProperty("--ntp-prog", Math.round(p * 360) + "deg");
     }
-    if (nodes.overlay && nodes.overlay.classList.contains("is-open"))
-      renderPanel();
+    if (nodes.overlay && nodes.overlay.classList.contains("is-open")) renderPanel();
   }
 
   function open() {

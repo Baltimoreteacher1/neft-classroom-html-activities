@@ -10,14 +10,32 @@ function esc(s) {
   );
 }
 
-// Slow, clear read-aloud for ESOL support.
-window.speakText = function (text, lang = "en") {
+// Slow, clear read-aloud with visual highlighting.
+window.speakText = function (text, highlightEl, speakBtn) {
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
+
+  // Clear any existing active highlights
+  document.querySelectorAll(".audio-highlight").forEach((el) => el.classList.remove("audio-highlight"));
+  document.querySelectorAll(".speak.playing").forEach((el) => el.classList.remove("playing"));
+
   const u = new SpeechSynthesisUtterance(text);
-  u.lang = lang === "es" ? "es-ES" : "en-US";
+  u.lang = "en-US";
   u.rate = 0.78;
   u.pitch = 1.05;
+
+  if (highlightEl && speakBtn) {
+    highlightEl.classList.add("audio-highlight");
+    speakBtn.classList.add("playing");
+
+    const cleanup = () => {
+      highlightEl.classList.remove("audio-highlight");
+      speakBtn.classList.remove("playing");
+    };
+    u.onend = cleanup;
+    u.onerror = cleanup;
+  }
+
   window.speechSynthesis.speak(u);
 };
 
@@ -212,11 +230,31 @@ function renderChapter(data) {
   const vocabularyCard = vocab
     ? `
     <section class="card" id="card-vocabulary">
-      <div class="card-head"><span class="card-icon">📖</span><h2>Vocabulary</h2></div>
-      <p class="card-note">Words to know. Tap 🔊 to hear each one.</p>
-      <ul class="vocab">${vocab}</ul>
+      <div class="card-head">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span class="card-icon">📖</span>
+          <h2>Vocabulary</h2>
+        </div>
+        <button id="toggleVocabModeBtn" class="vocab-toggle-btn" type="button">Study Cards</button>
+      </div>
+      <p class="card-note" id="vocabCardNote">Words to know. Tap 🔊 to hear each one.</p>
+      <div id="vocabContainer">
+        <ul class="vocab">${vocab}</ul>
+      </div>
     </section>`
     : "";
+
+  // --- Card 4.5: Samuel's Journal Studio ---
+  const journalCard = `
+    <section class="card" id="card-journal">
+      <div class="card-head"><span class="card-icon">📓</span><h2>Samuel's Journal</h2></div>
+      <p class="card-note">Write a diary entry from Samuel's perspective, or record your reflections. Your work auto-saves locally.</p>
+      <div class="journal-textarea-wrapper">
+        <textarea id="journalTextarea" placeholder="Start writing here... (e.g., Today we arrived at the docks...)" aria-label="Journal entry text area"></textarea>
+      </div>
+      <div class="journal-status" id="journalStatus">Saved locally</div>
+    </section>
+  `;
 
   // --- Card 5: Illustrated Storyboard ---
   let scenesCard = "";
@@ -246,9 +284,25 @@ function renderChapter(data) {
 
   setHTML(
     "#cardDeck",
-    charactersCard + eventsCard + importantCard + vocabularyCard + scenesCard,
+    `
+    <div class="layout-overview">
+      ${charactersCard}
+      ${eventsCard}
+      ${importantCard}
+    </div>
+    <div class="layout-interactive">
+      <div class="layout-main">
+        ${scenesCard}
+        ${journalCard}
+      </div>
+      <div class="layout-side">
+        ${vocabularyCard}
+      </div>
+    </div>
+    `
   );
 
+  // --- Storyboard Display Panel Logic ---
   if (data.scenes && data.scenes.length) {
     const activePanel = document.getElementById("activeScenePanel");
     if (activePanel) {
@@ -274,6 +328,125 @@ function renderChapter(data) {
         }
       });
     });
+  }
+
+  // --- Journal Studio Hookup ---
+  const textarea = document.getElementById("journalTextarea");
+  const journalStatus = document.getElementById("journalStatus");
+  if (textarea && journalStatus) {
+    const journalKey = `neft_bor_journal_ch${data.chapter}`;
+    textarea.value = localStorage.getItem(journalKey) || "";
+    
+    // Update print-only text initially
+    const printJournal = document.getElementById("printJournalContent");
+    if (printJournal) {
+      printJournal.textContent = textarea.value || "(No journal entry written yet.)";
+    }
+    
+    let saveTimeout;
+    textarea.addEventListener("input", () => {
+      journalStatus.textContent = "Saving...";
+      clearTimeout(saveTimeout);
+      saveTimeout = setTimeout(() => {
+        localStorage.setItem(journalKey, textarea.value);
+        journalStatus.textContent = "Saved locally";
+        if (printJournal) {
+          printJournal.textContent = textarea.value || "(No journal entry written yet.)";
+        }
+      }, 500);
+    });
+  }
+
+  // --- Flashcards Mode Hookup ---
+  const toggleVocabBtn = document.getElementById("toggleVocabModeBtn");
+  const vocabContainer = document.getElementById("vocabContainer");
+  const vocabNote = document.getElementById("vocabCardNote");
+  if (toggleVocabBtn && vocabContainer && vocabNote) {
+    let cardMode = false;
+    let activeCardIdx = 0;
+    
+    // Build flashcards HTML
+    const cardsHtml = `
+      <div class="vocab-flashcard-deck">
+        ${(data.vocab || []).map((v, idx) => `
+          <div class="vocab-card-wrapper${idx === 0 ? ' active' : ''}" data-card-idx="${idx}">
+            <div class="vocab-card-inner">
+              <div class="vocab-card-front">
+                <span class="vocab-card-emoji">${v[2] || '📖'}</span>
+                <div class="vocab-card-word">${esc(v[0])}</div>
+                <p class="vocab-card-hint">Click to reveal definition</p>
+                <button class="speak" type="button" data-text="${esc(v[0])}" title="Read aloud" style="position:absolute; bottom:12px; right:12px;">🔊</button>
+              </div>
+              <div class="vocab-card-back">
+                <div class="vocab-card-word-mini">${esc(v[0])}</div>
+                <p class="vocab-card-def">${esc(v[1])}</p>
+                <button class="speak" type="button" data-text="${esc(v[0])}: ${esc(v[1])}" title="Read aloud" style="position:absolute; bottom:12px; right:12px;">🔊</button>
+              </div>
+            </div>
+          </div>
+        `).join("")}
+      </div>
+      <div class="vocab-card-controls">
+        <button id="prevVocabCardBtn" type="button">◀ Previous</button>
+        <span id="vocabCardCounter">1 of ${data.vocab.length}</span>
+        <button id="nextVocabCardBtn" type="button">Next ▶</button>
+      </div>
+    `;
+    
+    toggleVocabBtn.addEventListener("click", () => {
+      cardMode = !cardMode;
+      if (cardMode) {
+        toggleVocabBtn.textContent = "List View";
+        toggleVocabBtn.classList.add("active-mode");
+        vocabNote.textContent = "Click a card to flip it over. Use controls to navigate.";
+        vocabContainer.innerHTML = cardsHtml;
+        activeCardIdx = 0;
+        setupFlashcardListeners();
+      } else {
+        toggleVocabBtn.textContent = "Study Cards";
+        toggleVocabBtn.classList.remove("active-mode");
+        vocabNote.textContent = "Words to know. Tap 🔊 to hear each one.";
+        vocabContainer.innerHTML = `<ul class="vocab">${vocab}</ul>`;
+      }
+    });
+    
+    function setupFlashcardListeners() {
+      const wrappers = document.querySelectorAll(".vocab-card-wrapper");
+      wrappers.forEach(wrap => {
+        wrap.addEventListener("click", (e) => {
+          if (e.target.closest(".speak")) return;
+          wrap.classList.toggle("flipped");
+        });
+      });
+      
+      const prevBtn = document.getElementById("prevVocabCardBtn");
+      const nextBtn = document.getElementById("nextVocabCardBtn");
+      const counter = document.getElementById("vocabCardCounter");
+      
+      const updateCardNav = () => {
+        wrappers.forEach((w, i) => {
+          w.classList.remove("active", "flipped");
+          if (i === activeCardIdx) w.classList.add("active");
+        });
+        counter.textContent = `${activeCardIdx + 1} of ${wrappers.length}`;
+      };
+      
+      if (prevBtn) {
+        prevBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          activeCardIdx = (activeCardIdx - 1 + wrappers.length) % wrappers.length;
+          updateCardNav();
+        });
+      }
+      
+      if (nextBtn) {
+        nextBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          activeCardIdx = (activeCardIdx + 1) % wrappers.length;
+          updateCardNav();
+        });
+      }
+    }
   }
 
   // --- Dynamic Completion Button ---
@@ -330,7 +503,7 @@ function renderChapter(data) {
           Name: ___________________________ &nbsp;&nbsp;&nbsp;&nbsp; Date: ___________________________
         </div>
         <p style="font-style:italic; margin-bottom:30px;">
-          Directions: Read Chapter ${data.chapter}. Write definitions for vocabulary words, then answer the questions for each scene below.
+          Directions: Read Chapter ${data.chapter}. Write definitions for vocabulary words, write your journal reflection, then answer the questions for each scene below.
         </p>
         
         <h3 style="border-bottom:2px solid #000; margin-top:20px; font-family:'Outfit', sans-serif;">Vocabulary Study</h3>
@@ -350,6 +523,11 @@ function renderChapter(data) {
             `).join("")}
           </tbody>
         </table>
+
+        <h3 style="border-bottom:2px solid #000; margin-top:20px; font-family:'Outfit', sans-serif; page-break-inside:avoid; break-inside:avoid;">Student Reflections Journal</h3>
+        <div style="border:1px solid #999; padding:15px; min-height:220px; font-family:'Plus Jakarta Sans', sans-serif; white-space:pre-wrap; font-size:0.95rem; line-height:24px; background:repeating-linear-gradient(transparent, transparent 23px, #e6eef5 23px, #e6eef5 24px); padding-left:45px; border-left:3px double red; margin-bottom:40px;" id="printJournalContent">
+          (No journal entry written yet.)
+        </div>
         
         <h3 style="border-bottom:2px solid #000; page-break-before:always; break-before:always; font-family:'Outfit', sans-serif;">Scene-by-Scene Reading Questions</h3>
         ${data.scenes.map(s => {
@@ -454,12 +632,13 @@ function bindInteractions() {
     show.t = setTimeout(() => status.classList.remove("show"), 1400);
   }
 
-  // Read-aloud (character names + vocabulary).
+  // Read-aloud (character names + vocabulary + quotes + explanations).
   document.addEventListener("click", (e) => {
     const b = e.target.closest(".speak");
     if (b) {
       e.preventDefault();
-      window.speakText(b.dataset.text, "en");
+      const container = b.closest(".vrow, .person, .scene-quote, .scene-explain");
+      window.speakText(b.dataset.text, container, b);
     }
   });
 
