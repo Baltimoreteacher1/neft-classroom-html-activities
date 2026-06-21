@@ -218,12 +218,228 @@ function renderChapter(data) {
     </section>`
     : "";
 
+  // --- Card 5: Illustrated Storyboard ---
+  let scenesCard = "";
+  if (data.scenes && data.scenes.length) {
+    scenesCard = `
+    <section class="card" id="card-scenes">
+      <div class="card-head"><span class="card-icon">🎬</span><h2>Illustrated Storyboard</h2></div>
+      <p class="card-note">Walk through the key moments of the chapter. Select a scene to see details, quotes, and questions.</p>
+      <div class="storyboard-container">
+        <nav class="scene-nav" aria-label="Scene selection">
+          ${data.scenes
+            .map(
+              (s, idx) => `
+            <button class="scene-tab-btn${idx === 0 ? " active" : ""}" type="button" data-scene-idx="${idx}" aria-controls="activeScenePanel">
+              <span class="scene-tab-num">${s.n}</span>
+              <span class="scene-tab-label">${esc(s.title)}</span>
+            </button>`,
+            )
+            .join("")}
+        </nav>
+        <div class="scene-panel" id="activeScenePanel" aria-live="polite">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </section>`;
+  }
+
   setHTML(
     "#cardDeck",
-    charactersCard + eventsCard + importantCard + vocabularyCard,
+    charactersCard + eventsCard + importantCard + vocabularyCard + scenesCard,
   );
 
+  if (data.scenes && data.scenes.length) {
+    const activePanel = document.getElementById("activeScenePanel");
+    if (activePanel) {
+      activePanel.innerHTML = renderActiveScene(data.scenes[0], data.chapter);
+    }
+
+    const tabs = document.querySelectorAll(".scene-tab-btn");
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", (e) => {
+        const btn = e.currentTarget;
+        const idx = parseInt(btn.dataset.sceneIdx, 10);
+
+        tabs.forEach((t) => t.classList.remove("active"));
+        btn.classList.add("active");
+
+        const panel = document.getElementById("activeScenePanel");
+        if (panel) {
+          panel.style.opacity = 0;
+          setTimeout(() => {
+            panel.innerHTML = renderActiveScene(data.scenes[idx], data.chapter);
+            panel.style.opacity = 1;
+          }, 150);
+        }
+      });
+    });
+  }
+
+  // --- Dynamic Completion Button ---
+  const heroActions = document.querySelector(".hero-actions");
+  if (heroActions) {
+    if (!document.getElementById("completeBtn")) {
+      const isCompleted = completedSet().has(data.chapter);
+      const completeBtn = document.createElement("button");
+      completeBtn.id = "completeBtn";
+      completeBtn.type = "button";
+      completeBtn.className = isCompleted ? "btn gold completed" : "btn clear";
+      completeBtn.innerHTML = isCompleted ? "✓ Completed" : "Mark Completed";
+      completeBtn.style.transition = "all 0.2s";
+      heroActions.appendChild(completeBtn);
+      
+      completeBtn.addEventListener("click", () => {
+        const done = completedSet();
+        const num = data.chapter;
+        let nowDone = false;
+        
+        if (done.has(num)) {
+          done.delete(num);
+          completeBtn.className = "btn clear";
+          completeBtn.innerHTML = "Mark Completed";
+        } else {
+          done.add(num);
+          completeBtn.className = "btn gold completed";
+          completeBtn.innerHTML = "✓ Completed";
+          nowDone = true;
+          triggerConfetti();
+        }
+        
+        localStorage.setItem("neft_chapters_completed", JSON.stringify([...done]));
+        
+        const status = document.getElementById("status");
+        if (status) {
+          status.textContent = nowDone ? "Chapter marked complete!" : "Chapter incomplete";
+          status.classList.add("show");
+          setTimeout(() => status.classList.remove("show"), 1400);
+        }
+      });
+    }
+  }
+
+  // --- Printable Student Worksheet Builder ---
+  let printWorksheetHtml = "";
+  if (data.scenes && data.scenes.length) {
+    printWorksheetHtml = `
+      <div class="print-only">
+        <h2 style="text-align:center; border-bottom:3px double #000; padding-bottom:10px; margin-bottom:30px; font-family:'Outfit', sans-serif;">
+          Blood on the River — Chapter ${data.chapter} Student Worksheet
+        </h2>
+        <div style="margin-bottom:20px; font-weight:700;">
+          Name: ___________________________ &nbsp;&nbsp;&nbsp;&nbsp; Date: ___________________________
+        </div>
+        <p style="font-style:italic; margin-bottom:30px;">
+          Directions: Read Chapter ${data.chapter}. Write definitions for vocabulary words, then answer the questions for each scene below.
+        </p>
+        
+        <h3 style="border-bottom:2px solid #000; margin-top:20px; font-family:'Outfit', sans-serif;">Vocabulary Study</h3>
+        <table style="width:100%; border-collapse:collapse; margin-bottom:40px;">
+          <thead>
+            <tr style="border-bottom:1px solid #000;">
+              <th style="text-align:left; width:25%; padding:8px 0;">Word</th>
+              <th style="text-align:left; padding:8px 0;">Definition &amp; Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${(data.vocab || []).map(v => `
+              <tr style="border-bottom:1px dashed #aaa;">
+                <td style="padding:12px 0; font-weight:700;">${esc(v[0])} ${v[2] || ''}</td>
+                <td style="padding:12px 0; color:#666;">____________________________________________________________________</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+        
+        <h3 style="border-bottom:2px solid #000; page-break-before:always; break-before:always; font-family:'Outfit', sans-serif;">Scene-by-Scene Reading Questions</h3>
+        ${data.scenes.map(s => {
+          const checkQuestions = (s.check || []).map(q => `
+            <div class="print-question-item">
+              <div class="print-question-text">❓ ${esc(q)}</div>
+              <div class="print-writing-lines"></div>
+              <div class="print-writing-lines"></div>
+              <div class="print-writing-lines"></div>
+            </div>
+          `).join("");
+          
+          return `
+            <div class="print-scene-item">
+              <div class="print-scene-header">Scene ${esc(s.n)}: ${esc(s.title)} (PDF Page ${esc(s.page || 'N/A')})</div>
+              <div class="print-scene-quote">Key Quote: "${esc(s.quote)}"</div>
+              <div class="print-scene-summary"><strong>Summary:</strong> ${esc(s.summary)}</div>
+              <div class="print-scene-check-title">Comprehension &amp; Reflection Questions:</div>
+              ${checkQuestions}
+            </div>
+          `;
+        }).join("")}
+      </div>
+    `;
+  }
+
+  let printContainer = document.getElementById("printWorksheetContainer");
+  if (!printContainer) {
+    printContainer = document.createElement("div");
+    printContainer.id = "printWorksheetContainer";
+    document.body.appendChild(printContainer);
+  }
+  printContainer.innerHTML = printWorksheetHtml;
+
   bindInteractions();
+}
+
+function renderActiveScene(s, chapterNum) {
+  const quoteHtml = s.quote
+    ? `
+    <blockquote class="scene-quote">
+      <p>${esc(s.quote)}</p>
+      <button class="speak" type="button" data-text="${esc(s.quote)}" title="Read aloud" aria-label="Read quote aloud">🔊</button>
+    </blockquote>`
+    : "";
+  const explainHtml = s.explain
+    ? `
+    <div class="scene-explain">
+      <strong>Why this matters:</strong>
+      <p>${esc(s.explain)}</p>
+      <button class="speak" type="button" data-text="Why this matters: ${esc(s.explain)}" title="Read aloud" aria-label="Read explanation aloud">🔊</button>
+    </div>`
+    : "";
+  const detailsHtml =
+    s.details && s.details.length
+      ? `
+    <ul class="scene-details">
+      ${s.details.map((d) => `<li>${esc(d)}</li>`).join("")}
+    </ul>`
+      : "";
+  const checkHtml =
+    s.check && s.check.length
+      ? `
+    <details class="scene-check">
+      <summary>❓ Check for Understanding</summary>
+      <div class="scene-check-content">
+        <ul>
+          ${s.check.map((c) => `<li>${esc(c)}</li>`).join("")}
+        </ul>
+      </div>
+    </details>`
+      : "";
+  const imgCaption = s.label || s.title || `Scene ${s.n}`;
+  const pageRef = s.page ? ` · ${esc(s.page)}` : "";
+  const imgPath = `/blood-on-the-river/images/chapter-${chapterNum}.png`;
+
+  return `
+    <div class="scene-illustration-container">
+      <img class="scene-img" src="${imgPath}" onerror="this.src='/blood-on-the-river/images/fallback.svg'; this.onerror=null;" alt="${esc(imgCaption)}" loading="lazy">
+      <div class="scene-img-caption">${esc(imgCaption)}</div>
+    </div>
+    <div class="scene-info">
+      <div class="scene-meta">Scene ${esc(s.n)}${pageRef}</div>
+      <h3>${esc(s.title)}</h3>
+      ${quoteHtml}
+      <p class="scene-summary">${esc(s.summary)}</p>
+      ${detailsHtml}
+      ${explainHtml}
+      ${checkHtml}
+    </div>`;
 }
 
 function bindInteractions() {
@@ -274,4 +490,72 @@ function bindInteractions() {
           : "High contrast off",
       );
     });
+}
+
+function completedSet() {
+  try {
+    return new Set(
+      JSON.parse(
+        localStorage.getItem("neft_chapters_completed") || "[]",
+      ).map(Number),
+    );
+  } catch (e) {
+    return new Set();
+  }
+}
+
+function triggerConfetti() {
+  const colors = ["#d6a84f", "#1d6f73", "#132238", "#9f3434", "#fffaf0"];
+  const container = document.createElement("div");
+  container.style.position = "fixed";
+  container.style.top = "0";
+  container.style.left = "0";
+  container.style.width = "100vw";
+  container.style.height = "100vh";
+  container.style.pointerEvents = "none";
+  container.style.zIndex = "9999";
+  document.body.appendChild(container);
+  
+  for (let i = 0; i < 50; i++) {
+    const p = document.createElement("div");
+    p.style.position = "absolute";
+    p.style.width = Math.random() * 8 + 6 + "px";
+    p.style.height = Math.random() * 8 + 6 + "px";
+    p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    p.style.borderRadius = Math.random() > 0.5 ? "50%" : "2px";
+    p.style.left = "50%";
+    p.style.bottom = "10%";
+    p.style.opacity = "1";
+    
+    const angle = Math.random() * Math.PI - Math.PI; // upwards
+    const speed = Math.random() * 15 + 12;
+    let x = window.innerWidth / 2;
+    let y = window.innerHeight * 0.9;
+    let vx = Math.cos(angle) * speed;
+    let vy = Math.sin(angle) * speed;
+    let opacity = 1;
+    
+    container.appendChild(p);
+    
+    function update() {
+      x += vx;
+      y += vy;
+      vy += 0.45; // gravity
+      vx *= 0.98; // drag
+      opacity -= 0.015;
+      p.style.left = x + "px";
+      p.style.top = y + "px";
+      p.style.opacity = opacity;
+      p.style.transform = `rotate(${y}deg)`;
+      
+      if (opacity > 0) {
+        requestAnimationFrame(update);
+      } else {
+        p.remove();
+      }
+    }
+    requestAnimationFrame(update);
+  }
+  
+  setTimeout(() => container.remove(), 3000);
 }
