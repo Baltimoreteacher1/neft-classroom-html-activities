@@ -647,7 +647,9 @@ function renderActiveScene(s, chapterNum) {
 
   return `
     <div class="scene-illustration-container">
-      <img class="scene-img" src="${imgPath}" onerror="this.src='/blood-on-the-river/images/fallback.svg'; this.onerror=null;" alt="${esc(imgCaption)}" loading="lazy">
+      <button class="scene-img-btn" type="button" aria-label="Zoom illustration">
+        <img class="scene-img" src="${imgPath}" onerror="this.src='/blood-on-the-river/images/fallback.svg'; this.onerror=null;" alt="${esc(imgCaption)}" loading="lazy">
+      </button>
       <div class="scene-img-caption">${esc(imgCaption)}</div>
     </div>
     <div class="scene-info">
@@ -709,9 +711,12 @@ function bindInteractions(data) {
     }
 
     // Lightbox image click handler
-    const img = e.target.closest(".scene-img");
-    if (img) {
-      openLightbox(img.src, img.alt);
+    const btn = e.target.closest(".scene-img-btn");
+    if (btn) {
+      const img = btn.querySelector(".scene-img");
+      if (img) {
+        openLightbox(img.src, img.alt, btn);
+      }
     }
   });
 
@@ -846,7 +851,10 @@ function triggerConfetti() {
   setTimeout(() => container.remove(), 3000);
 }
 
-function openLightbox(src, alt) {
+let activeTriggerElement = null;
+
+function openLightbox(src, alt, triggerEl) {
+  activeTriggerElement = triggerEl;
   let lightbox = document.getElementById("lightboxModal");
   if (!lightbox) {
     lightbox = document.createElement("div");
@@ -864,15 +872,23 @@ function openLightbox(src, alt) {
     // Close handlers
     lightbox.addEventListener("click", (e) => {
       if (e.target === lightbox || e.target.closest(".lightbox-close")) {
-        lightbox.classList.remove("open");
+        closeLightbox();
       }
     });
 
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && lightbox.classList.contains("open")) {
-        lightbox.classList.remove("open");
+        closeLightbox();
       }
     });
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove("open");
+    if (activeTriggerElement) {
+      activeTriggerElement.focus();
+      activeTriggerElement = null;
+    }
   }
 
   const lightboxImg = lightbox.querySelector(".lightbox-img");
@@ -882,4 +898,10 @@ function openLightbox(src, alt) {
   lightboxCaption.textContent = alt;
 
   lightbox.classList.add("open");
+  const closeBtn = lightbox.querySelector(".lightbox-close");
+  if (closeBtn) {
+    requestAnimationFrame(() => {
+      closeBtn.focus();
+    });
+  }
 }
