@@ -68,15 +68,6 @@ const foot = `
   </body>
 </html>`;
 
-const DOMAIN = {
-  "mult-div-fluency": "Operations",
-  "fraction-sense": "Fractions & Decimals",
-  "decimals-place-value": "Fractions & Decimals",
-  "ratios-rates-percents": "Ratios & Percents",
-  "integers-coordinate": "Integers & Plane",
-  "expressions-equations": "Expressions & Equations",
-};
-
 /* ------------------------------ HUB ------------------------------ */
 function hub() {
   const cards = TOPICS.map(
@@ -170,7 +161,7 @@ function hub() {
           <div class="section-head">
             <span class="eyebrow">Program at a glance</span>
             <h2>Scope &amp; sequence</h2>
-            <p>Six targeted topics rebuild the Grade 6 readiness skills, each tagged to the standard it unlocks.</p>
+            <p>${TOPICS.length} targeted topics across ${domains.length} domains rebuild the Grade 6 readiness skills, each tagged to the standard it unlocks.</p>
           </div>
           <div class="sos-wrap">
             <table class="sos">
@@ -438,8 +429,8 @@ function topicPage(t) {
             <h3>Answer Drop</h3>
             <p>Tap the falling tile that matches the problem. Five lives — how high can you climb?</p>
             <div class="game-stage" id="game-stage">
-              <div class="game-hud"></div>
-              <canvas></canvas>
+              <div class="game-hud" aria-hidden="true"></div>
+              <canvas role="img" aria-label="Answer Drop game. Tap the falling tile that matches the problem shown at the bottom."></canvas>
               <div class="game-overlay">
                 <div>
                   <h3>Answer Drop</h3>

@@ -19,6 +19,13 @@
     return r;
   };
   const pickN = (a, n) => shuffle(a).slice(0, Math.min(n, a.length));
+  const reduceMotion = () => {
+    try {
+      return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    } catch (e) {
+      return false;
+    }
+  };
 
   /* -------------------- Progress (localStorage) ------------------- */
   const PKEY = "nt-intervention:v1";
@@ -69,10 +76,30 @@
       tablist.parentNode.insertBefore(share, tablist.nextSibling);
     }
 
-    function select(id) {
-      tabs.forEach((t) =>
-        t.setAttribute("aria-selected", String(t.dataset.tab === id)),
-      );
+    // Wire the full WAI-ARIA tabs relationship up front: each tab owns a panel
+    // (aria-controls), each panel points back at its tab (aria-labelledby), and
+    // panels become focusable tabpanels so keyboard users land inside content.
+    if (tablist) tablist.setAttribute("role", "tablist");
+    tabs.forEach((t) => {
+      const id = t.dataset.tab;
+      if (!t.id) t.id = "tab-" + id;
+      t.setAttribute("aria-controls", "panel-" + id);
+      const panel = document.getElementById("panel-" + id);
+      if (panel) {
+        panel.setAttribute("role", "tabpanel");
+        panel.setAttribute("aria-labelledby", t.id);
+        panel.setAttribute("tabindex", "0");
+      }
+    });
+
+    function select(id, focusTab) {
+      tabs.forEach((t) => {
+        const on = t.dataset.tab === id;
+        t.setAttribute("aria-selected", String(on));
+        // Roving tabindex: only the active tab is in the Tab order.
+        t.setAttribute("tabindex", on ? "0" : "-1");
+        if (on && focusTab) t.focus();
+      });
       panels.forEach((p) =>
         p.classList.toggle("active", p.id === "panel-" + id),
       );
@@ -88,6 +115,35 @@
     tabs.forEach((t) =>
       t.addEventListener("click", () => select(t.dataset.tab)),
     );
+
+    // Keyboard support per the ARIA tabs pattern: Left/Right (and Up/Down) move
+    // between tabs, Home/End jump to the ends.
+    if (tablist) {
+      tablist.addEventListener("keydown", (e) => {
+        const keys = {
+          ArrowRight: 1,
+          ArrowDown: 1,
+          ArrowLeft: -1,
+          ArrowUp: -1,
+        };
+        let idx = tabs.findIndex(
+          (t) => t.getAttribute("aria-selected") === "true",
+        );
+        if (idx < 0) idx = 0;
+        if (e.key in keys) {
+          e.preventDefault();
+          idx = (idx + keys[e.key] + tabs.length) % tabs.length;
+          select(tabs[idx].dataset.tab, true);
+        } else if (e.key === "Home") {
+          e.preventDefault();
+          select(tabs[0].dataset.tab, true);
+        } else if (e.key === "End") {
+          e.preventDefault();
+          select(tabs[tabs.length - 1].dataset.tab, true);
+        }
+      });
+    }
+
     const start = location.hash.replace("#", "");
     select(
       tabs.some((t) => t.dataset.tab === start) ? start : tabs[0].dataset.tab,
@@ -160,6 +216,12 @@
             );
           }),
         );
+        // Keep keyboard users in flow: after the first question, move focus to
+        // the first option of the next one (the previous button was replaced).
+        if (i > 0) {
+          const first = $(".opt", mount);
+          if (first) first.focus({ preventScroll: true });
+        }
       }
 
       function finish() {
@@ -315,6 +377,7 @@
     }
 
     function flash(color) {
+      if (reduceMotion()) return;
       stage.animate(
         [
           { boxShadow: "inset 0 0 0 4px " + color },
@@ -460,6 +523,10 @@
           )
           .join("");
         locked = false;
+        // Keep keyboard focus on the live question during the timed drill.
+        const first = mount.querySelector(".fd-opts .opt");
+        if (first && document.activeElement !== document.body)
+          first.focus({ preventScroll: true });
       }
       function tick() {
         left--;

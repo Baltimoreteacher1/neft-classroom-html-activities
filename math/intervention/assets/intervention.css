@@ -1487,3 +1487,34 @@ section.block {
     display: block;
   }
 }
+
+/* ==========================================================================
+   Reduced motion — honor the OS/browser "reduce motion" setting.
+   Strips decorative transitions, transforms, and the 3D flashcard flip so the
+   UI stays calm for motion-sensitive users (the game is user-initiated).
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* Hover lifts and the card flip rely on transform — neutralize them. */
+  .btn:hover,
+  .topic-card:hover,
+  .topic-card:focus-visible,
+  .opt:hover,
+  .speak-btn:hover {
+    transform: none !important;
+  }
+  .flashcard .fc-inner,
+  .flashcard.flipped .fc-inner {
+    transition: none !important;
+  }
+}
