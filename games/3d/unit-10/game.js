@@ -455,7 +455,7 @@ export default {
 
       if (typeof hud.setProgress === "function")
         hud.setProgress(roundIndex, cfg.rounds.length);
-      if (typeof hud.setTimer === "function") hud.setTimer(roundTime);
+      if (typeof hud.setTimer === "function") hud.setTimer(null);
 
       problemCard.position.set(0, ny + 2.2, 0);
       setProblemCard(`PACK IT:  ${round.l} × ${round.w} × ${round.h}`);
@@ -697,7 +697,7 @@ export default {
         clarity.setObjective(text);
         clarity.setTarget(`Pick the volume before time runs out!`);
       }
-      if (typeof hud.setTimer === "function") hud.setTimer(gateTime);
+      if (typeof hud.setTimer === "function") hud.setTimer(null);
       feel.sfx("select");
       announce(
         `Speed round. What is ${round.l} times ${round.w} times ${round.h}? ` +
@@ -926,24 +926,10 @@ export default {
       }
 
       if (phase === "packing") {
-        // Round timer pressure.
-        roundTime -= d;
+        // Round timer pressure removed.
         if (typeof hud.setTimer === "function")
-          hud.setTimer(Math.max(0, roundTime));
-        if (roundTime <= 0) {
-          // Ran out of time before filling the vault.
-          phase = "between";
-          columnMesh.visible = false;
-          chute.visible = false;
-          fallingCube.visible = false;
-          cubeFalling = false;
-          feel.sfx("wrong");
-          loseLife(
-            `Time! You packed ${placedCount} of ${targetCount} cubes.`,
-            () => later(nextRound, reduced ? 1000 : 1600),
-          );
-          return;
-        }
+          hud.setTimer(null);
+      }
 
         // Factory auto-drops cubes into the selected column on a tightening
         // interval — this is the real-time pressure. The player keeps moving to
@@ -976,16 +962,14 @@ export default {
             0.18 + Math.abs(Math.sin(performance.now() * 0.004)) * 0.16;
         }
       } else if (phase === "gate") {
-        gateTime -= d;
         if (typeof hud.setTimer === "function")
-          hud.setTimer(Math.max(0, gateTime));
+          hud.setTimer(null);
         // Float the gate panels gently.
         if (!reduced) {
           gateGroup.children.forEach((lane, i) => {
             lane.position.y = Math.sin(performance.now() * 0.003 + i) * 0.1;
           });
         }
-        if (gateTime <= 0) lockGate(true);
       }
     }
 

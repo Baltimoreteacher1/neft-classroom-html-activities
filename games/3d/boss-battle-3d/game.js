@@ -44,15 +44,8 @@ function buildPlan(level) {
     startLives: support ? 5 : 3,
     // Hits to clear a phase grows as you go deeper (min 3, +1 every 2 phases).
     hitsForPhase: (idx) => (support ? 3 : 3) + Math.floor(idx / 2),
-    // Per-question answer time. Level 1 gets a generous clock (or none on the
-    // very first phase) so the timer pressures without overwhelming; Level 2 is
-    // faster and tightens slightly as phases get deeper. null/0 = no timer.
-    answerSeconds: (idx) =>
-      support
-        ? idx === 0
-          ? 0
-          : 30
-        : Math.max(16, 24 - Math.floor(idx / 2) * 2),
+    // Per-question answer time. Removed for relaxed gameplay.
+    answerSeconds: (idx) => 0,
     bilingual: support, // Level 1 may include EN/ES support text
   };
 }

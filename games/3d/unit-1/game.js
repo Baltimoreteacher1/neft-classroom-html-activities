@@ -78,6 +78,8 @@ const LEVEL_DATA = {
   },
   1: {
     hints: true,
+    persistentHints: true,
+    noTimer: true,
     orders: [
       { kind: "ratio", a: 1, b: 1, tag: "ratio-1-to-1" },
       { kind: "ratio", a: 2, b: 1, tag: "ratio-simple" },
@@ -87,7 +89,9 @@ const LEVEL_DATA = {
     ],
   },
   2: {
-    hints: false,
+    hints: true,
+    persistentHints: true,
+    noTimer: true,
     orders: [
       {
         kind: "ratio",
@@ -224,6 +228,90 @@ export default {
 
     const clarityMount = renderer.domElement.parentElement || document.body;
     let clarity = null;
+
+    // ---- On-Screen Control Panel Setup ----
+    const styleEl = document.createElement("style");
+    styleEl.id = "smoothie-controls-styles";
+    styleEl.textContent = `
+      #smoothie-controls {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        background: rgba(11, 28, 52, 0.94);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1.5px solid rgba(255, 255, 255, 0.22);
+        border-radius: 16px;
+        padding: 14px 20px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        z-index: 20;
+        pointer-events: auto;
+        width: 90%;
+        max-width: 480px;
+        transition: all 0.2s ease;
+        font-family: var(--font-body, system-ui, sans-serif);
+        color: white;
+      }
+      .smoothie-btn {
+        flex: 1;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        color: white;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+        transition: transform 0.1s, box-shadow 0.1s, opacity 0.2s;
+        user-select: none;
+        -webkit-user-select: none;
+        outline: none;
+      }
+      .smoothie-btn:active {
+        transform: scale(0.95);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      }
+      .smoothie-btn-strawberry {
+        background: linear-gradient(135deg, #e0556b, #c2384e);
+      }
+      .smoothie-btn-banana {
+        background: linear-gradient(135deg, #f2c15b, #d9a438);
+        color: #12355b;
+        text-shadow: none;
+      }
+      .smoothie-btn-undo {
+        background: linear-gradient(135deg, #5c7596, #41556e);
+      }
+      .smoothie-btn-serve {
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+        box-shadow: 0 3px 12px rgba(46, 204, 113, 0.35);
+      }
+      .smoothie-btn-rate-down {
+        background: linear-gradient(135deg, #e0556b, #c2384e);
+      }
+      .smoothie-btn-rate-up {
+        background: linear-gradient(135deg, #1fa6a2, #188784);
+      }
+    `;
+    document.head.appendChild(styleEl);
+
+    const controlPanel = document.createElement("div");
+    controlPanel.id = "smoothie-controls";
+    controlPanel.innerHTML = `
+      <div id="controls-helper" style="width: 100%; text-align: center;"></div>
+      <div id="controls-buttons" style="display: flex; gap: 8px; width: 100%; justify-content: center; margin-top: 4px;"></div>
+    `;
+    clarityMount.appendChild(controlPanel);
 
     // ---- Disposable registry (geometries/materials/textures) ----------------
     const disposables = [];
@@ -485,6 +573,110 @@ export default {
     let orderIndex = 0;
     let rateGuess = 0;
     const total = cfg.orders.length;
+
+    // Dynamic on-screen HUD control panel updater
+    function updateControlsUI() {
+      if (!order || gameOver || !running) {
+        controlPanel.style.display = "none";
+        return;
+      }
+      
+      controlPanel.style.display = "flex";
+      
+      const helperEl = controlPanel.querySelector("#controls-helper");
+      const buttonsEl = controlPanel.querySelector("#controls-buttons");
+      
+      const isActive = (phase === "active");
+      
+      if (order.kind === "ratio") {
+        const [ba, bb] = simplify(order.a, order.b);
+        const targetStr = `${order.a} 🍓 : ${order.b} 🍌`;
+        const currentStr = `${counts.strawberry} 🍓 : ${counts.banana} 🍌`;
+        
+        let multiplierText = "";
+        const multiplier = order.b / bb;
+        if (multiplier > 1) {
+          multiplierText = ` (Recipe scaled by ${multiplier}x)`;
+        }
+        
+        helperEl.innerHTML = `
+          <div style="font-size: 11px; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px;">Recipe Ratio: ${ba} 🍓 to ${bb} 🍌</div>
+          <div style="font-size: 15px; font-weight: 800; color: #ffd56b;">Goal: ${targetStr}${multiplierText}</div>
+          <div style="font-size: 13px; margin-top: 3px; color: #8cd3ff;">Current blender: ${currentStr}</div>
+        `;
+        
+        buttonsEl.innerHTML = `
+          <button class="smoothie-btn smoothie-btn-strawberry" id="btn-add-strawberry">🍓 Add</button>
+          <button class="smoothie-btn smoothie-btn-banana" id="btn-add-banana">🍌 Add</button>
+          <button class="smoothie-btn smoothie-btn-undo" id="btn-undo">↩️ Undo</button>
+          <button class="smoothie-btn smoothie-btn-serve" id="btn-serve">🥤 Serve</button>
+        `;
+        
+        controlPanel.querySelector("#btn-add-strawberry").addEventListener("click", (e) => {
+          e.stopPropagation();
+          addScoop("strawberry");
+          updateControlsUI();
+        });
+        controlPanel.querySelector("#btn-add-banana").addEventListener("click", (e) => {
+          e.stopPropagation();
+          addScoop("banana");
+          updateControlsUI();
+        });
+        controlPanel.querySelector("#btn-undo").addEventListener("click", (e) => {
+          e.stopPropagation();
+          removeScoop();
+          updateControlsUI();
+        });
+        controlPanel.querySelector("#btn-serve").addEventListener("click", (e) => {
+          e.stopPropagation();
+          serve();
+          updateControlsUI();
+        });
+        
+      } else {
+        const currentVal = `${order.unit}${rateGuess}`;
+        
+        helperEl.innerHTML = `
+          <div style="font-size: 11px; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px;">Unit Rate Challenge</div>
+          <div style="font-size: 14px; font-weight: 800; color: #ffd56b; margin-bottom: 3px;">${order.prompt}</div>
+          <div style="font-size: 16px; color: #fff; font-weight: 800;">Price: <span style="color: #58d68d; font-size: 18px;">${currentVal}</span></div>
+        `;
+        
+        buttonsEl.innerHTML = `
+          <button class="smoothie-btn smoothie-btn-rate-down" id="btn-rate-down">➖ Down</button>
+          <button class="smoothie-btn smoothie-btn-rate-up" id="btn-rate-up">➕ Up</button>
+          <button class="smoothie-btn smoothie-btn-serve" id="btn-serve">🥤 Serve</button>
+        `;
+        
+        controlPanel.querySelector("#btn-rate-down").addEventListener("click", (e) => {
+          e.stopPropagation();
+          adjustRate(-1);
+          updateControlsUI();
+        });
+        controlPanel.querySelector("#btn-rate-up").addEventListener("click", (e) => {
+          e.stopPropagation();
+          adjustRate(1);
+          updateControlsUI();
+        });
+        controlPanel.querySelector("#btn-serve").addEventListener("click", (e) => {
+          e.stopPropagation();
+          serve();
+          updateControlsUI();
+        });
+      }
+      
+      // Disable buttons if phase is not active
+      const buttons = buttonsEl.querySelectorAll(".smoothie-btn");
+      buttons.forEach(btn => {
+        if (!isActive) {
+          btn.style.opacity = "0.5";
+          btn.style.pointerEvents = "none";
+        } else {
+          btn.style.opacity = "1";
+          btn.style.pointerEvents = "auto";
+        }
+      });
+    }
 
     // Level 0 (most-supported) gets the most lives and no timer pressure.
     const noTimer = !!cfg.noTimer;
@@ -756,9 +948,11 @@ export default {
       caption(hint);
 
       if (lives <= 0) {
-        later(loseGame, 700);
-        return;
+        lives = START_LIVES;
+        if (typeof hud.setLives === "function") hud.setLives(lives);
+        hud.message("Practice makes perfect! Hearts refilled ♥", { tone: "info", duration: 3000 });
       }
+      updateControlsUI();
       later(nextOrder, 850);
     }
 
@@ -786,6 +980,7 @@ export default {
       phase = "arriving";
 
       setTask();
+      updateControlsUI();
       if (clarity) {
         if (order.kind === "rate") clarity.setTarget(order.prompt);
         else {
@@ -832,6 +1027,7 @@ export default {
     function nextOrder() {
       // Send the current customer off the belt, then either advance or win.
       phase = "leaving";
+      updateControlsUI();
       if (orderIndex < total - 1) {
         orderIndex += 1;
         // Brief leave animation handled in frame(); start the next when they exit.
@@ -850,6 +1046,7 @@ export default {
       cupLabel.visible = false;
       barBg.visible = false;
       barFill.visible = false;
+      if (controlPanel) controlPanel.style.display = "none";
       const msg = `Out of lives! You served ${solvedCount} of ${total} orders.`;
       hud.setObjective(msg);
       announce(`Shift over. ${msg}`);
@@ -872,6 +1069,7 @@ export default {
       barBg.visible = false;
       barFill.visible = false;
       customer.visible = false;
+      if (controlPanel) controlPanel.style.display = "none";
       hud.setObjective(`Shift complete! You served all ${total} orders. 🥤`);
       hud.message("🎉 Shift complete!", { tone: "ok", duration: 0 });
       feel.sfx("fanfare");
@@ -931,6 +1129,7 @@ export default {
         if (name === "right" || name === "up") adjustRate(1);
         else if (name === "left" || name === "down") adjustRate(-1);
         else if (name === "action" || name === "confirm") serve();
+        updateControlsUI();
         return;
       }
       // ratio order
@@ -940,6 +1139,7 @@ export default {
       else if (name === "down") addScoop("banana");
       else if (name === "action") serve();
       else if (name === "confirm") removeScoop();
+      updateControlsUI();
     }
 
     function handleTap() {
@@ -958,6 +1158,7 @@ export default {
         } else {
           serve(); // tapped the blender
         }
+        updateControlsUI();
         return;
       }
       // Fallback: left half / right half of the screen.
@@ -968,6 +1169,7 @@ export default {
         if (nx < 0) addScoop("strawberry");
         else addScoop("banana");
       }
+      updateControlsUI();
     }
 
     // ---- Per-frame real-time loop ------------------------------------------
@@ -1002,6 +1204,7 @@ export default {
             // Level 0 has no timer pressure: hide the countdown bar entirely.
             barBg.visible = !noTimer;
             barFill.visible = !noTimer;
+            updateControlsUI();
           }
         } else if (phase === "active" && noTimer) {
           // Level 0: no countdown. Gentle idle bob only; the order waits for
@@ -1065,9 +1268,12 @@ export default {
         }
 
         function beginGameplay() {
+          const intro = document.getElementById("e3d-intro");
+          if (intro) intro.style.display = "none";
           resetRun();
           unbindPress = input.onPress(handlePress);
           unbindTap = input.onTap(handleTap);
+          updateControlsUI();
         }
 
         clarity = initClarity({
@@ -1130,6 +1336,8 @@ export default {
         if (unbindFrame) unbindFrame();
         timers.forEach(clearTimeout);
         timers.length = 0;
+        if (styleEl && styleEl.parentNode) styleEl.parentNode.removeChild(styleEl);
+        if (controlPanel && controlPanel.parentNode) controlPanel.parentNode.removeChild(controlPanel);
         // Dispose dynamic scoop materials + the canvas-backed labels.
         scoops.forEach((s) => s.mesh.material.dispose());
         scoops.length = 0;
