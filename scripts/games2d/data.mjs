@@ -910,6 +910,200 @@ export const GAMES_2D = {
       },
     },
   },
+
+  // ── Temperature Quest (6-ns-c-5game) — 6.NS.C.5 ──
+  "6-ns-c-5game": {
+    ccss: "6.NS.C.5",
+    title: "Temperature Quest",
+    vocab: [
+      {
+        term: "integer",
+        defn: "A whole number that can be positive, negative, or zero — like -4, 0, or 7. No fractions or decimals.",
+      },
+      {
+        term: "negative number",
+        defn: "A number less than zero. It sits to the LEFT of 0 on the number line, like -5 degrees (below zero) or 200 feet below sea level.",
+      },
+      {
+        term: "opposite",
+        defn: "The number the same distance from 0 but on the other side. The opposite of +7 is -7; the opposite of 0 is 0.",
+      },
+    ],
+    misconceptions: [
+      {
+        tag: "dropped-sign",
+        trigger: "Places the value on the positive side when the situation says below/under.",
+        feedback:
+          "Below zero, below sea level, and debt are all NEGATIVE — move LEFT of 0 on the scale.",
+      },
+      {
+        tag: "opposite-is-reciprocal",
+        trigger: "Thinks the opposite of a number changes its size, not just its sign.",
+        feedback: "The opposite only flips the sign: opposite of -10 is 10, same distance from 0.",
+      },
+    ],
+    tiers: {
+      0: {
+        label: "Level 0",
+        sub: "Most support",
+        desc: "Explorer · small numbers · the rule stays on screen · most lives",
+      },
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Challenge · bigger numbers · less help · fewer lives",
+      },
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Survival · one life · place each integer with no scaffold",
+      },
+    },
+  },
+
+  // ── Coordinate Treasure Hunt (6-ns-c-6game) — 6.NS.C.6 ──
+  "6-ns-c-6game": {
+    ccss: "6.NS.C.6",
+    title: "Coordinate Treasure Hunt",
+    vocab: [
+      {
+        term: "coordinate plane",
+        defn: "A flat grid made by a left-right line (x-axis) and an up-down line (y-axis) that cross at the center (0, 0).",
+      },
+      {
+        term: "ordered pair (x, y)",
+        defn: "Two numbers that name one point. The first number (x) is left/right; the second number (y) is up/down.",
+      },
+      {
+        term: "quadrant",
+        defn: "One of the 4 corners of the plane, numbered I, II, III, IV from top-right going counter-clockwise.",
+      },
+      {
+        term: "reflection / opposite",
+        defn: "Flipping a point to the other side of an axis. Flipping the sign of x mirrors left-right; flipping y mirrors up-down.",
+      },
+    ],
+    misconceptions: [
+      {
+        tag: "swapped-x-y",
+        trigger: "Moves up/down for the first number instead of left/right.",
+        feedback: "Read (x, y) in order: the FIRST number is left/right, the SECOND is up/down.",
+      },
+      {
+        tag: "reflection-wrong-axis",
+        trigger: "Flips the wrong coordinate when reflecting across an axis.",
+        feedback:
+          "Across the x-axis, keep x and flip y. Across the y-axis, keep y and flip x.",
+      },
+    ],
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Quadrants & worded points · the rule is shown after a miss · 3 lives",
+      },
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Reflections & opposites · figure out the spot yourself · 3 lives",
+      },
+    },
+  },
+
+  // ── City Builder (6-ns-c-8game) — 6.NS.C.8 ──
+  "6-ns-c-8game": {
+    ccss: "6.NS.C.8",
+    title: "City Builder",
+    vocab: [
+      {
+        term: "coordinate plane",
+        defn: "A grid of streets built from an x-axis (left-right) and a y-axis (up-down) crossing at the center (0, 0).",
+      },
+      {
+        term: "ordered pair (x, y)",
+        defn: "The address of a spot on the grid: go x steps left/right, then y steps up/down.",
+      },
+      {
+        term: "absolute value",
+        defn: "How far a number is from 0, ignoring its sign. |−3| = 3. Use it to count blocks between two points.",
+      },
+      {
+        term: "distance on a grid",
+        defn: "When two points share an x or a y, the distance is |a − b| — subtract the coordinates that differ and drop the sign.",
+      },
+    ],
+    misconceptions: [
+      {
+        tag: "subtract-kept-sign",
+        trigger: "Keeps a negative result when measuring distance.",
+        feedback: "Distance is never negative — take the absolute value: |a − b|.",
+      },
+      {
+        tag: "added-instead-of-subtracted",
+        trigger: "Adds the two coordinates instead of subtracting to find a straight-line distance.",
+        feedback:
+          "On the same row or column, SUBTRACT the coordinates that differ, then drop the sign.",
+      },
+    ],
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Smaller grid · plot prompts name the steps · 5 lives",
+      },
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Bigger grid · measure distances yourself · 3 lives",
+      },
+    },
+  },
+
+  // ── Detective: Statistical Questions (6-sp-a-1game) — 6.SP.A.1 ──
+  "6-sp-a-1game": {
+    ccss: "6.SP.A.1",
+    title: "Question Detective",
+    vocab: [
+      {
+        term: "statistical question",
+        defn: "A question you answer by collecting data that VARIES — different people or things give different answers (like 'How tall are the students in our class?').",
+      },
+      {
+        term: "variability",
+        defn: "How spread out the answers are. Lots of different answers = lots of variability. One repeated answer = none.",
+      },
+      {
+        term: "non-statistical question",
+        defn: "A question with one fixed answer — everyone reports the same thing (like 'What time does school start?'). No variability.",
+      },
+    ],
+    misconceptions: [
+      {
+        tag: "topic-not-variability",
+        trigger: "Calls a question statistical because it sounds 'sciency' or has numbers, even when every answer is the same.",
+        feedback:
+          "A question is statistical only if the answers VARY. If every poller lands on one spot, it has one answer — not statistical.",
+      },
+      {
+        tag: "single-thing",
+        trigger: "Treats a question about ONE person or ONE object as statistical.",
+        feedback:
+          "One thing has one answer. To make it statistical, ask about a whole GROUP so the answers can spread out.",
+      },
+    ],
+    tiers: {
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Clear-cut questions · fewer pollers · guided hints · 5 lives",
+      },
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Subtler questions · more pollers · less help · 3 lives",
+      },
+    },
+  },
 };
 
 export default GAMES_2D;
