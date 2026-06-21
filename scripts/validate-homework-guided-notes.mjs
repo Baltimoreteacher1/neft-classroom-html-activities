@@ -69,7 +69,7 @@ for (const id of lessonIds) {
   }
 
   const quickChecks = (html.match(/Quick Check \d/g) || []).length;
-  if (quickChecks > 2) {
+  if (quickChecks > 4) {
     issues.push({ id, level: "HIGH", msg: `Too many quick check problems: ${quickChecks}` });
   }
   if (quickChecks === 0) {

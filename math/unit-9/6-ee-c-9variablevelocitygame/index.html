@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Variable Velocity - Racing Game | 6.EE.C.9</title>
     <meta
       name="description"
@@ -184,6 +184,29 @@
       }
       .vdef {
         color: var(--txt);
+      }
+      .vimg {
+        flex: 0 0 auto;
+        width: 56px;
+        height: 56px;
+        border-radius: 12px;
+        background: #0b2330;
+        border: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+        line-height: 1;
+      }
+      .vbody {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      @media (max-width: 560px) {
+        .vterm {
+          min-width: 0;
+        }
       }
       .levels {
         display: grid;
@@ -733,7 +756,16 @@
           lo++;
           if (lo > y + 6) break;
         }
-        const lanes = [...cand].sort((a2, b2) => a2 - b2);
+        // SHUFFLE (Fisher–Yates): the correct lane y must not sit in a
+        // predictable position. With sorted lanes the answer always landed in
+        // the upper half (distractors y-1/y-2 pinned it down), letting a player
+        // pick by position instead of by computing y. Shuffling makes the
+        // evaluation the only way to choose the right lane.
+        const lanes = [...cand];
+        for (let i = lanes.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [lanes[i], lanes[j]] = [lanes[j], lanes[i]];
+        }
         return lanes;
       }
 
@@ -766,11 +798,23 @@
       }
 
       // ── Vocab gate ──
+      // Per-term visual for the vocab gate (term + definition + image). The
+      // metadata carries no image URLs, so we map each term to a meaningful
+      // emoji glyph (with a default), mirroring the engine3d vocab-gate which
+      // falls back to emoji/placeholder when no image asset exists.
+      const VOCAB_ICON = {
+        "independent variable": "🎚️",
+        "dependent variable": "📈",
+        evaluate: "🧮",
+      };
+      function vocabImage(term) {
+        return VOCAB_ICON[(term || "").toLowerCase()] || "🔢";
+      }
       function renderVocab() {
         $("vocab-list").innerHTML = (DATA.vocab || [])
           .map(
             (v) =>
-              `<div class="vrow"><span class="vterm">${v.term}</span><span class="vdef">${v.defn}</span></div>`,
+              `<div class="vrow"><span class="vimg" role="img" aria-label="${v.term} icon">${vocabImage(v.term)}</span><span class="vbody"><span class="vterm">${v.term}</span><span class="vdef">${v.defn}</span></span></div>`,
           )
           .join("");
       }
@@ -1011,5 +1055,8 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
-  </body>
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+</body>
 </html>

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Discount Dash — Sale Runner</title>
     <style>
       * {
@@ -290,7 +290,7 @@
           this.combo = 0;
           this.round = 1;
           this.lane = 1;
-          this.speed = 4;
+          this.speed = 2.2;
           this.gameOver = false;
           this.rows = [];
           this.rowGap = 360;
@@ -794,7 +794,7 @@
           if (this.distSinceRow >= this.rowGap) {
             this.distSinceRow = 0;
             this.round++;
-            this.speed = Math.min(9, 4 + this.round * 0.25);
+            this.speed = Math.min(5, 2.2 + this.round * 0.15);
             this.spawnRow();
             this.updateHUD();
           }
@@ -915,7 +915,7 @@
           });
         } catch (e) {}
       });
-</script>
+    </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
@@ -925,5 +925,8 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
-  </body>
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+</body>
 </html>

@@ -19,6 +19,13 @@
     return r;
   };
   const pickN = (a, n) => shuffle(a).slice(0, Math.min(n, a.length));
+  const reduceMotion = () => {
+    try {
+      return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    } catch (e) {
+      return false;
+    }
+  };
 
   /* -------------------- Progress (localStorage) ------------------- */
   const PKEY = "nt-intervention:v1";
@@ -69,10 +76,30 @@
       tablist.parentNode.insertBefore(share, tablist.nextSibling);
     }
 
-    function select(id) {
-      tabs.forEach((t) =>
-        t.setAttribute("aria-selected", String(t.dataset.tab === id)),
-      );
+    // Wire the full WAI-ARIA tabs relationship up front: each tab owns a panel
+    // (aria-controls), each panel points back at its tab (aria-labelledby), and
+    // panels become focusable tabpanels so keyboard users land inside content.
+    if (tablist) tablist.setAttribute("role", "tablist");
+    tabs.forEach((t) => {
+      const id = t.dataset.tab;
+      if (!t.id) t.id = "tab-" + id;
+      t.setAttribute("aria-controls", "panel-" + id);
+      const panel = document.getElementById("panel-" + id);
+      if (panel) {
+        panel.setAttribute("role", "tabpanel");
+        panel.setAttribute("aria-labelledby", t.id);
+        panel.setAttribute("tabindex", "0");
+      }
+    });
+
+    function select(id, focusTab) {
+      tabs.forEach((t) => {
+        const on = t.dataset.tab === id;
+        t.setAttribute("aria-selected", String(on));
+        // Roving tabindex: only the active tab is in the Tab order.
+        t.setAttribute("tabindex", on ? "0" : "-1");
+        if (on && focusTab) t.focus();
+      });
       panels.forEach((p) =>
         p.classList.toggle("active", p.id === "panel-" + id),
       );
@@ -88,6 +115,35 @@
     tabs.forEach((t) =>
       t.addEventListener("click", () => select(t.dataset.tab)),
     );
+
+    // Keyboard support per the ARIA tabs pattern: Left/Right (and Up/Down) move
+    // between tabs, Home/End jump to the ends.
+    if (tablist) {
+      tablist.addEventListener("keydown", (e) => {
+        const keys = {
+          ArrowRight: 1,
+          ArrowDown: 1,
+          ArrowLeft: -1,
+          ArrowUp: -1,
+        };
+        let idx = tabs.findIndex(
+          (t) => t.getAttribute("aria-selected") === "true",
+        );
+        if (idx < 0) idx = 0;
+        if (e.key in keys) {
+          e.preventDefault();
+          idx = (idx + keys[e.key] + tabs.length) % tabs.length;
+          select(tabs[idx].dataset.tab, true);
+        } else if (e.key === "Home") {
+          e.preventDefault();
+          select(tabs[0].dataset.tab, true);
+        } else if (e.key === "End") {
+          e.preventDefault();
+          select(tabs[tabs.length - 1].dataset.tab, true);
+        }
+      });
+    }
+
     const start = location.hash.replace("#", "");
     select(
       tabs.some((t) => t.dataset.tab === start) ? start : tabs[0].dataset.tab,
@@ -160,6 +216,12 @@
             );
           }),
         );
+        // Keep keyboard users in flow: after the first question, move focus to
+        // the first option of the next one (the previous button was replaced).
+        if (i > 0) {
+          const first = $(".opt", mount);
+          if (first) first.focus({ preventScroll: true });
+        }
       }
 
       function finish() {
@@ -281,7 +343,7 @@
       ctx.fillText(q ? q.prompt : "", W / 2, H - 32);
 
       let allGone = true;
-      tiles.forEach((t) => {
+      tiles.forEach((t, idx) => {
         if (t.dead) return;
         allGone = false;
         t.y += speed * (1 + level * 0.08) * 1.25;
@@ -292,8 +354,14 @@
         ctx.strokeStyle = "#2d6fb0";
         ctx.lineWidth = 2;
         ctx.stroke();
+        // Key-number badge (top-left) so keyboard players know which key plays it.
+        ctx.fillStyle = "rgba(234,242,255,0.5)";
+        ctx.font = "700 12px Inter, system-ui, sans-serif";
+        ctx.textAlign = "left";
+        ctx.fillText(String(idx + 1), t.x + 7, t.y + 13);
         ctx.fillStyle = "#eaf2ff";
         ctx.font = "700 20px Inter, system-ui, sans-serif";
+        ctx.textAlign = "center";
         ctx.fillText(t.val, t.x + t.w / 2, t.y + t.h / 2);
         if (t.y > H - 64) {
           // reached bottom
@@ -315,6 +383,7 @@
     }
 
     function flash(color) {
+      if (reduceMotion()) return;
       stage.animate(
         [
           { boxShadow: "inset 0 0 0 4px " + color },
@@ -324,6 +393,21 @@
       );
     }
 
+    // Resolve a chosen tile — shared by pointer and keyboard input.
+    function pick(t) {
+      if (!t || t.dead) return;
+      if (t.val === String(q.answer)) {
+        score += 10;
+        if (score % 80 === 0) {
+          level++;
+          speed += 0.1;
+        }
+        flash("#2c7d6b");
+        newQuestion();
+      } else {
+        loseLife("Not quite — that was " + t.val);
+      }
+    }
     function onTap(e) {
       if (!running) return;
       const r = canvas.getBoundingClientRect();
@@ -332,22 +416,23 @@
       for (const t of tiles) {
         if (t.dead) continue;
         if (px >= t.x && px <= t.x + t.w && py >= t.y && py <= t.y + t.h) {
-          if (t.val === String(q.answer)) {
-            score += 10;
-            if (score % 80 === 0) {
-              level++;
-              speed += 0.1;
-            }
-            flash("#2c7d6b");
-            newQuestion();
-          } else {
-            loseLife("Not quite — that was " + t.val);
-          }
+          pick(t);
           return;
         }
       }
     }
+    // Keyboard play: number keys 1–4 select the tile in that column, so the
+    // game is fully playable without a mouse or touchscreen.
+    function onKey(e) {
+      if (!running) return;
+      const idx = { 1: 0, 2: 1, 3: 2, 4: 3 }[e.key];
+      if (idx == null) return;
+      e.preventDefault();
+      pick(tiles[idx]);
+    }
+    canvas.tabIndex = 0; // focusable for keyboard players
     canvas.addEventListener("click", onTap);
+    canvas.addEventListener("keydown", onKey);
     canvas.addEventListener("touchstart", (e) => {
       e.preventDefault();
       onTap(e);
@@ -358,6 +443,9 @@
       reset();
       running = true;
       overlay.style.display = "none";
+      try {
+        canvas.focus({ preventScroll: true });
+      } catch (e) {}
       raf = requestAnimationFrame(loop);
     }
     function end(win, msg) {
@@ -460,6 +548,10 @@
           )
           .join("");
         locked = false;
+        // Keep keyboard focus on the live question during the timed drill.
+        const first = mount.querySelector(".fd-opts .opt");
+        if (first && document.activeElement !== document.body)
+          first.focus({ preventScroll: true });
       }
       function tick() {
         left--;

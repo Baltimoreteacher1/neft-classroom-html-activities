@@ -1,5 +1,15 @@
 # Games-2D Math-as-Mechanic Rebuild — Build Spec
 
+> **RE-BASELINED 2026-06-21 — this spec is largely DONE; do not re-execute it wholesale.**
+> A fresh classification confirmed **17 of the 23 audit games already meet the bar** and
+> the data/QA layer is complete (`scripts/games2d/data.mjs` now has ~16+ entries, not 3).
+> The per-game build list and Wave A/B/C plan below describe work that has **already
+> shipped** for most games. Remaining real work as of 2026-06-21: rebuild `6-ns-c-6game`
+> (themed-MCQ + giveaways) and minor-fix `6-ee-9gamereview`, `6-ee-c-9variablevelocitygame`,
+> `6-ns-c-5game`, `6-ns-c-8game`, `6-sp-a-1game`; plus vocab gates for the `math/games/u*`
+> arcade family (out of this spec's original scope). Backlog: the `u*` lane-runners are
+> still collision-select MCQ and want true math-as-mechanic rewrites.
+
 **Status:** design approved-in-principle (consolidates `docs/games-audit-2026-06-08.md`).
 **Date:** 2026-06-19. **Branch:** `feat/gold-standard-complete`.
 **Why this exists:** the gold-standard wave finished the data/QA layer for games-2d

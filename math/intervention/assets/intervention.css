@@ -1487,3 +1487,130 @@ section.block {
     display: block;
   }
 }
+
+/* ==========================================================================
+   Reduced motion — honor the OS/browser "reduce motion" setting.
+   Strips decorative transitions, transforms, and the 3D flashcard flip so the
+   UI stays calm for motion-sensitive users (the game is user-initiated).
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* Hover lifts and the card flip rely on transform — neutralize them. */
+  .btn:hover,
+  .topic-card:hover,
+  .topic-card:focus-visible,
+  .opt:hover,
+  .speak-btn:hover {
+    transform: none !important;
+  }
+  .flashcard .fc-inner,
+  .flashcard.flipped .fc-inner {
+    transition: none !important;
+  }
+}
+
+/* ==========================================================================
+   Dark mode — honors the OS/browser color-scheme. Surfaces and ink flip to a
+   calm dark palette; the printable "paper" components (worksheet, family
+   letter) stay light with dark ink so they still read and print like
+   documents. --navy is repurposed as a light heading ink here, so the few
+   places that used it as a *background* are re-pinned to explicit brand blues.
+   ========================================================================== */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --navy: #cfe0f3; /* now a light heading ink (was the dark brand blue) */
+    --teal: #6fb2ef;
+    --teal-light: rgba(111, 178, 239, 0.16);
+    --green: #4cc4a6;
+    --green-light: rgba(76, 196, 166, 0.16);
+    --cream: #0e1722;
+    --ink: #e7eef7;
+    --muted: #9fb0c6;
+    --line: rgba(255, 255, 255, 0.13);
+    --card: #16212f;
+    --surface-2: #1c2939;
+    --shadow: 0 6px 22px rgba(0, 0, 0, 0.5);
+    --shadow-hover: 0 12px 34px rgba(0, 0, 0, 0.62);
+    --amber: #e0a13b;
+    --amber-light: rgba(224, 161, 59, 0.16);
+  }
+  body {
+    background:
+      radial-gradient(1200px 600px at 12% -8%, #14233a 0%, transparent 55%),
+      radial-gradient(1000px 520px at 100% 0%, #102a25 0%, transparent 50%),
+      var(--cream);
+  }
+  .topbar {
+    background: rgba(14, 23, 34, 0.85);
+  }
+
+  /* Re-pin the spots that used --navy as a background (now a light ink). */
+  .skip-link {
+    background: #1c5f95;
+  }
+  .btn-primary {
+    background: #1f6fb2;
+    color: #fff;
+  }
+  .step::before {
+    background: #1f6fb2;
+  }
+  .callout {
+    background: linear-gradient(135deg, #12325b, #1c5f95);
+  }
+  .fc-back {
+    background: linear-gradient(160deg, #12325b, #1c5f95);
+  }
+
+  /* Literal-white interactive surfaces → dark surfaces. */
+  .btn-ghost,
+  .filter-chip,
+  .recent-chip,
+  .glance .g-pill,
+  .speak-btn,
+  .opt,
+  .search-box input,
+  .cert-actions input {
+    background: var(--surface-2);
+    color: var(--ink);
+  }
+  .btn-ghost {
+    color: var(--navy);
+  }
+
+  /* Printable "paper" components stay light with dark ink (screen + print). */
+  .worksheet,
+  .family-letter {
+    background: #ffffff;
+    color: #14223a;
+  }
+  .worksheet h2,
+  .family-letter h2,
+  .ws-header h2 {
+    color: #15487f;
+  }
+  .ws-header {
+    border-bottom-color: #15487f;
+  }
+  .ws-problem {
+    color: #14223a;
+    border-bottom-color: rgba(20, 34, 58, 0.18);
+  }
+  .ws-answer {
+    border-bottom-color: #14223a;
+  }
+  .family-letter .vocab-list b {
+    color: #15487f;
+  }
+}

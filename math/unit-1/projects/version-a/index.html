@@ -1392,9 +1392,10 @@
     </div>
 
     <script>
-      document.getElementById("yr").textContent = new Date().getFullYear();
+      const yrEl = document.getElementById("yr");
+      if (yrEl) yrEl.textContent = new Date().getFullYear();
       const $ = (id) => document.getElementById(id);
-      const num = (id) => parseFloat($(id).value);
+      const num = (id) => { const e = $(id); return e ? parseFloat(e.value) : NaN; };
 
       /* ---- Dynamic SVG Draw Functions ---- */
       function getFactors(n) {
@@ -2199,5 +2200,8 @@ function recalcAll() {
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
     <script src="/shared/projects/projects-tabs.js" defer></script>
-    </body>
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+</body>
 </html>

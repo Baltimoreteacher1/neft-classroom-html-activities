@@ -832,7 +832,13 @@
           else if (!isGame) openPanel(self); // session vanished; let them choose
         });
       } else if (this.cfg.autoStart && !isGame) {
-        openPanel(this); // first visit: show Start New / Continue with Code
+        // First visit: do not cover the page with the panel (it overlapped
+        // ~30% of lessons/projects on first paint). Autosave is already on;
+        // nudge toward the always-visible launcher instead of auto-opening.
+        showToast(
+          this,
+          "Your work saves automatically. Tap the 💾 button to save with a code.",
+        );
       }
     },
 

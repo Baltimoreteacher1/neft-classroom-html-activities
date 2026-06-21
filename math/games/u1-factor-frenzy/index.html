@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Factor Frenzy — Lessons 1.1–1.3 Game | Neft Teacher</title>
     <meta
       name="description"
@@ -322,6 +322,53 @@
         min-height: 44px;
         align-content: flex-start;
       }
+      /* Ghost target slots (Level 1 scaffold): show how many primes a circle still needs. */
+      .ghost-slot {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        border: 2px dashed var(--line);
+        background: rgba(255, 255, 255, 0.03);
+      }
+      /* When a prime is "picked up", the circles glow + invite a tap. */
+      .venn.armed .zone {
+        border-style: solid;
+        border-color: var(--teal-bright);
+        background: #11384a;
+      }
+      .zone.filled {
+        border-style: solid;
+        border-color: var(--shared);
+      }
+      .zone.filled .ztick {
+        color: var(--shared);
+        font-weight: 800;
+      }
+      .tap-cue {
+        display: none;
+        text-align: center;
+        color: var(--teal-bright);
+        font-weight: 700;
+        margin: 2px 0 8px;
+      }
+      .venn-wrap.armed .tap-cue {
+        display: block;
+      }
+      .howto {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        background: #0c2532;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 10px 14px;
+        margin: 4px 0 12px;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .howto b {
+        color: var(--txt);
+      }
       .tray {
         display: flex;
         flex-wrap: wrap;
@@ -335,7 +382,7 @@
           800 1.15rem "Segoe UI",
           system-ui,
           sans-serif;
-        cursor: grab;
+        cursor: pointer;
         border: none;
         border-radius: 12px;
         padding: 12px 16px;
@@ -503,38 +550,56 @@
               <span id="t-b">18</span>
             </div>
             <div class="prompt" id="t-prompt">
-              Drag each prime factor into the right circle.
+              Sort every prime tile into the right circle.
             </div>
           </div>
 
-          <div class="venn">
-            <button
-              class="zone a"
-              data-region="a"
-              aria-label="Only the first number's factors"
-            >
-              <span class="zt">Only <span id="z-a-n">12</span></span>
-              <span class="zsub">primes only in this number</span>
-              <span class="slots" id="slots-a"></span>
-            </button>
-            <button
-              class="zone s"
-              data-region="s"
-              aria-label="Shared factors of both numbers"
-            >
-              <span class="zt">Shared ⚒️</span>
-              <span class="zsub">primes in BOTH → these build the GCF</span>
-              <span class="slots" id="slots-s"></span>
-            </button>
-            <button
-              class="zone b"
-              data-region="b"
-              aria-label="Only the second number's factors"
-            >
-              <span class="zt">Only <span id="z-b-n">18</span></span>
-              <span class="zsub">primes only in this number</span>
-              <span class="slots" id="slots-b"></span>
-            </button>
+          <div class="howto">
+            <span aria-hidden="true">👇</span>
+            <span>
+              <b>How to play:</b> Tap a prime tile to pick it up, then tap a
+              circle to drop it in. A prime goes in the <b>middle</b> circle
+              only if <b>both</b> numbers have it.
+            </span>
+          </div>
+
+          <div class="venn-wrap" id="venn-wrap">
+            <div class="venn">
+              <button
+                class="zone a"
+                data-region="a"
+                aria-label="Only the first number's factors"
+              >
+                <span class="zt"
+                  >Only <span id="z-a-n">12</span> <span class="ztick"></span
+                ></span>
+                <span class="zsub">primes only in this number</span>
+                <span class="slots" id="slots-a"></span>
+              </button>
+              <button
+                class="zone s"
+                data-region="s"
+                aria-label="Shared factors of both numbers"
+              >
+                <span class="zt">Shared ⚒️ <span class="ztick"></span></span>
+                <span class="zsub">primes in BOTH → these build the GCF</span>
+                <span class="slots" id="slots-s"></span>
+              </button>
+              <button
+                class="zone b"
+                data-region="b"
+                aria-label="Only the second number's factors"
+              >
+                <span class="zt"
+                  >Only <span id="z-b-n">18</span> <span class="ztick"></span
+                ></span>
+                <span class="zsub">primes only in this number</span>
+                <span class="slots" id="slots-b"></span>
+              </button>
+            </div>
+            <p class="tap-cue" id="tap-cue" aria-hidden="true">
+              👆 Now tap a circle to drop your prime in
+            </p>
           </div>
 
           <div class="readout">
@@ -543,7 +608,7 @@
           </div>
 
           <p style="text-align: center; color: var(--muted); margin: 6px 0">
-            Prime ingots — pick one, then drop it in a circle:
+            Prime tiles — tap one to pick it up, then tap a circle:
           </p>
           <div
             class="tray"
@@ -900,6 +965,12 @@
         $("slots-a").innerHTML = "";
         $("slots-b").innerHTML = "";
         $("slots-s").innerHTML = "";
+        document
+          .querySelectorAll(".zone")
+          .forEach((z) => z.classList.remove("filled"));
+        disarm();
+        renderGhosts();
+        updateAllZoneStatus();
         $("hint").textContent =
           S.level === 1
             ? "Tip: a prime goes in Shared only if BOTH numbers have it."
@@ -925,30 +996,89 @@
           b.setAttribute("role", "listitem");
           b.setAttribute(
             "aria-label",
-            `Prime factor ${ing.p}. Press Enter to pick up, then choose a circle.`,
+            `Prime factor ${ing.p}. Tap to pick up, then tap a circle.`,
           );
           b.addEventListener("click", () => selectIngot(ing.id));
           tray.appendChild(b);
         });
         if (!tray.children.length)
           tray.innerHTML =
-            '<span style="color:var(--muted)">All ingots placed — forging…</span>';
+            '<span style="color:var(--muted)">All tiles placed — forging…</span>';
       }
 
       function selectIngot(id) {
+        // Tap the same tile again to put it back down.
+        if (S.selected === id) {
+          S.selected = null;
+          document
+            .querySelectorAll(".ingot")
+            .forEach((el) => el.classList.remove("sel"));
+          disarm();
+          srSay("Put the prime back down.");
+          return;
+        }
         S.selected = id;
         document
           .querySelectorAll(".ingot")
           .forEach((el) => el.classList.toggle("sel", el.dataset.id === id));
         const ing = S.cur.ingots.find((x) => x.id === id);
+        arm();
         srSay(
-          `Picked up prime ${ing.p}. Choose Only ${S.cur.a}, Shared, or Only ${S.cur.b}.`,
+          `Picked up prime ${ing.p}. Now tap a circle: Only ${S.cur.a}, Shared, or Only ${S.cur.b}.`,
         );
       }
 
+      // Circles "light up" while a prime is held, prompting the second tap.
+      function arm() {
+        const w = $("venn-wrap"),
+          v = document.querySelector(".venn");
+        if (w) w.classList.add("armed");
+        if (v) v.classList.add("armed");
+      }
+      function disarm() {
+        const w = $("venn-wrap"),
+          v = document.querySelector(".venn");
+        if (w) w.classList.remove("armed");
+        if (v) v.classList.remove("armed");
+      }
+
+      // Region target/placed totals (multiplicity-aware).
+      const regionNeedTotal = (r) =>
+        Object.values(S.cur.need[r]).reduce((a, c) => a + c, 0);
+      const regionPlacedTotal = (r) =>
+        Object.values(S.cur.placed[r]).reduce((a, c) => a + c, 0);
+
+      // Level 1 scaffold: one dashed placeholder per prime each circle still needs.
+      function renderGhosts() {
+        if (S.level !== 1) return;
+        ["a", "s", "b"].forEach((r) => {
+          const host = $("slots-" + r);
+          const n = regionNeedTotal(r);
+          for (let k = 0; k < n; k++) {
+            const g = document.createElement("span");
+            g.className = "ghost-slot";
+            host.appendChild(g);
+          }
+        });
+      }
+      function updateZoneStatus(region) {
+        if (S.level !== 1) return; // counts stay hidden at Level 2 (challenge)
+        const zone = document.querySelector(
+          '.zone[data-region="' + region + '"]',
+        );
+        if (!zone) return;
+        const need = regionNeedTotal(region),
+          have = regionPlacedTotal(region);
+        const tick = zone.querySelector(".ztick");
+        if (tick) tick.textContent = need ? have + "/" + need : "";
+        zone.classList.toggle("filled", need > 0 && have >= need);
+      }
+      const updateAllZoneStatus = () =>
+        ["a", "s", "b"].forEach(updateZoneStatus);
+
       function place(region) {
         if (!S.selected) {
-          flash("Pick up a prime ingot first.", "bad");
+          flash("Tap a prime tile first, then tap a circle.", "bad");
           return;
         }
         const ing = S.cur.ingots.find((x) => x.id === S.selected);
@@ -965,10 +1095,12 @@
           SFX.good();
           addSlot(region, p);
           updateReadout();
+          updateZoneStatus(region);
           renderTray();
           $("hud-score").textContent = S.score;
           flash("Forged! " + ing.p + " → " + regionName(region), "good");
           S.selected = null;
+          disarm();
           if (S.cur.remaining === 0) roundWon();
         } else {
           // wrong placement → misconception nudge
@@ -1017,7 +1149,10 @@
         chip.style.padding = "6px 10px";
         chip.style.fontSize = "0.95rem";
         chip.style.boxShadow = "none";
-        slot.appendChild(chip);
+        // Fill a Level-1 ghost placeholder if one is waiting; else just append.
+        const ghost = slot.querySelector(".ghost-slot");
+        if (ghost) slot.replaceChild(chip, ghost);
+        else slot.appendChild(chip);
       }
 
       function updateReadout() {
@@ -1150,5 +1285,8 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
-  </body>
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+</body>
 </html>

@@ -522,6 +522,83 @@ header.homework-header h1 {
   line-height: 1.45;
 }
 
+/* ---- Family scaffolding: step guide, visual model, show-your-work ---- */
+.hw-step-guide {
+  margin: 14px 0;
+  border: 1.5px solid var(--teal);
+  border-radius: 12px;
+  background: var(--teal-light);
+  overflow: hidden;
+}
+.hw-step-guide > summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 11px 16px;
+  font-family: "Outfit", sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--navy);
+  background: rgba(31, 166, 162, 0.16);
+}
+.hw-step-guide > summary::-webkit-details-marker { display: none; }
+.hw-step-guide > summary::after { content: " ▾"; color: var(--teal); }
+.hw-step-guide[open] > summary::after { content: " ▴"; }
+.hw-steps {
+  margin: 0;
+  padding: 12px 18px 14px 34px;
+  display: grid;
+  gap: 9px;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--navy);
+}
+.hw-steps li { padding-left: 4px; }
+.hw-steps strong { color: var(--navy); }
+
+.hw-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  margin: 14px 0 4px;
+}
+@media (min-width: 640px) {
+  .hw-workspace { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+}
+.hw-visual-caption, .hw-work-label {
+  display: block;
+  font-family: "Outfit", sans-serif;
+  font-weight: 700;
+  font-size: 13.5px;
+  color: var(--navy);
+  margin-bottom: 6px;
+}
+.hw-visual-frame {
+  border: 1.5px dashed #9bb6cf;
+  border-radius: 12px;
+  background: #fbfdff;
+  padding: 8px;
+  text-align: center;
+}
+.hw-visual-svg { width: 100%; height: auto; max-height: 180px; }
+.hw-work-input {
+  width: 100%;
+  min-height: 96px;
+  resize: vertical;
+  line-height: 28px;
+  background-color: #fbfdff;
+  background-image: repeating-linear-gradient(#fbfdff 0, #fbfdff 27px, #d6e2ee 27px, #d6e2ee 28px);
+  font-family: inherit;
+}
+
+@media print {
+  .hw-step-guide { break-inside: avoid; border-color: #888; background: #fff; }
+  .hw-step-guide > summary { background: #f0f0f0; }
+  .hw-step-guide[open] > summary::after, .hw-step-guide > summary::after { content: ""; }
+  .hw-workspace { break-inside: avoid; }
+  .hw-work-input { min-height: 130px; border: 1px solid #888; }
+  .hw-visual-frame { border-color: #888; }
+}
+
 /* Custom styled inputs, checkboxes, and select dropdowns */
 .custom-input {
   width: 100%;
@@ -2096,9 +2173,6 @@ body { font-size: 15px; line-height: 1.58; }
   .card { box-shadow: none; }
 }
 </style>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
 </head>
 <body>
 
@@ -2423,8 +2497,8 @@ body { font-size: 15px; line-height: 1.58; }
     
       <h2 class="section-title">✅ Quick check / Repaso rápido</h2>
       <p class="bilingual-block">
-        <span class="lang-en">One or two problems to try on the screen. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
-        <span class="lang-es" lang="es">Una o dos preguntas en pantalla. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
+        <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
+        <span class="lang-es" lang="es">Unos problemas para practicar juntos. Cada uno tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para mostrar el trabajo</strong>. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
       </p>
     
       <main class="problems-container">
@@ -2488,6 +2562,26 @@ body { font-size: 15px; line-height: 1.58; }
         </div>
       </div>
     
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Make a factor list or a tree to break the number apart.</span><span class="lang-es" lang="es">Haz una lista de factores o un árbol para descomponer el número.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">List factors or multiples in order so none are missed.</span><span class="lang-es" lang="es">Enumera factores o múltiplos en orden para no olvidar ninguno.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Make a factor list or a tree to break the number apart.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Haz una lista de factores o un árbol para descomponer el número.</span></div>
+          <div class="hw-visual-frame"><svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg></div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_0"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_0" name="work_0" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">
           ✓ Check This Problem / Revisar
@@ -2557,11 +2651,243 @@ body { font-size: 15px; line-height: 1.58; }
         </div>
       </div>
     
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Make a factor list or a tree to break the number apart.</span><span class="lang-es" lang="es">Haz una lista de factores o un árbol para descomponer el número.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">List factors or multiples in order so none are missed.</span><span class="lang-es" lang="es">Enumera factores o múltiplos en orden para no olvidar ninguno.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Make a factor list or a tree to break the number apart.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Haz una lista de factores o un árbol para descomponer el número.</span></div>
+          <div class="hw-visual-frame"><svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg></div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_1"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_1" name="work_1" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">
           ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_2" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Quick Check 3</div>
+        <div class="problem-type-badge">DRAG SORT</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">Sort the station ID numbers: drag each one into PRIME (only 1 and itself) or COMPOSITE (more than two factors) to clear the scanner.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
+        
+        <div class="drag-sort-workspace" id="dragsort_2">
+          <div class="drag-columns">
+            
+              <div class="drag-column" data-category-id="prime" ondragover="allowDrop(event)" ondrop="handleDrop(event, 2, 'prime')">
+                <div class="drag-column-header">Prime Numbers</div>
+                <div class="drag-column-slots" id="slots_2_prime" ondragover="allowDrop(event)" ondrop="handleDrop(event, 2, 'prime')"></div>
+              </div>
+              <div class="drag-column" data-category-id="composite" ondragover="allowDrop(event)" ondrop="handleDrop(event, 2, 'composite')">
+                <div class="drag-column-header">Composite Numbers</div>
+                <div class="drag-column-slots" id="slots_2_composite" ondragover="allowDrop(event)" ondrop="handleDrop(event, 2, 'composite')"></div>
+              </div>
+          </div>
+          <div class="drag-source-section">
+            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
+            <div class="drag-source-pile" id="pile_2" ondragover="allowDrop(event)" ondrop="handleDrop(event, 2, '')">
+              
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_2_0"
+                     data-item-index="0"
+                     data-correct-category="prime"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">19</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_2_0', 2); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="prime">Prime Numbers</option><option value="composite">Composite Numbers</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_2_1"
+                     data-item-index="1"
+                     data-correct-category="prime"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">37</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_2_1', 2); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="prime">Prime Numbers</option><option value="composite">Composite Numbers</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_2_2"
+                     data-item-index="2"
+                     data-correct-category="prime"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">41</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_2_2', 2); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="prime">Prime Numbers</option><option value="composite">Composite Numbers</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_2_3"
+                     data-item-index="3"
+                     data-correct-category="composite"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">63</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_2_3', 2); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="prime">Prime Numbers</option><option value="composite">Composite Numbers</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_2_4"
+                     data-item-index="4"
+                     data-correct-category="composite"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">44</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_2_4', 2); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="prime">Prime Numbers</option><option value="composite">Composite Numbers</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_2_5"
+                     data-item-index="5"
+                     data-correct-category="composite"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">99</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_2_5', 2); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="prime">Prime Numbers</option><option value="composite">Composite Numbers</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="drag-controls">
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(2); saveState(); updateProgress();">Reset Sorting</button>
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Make a factor list or a tree to break the number apart.</span><span class="lang-es" lang="es">Haz una lista de factores o un árbol para descomponer el número.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">List factors or multiples in order so none are missed.</span><span class="lang-es" lang="es">Enumera factores o múltiplos en orden para no olvidar ninguno.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_3" data-problem-type="open-response">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Quick Check 4</div>
+        <div class="problem-type-badge">OPEN RESPONSE</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">Choose any two-digit composite number. Show TWO different factor trees that both lead to the same prime factorization. Explain why every composite number has only one prime factorization.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 A complete sentence with math vocabulary is the goal — not a perfect paragraph.</span><span class="lang-es" lang="es">👪 Una oración completa con vocabulario matemático es la meta — no un párrafo perfecto.</span></p>
+        
+        
+          <div class="sentence-frame-card">
+            <span class="sentence-frame-tag">💡 Sentence Starter:</span>
+            <span class="sentence-frame-text" onclick="insertSentenceStarter(3, 'I chose the number ___. My first factor tree starts with ___ × ___, and my second starts with ___ × ___. Both give the same prime factorization: ___. This happens because ___.')">"I chose the number ___. My first factor tree starts with ___ × ___, and my second starts with ___ × ___. Both give the same prime factorization: ___. This happens because ___."</span>
+            <span class="click-to-insert-hint">(Click to insert starter)</span>
+          </div>
+        
+        
+        <div class="open-response-wrapper">
+          <textarea id="open_response_3" 
+                    class="custom-textarea open-response-textarea" 
+                    data-min-length="40" 
+                    data-keywords="[&quot;factor tree&quot;,&quot;prime factorization&quot;,&quot;same&quot;,&quot;only one&quot;,&quot;composite&quot;,&quot;break down&quot;]"
+                    placeholder="Write your mathematical explanation here..." 
+                    oninput="saveState(); updateProgress();"></textarea>
+          <span class="feedback-badge"></span>
+        </div>
+        
+        
+          <div class="word-bank-container">
+            <div class="word-bank-label">Key Vocabulary to include (click to insert):</div>
+            <div class="word-bank-chips">
+              <span class="word-chip" onclick="insertWord(3, 'factor tree')">factor tree</span><span class="word-chip" onclick="insertWord(3, 'prime factorization')">prime factorization</span><span class="word-chip" onclick="insertWord(3, 'same')">same</span><span class="word-chip" onclick="insertWord(3, 'only one')">only one</span><span class="word-chip" onclick="insertWord(3, 'composite')">composite</span><span class="word-chip" onclick="insertWord(3, 'break down')">break down</span>
+            </div>
+          </div>
+        
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Make a factor list or a tree to break the number apart.</span><span class="lang-es" lang="es">Haz una lista de factores o un árbol para descomponer el número.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">List factors or multiples in order so none are missed.</span><span class="lang-es" lang="es">Enumera factores o múltiplos en orden para no olvidar ninguno.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Make a factor list or a tree to break the number apart.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Haz una lista de factores o un árbol para descomponer el número.</span></div>
+          <div class="hw-visual-frame"><svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg></div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_3"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_3" name="work_3" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
     </section>
   </main>
@@ -2766,7 +3092,7 @@ body { font-size: 15px; line-height: 1.58; }
     
     <div class="score-progress-container">
       <div class="score-text">
-        Progress / Progreso: <span id="progress_text">0 / 2 Completed</span>
+        Progress / Progreso: <span id="progress_text">0 / 4 Completed</span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -4146,8 +4472,8 @@ window.onload = function() {
   });
 };
 </script>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
 </body>
 </html>

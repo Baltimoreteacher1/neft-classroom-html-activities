@@ -414,26 +414,64 @@ export async function onRequest(context) {
 
       // Bulk roster sync: assign names/classes/grades/notes to save codes.
       // Body: { rows: [{ saveCode, studentName?, section?, grade?, note? }] }
+      //   - Real student save codes are updated in place.
+      //   - Codes that do not exist yet (e.g. manually-added students with a
+      //     synthetic "MAN-XXXX" code, or names imported ahead of a student's
+      //     first save) are inserted as a placeholder roster row. When the real
+      //     student later hits /create|/save, their state fills in but the
+      //     teacher-entered name/class is preserved (that route only touches
+      //     state/progress on conflict).
+      // Body alt: { delete: [saveCode, ...] } removes manual-only rows. Never
+      //     touches a row with real activity progress — only activity_id='manual'.
       if (seg === "roster" && method === "POST") {
         const body = await request.json().catch(() => null);
+
+        // --- Delete (manual rows only) -------------------------------------
+        const del = (body && Array.isArray(body.delete) && body.delete) || [];
+        if (del.length) {
+          let removed = 0;
+          const dstmt = env.DB.prepare(
+            "DELETE FROM student_progress WHERE save_code = ? AND activity_id = 'manual'",
+          );
+          const dbatch = [];
+          for (const c of del.slice(0, 2000)) {
+            const code = String(c || "").toUpperCase();
+            if (!validCode(code)) continue;
+            dbatch.push(dstmt.bind(code));
+            removed++;
+          }
+          if (dbatch.length) await env.DB.batch(dbatch);
+          return json({ ok: true, removed });
+        }
+
+        // --- Upsert names/classes/grades/notes -----------------------------
         const rows = (body && Array.isArray(body.rows) && body.rows) || [];
         let updated = 0;
+        const nowIso = new Date().toISOString();
         const stmt = env.DB.prepare(
-          `UPDATE student_progress SET
-             student_name = COALESCE(NULLIF(?, ' '), student_name),
-             section      = COALESCE(NULLIF(?, ' '), section),
-             manual_grade = COALESCE(NULLIF(?, ' '), manual_grade),
-             teacher_note = COALESCE(NULLIF(?, ' '), teacher_note)
-           WHERE save_code = ?`,
+          `INSERT INTO student_progress
+             (save_code, activity_id, activity_title, student_name, section,
+              state_json, progress_percent, manual_grade, teacher_note,
+              created_at, updated_at)
+           VALUES (?, 'manual', 'Manual entry', NULLIF(?, ' '), NULLIF(?, ' '),
+                   '{}', 0, NULLIF(?, ' '), NULLIF(?, ' '), ?, ?)
+           ON CONFLICT(save_code) DO UPDATE SET
+             student_name = COALESCE(excluded.student_name, student_name),
+             section      = COALESCE(excluded.section, section),
+             manual_grade = COALESCE(excluded.manual_grade, manual_grade),
+             teacher_note = COALESCE(excluded.teacher_note, teacher_note)`,
         );
         const batch = [];
         for (const r of rows.slice(0, 2000)) {
           const code = (r && r.saveCode ? String(r.saveCode) : "").toUpperCase();
           if (!validCode(code)) continue;
           // " " sentinel = field omitted → keep existing value. An explicit
-          // empty string overwrites (clears) the field.
+          // empty string overwrites (clears) the field. NULLIF maps the
+          // sentinel to NULL so COALESCE on conflict keeps the old value.
           const f = (v) => (v === undefined ? " " : clamp(v, 300));
-          batch.push(stmt.bind(f(r.studentName), f(r.section), f(r.grade), f(r.note), code));
+          batch.push(
+            stmt.bind(code, f(r.studentName), f(r.section), f(r.grade), f(r.note), nowIso, nowIso),
+          );
           updated++;
         }
         if (batch.length) await env.DB.batch(batch);
@@ -485,10 +523,14 @@ export async function onRequest(context) {
       }
 
       // seg === "grades": pivot students (rows) × activities (columns).
+      // Manually-added students (MAN- codes) are placeholders with no real
+      // activity: they keep their row (so the class roster is complete) but
+      // their "Manual entry" never becomes a graded column.
+      const isManual = (r) => typeof r.code === "string" && r.code.indexOf("MAN-") === 0;
       const activities = [];
       const seenAct = new Set();
       for (const r of records) {
-        if (r.activity && !seenAct.has(r.activity)) {
+        if (r.activity && !isManual(r) && !seenAct.has(r.activity)) {
           seenAct.add(r.activity);
           activities.push(r.activity);
         }
@@ -502,6 +544,7 @@ export async function onRequest(context) {
             section: r.section || "",
             cells: {},
           });
+        if (isManual(r) || !r.activity) continue;
         // cell = manual grade ?? extracted score ?? progress percent
         const cellVal =
           r.grade !== "" && r.grade != null ? r.grade : r.score != null ? r.score : r.progress;

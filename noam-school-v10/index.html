@@ -29,6 +29,9 @@
   <!-- nsr-injected:end -->
 </head>
   <body>
+    <!-- Ambient Backdrop Glows -->
+    <div class="ambient-glow bg-blob-1" aria-hidden="true"></div>
+    <div class="ambient-glow bg-blob-2" aria-hidden="true"></div>
     <a class="skip-link" href="#main">Skip to content</a>
     <div class="wrap">
       <header class="top">
@@ -40,6 +43,9 @@
           </div>
         </div>
         <div class="top-actions">
+          <button class="btn sm" data-act="open-command-bar" id="searchBtn" aria-label="Search and commands" title="Search and commands (Cmd+K)">
+            🔍 Search
+          </button>
           <span class="chip online" id="connChip" title="Connection status"
             ><span class="dot" aria-hidden="true"></span
             ><span id="connText">Online</span></span
@@ -131,6 +137,16 @@
         <div class="phase" id="fPhase">Focus</div>
       </div>
       <div class="fsteps" id="fSteps"></div>
+      <!-- Procedural Focus Sound Engine Controls -->
+      <div class="fambient-controls" id="fAmbientControls">
+        <span class="fambient-label">🧠 Background Focus Sound</span>
+        <div class="fambient-buttons">
+          <button class="btn sm" data-act="focus-sound" data-arg="none" aria-pressed="true">Silence</button>
+          <button class="btn sm" data-act="focus-sound" data-arg="rain">Gentle Rain</button>
+          <button class="btn sm" data-act="focus-sound" data-arg="rumble">Cozy Rumble</button>
+          <button class="btn sm" data-act="focus-sound" data-arg="ticks">Focus Ticks</button>
+        </div>
+      </div>
       <div class="factions">
         <button class="btn" data-act="focus-stop">⏹ Stop</button>
         <button class="btn go" data-act="complete" id="fDone">
@@ -164,6 +180,29 @@
       <div class="gactions" id="gActions"></div>
     </div>
 
+    <!-- Command Bar Modal -->
+    <div
+      class="command-bar-back"
+      id="commandBarBack"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Command bar"
+      aria-hidden="true"
+    >
+      <div class="command-bar-modal">
+        <div class="cmd-head">
+          <input
+            type="text"
+            id="cmdInput"
+            placeholder="Search tasks, switch views, or type commands... (try /focus, /theme)"
+            autocomplete="off"
+          />
+          <button class="btn sm danger" data-act="close-command-bar" aria-label="Close">✕</button>
+        </div>
+        <div class="cmd-results" id="cmdResults"></div>
+      </div>
+    </div>
+
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
     <script src="app.js" defer></script>
@@ -174,5 +213,8 @@
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js" defer></script>
   <!-- nsr-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
 </body>
 </html>

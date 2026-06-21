@@ -3,7 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
     <title>Teacher Guide — Math Intervention | Neft Teacher</title>
     <meta name="description" content="Pacing guide, standards correlation, and routine for the 6th-grade math intervention program." />
     <link rel="canonical" href="https://eduwonderlab.com/math/intervention/teacher/" />
@@ -22,10 +21,23 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/math/intervention/assets/intervention.css" />
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-</head>
+    <link rel="manifest" href="/math/intervention/manifest.webmanifest" />
+    <link rel="icon" href="/assets/favicon.svg" />
+    <link rel="apple-touch-icon" href="/assets/favicon.svg" />
+    <script>
+      // Register the offline service worker so stations keep working without
+      // wifi once visited (classroom-friendly). Scoped to /math/intervention/.
+      if ("serviceWorker" in navigator) {
+        addEventListener("load", function () {
+          navigator.serviceWorker
+            .register("/math/intervention/sw.js", {
+              scope: "/math/intervention/",
+            })
+            .catch(function () {});
+        });
+      }
+    </script>
+  </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
     <header class="topbar">
@@ -189,9 +201,9 @@
         </p>
       </div>
     </footer>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
 </body>
 </html>
     <script src="/math/intervention/assets/intervention-engine.js"></script>

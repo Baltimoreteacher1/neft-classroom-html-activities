@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Fraction Frenzy — Lessons 2.1–2.5 Game | Neft Teacher</title>
     <meta
       name="description"
@@ -82,6 +82,105 @@
         white-space: nowrap;
         border: 0;
       }
+      /* ── Vocab gate (shown BEFORE the game boots) ── */
+      #fr-vocab {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        overflow-y: auto;
+        background: rgba(28, 12, 25, 0.96);
+        font-family: "Segoe UI", system-ui, sans-serif;
+      }
+      #fr-vocab .fr-vcard {
+        background: #3a1834;
+        border: 1px solid #6b3050;
+        border-radius: 18px;
+        padding: 22px 22px 24px;
+        max-width: 560px;
+        width: 100%;
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
+        margin: auto;
+      }
+      #fr-vocab h2 {
+        color: #ff7ba8;
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin-bottom: 2px;
+      }
+      #fr-vocab .fr-vsub {
+        color: #c890a8;
+        font-size: 0.9rem;
+        margin-bottom: 14px;
+      }
+      #fr-vocab .fr-vlist {
+        display: grid;
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+      #fr-vocab .fr-vrow {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        background: #2a1326;
+        border: 1px solid #6b3050;
+        border-radius: 12px;
+        padding: 12px 14px;
+      }
+      #fr-vocab .fr-vimg {
+        flex: 0 0 auto;
+        width: 58px;
+        height: 58px;
+        border-radius: 12px;
+        background: #4a2244;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 34px;
+        line-height: 1;
+      }
+      #fr-vocab .fr-vbody {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+      #fr-vocab .fr-vterm {
+        color: #ffb648;
+        font-weight: 800;
+        font-size: 1.05rem;
+      }
+      #fr-vocab .fr-vdef {
+        color: #f0d7e2;
+        font-size: 0.95rem;
+        line-height: 1.45;
+        margin-top: 2px;
+      }
+      #fr-vocab .fr-vgo {
+        width: 100%;
+        font:
+          800 1.1rem "Segoe UI",
+          system-ui,
+          sans-serif;
+        cursor: pointer;
+        border: none;
+        border-radius: 12px;
+        padding: 16px 22px;
+        color: #fff3ec;
+        background: #c45a3c;
+        transition:
+          background 0.12s,
+          transform 0.12s;
+      }
+      #fr-vocab .fr-vgo:hover {
+        background: #d86c4c;
+        transform: translateY(-1px);
+      }
+      #fr-vocab .fr-vgo:focus-visible {
+        outline: 3px solid #ffb648;
+        outline-offset: 3px;
+      }
     </style>
     <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
     <script>
@@ -111,6 +210,24 @@
   <body>
     <div id="fr-bg" aria-hidden="true"></div>
     <div id="fr-sr" role="status" aria-live="polite"></div>
+
+    <!-- VOCAB GATE — term + Level-1 definition + image/emoji, shown BEFORE play -->
+    <div
+      id="fr-vocab"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="fr-vocab-h"
+    >
+      <div class="fr-vcard">
+        <h2 id="fr-vocab-h">Words to know first</h2>
+        <p class="fr-vsub">Dividing fractions · Lessons 2.1–2.5 · 6.NS.1</p>
+        <div class="fr-vlist" id="fr-vocab-list"></div>
+        <button class="fr-vgo" id="fr-vocab-go" type="button">
+          I'm ready — load the cannon ▶
+        </button>
+      </div>
+    </div>
+
     <script>
       (function () {
         var host = document.getElementById("fr-bg");
@@ -159,8 +276,9 @@
         init() {
           if (!this.ctx)
             try {
-              this.ctx = new (window.AudioContext ||
-                window.webkitAudioContext)();
+              this.ctx = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
             } catch (e) {}
         },
         play(t, f, d, v = 0.2) {
@@ -302,7 +420,20 @@
             tag: "Fraction ÷ Unit Fraction",
             prompt: a + "/" + b + " ÷ 1/" + d,
             why:
-              a + "/" + b + " ÷ 1/" + d + " = " + a + "/" + b + " × " + d + " = " + ans + ".",
+              a +
+              "/" +
+              b +
+              " ÷ 1/" +
+              d +
+              " = " +
+              a +
+              "/" +
+              b +
+              " × " +
+              d +
+              " = " +
+              ans +
+              ".",
             bubbles: g.labels,
             correctIndex: g.correctIndex,
           };
@@ -321,7 +452,18 @@
         return {
           tag: "Unit Fraction ÷ Whole",
           prompt: "1/" + b + " ÷ " + n,
-          why: "1/" + b + " ÷ " + n + " = 1/(" + b + "×" + n + ") = 1/" + denom + ".",
+          why:
+            "1/" +
+            b +
+            " ÷ " +
+            n +
+            " = 1/(" +
+            b +
+            "×" +
+            n +
+            ") = 1/" +
+            denom +
+            ".",
           bubbles: g.labels,
           correctIndex: g.correctIndex,
         };
@@ -409,10 +551,15 @@
             )
             .setOrigin(0.5);
           this.add
-            .text(cx, 356, "← → or A/D to aim   ·   Space/↑ to fire   ·   tap a bubble", {
-              fontSize: "14px",
-              color: "#b380a0",
-            })
+            .text(
+              cx,
+              356,
+              "← → or A/D to aim   ·   Space/↑ to fire   ·   tap a bubble",
+              {
+                fontSize: "14px",
+                color: "#b380a0",
+              },
+            )
             .setOrigin(0.5);
 
           const hs = localStorage.getItem(LS_KEY);
@@ -544,7 +691,9 @@
             .setDepth(9);
 
           // Cannon base + barrel
-          this.add.circle(this.cannonX, this.cannonY, 34, 0x6b3050).setDepth(10);
+          this.add
+            .circle(this.cannonX, this.cannonY, 34, 0x6b3050)
+            .setDepth(10);
           this.barrel = this.add
             .rectangle(this.cannonX, this.cannonY, 18, 56, 0xffb648)
             .setOrigin(0.5, 1)
@@ -659,7 +808,9 @@
           const slotX = [W * 0.25, W * 0.5, W * 0.75];
           const drift = (28 + (this.level - 1) * 22) / 1000; // px/ms
           for (let i = 0; i < 3; i++) {
-            const c = this.add.container(slotX[i], 200 + (i % 2) * 40).setDepth(14);
+            const c = this.add
+              .container(slotX[i], 200 + (i % 2) * 40)
+              .setDepth(14);
             const circle = this.add.graphics();
             circle.fillStyle(0x6b3050, 0.92);
             circle.fillCircle(0, 0, 42);
@@ -1018,7 +1169,9 @@
           hub.on("pointerout", () => hub.setFillStyle(0x4a2240));
           hub.on("pointerdown", () => (window.location.href = "/math/games/"));
 
-          this.input.keyboard.on("keydown-SPACE", () => this.scene.start("Game"));
+          this.input.keyboard.on("keydown-SPACE", () =>
+            this.scene.start("Game"),
+          );
 
           if (won && stars >= 2 && !this.reduce) {
             const p = this.add
@@ -1043,29 +1196,116 @@
       }
 
       config.scene = [BootScene, TitleScene, GameScene, ResultScene];
-      const game = new Phaser.Game(config);
 
-      game.events.once("ready", function () {
-        try {
-          const cv = game.canvas;
-          if (!cv) return;
-          cv.setAttribute("role", "application");
-          cv.setAttribute(
-            "aria-label",
-            "Fraction Frenzy bubble-popper math game. Divide the fractions, then " +
-              "aim the cannon with the arrow keys or A and D and press Space or Up " +
-              "to fire at the bubble showing the correct quotient. Press Space to " +
-              "start.",
+      // ── Boot the Phaser game (called AFTER the vocab gate is dismissed) ──
+      function bootGame() {
+        const game = new Phaser.Game(config);
+
+        game.events.once("ready", function () {
+          try {
+            const cv = game.canvas;
+            if (!cv) return;
+            cv.setAttribute("role", "application");
+            cv.setAttribute(
+              "aria-label",
+              "Fraction Frenzy bubble-popper math game. Divide the fractions, then " +
+                "aim the cannon with the arrow keys or A and D and press Space or Up " +
+                "to fire at the bubble showing the correct quotient. Press Space to " +
+                "start.",
+            );
+            cv.setAttribute("aria-roledescription", "math game");
+            if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
+            cv.addEventListener("pointerdown", function () {
+              try {
+                cv.focus();
+              } catch (e) {}
+            });
+          } catch (e) {}
+        });
+      }
+
+      // ════════════════════════════════════════════════════════════════════
+      // VOCAB GATE — repo rule: term + Level-1 definition + image/emoji shown
+      // BEFORE play. The 4 key words for dividing fractions (6.NS.1). Default
+      // shown; the gate appears once per page load, ahead of the Phaser flow
+      // (in-game "Play again" replays inside Phaser and is not re-gated).
+      // ════════════════════════════════════════════════════════════════════
+      (function vocabGate() {
+        const VOCAB = [
+          {
+            term: "Dividend",
+            emoji: "🍕",
+            def: "The amount you START with — the number being split up. In 3 ÷ 1/4, the dividend is 3.",
+          },
+          {
+            term: "Divisor",
+            emoji: "✂️",
+            def: "The size of EACH piece you split into. In 3 ÷ 1/4, the divisor is 1/4.",
+          },
+          {
+            term: "Reciprocal",
+            emoji: "🔄",
+            def: "A fraction flipped upside down. The reciprocal of 1/4 is 4. To divide, you flip the divisor and multiply.",
+          },
+          {
+            term: "Quotient",
+            emoji: "🎯",
+            def: "The ANSWER to a division problem — how many pieces you get. 3 ÷ 1/4 = 12, so 12 is the quotient.",
+          },
+        ];
+
+        const overlay = document.getElementById("fr-vocab");
+        const list = document.getElementById("fr-vocab-list");
+        const goBtn = document.getElementById("fr-vocab-go");
+        if (!overlay || !list || !goBtn) {
+          bootGame();
+          return;
+        }
+
+        const esc = (s) =>
+          String(s).replace(
+            /[&<>"']/g,
+            (c) =>
+              ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;",
+              })[c],
           );
-          cv.setAttribute("aria-roledescription", "math game");
-          if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
-          cv.addEventListener("pointerdown", function () {
-            try {
-              cv.focus();
-            } catch (e) {}
-          });
-        } catch (e) {}
-      });
+
+        list.innerHTML = VOCAB.map(
+          (v) =>
+            '<div class="fr-vrow">' +
+            '<div class="fr-vimg" aria-hidden="true">' +
+            esc(v.emoji) +
+            "</div>" +
+            '<div class="fr-vbody">' +
+            '<div class="fr-vterm">' +
+            esc(v.term) +
+            "</div>" +
+            '<div class="fr-vdef">' +
+            esc(v.def) +
+            "</div>" +
+            "</div>" +
+            "</div>",
+        ).join("");
+
+        srSay(
+          "Words to know first before playing Fraction Frenzy: " +
+            VOCAB.map((v) => v.term + ", " + v.def).join(" ") +
+            " Press the button when you are ready to play.",
+        );
+
+        function start() {
+          goBtn.removeEventListener("click", start);
+          overlay.parentNode && overlay.parentNode.removeChild(overlay);
+          bootGame();
+        }
+        goBtn.addEventListener("click", start);
+        goBtn.focus();
+      })();
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>
@@ -1076,5 +1316,8 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
-  </body>
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+</body>
 </html>

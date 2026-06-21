@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Equation Quest — Rune Leap | Math Games</title>
     <meta
       name="description"
@@ -214,8 +214,9 @@
         init() {
           if (!this.ctx)
             try {
-              this.ctx = new (window.AudioContext ||
-                window.webkitAudioContext)();
+              this.ctx = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
             } catch (e) {}
         },
         play(t, f, d, v = 0.18) {
@@ -394,11 +395,38 @@
         parent: document.body,
         backgroundColor: "#0c281d",
         scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-        scene: [BootScene, TitleScene, GameScene, ResultScene],
+        scene: [BootScene, TitleScene, VocabScene, GameScene, ResultScene],
       };
 
+      // ── Words to know first (vocab gate) ──────────────────────────────────
+      // Repo rule: term + student-facing (Level-1) definition + image/emoji
+      // shown BEFORE play. Topic: one-step equations (6.EE.7). The game does
+      // not track replay, so the gate shows before every quest.
+      const VOCAB_TERMS = [
+        {
+          term: "Equation",
+          emoji: "⚖️",
+          def: "A math sentence that says two sides are equal, with an = sign. Example: x + 5 = 9.",
+        },
+        {
+          term: "Variable",
+          emoji: "🔤",
+          def: "A letter, like x, that stands for a number you don't know yet.",
+        },
+        {
+          term: "Solve",
+          emoji: "🔍",
+          def: "To find the number the variable stands for so both sides stay equal.",
+        },
+        {
+          term: "Inverse operation",
+          emoji: "🔁",
+          def: "The opposite move that undoes another. Add undoes subtract; multiply undoes divide.",
+        },
+      ];
+
       function BootScene() {
-        return new Phaser.Scene("Boot");
+        Phaser.Scene.call(this, "Boot");
       }
       BootScene.prototype = Object.create(Phaser.Scene.prototype);
       BootScene.prototype.constructor = BootScene;
@@ -416,7 +444,7 @@
       };
 
       function TitleScene() {
-        return new Phaser.Scene("Title");
+        Phaser.Scene.call(this, "Title");
       }
       TitleScene.prototype = Object.create(Phaser.Scene.prototype);
       TitleScene.prototype.constructor = TitleScene;
@@ -498,7 +526,7 @@
         const start = () => {
           SFX.init();
           SFX.jump();
-          this.scene.start("Game");
+          this.scene.start("Vocab");
         };
         btn.on("pointerover", () => btn.setFillStyle(0x36a35b));
         btn.on("pointerout", () => btn.setFillStyle(0x2d874b));
@@ -520,8 +548,168 @@
         srSay("Equation Quest Rune Leap. Press Start to play.");
       };
 
+      // ── VocabScene — "Words to know first" gate, shown before play ────────
+      // Card per term: emoji image + term + Level-1 definition. Back/Next to
+      // step through; the last step leaps into the Game. Keyboard + pointer.
+      function VocabScene() {
+        Phaser.Scene.call(this, "Vocab");
+      }
+      VocabScene.prototype = Object.create(Phaser.Scene.prototype);
+      VocabScene.prototype.constructor = VocabScene;
+      VocabScene.prototype.init = function () {
+        this.idx = 0;
+        this.parts = [];
+      };
+      VocabScene.prototype.create = function () {
+        this.add.rectangle(W / 2, H / 2, W, H, 0x0c281d);
+        const cx = W / 2;
+        this.add
+          .text(cx, 70, "WORDS TO KNOW FIRST", {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "34px",
+            color: "#3fbf8f",
+            stroke: "#061410",
+            strokeThickness: 5,
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 110, "Learn these before you leap. (No answers given!)", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "15px",
+            color: "#9af0c8",
+          })
+          .setOrigin(0.5);
+
+        // Card frame.
+        this.add
+          .rectangle(cx, 320, 560, 320, 0x102f22)
+          .setStrokeStyle(3, 0x3fbf8f);
+
+        this.stepText = this.add
+          .text(cx, 192, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "13px",
+            color: "#7fc0a0",
+            fontStyle: "bold",
+          })
+          .setOrigin(0.5);
+        this.emojiText = this.add
+          .text(cx, 244, "", { fontSize: "72px" })
+          .setOrigin(0.5);
+        this.termText = this.add
+          .text(cx, 310, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "30px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        this.defText = this.add
+          .text(cx, 372, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "17px",
+            color: "#cdeede",
+            align: "center",
+            wordWrap: { width: 500 },
+          })
+          .setOrigin(0.5);
+
+        // Progress dots.
+        this.dots = [];
+        const dn = VOCAB_TERMS.length;
+        const dStart = cx - (dn - 1) * 11;
+        for (let i = 0; i < dn; i++) {
+          this.dots.push(this.add.circle(dStart + i * 22, 442, 5, 0x1d5a3c));
+        }
+
+        // Back button.
+        this.backBtn = this.add
+          .rectangle(cx - 130, 500, 150, 50, 0x1a3a2a)
+          .setInteractive({ useHandCursor: true });
+        this.backText = this.add
+          .text(cx - 130, 500, "← Back", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            fontStyle: "bold",
+            color: "#cdeede",
+          })
+          .setOrigin(0.5);
+        this.backBtn.on("pointerover", () =>
+          this.backBtn.setFillStyle(0x244c39),
+        );
+        this.backBtn.on("pointerout", () =>
+          this.backBtn.setFillStyle(0x1a3a2a),
+        );
+        this.backBtn.on("pointerdown", () => this.go(-1));
+
+        // Next / Start button.
+        this.nextBtn = this.add
+          .rectangle(cx + 130, 500, 200, 50, 0x2d874b)
+          .setInteractive({ useHandCursor: true });
+        this.nextText = this.add
+          .text(cx + 130, 500, "Next →", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        this.nextBtn.on("pointerover", () =>
+          this.nextBtn.setFillStyle(0x36a35b),
+        );
+        this.nextBtn.on("pointerout", () =>
+          this.nextBtn.setFillStyle(0x2d874b),
+        );
+        this.nextBtn.on("pointerdown", () => this.go(1));
+
+        this.input.keyboard.on("keydown-SPACE", () => this.go(1));
+        this.input.keyboard.on("keydown-ENTER", () => this.go(1));
+        this.input.keyboard.on("keydown-RIGHT", () => this.go(1));
+        this.input.keyboard.on("keydown-LEFT", () => this.go(-1));
+
+        this.render();
+      };
+      VocabScene.prototype.go = function (dir) {
+        const next = this.idx + dir;
+        if (next < 0) return;
+        if (next >= VOCAB_TERMS.length) {
+          SFX.jump();
+          this.scene.start("Game");
+          return;
+        }
+        this.idx = next;
+        SFX.step();
+        this.render();
+      };
+      VocabScene.prototype.render = function () {
+        const t = VOCAB_TERMS[this.idx];
+        const last = this.idx === VOCAB_TERMS.length - 1;
+        this.stepText.setText(
+          "Word " + (this.idx + 1) + " of " + VOCAB_TERMS.length,
+        );
+        this.emojiText.setText(t.emoji);
+        this.termText.setText(t.term);
+        this.defText.setText(t.def);
+        this.nextText.setText(last ? "Start playing ▶" : "Next →");
+        this.backBtn.setVisible(this.idx > 0);
+        this.backText.setVisible(this.idx > 0);
+        this.dots.forEach((d, i) =>
+          d.setFillStyle(i === this.idx ? 0x3fbf8f : 0x1d5a3c),
+        );
+        srSay(
+          "Key word " +
+            (this.idx + 1) +
+            " of " +
+            VOCAB_TERMS.length +
+            ". " +
+            t.term +
+            ". " +
+            t.def,
+        );
+      };
+
       function GameScene() {
-        return new Phaser.Scene("Game");
+        Phaser.Scene.call(this, "Game");
       }
       GameScene.prototype = Object.create(Phaser.Scene.prototype);
       GameScene.prototype.constructor = GameScene;
@@ -912,7 +1100,7 @@
       };
 
       function ResultScene() {
-        return new Phaser.Scene("Result");
+        Phaser.Scene.call(this, "Result");
       }
       ResultScene.prototype = Object.create(Phaser.Scene.prototype);
       ResultScene.prototype.constructor = ResultScene;
@@ -1064,5 +1252,8 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
-  </body>
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+</body>
 </html>

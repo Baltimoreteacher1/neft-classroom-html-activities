@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Equation Fortress - Tower Defense | 6.EE.C.9</title>
     <meta
       name="description"
@@ -177,6 +177,16 @@
         color: var(--gold);
         font-weight: 700;
         min-width: 150px;
+      }
+      .vrow img.vimg {
+        width: 56px;
+        height: 56px;
+        flex: 0 0 56px;
+        object-fit: contain;
+        border-radius: 10px;
+        background: #07212d;
+        border: 1px solid var(--line);
+        padding: 4px;
       }
       .levels {
         display: grid;
@@ -896,11 +906,23 @@
       }
 
       // ── Render: vocab gate + level select ──
+      // Term → illustration. Used when DATA.vocab[i].img is empty (the shared
+      // metadata ships blank img fields), so the gate always shows term+def+image.
+      const VOCAB_IMG = {
+        "independent variable": "/assets/vocab-images/variable.svg",
+        "dependent variable": "/assets/vocab-images/variable.svg",
+        "rule (equation)": "/assets/vocab-images/equation.svg",
+      };
+      function vocabImg(v) {
+        return (
+          v.img || VOCAB_IMG[v.term] || "/assets/vocab-images/equation.svg"
+        );
+      }
       function renderVocab() {
         $("vocab-list").innerHTML = (DATA.vocab || [])
           .map(
             (v) =>
-              `<div class="vrow"><span class="vterm">${v.term}</span><span>${v.defn}</span></div>`,
+              `<div class="vrow"><img class="vimg" src="${vocabImg(v)}" alt="" aria-hidden="true" onerror="this.style.display='none'"><span class="vterm">${v.term}</span><span>${v.defn}</span></div>`,
           )
           .join("");
       }
@@ -969,5 +991,8 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
-  </body>
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+</body>
 </html>

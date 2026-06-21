@@ -281,6 +281,7 @@
         morningBriefingTime: "07:15",
         leaveByTime: "",
         sync: { enabled: false, code: "", lastAt: "" },
+        themeGradient: "",
         // Google Calendar (read-only, client-side OAuth). Only the Web Client ID
         // is persisted — the access token lives in memory and is never stored.
         googleClientId: "",
@@ -315,6 +316,7 @@
       // { dateKey: true } — marks days the "did you write everything down?"
       // capture prompt was answered, so it only nudges once per day.
       captureLog: {},
+      reflections: {},
       updatedAt: Date.now(),
     };
   }
@@ -324,6 +326,7 @@
     if (!x || typeof x !== "object") return base;
     const s = { ...base.settings, ...(x.settings || {}) };
     s.sync = { ...base.settings.sync, ...(x.settings?.sync || {}) };
+    s.themeGradient = String(x.settings?.themeGradient || "");
     let order = Array.isArray(s.homeOrder)
       ? s.homeOrder
       : base.settings.homeOrder;
@@ -387,6 +390,7 @@
           ? { messages: x.gmail.messages, fetchedAt: x.gmail.fetchedAt || "" }
           : { messages: [], fetchedAt: "" },
       checkins: x.checkins && typeof x.checkins === "object" ? x.checkins : {},
+      reflections: x.reflections && typeof x.reflections === "object" ? x.reflections : {},
     };
   }
 
@@ -402,6 +406,7 @@
     return {
       id: c.id || uid("c"),
       name: String(c.name || "Class").slice(0, 60),
+      emoji: String(c.emoji || "📚").slice(0, 8),
       subject: String(c.subject || "").slice(0, 60),
       teacher: String(c.teacher || "").slice(0, 80),
       email: String(c.email || "").slice(0, 120),
@@ -514,6 +519,7 @@
   const cls = (id) =>
     state.classes.find((c) => c.id === id) || {
       name: "Class",
+      emoji: "📚",
       color: "#147c78",
     };
   const openTasks = () => state.assignments.filter((a) => a.status !== "done");
@@ -688,6 +694,502 @@
     window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
   }
 
+  // Confetti Particle System
+  function triggerConfetti() {
+    const canvas = document.createElement("canvas");
+    canvas.style.position = "fixed";
+    canvas.style.top = "0";
+    canvas.style.left = "0";
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
+    canvas.style.pointerEvents = "none";
+    canvas.style.zIndex = "9999";
+    document.body.appendChild(canvas);
+
+    const ctx = canvas.getContext("2d");
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    const resizeHandler = () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    };
+    window.addEventListener("resize", resizeHandler);
+
+    const colors = ["#14b8a6", "#3b82f6", "#f59e0b", "#ef4444", "#10b981", "#8b5cf6", "#ec4899"];
+    const particles = [];
+
+    for (let i = 0; i < 80; i++) {
+      particles.push({
+        x: width / 2,
+        y: height + 20,
+        vx: (Math.random() - 0.5) * 12,
+        vy: -Math.random() * 12 - 12,
+        r: Math.random() * 5 + 4,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        rotation: Math.random() * 360,
+        rotationSpeed: (Math.random() - 0.5) * 8,
+        opacity: 1,
+        gravity: 0.35,
+        friction: 0.98
+      });
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+      let alive = false;
+      for (const p of particles) {
+        p.vx *= p.friction;
+        p.vy += p.gravity;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.rotation += p.rotationSpeed;
+        p.opacity -= 0.015;
+
+        if (p.opacity > 0 && p.y < height + 50) {
+          alive = true;
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rotation * Math.PI) / 180);
+          ctx.globalAlpha = p.opacity;
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.r, -p.r, p.r * 2, p.r * 2);
+          ctx.restore();
+        }
+      }
+
+      if (alive) {
+        requestAnimationFrame(animate);
+      } else {
+        window.removeEventListener("resize", resizeHandler);
+        canvas.remove();
+      }
+    }
+    animate();
+  }
+
+  // Web Audio API Procedural Sound Engine
+  let audioCtx = null;
+  let ambientSource = null;
+  let ambientGain = null;
+  let focusTicksTimer = null;
+  let activeSoundType = "none"; // "none" | "rain" | "rumble" | "ticks"
+
+  function initAudio() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === "suspended") {
+      audioCtx.resume();
+    }
+  }
+
+  function createPinkNoiseBuffer(ctx, seconds = 4) {
+    const bufferSize = ctx.sampleRate * seconds;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+    for (let i = 0; i < bufferSize; i++) {
+      const white = Math.random() * 2 - 1;
+      b0 = 0.99886 * b0 + white * 0.0555179;
+      b1 = 0.99332 * b1 + white * 0.0750759;
+      b2 = 0.96900 * b2 + white * 0.1538520;
+      b3 = 0.86650 * b3 + white * 0.3104856;
+      b4 = 0.55000 * b4 + white * 0.5329522;
+      b5 = -0.7616 * b5 - white * 0.0168980;
+      data[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+      data[i] *= 0.11;
+      b6 = white * 0.115926;
+    }
+    return buffer;
+  }
+
+  function createBrownNoiseBuffer(ctx, seconds = 4) {
+    const bufferSize = ctx.sampleRate * seconds;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    let lastOut = 0.0;
+    for (let i = 0; i < bufferSize; i++) {
+      const white = Math.random() * 2 - 1;
+      data[i] = (lastOut + (0.02 * white)) / 1.02;
+      lastOut = data[i];
+      data[i] *= 3.5;
+    }
+    return buffer;
+  }
+
+  function stopAmbientSound() {
+    if (ambientSource) {
+      try { ambientSource.stop(); } catch {}
+      ambientSource.disconnect();
+      ambientSource = null;
+    }
+    if (ambientGain) {
+      ambientGain.disconnect();
+      ambientGain = null;
+    }
+    if (focusTicksTimer) {
+      clearInterval(focusTicksTimer);
+      focusTicksTimer = null;
+    }
+    activeSoundType = "none";
+  }
+
+  function playRain() {
+    stopAmbientSound();
+    initAudio();
+    const buffer = createPinkNoiseBuffer(audioCtx, 4);
+    ambientSource = audioCtx.createBufferSource();
+    ambientSource.buffer = buffer;
+    ambientSource.loop = true;
+
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.value = 1000;
+
+    ambientGain = audioCtx.createGain();
+    ambientGain.gain.value = 0.15;
+
+    ambientSource.connect(filter);
+    filter.connect(ambientGain);
+    ambientGain.connect(audioCtx.destination);
+    ambientSource.start();
+    activeSoundType = "rain";
+  }
+
+  function playRumble() {
+    stopAmbientSound();
+    initAudio();
+    const buffer = createBrownNoiseBuffer(audioCtx, 4);
+    ambientSource = audioCtx.createBufferSource();
+    ambientSource.buffer = buffer;
+    ambientSource.loop = true;
+
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.value = 400;
+
+    ambientGain = audioCtx.createGain();
+    ambientGain.gain.value = 0.22;
+
+    ambientSource.connect(filter);
+    filter.connect(ambientGain);
+    ambientGain.connect(audioCtx.destination);
+    ambientSource.start();
+    activeSoundType = "rumble";
+  }
+
+  function playFocusTicks() {
+    stopAmbientSound();
+    initAudio();
+    activeSoundType = "ticks";
+    function tick() {
+      if (activeSoundType !== "ticks" || !audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "sine";
+      osc.frequency.value = 800;
+      gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.06);
+    }
+    tick();
+    focusTicksTimer = setInterval(tick, 1000);
+  }
+
+  function updateAmbientSoundUI(soundType) {
+    const buttons = document.querySelectorAll("#fAmbientControls button[data-act='focus-sound']");
+    buttons.forEach((btn) => {
+      const isPressed = btn.dataset.arg === soundType;
+      btn.setAttribute("aria-pressed", isPressed ? "true" : "false");
+    });
+  }
+
+  const GRADIENTS = [
+    ["", "Default Navy"],
+    ["linear-gradient(135deg, #0d324d, #7f5a83)", "Aurora Twilight"],
+    ["linear-gradient(135deg, #2b1055, #553c8b, #7597de)", "Cosmic Nebula"],
+    ["linear-gradient(135deg, #370617, #6a040f, #ffba08)", "Sunset Glow"],
+    ["linear-gradient(135deg, #134e5e, #71b280)", "Tropical Emerald"],
+  ];
+
+  function xpLevelCardHTML() {
+    const pts = state.points || 0;
+    const lvl = Math.floor(pts / 100) + 1;
+    const xpRemainder = pts % 100;
+    const title = lvl >= 10 ? "Focus Legend 👑" : lvl >= 6 ? "Focus Master 🧙‍♂️" : lvl >= 3 ? "Focus Knight 🛡️" : "Focus Padawan 🪴";
+    const r = 36;
+    const circ = 2 * Math.PI * r;
+    const offset = circ * (1 - xpRemainder / 100);
+    return `
+      <div class="xp-level-card">
+        <div class="xp-level-ring">
+          <svg width="90" height="90" viewBox="0 0 90 90">
+            <circle class="track" cx="45" cy="45" r="${r}" fill="none" stroke-width="8"></circle>
+            <circle class="prog" cx="45" cy="45" r="${r}" fill="none" stroke-width="8"
+              stroke-dasharray="${circ}" stroke-dashoffset="${offset}"></circle>
+          </svg>
+          <div class="xp-level-number">${lvl}</div>
+        </div>
+        <div class="xp-details">
+          <h4>XP Level ${lvl}</h4>
+          <div class="level-title">${title}</div>
+          <div class="points-bar-text">${xpRemainder} / 100 XP to next level · ${pts} total points</div>
+        </div>
+      </div>
+    `;
+  }
+
+  function weeklyFocusChartHTML() {
+    const days = [];
+    const focusMins = [];
+    const labels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const k = isoForOffset(-i);
+      const act = state.activity[k] || { focusMin: 0 };
+      days.push(labels[d.getDay()]);
+      focusMins.push(act.focusMin || 0);
+    }
+    const maxVal = Math.max(...focusMins, 15);
+    const chartHeight = 120;
+    const chartWidth = 320;
+    const barWidth = 24;
+    const gap = 16;
+    const barsHTML = focusMins.map((m, idx) => {
+      const barHeight = (m / maxVal) * 80;
+      const x = gap + idx * (barWidth + gap);
+      const y = 90 - barHeight;
+      return `
+        <g>
+          <rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" rx="4" fill="var(--teal)" opacity="0.85">
+            <title>${m} focus minutes</title>
+          </rect>
+          <text x="${x + barWidth / 2}" y="106" font-size="10" font-family="Plus Jakarta Sans" font-weight="700" fill="var(--muted)" text-anchor="middle">${days[idx]}</text>
+          ${m > 0 ? `<text x="${x + barWidth / 2}" y="${y - 6}" font-size="9" font-family="Plus Jakarta Sans" font-weight="800" fill="var(--ink)" text-anchor="middle">${m}m</text>` : ""}
+        </g>
+      `;
+    }).join("");
+    return `
+      <div class="chart-container">
+        <div class="chart-header">📊 Weekly Focus Studio (Minutes)</div>
+        <svg viewBox="0 0 ${chartWidth} ${chartHeight}" class="svg-chart">
+          <line x1="0" y1="92" x2="${chartWidth}" y2="92" stroke="var(--line)" stroke-width="1.5"></line>
+          ${barsHTML}
+        </svg>
+      </div>
+    `;
+  }
+
+  function reflectionCardHTML() {
+    const k = todayKey();
+    const existing = state.reflections[k];
+    if (existing) {
+      return card(
+        "reflection",
+        "📓 Today's Reflection",
+        "Great job checking out today!",
+        `<div class="note">
+          <p><b>Focus score:</b> ${existing.focus} / 5</p>
+          <p><b>Mood score:</b> ${existing.mood} / 5</p>
+          ${existing.text ? `<p><b>Gratitude/Notes:</b> ${esc(existing.text)}</p>` : ""}
+         </div>`
+      );
+    }
+    const focusVal = window._pendingReflectionFocus || 0;
+    const moodVal = window._pendingReflectionMood || 0;
+    const textVal = window._pendingReflectionText || "";
+    const ratingBtn = (field, val, active) => `
+      <button type="button" class="rating-btn" data-act="set-reflection-rating" data-arg="${field}:${val}" aria-pressed="${active}">
+        ${val}
+      </button>
+    `;
+    return card(
+      "reflection",
+      "📓 End-of-Day Check-out",
+      "Reflect on your focus and mood today.",
+      `
+      <div class="reflection-rating-row">
+        <span class="reflection-rating-label">Focus Rating (1-5):</span>
+        <div class="rating-buttons">
+          ${[1,2,3,4,5].map(v => ratingBtn("focus", v, focusVal === v)).join("")}
+        </div>
+      </div>
+      <div class="reflection-rating-row">
+        <span class="reflection-rating-label">Mood Rating (1-5):</span>
+        <div class="rating-buttons">
+          ${[1,2,3,4,5].map(v => ratingBtn("mood", v, moodVal === v)).join("")}
+        </div>
+      </div>
+      <div class="reflection-text-row">
+        <div class="field">
+          <label>One win or gratitude from today:</label>
+          <input type="text" id="reflectionTextInput" value="${esc(textVal)}" placeholder="Something I learned or did well..." oninput="window._pendingReflectionText = this.value">
+        </div>
+      </div>
+      <button class="btn primary block" data-act="save-reflection" style="margin-top:12px">
+        💾 Save check-out
+      </button>
+      `
+    );
+  }
+
+  function reflectionChartHTML() {
+    const dates = [];
+    const focusRatings = [];
+    const moodRatings = [];
+    const sortedDates = Object.keys(state.reflections || {}).sort().slice(-10);
+    if (sortedDates.length < 2) {
+      return `<div class="chart-container"><div class="chart-header">📈 Reflection Trends</div><div class="empty">🌱 Reflect for at least 2 days to see your trend graph!</div></div>`;
+    }
+    const chartHeight = 120;
+    const chartWidth = 320;
+    const padding = 20;
+    const pointsFocus = [];
+    const pointsMood = [];
+    sortedDates.forEach((k, idx) => {
+      const ref = state.reflections[k];
+      const x = padding + (idx * (chartWidth - 2 * padding)) / (sortedDates.length - 1);
+      const yFocus = 100 - (ref.focus - 1) * 20;
+      const yMood = 100 - (ref.mood - 1) * 20;
+      pointsFocus.push(`${x},${yFocus}`);
+      pointsMood.push(`${x},${yMood}`);
+    });
+    const focusPath = pointsFocus.join(" ");
+    const moodPath = pointsMood.join(" ");
+    const focusDots = pointsFocus.map((p, idx) => {
+      const [x, y] = p.split(",");
+      const rating = state.reflections[sortedDates[idx]].focus;
+      return `<circle cx="${x}" cy="${y}" r="4" fill="var(--teal)"><title>Focus: ${rating}/5</title></circle>`;
+    }).join("");
+    const moodDots = pointsMood.map((p, idx) => {
+      const [x, y] = p.split(",");
+      const rating = state.reflections[sortedDates[idx]].mood;
+      return `<circle cx="${x}" cy="${y}" r="4" fill="var(--amber)"><title>Mood: ${rating}/5</title></circle>`;
+    }).join("");
+    return `
+      <div class="chart-container">
+        <div class="chart-header">📈 Reflection Trends (Last ${sortedDates.length} days)</div>
+        <svg viewBox="0 0 ${chartWidth} ${chartHeight}" class="svg-chart">
+          <line x1="${padding}" y1="20" x2="${chartWidth - padding}" y2="20" stroke="var(--line)" stroke-dasharray="2,2"></line>
+          <line x1="${padding}" y1="60" x2="${chartWidth - padding}" y2="60" stroke="var(--line)" stroke-dasharray="2,2"></line>
+          <line x1="${padding}" y1="100" x2="${chartWidth - padding}" y2="100" stroke="var(--line)" stroke-dasharray="2,2"></line>
+          <polyline fill="none" stroke="var(--teal)" stroke-width="3" points="${focusPath}"></polyline>
+          <polyline fill="none" stroke="var(--amber)" stroke-width="2.5" stroke-dasharray="4,2" points="${moodPath}"></polyline>
+          ${focusDots}
+          ${moodDots}
+        </svg>
+        <div class="row" style="justify-content:center;gap:12px;font-size:0.75rem;font-weight:700;margin-top:8px">
+          <span style="color:var(--teal)">● Focus Rating</span>
+          <span style="color:var(--amber)">● Mood Rating</span>
+        </div>
+      </div>
+    `;
+  }
+
+  window._cmdSelectedIndex = 0;
+  window._cmdItems = [];
+
+  function openCommandBar() {
+    const modal = document.getElementById("commandBarBack");
+    if (!modal) return;
+    modal.classList.add("open");
+    const input = document.getElementById("cmdInput");
+    if (input) {
+      input.value = "";
+      input.focus();
+    }
+    renderCommandBarResults("");
+  }
+
+  function closeCommandBar() {
+    const modal = document.getElementById("commandBarBack");
+    if (modal) modal.classList.remove("open");
+  }
+
+  function renderCommandBarResults(query) {
+    query = (query || "").trim().toLowerCase();
+    const resultsContainer = document.getElementById("cmdResults");
+    if (!resultsContainer) return;
+    const items = [];
+    const navs = [
+      { title: "🎯 Go to Now (Home)", act: "nav", arg: "home", badge: "nav" },
+      { title: "📅 Go to Today", act: "nav", arg: "today", badge: "nav" },
+      { title: "✅ Go to Tasks", act: "nav", arg: "tasks", badge: "nav" },
+      { title: "📆 Go to Calendar", act: "nav", arg: "calendar", badge: "nav" },
+      { title: "🔁 Go to Routines", act: "nav", arg: "routines", badge: "nav" },
+      { title: "🏆 Go to Wins & Stats", act: "nav", arg: "wins", badge: "nav" },
+      { title: "⚙️ Go to Settings", act: "nav", arg: "settings", badge: "nav" },
+      { title: "☁️ Go to Backup & Sync", act: "nav", arg: "sync", badge: "nav" },
+    ];
+    const controls = [
+      { title: "⏱️ Toggle Focus Session", act: "focus-toggle", badge: "cmd" },
+      { title: "🎨 Cycle Theme Colors", act: "theme-cycle", badge: "cmd" },
+      { title: "🌧️ Play Gentle Rain", act: "focus-sound", arg: "rain", badge: "audio" },
+      { title: "🔥 Play Cozy Rumble", act: "focus-sound", arg: "rumble", badge: "audio" },
+      { title: "⏱️ Play Focus Ticks", act: "focus-sound", arg: "ticks", badge: "audio" },
+      { title: "🔇 Silence Background Sounds", act: "focus-sound", arg: "none", badge: "audio" },
+    ];
+    navs.concat(controls).forEach(item => {
+      if (!query || item.title.toLowerCase().includes(query) || item.arg?.includes(query)) {
+        items.push(item);
+      }
+    });
+    state.assignments.forEach(a => {
+      if (a.status !== "done" && (!query || a.title.toLowerCase().includes(query))) {
+        items.push({
+          title: `Focus: ${a.title}`,
+          act: "focus-start-task",
+          arg: a.id,
+          badge: "task"
+        });
+      }
+    });
+    window._cmdItems = items;
+    window._cmdSelectedIndex = Math.min(window._cmdSelectedIndex, items.length - 1);
+    if (window._cmdSelectedIndex < 0) window._cmdSelectedIndex = 0;
+    resultsContainer.innerHTML = items.map((item, idx) => {
+      const isSel = idx === window._cmdSelectedIndex;
+      return `
+        <div class="cmd-item ${isSel ? "selected" : ""}" data-idx="${idx}" data-act="cmd-trigger">
+          <span class="cmd-title">${esc(item.title)}</span>
+          <span class="cmd-badge">${item.badge}</span>
+        </div>
+      `;
+    }).join("");
+  }
+
+  function triggerCommandItem(item) {
+    closeCommandBar();
+    if (item.act === "nav") {
+      setView(item.arg);
+    } else if (item.act === "focus-toggle") {
+      if ($("#focusOverlay").classList.contains("open")) {
+        focus.stop();
+      } else {
+        const next = rightNowTask();
+        if (next) focus.start(next.id);
+        else toast("No assignments to focus on!");
+      }
+    } else if (item.act === "theme-cycle") {
+      const themes = ["light", "dark", "contrast"];
+      const nextIdx = (themes.indexOf(state.settings.theme) + 1) % themes.length;
+      state.settings.theme = themes[nextIdx];
+      save();
+      applyAppearance();
+      render();
+    } else if (item.act === "focus-sound") {
+      ACTIONS["focus-sound"](null, item.arg);
+      toast(`Background sound: ${item.arg}`);
+    } else if (item.act === "focus-start-task") {
+      focus.start(item.arg);
+    }
+  }
+
   function applyAppearance() {
     const s = state.settings;
     const root = document.documentElement;
@@ -696,6 +1198,11 @@
     root.dataset.motion = s.motion;
     root.dataset.accent = s.accent;
     root.style.setProperty("--font-scale", s.fontScale);
+    if (s.themeGradient) {
+      root.style.setProperty("--theme-gradient", s.themeGradient);
+    } else {
+      root.style.removeProperty("--theme-gradient");
+    }
     // Light theme only: re-tint the teal accent. Dark/contrast keep their tuned
     // palettes so contrast stays AA.
     const acc = ACCENTS.find((a) => a[0] === s.accent);
@@ -722,12 +1229,54 @@
       (s.studentName || "Noam").split(" ")[0] + " School";
   }
 
+  function updateHeaderStatus() {
+    const chip = $("#connChip");
+    if (!chip) return;
+    const textEl = $("#connText");
+    const online = navigator.onLine;
+
+    chip.classList.remove("online", "offline", "syncing", "synced", "offline-sync", "local");
+
+    if (!online) {
+      chip.classList.add("offline");
+      chip.title = "Offline — changes will save locally and sync when you're back online";
+      if (textEl) textEl.textContent = "Offline — saved locally";
+      return;
+    }
+
+    if (state && state.settings && state.settings.sync && state.settings.sync.enabled) {
+      if (cloud.status === "syncing") {
+        chip.classList.add("syncing");
+        chip.title = "Syncing with Cloudflare KV...";
+        if (textEl) textEl.innerHTML = `Syncing... <span class="sync-spinner">🔄</span>`;
+      } else if (cloud.status === "synced") {
+        chip.classList.add("synced");
+        chip.title = "All changes synced to the cloud";
+        if (textEl) textEl.textContent = "Synced ☁️";
+      } else if (cloud.status === "offline") {
+        chip.classList.add("offline-sync");
+        chip.title = "Could not reach sync server (stored locally)";
+        if (textEl) textEl.textContent = "Offline (Local)";
+      } else {
+        chip.classList.add("online");
+        chip.title = "Connected to internet & ready to sync";
+        if (textEl) textEl.textContent = "Online";
+      }
+    } else {
+      chip.classList.add("local");
+      chip.title = "Cloud sync is disabled. Storing locally.";
+      if (textEl) textEl.textContent = "Local Only";
+    }
+  }
+
   function render() {
     applyAppearance();
     renderHero();
     $("#main").innerHTML = (VIEWS[view] || VIEWS.home)();
     renderTabbar();
+    updateHeaderStatus();
   }
+
 
   function renderTabbar() {
     $("#tabbar").innerHTML = TABS.map(
@@ -781,7 +1330,7 @@
       <div class="now-task">
         <div class="now-title">${esc(t.title)}</div>
         <div class="now-meta">
-          <span class="tag" style="background:${esc(c.color)}55">${esc(c.name)}</span>
+          <span class="tag" style="background:${esc(c.color)}55">${c.emoji || "📚"} ${esc(c.name)}</span>
           <span class="tag" ${overdueB ? 'style="background:#b3000f"' : daysUntil(t.due) === 0 ? 'style="background:#7a4d0a"' : ""}>${esc(dueLabel(t.due, t.dueTime))}</span>
           ${t.estimateMin ? `<span class="tag">~${t.estimateMin} min</span>` : ""}
           ${t.steps.length ? `<span class="tag">${pct}% done</span>` : ""}
@@ -858,7 +1407,7 @@
             <p class="meta">${dueIcon(n)} ${esc(dueLabel(a.due, a.dueTime))}${a.estimateMin ? " · ~" + a.estimateMin + " min" : ""}${a.steps.length ? " · " + pct + "%" : ""}</p>
           </div>
           <div class="row">
-            ${showClass ? `<span class="pill" style="background:${esc(c.color)}1f;color:var(--ink)"><span class="dot" style="background:${esc(c.color)};width:9px;height:9px;border-radius:50%;display:inline-block"></span>${esc(c.name)}</span>` : ""}
+            ${showClass ? `<span class="pill" style="background:${esc(c.color)}1f;color:var(--ink)"><span style="margin-right:4px">${c.emoji || "📚"}</span>${esc(c.name)}</span>` : ""}
             ${priPill(a.priority)}
           </div>
         </div>
@@ -972,7 +1521,7 @@
             ? dayItems
                 .map((a) => {
                   const c = cls(a.classId);
-                  return `<div class="item"><div class="head"><div><h4>${esc(a.title)}</h4><p class="meta">${esc(dueLabel(a.due, a.dueTime))} · ${esc(c.name)}</p></div><div class="row"><button class="btn primary sm" data-act="complete" data-id="${a.id}">✓ Done</button></div></div></div>`;
+                  return `<div class="item"><div class="head"><div><h4>${esc(a.title)}</h4><p class="meta">${esc(dueLabel(a.due, a.dueTime))} · ${c.emoji || "📚"} ${esc(c.name)}</p></div><div class="row"><button class="btn primary sm" data-act="complete" data-id="${a.id}">✓ Done</button></div></div></div>`;
                 })
                 .join("")
             : dayGcal.length
@@ -1061,7 +1610,7 @@
             const n = daysUntil(a.due);
             const stateCls =
               n !== null && n < 0 ? "overdue" : n === 0 ? "today-due" : "";
-            return `<div class="item ${stateCls}"><div class="head"><div><h4>${esc(a.title)}</h4><p class="meta">${dueIcon(n)} ${esc(dueLabel(a.due, a.dueTime))} · ${esc(c.name)}</p></div><div class="row"><button class="btn primary sm" data-act="complete" data-id="${a.id}">✓ Done</button><button class="btn sm" data-act="open-task" data-id="${a.id}" aria-label="Edit ${esc(a.title)}">✏️</button></div></div></div>`;
+            return `<div class="item ${stateCls}"><div class="head"><div><h4>${esc(a.title)}</h4><p class="meta">${dueIcon(n)} ${esc(dueLabel(a.due, a.dueTime))} · ${c.emoji || "📚"} ${esc(c.name)}</p></div><div class="row"><button class="btn primary sm" data-act="complete" data-id="${a.id}">✓ Done</button><button class="btn sm" data-act="open-task" data-id="${a.id}" aria-label="Edit ${esc(a.title)}">✏️</button></div></div></div>`;
           })
           .join("")
       : emptyState("🎉", "No assignments due. You're caught up!");
@@ -1176,7 +1725,7 @@
       const order = state.settings.homeOrder.filter(
         (k) => !state.settings.hiddenCards.includes(k),
       );
-      return `${checkinBanner()}${captureBanner()}<div class="home-grid">${order.map((k) => map[k] || "").join("")}</div>`;
+      return `${checkinBanner()}${captureBanner()}<div class="home-grid">${order.map((k) => map[k] || "").join("")}</div>${reflectionCardHTML()}`;
     },
 
     calendar() {
@@ -1402,7 +1951,7 @@
           c.room,
           c.teacher,
         ].filter(Boolean);
-        return `<div class="item" style="border-left:4px solid ${esc(c.color)}"><div class="head"><div><h4><span class="dot" style="background:${esc(c.color)};width:11px;height:11px;border-radius:50%;display:inline-block;margin-right:6px"></span>${esc(c.name)}</h4><p class="meta">${meta.length ? esc(meta.join(" · ")) : "Tap Edit to add details"}${open ? ` · ${open} open task${open === 1 ? "" : "s"}` : ""}</p></div></div><div class="row">
+        return `<div class="item" style="border-left:4px solid ${esc(c.color)}"><div class="head"><div><h4><span style="margin-right:6px">${c.emoji || "📚"}</span>${esc(c.name)}</h4><p class="meta">${meta.length ? esc(meta.join(" · ")) : "Tap Edit to add details"}${open ? ` · ${open} open task${open === 1 ? "" : "s"}` : ""}</p></div></div><div class="row">
                 <button class="btn sm" data-act="edit-class" data-id="${c.id}">Edit</button>
                 ${c.email ? `<a class="btn sm navy" target="_blank" rel="noopener" href="${gmailCompose(c.email, "Question for " + c.name, "Hi,\n\nI had a question about...\n\nThank you,\n" + state.settings.studentName)}">✉️ Email</a>` : ""}
               </div></div>`;
@@ -1451,7 +2000,7 @@
       return (
         backHeader("Email a teacher", "more") +
         `<div class="grid g2"><section class="card"><h3>Write an email</h3><p class="sub">This opens Gmail in your browser (not Apple Mail).</p>
-          <div class="field"><label>To which class / teacher</label><select id="eClass">${state.classes.map((c) => `<option value="${c.id}">${esc(c.name)}${c.teacher ? " — " + esc(c.teacher) : ""}</option>`).join("")}</select></div>
+          <div class="field"><label>To which class / teacher</label><select id="eClass">${state.classes.map((c) => `<option value="${c.id}">${c.emoji || "📚"} ${esc(c.name)}${c.teacher ? " — " + esc(c.teacher) : ""}</option>`).join("")}</select></div>
           <div class="field"><label>Subject</label><input id="eSub" value="Question about class"></div>
           <div class="field"><label>Message</label><textarea id="eBody">Hi,
 
@@ -1494,7 +2043,9 @@ Due May 31"></textarea>
       const recent = [...state.wins].slice(-30).reverse();
       return (
         backHeader("My wins", "more") +
-        momentumCard() +
+        xpLevelCardHTML() +
+        weeklyFocusChartHTML() +
+        reflectionChartHTML() +
         card(
           "addwin",
           "Add a win",
@@ -1517,6 +2068,15 @@ Due May 31"></textarea>
           "Set it up the way that's easiest for you.",
           `
           <div class="field"><label>Color theme</label><div class="seg">${themeBtn("light", "☀️ Light")}${themeBtn("dark", "🌙 Dark")}${themeBtn("contrast", "⬛ High contrast")}</div></div>
+          <div class="field"><label>Gradient Background Preset</label>
+            <div class="theme-gradient-grid">
+              ${GRADIENTS.map(g => `
+                <div class="theme-gradient-swatch" data-act="set-gradient-theme" data-arg="${esc(g[0])}" aria-pressed="${state.settings.themeGradient === g[0]}" style="background: ${g[0] || "linear-gradient(180deg, var(--bg-2), var(--bg))"}">
+                  <b>${esc(g[1])}</b>
+                </div>
+              `).join("")}
+            </div>
+          </div>
           <div class="field"><label>Accent color${s.theme === "light" ? "" : " (Light theme only)"}</label><div class="accent-row" role="group" aria-label="Accent color">${ACCENTS.map(
             (a) =>
               `<button class="accent-swatch" data-act="set-accent" data-arg="${a[0]}" aria-pressed="${s.accent === a[0]}" aria-label="${a[1]}" title="${a[1]}" style="background:${a[2]}"></button>`,
@@ -1612,6 +2172,7 @@ Due May 31"></textarea>
         : '<span class="pill">Off by default</span>';
       // When sync is ON, show the linking code + status. When OFF, show the
       // one-tap "Turn on sync" plus an "Enter a code" path for the 2nd device.
+      const syncLink = linkURL(s.code);
       const onBody = `
           <p class="sub" style="margin-top:0">Sync is on. Your data keeps itself up to date across every device that uses this code — automatically.</p>
           ${syncStatusHTML()}
@@ -1622,6 +2183,12 @@ Due May 31"></textarea>
             <button class="btn" data-act="copy-link">🔗 Copy link</button>
             <button class="btn navy" data-act="sync-now">🔄 Sync now</button>
             <button class="btn danger" data-act="toggle-sync">Turn off sync</button>
+          </div>
+          <div class="qr-pairing-box" style="margin-top: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 12px; background: rgba(255,255,255,0.03); border: 1.5px dashed var(--line); border-radius: 12px; text-align: center;">
+            <span style="font-size: 0.85rem; font-weight: 800; color: var(--ink);">📱 Scan to Pair Your Phone</span>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(syncLink)}&size=160x160" alt="Pairing QR Code" style="border: 4px solid white; border-radius: 8px; width: 160px; height: 160px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+            <span style="display:none; font-size: 0.85rem; color: var(--muted)">QR Code generation offline. Copy the link above to pair!</span>
+            <small class="muted" style="font-size: 0.75rem; margin-top: 4px">Scan this with your mobile camera to instantly sync and access your planner on the go.</small>
           </div>
           <p class="sub" style="margin-top:10px"><b>Link another device:</b> paste this code there (Backup &amp; sync → “Enter a code”), or send yourself the <b>link</b> and open it on the other device — it links automatically.</p>`;
       const offBody = `
@@ -1822,7 +2389,7 @@ Due May 31"></textarea>
       <p class="sub">Write it down before you forget. You can add details later.</p>
       <div class="field"><label>What is it?</label><input id="qaTitle" placeholder="Math worksheet p. 42" autocomplete="off"></div>
       <div class="field"><label>Which class?</label><select id="qaClass">${state.classes
-        .map((c) => `<option value="${c.id}">${esc(c.name)}</option>`)
+        .map((c) => `<option value="${c.id}">${c.emoji || "📚"} ${esc(c.name)}</option>`)
         .join("")}</select></div>
       <div class="field"><label>When is it due?</label>
         <div class="seg" id="qaDueSeg">${pick(isoForOffset(0), "Today")}${pick(isoForOffset(1), "Tomorrow")}${pick("custom", "Pick a date")}${pick("", "Not sure")}</div>
@@ -1838,7 +2405,7 @@ Due May 31"></textarea>
     return `
       <div class="field"><label>What is it?</label><input id="tTitle" value="${esc(a.title || "")}" placeholder="Math worksheet p. 42"></div>
       <div class="g2 grid">
-        <div class="field"><label>Class</label><select id="tClass">${state.classes.map((c) => `<option value="${c.id}" ${a.classId === c.id ? "selected" : ""}>${esc(c.name)}</option>`).join("")}</select></div>
+        <div class="field"><label>Class</label><select id="tClass">${state.classes.map((c) => `<option value="${c.id}" ${a.classId === c.id ? "selected" : ""}>${c.emoji || "📚"} ${esc(c.name)}</option>`).join("")}</select></div>
         <div class="field"><label>Priority</label><select id="tPri"><option value="low" ${a.priority === "low" ? "selected" : ""}>Low</option><option value="med" ${!a.priority || a.priority === "med" ? "selected" : ""}>Medium</option><option value="high" ${a.priority === "high" ? "selected" : ""}>High</option></select></div>
       </div>
       <div class="g2 grid">
@@ -1875,7 +2442,10 @@ Due May 31"></textarea>
     c = c || {};
     const days = Array.isArray(c.meetDays) ? c.meetDays : [];
     return `
-      <div class="field"><label>Class name</label><input id="cName" value="${esc(c.name || "")}" placeholder="Math"></div>
+      <div class="g2 grid">
+        <div class="field"><label>Class name</label><input id="cName" value="${esc(c.name || "")}" placeholder="Math"></div>
+        <div class="field"><label>Emoji Icon (optional)</label><input id="cEmoji" value="${esc(c.emoji || "📚")}" placeholder="📐"></div>
+      </div>
       <div class="g2 grid">
         <div class="field"><label>Subject (optional)</label><input id="cSubject" value="${esc(c.subject || "")}" placeholder="Mathematics"></div>
         <div class="field"><label>Room (optional)</label><input id="cRoom" value="${esc(c.room || "")}" placeholder="Room 214"></div>
@@ -1950,6 +2520,8 @@ Due May 31"></textarea>
       }
       this._lastFocus = document.activeElement;
       this.beginPhase("focus");
+      stopAmbientSound();
+      updateAmbientSoundUI("none");
       const ov = $("#focusOverlay");
       ov.classList.add("open");
       this.renderSteps();
@@ -2031,6 +2603,7 @@ Due May 31"></textarea>
         : `<p style="color:rgba(255,255,255,.7);text-align:center">No steps — just do the first small part.</p>`;
     },
     stop() {
+      stopAmbientSound();
       clearInterval(this.timer);
       // Give partial credit for time already focused if they stop early.
       if (this.phase === "focus") {
@@ -2413,6 +2986,7 @@ Due May 31"></textarea>
       this.status = next;
       const el = document.getElementById("syncStatus");
       if (el) el.outerHTML = syncStatusHTML();
+      if (typeof updateHeaderStatus === "function") updateHeaderStatus();
     },
     async push() {
       const code = state.settings.sync.code;
@@ -2495,8 +3069,8 @@ Due May 31"></textarea>
     startAuto() {
       this.stopAuto();
       if (!state.settings.sync.enabled) return;
-      // ~50s cadence: fresh enough to feel live, light on the KV endpoint.
-      this._interval = setInterval(() => this.autoPull(), 50000);
+      // ~10s cadence: fresh enough to feel live, light on the KV endpoint.
+      this._interval = setInterval(() => this.autoPull(), 10000);
     },
     stopAuto() {
       if (this._interval) {
@@ -3186,6 +3760,7 @@ Due May 31"></textarea>
     });
     save();
     toast("Done! +10 points 🎉");
+    triggerConfetti();
     if (focus.taskId === id) focus.stop();
     else render();
   }
@@ -3335,6 +3910,13 @@ Due May 31"></textarea>
       focus.beginPhase("focus");
     },
     "focus-stop": () => focus.stop(),
+    "focus-sound": (_, arg) => {
+      if (arg === "rain") playRain();
+      else if (arg === "rumble") playRumble();
+      else if (arg === "ticks") playFocusTicks();
+      else stopAmbientSound();
+      updateAmbientSoundUI(arg);
+    },
 
     "guide-start": (id) => guide.start(id),
     "guide-next": () => guide.markCurrent(),
@@ -3363,6 +3945,7 @@ Due May 31"></textarea>
       const c = normalizeClass({
         id: id || uid("c"),
         name: $("#cName").value.trim() || "Class",
+        emoji: $("#cEmoji") ? $("#cEmoji").value.trim() : "📚",
         subject: $("#cSubject").value.trim(),
         room: $("#cRoom").value.trim(),
         period: $("#cPeriod").value.trim(),
@@ -3935,6 +4518,64 @@ ${name}`;
     },
 
     "close-modal": () => closeModal(),
+    "show-shortcuts": () => {
+      openModal(
+        "⌨️ Keyboard Shortcuts",
+        `<div style="display:flex;flex-direction:column;gap:12px;font-weight:700">
+          <p class="sub">Use these shortcuts to navigate faster on desktop:</p>
+          <div class="row"><span class="pill">Cmd+K</span><span>or</span><span class="pill">/</span><span>Open search &amp; command bar</span></div>
+          <div class="row"><span class="pill">1</span><span>to</span><span class="pill">6</span><span>Switch tabs (Now, Today, Tasks...)</span></div>
+          <div class="row"><span class="pill">f</span><span>Start/stop focus session for today's task</span></div>
+          <div class="row"><span class="pill">Esc</span><span>Close any open modal or overlay</span></div>
+          <div class="row"><span class="pill">?</span><span>Show this shortcuts guide</span></div>
+         </div>`
+      );
+    },
+    "set-reflection-rating": (_, arg) => {
+      const [field, val] = arg.split(":");
+      if (field === "focus") window._pendingReflectionFocus = Number(val);
+      if (field === "mood") window._pendingReflectionMood = Number(val);
+      render();
+    },
+    "save-reflection": () => {
+      const focusVal = window._pendingReflectionFocus || 0;
+      const moodVal = window._pendingReflectionMood || 0;
+      const textVal = document.getElementById("reflectionTextInput")?.value || "";
+      if (focusVal === 0 || moodVal === 0) {
+        toast("Please select a score for focus and mood!");
+        return;
+      }
+      state.reflections[todayKey()] = {
+        focus: focusVal,
+        mood: moodVal,
+        text: textVal,
+        timestamp: new Date().toISOString()
+      };
+      state.points += 5;
+      save();
+      window._pendingReflectionFocus = 0;
+      window._pendingReflectionMood = 0;
+      window._pendingReflectionText = "";
+      triggerConfetti();
+      render();
+      toast("Check-out saved! +5 points 📓");
+    },
+    "set-gradient-theme": (_, arg) => {
+      state.settings.themeGradient = arg;
+      save();
+      applyAppearance();
+      render();
+    },
+    "open-command-bar": () => openCommandBar(),
+    "close-command-bar": () => closeCommandBar(),
+    "cmd-trigger": (id, arg, ev) => {
+      const btn = ev.target.closest("[data-idx]");
+      if (btn) {
+        const idx = Number(btn.dataset.idx);
+        const selected = window._cmdItems[idx];
+        if (selected) triggerCommandItem(selected);
+      }
+    },
   };
 
   // ---------------------------------------------------------------------------
@@ -4001,6 +4642,7 @@ ${name}`;
           state.points += 5;
           bumpActivity("routines");
           toast(`${r.name} complete! +5 🎉`);
+          triggerConfetti();
         }
         save();
         const label = box.parentElement.querySelector(".steptext");
@@ -4013,6 +4655,7 @@ ${name}`;
           if (box.checked) {
             state.points += 1;
             bumpActivity("tasks");
+            triggerConfetti();
           }
           save();
           const label = box.parentElement.querySelector(".steptext");
@@ -4092,17 +4735,127 @@ ${name}`;
     // avoid losing a half-typed assignment/routine. Use ✕ or Escape instead.
 
     // connection status
-    const setConn = () => {
-      const online = navigator.onLine;
-      const chip = $("#connChip");
-      chip.className = "chip " + (online ? "online" : "offline");
-      $("#connText").textContent = online ? "Online" : "Offline — still works";
-      if (online && state.settings.sync.enabled)
+    window.addEventListener("online", () => {
+      updateHeaderStatus();
+      if (state.settings.sync.enabled)
         cloud.pull().then((p) => p && render());
-    };
-    window.addEventListener("online", setConn);
-    window.addEventListener("offline", setConn);
-    setConn();
+    });
+    window.addEventListener("offline", updateHeaderStatus);
+    updateHeaderStatus();
+
+    // Global keyboard listeners for Command Bar & Shortcuts
+    window.addEventListener("keydown", (ev) => {
+      const modal = document.getElementById("commandBarBack");
+      const isOpen = modal && modal.classList.contains("open");
+
+      if ((ev.metaKey || ev.ctrlKey) && ev.key.toLowerCase() === "k") {
+        ev.preventDefault();
+        if (isOpen) closeCommandBar();
+        else openCommandBar();
+        return;
+      }
+
+      if (ev.key === "/" && !isOpen && document.activeElement.tagName !== "INPUT" && document.activeElement.tagName !== "TEXTAREA") {
+        ev.preventDefault();
+        openCommandBar();
+        return;
+      }
+
+      if (!isOpen) {
+        if (ev.key === "?" && document.activeElement.tagName !== "INPUT" && document.activeElement.tagName !== "TEXTAREA") {
+          ev.preventDefault();
+          ACTIONS["show-shortcuts"]();
+          return;
+        }
+        if (ev.key === "f" && document.activeElement.tagName !== "INPUT" && document.activeElement.tagName !== "TEXTAREA") {
+          ev.preventDefault();
+          const next = rightNowTask();
+          if (next) focus.start(next.id);
+          else toast("No assignments to focus on!");
+          return;
+        }
+        if (["1", "2", "3", "4", "5", "6"].includes(ev.key) && document.activeElement.tagName !== "INPUT" && document.activeElement.tagName !== "TEXTAREA") {
+          ev.preventDefault();
+          const tabs = ["home", "today", "tasks", "calendar", "routines", "more"];
+          setView(tabs[Number(ev.key) - 1]);
+          return;
+        }
+        return;
+      }
+
+      if (ev.key === "Escape") {
+        ev.preventDefault();
+        closeCommandBar();
+      } else if (ev.key === "ArrowDown") {
+        ev.preventDefault();
+        window._cmdSelectedIndex = (window._cmdSelectedIndex + 1) % window._cmdItems.length;
+        renderCommandBarResults(document.getElementById("cmdInput")?.value);
+      } else if (ev.key === "ArrowUp") {
+        ev.preventDefault();
+        window._cmdSelectedIndex = (window._cmdSelectedIndex - 1 + window._cmdItems.length) % window._cmdItems.length;
+        renderCommandBarResults(document.getElementById("cmdInput")?.value);
+      } else if (ev.key === "Enter") {
+        ev.preventDefault();
+        const selected = window._cmdItems[window._cmdSelectedIndex];
+        if (selected) {
+          triggerCommandItem(selected);
+        }
+      }
+    });
+
+    // Touch Swipe Navigation for PWA
+    let touchStartX = 0;
+    let touchStartY = 0;
+    document.addEventListener("touchstart", (ev) => {
+      if (document.getElementById("modalBack").classList.contains("open") ||
+          document.getElementById("focusOverlay").classList.contains("open") ||
+          document.getElementById("guideOverlay").classList.contains("open") ||
+          document.getElementById("commandBarBack").classList.contains("open")) {
+        return;
+      }
+      if (ev.target.closest("input[type='range']") || ev.target.closest(".seg") || ev.target.closest(".accent-row") || ev.target.closest(".theme-gradient-grid")) {
+        return;
+      }
+      touchStartX = ev.changedTouches[0].screenX;
+      touchStartY = ev.changedTouches[0].screenY;
+    }, { passive: true });
+
+    document.addEventListener("touchend", (ev) => {
+      if (document.getElementById("modalBack").classList.contains("open") ||
+          document.getElementById("focusOverlay").classList.contains("open") ||
+          document.getElementById("guideOverlay").classList.contains("open") ||
+          document.getElementById("commandBarBack").classList.contains("open")) {
+        return;
+      }
+      if (ev.target.closest("input[type='range']") || ev.target.closest(".seg") || ev.target.closest(".accent-row") || ev.target.closest(".theme-gradient-grid")) {
+        return;
+      }
+      const touchEndX = ev.changedTouches[0].screenX;
+      const touchEndY = ev.changedTouches[0].screenY;
+      const diffX = touchEndX - touchStartX;
+      const diffY = touchEndY - touchStartY;
+      if (Math.abs(diffX) > 80 && Math.abs(diffY) < 40) {
+        const tabsOrder = ["home", "today", "tasks", "calendar", "routines", "more"];
+        const currentIdx = tabsOrder.indexOf(view);
+        if (currentIdx !== -1) {
+          if (diffX < 0) {
+            const nextIdx = currentIdx + 1;
+            if (nextIdx < tabsOrder.length) setView(tabsOrder[nextIdx]);
+          } else {
+            const prevIdx = currentIdx - 1;
+            if (prevIdx >= 0) setView(tabsOrder[prevIdx]);
+          }
+        }
+      }
+    }, { passive: true });
+
+    // Wire cmdInput input handler
+    document.addEventListener("input", (ev) => {
+      if (ev.target.id === "cmdInput") {
+        window._cmdSelectedIndex = 0;
+        renderCommandBarResults(ev.target.value);
+      }
+    });
   }
 
   function updateProgressBars() {
@@ -4149,6 +4902,12 @@ ${name}`;
       }
     }
     state = normalize(stored);
+    let newlyCreatedSync = false;
+    if (!state.settings.sync.code) {
+      state.settings.sync.code = genSyncCode();
+      state.settings.sync.enabled = true;
+      newlyCreatedSync = true;
+    }
     // Don't push local state to the cloud until after the first pull, so a stale
     // device can't overwrite newer remote data on startup.
     suppressPush = true;
@@ -4195,6 +4954,10 @@ ${name}`;
     // Save any code adopted from a deep link now that pushing is allowed.
     if (linkCode && linkCode.length >= 12) {
       save();
+      await cloud.push();
+    }
+    if (newlyCreatedSync) {
+      save({ touch: false, immediate: true });
       await cloud.push();
     }
 

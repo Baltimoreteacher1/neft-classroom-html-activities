@@ -1852,7 +1852,8 @@
          builds a "Research & Resources" step. Each unit can supply its own
          links by adding its own #pk-research block — no code changes needed. -->
     <script>
-      document.getElementById("yr").textContent = new Date().getFullYear();
+      const yrEl = document.getElementById("yr");
+      if (yrEl) yrEl.textContent = new Date().getFullYear();
       const $ = (id) => document.getElementById(id);
       const num = (id) => {
         const e = $(id);
@@ -2496,5 +2497,8 @@
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
     <script src="/shared/projects/projects-tabs.js" defer></script>
-  </body>
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+</body>
 </html>

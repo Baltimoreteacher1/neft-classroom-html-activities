@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Area Attack — Brick Cannon | Math Games</title>
     <meta
       name="description"
@@ -213,8 +213,9 @@
         init() {
           if (!this.ctx)
             try {
-              this.ctx = new (window.AudioContext ||
-                window.webkitAudioContext)();
+              this.ctx = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
             } catch (e) {}
         },
         play(t, f, d, v = 0.18) {
@@ -323,8 +324,7 @@
             h = randInt(minDim, maxDim);
           if (((b1 + b2) * h) % 2 !== 0) h = h + 1;
           area = ((b1 + b2) * h) / 2;
-          prompt =
-            "Trapezoid  bases " + b1 + " & " + b2 + ",  height " + h;
+          prompt = "Trapezoid  bases " + b1 + " & " + b2 + ",  height " + h;
           formula = "A = ½ (b₁ + b₂) × h";
           shapeData = { type, b1, b2, h };
         }
@@ -373,11 +373,44 @@
         parent: document.body,
         backgroundColor: "#0c1c30",
         scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-        scene: [BootScene, TitleScene, GameScene, ResultScene],
+        scene: [BootScene, TitleScene, VocabScene, GameScene, ResultScene],
       };
 
+      // ── Vocab gate data ────────────────────────────────────────────────
+      // Repo rule: term + student-facing (Level-1) definition + IMAGE/emoji
+      // shown BEFORE the first round. Topic: area of rectangles,
+      // parallelograms, triangles, trapezoids (6.G.1). No giveaways: these
+      // teach the words, not the answers.
+      const AA_VOCAB = [
+        {
+          term: "Area",
+          def: "The amount of flat space inside a shape. We measure it in square units.",
+          emoji: "🟦",
+        },
+        {
+          term: "Base",
+          def: "One flat side of a shape that we measure along the bottom.",
+          emoji: "📏",
+        },
+        {
+          term: "Height",
+          def: "How tall the shape is, measured straight up from the base (a right angle to it).",
+          emoji: "📐",
+        },
+        {
+          term: "Parallelogram",
+          def: "A four-sided shape with two pairs of parallel sides, like a slanted rectangle.",
+          emoji: "▱",
+        },
+        {
+          term: "Trapezoid",
+          def: "A four-sided shape with exactly one pair of parallel sides (two different bases).",
+          emoji: "🔻",
+        },
+      ];
+
       function BootScene() {
-        return new Phaser.Scene("Boot");
+        Phaser.Scene.call(this, "Boot");
       }
       BootScene.prototype = Object.create(Phaser.Scene.prototype);
       BootScene.prototype.constructor = BootScene;
@@ -395,7 +428,7 @@
       };
 
       function TitleScene() {
-        return new Phaser.Scene("Title");
+        Phaser.Scene.call(this, "Title");
       }
       TitleScene.prototype = Object.create(Phaser.Scene.prototype);
       TitleScene.prototype.constructor = TitleScene;
@@ -472,7 +505,8 @@
         const start = () => {
           SFX.init();
           SFX.fire();
-          this.scene.start("Game");
+          // Start -> Vocab -> Play: show the key words before the first round.
+          this.scene.start("Vocab");
         };
         btn.on("pointerover", () => btn.setFillStyle(0x2484d0));
         btn.on("pointerout", () => btn.setFillStyle(0x1a6fb5));
@@ -494,8 +528,135 @@
         srSay("Area Attack Brick Cannon. Press Start to play.");
       };
 
+      // ── VOCAB GATE SCENE ───────────────────────────────────────────────
+      // Shown once before the first round (Title -> Vocab -> Game). The
+      // player steps through each key word (term + Level-1 definition + emoji)
+      // and then begins play. Replays go Result -> Game directly, so this
+      // intro only appears before the first round (no repeat-on-replay).
+      function VocabScene() {
+        Phaser.Scene.call(this, "Vocab");
+      }
+      VocabScene.prototype = Object.create(Phaser.Scene.prototype);
+      VocabScene.prototype.constructor = VocabScene;
+      VocabScene.prototype.init = function () {
+        this.idx = 0;
+        this.cardItems = [];
+      };
+      VocabScene.prototype.create = function () {
+        const cx = W / 2;
+        this.add.rectangle(cx, H / 2, W, H, 0x0c1c30);
+        this.add
+          .text(cx, 70, "WORDS TO KNOW FIRST", {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "38px",
+            color: "#4488ff",
+            stroke: "#060f1a",
+            strokeThickness: 5,
+          })
+          .setOrigin(0.5);
+        this.add
+          .text(cx, 110, "Learn these, then aim and fire!", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "16px",
+            color: "#88ccaa",
+          })
+          .setOrigin(0.5);
+
+        // Card background panel.
+        this.add
+          .rectangle(cx, 320, 560, 320, 0x12355b)
+          .setStrokeStyle(2, 0x4488ff);
+
+        this.stepText = this.add
+          .text(cx, 190, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "13px",
+            fontStyle: "bold",
+            color: "#7fa0c0",
+          })
+          .setOrigin(0.5);
+        this.emojiText = this.add
+          .text(cx, 250, "", { fontSize: "72px" })
+          .setOrigin(0.5);
+        this.termText = this.add
+          .text(cx, 320, "", {
+            fontFamily: "Impact, sans-serif",
+            fontSize: "34px",
+            color: "#ffd24a",
+          })
+          .setOrigin(0.5);
+        this.defText = this.add
+          .text(cx, 390, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            color: "#cfe0f0",
+            align: "center",
+            wordWrap: { width: 500 },
+            lineSpacing: 4,
+          })
+          .setOrigin(0.5);
+
+        // Next / Start button.
+        const btn = this.add
+          .rectangle(cx, 500, 260, 56, 0x1a6fb5)
+          .setInteractive({ useHandCursor: true });
+        const btnT = this.add
+          .text(cx, 500, "", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "22px",
+            fontStyle: "bold",
+            color: "#ffffff",
+          })
+          .setOrigin(0.5);
+        this.btn = btn;
+        this.btnT = btnT;
+        btn.on("pointerover", () => btn.setFillStyle(0x2484d0));
+        btn.on("pointerout", () => btn.setFillStyle(0x1a6fb5));
+        btn.on("pointerdown", () => this.advance());
+        this.input.keyboard.on("keydown-SPACE", () => this.advance());
+        this.input.keyboard.on("keydown-ENTER", () => this.advance());
+        this.input.keyboard.on("keydown-RIGHT", () => this.advance());
+
+        // Skip-all link (still compliant: vocab is shown by default; this is
+        // an explicit student choice, not an auto-skip).
+        const skip = this.add
+          .text(cx, 555, "Skip to game ▸", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "14px",
+            color: "#7fa0c0",
+          })
+          .setOrigin(0.5)
+          .setInteractive({ useHandCursor: true });
+        skip.on("pointerover", () => skip.setColor("#4488ff"));
+        skip.on("pointerout", () => skip.setColor("#7fa0c0"));
+        skip.on("pointerdown", () => this.scene.start("Game"));
+
+        this.render();
+      };
+      VocabScene.prototype.render = function () {
+        const v = AA_VOCAB[this.idx];
+        const last = this.idx === AA_VOCAB.length - 1;
+        this.stepText.setText(
+          "Word " + (this.idx + 1) + " of " + AA_VOCAB.length,
+        );
+        this.emojiText.setText(v.emoji);
+        this.termText.setText(v.term);
+        this.defText.setText(v.def);
+        this.btnT.setText(last ? "START PLAYING ▶" : "NEXT →");
+        srSay(v.term + ". " + v.def);
+      };
+      VocabScene.prototype.advance = function () {
+        SFX.fire();
+        if (this.idx < AA_VOCAB.length - 1) {
+          this.idx++;
+          this.render();
+        } else {
+          this.scene.start("Game");
+        }
+      };
+
       function GameScene() {
-        return new Phaser.Scene("Game");
+        Phaser.Scene.call(this, "Game");
       }
       GameScene.prototype = Object.create(Phaser.Scene.prototype);
       GameScene.prototype.constructor = GameScene;
@@ -668,8 +829,7 @@
           const x = fromLeft ? -40 : W + 40;
           const y = ys[i];
           const speed =
-            (40 + (this.level - 1) * 10 + randInt(0, 20)) *
-            (fromLeft ? 1 : -1);
+            (40 + (this.level - 1) * 10 + randInt(0, 20)) * (fromLeft ? 1 : -1);
           const circ = this.add.circle(x, y, 34, 0x16345a);
           circ.setStrokeStyle(3, 0x4488ff);
           const txt = this.add
@@ -786,7 +946,12 @@
           b.y += this.brick.vy * dt;
           // Hit test against targets.
           for (const t of this.targets) {
-            const d = Phaser.Math.Distance.Between(b.x, b.y, t.circ.x, t.circ.y);
+            const d = Phaser.Math.Distance.Between(
+              b.x,
+              b.y,
+              t.circ.x,
+              t.circ.y,
+            );
             if (d <= 34 + 12) {
               this.resolveHit(t);
               return;
@@ -836,7 +1001,9 @@
           this.flash(t.circ.x, t.circ.y, "✗", "#ff8f8f");
           this.feedback
             .setText(
-              "Not that one. Correct area = " + this.problem.area + " sq units.",
+              "Not that one. Correct area = " +
+                this.problem.area +
+                " sq units.",
             )
             .setAlpha(1);
           srSay(
@@ -919,7 +1086,7 @@
       };
 
       function ResultScene() {
-        return new Phaser.Scene("Result");
+        Phaser.Scene.call(this, "Result");
       }
       ResultScene.prototype = Object.create(Phaser.Scene.prototype);
       ResultScene.prototype.constructor = ResultScene;
@@ -965,16 +1132,11 @@
           })
           .setOrigin(0.5);
         this.add
-          .text(
-            cx,
-            295,
-            "Solved " + d.solved + " of " + d.target + " shapes",
-            {
-              fontFamily: "Segoe UI, sans-serif",
-              fontSize: "18px",
-              color: "#cfe0f0",
-            },
-          )
+          .text(cx, 295, "Solved " + d.solved + " of " + d.target + " shapes", {
+            fontFamily: "Segoe UI, sans-serif",
+            fontSize: "18px",
+            color: "#cfe0f0",
+          })
           .setOrigin(0.5);
         this.add
           .text(cx, 325, "High Score: " + hs, {
@@ -1071,5 +1233,8 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
-  </body>
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+</body>
 </html>

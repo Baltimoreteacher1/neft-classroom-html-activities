@@ -7,7 +7,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Treasure Hunter — 6.NS.B.4</title>
     <style>
       * {
@@ -43,12 +43,12 @@
       }
     </style>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <link rel="stylesheet" href="/assets/game-fx.css">
-  <!-- gfx-injected:end -->
-</head>
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
   <body>
     <div
       id="game-container"
@@ -206,12 +206,16 @@
           return factors.sort((x, y) => x - y);
         }
         function multisetIntersection(a, b) {
-          const countsA = {}, countsB = {};
-          a.forEach(x => countsA[x] = (countsA[x] || 0) + 1);
-          b.forEach(x => countsB[x] = (countsB[x] || 0) + 1);
+          const countsA = {},
+            countsB = {};
+          a.forEach((x) => (countsA[x] = (countsA[x] || 0) + 1));
+          b.forEach((x) => (countsB[x] = (countsB[x] || 0) + 1));
           const intersection = [];
-          const keys = new Set([...Object.keys(countsA), ...Object.keys(countsB)]);
-          keys.forEach(k => {
+          const keys = new Set([
+            ...Object.keys(countsA),
+            ...Object.keys(countsB),
+          ]);
+          keys.forEach((k) => {
             const val = parseInt(k, 10);
             const count = Math.min(countsA[val] || 0, countsB[val] || 0);
             for (let i = 0; i < count; i++) intersection.push(val);
@@ -219,12 +223,16 @@
           return intersection.sort((x, y) => x - y);
         }
         function multisetUnion(a, b) {
-          const countsA = {}, countsB = {};
-          a.forEach(x => countsA[x] = (countsA[x] || 0) + 1);
-          b.forEach(x => countsB[x] = (countsB[x] || 0) + 1);
+          const countsA = {},
+            countsB = {};
+          a.forEach((x) => (countsA[x] = (countsA[x] || 0) + 1));
+          b.forEach((x) => (countsB[x] = (countsB[x] || 0) + 1));
           const union = [];
-          const keys = new Set([...Object.keys(countsA), ...Object.keys(countsB)]);
-          keys.forEach(k => {
+          const keys = new Set([
+            ...Object.keys(countsA),
+            ...Object.keys(countsB),
+          ]);
+          keys.forEach((k) => {
             const val = parseInt(k, 10);
             const count = Math.max(countsA[val] || 0, countsB[val] || 0);
             for (let i = 0; i < count; i++) union.push(val);
@@ -237,7 +245,7 @@
           let attempts = 0;
           const maxVal = level <= 2 ? 30 : level <= 4 ? 60 : 100;
           const minVal = level <= 2 ? 6 : 12;
-          
+
           do {
             a = rand(minVal, maxVal);
             b = rand(minVal, maxVal);
@@ -248,7 +256,12 @@
             union = multisetUnion(primeA, primeB);
             attempts++;
           } while (
-            (a === b || g === 1 || primeA.length > 4 || primeB.length > 4 || union.length > 5 || union.length < 2) &&
+            (a === b ||
+              g === 1 ||
+              primeA.length > 4 ||
+              primeB.length > 4 ||
+              union.length > 5 ||
+              union.length < 2) &&
             attempts < 200
           );
 
@@ -273,12 +286,34 @@
             primeB,
             union,
             type,
-            prompt: type === "GCF" ? "Find the GCF of " + a + " and " + b : "Find the LCM of " + a + " and " + b,
-            stem: type === "GCF" ? "Greatest Common Factor" : "Least Common Multiple",
-            hint: "Prime Factors of " + a + ": " + primeA.join(" × ") + "\n" +
-                  "Prime Factors of " + b + ": " + primeB.join(" × ") + "\n" +
-                  "GCF (Overlap): " + multisetIntersection(primeA, primeB).join(" × ") + " = " + g + "\n" +
-                  "LCM (Union): " + union.join(" × ") + " = " + l
+            prompt:
+              type === "GCF"
+                ? "Find the GCF of " + a + " and " + b
+                : "Find the LCM of " + a + " and " + b,
+            stem:
+              type === "GCF"
+                ? "Greatest Common Factor"
+                : "Least Common Multiple",
+            hint:
+              "Prime Factors of " +
+              a +
+              ": " +
+              primeA.join(" × ") +
+              "\n" +
+              "Prime Factors of " +
+              b +
+              ": " +
+              primeB.join(" × ") +
+              "\n" +
+              "GCF (Overlap): " +
+              multisetIntersection(primeA, primeB).join(" × ") +
+              " = " +
+              g +
+              "\n" +
+              "LCM (Union): " +
+              union.join(" × ") +
+              " = " +
+              l,
           };
         }
 
@@ -625,6 +660,7 @@
             this.keys = 0;
             this.chestsOpened = 0;
             this.room = 1;
+            this.levelingUp = false;
             this.questionsCorrect = 0;
             this.questionsTotal = 0;
             this.currentQ = null;
@@ -810,6 +846,7 @@
           }
 
           buildRoom() {
+            this.levelingUp = false;
             this.chests.clear(true, true);
             this.coins.clear(true, true);
             this.keyItems.clear(true, true);
@@ -1055,9 +1092,12 @@
             this.overlayTileRects = [];
 
             // Backdrop
-            const backdrop = this.add.rectangle(W / 2, H / 2, W, H, 0x000000, 0.85)
+            const backdrop = this.add
+              .rectangle(W / 2, H / 2, W, H, 0x000000, 0.85)
               .setInteractive();
-            backdrop.on('pointerdown', (pointer) => { pointer.event.stopPropagation(); });
+            backdrop.on("pointerdown", (pointer) => {
+              pointer.event.stopPropagation();
+            });
             this.vennContainer.add(backdrop);
 
             // Dialog Card
@@ -1065,51 +1105,114 @@
             const cardY = H / 2;
             const cardW = 750;
             const cardH = 480;
-            const card = this.add.rectangle(cardX, cardY, cardW, cardH, 0x0f0f1b, 0.98);
+            const card = this.add.rectangle(
+              cardX,
+              cardY,
+              cardW,
+              cardH,
+              0x0f0f1b,
+              0.98,
+            );
             card.setStrokeStyle(3, 0xfbbf24, 1);
             this.vennContainer.add(card);
 
             // Header Title
-            const title = this.add.text(cardX, cardY - cardH / 2 + 30, "CHEST VENNLOCK DECRYPTOR", {
-              fontSize: "24px",
-              fontStyle: "bold",
-              color: "#fcd34d",
-              fontFamily: "Inter, system-ui, sans-serif"
-            }).setOrigin(0.5);
+            const title = this.add
+              .text(cardX, cardY - cardH / 2 + 30, "CHEST VENNLOCK DECRYPTOR", {
+                fontSize: "24px",
+                fontStyle: "bold",
+                color: "#fcd34d",
+                fontFamily: "Inter, system-ui, sans-serif",
+              })
+              .setOrigin(0.5);
             this.vennContainer.add(title);
             this.overlayTexts.push(title);
 
             // Question Prompt
-            const promptStr = this.currentQ.prompt + " (" + this.currentQ.type + ")";
-            const promptText = this.add.text(cardX, cardY - cardH / 2 + 65, promptStr, {
-              fontSize: "18px",
-              fontStyle: "bold",
-              color: "#ffffff",
-              fontFamily: "Inter, system-ui, sans-serif"
-            }).setOrigin(0.5);
+            const promptStr =
+              this.currentQ.prompt + " (" + this.currentQ.type + ")";
+            const promptText = this.add
+              .text(cardX, cardY - cardH / 2 + 65, promptStr, {
+                fontSize: "18px",
+                fontStyle: "bold",
+                color: "#ffffff",
+                fontFamily: "Inter, system-ui, sans-serif",
+              })
+              .setOrigin(0.5);
             this.vennContainer.add(promptText);
             this.overlayTexts.push(promptText);
 
             // Active Zone state
-            this.selectedZone = 'overlap'; // defaults to overlap GCF zone
+            this.selectedZone = "overlap"; // defaults to overlap GCF zone
 
             // Venn circles center / graphics
             this.vennGraphics = this.add.graphics();
             this.vennContainer.add(this.vennGraphics);
 
             // Add Equations Labels
-            this.aEqText = this.add.text(cardX - 200, cardY - 170, "", { fontSize: "12px", fontStyle: "bold", fontFamily: "Inter" }).setOrigin(0.5);
-            this.bEqText = this.add.text(cardX + 200, cardY - 170, "", { fontSize: "12px", fontStyle: "bold", fontFamily: "Inter" }).setOrigin(0.5);
-            this.gcfEqText = this.add.text(cardX, cardY + 140, "", { fontSize: "12px", fontStyle: "bold", fontFamily: "Inter" }).setOrigin(0.5);
-            this.lcmEqText = this.add.text(cardX, cardY + 165, "", { fontSize: "12px", fontStyle: "bold", fontFamily: "Inter" }).setOrigin(0.5);
-            this.vennContainer.add([this.aEqText, this.bEqText, this.gcfEqText, this.lcmEqText]);
-            this.overlayTexts.push(this.aEqText, this.bEqText, this.gcfEqText, this.lcmEqText);
+            this.aEqText = this.add
+              .text(cardX - 200, cardY - 170, "", {
+                fontSize: "12px",
+                fontStyle: "bold",
+                fontFamily: "Inter",
+              })
+              .setOrigin(0.5);
+            this.bEqText = this.add
+              .text(cardX + 200, cardY - 170, "", {
+                fontSize: "12px",
+                fontStyle: "bold",
+                fontFamily: "Inter",
+              })
+              .setOrigin(0.5);
+            this.gcfEqText = this.add
+              .text(cardX, cardY + 140, "", {
+                fontSize: "12px",
+                fontStyle: "bold",
+                fontFamily: "Inter",
+              })
+              .setOrigin(0.5);
+            this.lcmEqText = this.add
+              .text(cardX, cardY + 165, "", {
+                fontSize: "12px",
+                fontStyle: "bold",
+                fontFamily: "Inter",
+              })
+              .setOrigin(0.5);
+            this.vennContainer.add([
+              this.aEqText,
+              this.bEqText,
+              this.gcfEqText,
+              this.lcmEqText,
+            ]);
+            this.overlayTexts.push(
+              this.aEqText,
+              this.bEqText,
+              this.gcfEqText,
+              this.lcmEqText,
+            );
 
             // Zone Selection Buttons
-            const createZoneButton = (scene, x, y, width, height, zoneKey, label) => {
-              const btn = scene.add.rectangle(x, y, width, height, 0x1e1b4b).setInteractive({ useHandCursor: true });
+            const createZoneButton = (
+              scene,
+              x,
+              y,
+              width,
+              height,
+              zoneKey,
+              label,
+            ) => {
+              const btn = scene.add
+                .rectangle(x, y, width, height, 0x1e1b4b)
+                .setInteractive({ useHandCursor: true });
               btn.setStrokeStyle(1.5, 0x4f46e5, 1);
-              const txt = scene.add.text(x, y, label, { fontSize: "12px", fontStyle: "bold", color: "#c7d2fe", fontFamily: "Inter" }).setOrigin(0.5);
+              const txt = scene.add
+                .text(x, y, label, {
+                  fontSize: "12px",
+                  fontStyle: "bold",
+                  color: "#c7d2fe",
+                  fontFamily: "Inter",
+                })
+                .setOrigin(0.5);
               btn.on("pointerdown", () => {
                 scene.selectedZone = zoneKey;
                 playTone(480, 0.05);
@@ -1122,22 +1225,69 @@
             };
 
             const btnY = cardY - 120;
-            this.zoneA_Btn = createZoneButton(this, cardX - 180, btnY, 110, 26, 'left', "A ONLY");
-            this.zoneOverlap_Btn = createZoneButton(this, cardX, btnY, 140, 26, 'overlap', "GCF (SHARED)");
-            this.zoneB_Btn = createZoneButton(this, cardX + 180, btnY, 110, 26, 'right', "B ONLY");
+            this.zoneA_Btn = createZoneButton(
+              this,
+              cardX - 180,
+              btnY,
+              110,
+              26,
+              "left",
+              "A ONLY",
+            );
+            this.zoneOverlap_Btn = createZoneButton(
+              this,
+              cardX,
+              btnY,
+              140,
+              26,
+              "overlap",
+              "GCF (SHARED)",
+            );
+            this.zoneB_Btn = createZoneButton(
+              this,
+              cardX + 180,
+              btnY,
+              110,
+              26,
+              "right",
+              "B ONLY",
+            );
 
             // Setup state for tiles
-            this.vennTiles = this.currentQ.union.map((val, idx) => ({ id: idx, value: val, zone: 'pool' }));
-            
+            this.vennTiles = this.currentQ.union.map((val, idx) => ({
+              id: idx,
+              value: val,
+              zone: "pool",
+            }));
+
             // Placed numbers text container
             this.placedTexts = [];
 
             // Submit / Reset / Swim Away Buttons at the very bottom
             const bottomBtnY = cardY + 205;
-            
-            const createBottomButton = (scene, x, y, width, height, label, color, textColor, onClick) => {
-              const btn = scene.add.rectangle(x, y, width, height, color).setInteractive({ useHandCursor: true });
-              const txt = scene.add.text(x, y, label, { fontSize: "14px", fontStyle: "bold", color: textColor, fontFamily: "Inter" }).setOrigin(0.5);
+
+            const createBottomButton = (
+              scene,
+              x,
+              y,
+              width,
+              height,
+              label,
+              color,
+              textColor,
+              onClick,
+            ) => {
+              const btn = scene.add
+                .rectangle(x, y, width, height, color)
+                .setInteractive({ useHandCursor: true });
+              const txt = scene.add
+                .text(x, y, label, {
+                  fontSize: "14px",
+                  fontStyle: "bold",
+                  color: textColor,
+                  fontFamily: "Inter",
+                })
+                .setOrigin(0.5);
               btn.on("pointerover", () => btn.setAlpha(0.85));
               btn.on("pointerout", () => btn.setAlpha(1));
               btn.on("pointerdown", () => {
@@ -1149,33 +1299,66 @@
             };
 
             // Swim Away (closes and gives back key)
-            createBottomButton(this, cardX - 160, bottomBtnY, 130, 34, "SWIM AWAY", 0x3b82f6, "#fff", () => {
-              this.keys++; // give back key
-              this.hideAnswerPanel();
-            });
+            createBottomButton(
+              this,
+              cardX - 160,
+              bottomBtnY,
+              130,
+              34,
+              "SWIM AWAY",
+              0x3b82f6,
+              "#fff",
+              () => {
+                this.keys++; // give back key
+                this.hideAnswerPanel();
+              },
+            );
 
             // Reset
-            createBottomButton(this, cardX, bottomBtnY, 110, 34, "RESET", 0x4b5563, "#fff", () => {
-              this.vennTiles.forEach(t => t.zone = 'pool');
-              this.selectedZone = 'overlap';
-              playTone(440, 0.08);
-              this.drawVenn();
-            });
+            createBottomButton(
+              this,
+              cardX,
+              bottomBtnY,
+              110,
+              34,
+              "RESET",
+              0x4b5563,
+              "#fff",
+              () => {
+                this.vennTiles.forEach((t) => (t.zone = "pool"));
+                this.selectedZone = "overlap";
+                playTone(440, 0.08);
+                this.drawVenn();
+              },
+            );
 
             // Submit
-            createBottomButton(this, cardX + 160, bottomBtnY, 130, 34, "SUBMIT ANSWER", 0x10b981, "#fff", () => {
-              this.submitVenn(chest);
-            });
+            createBottomButton(
+              this,
+              cardX + 160,
+              bottomBtnY,
+              130,
+              34,
+              "SUBMIT ANSWER",
+              0x10b981,
+              "#fff",
+              () => {
+                this.submitVenn(chest);
+              },
+            );
 
             // Error Overlay Feedback
-            this.overlayFeedback = this.add.text(cardX, cardY - 70, "", {
-              fontSize: "16px",
-              fontStyle: "bold",
-              color: "#ef4444",
-              stroke: "#000",
-              strokeThickness: 3,
-              fontFamily: "Inter"
-            }).setOrigin(0.5).setAlpha(0);
+            this.overlayFeedback = this.add
+              .text(cardX, cardY - 70, "", {
+                fontSize: "16px",
+                fontStyle: "bold",
+                color: "#ef4444",
+                stroke: "#000",
+                strokeThickness: 3,
+                fontFamily: "Inter",
+              })
+              .setOrigin(0.5)
+              .setAlpha(0);
             this.vennContainer.add(this.overlayFeedback);
             this.overlayTexts.push(this.overlayFeedback);
 
@@ -1187,13 +1370,13 @@
 
           drawVenn() {
             this.vennGraphics.clear();
-            
+
             // Clear old placed texts/rects
-            this.placedTexts.forEach(t => t.destroy());
+            this.placedTexts.forEach((t) => t.destroy());
             this.placedTexts = [];
-            this.overlayTileTexts.forEach(t => t.destroy());
+            this.overlayTileTexts.forEach((t) => t.destroy());
             this.overlayTileTexts = [];
-            this.overlayTileRects.forEach(r => r.destroy());
+            this.overlayTileRects.forEach((r) => r.destroy());
             this.overlayTileRects = [];
 
             const cardX = W / 2;
@@ -1216,19 +1399,45 @@
             this.vennGraphics.strokeCircle(cxB, cy, rad);
 
             // Highlight active zone button
-            this.zoneA_Btn.setStrokeStyle(1.5, this.selectedZone === 'left' ? 0xfcd34d : 0x4f46e5, 1);
-            this.zoneOverlap_Btn.setStrokeStyle(1.5, this.selectedZone === 'overlap' ? 0xfcd34d : 0x4f46e5, 1);
-            this.zoneB_Btn.setStrokeStyle(1.5, this.selectedZone === 'right' ? 0xfcd34d : 0x4f46e5, 1);
+            this.zoneA_Btn.setStrokeStyle(
+              1.5,
+              this.selectedZone === "left" ? 0xfcd34d : 0x4f46e5,
+              1,
+            );
+            this.zoneOverlap_Btn.setStrokeStyle(
+              1.5,
+              this.selectedZone === "overlap" ? 0xfcd34d : 0x4f46e5,
+              1,
+            );
+            this.zoneB_Btn.setStrokeStyle(
+              1.5,
+              this.selectedZone === "right" ? 0xfcd34d : 0x4f46e5,
+              1,
+            );
 
             // Filter tiles in zones
-            const leftTiles = this.vennTiles.filter(t => t.zone === 'left');
-            const overlapTiles = this.vennTiles.filter(t => t.zone === 'overlap');
-            const rightTiles = this.vennTiles.filter(t => t.zone === 'right');
-            const poolTiles = this.vennTiles.filter(t => t.zone === 'pool');
+            const leftTiles = this.vennTiles.filter((t) => t.zone === "left");
+            const overlapTiles = this.vennTiles.filter(
+              (t) => t.zone === "overlap",
+            );
+            const rightTiles = this.vennTiles.filter((t) => t.zone === "right");
+            const poolTiles = this.vennTiles.filter((t) => t.zone === "pool");
 
             // Render Circle labels inside diagram
-            const labelA = this.add.text(cxA - 40, cy - 80, "Factors of " + this.currentQ.a, { fontSize: "13px", fontStyle: "bold", color: "#60a5fa" }).setOrigin(0.5);
-            const labelB = this.add.text(cxB + 40, cy - 80, "Factors of " + this.currentQ.b, { fontSize: "13px", fontStyle: "bold", color: "#c084fc" }).setOrigin(0.5);
+            const labelA = this.add
+              .text(cxA - 40, cy - 80, "Factors of " + this.currentQ.a, {
+                fontSize: "13px",
+                fontStyle: "bold",
+                color: "#60a5fa",
+              })
+              .setOrigin(0.5);
+            const labelB = this.add
+              .text(cxB + 40, cy - 80, "Factors of " + this.currentQ.b, {
+                fontSize: "13px",
+                fontStyle: "bold",
+                color: "#c084fc",
+              })
+              .setOrigin(0.5);
             this.placedTexts.push(labelA, labelB);
             this.vennContainer.add([labelA, labelB]);
 
@@ -1236,18 +1445,26 @@
             const drawPlacedTilesInZone = (tiles, cx, startY) => {
               tiles.forEach((tile, index) => {
                 const tx = cx;
-                const ty = startY + (index - (tiles.length - 1)/2) * 32;
-                
-                const rect = this.add.rectangle(tx, ty, 28, 26, 0x1e1b4b).setInteractive({ useHandCursor: true });
+                const ty = startY + (index - (tiles.length - 1) / 2) * 32;
+
+                const rect = this.add
+                  .rectangle(tx, ty, 28, 26, 0x1e1b4b)
+                  .setInteractive({ useHandCursor: true });
                 rect.setStrokeStyle(1.5, 0xfcd34d, 1);
-                const txt = this.add.text(tx, ty, String(tile.value), { fontSize: "13px", fontStyle: "bold", color: "#fcd34d" }).setOrigin(0.5);
-                
+                const txt = this.add
+                  .text(tx, ty, String(tile.value), {
+                    fontSize: "13px",
+                    fontStyle: "bold",
+                    color: "#fcd34d",
+                  })
+                  .setOrigin(0.5);
+
                 rect.on("pointerdown", () => {
-                  tile.zone = 'pool';
+                  tile.zone = "pool";
                   playTone(330, 0.05);
                   this.drawVenn();
                 });
-                
+
                 this.vennContainer.add([rect, txt]);
                 this.overlayTileRects.push(rect);
                 this.overlayTileTexts.push(txt);
@@ -1264,12 +1481,20 @@
             // Draw Pool Tiles Rack at bottom
             const poolRackY = cardY + 95;
             poolTiles.forEach((tile, index) => {
-              const px = cardX + (index - (poolTiles.length - 1)/2) * 44;
-              
-              const rect = this.add.rectangle(px, poolRackY, 32, 30, 0x0f172a).setInteractive({ useHandCursor: true });
+              const px = cardX + (index - (poolTiles.length - 1) / 2) * 44;
+
+              const rect = this.add
+                .rectangle(px, poolRackY, 32, 30, 0x0f172a)
+                .setInteractive({ useHandCursor: true });
               rect.setStrokeStyle(1.5, 0x94a3b8, 0.8);
-              const txt = this.add.text(px, poolRackY, String(tile.value), { fontSize: "14px", fontStyle: "bold", color: "#f8fafc" }).setOrigin(0.5);
-              
+              const txt = this.add
+                .text(px, poolRackY, String(tile.value), {
+                  fontSize: "14px",
+                  fontStyle: "bold",
+                  color: "#f8fafc",
+                })
+                .setOrigin(0.5);
+
               rect.on("pointerover", () => rect.setScale(1.1));
               rect.on("pointerout", () => rect.setScale(1));
               rect.on("pointerdown", () => {
@@ -1284,9 +1509,9 @@
             });
 
             // Calculate Dynamic Products
-            const leftVals = leftTiles.map(t => t.value);
-            const overlapVals = overlapTiles.map(t => t.value);
-            const rightVals = rightTiles.map(t => t.value);
+            const leftVals = leftTiles.map((t) => t.value);
+            const overlapVals = overlapTiles.map((t) => t.value);
+            const rightVals = rightTiles.map((t) => t.value);
 
             // A contains Left + Overlap
             const aVals = [...leftVals, ...overlapVals];
@@ -1312,23 +1537,65 @@
             const matchLCM = hasLCM && prodLCM === this.currentQ.lcm;
 
             // Update Dynamic Equation text fields
-            this.aEqText.setText("Circle A: " + (hasA ? aVals.join(" × ") : "0") + " = " + (hasA ? prodA : "0") + " (Goal: " + this.currentQ.a + ")")
+            this.aEqText
+              .setText(
+                "Circle A: " +
+                  (hasA ? aVals.join(" × ") : "0") +
+                  " = " +
+                  (hasA ? prodA : "0") +
+                  " (Goal: " +
+                  this.currentQ.a +
+                  ")",
+              )
               .setColor(matchA ? "#34d399" : "#f87171");
 
-            this.bEqText.setText("Circle B: " + (hasB ? bVals.join(" × ") : "0") + " = " + (hasB ? prodB : "0") + " (Goal: " + this.currentQ.b + ")")
+            this.bEqText
+              .setText(
+                "Circle B: " +
+                  (hasB ? bVals.join(" × ") : "0") +
+                  " = " +
+                  (hasB ? prodB : "0") +
+                  " (Goal: " +
+                  this.currentQ.b +
+                  ")",
+              )
               .setColor(matchB ? "#34d399" : "#f87171");
 
-            this.gcfEqText.setText("GCF (Overlap): " + (hasGCF ? overlapVals.join(" × ") : "0") + " = " + (hasGCF ? prodGCF : "0") + " (Goal: " + this.currentQ.gcf + ")")
+            this.gcfEqText
+              .setText(
+                "GCF (Overlap): " +
+                  (hasGCF ? overlapVals.join(" × ") : "0") +
+                  " = " +
+                  (hasGCF ? prodGCF : "0") +
+                  " (Goal: " +
+                  this.currentQ.gcf +
+                  ")",
+              )
               .setColor(matchGCF ? "#34d399" : "#fcd34d");
 
-            this.lcmEqText.setText("LCM (Union): " + (hasLCM ? unionVals.join(" × ") : "0") + " = " + (hasLCM ? prodLCM : "0") + " (Goal: " + this.currentQ.lcm + ")")
+            this.lcmEqText
+              .setText(
+                "LCM (Union): " +
+                  (hasLCM ? unionVals.join(" × ") : "0") +
+                  " = " +
+                  (hasLCM ? prodLCM : "0") +
+                  " (Goal: " +
+                  this.currentQ.lcm +
+                  ")",
+              )
               .setColor(matchLCM ? "#34d399" : "#fcd34d");
           }
 
           submitVenn(chest) {
-            const leftVals = this.vennTiles.filter(t => t.zone === 'left').map(t => t.value);
-            const overlapVals = this.vennTiles.filter(t => t.zone === 'overlap').map(t => t.value);
-            const rightVals = this.vennTiles.filter(t => t.zone === 'right').map(t => t.value);
+            const leftVals = this.vennTiles
+              .filter((t) => t.zone === "left")
+              .map((t) => t.value);
+            const overlapVals = this.vennTiles
+              .filter((t) => t.zone === "overlap")
+              .map((t) => t.value);
+            const rightVals = this.vennTiles
+              .filter((t) => t.zone === "right")
+              .map((t) => t.value);
 
             // Compute products
             const aVals = [...leftVals, ...overlapVals];
@@ -1342,8 +1609,10 @@
             // Check correctness of diagram
             const matchA = aVals.length > 0 && prodA === this.currentQ.a;
             const matchB = bVals.length > 0 && prodB === this.currentQ.b;
-            const matchGCF = overlapVals.length > 0 && prodGCF === this.currentQ.gcf;
-            const matchLCM = unionVals.length > 0 && prodLCM === this.currentQ.lcm;
+            const matchGCF =
+              overlapVals.length > 0 && prodGCF === this.currentQ.gcf;
+            const matchLCM =
+              unionVals.length > 0 && prodLCM === this.currentQ.lcm;
 
             const correct = matchA && matchB && matchGCF && matchLCM;
 
@@ -1405,6 +1674,7 @@
 
               // Level up every 3 chests
               if (this.chestsOpened > 0 && this.chestsOpened % 3 === 0) {
+                this.levelingUp = true;
                 this.level++;
                 this.room++;
                 sfxLevelUp();
@@ -1430,13 +1700,21 @@
 
               let errorMsg = "";
               if (!matchA) {
-                errorMsg = "Circle A product does not equal " + this.currentQ.a + "!";
+                errorMsg =
+                  "Circle A product does not equal " + this.currentQ.a + "!";
               } else if (!matchB) {
-                errorMsg = "Circle B product does not equal " + this.currentQ.b + "!";
+                errorMsg =
+                  "Circle B product does not equal " + this.currentQ.b + "!";
               } else if (!matchGCF) {
-                errorMsg = "Overlap product does not equal GCF (" + this.currentQ.gcf + ")!";
+                errorMsg =
+                  "Overlap product does not equal GCF (" +
+                  this.currentQ.gcf +
+                  ")!";
               } else if (!matchLCM) {
-                errorMsg = "Union product does not equal LCM (" + this.currentQ.lcm + ")!";
+                errorMsg =
+                  "Union product does not equal LCM (" +
+                  this.currentQ.lcm +
+                  ")!";
               } else {
                 errorMsg = "Factors misplaced!";
               }
@@ -1678,7 +1956,8 @@
             if (
               unopened.length === 0 &&
               this.chests.getLength() > 0 &&
-              !this.answerPanel.visible
+              !this.answerPanel.visible &&
+              !this.levelingUp
             ) {
               this.room++;
               this.showFeedback("Room cleared! Next room...", 0x34d399);
@@ -1887,10 +2166,13 @@
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
-  <script src="/assets/game-fx.js" defer></script>
-  <!-- gfx-injected:end -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
 </body>
 </html>

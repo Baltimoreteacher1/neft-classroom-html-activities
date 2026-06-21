@@ -72,7 +72,7 @@ const DOMAIN_XWALK = { RP: "AT", EE: "AT", NS: "NOS", G: "GR", SP: "DS" };
 // then translate it to the current 2025 code: exact crosswalk first, else a
 // domain-level rewrite so at least the domain matches the revised standards.
 function standardFrom(title) {
-  const m = title && title.match(/\b6\.[A-Z]{1,3}(?:\.[A-Z0-9]+)*\b/);
+  const m = title && title.match(/\b6\.[A-Z]{1,3}(?:\.[A-Z0-9]+)*(?:\.[a-z])?\b/);
   if (!m) return null;
   if (XWALK[m[0]]) return XWALK[m[0]];
   return m[0].replace(/^6\.(RP|EE|NS|G|SP)\b/, (_, d) => `6.${DOMAIN_XWALK[d]}`);

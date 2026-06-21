@@ -274,6 +274,100 @@
       a {
         color: var(--accent);
       }
+      /* Collapsible "dropdown" card sections */
+      details.section {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        margin-bottom: 16px;
+        overflow: hidden;
+      }
+      details.section > summary {
+        list-style: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 18px;
+        font-size: 17px;
+        font-weight: 700;
+        user-select: none;
+      }
+      details.section > summary::-webkit-details-marker {
+        display: none;
+      }
+      .section-meta {
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 400;
+      }
+      .chev {
+        margin-left: auto;
+        color: var(--muted);
+        transition: transform 0.15s;
+      }
+      details.section[open] > summary .chev {
+        transform: rotate(180deg);
+      }
+      .section-body {
+        padding: 0 16px 16px;
+        border-top: 1px solid var(--line);
+      }
+      tr.grp td {
+        background: var(--panel-2);
+        font-weight: 700;
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        font-size: 12px;
+      }
+      button.del {
+        border: none;
+        background: transparent;
+        color: var(--bad);
+        padding: 0 4px;
+        font-size: 13px;
+        cursor: pointer;
+        vertical-align: middle;
+      }
+      /* Modal */
+      .modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(4, 9, 18, 0.66);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 20;
+        padding: 16px;
+      }
+      .modal-card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 22px;
+        width: 100%;
+        max-width: 380px;
+      }
+      .modal-card h3 {
+        margin: 0 0 14px;
+      }
+      .modal-card label {
+        display: block;
+        font-size: 13px;
+        color: var(--muted);
+        margin-bottom: 12px;
+      }
+      .modal-card label input {
+        width: 100%;
+        margin-top: 4px;
+      }
+      .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 6px;
+      }
     </style>
   </head>
   <body>
@@ -308,77 +402,128 @@
     <main id="app" class="hidden">
       <div class="help">
         <strong>How it works.</strong> Every save code a student creates appears
-        here automatically, and the <strong>name</strong> and <strong>class</strong>
-        a student typed in the activity arrive filled in — you only complete any
-        blanks. Edits save instantly and power the Grades tab. Use
-        <strong>Download Excel</strong> for an offline workbook (Save Codes +
-        Grades tabs), or fill names into that file and <strong>Import</strong> it
-        back to sync in bulk.
+        here automatically with the <strong>name</strong> and
+        <strong>class</strong> they typed. You can also
+        <strong>＋ Add student</strong> by hand (for students who have not
+        started yet) and <strong>＋ Add class</strong> to set up your sections.
+        Edits save instantly online and feed the Grades section. Use
+        <strong>Import names</strong> to bulk-fill from a CSV/Excel file, or the
+        per-section <strong>Excel / CSV</strong> buttons to download.
       </div>
 
       <div class="cards" id="stats"></div>
-
-      <div class="tabs" role="tablist">
-        <button class="tab" role="tab" aria-selected="true" data-tab="roster">
-          Save Codes &amp; Roster
-        </button>
-        <button class="tab" role="tab" aria-selected="false" data-tab="grades">
-          Grades (by activity)
-        </button>
-      </div>
 
       <div class="toolbar">
         <input id="search" placeholder="Search name, code, activity…" />
         <select id="classFilter">
           <option value="">All classes</option>
         </select>
+        <button id="addStudent">＋ Add student</button>
+        <button id="addClass">＋ Add class</button>
         <span class="spacer"></span>
         <button id="refresh">↻ Refresh</button>
-        <button class="good" id="dlXls">⬇ Download Excel</button>
-        <button id="dlCsv">⬇ CSV</button>
         <button class="primary" id="importBtn">⬆ Import names</button>
         <input id="importFile" type="file" accept=".csv,.xls,.txt" hidden />
       </div>
 
-      <div class="table-wrap">
-        <table id="rosterTable">
-          <thead>
-            <tr>
-              <th>Code</th>
-              <th>Student Name</th>
-              <th>Class</th>
-              <th>Activity</th>
-              <th>Progress</th>
-              <th>Score</th>
-              <th>Grade</th>
-              <th>Note</th>
-              <th>Last Saved</th>
-            </tr>
-          </thead>
-          <tbody id="rosterBody"></tbody>
-        </table>
-      </div>
+      <details class="section" id="secRoster" open>
+        <summary>
+          <span>📇 Save Codes &amp; Roster</span>
+          <span class="section-meta" id="rosterMeta"></span>
+          <span class="chev">▾</span>
+        </summary>
+        <div class="section-body">
+          <div class="toolbar" style="margin: 14px 0">
+            <span class="muted"
+              >Grouped by class · names &amp; grades autosave</span
+            >
+            <span class="spacer"></span>
+            <button class="good" id="dlXls">⬇ Excel</button>
+            <button id="dlCsv">⬇ CSV</button>
+          </div>
+          <div class="table-wrap">
+            <table id="rosterTable">
+              <thead>
+                <tr>
+                  <th>Code</th>
+                  <th>Student Name</th>
+                  <th>Class</th>
+                  <th>Activity</th>
+                  <th>Progress</th>
+                  <th>Score</th>
+                  <th>Grade</th>
+                  <th>Note</th>
+                  <th>Last Saved</th>
+                </tr>
+              </thead>
+              <tbody id="rosterBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </details>
 
-      <div class="table-wrap hidden" id="gradesWrap">
-        <table id="gradesTable">
-          <thead id="gradesHead"></thead>
-          <tbody id="gradesBody"></tbody>
-        </table>
-      </div>
+      <details class="section" id="secGrades">
+        <summary>
+          <span>📊 Grades by Assignment</span>
+          <span class="section-meta" id="gradesMeta"></span>
+          <span class="chev">▾</span>
+        </summary>
+        <div class="section-body">
+          <div class="toolbar" style="margin: 14px 0">
+            <span class="muted"
+              >Manual grade ▸ activity score ▸ progress · average ignores
+              blanks</span
+            >
+            <span class="spacer"></span>
+            <button class="good" id="dlXlsG">⬇ Excel</button>
+            <button id="dlCsvG">⬇ CSV</button>
+          </div>
+          <div class="table-wrap" id="gradesWrap">
+            <table id="gradesTable">
+              <thead id="gradesHead"></thead>
+              <tbody id="gradesBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </details>
     </main>
+
+    <div class="modal hidden" id="modal">
+      <div class="modal-card">
+        <h3 id="mTitle">Add</h3>
+        <div id="mBody"></div>
+        <div class="modal-actions">
+          <button id="mCancel">Cancel</button>
+          <button class="primary" id="mOk">Add</button>
+        </div>
+      </div>
+    </div>
 
     <div class="toast" id="toast"></div>
 
     <script>
       (function () {
         "use strict";
+        // Embedded inside the curriculum hub teacher card → hide page chrome.
+        if (new URLSearchParams(location.search).get("embed"))
+          document.documentElement.classList.add("embed");
         var LS_KEY = "neft.teacher.key";
         var API = "/api/progress";
         var key = localStorage.getItem(LS_KEY) || "";
         var records = []; // roster records from server
         var dirty = {}; // saveCode -> pending field changes
         var saveTimer = null;
-        var currentTab = "roster";
+        var modalOk = null; // pending modal confirm callback
+        // Teacher-defined classes that may not have any students yet. Persisted
+        // per-device; classes with ≥1 student also come back from the server.
+        var CC_KEY = "neft.teacher.classes";
+        var customClasses = [];
+        try {
+          customClasses =
+            JSON.parse(localStorage.getItem(CC_KEY) || "[]") || [];
+        } catch (e) {
+          customClasses = [];
+        }
 
         var $ = function (id) {
           return document.getElementById(id);
@@ -499,17 +644,33 @@
           $("stats").innerHTML = html;
         }
 
-        function renderClassFilter() {
-          var classes = {};
+        // Union of classes that have students (from the server) and classes the
+        // teacher added by hand (may still be empty), sorted alphabetically.
+        function allClasses() {
+          var set = {};
           records.forEach(function (r) {
-            if (r.section) classes[r.section] = 1;
+            if (r.section) set[r.section] = 1;
           });
+          customClasses.forEach(function (c) {
+            if (c) set[c] = 1;
+          });
+          return Object.keys(set).sort();
+        }
+
+        function addCustomClass(name) {
+          name = (name || "").trim();
+          if (!name || customClasses.indexOf(name) !== -1) return;
+          customClasses.push(name);
+          localStorage.setItem(CC_KEY, JSON.stringify(customClasses));
+          renderClassFilter();
+        }
+
+        function renderClassFilter() {
           var sel = $("classFilter");
           var cur = sel.value;
           sel.innerHTML =
             '<option value="">All classes</option>' +
-            Object.keys(classes)
-              .sort()
+            allClasses()
               .map(function (c) {
                 return '<option value="' + esc(c) + '">' + esc(c) + "</option>";
               })
@@ -532,58 +693,87 @@
           });
         }
 
-        // --- Render roster table --------------------------------------------
+        function isManual(r) {
+          return typeof r.code === "string" && r.code.indexOf("MAN-") === 0;
+        }
+
+        // --- Render roster table (grouped by class) -------------------------
         function render() {
-          if (currentTab === "grades") {
-            renderGrades();
-            return;
-          }
-          var rows = filtered();
-          var html = rows
-            .map(function (r) {
-              var prog = typeof r.progress === "number" ? r.progress : 0;
-              return (
-                "<tr data-code='" +
-                esc(r.code) +
-                "'>" +
-                "<td class='code'>" +
-                esc(r.code) +
-                "</td>" +
-                "<td class='edit'><input data-f='name' value='" +
-                esc(r.name) +
-                "' placeholder='Add name…'></td>" +
-                "<td class='edit'><input data-f='section' value='" +
-                esc(r.section) +
-                "' placeholder='Class…'></td>" +
-                "<td>" +
-                esc(r.activity) +
-                "</td>" +
-                "<td><span class='bar'><i style='width:" +
-                prog +
-                "%'></i></span> <span class='muted'>" +
-                prog +
-                "%</span></td>" +
-                "<td>" +
-                (r.score == null ? "<span class='muted'>—</span>" : r.score) +
-                "</td>" +
-                "<td class='edit'><input data-f='grade' value='" +
-                esc(r.grade) +
-                "' placeholder='—' style='max-width:80px'></td>" +
-                "<td class='edit'><input data-f='note' value='" +
-                esc(r.note) +
-                "' placeholder='…'></td>" +
-                "<td class='muted'>" +
-                (r.updatedAt
-                  ? r.updatedAt.replace("T", " ").slice(0, 16)
-                  : "") +
-                "</td>" +
-                "</tr>"
-              );
-            })
-            .join("");
+          var rows = filtered().slice();
+          // Sort by class then name; unassigned (blank) class sinks to bottom.
+          rows.sort(function (a, b) {
+            var sa = a.section ? a.section.toLowerCase() : "~~~";
+            var sb = b.section ? b.section.toLowerCase() : "~~~";
+            if (sa !== sb) return sa < sb ? -1 : 1;
+            var na = (a.name || "").toLowerCase();
+            var nb = (b.name || "").toLowerCase();
+            return na < nb ? -1 : na > nb ? 1 : 0;
+          });
+          // Per-class counts for the group header.
+          var counts = {};
+          rows.forEach(function (r) {
+            var c = r.section || "";
+            counts[c] = (counts[c] || 0) + 1;
+          });
+          var html = "";
+          var lastClass = null;
+          rows.forEach(function (r) {
+            var cls = r.section || "";
+            if (cls !== lastClass) {
+              lastClass = cls;
+              html +=
+                "<tr class='grp'><td colspan='9'>" +
+                (cls ? esc(cls) : "Unassigned") +
+                " · " +
+                counts[cls] +
+                "</td></tr>";
+            }
+            var prog = typeof r.progress === "number" ? r.progress : 0;
+            html +=
+              "<tr data-code='" +
+              esc(r.code) +
+              "'>" +
+              "<td class='code'>" +
+              esc(r.code) +
+              (isManual(r)
+                ? " <button class='del' title='Remove this manually-added student'>✕</button>"
+                : "") +
+              "</td>" +
+              "<td class='edit'><input data-f='name' value='" +
+              esc(r.name) +
+              "' placeholder='Add name…'></td>" +
+              "<td class='edit'><input data-f='section' value='" +
+              esc(r.section) +
+              "' placeholder='Class…'></td>" +
+              "<td>" +
+              (isManual(r)
+                ? "<span class='muted'>not started</span>"
+                : esc(r.activity)) +
+              "</td>" +
+              "<td><span class='bar'><i style='width:" +
+              prog +
+              "%'></i></span> <span class='muted'>" +
+              prog +
+              "%</span></td>" +
+              "<td>" +
+              (r.score == null ? "<span class='muted'>—</span>" : r.score) +
+              "</td>" +
+              "<td class='edit'><input data-f='grade' value='" +
+              esc(r.grade) +
+              "' placeholder='—' style='max-width:80px'></td>" +
+              "<td class='edit'><input data-f='note' value='" +
+              esc(r.note) +
+              "' placeholder='…'></td>" +
+              "<td class='muted'>" +
+              (r.updatedAt ? r.updatedAt.replace("T", " ").slice(0, 16) : "") +
+              "</td>" +
+              "</tr>";
+          });
           $("rosterBody").innerHTML =
             html ||
-            "<tr><td colspan='9' class='muted' style='padding:24px;text-align:center'>No save codes yet. They appear here the moment a student starts work.</td></tr>";
+            "<tr><td colspan='9' class='muted' style='padding:24px;text-align:center'>No students yet. Save codes appear automatically — or use ＋ Add student.</td></tr>";
+          $("rosterMeta").textContent =
+            records.length + " in roster · " + allClasses().length + " classes";
         }
 
         // Inline edit → queue change, debounce-save
@@ -603,6 +793,62 @@
           if (rec) rec[field] = inp.value;
           queueSave();
         });
+
+        // Remove a manually-added student (✕ button). Never offered for real
+        // save codes — the server also refuses to delete non-manual rows.
+        $("rosterBody").addEventListener("click", function (e) {
+          var btn = e.target.closest && e.target.closest(".del");
+          if (!btn) return;
+          var tr = btn.closest("tr");
+          var code = tr.getAttribute("data-code");
+          if (!confirm("Remove this manually-added student?")) return;
+          fetch(API + "/roster?key=" + encodeURIComponent(key), {
+            method: "POST",
+            headers: authHeaders(),
+            body: JSON.stringify({ delete: [code] }),
+          })
+            .then(function (r) {
+              return r.json();
+            })
+            .then(function (d) {
+              if (d && d.ok) {
+                toast("Removed");
+                load();
+              } else toast("Remove failed");
+            })
+            .catch(function () {
+              toast("Remove failed");
+            });
+        });
+
+        // Re-render every view that may depend on roster data.
+        function refreshViews() {
+          renderStats();
+          renderClassFilter();
+          render();
+          if ($("secGrades").open) renderGrades();
+        }
+
+        // POST roster rows, toast, then reload. Used by Add student / modal.
+        function postRoster(rows, okMsg) {
+          fetch(API + "/roster?key=" + encodeURIComponent(key), {
+            method: "POST",
+            headers: authHeaders(),
+            body: JSON.stringify({ rows: rows }),
+          })
+            .then(function (r) {
+              return r.json();
+            })
+            .then(function (d) {
+              if (d && d.ok) {
+                toast(okMsg || "Saved ✓");
+                load();
+              } else toast("Save failed");
+            })
+            .catch(function () {
+              toast("Save failed (offline?)");
+            });
+        }
 
         function queueSave() {
           clearTimeout(saveTimer);
@@ -625,8 +871,7 @@
             .then(function (d) {
               if (d && d.ok) {
                 toast("Saved " + d.updated + " ✓");
-                renderStats();
-                renderClassFilter();
+                refreshViews();
               } else toast("Save failed");
             })
             .catch(function () {
@@ -660,6 +905,11 @@
               var rows = d.rows.filter(function (row) {
                 return !cls || row[1] === cls;
               });
+              $("gradesMeta").textContent =
+                rows.length +
+                " students · " +
+                (d.activities || []).length +
+                " assignments";
               $("gradesBody").innerHTML =
                 rows
                   .map(function (row) {
@@ -686,37 +936,135 @@
             });
         }
 
-        // --- Tabs ------------------------------------------------------------
-        document.querySelectorAll(".tab").forEach(function (t) {
-          t.addEventListener("click", function () {
-            document.querySelectorAll(".tab").forEach(function (x) {
-              x.setAttribute("aria-selected", "false");
-            });
-            t.setAttribute("aria-selected", "true");
-            currentTab = t.getAttribute("data-tab");
-            $("rosterTable").parentElement.classList.toggle(
-              "hidden",
-              currentTab !== "roster",
-            );
-            $("gradesWrap").classList.toggle("hidden", currentTab !== "grades");
-            render();
-          });
+        // --- Collapsible sections -------------------------------------------
+        // Render grades lazily the first time the Grades section is opened.
+        $("secGrades").addEventListener("toggle", function () {
+          if ($("secGrades").open) renderGrades();
         });
 
         // --- Toolbar ---------------------------------------------------------
         $("search").addEventListener("input", render);
-        $("classFilter").addEventListener("change", render);
+        $("classFilter").addEventListener("change", function () {
+          render();
+          if ($("secGrades").open) renderGrades();
+        });
         $("refresh").addEventListener("click", load);
 
-        $("dlXls").addEventListener("click", function () {
-          var seg = currentTab === "grades" ? "grades" : "roster";
+        function download(seg, format) {
           window.location.href =
-            API + "/" + seg + "?key=" + encodeURIComponent(key) + "&format=xls";
+            API +
+            "/" +
+            seg +
+            "?key=" +
+            encodeURIComponent(key) +
+            "&format=" +
+            format;
+        }
+        $("dlXls").addEventListener("click", function () {
+          download("roster", "xls");
         });
         $("dlCsv").addEventListener("click", function () {
-          var seg = currentTab === "grades" ? "grades" : "roster";
-          window.location.href =
-            API + "/" + seg + "?key=" + encodeURIComponent(key) + "&format=csv";
+          download("roster", "csv");
+        });
+        $("dlXlsG").addEventListener("click", function () {
+          download("grades", "xls");
+        });
+        $("dlCsvG").addEventListener("click", function () {
+          download("grades", "csv");
+        });
+
+        // --- Modal -----------------------------------------------------------
+        function showModal(title, bodyHtml, okLabel, onOk) {
+          $("mTitle").textContent = title;
+          $("mBody").innerHTML = bodyHtml;
+          $("mOk").textContent = okLabel || "Add";
+          modalOk = onOk;
+          $("modal").classList.remove("hidden");
+          var first = $("mBody").querySelector("input");
+          if (first) first.focus();
+        }
+        function hideModal() {
+          $("modal").classList.add("hidden");
+          modalOk = null;
+        }
+        $("mCancel").addEventListener("click", hideModal);
+        $("mOk").addEventListener("click", function () {
+          if (!modalOk || modalOk() !== false) hideModal();
+        });
+        $("modal").addEventListener("click", function (e) {
+          if (e.target === $("modal")) hideModal();
+        });
+        $("mBody").addEventListener("keydown", function (e) {
+          if (e.key === "Enter") $("mOk").click();
+        });
+
+        // Synthetic code for a manually-added student (students never make MAN-).
+        function genCode() {
+          var s = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+          for (var t = 0; t < 50; t++) {
+            var c = "MAN-";
+            for (var i = 0; i < 4; i++)
+              c += s.charAt(Math.floor(Math.random() * s.length));
+            var taken = records.some(function (r) {
+              return r.code === c;
+            });
+            if (!taken) return c;
+          }
+          return "MAN-" + Date.now().toString(36).slice(-4).toUpperCase();
+        }
+
+        // --- Add student / Add class ----------------------------------------
+        $("addStudent").addEventListener("click", function () {
+          var opts = allClasses()
+            .map(function (c) {
+              return "<option value='" + esc(c) + "'>";
+            })
+            .join("");
+          showModal(
+            "Add student",
+            "<label>Name<input id='mName' placeholder='Student name' autocomplete='off'></label>" +
+              "<label>Class<input id='mClass' list='mClassList' placeholder='Type or pick a class' autocomplete='off'>" +
+              "<datalist id='mClassList'>" +
+              opts +
+              "</datalist></label>",
+            "Add student",
+            function () {
+              var name = $("mName").value.trim();
+              var cls = $("mClass").value.trim();
+              if (!name) {
+                toast("Enter a name");
+                return false;
+              }
+              if (cls) addCustomClass(cls);
+              postRoster(
+                [
+                  {
+                    saveCode: genCode(),
+                    studentName: name,
+                    section: cls || "",
+                  },
+                ],
+                "Added " + name,
+              );
+            },
+          );
+        });
+
+        $("addClass").addEventListener("click", function () {
+          showModal(
+            "Add class",
+            "<label>Class / section name<input id='mClassName' placeholder='e.g. Period 1' autocomplete='off'></label>",
+            "Add class",
+            function () {
+              var c = $("mClassName").value.trim();
+              if (!c) {
+                toast("Enter a class name");
+                return false;
+              }
+              addCustomClass(c);
+              toast("Class “" + c + "” added");
+            },
+          );
         });
 
         // --- Import (CSV or Excel-2003 XML) ----------------------------------
@@ -729,8 +1077,12 @@
           var reader = new FileReader();
           reader.onload = function () {
             var rows = parseImport(String(reader.result));
+            // Rows with a name but no save code become manual students.
+            rows.forEach(function (row) {
+              if (!row.saveCode) row.saveCode = genCode();
+            });
             if (!rows.length) {
-              toast("No rows found (need a Save Code column).");
+              toast("No rows found (need a Name or Save Code column).");
               return;
             }
             fetch(API + "/roster?key=" + encodeURIComponent(key), {
@@ -790,7 +1142,7 @@
             headers.forEach(function (f, idx) {
               if (f) row[f] = (cells[idx] || "").trim();
             });
-            if (row.saveCode) out.push(row);
+            if (row.saveCode || row.studentName) out.push(row);
           }
           return out;
         }
@@ -838,7 +1190,7 @@
             headers.forEach(function (f, idx) {
               if (f) row[f] = (cells[idx] || "").trim();
             });
-            if (row.saveCode) out.push(row);
+            if (row.saveCode || row.studentName) out.push(row);
           }
           return out;
         }
@@ -848,8 +1200,13 @@
         else showGate("");
         setInterval(function () {
           if (key && !$("app").classList.contains("hidden")) {
-            // Only silent-refresh roster when there are no pending edits.
-            if (!Object.keys(dirty).length && currentTab === "roster") load();
+            // Silent-refresh only when there are no pending edits and no modal
+            // open, so we never clobber what the teacher is typing.
+            if (
+              !Object.keys(dirty).length &&
+              $("modal").classList.contains("hidden")
+            )
+              load();
           }
         }, 30000);
       })();

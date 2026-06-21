@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Ratio Rush — Lessons 3.1–3.5 Game | Neft Teacher</title>
     <meta
       name="description"
@@ -82,6 +82,116 @@
         white-space: nowrap;
         border: 0;
       }
+      /* ── Vocab gate (shown BEFORE play: term + Level-1 definition + image) ── */
+      #rr-vocab {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(7, 25, 28, 0.96);
+        padding: 16px;
+        font-family: "Segoe UI", system-ui, sans-serif;
+      }
+      #rr-vocab.on {
+        display: flex;
+      }
+      .rr-vcard {
+        background: #0f2b30;
+        border: 1px solid #1f4a52;
+        color: #dff1f0;
+        max-width: 440px;
+        width: 100%;
+        border-radius: 22px;
+        padding: 26px 24px 22px;
+        text-align: center;
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
+      }
+      .rr-vstep {
+        font-size: 13px;
+        font-weight: 700;
+        color: #6be0c0;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .rr-vmedia {
+        margin: 16px auto;
+        width: 150px;
+        height: 150px;
+        border-radius: 16px;
+        background: #123a3e;
+        border: 1px solid #1f4a52;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 84px;
+        line-height: 1;
+        overflow: hidden;
+      }
+      .rr-vmedia img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .rr-vterm {
+        font-size: 30px;
+        font-weight: 800;
+        margin: 6px 0;
+        color: #fff;
+      }
+      .rr-vdef {
+        font-size: 18px;
+        line-height: 1.5;
+        color: #9fd6c0;
+        margin: 0 0 20px;
+      }
+      .rr-vactions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+      }
+      .rr-vbtn {
+        font-size: 17px;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+        padding: 12px 24px;
+        border-radius: 999px;
+      }
+      .rr-vbtn.next {
+        background: #0e8a7d;
+        color: #062420;
+      }
+      .rr-vbtn.next:hover {
+        background: #12a596;
+      }
+      .rr-vbtn.back {
+        background: #1a3a3e;
+        color: #9fd6c0;
+      }
+      .rr-vbtn.back:hover {
+        background: #244c50;
+      }
+      .rr-vbtn:focus-visible {
+        outline: 3px solid #d4952a;
+        outline-offset: 2px;
+      }
+      .rr-vdots {
+        display: flex;
+        gap: 6px;
+        justify-content: center;
+        margin-top: 18px;
+      }
+      .rr-vdots span {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: #1f4a52;
+      }
+      .rr-vdots span.on {
+        background: #6be0c0;
+      }
     </style>
     <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
     <script>
@@ -111,6 +221,13 @@
   <body>
     <div id="rr-bg" aria-hidden="true"></div>
     <div id="rr-sr" role="status" aria-live="polite"></div>
+    <!-- Vocab gate: term + Level-1 definition + image/emoji, shown BEFORE play -->
+    <div
+      id="rr-vocab"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Key words before we play"
+    ></div>
     <script>
       (function () {
         var host = document.getElementById("rr-bg");
@@ -159,8 +276,9 @@
         init() {
           if (!this.ctx)
             try {
-              this.ctx = new (window.AudioContext ||
-                window.webkitAudioContext)();
+              this.ctx = new (
+                window.AudioContext || window.webkitAudioContext
+              )();
             } catch (e) {}
         },
         play(t, f, d, v = 0.2) {
@@ -247,16 +365,50 @@
 
       // Coprime pairs — simplest-form ratio bases.
       const COPRIME_PAIRS = [
-        [1, 2], [1, 3], [1, 4], [1, 5], [2, 3], [2, 5], [3, 4], [3, 5],
-        [4, 5], [3, 7], [2, 7], [5, 7], [5, 8], [5, 9], [4, 7], [3, 8],
+        [1, 2],
+        [1, 3],
+        [1, 4],
+        [1, 5],
+        [2, 3],
+        [2, 5],
+        [3, 4],
+        [3, 5],
+        [4, 5],
+        [3, 7],
+        [2, 7],
+        [5, 7],
+        [5, 8],
+        [5, 9],
+        [4, 7],
+        [3, 8],
       ];
 
       const UNIT_RATE_TEMPLATES = [
-        { tmpl: (t, c) => "$" + t + " for " + c + " items", unit: "$ per item", word: "item" },
-        { tmpl: (t, c) => t + " miles in " + c + " hours", unit: "mph", word: "hour" },
-        { tmpl: (t, c) => t + " words in " + c + " minutes", unit: "words/min", word: "minute" },
-        { tmpl: (t, c) => "$" + t + " for " + c + " pounds", unit: "$ per lb", word: "pound" },
-        { tmpl: (t, c) => t + " pages in " + c + " days", unit: "pages/day", word: "day" },
+        {
+          tmpl: (t, c) => "$" + t + " for " + c + " items",
+          unit: "$ per item",
+          word: "item",
+        },
+        {
+          tmpl: (t, c) => t + " miles in " + c + " hours",
+          unit: "mph",
+          word: "hour",
+        },
+        {
+          tmpl: (t, c) => t + " words in " + c + " minutes",
+          unit: "words/min",
+          word: "minute",
+        },
+        {
+          tmpl: (t, c) => "$" + t + " for " + c + " pounds",
+          unit: "$ per lb",
+          word: "pound",
+        },
+        {
+          tmpl: (t, c) => t + " pages in " + c + " days",
+          unit: "pages/day",
+          word: "day",
+        },
       ];
 
       // Build 3 distinct pad labels (strings) with exactly one correct.
@@ -312,14 +464,14 @@
           return {
             tag: "Equivalent Ratios",
             prompt: a + " : " + b + " = ? : " + bigB,
-            why:
-              a + ":" + b + " = " + ans + ":" + bigB + " (×" + k + " each).",
+            why: a + ":" + b + " = " + ans + ":" + bigB + " (×" + k + " each).",
             pads: g.labels,
             correctIndex: g.correctIndex,
           };
         }
         // round 3 — unit rate
-        const tpl = UNIT_RATE_TEMPLATES[randInt(0, UNIT_RATE_TEMPLATES.length - 1)];
+        const tpl =
+          UNIT_RATE_TEMPLATES[randInt(0, UNIT_RATE_TEMPLATES.length - 1)];
         const count = randInt(2, 9);
         const rate = randInt(3, 15);
         const total = rate * count;
@@ -333,7 +485,16 @@
           tag: "Unit Rates",
           prompt: tpl.tmpl(total, count),
           why:
-            total + " ÷ " + count + " = " + rate + " " + tpl.unit + " (per " + tpl.word + ").",
+            total +
+            " ÷ " +
+            count +
+            " = " +
+            rate +
+            " " +
+            tpl.unit +
+            " (per " +
+            tpl.word +
+            ").",
           pads: g.labels,
           correctIndex: g.correctIndex,
         };
@@ -344,6 +505,104 @@
           const el = document.getElementById("rr-sr");
           if (el) el.textContent = msg;
         } catch (e) {}
+      }
+
+      // ────────────────────────────────────────────────────────────────────
+      // VOCAB GATE — term + student-facing (Level-1) definition + image/emoji,
+      // shown BEFORE the first round (Title → Vocab → Play). No giveaways: the
+      // definitions teach the concepts, never the in-game answers. Shown by
+      // default; skippable on REPLAY (once seen this session) via a Skip button.
+      // ────────────────────────────────────────────────────────────────────
+      const RR_VOCAB_TERMS = [
+        {
+          term: "Ratio",
+          emoji: "🐸",
+          def: "A way to compare two amounts, like 2 frogs to 3 lily pads. We write it as 2:3.",
+        },
+        {
+          term: "Equivalent ratios",
+          emoji: "⚖️",
+          def: "Two ratios that show the same comparison. Multiply or divide BOTH parts by the same number, like 1:2 = 3:6.",
+        },
+        {
+          term: "Unit rate",
+          emoji: "🏷️",
+          def: "How much you get for just ONE of something, like miles in 1 hour. Divide the total by the number of items.",
+        },
+      ];
+      let RR_VOCAB_SEEN = false; // becomes true after the gate is completed once
+
+      function rrEscapeHtml(s) {
+        return String(s).replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[c],
+        );
+      }
+
+      // Shows the vocab gate, then calls onComplete(). `allowSkip` adds a Skip
+      // button (only used on replay once the student has already seen the words).
+      function showVocabGate(onComplete, allowSkip) {
+        const overlay = document.getElementById("rr-vocab");
+        if (!overlay || !RR_VOCAB_TERMS.length) {
+          if (onComplete) onComplete();
+          return;
+        }
+        let i = 0;
+        const finish = () => {
+          RR_VOCAB_SEEN = true;
+          overlay.classList.remove("on");
+          overlay.innerHTML = "";
+          if (onComplete) onComplete();
+        };
+        const render = () => {
+          const t = RR_VOCAB_TERMS[i];
+          const last = i === RR_VOCAB_TERMS.length - 1;
+          const media = t.image
+            ? `<img src="${rrEscapeHtml(t.image)}" alt="${rrEscapeHtml(t.term)}" onerror="this.replaceWith(document.createTextNode('${rrEscapeHtml(t.emoji || "?")}'))" />`
+            : rrEscapeHtml(t.emoji || "?");
+          overlay.innerHTML = `
+            <div class="rr-vcard">
+              <div class="rr-vstep">Key word ${i + 1} of ${RR_VOCAB_TERMS.length}</div>
+              <div class="rr-vmedia" aria-hidden="true">${media}</div>
+              <h2 class="rr-vterm">${rrEscapeHtml(t.term)}</h2>
+              <p class="rr-vdef">${rrEscapeHtml(t.def)}</p>
+              <div class="rr-vactions">
+                ${i > 0 ? '<button class="rr-vbtn back" type="button" data-act="back">Back</button>' : ""}
+                ${allowSkip ? '<button class="rr-vbtn back" type="button" data-act="skip">Skip ▸</button>' : ""}
+                <button class="rr-vbtn next" type="button" data-act="next">${last ? "Start hopping ▶" : "Next →"}</button>
+              </div>
+              <div class="rr-vdots">${RR_VOCAB_TERMS.map((_, n) => `<span class="${n === i ? "on" : ""}"></span>`).join("")}</div>
+            </div>`;
+          const nextBtn = overlay.querySelector('[data-act="next"]');
+          const backBtn = overlay.querySelector('[data-act="back"]');
+          const skipBtn = overlay.querySelector('[data-act="skip"]');
+          nextBtn.addEventListener("click", () => {
+            SFX.init();
+            SFX.tick();
+            if (last) finish();
+            else {
+              i += 1;
+              render();
+            }
+          });
+          if (backBtn)
+            backBtn.addEventListener("click", () => {
+              i = Math.max(0, i - 1);
+              render();
+            });
+          if (skipBtn) skipBtn.addEventListener("click", finish);
+          nextBtn.focus();
+          srSay(t.term + ". " + t.def);
+        };
+        overlay.classList.add("on");
+        render();
       }
 
       const config = {
@@ -459,7 +718,11 @@
             SFX.init();
             SFX.tick();
             this.cameras.main.fadeOut(300);
-            this.time.delayedCall(300, () => this.scene.start("Game"));
+            // Title → Vocab → Play. Default shown; Skip only offered on replay
+            // (once the words have already been seen this session).
+            this.time.delayedCall(300, () =>
+              showVocabGate(() => this.scene.start("Game"), RR_VOCAB_SEEN),
+            );
           };
           btn.on("pointerover", () => btn.setFillStyle(0x12a596));
           btn.on("pointerout", () => btn.setFillStyle(0x0e8a7d));
@@ -561,7 +824,9 @@
 
           // Frog
           this.frogHome = { x: cx, y: H - 80 };
-          this.frog = this.add.container(this.frogHome.x, this.frogHome.y).setDepth(16);
+          this.frog = this.add
+            .container(this.frogHome.x, this.frogHome.y)
+            .setDepth(16);
           const fg = this.add.graphics();
           fg.fillStyle(0x57c84a, 1);
           fg.fillEllipse(0, 0, 50, 40);
@@ -725,7 +990,8 @@
           if (!this.reduce) {
             this.pads.forEach((p) => {
               p.sprite.y =
-                p.baseY + Math.sin(this.bobT * this.bobSpeed + p.phase) * this.bobAmp;
+                p.baseY +
+                Math.sin(this.bobT * this.bobSpeed + p.phase) * this.bobAmp;
             });
             // drift water stripes downward for motion
             this.stripes.forEach((s) => {
@@ -964,10 +1230,12 @@
             .setOrigin(0.5);
           retry.on("pointerover", () => retry.setFillStyle(0x12a596));
           retry.on("pointerout", () => retry.setFillStyle(0x0e8a7d));
-          retry.on("pointerdown", () => {
+          const replay = () => {
             SFX.tick();
-            this.scene.start("Game");
-          });
+            // Replay: words shown again but skippable (already seen this session).
+            showVocabGate(() => this.scene.start("Game"), RR_VOCAB_SEEN);
+          };
+          retry.on("pointerdown", replay);
 
           const hub = this.add
             .rectangle(cx + 95, 470, 170, 46, 0x1a3a3e)
@@ -983,7 +1251,7 @@
           hub.on("pointerout", () => hub.setFillStyle(0x1a3a3e));
           hub.on("pointerdown", () => (window.location.href = "/math/games/"));
 
-          this.input.keyboard.on("keydown-SPACE", () => this.scene.start("Game"));
+          this.input.keyboard.on("keydown-SPACE", replay);
 
           if (won && stars >= 2 && !this.reduce) {
             const p = this.add
@@ -1041,5 +1309,8 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
-  </body>
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+</body>
 </html>

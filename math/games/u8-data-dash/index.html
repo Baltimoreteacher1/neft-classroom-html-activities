@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Data Dash — Mean, Median &amp; Range Catcher | Neft Teacher</title>
     <meta
       name="description"
@@ -155,8 +155,7 @@
           function (e) {
             var tx = (e.clientX / window.innerWidth - 0.5) * -22;
             var ty = (e.clientY / window.innerHeight - 0.5) * -14;
-            layer.style.transform =
-              "translate3d(" + tx + "px," + ty + "px,0)";
+            layer.style.transform = "translate3d(" + tx + "px," + ty + "px,0)";
           },
           { passive: true },
         );
@@ -194,10 +193,48 @@
       };
 
       const STAT_INFO = {
-        mean: { label: "MEAN", color: C.mean, hint: "Add all values, then divide by how many there are." },
-        median: { label: "MEDIAN", color: C.median, hint: "Sort the values; the median is the middle one." },
-        range: { label: "RANGE", color: C.range, hint: "Range = greatest value − least value." },
+        mean: {
+          label: "MEAN",
+          color: C.mean,
+          hint: "Add all values, then divide by how many there are.",
+        },
+        median: {
+          label: "MEDIAN",
+          color: C.median,
+          hint: "Sort the values; the median is the middle one.",
+        },
+        range: {
+          label: "RANGE",
+          color: C.range,
+          hint: "Range = greatest value − least value.",
+        },
       };
+
+      // ── Words to know first (shown BEFORE the first round) ──
+      // Level-1 (student-facing) definitions + an emoji image per term.
+      // No giveaways: these explain WHAT each word means, not how to win a round.
+      const VOCAB_TERMS = [
+        {
+          term: "Data set",
+          emoji: "📋",
+          def: "A group of numbers we collected, like test scores or daily temperatures.",
+        },
+        {
+          term: "Mean (average)",
+          emoji: "➗",
+          def: "Add up all the numbers, then share the total equally — divide by how many numbers there are.",
+        },
+        {
+          term: "Median",
+          emoji: "🪜",
+          def: "Put the numbers in order from least to greatest. The median is the one right in the middle.",
+        },
+        {
+          term: "Range",
+          emoji: "📏",
+          def: "How spread out the numbers are: the biggest number minus the smallest number.",
+        },
+      ];
 
       const randInt = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
       const choice = (arr) => arr[Math.floor(Math.random() * arr.length)];
@@ -250,8 +287,20 @@
           total = mean * count;
           computed = mean;
         }
-        return finishQuestion("mean", nums, computed,
-          "Sum = " + total + "; " + total + " ÷ " + count + " = " + computed + ".");
+        return finishQuestion(
+          "mean",
+          nums,
+          computed,
+          "Sum = " +
+            total +
+            "; " +
+            total +
+            " ÷ " +
+            count +
+            " = " +
+            computed +
+            ".",
+        );
       }
 
       // MEDIAN: ODD-length set (5 or 7), distinct values, answer = middle.
@@ -268,8 +317,12 @@
         }
         const sorted = nums.slice().sort((a, b) => a - b);
         const median = sorted[(count - 1) / 2];
-        return finishQuestion("median", nums, median,
-          "Sorted: " + sorted.join(", ") + ". Middle value = " + median + ".");
+        return finishQuestion(
+          "median",
+          nums,
+          median,
+          "Sorted: " + sorted.join(", ") + ". Middle value = " + median + ".",
+        );
       }
 
       // RANGE: distinct values; answer = max - min.
@@ -287,8 +340,22 @@
         const mn = Math.min.apply(null, nums);
         const mx = Math.max.apply(null, nums);
         const range = mx - mn;
-        return finishQuestion("range", nums, range,
-          "Max = " + mx + ", Min = " + mn + "; " + mx + " − " + mn + " = " + range + ".");
+        return finishQuestion(
+          "range",
+          nums,
+          range,
+          "Max = " +
+            mx +
+            ", Min = " +
+            mn +
+            "; " +
+            mx +
+            " − " +
+            mn +
+            " = " +
+            range +
+            ".",
+        );
       }
 
       // Build four DISTINCT integer answer tiles, exactly one correct.
@@ -377,8 +444,13 @@
           heights.forEach((h, i) => {
             badge.add(
               this.add
-                .rectangle(-90 + i * 45, 0 - h / 2, 32, h,
-                  [C.mean, C.median, C.range, C.accent, C.gold][i])
+                .rectangle(
+                  -90 + i * 45,
+                  0 - h / 2,
+                  32,
+                  h,
+                  [C.mean, C.median, C.range, C.accent, C.gold][i],
+                )
                 .setOrigin(0.5, 0.5),
             );
           });
@@ -433,7 +505,14 @@
             .setOrigin(0.5);
 
           this.makeButton(cx, 474, "▶  START GAME", 0x0e8a7d, () =>
-            this.scene.start("Game", { level: 0, score: 0, lives: START_LIVES }),
+            // Words-first: route through the Vocab gate before the first round.
+            // (skip:false → always show the key words on a fresh start.)
+            this.scene.start("Vocab", {
+              level: 0,
+              score: 0,
+              lives: START_LIVES,
+              skip: false,
+            }),
           );
           this.add
             .text(
@@ -496,6 +575,164 @@
       }
 
       // ════════════════════════════════════════════════════════════════════
+      //  VOCAB GATE  ·  "Words to know first" (shown BEFORE the first round)
+      //  Repo rule: term + Level-1 definition + image/emoji BEFORE play.
+      //  Additive: routed Title → Vocab → Game. Skipped on replay (skip:true).
+      // ════════════════════════════════════════════════════════════════════
+      class VocabScene extends Phaser.Scene {
+        constructor() {
+          super("Vocab");
+        }
+        init(data) {
+          this.next = {
+            level: data.level || 0,
+            score: data.score || 0,
+            lives: data.lives != null ? data.lives : START_LIVES,
+          };
+          this.skip = !!data.skip;
+          this.i = 0;
+        }
+        create() {
+          // On replay the words have already been seen — go straight to play.
+          if (this.skip) {
+            this.scene.start("Game", this.next);
+            return;
+          }
+          this.cameras.main.setBackgroundColor(C.bg);
+          const cx = W / 2;
+
+          this.add
+            .text(cx, 70, "WORDS TO KNOW FIRST", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "30px",
+              fontStyle: "900",
+              color: "#eaf6ff",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(cx, 108, "Learn these before you play Data Dash.", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "16px",
+              color: "#9cc4dd",
+            })
+            .setOrigin(0.5);
+
+          // card
+          this.add
+            .rectangle(cx, 330, 620, 320, C.panel)
+            .setStrokeStyle(2, C.panelEdge);
+
+          this.stepText = this.add
+            .text(cx, 200, "", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "13px",
+              fontStyle: "bold",
+              color: "#2bd1c4",
+            })
+            .setOrigin(0.5);
+          this.emojiText = this.add
+            .text(cx, 262, "", { fontSize: "76px" })
+            .setOrigin(0.5);
+          this.termText = this.add
+            .text(cx, 332, "", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "30px",
+              fontStyle: "900",
+              color: "#eaf6ff",
+            })
+            .setOrigin(0.5);
+          this.defText = this.add
+            .text(cx, 392, "", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "18px",
+              color: "#cfe6f5",
+              align: "center",
+              lineSpacing: 6,
+              wordWrap: { width: 540 },
+            })
+            .setOrigin(0.5, 0);
+
+          // dots
+          this.dots = VOCAB_TERMS.map((_, n) =>
+            this.add.circle(0, 0, 6, C.panelEdge),
+          );
+          const dw = (VOCAB_TERMS.length - 1) * 22;
+          this.dots.forEach((d, n) => d.setPosition(cx - dw / 2 + n * 22, 470));
+
+          // buttons
+          this.backBtn = this.makeBtn(cx - 110, 540, "← Back", 0x355a86, () =>
+            this.go(-1),
+          );
+          this.nextBtn = this.makeBtn(cx + 110, 540, "Next →", 0x0e8a7d, () =>
+            this.go(1),
+          );
+
+          this.input.keyboard.on("keydown-RIGHT", () => this.go(1));
+          this.input.keyboard.on("keydown-SPACE", () => this.go(1));
+          this.input.keyboard.on("keydown-ENTER", () => this.go(1));
+          this.input.keyboard.on("keydown-LEFT", () => this.go(-1));
+
+          this.render();
+          this.cameras.main.fadeIn(300);
+        }
+        makeBtn(x, y, label, color, cb) {
+          const b = this.add
+            .rectangle(x, y, 200, 52, color)
+            .setStrokeStyle(3, 0xffffff, 0.85)
+            .setInteractive({ useHandCursor: true });
+          const t = this.add
+            .text(x, y, label, {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "19px",
+              fontStyle: "bold",
+              color: "#ffffff",
+            })
+            .setOrigin(0.5);
+          b.on("pointerover", () => b.setScale(1.04));
+          b.on("pointerout", () => b.setScale(1));
+          b.on("pointerdown", cb);
+          b.labelText = t;
+          return b;
+        }
+        go(dir) {
+          const last = this.i >= VOCAB_TERMS.length - 1;
+          if (dir > 0 && last) {
+            this.scene.start("Game", this.next);
+            return;
+          }
+          this.i = Phaser.Math.Clamp(this.i + dir, 0, VOCAB_TERMS.length - 1);
+          this.render();
+        }
+        render() {
+          const t = VOCAB_TERMS[this.i];
+          const last = this.i >= VOCAB_TERMS.length - 1;
+          this.stepText.setText(
+            "WORD " + (this.i + 1) + " OF " + VOCAB_TERMS.length,
+          );
+          this.emojiText.setText(t.emoji || t.term.charAt(0));
+          this.termText.setText(t.term);
+          this.defText.setText(t.def);
+          this.nextBtn.labelText.setText(last ? "Start playing ▶" : "Next →");
+          this.backBtn.setVisible(this.i > 0);
+          this.backBtn.labelText.setVisible(this.i > 0);
+          this.dots.forEach((d, n) =>
+            d.setFillStyle(n === this.i ? C.accent : C.panelEdge),
+          );
+          const el = document.getElementById("dd-sr");
+          if (el)
+            el.textContent =
+              "Word " +
+              (this.i + 1) +
+              " of " +
+              VOCAB_TERMS.length +
+              ". " +
+              t.term +
+              ". " +
+              t.def;
+        }
+      }
+
+      // ════════════════════════════════════════════════════════════════════
       //  GAME
       // ════════════════════════════════════════════════════════════════════
       class GameScene extends Phaser.Scene {
@@ -527,7 +764,12 @@
           this.aKey = this.input.keyboard.addKey("A");
           this.dKey = this.input.keyboard.addKey("D");
           this.input.on("pointermove", (p) => {
-            if (this.falling) this.targetX = Phaser.Math.Clamp(p.x, this.playLeft + 50, this.playRight - 50);
+            if (this.falling)
+              this.targetX = Phaser.Math.Clamp(
+                p.x,
+                this.playLeft + 50,
+                this.playRight - 50,
+              );
           });
 
           this.targetX = W / 2;
@@ -646,10 +888,13 @@
           const body = this.add
             .rectangle(0, 0, 110, 30, C.cart)
             .setStrokeStyle(3, 0x0a5a54);
-          const rim = this.add
-            .rectangle(0, -16, 110, 8, 0x0a5a54);
-          const w1 = this.add.circle(-34, 20, 9, 0x123040).setStrokeStyle(3, C.cart);
-          const w2 = this.add.circle(34, 20, 9, 0x123040).setStrokeStyle(3, C.cart);
+          const rim = this.add.rectangle(0, -16, 110, 8, 0x0a5a54);
+          const w1 = this.add
+            .circle(-34, 20, 9, 0x123040)
+            .setStrokeStyle(3, C.cart);
+          const w2 = this.add
+            .circle(34, 20, 9, 0x123040)
+            .setStrokeStyle(3, C.cart);
           this.cartGlow = this.add
             .rectangle(0, 0, 110, 36, 0xffffff, 0)
             .setStrokeStyle(0);
@@ -661,18 +906,24 @@
           this.locked = false;
           this.q = buildQuestion(this.levelIndex);
           const info = STAT_INFO[this.q.statType];
-          this.statTag.setText("FIND THE " + info.label).setColor(
-            "#" + info.color.toString(16).padStart(6, "0"),
-          );
+          this.statTag
+            .setText("FIND THE " + info.label)
+            .setColor("#" + info.color.toString(16).padStart(6, "0"));
           this.dataText.setText(this.q.nums.join("   "));
           this.hintText.setText(info.hint);
-          this.fbText.setText("Catch the tile that equals the " + info.label.toLowerCase() + "!");
+          this.fbText.setText(
+            "Catch the tile that equals the " + info.label.toLowerCase() + "!",
+          );
 
           this.spawnTiles();
           this.setSR(
-            "Find the " + info.label.toLowerCase() +
-              " of " + this.q.nums.join(", ") + ". " +
-              "Falling answers: " + this.q.tiles.join(", ") +
+            "Find the " +
+              info.label.toLowerCase() +
+              " of " +
+              this.q.nums.join(", ") +
+              ". " +
+              "Falling answers: " +
+              this.q.tiles.join(", ") +
               ". Move your cart to catch the correct one.",
           );
         }
@@ -766,7 +1017,9 @@
             this.caught++;
             const gain = 100 + Math.min(this.streak, 5) * 20;
             this.score += gain;
-            this.fbText.setColor("#4fd18b").setText("✓ +" + gain + "   " + this.q.why);
+            this.fbText
+              .setColor("#4fd18b")
+              .setText("✓ +" + gain + "   " + this.q.why);
             this.burst(tile.x, tile.y, C.good);
             this.flashCart(C.good);
             this.setSR("Correct. " + this.q.why);
@@ -774,10 +1027,18 @@
             tile.rect.setFillStyle(0x5a1c1c).setStrokeStyle(3, C.bad);
             this.streak = 0;
             this.lives--;
-            this.fbText.setColor("#ff8f8f").setText(
-              "✗ That was " + tile.value + ", not the " + info.label.toLowerCase() +
-                " (" + this.q.answer + "). " + this.q.why,
-            );
+            this.fbText
+              .setColor("#ff8f8f")
+              .setText(
+                "✗ That was " +
+                  tile.value +
+                  ", not the " +
+                  info.label.toLowerCase() +
+                  " (" +
+                  this.q.answer +
+                  "). " +
+                  this.q.why,
+              );
             this.flashCart(C.bad);
             if (!reducedMotion()) this.cameras.main.shake(180, 0.006);
             this.setSR("Not quite. " + this.q.why);
@@ -794,10 +1055,16 @@
             this.falling = false;
             this.streak = 0;
             this.lives--;
-            this.fbText.setColor("#ff8f8f").setText(
-              "✗ Missed it! The " + STAT_INFO[this.q.statType].label.toLowerCase() +
-                " was " + this.q.answer + ". " + this.q.why,
-            );
+            this.fbText
+              .setColor("#ff8f8f")
+              .setText(
+                "✗ Missed it! The " +
+                  STAT_INFO[this.q.statType].label.toLowerCase() +
+                  " was " +
+                  this.q.answer +
+                  ". " +
+                  this.q.why,
+              );
             if (!reducedMotion()) this.cameras.main.shake(160, 0.005);
             this.refreshHUD();
             this.setSR("Missed. " + this.q.why);
@@ -860,7 +1127,8 @@
               .text(
                 W / 2,
                 292,
-                "You mastered the " + STAT_INFO[this.q.statType].label.toLowerCase() +
+                "You mastered the " +
+                  STAT_INFO[this.q.statType].label.toLowerCase() +
                   "!\n+250 round bonus",
                 {
                   fontFamily: "Segoe UI, sans-serif",
@@ -907,7 +1175,9 @@
           this.setSR(
             "Round clear. You mastered the " +
               STAT_INFO[this.q.statType].label.toLowerCase() +
-              ". Score " + this.score + ".",
+              ". Score " +
+              this.score +
+              ".",
           );
         }
 
@@ -1003,7 +1273,13 @@
             )
             .setOrigin(0.5);
           this.btn(cx - 150, 460, "↻  PLAY AGAIN", 0x0e8a7d, () =>
-            this.scene.start("Game", { level: 0, score: 0, lives: START_LIVES }),
+            // Replay: words were already shown this session, so skip the gate.
+            this.scene.start("Vocab", {
+              level: 0,
+              score: 0,
+              lives: START_LIVES,
+              skip: true,
+            }),
           );
           this.btn(cx + 150, 460, "🏠  ALL GAMES", 0x355a86, () => {
             window.location.href = "/math/games/";
@@ -1012,7 +1288,11 @@
           if (el)
             el.textContent =
               (this.won ? "Data mastered" : "Out of lives") +
-              ". Final score " + this.score + ", " + stars + " stars.";
+              ". Final score " +
+              this.score +
+              ", " +
+              stars +
+              " stars.";
         }
         btn(x, y, label, color, cb) {
           const b = this.add
@@ -1041,7 +1321,7 @@
         parent: document.body,
         backgroundColor: "#0a1c2c",
         scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-        scene: [BootScene, TitleScene, GameScene, ResultScene],
+        scene: [BootScene, TitleScene, VocabScene, GameScene, ResultScene],
       };
       const ddGame = new Phaser.Game(config);
 
@@ -1078,5 +1358,8 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
-  </body>
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+</body>
 </html>

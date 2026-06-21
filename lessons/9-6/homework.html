@@ -522,6 +522,83 @@ header.homework-header h1 {
   line-height: 1.45;
 }
 
+/* ---- Family scaffolding: step guide, visual model, show-your-work ---- */
+.hw-step-guide {
+  margin: 14px 0;
+  border: 1.5px solid var(--teal);
+  border-radius: 12px;
+  background: var(--teal-light);
+  overflow: hidden;
+}
+.hw-step-guide > summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 11px 16px;
+  font-family: "Outfit", sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--navy);
+  background: rgba(31, 166, 162, 0.16);
+}
+.hw-step-guide > summary::-webkit-details-marker { display: none; }
+.hw-step-guide > summary::after { content: " ▾"; color: var(--teal); }
+.hw-step-guide[open] > summary::after { content: " ▴"; }
+.hw-steps {
+  margin: 0;
+  padding: 12px 18px 14px 34px;
+  display: grid;
+  gap: 9px;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--navy);
+}
+.hw-steps li { padding-left: 4px; }
+.hw-steps strong { color: var(--navy); }
+
+.hw-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  margin: 14px 0 4px;
+}
+@media (min-width: 640px) {
+  .hw-workspace { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+}
+.hw-visual-caption, .hw-work-label {
+  display: block;
+  font-family: "Outfit", sans-serif;
+  font-weight: 700;
+  font-size: 13.5px;
+  color: var(--navy);
+  margin-bottom: 6px;
+}
+.hw-visual-frame {
+  border: 1.5px dashed #9bb6cf;
+  border-radius: 12px;
+  background: #fbfdff;
+  padding: 8px;
+  text-align: center;
+}
+.hw-visual-svg { width: 100%; height: auto; max-height: 180px; }
+.hw-work-input {
+  width: 100%;
+  min-height: 96px;
+  resize: vertical;
+  line-height: 28px;
+  background-color: #fbfdff;
+  background-image: repeating-linear-gradient(#fbfdff 0, #fbfdff 27px, #d6e2ee 27px, #d6e2ee 28px);
+  font-family: inherit;
+}
+
+@media print {
+  .hw-step-guide { break-inside: avoid; border-color: #888; background: #fff; }
+  .hw-step-guide > summary { background: #f0f0f0; }
+  .hw-step-guide[open] > summary::after, .hw-step-guide > summary::after { content: ""; }
+  .hw-workspace { break-inside: avoid; }
+  .hw-work-input { min-height: 130px; border: 1px solid #888; }
+  .hw-visual-frame { border-color: #888; }
+}
+
 /* Custom styled inputs, checkboxes, and select dropdowns */
 .custom-input {
   width: 100%;
@@ -2096,9 +2173,6 @@ body { font-size: 15px; line-height: 1.58; }
   .card { box-shadow: none; }
 }
 </style>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
 </head>
 <body>
 
@@ -2443,8 +2517,8 @@ body { font-size: 15px; line-height: 1.58; }
     
       <h2 class="section-title">✅ Quick check / Repaso rápido</h2>
       <p class="bilingual-block">
-        <span class="lang-en">One or two problems to try on the screen. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
-        <span class="lang-es" lang="es">Una o dos preguntas en pantalla. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
+        <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
+        <span class="lang-es" lang="es">Unos problemas para practicar juntos. Cada uno tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para mostrar el trabajo</strong>. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
       </p>
     
       <main class="problems-container">
@@ -2508,6 +2582,26 @@ body { font-size: 15px; line-height: 1.58; }
         </div>
       </div>
     
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Start at (0, 0). Move right/left for x, then up/down for y.</span><span class="lang-es" lang="es">Empieza en (0, 0). Muévete a los lados para x, luego arriba/abajo para y.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></div>
+          <div class="hw-visual-frame"><svg viewBox="0 0 200 200" class="hw-visual-svg" role="img" aria-label="Blank four-quadrant coordinate grid"><line x1="20" y1="20" x2="20" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="20" x2="180" y2="20" stroke="#d6e2ee" stroke-width="1"/><line x1="40" y1="20" x2="40" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="40" x2="180" y2="40" stroke="#d6e2ee" stroke-width="1"/><line x1="60" y1="20" x2="60" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="60" x2="180" y2="60" stroke="#d6e2ee" stroke-width="1"/><line x1="80" y1="20" x2="80" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="80" x2="180" y2="80" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="20" x2="100" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="100" x2="180" y2="100" stroke="#d6e2ee" stroke-width="1"/><line x1="120" y1="20" x2="120" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="120" x2="180" y2="120" stroke="#d6e2ee" stroke-width="1"/><line x1="140" y1="20" x2="140" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="140" x2="180" y2="140" stroke="#d6e2ee" stroke-width="1"/><line x1="160" y1="20" x2="160" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="160" x2="180" y2="160" stroke="#d6e2ee" stroke-width="1"/><line x1="180" y1="20" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="180" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="16" x2="100" y2="184" stroke="#12355b" stroke-width="2"/><line x1="16" y1="100" x2="184" y2="100" stroke="#12355b" stroke-width="2"/><polygon points="100,16 96,26 104,26" fill="#12355b"/><polygon points="184,100 174,96 174,104" fill="#12355b"/></svg></div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_0"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_0" name="work_0" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(0)" aria-label="Check answer for problem 1">
           ✓ Check This Problem / Revisar
@@ -2577,11 +2671,213 @@ body { font-size: 15px; line-height: 1.58; }
         </div>
       </div>
     
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Start at (0, 0). Move right/left for x, then up/down for y.</span><span class="lang-es" lang="es">Empieza en (0, 0). Muévete a los lados para x, luego arriba/abajo para y.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></div>
+          <div class="hw-visual-frame"><svg viewBox="0 0 200 200" class="hw-visual-svg" role="img" aria-label="Blank four-quadrant coordinate grid"><line x1="20" y1="20" x2="20" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="20" x2="180" y2="20" stroke="#d6e2ee" stroke-width="1"/><line x1="40" y1="20" x2="40" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="40" x2="180" y2="40" stroke="#d6e2ee" stroke-width="1"/><line x1="60" y1="20" x2="60" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="60" x2="180" y2="60" stroke="#d6e2ee" stroke-width="1"/><line x1="80" y1="20" x2="80" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="80" x2="180" y2="80" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="20" x2="100" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="100" x2="180" y2="100" stroke="#d6e2ee" stroke-width="1"/><line x1="120" y1="20" x2="120" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="120" x2="180" y2="120" stroke="#d6e2ee" stroke-width="1"/><line x1="140" y1="20" x2="140" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="140" x2="180" y2="140" stroke="#d6e2ee" stroke-width="1"/><line x1="160" y1="20" x2="160" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="160" x2="180" y2="160" stroke="#d6e2ee" stroke-width="1"/><line x1="180" y1="20" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="180" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="16" x2="100" y2="184" stroke="#12355b" stroke-width="2"/><line x1="16" y1="100" x2="184" y2="100" stroke="#12355b" stroke-width="2"/><polygon points="100,16 96,26 104,26" fill="#12355b"/><polygon points="184,100 174,96 174,104" fill="#12355b"/></svg></div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_1"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_1" name="work_1" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">
           ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_2" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Quick Check 3</div>
+        <div class="problem-type-badge">DRAG SORT</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">Sort each block-distance problem by whether you SUBTRACT (same side of zero) or ADD absolute values (opposite sides of zero).</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
+        
+        <div class="drag-sort-workspace" id="dragsort_2">
+          <div class="drag-columns">
+            
+              <div class="drag-column" data-category-id="subtract" ondragover="allowDrop(event)" ondrop="handleDrop(event, 2, 'subtract')">
+                <div class="drag-column-header">Same side of zero — subtract</div>
+                <div class="drag-column-slots" id="slots_2_subtract" ondragover="allowDrop(event)" ondrop="handleDrop(event, 2, 'subtract')"></div>
+              </div>
+              <div class="drag-column" data-category-id="add" ondragover="allowDrop(event)" ondrop="handleDrop(event, 2, 'add')">
+                <div class="drag-column-header">Opposite sides of zero — add absolute values</div>
+                <div class="drag-column-slots" id="slots_2_add" ondragover="allowDrop(event)" ondrop="handleDrop(event, 2, 'add')"></div>
+              </div>
+          </div>
+          <div class="drag-source-section">
+            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
+            <div class="drag-source-pile" id="pile_2" ondragover="allowDrop(event)" ondrop="handleDrop(event, 2, '')">
+              
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_2_0"
+                     data-item-index="0"
+                     data-correct-category="subtract"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">School (2, 3) to Library (2, 9)</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_2_0', 2); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="subtract">Same side of zero — subtract</option><option value="add">Opposite sides of zero — add absolute values</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_2_1"
+                     data-item-index="1"
+                     data-correct-category="subtract"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Subway (1, 6) to Tower (8, 6)</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_2_1', 2); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="subtract">Same side of zero — subtract</option><option value="add">Opposite sides of zero — add absolute values</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_2_2"
+                     data-item-index="2"
+                     data-correct-category="add"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Park (-4, 5) to City Hall (3, 5)</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_2_2', 2); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="subtract">Same side of zero — subtract</option><option value="add">Opposite sides of zero — add absolute values</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_2_3"
+                     data-item-index="3"
+                     data-correct-category="add"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Café (-2, 1) to Gym (-2, -4)</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_2_3', 2); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="subtract">Same side of zero — subtract</option><option value="add">Opposite sides of zero — add absolute values</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="drag-controls">
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(2); saveState(); updateProgress();">Reset Sorting</button>
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Start at (0, 0). Move right/left for x, then up/down for y.</span><span class="lang-es" lang="es">Empieza en (0, 0). Muévete a los lados para x, luego arriba/abajo para y.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_2" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_3" data-problem-type="multiple-choice">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Quick Check 4</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Same x = -3. Distance = |5 - (-7)| = |5 + 7| = 12 units.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">Two points are at (-3, -7) and (-3, 5). What is the distance between them?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="Same x = -3. Distance = |5 - (-7)| = |5 + 7| = 12 units.">
+          
+            <label class="mc-option-label" id="label_q_3_0">
+              <input type="radio" name="q_3" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">12 units</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_3_1">
+              <input type="radio" name="q_3" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">2 units</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_3_2">
+              <input type="radio" name="q_3" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">7 units</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_3_3">
+              <input type="radio" name="q_3" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">8 units</span>
+            </label>
+          
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Start at (0, 0). Move right/left for x, then up/down for y.</span><span class="lang-es" lang="es">Empieza en (0, 0). Muévete a los lados para x, luego arriba/abajo para y.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></div>
+          <div class="hw-visual-frame"><svg viewBox="0 0 200 200" class="hw-visual-svg" role="img" aria-label="Blank four-quadrant coordinate grid"><line x1="20" y1="20" x2="20" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="20" x2="180" y2="20" stroke="#d6e2ee" stroke-width="1"/><line x1="40" y1="20" x2="40" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="40" x2="180" y2="40" stroke="#d6e2ee" stroke-width="1"/><line x1="60" y1="20" x2="60" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="60" x2="180" y2="60" stroke="#d6e2ee" stroke-width="1"/><line x1="80" y1="20" x2="80" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="80" x2="180" y2="80" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="20" x2="100" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="100" x2="180" y2="100" stroke="#d6e2ee" stroke-width="1"/><line x1="120" y1="20" x2="120" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="120" x2="180" y2="120" stroke="#d6e2ee" stroke-width="1"/><line x1="140" y1="20" x2="140" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="140" x2="180" y2="140" stroke="#d6e2ee" stroke-width="1"/><line x1="160" y1="20" x2="160" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="160" x2="180" y2="160" stroke="#d6e2ee" stroke-width="1"/><line x1="180" y1="20" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="180" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="16" x2="100" y2="184" stroke="#12355b" stroke-width="2"/><line x1="16" y1="100" x2="184" y2="100" stroke="#12355b" stroke-width="2"/><polygon points="100,16 96,26 104,26" fill="#12355b"/><polygon points="184,100 174,96 174,104" fill="#12355b"/></svg></div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_3"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_3" name="work_3" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(3)" aria-label="Check answer for problem 4">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
     </section>
   </main>
@@ -2786,7 +3082,7 @@ body { font-size: 15px; line-height: 1.58; }
     
     <div class="score-progress-container">
       <div class="score-text">
-        Progress / Progreso: <span id="progress_text">0 / 2 Completed</span>
+        Progress / Progreso: <span id="progress_text">0 / 4 Completed</span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -4166,8 +4462,8 @@ window.onload = function() {
   });
 };
 </script>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
 </body>
 </html>

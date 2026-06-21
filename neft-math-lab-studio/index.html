@@ -144,16 +144,6 @@
             background: rgba(139, 92, 246, 0.25);
         }
 
-        .btn-teacher {
-            background: rgba(245, 158, 11, 0.15);
-            color: #fde047;
-            border: 1px solid rgba(245, 158, 11, 0.3);
-        }
-
-        .btn-teacher:hover {
-            background: rgba(245, 158, 11, 0.25);
-        }
-
         .main-container {
             display: grid;
             grid-template-columns: 280px 1fr;
@@ -743,9 +733,6 @@
             <button class="btn" onclick="triggerSelfTest()">
                 ⚡ Run Self-Test
             </button>
-            <button class="btn btn-teacher" onclick="toggleTeacherConsole()">
-                ⚙️ Teacher Admin
-            </button>
         </div>
     </header>
 
@@ -1212,46 +1199,6 @@
             </div>
         </div>
     </main>
-
-    <!-- Teacher Console Overlay Modal -->
-    <div class="modal-overlay" id="teacher-modal">
-        <div class="modal-card">
-            <h3>
-                <span>⚙️ Teacher Admin Dashboard</span>
-                <button onclick="closeTeacherConsole()" style="background: none; border: none; cursor: pointer; font-weight: 800; font-size: 1.25rem;">X</button>
-            </h3>
-            
-            <div id="teacher-auth-box">
-                <label style="font-weight: bold; margin-bottom: 6px; display: block;">Enter Admin Password</label>
-                <input type="password" id="teacher-pass" placeholder="Password: admin">
-                <button class="btn btn-primary" onclick="unlockTeacherConsole()" style="width: 100%; display: justify; text-align: center; justify-content: center; height: 40px;">Unlock console</button>
-            </div>
-
-            <div id="teacher-controls-box" style="display: none; flex-direction: column; gap: 14px;">
-                <p style="font-size: 0.82rem; color: var(--gray-400); margin-bottom: 8px;">Skip rounds, set score star overrides, specify custom algebra parameters, or print offline handouts.</p>
-                <div>
-                    <label style="font-weight: bold; display: block; margin-bottom: 4px;">Jump to Alchemical Quest</label>
-                    <select id="teacher-quest-select" onchange="teacherSelectQuest(this.value)">
-                        <option value="1">Quest 1: Wizard's Sack (x + 2 = 5)</option>
-                        <option value="2">Quest 2: Double Elixir (2x = 6)</option>
-                        <option value="3">Quest 3: Alchemist Shields (3x + 1 = 10)</option>
-                    </select>
-                </div>
-                <div>
-                    <label style="font-weight: bold; display: block; margin-bottom: 4px;">Score Override (Stars Count)</label>
-                    <div style="display: flex; gap: 8px;">
-                        <input type="number" id="teacher-stars-override" min="0" style="margin: 0; flex: 1;" placeholder="Stars count">
-                        <button class="btn btn-primary" onclick="teacherSetStars()" style="height: 38px;">Apply</button>
-                    </div>
-                </div>
-                <button class="btn btn-teacher" onclick="window.print()" style="width: 100%; font-size: 0.85rem; margin-top: 10px; display: flex; justify-content: center;">
-                    🖨️ Print Homework Handout Grid
-                </button>
-                <button onclick="teacherWipeStorage()" style="background: var(--danger); border: none; color: white; border-radius: 8px; padding: 8px; font-weight: bold; cursor: pointer;">⚠️ Reset Scorecard Database</button>
-            </div>
-            <div id="teacher-err" style="color: var(--danger); font-weight: bold; font-size: 0.82rem; margin-top: 10px; display: none;">Incorrect password. Try again!</div>
-        </div>
-    </div>
 
     <!-- Diagnostics Panel -->
     <div class="diagnostics-overlay" id="diag-panel">
@@ -3532,80 +3479,6 @@
         }
 
         // ==========================================
-        // 11. TEACHER CONSOLE ADMIN DIALOGS
-        // ==========================================
-        function toggleTeacherConsole() {
-            document.getElementById('teacher-modal').style.display = 'grid';
-            document.getElementById('teacher-pass').value = '';
-            document.getElementById('teacher-auth-box').style.display = 'block';
-            document.getElementById('teacher-controls-box').style.display = 'none';
-            document.getElementById('teacher-err').style.display = 'none';
-        }
-
-        function closeTeacherConsole() {
-            document.getElementById('teacher-modal').style.display = 'none';
-        }
-
-        function unlockTeacherConsole() {
-            const pass = document.getElementById('teacher-pass').value;
-            if (pass === 'admin') {
-                document.getElementById('teacher-auth-box').style.display = 'none';
-                document.getElementById('teacher-controls-box').style.display = 'flex';
-                document.getElementById('teacher-err').style.display = 'none';
-                document.getElementById('teacher-stars-override').value = STATE.scoreStars;
-                document.getElementById('teacher-quest-select').value = STATE.currentQuestId;
-            } else {
-                document.getElementById('teacher-err').style.display = 'block';
-            }
-        }
-
-        function teacherSelectQuest(questId) {
-            const parsed = parseInt(questId, 10);
-            transitionState({
-                currentQuestId: parsed,
-                leftPan: { x: 0, unit: 0 },
-                rightPan: { x: 0, unit: 0 },
-                valX: 0
-            });
-            document.getElementById('slider-val-x').value = 0;
-            document.getElementById('val-slider-x').innerText = 0;
-            setupAlgebraTiles();
-            closeTeacherConsole();
-        }
-
-        function teacherSetStars() {
-            const val = parseInt(document.getElementById('teacher-stars-override').value, 10);
-            transitionState({ scoreStars: val });
-            closeTeacherConsole();
-        }
-
-        function teacherWipeStorage() {
-            localStorage.clear();
-            transitionState({
-                scoreStars: 0,
-                scoreStreak: 0,
-                currentQuestId: 1,
-                ineqQuestId: 1,
-                leftPan: { x: 0, unit: 0 },
-                rightPan: { x: 0, unit: 0 },
-                valX: 0,
-                polygonPoints: [],
-                fractionNum: 2,
-                fractionDenom: 4,
-                ineqCoeffA: 1,
-                ineqCoeffB: 2,
-                ineqOp: '<',
-                ineqRhs: 5,
-                ineqSolved: false
-            });
-            document.getElementById('slider-val-x').value = 0;
-            document.getElementById('val-slider-x').innerText = 0;
-            document.getElementById('journal-input').value = '';
-            setupAlgebraTiles();
-            closeTeacherConsole();
-        }
-
-        // ==========================================
         // 12. AUTOMATED SELF-TEST DIAGNOSTICS
         // ==========================================
         function logDiag(msg) {
@@ -3715,5 +3588,8 @@
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js" defer></script>
   <!-- nsr-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
 </body>
 </html>

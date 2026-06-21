@@ -3,8 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
-    <title>Coordinate Quest — Integers &amp; Coordinate Plane Game | Neft Teacher</title>
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
+    <title>
+      Coordinate Quest — Integers &amp; Coordinate Plane Game | Neft Teacher
+    </title>
     <meta
       name="description"
       content="A 2D coordinate-plane game for Grade 6 integers (6.NS.5-8): pilot a probe across the grid to plot points, choose the correct quadrant, order integers on a number line, and read absolute value."
@@ -232,8 +234,12 @@
       function buildPlot(level) {
         const lim = level === 0 ? 4 : level === 1 ? 6 : 8;
         let x, y;
-        do { x = randInt(-lim, lim); } while (x === 0);
-        do { y = randInt(-lim, lim); } while (y === 0);
+        do {
+          x = randInt(-lim, lim);
+        } while (x === 0);
+        do {
+          y = randInt(-lim, lim);
+        } while (y === 0);
         return {
           kind: "plot",
           gridLim: lim,
@@ -241,9 +247,17 @@
           prompt: "Plot the point  (" + fmtInt(x) + ", " + fmtInt(y) + ")",
           hint: "Move right/left for x, up/down for y, then LAND (Space).",
           why:
-            "(" + fmtInt(x) + ", " + fmtInt(y) + "): go " + Math.abs(x) +
-            (x >= 0 ? " right" : " left") + " and " + Math.abs(y) +
-            (y >= 0 ? " up" : " down") + " from the origin.",
+            "(" +
+            fmtInt(x) +
+            ", " +
+            fmtInt(y) +
+            "): go " +
+            Math.abs(x) +
+            (x >= 0 ? " right" : " left") +
+            " and " +
+            Math.abs(y) +
+            (y >= 0 ? " up" : " down") +
+            " from the origin.",
         };
       }
 
@@ -260,12 +274,21 @@
           axisRow: true, // restrict to the x-axis (y = 0)
           target: { x: target, y: 0 },
           mag: mag,
-          prompt: "Fly to the integer whose distance from 0 is " + mag +
+          prompt:
+            "Fly to the integer whose distance from 0 is " +
+            mag +
             (onNeg ? "  (on the negative side)" : "  (on the positive side)"),
           hint: "Absolute value is distance from 0. Move along the x-axis and LAND.",
           why:
-            "|" + fmtInt(target) + "| = " + mag +
-            " because " + fmtInt(target) + " is " + mag + " units from 0.",
+            "|" +
+            fmtInt(target) +
+            "| = " +
+            mag +
+            " because " +
+            fmtInt(target) +
+            " is " +
+            mag +
+            " units from 0.",
         };
       }
 
@@ -274,7 +297,13 @@
       function buildQuadrant(level) {
         const lim = level === 1 ? 6 : 8;
         const q = randInt(1, 4);
-        const names = ["", "Quadrant I", "Quadrant II", "Quadrant III", "Quadrant IV"];
+        const names = [
+          "",
+          "Quadrant I",
+          "Quadrant II",
+          "Quadrant III",
+          "Quadrant IV",
+        ];
         const signs = ["", "x +, y +", "x −, y +", "x −, y −", "x +, y −"];
         return {
           kind: "quad",
@@ -302,7 +331,9 @@
         // ensure at least one negative for a meaningful ordering task
         if (!nums.some((v) => v < 0)) {
           let nv;
-          do { nv = -randInt(1, lim); } while (seen[nv]);
+          do {
+            nv = -randInt(1, lim);
+          } while (seen[nv]);
           nums[randInt(0, 2)] = nv;
         }
         const least = Math.min.apply(null, nums);
@@ -315,7 +346,8 @@
           prompt: "Land on the LEAST integer:  " + nums.map(fmtInt).join(",  "),
           hint: "Least is farthest LEFT on the number line. Fly there and LAND.",
           why:
-            fmtInt(least) + " is least — it sits farthest left on the number line.",
+            fmtInt(least) +
+            " is least — it sits farthest left on the number line.",
         };
       }
 
@@ -344,6 +376,193 @@
         buildMission,
         quadrantOf,
       };
+
+      // ── Vocab gate content (term + Level-1 definition + image/emoji) ──
+      // Shown BEFORE the first round so students meet the key words first.
+      const VOCAB_TERMS = [
+        {
+          term: "Coordinate plane",
+          emoji: "🗺️",
+          definition:
+            "A grid with two number lines that cross at zero. You use it to find and plot points.",
+        },
+        {
+          term: "Ordered pair (x, y)",
+          emoji: "📍",
+          definition:
+            "Two numbers in parentheses. The first (x) tells how far right or left; the second (y) tells how far up or down.",
+        },
+        {
+          term: "Quadrant",
+          emoji: "🧭",
+          definition:
+            "One of the 4 corners of the plane (I, II, III, IV). The signs of x and y tell you which corner a point is in.",
+        },
+        {
+          term: "Absolute value",
+          emoji: "📏",
+          definition:
+            "How far a number is from zero on the number line. It is never negative — |−5| and |5| are both 5.",
+        },
+      ];
+
+      // Tracks whether the student has already seen the vocab this session so
+      // replays jump straight back into play (gate is shown by default once).
+      let vocabSeen = false;
+      function startQuest(scene) {
+        const params = { level: 0, score: 0, lives: START_LIVES };
+        if (vocabSeen) {
+          scene.scene.start("Game", params);
+        } else {
+          scene.scene.start("Vocab", params);
+        }
+      }
+
+      // ════════════════════════════════════════════════════════════════════
+      //  VOCAB GATE  ·  Words to know first (shown before the first round)
+      //  term + Level-1 definition + image (emoji) per repo rule. No giveaways:
+      //  these define the math vocabulary, they do not answer any mission.
+      // ════════════════════════════════════════════════════════════════════
+      class VocabScene extends Phaser.Scene {
+        constructor() {
+          super("Vocab");
+        }
+        init(data) {
+          this.params = data || { level: 0, score: 0, lives: START_LIVES };
+          this.i = 0;
+        }
+        create() {
+          this.cameras.main.setBackgroundColor(C.bg);
+          const cx = W / 2;
+
+          this.add
+            .text(cx, 70, "WORDS TO KNOW FIRST", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "30px",
+              fontStyle: "900",
+              color: "#eaf4ff",
+            })
+            .setOrigin(0.5);
+          this.add
+            .text(cx, 108, "Meet the key words before you pilot the probe.", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "16px",
+              color: "#9fc1de",
+            })
+            .setOrigin(0.5);
+
+          // card
+          this.add
+            .rectangle(cx, 330, 560, 360, C.panel)
+            .setStrokeStyle(2, C.panelEdge);
+
+          this.stepT = this.add
+            .text(cx, 180, "", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "13px",
+              fontStyle: "900",
+              color: "#5ad1ff",
+            })
+            .setOrigin(0.5);
+          this.emojiT = this.add
+            .text(cx, 250, "", { fontSize: "84px" })
+            .setOrigin(0.5);
+          this.termT = this.add
+            .text(cx, 330, "", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "32px",
+              fontStyle: "900",
+              color: "#ffcd4d",
+            })
+            .setOrigin(0.5);
+          this.defT = this.add
+            .text(cx, 410, "", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "18px",
+              color: "#eaf4ff",
+              align: "center",
+              wordWrap: { width: 500 },
+              lineSpacing: 6,
+            })
+            .setOrigin(0.5);
+
+          // dots
+          this.dots = [];
+          const dn = VOCAB_TERMS.length;
+          const dStart = cx - ((dn - 1) * 22) / 2;
+          for (let k = 0; k < dn; k++) {
+            this.dots.push(this.add.circle(dStart + k * 22, 488, 6, 0x3a5774));
+          }
+
+          this.nextBtn = this.add
+            .rectangle(cx, 545, 300, 54, 0x2f8f5a)
+            .setStrokeStyle(3, 0xffffff, 0.85)
+            .setInteractive({ useHandCursor: true });
+          this.nextLabel = this.add
+            .text(cx, 545, "", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "20px",
+              fontStyle: "bold",
+              color: "#fff",
+            })
+            .setOrigin(0.5);
+          this.nextBtn.on("pointerover", () => this.nextBtn.setScale(1.04));
+          this.nextBtn.on("pointerout", () => this.nextBtn.setScale(1));
+          this.nextBtn.on("pointerdown", () => this.advance());
+          this.input.keyboard.on("keydown-SPACE", () => this.advance());
+          this.input.keyboard.on("keydown-ENTER", () => this.advance());
+          this.input.keyboard.on("keydown-RIGHT", () => this.advance());
+
+          this.add
+            .text(cx, 590, "Space / Enter / ▶ to continue", {
+              fontFamily: "Segoe UI, sans-serif",
+              fontSize: "13px",
+              color: "#7fa3c2",
+            })
+            .setOrigin(0.5);
+
+          this.render();
+          this.cameras.main.fadeIn(300);
+        }
+        render() {
+          const t = VOCAB_TERMS[this.i];
+          const last = this.i === VOCAB_TERMS.length - 1;
+          this.stepT.setText(
+            "KEY WORD " + (this.i + 1) + " OF " + VOCAB_TERMS.length,
+          );
+          this.emojiT.setText(t.emoji || "🔤");
+          this.termT.setText(t.term);
+          this.defT.setText(t.definition);
+          this.nextLabel.setText(last ? "▶  START QUEST" : "Next →");
+          this.dots.forEach((d, k) =>
+            d.setFillStyle(k === this.i ? C.accent : 0x3a5774),
+          );
+          this.setSR(
+            "Key word " +
+              (this.i + 1) +
+              " of " +
+              VOCAB_TERMS.length +
+              ". " +
+              t.term +
+              ". " +
+              t.definition,
+          );
+        }
+        advance() {
+          if (this.i < VOCAB_TERMS.length - 1) {
+            this.i++;
+            this.render();
+          } else {
+            vocabSeen = true;
+            this.input.keyboard.removeAllListeners();
+            this.scene.start("Game", this.params);
+          }
+        }
+        setSR(msg) {
+          const el = document.getElementById("cq-sr");
+          if (el) el.textContent = msg;
+        }
+      }
 
       // ════════════════════════════════════════════════════════════════════
       //  BOOT
@@ -377,12 +596,28 @@
           const cx = W / 2;
 
           const badge = this.add.container(cx, 150);
-          const ring = this.add.circle(0, 0, 40, 0x123a55).setStrokeStyle(3, C.accent);
-          const probe = this.add.triangle(0, 0, 0, -16, 13, 14, -13, 14, C.probe).setStrokeStyle(2, 0x6b4e00);
+          const ring = this.add
+            .circle(0, 0, 40, 0x123a55)
+            .setStrokeStyle(3, C.accent);
+          const probe = this.add
+            .triangle(0, 0, 0, -16, 13, 14, -13, 14, C.probe)
+            .setStrokeStyle(2, 0x6b4e00);
           badge.add([ring, probe]);
           if (!reducedMotion()) {
-            this.tweens.add({ targets: probe, angle: 360, duration: 4000, repeat: -1 });
-            this.tweens.add({ targets: badge, y: 138, duration: 1600, yoyo: true, repeat: -1, ease: "Sine.inOut" });
+            this.tweens.add({
+              targets: probe,
+              angle: 360,
+              duration: 4000,
+              repeat: -1,
+            });
+            this.tweens.add({
+              targets: badge,
+              y: 138,
+              duration: 1600,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.inOut",
+            });
           }
 
           this.add
@@ -425,7 +660,7 @@
             .setOrigin(0.5);
 
           this.makeButton(cx, 474, "▶  START QUEST", 0x2f8f5a, () =>
-            this.scene.start("Game", { level: 0, score: 0, lives: START_LIVES }),
+            startQuest(this),
           );
           this.add
             .text(
@@ -666,7 +901,13 @@
           // panel
           this.gridContainer.add(
             this.add
-              .rectangle(this.gx0, this.gy0, this.cellPx * 2 * lim + 60, this.cellPx * 2 * lim + 60, C.panel)
+              .rectangle(
+                this.gx0,
+                this.gy0,
+                this.cellPx * 2 * lim + 60,
+                this.cellPx * 2 * lim + 60,
+                C.panel,
+              )
               .setStrokeStyle(2, C.panelEdge),
           );
 
@@ -682,8 +923,14 @@
             ];
             corners.forEach((cn, i) => {
               const r = this.add
-                .rectangle(cn[0] + half / 2, cn[1] + half / 2, half, half, tint[i],
-                  i + 1 === this.m.quadrant ? 0.3 : 0.08)
+                .rectangle(
+                  cn[0] + half / 2,
+                  cn[1] + half / 2,
+                  half,
+                  half,
+                  tint[i],
+                  i + 1 === this.m.quadrant ? 0.3 : 0.08,
+                )
                 .setDepth(0);
               this.gridContainer.add(r);
             });
@@ -734,25 +981,41 @@
           if (this.m.kind === "order") {
             this.m.listed.forEach((n) => {
               this.markGfx.lineStyle(2, C.gold, 0.9);
-              this.markGfx.strokeCircle(this.sx(n), this.gy0, this.cellPx * 0.42);
+              this.markGfx.strokeCircle(
+                this.sx(n),
+                this.gy0,
+                this.cellPx * 0.42,
+              );
             });
           }
           // absolute-value highlight band on x-axis
           if (this.m.kind === "abs") {
             this.gridContainer.add(
               this.add
-                .text(this.gx0, this.sy(lim) - 4, "stay on the x-axis (y = 0)", {
-                  fontFamily: "Segoe UI, sans-serif",
-                  fontSize: "11px",
-                  color: "#7fa3c2",
-                })
+                .text(
+                  this.gx0,
+                  this.sy(lim) - 4,
+                  "stay on the x-axis (y = 0)",
+                  {
+                    fontFamily: "Segoe UI, sans-serif",
+                    fontSize: "11px",
+                    color: "#7fa3c2",
+                  },
+                )
                 .setOrigin(0.5, 1),
             );
           }
 
           // pointer: click a cell to jump the probe there
           const hit = this.add
-            .rectangle(this.gx0, this.gy0, this.cellPx * 2 * lim, this.cellPx * 2 * lim, 0xffffff, 0.001)
+            .rectangle(
+              this.gx0,
+              this.gy0,
+              this.cellPx * 2 * lim,
+              this.cellPx * 2 * lim,
+              0xffffff,
+              0.001,
+            )
             .setInteractive({ useHandCursor: true });
           this.gridContainer.add(hit);
           hit.on("pointerdown", (p) => {
@@ -767,9 +1030,21 @@
 
           // the probe
           this.probe = this.add.container(0, 0).setDepth(8);
-          const ring = this.add.circle(0, 0, this.cellPx * 0.4, 0x1b3a59, 0.6).setStrokeStyle(2, C.probe);
+          const ring = this.add
+            .circle(0, 0, this.cellPx * 0.4, 0x1b3a59, 0.6)
+            .setStrokeStyle(2, C.probe);
           this.probeTri = this.add
-            .triangle(0, 0, 0, -this.cellPx * 0.34, this.cellPx * 0.3, this.cellPx * 0.3, -this.cellPx * 0.3, this.cellPx * 0.3, C.probe)
+            .triangle(
+              0,
+              0,
+              0,
+              -this.cellPx * 0.34,
+              this.cellPx * 0.3,
+              this.cellPx * 0.3,
+              -this.cellPx * 0.3,
+              this.cellPx * 0.3,
+              C.probe,
+            )
             .setStrokeStyle(1, 0x6b4e00);
           this.probe.add([ring, this.probeTri]);
           this.gridContainer.add(this.probe);
@@ -790,7 +1065,13 @@
             this.probe.x = sx;
             this.probe.y = sy;
           } else {
-            this.tweens.add({ targets: this.probe, x: sx, y: sy, duration: 130, ease: "Sine.out" });
+            this.tweens.add({
+              targets: this.probe,
+              x: sx,
+              y: sy,
+              duration: 130,
+              ease: "Sine.out",
+            });
           }
           this.posT.setText("Probe: (" + fmtInt(x) + ", " + fmtInt(y) + ")");
         }
@@ -851,7 +1132,9 @@
             this.solved++;
             const gain = 100 + Math.min(this.streak, 5) * 20;
             this.score += gain;
-            this.fbText.setColor("#4fd18b").setText("✓ +" + gain + "   " + m.why);
+            this.fbText
+              .setColor("#4fd18b")
+              .setText("✓ +" + gain + "   " + m.why);
             this.burst(this.probe.x, this.probe.y, C.good);
             this.flashProbe(C.good);
             this.setSR("Correct. " + m.why);
@@ -918,13 +1201,18 @@
           );
           ov.add(
             this.add
-              .text(W / 2, 292, "Round " + (this.levelIndex + 1) + " navigated!\n+250 bonus", {
-                fontFamily: "Segoe UI, sans-serif",
-                fontSize: "20px",
-                color: "#eaf4ff",
-                align: "center",
-                lineSpacing: 6,
-              })
+              .text(
+                W / 2,
+                292,
+                "Round " + (this.levelIndex + 1) + " navigated!\n+250 bonus",
+                {
+                  fontFamily: "Segoe UI, sans-serif",
+                  fontSize: "20px",
+                  color: "#eaf4ff",
+                  align: "center",
+                  lineSpacing: 6,
+                },
+              )
               .setOrigin(0.5),
           );
           this.confetti();
@@ -1054,7 +1342,11 @@
             )
             .setOrigin(0.5);
           this.btn(cx - 150, 460, "↻  PLAY AGAIN", 0x2f8f5a, () =>
-            this.scene.start("Game", { level: 0, score: 0, lives: START_LIVES }),
+            this.scene.start("Game", {
+              level: 0,
+              score: 0,
+              lives: START_LIVES,
+            }),
           );
           this.btn(cx + 150, 460, "🏠  ALL GAMES", 0x355a86, () => {
             window.location.href = "/math/games/";
@@ -1063,7 +1355,11 @@
           if (el)
             el.textContent =
               (this.won ? "Quest complete" : "Probe lost") +
-              ". Final score " + this.score + ", " + stars + " stars.";
+              ". Final score " +
+              this.score +
+              ", " +
+              stars +
+              " stars.";
         }
         btn(x, y, label, color, cb) {
           const b = this.add
@@ -1092,7 +1388,7 @@
         parent: document.body,
         backgroundColor: "#0a1a2e",
         scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-        scene: [BootScene, TitleScene, GameScene, ResultScene],
+        scene: [BootScene, TitleScene, VocabScene, GameScene, ResultScene],
       };
       const cqGame = new Phaser.Game(config);
 
@@ -1129,5 +1425,8 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
-  </body>
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+</body>
 </html>

@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="/assets/shared.css" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Detective Investigation — 6.SP.A.1</title>
     <style>
       * {
@@ -18,6 +18,8 @@
     <!-- nsr-injected:end -->
   </head>
   <body>
+    <!-- games-2d metadata source of truth (window.Games2DData) -->
+    <script src="/assets/games2d-data.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
     <script>
       // CDN fallback: if the primary CDN failed, synchronously load Phaser from a mirror
@@ -383,6 +385,11 @@
         const W = 960,
           H = 640;
 
+        // ── games-2d metadata source of truth (vocab text) ──
+        const GAME_ID = "6-sp-a-1game";
+        const GAME_DATA =
+          (window.Games2DData && window.Games2DData[GAME_ID]) || {};
+
         function shuffle(a) {
           const b = [...a];
           for (let i = b.length - 1; i > 0; i--) {
@@ -395,19 +402,26 @@
         // ── Deterministic poll model ──
         // Draw one witness response = a bucket index on the dot-plot's number line.
         // spread === 0 ⇒ always the same bucket (collapses). spread > 0 ⇒ scatters.
-        function pollResponse(clue) {
+        // `draw` = how many witnesses have already been polled this case. We seed
+        // the first two draws of a variable question at the OPPOSITE edges of the
+        // model so the dot-plot is GUARANTEED to show real spread — never an
+        // unlucky collapse that would contradict the true classification. The
+        // grader reads this visible spread, so the math the player builds is the
+        // single source of truth (no hidden answer key).
+        function pollResponse(clue, draw) {
           const n = clue.ticks.length;
           const c = clue.model.center;
           const s = clue.model.spread;
-          if (s <= 0) return c; // identical → no variability
-          // Triangular-ish draw centred on `center`, scatter up to ±spread.
+          if (s <= 0) return c; // identical → no variability, always one bucket
+          const clamp = (i) => (i < 0 ? 0 : i > n - 1 ? n - 1 : i);
+          // Seed the spread deterministically on the first two responses.
+          if (draw === 0) return clamp(c - s);
+          if (draw === 1) return clamp(c + s);
+          // Remaining responses: triangular-ish draw centred on `center`.
           const r1 = Math.random(),
             r2 = Math.random();
           const off = Math.round((r1 + r2 - 1) * s); // peak at 0, range ±s
-          let idx = c + off;
-          if (idx < 0) idx = 0;
-          if (idx > n - 1) idx = n - 1;
-          return idx;
+          return clamp(c + off);
         }
 
         // ═══════════════════════════════════════════════════
@@ -584,7 +598,7 @@
                 SFX.play("whoosh");
                 this.cameras.main.fade(400, 0, 0, 0);
                 this.time.delayedCall(400, () =>
-                  this.scene.start("Game", {
+                  this.scene.start("Vocab", {
                     tier: m.tier,
                     totalCases: m.cases,
                     witnesses: m.witnesses,
@@ -606,6 +620,255 @@
               )
               .setOrigin(0.5);
             this.cameras.main.fadeIn(500);
+          }
+        }
+
+        // ═══════════════════════════════════════════════════
+        // VOCAB GATE — term + plain definition + simple picture BEFORE play.
+        // Self-contained (no module deps). Reads text from GAME_DATA (the
+        // games-2d source of truth) with inline fallbacks, keeps the drawn
+        // pictures. Title → Vocab → Game.
+        class VocabScene extends Phaser.Scene {
+          constructor() {
+            super("Vocab");
+          }
+          init(data) {
+            // Pass the Title-scene payload (tier/cases/witnesses/scaffold)
+            // straight through to the Game scene after the gate.
+            this.payload = data || {};
+          }
+          create() {
+            SFX.init();
+            this.cameras.main.setBackgroundColor(0x0c1529);
+            const bg = this.add.graphics();
+            bg.fillGradientStyle(0x14213d, 0x14213d, 0x0c1529, 0x0c1529, 1);
+            bg.fillRect(0, 0, W, H);
+
+            // Term + plain-language definition + simple drawn dot-plot picture.
+            this.terms = [
+              {
+                term: "statistical question",
+                def: "A question you answer by collecting data that VARIES — different people or things give different answers (like 'How tall are the students in our class?').",
+                // Dots SPREAD across several values → variability.
+                draw: (g) => {
+                  g.lineStyle(3, 0xfbbf24, 0.9);
+                  g.lineBetween(14, 150, 166, 150);
+                  const xs = [30, 64, 64, 98, 98, 98, 132, 150];
+                  const stk = {};
+                  xs.forEach((x) => {
+                    stk[x] = (stk[x] || 0) + 1;
+                    const y = 138 - (stk[x] - 1) * 18;
+                    g.fillStyle(0x2a9d5c, 1);
+                    g.fillCircle(x, y, 7);
+                    g.lineStyle(2, 0xffffff, 0.9);
+                    g.strokeCircle(x, y, 7);
+                  });
+                },
+              },
+              {
+                term: "variability",
+                def: "How spread out the answers are. Lots of different answers = lots of variability. One repeated answer = none.",
+                // Left: spread cluster. Right: one tall stack. Contrast.
+                draw: (g) => {
+                  g.lineStyle(2, 0xfbbf24, 0.8);
+                  g.lineBetween(8, 150, 86, 150);
+                  g.lineBetween(98, 150, 176, 150);
+                  // spread (variability)
+                  [
+                    [22, 138],
+                    [40, 138],
+                    [40, 120],
+                    [60, 138],
+                  ].forEach(([x, y]) => {
+                    g.fillStyle(0x2a9d5c, 1);
+                    g.fillCircle(x, y, 6);
+                    g.lineStyle(2, 0xffffff, 0.9);
+                    g.strokeCircle(x, y, 6);
+                  });
+                  // single stack (no variability)
+                  for (let s = 0; s < 4; s++) {
+                    const y = 138 - s * 16;
+                    g.fillStyle(0xe63946, 1);
+                    g.fillCircle(137, y, 6);
+                    g.lineStyle(2, 0xffffff, 0.9);
+                    g.strokeCircle(137, y, 6);
+                  }
+                },
+              },
+              {
+                term: "non-statistical question",
+                def: "A question with one fixed answer — everyone reports the same thing (like 'What time does school start?'). No variability.",
+                // All dots STACKED on one value → no spread.
+                draw: (g) => {
+                  g.lineStyle(3, 0xfbbf24, 0.9);
+                  g.lineBetween(14, 150, 166, 150);
+                  for (let s = 0; s < 6; s++) {
+                    const y = 138 - s * 16;
+                    g.fillStyle(0xe63946, 1);
+                    g.fillCircle(90, y, 7);
+                    g.lineStyle(2, 0xffffff, 0.9);
+                    g.strokeCircle(90, y, 7);
+                  }
+                },
+              },
+            ];
+
+            // Overlay term + definition text from the source of truth
+            // (games2d-data.js), keeping the inline drawn picture for each card.
+            // Falls back to inline copy if the artifact is missing entries.
+            const sv = GAME_DATA.vocab || [];
+            this.terms.forEach((c, i) => {
+              const s = sv[i];
+              if (s) {
+                c.term = s.term || c.term;
+                c.def = s.defn || s.def || c.def;
+              }
+            });
+
+            this.idx = 0;
+            this.renderCard();
+            this.cameras.main.fadeIn(400);
+          }
+
+          renderCard() {
+            if (this.cardGroup) this.cardGroup.forEach((o) => o.destroy());
+            this.cardGroup = [];
+            const t = this.terms[this.idx];
+            const last = this.idx === this.terms.length - 1;
+            const cx = W / 2;
+            const push = (o) => {
+              this.cardGroup.push(o);
+              return o;
+            };
+
+            push(
+              this.add
+                .text(
+                  cx,
+                  86,
+                  "KEY WORD " + (this.idx + 1) + " OF " + this.terms.length,
+                  {
+                    fontSize: "15px",
+                    fontFamily: "sans-serif",
+                    fontStyle: "bold",
+                    color: "#fbbf24",
+                    letterSpacing: 2,
+                  },
+                )
+                .setOrigin(0.5),
+            );
+            push(
+              this.add
+                .text(cx, 118, "📋 What this word means", {
+                  fontSize: "13px",
+                  fontFamily: "sans-serif",
+                  color: "#8aa0c6",
+                })
+                .setOrigin(0.5),
+            );
+
+            // Picture box (drawn dot-plot motif)
+            const pic = this.add.graphics();
+            pic.fillStyle(0x0f1b33, 1);
+            pic.fillRoundedRect(cx - 95, 150, 190, 190, 16);
+            pic.lineStyle(3, 0xfbbf24, 0.55);
+            pic.strokeRoundedRect(cx - 95, 150, 190, 190, 16);
+            pic.translateCanvas(cx - 90, 162);
+            t.draw(pic);
+            push(pic);
+
+            push(
+              this.add
+                .text(cx, 372, t.term, {
+                  fontSize: "30px",
+                  fontFamily: "Trebuchet MS, sans-serif",
+                  fontStyle: "bold",
+                  color: "#fbbf24",
+                  align: "center",
+                  stroke: "#14213d",
+                  strokeThickness: 3,
+                })
+                .setOrigin(0.5),
+            );
+            push(
+              this.add
+                .text(cx, 438, t.def, {
+                  fontSize: "17px",
+                  fontFamily: "Trebuchet MS, sans-serif",
+                  color: "#f9d98a",
+                  wordWrap: { width: 600 },
+                  align: "center",
+                  lineSpacing: 4,
+                })
+                .setOrigin(0.5),
+            );
+
+            // Next / Start button (reuses BootScene's btn_teal texture)
+            const by = 540;
+            const btn = push(
+              this.add
+                .image(cx, by, "btn_teal")
+                .setScale(1.15)
+                .setInteractive({ useHandCursor: true }),
+            );
+            push(
+              this.add
+                .text(cx, by, last ? "START INVESTIGATION ▶" : "NEXT →", {
+                  fontSize: "18px",
+                  fontFamily: "Trebuchet MS, sans-serif",
+                  fontStyle: "bold",
+                  color: "#ffffff",
+                })
+                .setOrigin(0.5),
+            );
+            btn.on("pointerover", () => {
+              btn.setScale(1.2);
+              SFX.play("click");
+            });
+            btn.on("pointerout", () => btn.setScale(1.15));
+            btn.on("pointerdown", () => {
+              SFX.play("whoosh");
+              if (last) {
+                this.cameras.main.fade(350, 0, 0, 0);
+                this.time.delayedCall(350, () =>
+                  this.scene.start("Game", this.payload),
+                );
+              } else {
+                this.idx++;
+                this.renderCard();
+              }
+            });
+
+            // Back button
+            if (this.idx > 0) {
+              const back = push(
+                this.add
+                  .text(cx - 250, by, "← Back", {
+                    fontSize: "15px",
+                    fontFamily: "sans-serif",
+                    color: "#8aa0c6",
+                  })
+                  .setOrigin(0.5)
+                  .setInteractive({ useHandCursor: true }),
+              );
+              back.on("pointerdown", () => {
+                SFX.play("click");
+                this.idx = Math.max(0, this.idx - 1);
+                this.renderCard();
+              });
+            }
+
+            // Progress dots
+            for (let n = 0; n < this.terms.length; n++) {
+              push(
+                this.add.circle(
+                  cx - (this.terms.length - 1) * 9 + n * 18,
+                  592,
+                  5,
+                  n === this.idx ? 0xfbbf24 : 0x334155,
+                ),
+              );
+            }
           }
         }
 
@@ -1166,8 +1429,9 @@
           pollWitness(w) {
             w.polled = true;
             SFX.play("poll");
-            // Deterministic response from the case's true varies-model.
-            const bucket = pollResponse(this.activeClue);
+            // Deterministic response from the case's true varies-model. Pass the
+            // draw index so a variable question is guaranteed to show real spread.
+            const bucket = pollResponse(this.activeClue, this.responses.length);
             this.responses.push(bucket);
             this.tweens.killTweensOf(w.cont);
             w.icon.setText("🗣️");
@@ -1285,8 +1549,13 @@
               return;
             }
             const clue = this.activeClue;
-            const correct = saidStatistical === clue.stat;
             const spread = this.observedSpread();
+            // Grade on the EVIDENCE the player actually built and reads, not a
+            // hidden answer key: dots that SPREAD ⇒ statistical; dots that STACK
+            // on one value ⇒ non-statistical. The poll is seeded so the visible
+            // board always matches the true model, so the math is the mechanic.
+            const boardSaysStatistical = spread > 0;
+            const correct = saidStatistical === boardSaysStatistical;
             this.solved++;
             this.phase = "resolved";
             this.setBinsEnabled(false);
@@ -1309,7 +1578,7 @@
                 SFX.play("combo");
                 this.cameras.main.shake(80, 0.003);
               }
-              const why = clue.stat
+              const why = boardSaysStatistical
                 ? "Correct — the spread proves answers VARY. " + clue.explain
                 : "Correct — no spread, one exact answer. " + clue.explain;
               this.banner("📁 FILED!", "#7ee0a8");
@@ -1327,7 +1596,7 @@
               this.cameras.main.shake(160, 0.008);
               // Misfiling a wide-spread question visibly scatters the board.
               this.scatterBoard();
-              const why = clue.stat
+              const why = boardSaysStatistical
                 ? "Misfiled. Look again: the dots SPREAD across the line — that variability means STATISTICAL. " +
                   clue.explain
                 : "Misfiled. Look again: every dot STACKED on one value — no variability means NON-statistical. " +
@@ -1695,7 +1964,7 @@
             default: "arcade",
             arcade: { debug: false },
           },
-          scene: [BootScene, TitleScene, GameScene, ResultsScene],
+          scene: [BootScene, TitleScene, VocabScene, GameScene, ResultsScene],
           input: { touch: true },
         });
       })();
@@ -1706,5 +1975,8 @@
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
-  </body>
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
+</body>
 </html>
