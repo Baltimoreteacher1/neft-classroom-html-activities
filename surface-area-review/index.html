@@ -410,7 +410,6 @@
     <a href="/math/unit-5/">Unit 5 Dashboard</a>
     <a href="/math/unit-5/supplemental/">Unit 5 Activities</a>
     <button onclick="triggerSelfTest()" style="border: 1px solid var(--line); background: #fff; padding: 9px 12px; border-radius: 8px; font-weight: 800; font-size: 0.9rem; cursor: pointer; color: var(--blue);">⚡ Run Self-Test</button>
-    <button onclick="toggleTeacherConsole()" style="border: 1px solid var(--line); background: #fff; padding: 9px 12px; border-radius: 8px; font-weight: 800; font-size: 0.9rem; cursor: pointer; color: var(--gold);">⚙️ Teacher Console</button>
   </nav>
 
   <main class="shell">
@@ -490,53 +489,6 @@
   </main>
 
   <footer>Mr. Neft Classroom Activities</footer>
-
-  <!-- Teacher Control Console Overlay -->
-  <div id="teacher-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; display: none; place-items: center; backdrop-filter: blur(4px);">
-      <div style="background: #fff; border: 1px solid var(--line); padding: 24px; border-radius: 12px; width: min(400px, 90%); box-shadow: var(--shadow);">
-          <h3 style="margin-top: 0; display: flex; justify-content: space-between; align-items: center; color: var(--gold); font-family: sans-serif;">
-              <span>⚙️ Teacher Console Admin</span>
-              <button onclick="closeTeacherConsole()" style="background: none; border: none; color: var(--muted); font-size: 1.2rem; cursor: pointer; font-weight: 800;">X</button>
-          </h3>
-          <div id="teacher-auth-section">
-              <label for="teacher-password" style="font-weight: bold; margin-bottom: 6px; display: block;">Enter Admin Password</label>
-              <input type="password" id="teacher-password" placeholder="Password: admin" style="margin-bottom: 12px; width: 100%; border: 2px solid #cbd5e1; border-radius: 8px; padding: 8px;">
-              <button class="primary" onclick="unlockTeacherConsole()" style="width: 100%; background: var(--blue); color: white; padding: 10px; border-radius: 8px; font-weight: bold;">Unlock Console</button>
-          </div>
-          <div id="teacher-control-section" style="display: none; flex-direction: column; gap: 12px;">
-              <p style="font-size: 0.85rem; color: var(--muted); margin: 0 0 10px;">Authenticated successfully! Skip rounds or override current scorecard metrics.</p>
-              <div>
-                  <label for="teacher-skip-round" style="font-weight: bold; margin-bottom: 6px; display: block;">Jump to Round (1 - 12)</label>
-                  <div style="display: flex; gap: 8px;">
-                      <select id="teacher-skip-round" style="flex: 1; border: 2px solid #cbd5e1; border-radius: 8px; padding: 6px; font-weight: bold; background: #fff;">
-                          <option value="0">Round 1</option>
-                          <option value="1">Round 2</option>
-                          <option value="2">Round 3</option>
-                          <option value="3">Round 4</option>
-                          <option value="4">Round 5</option>
-                          <option value="5">Round 6</option>
-                          <option value="6">Round 7</option>
-                          <option value="7">Round 8</option>
-                          <option value="8">Round 9</option>
-                          <option value="9">Round 10</option>
-                          <option value="10">Round 11</option>
-                          <option value="11">Round 12</option>
-                      </select>
-                      <button class="primary" onclick="teacherSkip()" style="min-height: auto; background: var(--blue); color: white; border-radius: 8px; font-weight: bold; padding: 6px 12px;">Go</button>
-                  </div>
-              </div>
-              <div>
-                  <label for="teacher-override-score" style="font-weight: bold; margin-bottom: 6px; display: block;">Score Override</label>
-                  <div style="display: flex; gap: 8px;">
-                      <input type="number" id="teacher-override-score" min="0" style="flex: 1; min-height: 38px; padding: 6px; font-weight: bold; border: 2px solid #cbd5e1; border-radius: 8px;" placeholder="New Score">
-                      <button class="success" onclick="teacherOverrideScore()" style="min-height: auto; background: var(--green); color: white; border-radius: 8px; font-weight: bold; padding: 6px 12px;">Set</button>
-                  </div>
-              </div>
-              <button onclick="teacherResetAll()" style="background: var(--red); color: #fff; width: 100%; margin-top: 10px; padding: 8px; border-radius: 8px; font-weight: bold;">⚠️ Reset Scorecard Storage</button>
-          </div>
-          <div id="teacher-error" style="color: var(--red); font-weight: bold; font-size: 0.85rem; margin-top: 10px; display: none;">Incorrect password. Try again!</div>
-      </div>
-  </div>
 
   <!-- Diagnostics Panel -->
   <div class="diagnostics-overlay" id="diag-panel" style="position: fixed; bottom: 20px; right: 20px; background: #0f172a; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 16px; z-index: 1000; width: 300px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); display: none; color: white;">
@@ -928,59 +880,6 @@
         }
     }
 
-    // 4. Teacher Admin Control Console overlay methods
-    function toggleTeacherConsole() {
-        document.getElementById('teacher-overlay').style.display = 'grid';
-        document.getElementById('teacher-password').value = '';
-        document.getElementById('teacher-auth-section').style.display = 'block';
-        document.getElementById('teacher-control-section').style.display = 'none';
-        document.getElementById('teacher-error').style.display = 'none';
-    }
-
-    function closeTeacherConsole() {
-        document.getElementById('teacher-overlay').style.display = 'none';
-    }
-
-    function unlockTeacherConsole() {
-        const pass = document.getElementById('teacher-password').value;
-        if (pass === 'admin') {
-            document.getElementById('teacher-auth-section').style.display = 'none';
-            document.getElementById('teacher-control-section').style.display = 'flex';
-            document.getElementById('teacher-error').style.display = 'none';
-            document.getElementById('teacher-override-score').value = score;
-            document.getElementById('teacher-skip-round').value = index;
-        } else {
-            document.getElementById('teacher-error').style.display = 'block';
-        }
-    }
-
-    function teacherSkip() {
-        const target = parseInt(document.getElementById('teacher-skip-round').value, 10);
-        index = target;
-        AudioSynth.playFoldThud();
-        render();
-        saveProgress();
-        closeTeacherConsole();
-    }
-
-    function teacherOverrideScore() {
-        const target = parseInt(document.getElementById('teacher-override-score').value, 10);
-        score = target;
-        saveProgress();
-        render();
-        closeTeacherConsole();
-    }
-
-    function teacherResetAll() {
-        localStorage.removeItem('surface_area_index');
-        localStorage.removeItem('surface_area_score');
-        localStorage.removeItem('surface_area_streak');
-        localStorage.removeItem('surface_area_attempts');
-        localStorage.removeItem('surface_area_results');
-        resetGame();
-        closeTeacherConsole();
-    }
-
     // 5. Diagnostics overlay triggers
     function logDiag(msg) {
         const el = document.getElementById('diag-log');
@@ -1023,13 +922,6 @@
                 throw new Error("Assertion failed: local storage check failed.");
             }
             localStorage.removeItem('surface_area_index');
-
-            // Assert 5: Teacher Console components check
-            const overlay = document.getElementById('teacher-overlay');
-            logDiag(`✓ Teacher overlay presence check: ${!!overlay}`);
-            if (!overlay) {
-                throw new Error("Assertion failed: Teacher control modal not found.");
-            }
 
             logDiag("🎉 ALL SURFACE AREA LAB CHECKS PASSED!");
         } catch (err) {
