@@ -632,13 +632,21 @@ function bindInteractions() {
     show.t = setTimeout(() => status.classList.remove("show"), 1400);
   }
 
-  // Read-aloud (character names + vocabulary + quotes + explanations).
+  // Event Delegation for clicks on page
   document.addEventListener("click", (e) => {
+    // Speak button handler
     const b = e.target.closest(".speak");
     if (b) {
       e.preventDefault();
       const container = b.closest(".vrow, .person, .scene-quote, .scene-explain");
       window.speakText(b.dataset.text, container, b);
+      return;
+    }
+
+    // Lightbox image click handler
+    const img = e.target.closest(".scene-img");
+    if (img) {
+      openLightbox(img.src, img.alt);
     }
   });
 
@@ -737,4 +745,42 @@ function triggerConfetti() {
   }
   
   setTimeout(() => container.remove(), 3000);
+}
+
+function openLightbox(src, alt) {
+  let lightbox = document.getElementById("lightboxModal");
+  if (!lightbox) {
+    lightbox = document.createElement("div");
+    lightbox.id = "lightboxModal";
+    lightbox.className = "lightbox-modal";
+    lightbox.innerHTML = `
+      <button class="lightbox-close" type="button" aria-label="Close image view">&times;</button>
+      <div class="lightbox-content">
+        <img class="lightbox-img" src="" alt="">
+        <div class="lightbox-caption"></div>
+      </div>
+    `;
+    document.body.appendChild(lightbox);
+
+    // Close handlers
+    lightbox.addEventListener("click", (e) => {
+      if (e.target === lightbox || e.target.closest(".lightbox-close")) {
+        lightbox.classList.remove("open");
+      }
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && lightbox.classList.contains("open")) {
+        lightbox.classList.remove("open");
+      }
+    });
+  }
+
+  const lightboxImg = lightbox.querySelector(".lightbox-img");
+  const lightboxCaption = lightbox.querySelector(".lightbox-caption");
+  lightboxImg.src = src;
+  lightboxImg.alt = alt;
+  lightboxCaption.textContent = alt;
+
+  lightbox.classList.add("open");
 }
