@@ -54,6 +54,8 @@
   </head>
   <body>
     <div id="game-container"></div>
+    <!-- games-2d metadata source of truth (window.Games2DData) -->
+    <script src="/assets/games2d-data.js"></script>
     <script>
       // ============================================================
       //  TEMPERATURE EXPLORER — 6.NS.C.5
@@ -63,6 +65,10 @@
       const W = 800,
         H = 600;
       const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+      const GAME_ID = "6-ns-c-5game";
+      const GAME_DATA =
+        (window.Games2DData && window.Games2DData[GAME_ID]) || {};
 
       function synth(freq, dur, type = "square", vol = 0.1) {
         try {
@@ -117,6 +123,207 @@
           [a[i], a[j]] = [a[j], a[i]];
         }
         return a;
+      }
+
+      // ============================================================
+      // VOCAB GATE — term + plain definition + picture BEFORE play.
+      // Self-contained; reads text from window.Games2DData with an
+      // inline fallback. Pass-through of the Title payload to Game.
+      // ============================================================
+      class VocabScene extends Phaser.Scene {
+        constructor() {
+          super("Vocab");
+        }
+        init(data) {
+          this.payload = data || {};
+        }
+        create() {
+          if (audioCtx.state === "suspended") audioCtx.resume();
+          this.cameras.main.setBackgroundColor("#0b1628");
+
+          // Term + plain-language definition + simple drawn picture.
+          this.terms = [
+            {
+              term: "integer",
+              def: "A whole number that can be positive, negative, or zero — like -4, 0, or 7. No fractions or decimals.",
+              draw: (g) => {
+                // Number line with ticks and a dot left of 0.
+                g.lineStyle(3, 0x38bdf8, 1);
+                g.lineBetween(15, 90, 165, 90);
+                for (let n = 0; n <= 6; n++) {
+                  const x = 25 + n * 23;
+                  g.lineBetween(x, 84, x, 96);
+                }
+                g.fillStyle(0xfbbf24, 1);
+                g.fillCircle(48, 90, 9);
+              },
+            },
+            {
+              term: "negative number",
+              def: "A number less than zero. It sits to the LEFT of 0 on the number line, like -5 degrees (below zero) or 200 feet below sea level.",
+              draw: (g) => {
+                // Number line; dot clearly LEFT of center 0, labeled -.
+                g.lineStyle(3, 0x38bdf8, 1);
+                g.lineBetween(15, 90, 165, 90);
+                g.lineStyle(2, 0xffffff, 0.7);
+                g.lineBetween(90, 80, 90, 100); // 0 tick at center
+                g.fillStyle(0xf87171, 1);
+                g.fillCircle(40, 90, 9);
+                g.lineStyle(4, 0xf87171, 1);
+                g.lineBetween(33, 90, 47, 90); // minus sign over the dot
+              },
+            },
+            {
+              term: "opposite",
+              def: "The number the same distance from 0 but on the other side. The opposite of +7 is -7; the opposite of 0 is 0.",
+              draw: (g) => {
+                // Two dots equidistant from a center 0, opposite sides.
+                g.lineStyle(3, 0x38bdf8, 1);
+                g.lineBetween(15, 90, 165, 90);
+                g.lineStyle(2, 0xffffff, 0.7);
+                g.lineBetween(90, 80, 90, 100); // 0 tick at center
+                g.fillStyle(0xf87171, 1);
+                g.fillCircle(50, 90, 9); // left dot
+                g.fillStyle(0x4ade80, 1);
+                g.fillCircle(130, 90, 9); // right dot, same distance
+                g.lineStyle(2, 0xffffff, 0.3);
+                g.lineBetween(59, 90, 121, 90);
+              },
+            },
+          ];
+
+          // Overlay term + definition text from the source of truth,
+          // keeping the inline drawn picture for each card. Falls back
+          // to inline copy if the artifact is missing or shorter.
+          const sv = (GAME_DATA && GAME_DATA.vocab) || [];
+          this.terms.forEach((c, i) => {
+            const s = sv[i];
+            if (s) {
+              c.term = s.term || c.term;
+              c.def = s.defn || s.def || c.def;
+            }
+          });
+
+          this.idx = 0;
+          this.renderCard();
+        }
+
+        renderCard() {
+          if (this.cardGroup) this.cardGroup.forEach((o) => o.destroy());
+          this.cardGroup = [];
+          const t = this.terms[this.idx];
+          const last = this.idx === this.terms.length - 1;
+
+          const push = (o) => {
+            this.cardGroup.push(o);
+            return o;
+          };
+
+          push(
+            this.add
+              .text(
+                W / 2,
+                70,
+                `KEY WORD ${this.idx + 1} OF ${this.terms.length}`,
+                {
+                  fontSize: "15px",
+                  color: "#38bdf8",
+                  fontStyle: "bold",
+                },
+              )
+              .setOrigin(0.5),
+          );
+
+          // Picture
+          const pic = this.add.graphics();
+          pic.fillStyle(0x1e293b, 1);
+          pic.fillRoundedRect(W / 2 - 90, 100, 180, 180, 16);
+          pic.lineStyle(2, 0x38bdf8, 1);
+          pic.strokeRoundedRect(W / 2 - 90, 100, 180, 180, 16);
+          pic.translateCanvas(W / 2 - 90, 110);
+          t.draw(pic);
+          push(pic);
+
+          push(
+            this.add
+              .text(W / 2, 310, t.term, {
+                fontSize: "30px",
+                color: "#fbbf24",
+                fontStyle: "bold",
+                align: "center",
+              })
+              .setOrigin(0.5),
+          );
+          push(
+            this.add
+              .text(W / 2, 380, t.def, {
+                fontSize: "17px",
+                color: "#cbd5e1",
+                wordWrap: { width: 560 },
+                align: "center",
+                lineSpacing: 4,
+              })
+              .setOrigin(0.5),
+          );
+
+          // Next / Start button
+          const by = 500;
+          const btn = push(
+            this.add
+              .image(W / 2, by, "btn")
+              .setScale(1.0)
+              .setInteractive({ useHandCursor: true }),
+          );
+          push(
+            this.add
+              .text(W / 2, by, last ? "START PLAYING ▶" : "NEXT →", {
+                fontSize: "18px",
+                color: "#4ade80",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5),
+          );
+          btn.on("pointerover", () => btn.setScale(1.05));
+          btn.on("pointerout", () => btn.setScale(1.0));
+          btn.on("pointerdown", () => {
+            synth(500, 0.08);
+            if (last) {
+              this.scene.start("Game", this.payload);
+            } else {
+              this.idx++;
+              this.renderCard();
+            }
+          });
+
+          if (this.idx > 0) {
+            const back = push(
+              this.add
+                .text(W / 2 - 230, by, "← Back", {
+                  fontSize: "15px",
+                  color: "#94a3b8",
+                })
+                .setOrigin(0.5)
+                .setInteractive({ useHandCursor: true }),
+            );
+            back.on("pointerdown", () => {
+              synth(360, 0.06);
+              this.idx = Math.max(0, this.idx - 1);
+              this.renderCard();
+            });
+          }
+
+          // Progress dots
+          for (let n = 0; n < this.terms.length; n++) {
+            push(
+              this.add.circle(
+                W / 2 - (this.terms.length - 1) * 8 + n * 16,
+                550,
+                5,
+                n === this.idx ? 0x38bdf8 : 0x334155,
+              ),
+            );
+          }
+        }
       }
 
       // Question bank for 6.NS.C.5
@@ -622,7 +829,7 @@
             setTimeout(() => synth(800, 0.15), 80);
             this.cameras.main.fadeOut(400);
             this.time.delayedCall(400, () => {
-              this.scene.start("Game", { mode: this.selectedMode });
+              this.scene.start("Vocab", { mode: this.selectedMode });
             });
           });
 
@@ -1904,7 +2111,7 @@
           default: "arcade",
           arcade: { gravity: { y: 500 }, debug: false },
         },
-        scene: [BootScene, TitleScene, GameScene, ResultsScene],
+        scene: [BootScene, TitleScene, VocabScene, GameScene, ResultsScene],
         input: { activePointers: 3 },
       };
 
@@ -1919,5 +2126,8 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
 </body>
 </html>

@@ -54,6 +54,8 @@
   </head>
   <body>
     <div id="game-container"></div>
+    <!-- games-2d metadata source of truth (window.Games2DData) -->
+    <script src="/assets/games2d-data.js"></script>
     <script>
       // ============================================================
       //  CITY BUILDER — 6.NS.C.8
@@ -63,6 +65,14 @@
       const W = 800,
         H = 600;
       const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+      // Metadata source of truth: window.Games2DData (from scripts/games2d/data.mjs
+      // via assets/games2d-data.js). The vocab-gate art (drawn pictures) stays
+      // inline; the term + definition TEXT is pulled from the SoT when present so
+      // teachers edit copy in one place. Inline values below act as a fallback.
+      const GAME_ID = "6-ns-c-8game";
+      const GAME_DATA =
+        (window.Games2DData && window.Games2DData[GAME_ID]) || {};
 
       function synth(f, d, t = "square", v = 0.1) {
         try {
@@ -132,6 +142,222 @@
         { name: "Restaurant", emoji: "🍕", color: 0xec4899, points: 70 },
         { name: "Gym", emoji: "🏋️", color: 0x14b8a6, points: 65 },
       ];
+
+      // ============================================================
+      // VOCAB GATE — term + plain definition + picture BEFORE play.
+      // Self-contained (no module deps). Mirrors engine3d/vocab-gate.js.
+      // ============================================================
+      class VocabScene extends Phaser.Scene {
+        constructor() {
+          super("Vocab");
+        }
+        init(data) {
+          // Pass the Title payload (difficulty range, etc.) straight through to Game.
+          this.payload = data || {};
+        }
+        create() {
+          if (audioCtx.state === "suspended") audioCtx.resume();
+          this.cameras.main.setBackgroundColor("#0a0f1e");
+
+          // Term + plain-language definition + simple drawn picture.
+          this.terms = [
+            {
+              term: "coordinate plane",
+              def: "A grid of streets built from an x-axis (left-right) and a y-axis (up-down) crossing at the center (0, 0).",
+              draw: (g) => {
+                g.lineStyle(3, 0x38bdf8, 1);
+                g.lineBetween(20, 90, 160, 90);
+                g.lineBetween(90, 20, 90, 160);
+              },
+            },
+            {
+              term: "ordered pair (x, y)",
+              def: "The address of a spot on the grid: go x steps left/right, then y steps up/down.",
+              draw: (g) => {
+                g.lineStyle(2, 0x38bdf8, 0.6);
+                g.lineBetween(20, 90, 160, 90);
+                g.lineBetween(90, 20, 90, 160);
+                g.fillStyle(0xfbbf24, 1);
+                g.fillCircle(130, 55, 9);
+              },
+            },
+            {
+              term: "absolute value",
+              def: "How far a number is from 0, ignoring its sign. |−3| = 3. Use it to count blocks between two points.",
+              draw: (g) => {
+                g.lineStyle(3, 0x38bdf8, 1);
+                g.lineBetween(20, 90, 160, 90);
+                // tick marks for the number line
+                g.lineStyle(1, 0x38bdf8, 0.5);
+                for (let x = 30; x <= 150; x += 20) {
+                  g.lineBetween(x, 84, x, 96);
+                }
+                // origin marker at center (x = 90)
+                g.lineStyle(2, 0xfbbf24, 1);
+                g.lineBetween(90, 78, 90, 102);
+                // dot left of 0
+                g.fillStyle(0x4ade80, 1);
+                g.fillCircle(50, 90, 8);
+                // bracket/arrow showing distance from the dot to 0
+                g.lineStyle(2, 0xffffff, 0.7);
+                g.lineBetween(50, 70, 90, 70);
+                g.lineBetween(50, 66, 50, 74);
+                g.lineBetween(90, 66, 90, 74);
+              },
+            },
+            {
+              term: "distance on a grid",
+              def: "When two points share an x or a y, the distance is |a − b| — subtract the coordinates that differ and drop the sign.",
+              draw: (g) => {
+                g.lineStyle(2, 0x38bdf8, 0.6);
+                g.lineBetween(20, 120, 160, 120);
+                g.lineBetween(90, 20, 90, 160);
+                // two dots on the same horizontal line
+                g.fillStyle(0x4ade80, 1);
+                g.fillCircle(45, 70, 8);
+                g.fillStyle(0xfbbf24, 1);
+                g.fillCircle(140, 70, 8);
+                // measured segment between them
+                g.lineStyle(2, 0xffffff, 0.7);
+                g.lineBetween(45, 70, 140, 70);
+                g.lineBetween(45, 64, 45, 76);
+                g.lineBetween(140, 64, 140, 76);
+              },
+            },
+          ];
+
+          // Overlay term + definition text from the source of truth (data.mjs),
+          // keeping the inline drawn picture for each card. Falls back to inline
+          // copy if the artifact is missing or has fewer entries.
+          const sv = GAME_DATA.vocab || [];
+          this.terms.forEach((c, i) => {
+            const s = sv[i];
+            if (s) {
+              c.term = s.term || c.term;
+              c.def = s.defn || s.def || c.def;
+            }
+          });
+
+          this.idx = 0;
+          this.renderCard();
+        }
+
+        renderCard() {
+          if (this.cardGroup) this.cardGroup.forEach((o) => o.destroy());
+          this.cardGroup = [];
+          const t = this.terms[this.idx];
+          const last = this.idx === this.terms.length - 1;
+
+          const push = (o) => {
+            this.cardGroup.push(o);
+            return o;
+          };
+
+          push(
+            this.add
+              .text(
+                W / 2,
+                70,
+                `KEY WORD ${this.idx + 1} OF ${this.terms.length}`,
+                {
+                  fontSize: "15px",
+                  color: "#38bdf8",
+                  fontStyle: "bold",
+                },
+              )
+              .setOrigin(0.5),
+          );
+
+          // Picture
+          const pic = this.add.graphics();
+          pic.fillStyle(0x0f172a, 1);
+          pic.fillRoundedRect(W / 2 - 90, 100, 180, 180, 16);
+          pic.lineStyle(2, 0x1e293b, 1);
+          pic.strokeRoundedRect(W / 2 - 90, 100, 180, 180, 16);
+          pic.translateCanvas(W / 2 - 90, 110);
+          t.draw(pic);
+          push(pic);
+
+          push(
+            this.add
+              .text(W / 2, 310, t.term, {
+                fontSize: "30px",
+                color: "#fbbf24",
+                fontStyle: "bold",
+                align: "center",
+              })
+              .setOrigin(0.5),
+          );
+          push(
+            this.add
+              .text(W / 2, 380, t.def, {
+                fontSize: "17px",
+                color: "#cbd5e1",
+                wordWrap: { width: 560 },
+                align: "center",
+                lineSpacing: 4,
+              })
+              .setOrigin(0.5),
+          );
+
+          // Next / Start button
+          const by = 500;
+          const btn = push(
+            this.add
+              .image(W / 2, by, "btn")
+              .setScale(1.15)
+              .setInteractive({ useHandCursor: true }),
+          );
+          push(
+            this.add
+              .text(W / 2, by, last ? "START PLAYING ▶" : "NEXT →", {
+                fontSize: "18px",
+                color: "#4ade80",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5),
+          );
+          btn.on("pointerover", () => btn.setScale(1.2));
+          btn.on("pointerout", () => btn.setScale(1.15));
+          btn.on("pointerdown", () => {
+            synth(500, 0.08);
+            if (last) {
+              this.scene.start("Game", this.payload);
+            } else {
+              this.idx++;
+              this.renderCard();
+            }
+          });
+
+          if (this.idx > 0) {
+            const back = push(
+              this.add
+                .text(W / 2 - 230, by, "← Back", {
+                  fontSize: "15px",
+                  color: "#94a3b8",
+                })
+                .setOrigin(0.5)
+                .setInteractive({ useHandCursor: true }),
+            );
+            back.on("pointerdown", () => {
+              this.idx = Math.max(0, this.idx - 1);
+              this.renderCard();
+            });
+          }
+
+          // Progress dots
+          for (let n = 0; n < this.terms.length; n++) {
+            push(
+              this.add.circle(
+                W / 2 - (this.terms.length - 1) * 8 + n * 16,
+                550,
+                5,
+                n === this.idx ? 0x38bdf8 : 0x334155,
+              ),
+            );
+          }
+        }
+      }
 
       // ============================================================
       // BOOT
@@ -391,7 +617,7 @@
             this.cameras.main.fadeOut(400);
             const ranges = [2, 3, 4];
             this.time.delayedCall(400, () => {
-              this.scene.start("Game", { range: ranges[this.selectedDiff] });
+              this.scene.start("Vocab", { range: ranges[this.selectedDiff] });
             });
           });
 
@@ -1120,11 +1346,6 @@
               qs.push({
                 q: `Distance between ${a.building.name} (${a.gx},${a.gy}) and ${b.building.name} (${b.gx},${b.gy})?`,
                 ans: `${dist}`,
-                opts: shuffle([
-                  `${dist}`,
-                  `${dist + 2}`,
-                  `${Math.max(1, dist - 1)}`,
-                ]),
                 explanation: `Same x = ${a.gx}. Distance = |${a.gy} - ${b.gy}| = |${a.gy - b.gy}| = ${dist}`,
               });
             }
@@ -1134,11 +1355,6 @@
               qs.push({
                 q: `Distance between ${a.building.name} (${a.gx},${a.gy}) and ${b.building.name} (${b.gx},${b.gy})?`,
                 ans: `${dist}`,
-                opts: shuffle([
-                  `${dist}`,
-                  `${dist + 3}`,
-                  `${Math.max(1, dist - 2)}`,
-                ]),
                 explanation: `Same y = ${a.gy}. Distance = |${a.gx} - ${b.gx}| = |${a.gx - b.gx}| = ${dist}`,
               });
             }
@@ -1148,11 +1364,6 @@
               qs.push({
                 q: `Total blocks from ${a.building.name} (${a.gx},${a.gy}) to ${b.building.name} (${b.gx},${b.gy})? (|dx|+|dy|)`,
                 ans: `${dist}`,
-                opts: shuffle([
-                  `${dist}`,
-                  `${dist + 2}`,
-                  `${Math.max(1, dist - 3)}`,
-                ]),
                 explanation: `|${a.gx}-${b.gx}| + |${a.gy}-${b.gy}| = ${Math.abs(a.gx - b.gx)} + ${Math.abs(a.gy - b.gy)} = ${dist}`,
               });
             }
@@ -1172,7 +1383,6 @@
             qs.push({
               q: `Which quadrant is ${p.building.name} at (${p.gx}, ${p.gy})?`,
               ans: quad,
-              opts: shuffle(["I", "II", "III", "IV"]).slice(0, 3),
               explanation: `(${p.gx}, ${p.gy}): x is ${p.gx >= 0 ? "+" : "-"}, y is ${p.gy >= 0 ? "+" : "-"} = Quadrant ${quad}`,
             });
           }
@@ -1183,7 +1393,6 @@
                 {
                   q: "A building at (-3,4) and one at (2,4). Distance?",
                   ans: "5",
-                  opts: shuffle(["5", "7", "1"]),
                   explanation: "Same y=4. |(-3)-2| = |-5| = 5",
                 },
               ];
@@ -1877,7 +2086,7 @@
         height: H,
         parent: "game-container",
         scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-        scene: [BootScene, TitleScene, GameScene, ResultsScene],
+        scene: [BootScene, TitleScene, VocabScene, GameScene, ResultsScene],
         input: { activePointers: 3 },
       };
 
@@ -1892,5 +2101,8 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
+  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+  <script src="/assets/math-workbench-launcher.js" defer></script>
+  <!-- mwb-injected:end -->
 </body>
 </html>
