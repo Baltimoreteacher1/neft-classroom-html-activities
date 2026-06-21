@@ -350,6 +350,34 @@
       .flyout.open {
         display: block;
       }
+      .flyout-close {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        width: 30px;
+        height: 30px;
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 9px;
+        color: #5e6e85;
+        font-size: 1.25rem;
+        font-weight: 800;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 2;
+        transition:
+          border-color 0.12s,
+          color 0.12s,
+          background 0.12s;
+      }
+      .flyout-close:hover {
+        border-color: var(--teal);
+        color: var(--teal);
+        background: rgba(32, 95, 166, 0.06);
+      }
       @keyframes pop {
         from {
           opacity: 0;
@@ -400,6 +428,7 @@
         margin: 0 0 3px;
         font-size: 0.98rem;
         font-weight: 900;
+        padding-right: 34px;
       }
       .flyout p.hint {
         margin: 0 0 11px;
@@ -522,9 +551,118 @@
         position: relative;
         flex: 1;
         min-width: 0;
-        overflow: hidden;
+        overflow-y: auto;
+        overflow-x: hidden;
         background-color: var(--paper);
-        touch-action: none;
+        /* Patterns are painted on this element; "local" makes them scroll with
+           the content so ink stays aligned to the grid at any scroll depth. */
+        background-attachment: local;
+        /* Allow vertical finger-scroll across pages; drawing tools flip the
+           board to touch-action:none so strokes are never hijacked by a pan. */
+        touch-action: pan-y;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+        scrollbar-width: thin;
+        scrollbar-color: #b9c8dc transparent;
+      }
+      .workspace::-webkit-scrollbar {
+        width: 12px;
+      }
+      .workspace::-webkit-scrollbar-thumb {
+        background: #b9c8dc;
+        border: 3px solid var(--paper);
+        border-radius: 999px;
+      }
+      .workspace::-webkit-scrollbar-thumb:hover {
+        background: #9db2cc;
+      }
+      /* Tall scrolling sheet that holds the paper, ink, and floating objects. */
+      .sheet {
+        position: relative;
+        width: 100%;
+        min-height: 100%;
+      }
+      /* Floating page navigator (bottom-right of the board) */
+      .page-nav {
+        position: absolute;
+        right: 16px;
+        bottom: 16px;
+        z-index: 14;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 5px;
+        background: rgba(255, 255, 255, 0.96);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        box-shadow: var(--shadow-lg);
+        backdrop-filter: blur(6px);
+      }
+      .page-nav .pg-btn {
+        width: 34px;
+        height: 34px;
+        border: none;
+        background: transparent;
+        border-radius: 50%;
+        color: var(--teal);
+        font-size: 0.92rem;
+        font-weight: 800;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.12s;
+      }
+      .page-nav .pg-btn:hover {
+        background: rgba(32, 95, 166, 0.1);
+      }
+      .page-nav .page-ind {
+        min-width: 46px;
+        text-align: center;
+        font-size: 0.78rem;
+        font-weight: 800;
+        color: var(--ink);
+        font-variant-numeric: tabular-nums;
+        user-select: none;
+      }
+      .page-nav .pg-add {
+        height: 34px;
+        padding: 0 14px;
+        border: none;
+        border-radius: 999px;
+        background: var(--teal);
+        color: #fff;
+        font-weight: 800;
+        font-size: 0.8rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        transition:
+          filter 0.12s,
+          transform 0.08s;
+      }
+      .page-nav .pg-add:hover {
+        filter: brightness(1.06);
+      }
+      .page-nav .pg-add:active {
+        transform: scale(0.96);
+      }
+      .page-nav .pg-add:disabled {
+        background: #c2cede;
+        cursor: not-allowed;
+        filter: none;
+      }
+      @media (max-width: 620px) {
+        .page-nav {
+          right: 10px;
+          bottom: 10px;
+          gap: 2px;
+          padding: 4px;
+        }
+        .page-nav .pg-add .lbl-txt {
+          display: none;
+        }
       }
       .workspace.bg-grid {
         background-image:
@@ -704,10 +842,18 @@
         width: 100%;
         height: 100%;
       }
+      /* The canvas only ever covers the visible viewport (so it never exceeds a
+         device's max-canvas size, even at 20 pages). It is pinned to the top of
+         the scrollport with position:sticky; strokes are stored in document
+         coordinates and re-rendered with a scroll offset. */
       #board {
-        position: absolute;
-        inset: 0;
+        position: sticky;
+        top: 0;
+        left: 0;
         z-index: 1;
+      }
+      body[data-draw="1"] #board {
+        touch-action: none;
       }
       #overlay {
         position: absolute;
@@ -749,6 +895,8 @@
         user-select: none;
         transform-origin: top left;
         will-change: transform;
+        /* Dragging an object must never be hijacked into a page scroll. */
+        touch-action: none;
       }
       .obj.sel .obj-inner {
         outline: 2px dashed var(--teal);
@@ -1444,12 +1592,24 @@
 
       /* ============================ Formula dock (bottom) ============================ */
       .dock {
+        position: relative;
         background: linear-gradient(180deg, #f5f8fc, #ffffff);
         border-top: 1px solid var(--line);
         box-shadow: 0 -3px 14px rgba(15, 23, 42, 0.05);
         z-index: 15;
         min-width: 0;
         overflow: hidden;
+      }
+      /* Slim accent rule along the top edge of the reference bank. */
+      .dock::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--teal), var(--teal-2, #2c7d6b));
+        opacity: 0.85;
       }
       .dock-head {
         display: flex;
@@ -1485,6 +1645,16 @@
         display: inline-flex;
         align-items: center;
         gap: 6px;
+        cursor: pointer;
+        transition:
+          border-color 0.12s,
+          background 0.12s,
+          box-shadow 0.12s;
+      }
+      .dock-toggle:hover {
+        border-color: var(--teal);
+        background: rgba(32, 95, 166, 0.06);
+        box-shadow: var(--shadow-sm);
       }
       .dock-tabs {
         display: flex;
@@ -2045,33 +2215,12 @@
         <!-- Flyout palette -->
         <section class="flyout" id="flyout" aria-label="Tool options"></section>
 
-        <!-- Workspace -->
+        <!-- Workspace (scrolls vertically across multiple whiteboard pages) -->
         <div class="workspace" id="workspace">
-          <div id="bgLayer" aria-hidden="true"></div>
-          <canvas id="board"></canvas>
-          <div id="overlay"></div>
-          <div class="empty-hint" id="emptyHint">
-            <div class="big">✏️➗📐</div>
-            <h2>Your math workspace</h2>
-            <p>
-              Pick a tool on the left to write, stamp numbers, set up problems,
-              and drop in shapes. Tap <b>Help</b> any time.
-            </p>
-            <p class="starter-lbl">Or start with one of these:</p>
-            <div class="starter-row" id="starterRow">
-              <button class="starter" data-starter="grid">
-                📈 Coordinate plane
-              </button>
-              <button class="starter" data-starter="numline">
-                📏 Number line
-              </button>
-              <button class="starter" data-starter="division">
-                ➗ Long division
-              </button>
-              <button class="starter" data-starter="fraction">
-                ½ Fraction
-              </button>
-            </div>
+          <div class="sheet" id="sheet">
+            <div id="bgLayer" aria-hidden="true"></div>
+            <canvas id="board"></canvas>
+            <div id="overlay"></div>
           </div>
         </div>
 
@@ -2106,6 +2255,34 @@
               <span class="sw coord"></span> Coordinate plane
             </button>
           </div>
+        </div>
+
+        <!-- Page navigator: scroll between pages and add more writing room -->
+        <div class="page-nav" id="pageNav" role="group" aria-label="Pages">
+          <button
+            class="pg-btn"
+            id="pageUpBtn"
+            title="Previous page"
+            aria-label="Scroll up one page"
+          >
+            ▲
+          </button>
+          <span class="page-ind" id="pageInd" aria-live="polite">1 / 1</span>
+          <button
+            class="pg-btn"
+            id="pageDownBtn"
+            title="Next page"
+            aria-label="Scroll down one page"
+          >
+            ▼
+          </button>
+          <button
+            class="pg-add"
+            id="addPageBtn"
+            title="Add another page (up to 20)"
+          >
+            <span aria-hidden="true">＋</span> Page
+          </button>
         </div>
       </div>
 
@@ -2216,6 +2393,7 @@
       const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 
       const workspace = $("#workspace");
+      const sheet = $("#sheet");
       const overlay = $("#overlay");
       const canvas = $("#board");
       const ctx = canvas.getContext("2d");
@@ -2242,10 +2420,13 @@
       ];
 
       const state = {
-        strokes: [], // { tool, color, size, pts:[{x,y}] }
-        objects: [], // see makeObject
+        strokes: [], // { tool, color, size, pts:[{x,y}] } — document coords
+        objects: [], // see makeObject — x,y are document coords
         bg: "blank", // blank | grid | graphfine | dot | lined
+        pages: 1, // number of stacked whiteboard pages (1..MAX_PAGES)
       };
+      const MAX_PAGES = 20;
+      let DPR = 1; // device-pixel ratio captured in sizeCanvas()
       let tool = "move";
       let penColor = PEN_COLORS[0];
       let hiColor = HI_COLORS[0];
@@ -2262,6 +2443,7 @@
           strokes: state.strokes,
           objects: state.objects,
           bg: state.bg,
+          pages: state.pages,
         });
       }
       function pushHistory() {
@@ -2298,8 +2480,10 @@
         state.strokes = Array.isArray(d.strokes) ? d.strokes : [];
         state.objects = Array.isArray(d.objects) ? d.objects : [];
         state.bg = typeof d.bg === "string" ? d.bg : "blank";
+        state.pages = clampPages(d.pages);
         seedUidFromObjects(state.objects);
         renderAll();
+        applySheet();
       }
       function flushPendingHistory() {
         // A debounced erase snapshot may be queued; commit it before any
@@ -2378,27 +2562,107 @@
 
       /* ----------------------- Canvas sizing ----------------------- */
       function sizeCanvas() {
-        const r = workspace.getBoundingClientRect();
-        const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
-        canvas.width = Math.round(r.width * dpr);
-        canvas.height = Math.round(r.height * dpr);
-        canvas.style.width = r.width + "px";
-        canvas.style.height = r.height + "px";
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        // The canvas only spans the visible viewport (never the full multi-page
+        // sheet) so it can never exceed a device's maximum canvas size.
+        const vw = workspace.clientWidth;
+        const vh = workspace.clientHeight;
+        DPR = Math.min(window.devicePixelRatio || 1, 2.5);
+        canvas.width = Math.round(vw * DPR);
+        canvas.height = Math.round(vh * DPR);
+        canvas.style.width = vw + "px";
+        canvas.style.height = vh + "px";
+        applySheet();
         renderCanvas();
         if (state.bg === "coord") buildCoordBg();
       }
       function renderCanvas() {
         // Clear by the canvas's own device-pixel size (fast, never triggers
-        // layout) instead of querying the workspace rect — this runs on every
-        // highlighter pointermove frame. Reset the transform just for the
-        // clear, then restore the DPR transform set in sizeCanvas().
+        // layout) — runs on every highlighter pointermove frame.
         ctx.save();
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.restore();
+        // Strokes are stored in document coordinates; shift by the scroll
+        // offset so the correct slice shows in the pinned viewport canvas.
+        const sy = workspace.scrollTop;
+        ctx.setTransform(DPR, 0, 0, DPR, 0, -sy * DPR);
         for (const st of state.strokes) drawStroke(st);
       }
+      /* ----------------------- Pages / vertical scroll ----------------------- */
+      function clampPages(n) {
+        n = Math.round(Number(n) || 1);
+        return Math.max(1, Math.min(MAX_PAGES, n));
+      }
+      function pageUnit() {
+        // One "page" is a screenful of board, so "Add page" adds one more
+        // scroll of writing room. Floor keeps short Chromebooks usable.
+        return Math.max(workspace.clientHeight || 480, 480);
+      }
+      // How far down the lowest ink / object reaches, in document pixels.
+      function contentBottom() {
+        let b = 0;
+        for (const st of state.strokes)
+          for (const p of st.pts) if (p.y > b) b = p.y;
+        for (const o of state.objects) if ((o.y || 0) + 120 > b) b = o.y + 120;
+        return b;
+      }
+      function sheetHeight() {
+        const unit = pageUnit();
+        let h = state.pages * unit;
+        const cb = contentBottom() + 100;
+        if (cb > h) h = cb;
+        return Math.round(h);
+      }
+      function applySheet() {
+        sheet.style.minHeight = sheetHeight() + "px";
+        updatePageNav();
+      }
+      // Grow the page count automatically if content (or scrolling) reaches the
+      // last page, so there is always a fresh page below to write on.
+      function growToFit() {
+        const unit = pageUnit();
+        const needed = clampPages(Math.ceil((contentBottom() + 40) / unit));
+        if (needed > state.pages) {
+          state.pages = needed;
+          applySheet();
+        }
+      }
+      function addPage() {
+        if (state.pages >= MAX_PAGES) {
+          showToast("That's the most pages (" + MAX_PAGES + ")");
+          return;
+        }
+        state.pages = clampPages(state.pages + 1);
+        applySheet();
+        pushHistory();
+        // Reveal the freshly added page.
+        workspace.scrollTo({
+          top: (state.pages - 1) * pageUnit(),
+          behavior: "smooth",
+        });
+        showToast("Page " + state.pages + " added");
+      }
+      function curPage() {
+        return Math.min(
+          state.pages,
+          Math.round(workspace.scrollTop / pageUnit()) + 1,
+        );
+      }
+      function updatePageNav() {
+        const ind = $("#pageInd");
+        if (ind) ind.textContent = curPage() + " / " + state.pages;
+        const add = $("#addPageBtn");
+        if (add) add.disabled = state.pages >= MAX_PAGES;
+      }
+      function scrollByPage(dir) {
+        workspace.scrollTo({
+          top: workspace.scrollTop + dir * pageUnit(),
+          behavior: "smooth",
+        });
+      }
+      $("#addPageBtn").addEventListener("click", addPage);
+      $("#pageUpBtn").addEventListener("click", () => scrollByPage(-1));
+      $("#pageDownBtn").addEventListener("click", () => scrollByPage(1));
       function drawStroke(st) {
         const pts = st.pts;
         if (!pts.length) return;
@@ -2422,8 +2686,28 @@
       /* ----------------------- Drawing interaction ----------------------- */
       let drawing = null;
       function ptFromRect(e, r) {
-        return { x: e.clientX - r.left, y: e.clientY - r.top };
+        // Convert a viewport point to document coordinates by adding the live
+        // scroll offset, so ink lands at the right depth on a scrolled page.
+        return {
+          x: e.clientX - r.left,
+          y: e.clientY - r.top + workspace.scrollTop,
+        };
       }
+      // Re-render the pinned canvas for the new scroll slice (rAF-throttled),
+      // auto-grow pages when the student scrolls to the bottom, refresh the nav.
+      let scrollRaf = 0;
+      workspace.addEventListener(
+        "scroll",
+        () => {
+          if (scrollRaf) return;
+          scrollRaf = requestAnimationFrame(() => {
+            scrollRaf = 0;
+            renderCanvas();
+            updatePageNav();
+          });
+        },
+        { passive: true },
+      );
       function localPt(e) {
         return ptFromRect(e, workspace.getBoundingClientRect());
       }
@@ -2479,6 +2763,7 @@
         if (!drawing) return;
         if (!drawing.erase && drawing.pts && drawing.pts.length) {
           state.strokes.push(drawing);
+          growToFit();
           pushHistory();
           updateEmpty();
         }
@@ -2523,13 +2808,21 @@
             id: nid(),
             type,
             x: Math.round(r.width / 2 - 40 + (Math.random() * 60 - 30)),
-            y: Math.round(r.height / 2 - 50 + (Math.random() * 50 - 25)),
+            // Drop new items into the middle of the page the student is
+            // currently looking at (document coords = scroll offset + view).
+            y: Math.round(
+              workspace.scrollTop +
+                r.height / 2 -
+                50 +
+                (Math.random() * 50 - 25),
+            ),
             scale: 1,
             color: null,
           },
           props || {},
         );
         state.objects.push(o);
+        growToFit();
         renderAll();
         selectObject(o.id);
         pushHistory();
@@ -2723,17 +3016,24 @@
           g += lab(cx + 6, cy - n * u + 4, n);
         }
         g += lab(cx + 6, cy + 15, "0");
+        // Lock the plane to the first screenful (explicit px size) so it is not
+        // stretched down the full multi-page sheet by the 100%-sized #bgLayer.
         bgLayer.innerHTML =
           '<svg viewBox="0 0 ' +
           w +
           " " +
           h +
-          '" preserveAspectRatio="none">' +
+          '" preserveAspectRatio="none" style="position:absolute;top:0;left:0;width:' +
+          w +
+          "px;height:" +
+          h +
+          'px">' +
           g +
           "</svg>";
       }
 
       function updateEmpty() {
+        if (!emptyHint) return;
         emptyHint.style.display =
           state.objects.length || state.strokes.length ? "none" : "block";
       }
@@ -4746,7 +5046,7 @@
           const r = workspace.getBoundingClientRect();
           const move = (ev) => {
             const cx = o.x + r.left;
-            const cy = o.y + r.top + 11;
+            const cy = o.y + r.top + 11 - workspace.scrollTop;
             const dx = ev.clientX - cx;
             const dy = ev.clientY - cy;
             o.len = Math.max(30, Math.round(Math.hypot(dx, dy)));
@@ -4860,8 +5160,13 @@
         if (DRAW_TOOLS.has(t)) deselect();
         // flyout
         const fb = btn && btn.dataset.flyout;
-        if (fb) openFlyout(fb, t);
-        else if (
+        if (fb) {
+          // Clicking the rail button whose flyout is already open closes it
+          // (toggle), so a tapped-open palette never gets stuck on screen.
+          if (flyout.classList.contains("open") && flyout.dataset.kind === fb)
+            closeFlyout();
+          else openFlyout(fb, t);
+        } else if (
           !["number", "operation", "setup", "shapes", "tools"].includes(t)
         )
           closeFlyout();
@@ -4883,9 +5188,22 @@
       const flyout = $("#flyout");
       function closeFlyout() {
         flyout.classList.remove("open");
+        flyout.dataset.kind = "";
+      }
+      // A persistent close (×) button so the palette can always be dismissed,
+      // even after stamping several tiles. Re-appended after each innerHTML set.
+      function addFlyoutClose() {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "flyout-close";
+        b.setAttribute("aria-label", "Close this panel");
+        b.textContent = "×";
+        b.addEventListener("click", closeFlyout);
+        flyout.appendChild(b);
       }
       function openFlyout(kind, t) {
         flyout.classList.add("open");
+        flyout.dataset.kind = kind;
         if (kind === "pen") {
           flyout.innerHTML = penFlyoutHTML(t);
           wirePenFlyout(t);
@@ -5194,6 +5512,7 @@
             grid2.appendChild(b);
           });
         }
+        addFlyoutClose();
       }
       const ANGLE_ICON =
         '<svg viewBox="0 0 90 70" width="84" height="64"><path d="M14 56 A40 40 0 0 1 40 24" fill="none" stroke="#d97706" stroke-width="2.5"/><line x1="14" y1="56" x2="82" y2="56" stroke="#205fa6" stroke-width="3"/><line x1="14" y1="56" x2="74" y2="22" stroke="#205fa6" stroke-width="3"/><circle cx="14" cy="56" r="3" fill="#14223a"/></svg>';
@@ -5332,9 +5651,11 @@
         });
       }
 
-      // close flyout when clicking workspace (but keep palette tools available)
-      workspace.addEventListener("pointerdown", () => {
-        if (["pen", "highlighter"].includes(tool)) return;
+      // Close the flyout palette when the student touches the board itself, so
+      // it never lingers over the workspace after a tile has been stamped.
+      workspace.addEventListener("pointerdown", (e) => {
+        if (flyout.classList.contains("open") && !e.target.closest("#flyout"))
+          closeFlyout();
       });
 
       /* ===================================================================
