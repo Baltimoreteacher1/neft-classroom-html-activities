@@ -43,6 +43,9 @@
           </div>
         </div>
         <div class="top-actions">
+          <button class="btn sm" data-act="open-command-bar" id="searchBtn" aria-label="Search and commands" title="Search and commands (Cmd+K)">
+            🔍 Search
+          </button>
           <span class="chip online" id="connChip" title="Connection status"
             ><span class="dot" aria-hidden="true"></span
             ><span id="connText">Online</span></span
@@ -175,6 +178,29 @@
       <div class="gbody" id="gBody"></div>
       <div class="gcountdown" id="gCountdown" aria-live="polite"></div>
       <div class="gactions" id="gActions"></div>
+    </div>
+
+    <!-- Command Bar Modal -->
+    <div
+      class="command-bar-back"
+      id="commandBarBack"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Command bar"
+      aria-hidden="true"
+    >
+      <div class="command-bar-modal">
+        <div class="cmd-head">
+          <input
+            type="text"
+            id="cmdInput"
+            placeholder="Search tasks, switch views, or type commands... (try /focus, /theme)"
+            autocomplete="off"
+          />
+          <button class="btn sm danger" data-act="close-command-bar" aria-label="Close">✕</button>
+        </div>
+        <div class="cmd-results" id="cmdResults"></div>
+      </div>
     </div>
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>

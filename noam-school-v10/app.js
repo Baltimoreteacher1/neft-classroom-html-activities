@@ -281,6 +281,7 @@
         morningBriefingTime: "07:15",
         leaveByTime: "",
         sync: { enabled: false, code: "", lastAt: "" },
+        themeGradient: "",
         // Google Calendar (read-only, client-side OAuth). Only the Web Client ID
         // is persisted — the access token lives in memory and is never stored.
         googleClientId: "",
@@ -315,6 +316,7 @@
       // { dateKey: true } — marks days the "did you write everything down?"
       // capture prompt was answered, so it only nudges once per day.
       captureLog: {},
+      reflections: {},
       updatedAt: Date.now(),
     };
   }
@@ -324,6 +326,7 @@
     if (!x || typeof x !== "object") return base;
     const s = { ...base.settings, ...(x.settings || {}) };
     s.sync = { ...base.settings.sync, ...(x.settings?.sync || {}) };
+    s.themeGradient = String(x.settings?.themeGradient || "");
     let order = Array.isArray(s.homeOrder)
       ? s.homeOrder
       : base.settings.homeOrder;
@@ -387,6 +390,7 @@
           ? { messages: x.gmail.messages, fetchedAt: x.gmail.fetchedAt || "" }
           : { messages: [], fetchedAt: "" },
       checkins: x.checkins && typeof x.checkins === "object" ? x.checkins : {},
+      reflections: x.reflections && typeof x.reflections === "object" ? x.reflections : {},
     };
   }
 
@@ -402,6 +406,7 @@
     return {
       id: c.id || uid("c"),
       name: String(c.name || "Class").slice(0, 60),
+      emoji: String(c.emoji || "📚").slice(0, 8),
       subject: String(c.subject || "").slice(0, 60),
       teacher: String(c.teacher || "").slice(0, 80),
       email: String(c.email || "").slice(0, 120),
@@ -514,6 +519,7 @@
   const cls = (id) =>
     state.classes.find((c) => c.id === id) || {
       name: "Class",
+      emoji: "📚",
       color: "#147c78",
     };
   const openTasks = () => state.assignments.filter((a) => a.status !== "done");
@@ -902,6 +908,288 @@
     });
   }
 
+  const GRADIENTS = [
+    ["", "Default Navy"],
+    ["linear-gradient(135deg, #0d324d, #7f5a83)", "Aurora Twilight"],
+    ["linear-gradient(135deg, #2b1055, #553c8b, #7597de)", "Cosmic Nebula"],
+    ["linear-gradient(135deg, #370617, #6a040f, #ffba08)", "Sunset Glow"],
+    ["linear-gradient(135deg, #134e5e, #71b280)", "Tropical Emerald"],
+  ];
+
+  function xpLevelCardHTML() {
+    const pts = state.points || 0;
+    const lvl = Math.floor(pts / 100) + 1;
+    const xpRemainder = pts % 100;
+    const title = lvl >= 10 ? "Focus Legend 👑" : lvl >= 6 ? "Focus Master 🧙‍♂️" : lvl >= 3 ? "Focus Knight 🛡️" : "Focus Padawan 🪴";
+    const r = 36;
+    const circ = 2 * Math.PI * r;
+    const offset = circ * (1 - xpRemainder / 100);
+    return `
+      <div class="xp-level-card">
+        <div class="xp-level-ring">
+          <svg width="90" height="90" viewBox="0 0 90 90">
+            <circle class="track" cx="45" cy="45" r="${r}" fill="none" stroke-width="8"></circle>
+            <circle class="prog" cx="45" cy="45" r="${r}" fill="none" stroke-width="8"
+              stroke-dasharray="${circ}" stroke-dashoffset="${offset}"></circle>
+          </svg>
+          <div class="xp-level-number">${lvl}</div>
+        </div>
+        <div class="xp-details">
+          <h4>XP Level ${lvl}</h4>
+          <div class="level-title">${title}</div>
+          <div class="points-bar-text">${xpRemainder} / 100 XP to next level · ${pts} total points</div>
+        </div>
+      </div>
+    `;
+  }
+
+  function weeklyFocusChartHTML() {
+    const days = [];
+    const focusMins = [];
+    const labels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const k = isoForOffset(-i);
+      const act = state.activity[k] || { focusMin: 0 };
+      days.push(labels[d.getDay()]);
+      focusMins.push(act.focusMin || 0);
+    }
+    const maxVal = Math.max(...focusMins, 15);
+    const chartHeight = 120;
+    const chartWidth = 320;
+    const barWidth = 24;
+    const gap = 16;
+    const barsHTML = focusMins.map((m, idx) => {
+      const barHeight = (m / maxVal) * 80;
+      const x = gap + idx * (barWidth + gap);
+      const y = 90 - barHeight;
+      return `
+        <g>
+          <rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" rx="4" fill="var(--teal)" opacity="0.85">
+            <title>${m} focus minutes</title>
+          </rect>
+          <text x="${x + barWidth / 2}" y="106" font-size="10" font-family="Plus Jakarta Sans" font-weight="700" fill="var(--muted)" text-anchor="middle">${days[idx]}</text>
+          ${m > 0 ? `<text x="${x + barWidth / 2}" y="${y - 6}" font-size="9" font-family="Plus Jakarta Sans" font-weight="800" fill="var(--ink)" text-anchor="middle">${m}m</text>` : ""}
+        </g>
+      `;
+    }).join("");
+    return `
+      <div class="chart-container">
+        <div class="chart-header">📊 Weekly Focus Studio (Minutes)</div>
+        <svg viewBox="0 0 ${chartWidth} ${chartHeight}" class="svg-chart">
+          <line x1="0" y1="92" x2="${chartWidth}" y2="92" stroke="var(--line)" stroke-width="1.5"></line>
+          ${barsHTML}
+        </svg>
+      </div>
+    `;
+  }
+
+  function reflectionCardHTML() {
+    const k = todayKey();
+    const existing = state.reflections[k];
+    if (existing) {
+      return card(
+        "reflection",
+        "📓 Today's Reflection",
+        "Great job checking out today!",
+        `<div class="note">
+          <p><b>Focus score:</b> ${existing.focus} / 5</p>
+          <p><b>Mood score:</b> ${existing.mood} / 5</p>
+          ${existing.text ? `<p><b>Gratitude/Notes:</b> ${esc(existing.text)}</p>` : ""}
+         </div>`
+      );
+    }
+    const focusVal = window._pendingReflectionFocus || 0;
+    const moodVal = window._pendingReflectionMood || 0;
+    const textVal = window._pendingReflectionText || "";
+    const ratingBtn = (field, val, active) => `
+      <button type="button" class="rating-btn" data-act="set-reflection-rating" data-arg="${field}:${val}" aria-pressed="${active}">
+        ${val}
+      </button>
+    `;
+    return card(
+      "reflection",
+      "📓 End-of-Day Check-out",
+      "Reflect on your focus and mood today.",
+      `
+      <div class="reflection-rating-row">
+        <span class="reflection-rating-label">Focus Rating (1-5):</span>
+        <div class="rating-buttons">
+          ${[1,2,3,4,5].map(v => ratingBtn("focus", v, focusVal === v)).join("")}
+        </div>
+      </div>
+      <div class="reflection-rating-row">
+        <span class="reflection-rating-label">Mood Rating (1-5):</span>
+        <div class="rating-buttons">
+          ${[1,2,3,4,5].map(v => ratingBtn("mood", v, moodVal === v)).join("")}
+        </div>
+      </div>
+      <div class="reflection-text-row">
+        <div class="field">
+          <label>One win or gratitude from today:</label>
+          <input type="text" id="reflectionTextInput" value="${esc(textVal)}" placeholder="Something I learned or did well..." oninput="window._pendingReflectionText = this.value">
+        </div>
+      </div>
+      <button class="btn primary block" data-act="save-reflection" style="margin-top:12px">
+        💾 Save check-out
+      </button>
+      `
+    );
+  }
+
+  function reflectionChartHTML() {
+    const dates = [];
+    const focusRatings = [];
+    const moodRatings = [];
+    const sortedDates = Object.keys(state.reflections || {}).sort().slice(-10);
+    if (sortedDates.length < 2) {
+      return `<div class="chart-container"><div class="chart-header">📈 Reflection Trends</div><div class="empty">🌱 Reflect for at least 2 days to see your trend graph!</div></div>`;
+    }
+    const chartHeight = 120;
+    const chartWidth = 320;
+    const padding = 20;
+    const pointsFocus = [];
+    const pointsMood = [];
+    sortedDates.forEach((k, idx) => {
+      const ref = state.reflections[k];
+      const x = padding + (idx * (chartWidth - 2 * padding)) / (sortedDates.length - 1);
+      const yFocus = 100 - (ref.focus - 1) * 20;
+      const yMood = 100 - (ref.mood - 1) * 20;
+      pointsFocus.push(`${x},${yFocus}`);
+      pointsMood.push(`${x},${yMood}`);
+    });
+    const focusPath = pointsFocus.join(" ");
+    const moodPath = pointsMood.join(" ");
+    const focusDots = pointsFocus.map((p, idx) => {
+      const [x, y] = p.split(",");
+      const rating = state.reflections[sortedDates[idx]].focus;
+      return `<circle cx="${x}" cy="${y}" r="4" fill="var(--teal)"><title>Focus: ${rating}/5</title></circle>`;
+    }).join("");
+    const moodDots = pointsMood.map((p, idx) => {
+      const [x, y] = p.split(",");
+      const rating = state.reflections[sortedDates[idx]].mood;
+      return `<circle cx="${x}" cy="${y}" r="4" fill="var(--amber)"><title>Mood: ${rating}/5</title></circle>`;
+    }).join("");
+    return `
+      <div class="chart-container">
+        <div class="chart-header">📈 Reflection Trends (Last ${sortedDates.length} days)</div>
+        <svg viewBox="0 0 ${chartWidth} ${chartHeight}" class="svg-chart">
+          <line x1="${padding}" y1="20" x2="${chartWidth - padding}" y2="20" stroke="var(--line)" stroke-dasharray="2,2"></line>
+          <line x1="${padding}" y1="60" x2="${chartWidth - padding}" y2="60" stroke="var(--line)" stroke-dasharray="2,2"></line>
+          <line x1="${padding}" y1="100" x2="${chartWidth - padding}" y2="100" stroke="var(--line)" stroke-dasharray="2,2"></line>
+          <polyline fill="none" stroke="var(--teal)" stroke-width="3" points="${focusPath}"></polyline>
+          <polyline fill="none" stroke="var(--amber)" stroke-width="2.5" stroke-dasharray="4,2" points="${moodPath}"></polyline>
+          ${focusDots}
+          ${moodDots}
+        </svg>
+        <div class="row" style="justify-content:center;gap:12px;font-size:0.75rem;font-weight:700;margin-top:8px">
+          <span style="color:var(--teal)">● Focus Rating</span>
+          <span style="color:var(--amber)">● Mood Rating</span>
+        </div>
+      </div>
+    `;
+  }
+
+  window._cmdSelectedIndex = 0;
+  window._cmdItems = [];
+
+  function openCommandBar() {
+    const modal = document.getElementById("commandBarBack");
+    if (!modal) return;
+    modal.classList.add("open");
+    const input = document.getElementById("cmdInput");
+    if (input) {
+      input.value = "";
+      input.focus();
+    }
+    renderCommandBarResults("");
+  }
+
+  function closeCommandBar() {
+    const modal = document.getElementById("commandBarBack");
+    if (modal) modal.classList.remove("open");
+  }
+
+  function renderCommandBarResults(query) {
+    query = (query || "").trim().toLowerCase();
+    const resultsContainer = document.getElementById("cmdResults");
+    if (!resultsContainer) return;
+    const items = [];
+    const navs = [
+      { title: "🎯 Go to Now (Home)", act: "nav", arg: "home", badge: "nav" },
+      { title: "📅 Go to Today", act: "nav", arg: "today", badge: "nav" },
+      { title: "✅ Go to Tasks", act: "nav", arg: "tasks", badge: "nav" },
+      { title: "📆 Go to Calendar", act: "nav", arg: "calendar", badge: "nav" },
+      { title: "🔁 Go to Routines", act: "nav", arg: "routines", badge: "nav" },
+      { title: "🏆 Go to Wins & Stats", act: "nav", arg: "wins", badge: "nav" },
+      { title: "⚙️ Go to Settings", act: "nav", arg: "settings", badge: "nav" },
+      { title: "☁️ Go to Backup & Sync", act: "nav", arg: "sync", badge: "nav" },
+    ];
+    const controls = [
+      { title: "⏱️ Toggle Focus Session", act: "focus-toggle", badge: "cmd" },
+      { title: "🎨 Cycle Theme Colors", act: "theme-cycle", badge: "cmd" },
+      { title: "🌧️ Play Gentle Rain", act: "focus-sound", arg: "rain", badge: "audio" },
+      { title: "🔥 Play Cozy Rumble", act: "focus-sound", arg: "rumble", badge: "audio" },
+      { title: "⏱️ Play Focus Ticks", act: "focus-sound", arg: "ticks", badge: "audio" },
+      { title: "🔇 Silence Background Sounds", act: "focus-sound", arg: "none", badge: "audio" },
+    ];
+    navs.concat(controls).forEach(item => {
+      if (!query || item.title.toLowerCase().includes(query) || item.arg?.includes(query)) {
+        items.push(item);
+      }
+    });
+    state.assignments.forEach(a => {
+      if (a.status !== "done" && (!query || a.title.toLowerCase().includes(query))) {
+        items.push({
+          title: `Focus: ${a.title}`,
+          act: "focus-start-task",
+          arg: a.id,
+          badge: "task"
+        });
+      }
+    });
+    window._cmdItems = items;
+    window._cmdSelectedIndex = Math.min(window._cmdSelectedIndex, items.length - 1);
+    if (window._cmdSelectedIndex < 0) window._cmdSelectedIndex = 0;
+    resultsContainer.innerHTML = items.map((item, idx) => {
+      const isSel = idx === window._cmdSelectedIndex;
+      return `
+        <div class="cmd-item ${isSel ? "selected" : ""}" data-idx="${idx}" data-act="cmd-trigger">
+          <span class="cmd-title">${esc(item.title)}</span>
+          <span class="cmd-badge">${item.badge}</span>
+        </div>
+      `;
+    }).join("");
+  }
+
+  function triggerCommandItem(item) {
+    closeCommandBar();
+    if (item.act === "nav") {
+      setView(item.arg);
+    } else if (item.act === "focus-toggle") {
+      if ($("#focusOverlay").classList.contains("open")) {
+        focus.stop();
+      } else {
+        const next = rightNowTask();
+        if (next) focus.start(next.id);
+        else toast("No assignments to focus on!");
+      }
+    } else if (item.act === "theme-cycle") {
+      const themes = ["light", "dark", "contrast"];
+      const nextIdx = (themes.indexOf(state.settings.theme) + 1) % themes.length;
+      state.settings.theme = themes[nextIdx];
+      save();
+      applyAppearance();
+      render();
+    } else if (item.act === "focus-sound") {
+      ACTIONS["focus-sound"](null, item.arg);
+      toast(`Background sound: ${item.arg}`);
+    } else if (item.act === "focus-start-task") {
+      focus.start(item.arg);
+    }
+  }
+
   function applyAppearance() {
     const s = state.settings;
     const root = document.documentElement;
@@ -910,6 +1198,11 @@
     root.dataset.motion = s.motion;
     root.dataset.accent = s.accent;
     root.style.setProperty("--font-scale", s.fontScale);
+    if (s.themeGradient) {
+      root.style.setProperty("--theme-gradient", s.themeGradient);
+    } else {
+      root.style.removeProperty("--theme-gradient");
+    }
     // Light theme only: re-tint the teal accent. Dark/contrast keep their tuned
     // palettes so contrast stays AA.
     const acc = ACCENTS.find((a) => a[0] === s.accent);
@@ -995,7 +1288,7 @@
       <div class="now-task">
         <div class="now-title">${esc(t.title)}</div>
         <div class="now-meta">
-          <span class="tag" style="background:${esc(c.color)}55">${esc(c.name)}</span>
+          <span class="tag" style="background:${esc(c.color)}55">${c.emoji || "📚"} ${esc(c.name)}</span>
           <span class="tag" ${overdueB ? 'style="background:#b3000f"' : daysUntil(t.due) === 0 ? 'style="background:#7a4d0a"' : ""}>${esc(dueLabel(t.due, t.dueTime))}</span>
           ${t.estimateMin ? `<span class="tag">~${t.estimateMin} min</span>` : ""}
           ${t.steps.length ? `<span class="tag">${pct}% done</span>` : ""}
@@ -1072,7 +1365,7 @@
             <p class="meta">${dueIcon(n)} ${esc(dueLabel(a.due, a.dueTime))}${a.estimateMin ? " · ~" + a.estimateMin + " min" : ""}${a.steps.length ? " · " + pct + "%" : ""}</p>
           </div>
           <div class="row">
-            ${showClass ? `<span class="pill" style="background:${esc(c.color)}1f;color:var(--ink)"><span class="dot" style="background:${esc(c.color)};width:9px;height:9px;border-radius:50%;display:inline-block"></span>${esc(c.name)}</span>` : ""}
+            ${showClass ? `<span class="pill" style="background:${esc(c.color)}1f;color:var(--ink)"><span style="margin-right:4px">${c.emoji || "📚"}</span>${esc(c.name)}</span>` : ""}
             ${priPill(a.priority)}
           </div>
         </div>
@@ -1186,7 +1479,7 @@
             ? dayItems
                 .map((a) => {
                   const c = cls(a.classId);
-                  return `<div class="item"><div class="head"><div><h4>${esc(a.title)}</h4><p class="meta">${esc(dueLabel(a.due, a.dueTime))} · ${esc(c.name)}</p></div><div class="row"><button class="btn primary sm" data-act="complete" data-id="${a.id}">✓ Done</button></div></div></div>`;
+                  return `<div class="item"><div class="head"><div><h4>${esc(a.title)}</h4><p class="meta">${esc(dueLabel(a.due, a.dueTime))} · ${c.emoji || "📚"} ${esc(c.name)}</p></div><div class="row"><button class="btn primary sm" data-act="complete" data-id="${a.id}">✓ Done</button></div></div></div>`;
                 })
                 .join("")
             : dayGcal.length
@@ -1275,7 +1568,7 @@
             const n = daysUntil(a.due);
             const stateCls =
               n !== null && n < 0 ? "overdue" : n === 0 ? "today-due" : "";
-            return `<div class="item ${stateCls}"><div class="head"><div><h4>${esc(a.title)}</h4><p class="meta">${dueIcon(n)} ${esc(dueLabel(a.due, a.dueTime))} · ${esc(c.name)}</p></div><div class="row"><button class="btn primary sm" data-act="complete" data-id="${a.id}">✓ Done</button><button class="btn sm" data-act="open-task" data-id="${a.id}" aria-label="Edit ${esc(a.title)}">✏️</button></div></div></div>`;
+            return `<div class="item ${stateCls}"><div class="head"><div><h4>${esc(a.title)}</h4><p class="meta">${dueIcon(n)} ${esc(dueLabel(a.due, a.dueTime))} · ${c.emoji || "📚"} ${esc(c.name)}</p></div><div class="row"><button class="btn primary sm" data-act="complete" data-id="${a.id}">✓ Done</button><button class="btn sm" data-act="open-task" data-id="${a.id}" aria-label="Edit ${esc(a.title)}">✏️</button></div></div></div>`;
           })
           .join("")
       : emptyState("🎉", "No assignments due. You're caught up!");
@@ -1390,7 +1683,7 @@
       const order = state.settings.homeOrder.filter(
         (k) => !state.settings.hiddenCards.includes(k),
       );
-      return `${checkinBanner()}${captureBanner()}<div class="home-grid">${order.map((k) => map[k] || "").join("")}</div>`;
+      return `${checkinBanner()}${captureBanner()}<div class="home-grid">${order.map((k) => map[k] || "").join("")}</div>${reflectionCardHTML()}`;
     },
 
     calendar() {
@@ -1616,7 +1909,7 @@
           c.room,
           c.teacher,
         ].filter(Boolean);
-        return `<div class="item" style="border-left:4px solid ${esc(c.color)}"><div class="head"><div><h4><span class="dot" style="background:${esc(c.color)};width:11px;height:11px;border-radius:50%;display:inline-block;margin-right:6px"></span>${esc(c.name)}</h4><p class="meta">${meta.length ? esc(meta.join(" · ")) : "Tap Edit to add details"}${open ? ` · ${open} open task${open === 1 ? "" : "s"}` : ""}</p></div></div><div class="row">
+        return `<div class="item" style="border-left:4px solid ${esc(c.color)}"><div class="head"><div><h4><span style="margin-right:6px">${c.emoji || "📚"}</span>${esc(c.name)}</h4><p class="meta">${meta.length ? esc(meta.join(" · ")) : "Tap Edit to add details"}${open ? ` · ${open} open task${open === 1 ? "" : "s"}` : ""}</p></div></div><div class="row">
                 <button class="btn sm" data-act="edit-class" data-id="${c.id}">Edit</button>
                 ${c.email ? `<a class="btn sm navy" target="_blank" rel="noopener" href="${gmailCompose(c.email, "Question for " + c.name, "Hi,\n\nI had a question about...\n\nThank you,\n" + state.settings.studentName)}">✉️ Email</a>` : ""}
               </div></div>`;
@@ -1665,7 +1958,7 @@
       return (
         backHeader("Email a teacher", "more") +
         `<div class="grid g2"><section class="card"><h3>Write an email</h3><p class="sub">This opens Gmail in your browser (not Apple Mail).</p>
-          <div class="field"><label>To which class / teacher</label><select id="eClass">${state.classes.map((c) => `<option value="${c.id}">${esc(c.name)}${c.teacher ? " — " + esc(c.teacher) : ""}</option>`).join("")}</select></div>
+          <div class="field"><label>To which class / teacher</label><select id="eClass">${state.classes.map((c) => `<option value="${c.id}">${c.emoji || "📚"} ${esc(c.name)}${c.teacher ? " — " + esc(c.teacher) : ""}</option>`).join("")}</select></div>
           <div class="field"><label>Subject</label><input id="eSub" value="Question about class"></div>
           <div class="field"><label>Message</label><textarea id="eBody">Hi,
 
@@ -1708,7 +2001,9 @@ Due May 31"></textarea>
       const recent = [...state.wins].slice(-30).reverse();
       return (
         backHeader("My wins", "more") +
-        momentumCard() +
+        xpLevelCardHTML() +
+        weeklyFocusChartHTML() +
+        reflectionChartHTML() +
         card(
           "addwin",
           "Add a win",
@@ -1731,6 +2026,15 @@ Due May 31"></textarea>
           "Set it up the way that's easiest for you.",
           `
           <div class="field"><label>Color theme</label><div class="seg">${themeBtn("light", "☀️ Light")}${themeBtn("dark", "🌙 Dark")}${themeBtn("contrast", "⬛ High contrast")}</div></div>
+          <div class="field"><label>Gradient Background Preset</label>
+            <div class="theme-gradient-grid">
+              ${GRADIENTS.map(g => `
+                <div class="theme-gradient-swatch" data-act="set-gradient-theme" data-arg="${esc(g[0])}" aria-pressed="${state.settings.themeGradient === g[0]}" style="background: ${g[0] || "linear-gradient(180deg, var(--bg-2), var(--bg))"}">
+                  <b>${esc(g[1])}</b>
+                </div>
+              `).join("")}
+            </div>
+          </div>
           <div class="field"><label>Accent color${s.theme === "light" ? "" : " (Light theme only)"}</label><div class="accent-row" role="group" aria-label="Accent color">${ACCENTS.map(
             (a) =>
               `<button class="accent-swatch" data-act="set-accent" data-arg="${a[0]}" aria-pressed="${s.accent === a[0]}" aria-label="${a[1]}" title="${a[1]}" style="background:${a[2]}"></button>`,
@@ -2036,7 +2340,7 @@ Due May 31"></textarea>
       <p class="sub">Write it down before you forget. You can add details later.</p>
       <div class="field"><label>What is it?</label><input id="qaTitle" placeholder="Math worksheet p. 42" autocomplete="off"></div>
       <div class="field"><label>Which class?</label><select id="qaClass">${state.classes
-        .map((c) => `<option value="${c.id}">${esc(c.name)}</option>`)
+        .map((c) => `<option value="${c.id}">${c.emoji || "📚"} ${esc(c.name)}</option>`)
         .join("")}</select></div>
       <div class="field"><label>When is it due?</label>
         <div class="seg" id="qaDueSeg">${pick(isoForOffset(0), "Today")}${pick(isoForOffset(1), "Tomorrow")}${pick("custom", "Pick a date")}${pick("", "Not sure")}</div>
@@ -2052,7 +2356,7 @@ Due May 31"></textarea>
     return `
       <div class="field"><label>What is it?</label><input id="tTitle" value="${esc(a.title || "")}" placeholder="Math worksheet p. 42"></div>
       <div class="g2 grid">
-        <div class="field"><label>Class</label><select id="tClass">${state.classes.map((c) => `<option value="${c.id}" ${a.classId === c.id ? "selected" : ""}>${esc(c.name)}</option>`).join("")}</select></div>
+        <div class="field"><label>Class</label><select id="tClass">${state.classes.map((c) => `<option value="${c.id}" ${a.classId === c.id ? "selected" : ""}>${c.emoji || "📚"} ${esc(c.name)}</option>`).join("")}</select></div>
         <div class="field"><label>Priority</label><select id="tPri"><option value="low" ${a.priority === "low" ? "selected" : ""}>Low</option><option value="med" ${!a.priority || a.priority === "med" ? "selected" : ""}>Medium</option><option value="high" ${a.priority === "high" ? "selected" : ""}>High</option></select></div>
       </div>
       <div class="g2 grid">
@@ -2089,7 +2393,10 @@ Due May 31"></textarea>
     c = c || {};
     const days = Array.isArray(c.meetDays) ? c.meetDays : [];
     return `
-      <div class="field"><label>Class name</label><input id="cName" value="${esc(c.name || "")}" placeholder="Math"></div>
+      <div class="g2 grid">
+        <div class="field"><label>Class name</label><input id="cName" value="${esc(c.name || "")}" placeholder="Math"></div>
+        <div class="field"><label>Emoji Icon (optional)</label><input id="cEmoji" value="${esc(c.emoji || "📚")}" placeholder="📐"></div>
+      </div>
       <div class="g2 grid">
         <div class="field"><label>Subject (optional)</label><input id="cSubject" value="${esc(c.subject || "")}" placeholder="Mathematics"></div>
         <div class="field"><label>Room (optional)</label><input id="cRoom" value="${esc(c.room || "")}" placeholder="Room 214"></div>
@@ -3588,6 +3895,7 @@ Due May 31"></textarea>
       const c = normalizeClass({
         id: id || uid("c"),
         name: $("#cName").value.trim() || "Class",
+        emoji: $("#cEmoji") ? $("#cEmoji").value.trim() : "📚",
         subject: $("#cSubject").value.trim(),
         room: $("#cRoom").value.trim(),
         period: $("#cPeriod").value.trim(),
@@ -4160,6 +4468,51 @@ ${name}`;
     },
 
     "close-modal": () => closeModal(),
+    "set-reflection-rating": (_, arg) => {
+      const [field, val] = arg.split(":");
+      if (field === "focus") window._pendingReflectionFocus = Number(val);
+      if (field === "mood") window._pendingReflectionMood = Number(val);
+      render();
+    },
+    "save-reflection": () => {
+      const focusVal = window._pendingReflectionFocus || 0;
+      const moodVal = window._pendingReflectionMood || 0;
+      const textVal = document.getElementById("reflectionTextInput")?.value || "";
+      if (focusVal === 0 || moodVal === 0) {
+        toast("Please select a score for focus and mood!");
+        return;
+      }
+      state.reflections[todayKey()] = {
+        focus: focusVal,
+        mood: moodVal,
+        text: textVal,
+        timestamp: new Date().toISOString()
+      };
+      state.points += 5;
+      save();
+      window._pendingReflectionFocus = 0;
+      window._pendingReflectionMood = 0;
+      window._pendingReflectionText = "";
+      triggerConfetti();
+      render();
+      toast("Check-out saved! +5 points 📓");
+    },
+    "set-gradient-theme": (_, arg) => {
+      state.settings.themeGradient = arg;
+      save();
+      applyAppearance();
+      render();
+    },
+    "open-command-bar": () => openCommandBar(),
+    "close-command-bar": () => closeCommandBar(),
+    "cmd-trigger": (id, arg, ev) => {
+      const btn = ev.target.closest("[data-idx]");
+      if (btn) {
+        const idx = Number(btn.dataset.idx);
+        const selected = window._cmdItems[idx];
+        if (selected) triggerCommandItem(selected);
+      }
+    },
   };
 
   // ---------------------------------------------------------------------------
@@ -4330,6 +4683,54 @@ ${name}`;
     window.addEventListener("online", setConn);
     window.addEventListener("offline", setConn);
     setConn();
+
+    // Global keyboard listeners for Command Bar
+    window.addEventListener("keydown", (ev) => {
+      const modal = document.getElementById("commandBarBack");
+      const isOpen = modal && modal.classList.contains("open");
+
+      if ((ev.metaKey || ev.ctrlKey) && ev.key.toLowerCase() === "k") {
+        ev.preventDefault();
+        if (isOpen) closeCommandBar();
+        else openCommandBar();
+        return;
+      }
+
+      if (ev.key === "/" && !isOpen && document.activeElement.tagName !== "INPUT" && document.activeElement.tagName !== "TEXTAREA") {
+        ev.preventDefault();
+        openCommandBar();
+        return;
+      }
+
+      if (!isOpen) return;
+
+      if (ev.key === "Escape") {
+        ev.preventDefault();
+        closeCommandBar();
+      } else if (ev.key === "ArrowDown") {
+        ev.preventDefault();
+        window._cmdSelectedIndex = (window._cmdSelectedIndex + 1) % window._cmdItems.length;
+        renderCommandBarResults(document.getElementById("cmdInput")?.value);
+      } else if (ev.key === "ArrowUp") {
+        ev.preventDefault();
+        window._cmdSelectedIndex = (window._cmdSelectedIndex - 1 + window._cmdItems.length) % window._cmdItems.length;
+        renderCommandBarResults(document.getElementById("cmdInput")?.value);
+      } else if (ev.key === "Enter") {
+        ev.preventDefault();
+        const selected = window._cmdItems[window._cmdSelectedIndex];
+        if (selected) {
+          triggerCommandItem(selected);
+        }
+      }
+    });
+
+    // Wire cmdInput input handler
+    document.addEventListener("input", (ev) => {
+      if (ev.target.id === "cmdInput") {
+        window._cmdSelectedIndex = 0;
+        renderCommandBarResults(ev.target.value);
+      }
+    });
   }
 
   function updateProgressBars() {
