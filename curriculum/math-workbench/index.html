@@ -842,14 +842,13 @@
         width: 100%;
         height: 100%;
       }
-      /* The canvas only ever covers the visible viewport (so it never exceeds a
-         device's max-canvas size, even at 20 pages). It is pinned to the top of
-         the scrollport with position:sticky; strokes are stored in document
-         coordinates and re-rendered with a scroll offset. */
+      /* The canvas fills the whole multi-page sheet and scrolls natively with
+         the paper, ink, and objects — so there is no scroll-sync math and a
+         stroke can never split or drift. Device size is capped in sizeCanvas()
+         so it stays within the browser's maximum canvas dimensions. */
       #board {
-        position: sticky;
-        top: 0;
-        left: 0;
+        position: absolute;
+        inset: 0;
         z-index: 1;
       }
       body[data-draw="1"] #board {
@@ -2561,17 +2560,22 @@
       }
 
       /* ----------------------- Canvas sizing ----------------------- */
+      // Safe across Chrome / Firefox / Safari / iOS (all allow >= 16384px).
+      const MAX_CANVAS_PX = 16384;
       function sizeCanvas() {
-        // The canvas only spans the visible viewport (never the full multi-page
-        // sheet) so it can never exceed a device's maximum canvas size.
-        const vw = workspace.clientWidth;
-        const vh = workspace.clientHeight;
-        DPR = Math.min(window.devicePixelRatio || 1, 2.5);
-        canvas.width = Math.round(vw * DPR);
-        canvas.height = Math.round(vh * DPR);
-        canvas.style.width = vw + "px";
-        canvas.style.height = vh + "px";
-        applySheet();
+        // The canvas spans the FULL multi-page sheet and scrolls natively with
+        // everything else — so strokes never split or drift. Device dimensions
+        // are capped so a very tall sheet stays within the browser's limit.
+        const cssW = workspace.clientWidth;
+        const cssH = sheetHeight();
+        let dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+        const longest = Math.max(cssW, cssH);
+        if (longest * dpr > MAX_CANVAS_PX) dpr = MAX_CANVAS_PX / longest;
+        DPR = dpr;
+        canvas.width = Math.round(cssW * dpr);
+        canvas.height = Math.round(cssH * dpr);
+        canvas.style.width = cssW + "px";
+        canvas.style.height = cssH + "px";
         renderCanvas();
         if (state.bg === "coord") buildCoordBg();
       }
@@ -2582,10 +2586,9 @@
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.restore();
-        // Strokes are stored in document coordinates; shift by the scroll
-        // offset so the correct slice shows in the pinned viewport canvas.
-        const sy = workspace.scrollTop;
-        ctx.setTransform(DPR, 0, 0, DPR, 0, -sy * DPR);
+        // Strokes are in document coordinates and the canvas fills the sheet
+        // 1:1, so no scroll offset is needed.
+        ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
         for (const st of state.strokes) drawStroke(st);
       }
       /* ----------------------- Pages / vertical scroll ----------------------- */
@@ -2615,6 +2618,8 @@
       }
       function applySheet() {
         sheet.style.minHeight = sheetHeight() + "px";
+        // Resize the canvas to match the (possibly taller) sheet and repaint.
+        sizeCanvas();
         updatePageNav();
       }
       // Grow the page count automatically if content (or scrolling) reaches the
@@ -2693,8 +2698,9 @@
           y: e.clientY - r.top + workspace.scrollTop,
         };
       }
-      // Re-render the pinned canvas for the new scroll slice (rAF-throttled),
-      // auto-grow pages when the student scrolls to the bottom, refresh the nav.
+      // The canvas, paper, ink, and objects all live in the sheet and scroll
+      // together natively — nothing to repaint on scroll, just keep the page
+      // indicator current (rAF-throttled).
       let scrollRaf = 0;
       workspace.addEventListener(
         "scroll",
@@ -2702,7 +2708,6 @@
           if (scrollRaf) return;
           scrollRaf = requestAnimationFrame(() => {
             scrollRaf = 0;
-            renderCanvas();
             updatePageNav();
           });
         },
@@ -6587,9 +6592,9 @@
         try {
           localStorage.setItem("neft.mathWorkbench.dockOpen", open ? "1" : "0");
         } catch (e) {}
-        // Recompute canvas size — the workspace just grew/shrank.
+        // Recompute sheet + canvas size — the workspace just grew/shrank.
         clearTimeout(rsz);
-        rsz = setTimeout(sizeCanvas, 210);
+        rsz = setTimeout(applySheet, 210);
       });
 
       /* ----------------------- Top-bar actions ----------------------- */
@@ -6724,7 +6729,7 @@
       let rsz;
       window.addEventListener("resize", () => {
         clearTimeout(rsz);
-        rsz = setTimeout(sizeCanvas, 120);
+        rsz = setTimeout(applySheet, 120);
       });
 
       function setupAccessibility() {
@@ -6780,7 +6785,7 @@
         dock.classList.toggle("open", dockOpen);
         setDockToggle(dockOpen);
         const had = restore();
-        sizeCanvas();
+        applySheet();
         if (!had) {
           renderAll();
         }
