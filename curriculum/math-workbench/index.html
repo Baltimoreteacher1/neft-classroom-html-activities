@@ -582,87 +582,96 @@
         width: 100%;
         min-height: 100%;
       }
-      /* Floating page navigator (bottom-right of the board) */
-      .page-nav {
+      /* Page tabs — a vertical strip on the right edge. Each tab is its own
+         whiteboard page; the page beneath scrolls vertically on its own. */
+      .page-tabs {
         position: absolute;
-        right: 16px;
-        bottom: 16px;
-        z-index: 14;
+        right: 0;
+        top: 84px;
+        bottom: 18px;
+        z-index: 16;
         display: flex;
-        align-items: center;
-        gap: 4px;
-        padding: 5px;
-        background: rgba(255, 255, 255, 0.96);
-        border: 1px solid var(--line);
-        border-radius: 999px;
-        box-shadow: var(--shadow-lg);
-        backdrop-filter: blur(6px);
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 7px;
+        pointer-events: none;
       }
-      .page-nav .pg-btn {
-        width: 34px;
-        height: 34px;
-        border: none;
-        background: transparent;
-        border-radius: 50%;
-        color: var(--teal);
-        font-size: 0.92rem;
+      .page-tabs-list {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        max-height: 100%;
+        padding: 2px 0;
+        pointer-events: auto;
+        scrollbar-width: none;
+      }
+      .page-tabs-list::-webkit-scrollbar {
+        display: none;
+      }
+      .page-tab {
+        flex: none;
+        width: 42px;
+        height: 42px;
+        border: 1px solid var(--line);
+        border-right: none;
+        border-radius: 12px 0 0 12px;
+        background: #fff;
+        box-shadow: var(--shadow-sm);
+        color: var(--muted);
         font-weight: 800;
+        font-size: 0.95rem;
+        font-variant-numeric: tabular-nums;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: background 0.12s;
-      }
-      .page-nav .pg-btn:hover {
-        background: rgba(32, 95, 166, 0.1);
-      }
-      .page-nav .page-ind {
-        min-width: 46px;
-        text-align: center;
-        font-size: 0.78rem;
-        font-weight: 800;
-        color: var(--ink);
-        font-variant-numeric: tabular-nums;
-        user-select: none;
-      }
-      .page-nav .pg-add {
-        height: 34px;
-        padding: 0 14px;
-        border: none;
-        border-radius: 999px;
-        background: var(--teal);
-        color: #fff;
-        font-weight: 800;
-        font-size: 0.8rem;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 3px;
         transition:
-          filter 0.12s,
-          transform 0.08s;
+          background 0.12s,
+          color 0.12s,
+          border-color 0.12s,
+          width 0.12s;
       }
-      .page-nav .pg-add:hover {
-        filter: brightness(1.06);
+      .page-tab:hover {
+        color: var(--teal);
+        border-color: var(--teal);
+        width: 48px;
       }
-      .page-nav .pg-add:active {
-        transform: scale(0.96);
+      .page-tab.active {
+        background: var(--teal);
+        border-color: var(--teal);
+        color: #fff;
+        width: 48px;
       }
-      .page-nav .pg-add:disabled {
-        background: #c2cede;
+      .page-tab-add {
+        flex: none;
+        pointer-events: auto;
+        width: 42px;
+        height: 42px;
+        border: 1px dashed #b9c8dc;
+        border-right: none;
+        border-radius: 12px 0 0 12px;
+        background: #f5f8fc;
+        color: var(--teal);
+        font-size: 1.35rem;
+        font-weight: 800;
+        line-height: 1;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+          background 0.12s,
+          width 0.12s;
+      }
+      .page-tab-add:hover {
+        background: rgba(32, 95, 166, 0.1);
+        width: 48px;
+      }
+      .page-tab-add:disabled {
+        opacity: 0.4;
         cursor: not-allowed;
-        filter: none;
-      }
-      @media (max-width: 620px) {
-        .page-nav {
-          right: 10px;
-          bottom: 10px;
-          gap: 2px;
-          padding: 4px;
-        }
-        .page-nav .pg-add .lbl-txt {
-          display: none;
-        }
       }
       .workspace.bg-grid {
         background-image:
@@ -2256,31 +2265,22 @@
           </div>
         </div>
 
-        <!-- Page navigator: scroll between pages and add more writing room -->
-        <div class="page-nav" id="pageNav" role="group" aria-label="Pages">
+        <!-- Page tabs (right side): each page is its own whiteboard surface -->
+        <div
+          class="page-tabs"
+          id="pageTabs"
+          role="tablist"
+          aria-label="Whiteboard pages"
+          aria-orientation="vertical"
+        >
+          <div class="page-tabs-list" id="pageTabsList"></div>
           <button
-            class="pg-btn"
-            id="pageUpBtn"
-            title="Previous page"
-            aria-label="Scroll up one page"
-          >
-            ▲
-          </button>
-          <span class="page-ind" id="pageInd" aria-live="polite">1 / 1</span>
-          <button
-            class="pg-btn"
-            id="pageDownBtn"
-            title="Next page"
-            aria-label="Scroll down one page"
-          >
-            ▼
-          </button>
-          <button
-            class="pg-add"
+            class="page-tab-add"
             id="addPageBtn"
-            title="Add another page (up to 20)"
+            title="Add a new page (up to 20)"
+            aria-label="Add a new page"
           >
-            <span aria-hidden="true">＋</span> Page
+            ＋
           </button>
         </div>
       </div>
@@ -2418,13 +2418,19 @@
         "#c4b5fd",
       ];
 
-      const state = {
+      // `state` is the ACTIVE page; the notebook holds every page (tab). All
+      // drawing/object code reads `state`, so switching tabs is just a reassign.
+      let state = {
         strokes: [], // { tool, color, size, pts:[{x,y}] } — document coords
         objects: [], // see makeObject — x,y are document coords
         bg: "blank", // blank | grid | graphfine | dot | lined
-        pages: 1, // number of stacked whiteboard pages (1..MAX_PAGES)
+        pages: 3, // vertical screens of writing room on this page
+        scroll: 0, // remembered scroll position of this page
       };
-      const MAX_PAGES = 20;
+      const notebook = { boards: [state], active: 0 };
+      const MAX_TABS = 20; // number of page tabs
+      const MAX_VPAGES = 30; // vertical screens a single page can grow to
+      const DEFAULT_VPAGES = 3; // starting vertical room on a fresh page
       let DPR = 1; // device-pixel ratio captured in sizeCanvas()
       let tool = "move";
       let penColor = PEN_COLORS[0];
@@ -2518,10 +2524,63 @@
       /* ----------------------- Persistence ----------------------- */
       const LS_KEY = "neft.mathWorkbench.v1";
       let saveTimer = null;
+      function boardData(b) {
+        return {
+          strokes: b.strokes,
+          objects: b.objects,
+          bg: b.bg,
+          pages: b.pages,
+          scroll: b.scroll || 0,
+        };
+      }
+      function notebookSnapshot() {
+        // Keep the active page's scroll current before serializing.
+        notebook.boards[notebook.active].scroll = workspace.scrollTop;
+        return JSON.stringify({
+          v: 2,
+          active: notebook.active,
+          boards: notebook.boards.map(boardData),
+        });
+      }
+      function coerceBoard(d) {
+        d = d && typeof d === "object" ? d : {};
+        return {
+          strokes: Array.isArray(d.strokes) ? d.strokes : [],
+          objects: Array.isArray(d.objects) ? d.objects : [],
+          bg: typeof d.bg === "string" ? d.bg : "blank",
+          pages: clampPages(d.pages),
+          scroll: Number(d.scroll) || 0,
+        };
+      }
+      // Load a saved notebook; transparently upgrades the old single-page format.
+      function loadNotebook(raw) {
+        let d;
+        try {
+          d = JSON.parse(raw);
+        } catch (e) {
+          d = null;
+        }
+        if (!d || typeof d !== "object") d = {};
+        const boards =
+          Array.isArray(d.boards) && d.boards.length
+            ? d.boards.map(coerceBoard)
+            : [coerceBoard(d)]; // old format: the whole object was one page
+        notebook.boards = boards;
+        notebook.active = Math.min(
+          Math.max(0, d.active | 0),
+          boards.length - 1,
+        );
+        state = notebook.boards[notebook.active];
+        for (const b of boards) seedUidFromObjects(b.objects);
+        renderAll();
+        applySheet();
+        renderTabs();
+        workspace.scrollTop = state.scroll || 0;
+      }
       function writeNow() {
         const pill = $("#savePill");
         try {
-          localStorage.setItem(LS_KEY, snapshot());
+          localStorage.setItem(LS_KEY, notebookSnapshot());
           if (pill) pill.textContent = "Saved";
           return true;
         } catch (e) {
@@ -2552,7 +2611,7 @@
         try {
           const raw = localStorage.getItem(LS_KEY);
           if (raw) {
-            applySnap(raw);
+            loadNotebook(raw);
             return true;
           }
         } catch (e) {}
@@ -2591,14 +2650,14 @@
         ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
         for (const st of state.strokes) drawStroke(st);
       }
-      /* ----------------------- Pages / vertical scroll ----------------------- */
+      /* --------------- Pages (tabs) + per-page vertical scroll --------------- */
       function clampPages(n) {
-        n = Math.round(Number(n) || 1);
-        return Math.max(1, Math.min(MAX_PAGES, n));
+        n = Math.round(Number(n) || DEFAULT_VPAGES);
+        return Math.max(1, Math.min(MAX_VPAGES, n));
       }
       function pageUnit() {
-        // One "page" is a screenful of board, so "Add page" adds one more
-        // scroll of writing room. Floor keeps short Chromebooks usable.
+        // One vertical "screen" of writing room. Floor keeps short Chromebooks
+        // usable.
         return Math.max(workspace.clientHeight || 480, 480);
       }
       // How far down the lowest ink / object reaches, in document pixels.
@@ -2618,12 +2677,11 @@
       }
       function applySheet() {
         sheet.style.minHeight = sheetHeight() + "px";
-        // Resize the canvas to match the (possibly taller) sheet and repaint.
+        // Resize the canvas to match the (possibly taller) page and repaint.
         sizeCanvas();
-        updatePageNav();
       }
-      // Grow the page count automatically if content (or scrolling) reaches the
-      // last page, so there is always a fresh page below to write on.
+      // Extend this page's vertical room when content reaches the bottom, so a
+      // page keeps scrolling further down as the student writes.
       function growToFit() {
         const unit = pageUnit();
         const needed = clampPages(Math.ceil((contentBottom() + 40) / unit));
@@ -2632,42 +2690,88 @@
           applySheet();
         }
       }
-      function addPage() {
-        if (state.pages >= MAX_PAGES) {
-          showToast("That's the most pages (" + MAX_PAGES + ")");
+      // Endless feel: when the student scrolls near the bottom, add another
+      // screen of room (up to MAX_VPAGES).
+      function growOnScroll() {
+        if (
+          workspace.scrollTop + workspace.clientHeight >= sheetHeight() - 90 &&
+          state.pages < MAX_VPAGES
+        ) {
+          state.pages++;
+          applySheet();
+          persist();
+        }
+      }
+
+      /* --------------- Notebook: each page (tab) is its own board ----------- */
+      function blankBoard() {
+        return {
+          strokes: [],
+          objects: [],
+          bg: "blank",
+          pages: DEFAULT_VPAGES,
+          scroll: 0,
+        };
+      }
+      function renderTabs() {
+        const list = $("#pageTabsList");
+        if (!list) return;
+        list.innerHTML = "";
+        notebook.boards.forEach((b, i) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "page-tab" + (i === notebook.active ? " active" : "");
+          btn.textContent = i + 1;
+          btn.title = "Go to page " + (i + 1);
+          btn.setAttribute("role", "tab");
+          btn.setAttribute(
+            "aria-selected",
+            i === notebook.active ? "true" : "false",
+          );
+          btn.addEventListener("click", () => switchBoard(i));
+          list.appendChild(btn);
+        });
+        const add = $("#addPageBtn");
+        if (add) add.disabled = notebook.boards.length >= MAX_TABS;
+        // Keep the active tab visible if the strip overflows.
+        const activeEl = list.children[notebook.active];
+        if (activeEl && activeEl.scrollIntoView)
+          activeEl.scrollIntoView({ block: "nearest" });
+      }
+      function switchBoard(i) {
+        if (i < 0 || i >= notebook.boards.length || i === notebook.active) {
+          renderTabs();
           return;
         }
-        state.pages = clampPages(state.pages + 1);
+        flushPendingHistory();
+        // Remember where we were on the page we are leaving.
+        notebook.boards[notebook.active].scroll = workspace.scrollTop;
+        notebook.active = i;
+        state = notebook.boards[i];
+        selectedId = null;
+        seedUidFromObjects(state.objects);
+        renderAll();
         applySheet();
-        pushHistory();
-        // Reveal the freshly added page.
-        workspace.scrollTo({
-          top: (state.pages - 1) * pageUnit(),
-          behavior: "smooth",
-        });
-        showToast("Page " + state.pages + " added");
+        // Each page keeps its own undo history; start a fresh baseline.
+        history.length = 0;
+        hpos = -1;
+        history.push(snapshot());
+        hpos = 0;
+        updateUndoButtons();
+        workspace.scrollTop = state.scroll || 0;
+        renderTabs();
+        persist();
       }
-      function curPage() {
-        return Math.min(
-          state.pages,
-          Math.round(workspace.scrollTop / pageUnit()) + 1,
-        );
+      function addBoard() {
+        if (notebook.boards.length >= MAX_TABS) {
+          showToast("That's the most pages (" + MAX_TABS + ")");
+          return;
+        }
+        notebook.boards.push(blankBoard());
+        switchBoard(notebook.boards.length - 1);
+        showToast("Page " + notebook.boards.length + " added");
       }
-      function updatePageNav() {
-        const ind = $("#pageInd");
-        if (ind) ind.textContent = curPage() + " / " + state.pages;
-        const add = $("#addPageBtn");
-        if (add) add.disabled = state.pages >= MAX_PAGES;
-      }
-      function scrollByPage(dir) {
-        workspace.scrollTo({
-          top: workspace.scrollTop + dir * pageUnit(),
-          behavior: "smooth",
-        });
-      }
-      $("#addPageBtn").addEventListener("click", addPage);
-      $("#pageUpBtn").addEventListener("click", () => scrollByPage(-1));
-      $("#pageDownBtn").addEventListener("click", () => scrollByPage(1));
+      $("#addPageBtn").addEventListener("click", addBoard);
       function drawStroke(st) {
         const pts = st.pts;
         if (!pts.length) return;
@@ -2698,9 +2802,9 @@
           y: e.clientY - r.top + workspace.scrollTop,
         };
       }
-      // The canvas, paper, ink, and objects all live in the sheet and scroll
-      // together natively — nothing to repaint on scroll, just keep the page
-      // indicator current (rAF-throttled).
+      // Canvas, paper, ink, and objects all live in the sheet and scroll
+      // together natively — nothing to repaint. Just extend the page when the
+      // student reaches the bottom (rAF-throttled) for an endless feel.
       let scrollRaf = 0;
       workspace.addEventListener(
         "scroll",
@@ -2708,7 +2812,7 @@
           if (scrollRaf) return;
           scrollRaf = requestAnimationFrame(() => {
             scrollRaf = 0;
-            updatePageNav();
+            growOnScroll();
           });
         },
         { passive: true },
@@ -6471,7 +6575,7 @@
       // The reference bank is an accordion: each category is a card that drops
       // down to reveal its formulas. renderTabs is kept as a no-op hook so the
       // existing call sites still work.
-      function renderTabs() {
+      function hideDockTabs() {
         dockTabs.style.display = "none";
       }
       function buildFormulaCard(t, it) {
@@ -6634,8 +6738,11 @@
         ) {
           state.objects = [];
           state.strokes = [];
+          state.pages = DEFAULT_VPAGES;
           selectedId = null;
           renderAll();
+          applySheet();
+          workspace.scrollTop = 0;
           pushHistory();
         }
       });
@@ -6772,6 +6879,7 @@
       }
       function init() {
         document.body.dataset.level = currentLevel;
+        hideDockTabs();
         renderTabs();
         renderFormulas();
         setupAccessibility();
