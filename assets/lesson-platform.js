@@ -66,11 +66,18 @@
       css: "ai-tutor.css",
       global: "NeftTutor",
     },
+    {
+      name: "focus",
+      js: "lesson-focus.js",
+      css: "lesson-focus.css",
+      global: "NTFocus",
+    },
   ];
 
   function logWarn(msg, err) {
     try {
-      if (window.console && console.warn) console.warn("[lesson-platform] " + msg, err || "");
+      if (window.console && console.warn)
+        console.warn("[lesson-platform] " + msg, err || "");
     } catch (e) {
       /* ignore */
     }
@@ -131,12 +138,17 @@
     return new Promise(function (resolve) {
       try {
         var src = BASE + file;
-        if (hasScript(file) || (window.__ntlpScriptsAdded && window.__ntlpScriptsAdded[file])) {
+        if (
+          hasScript(file) ||
+          (window.__ntlpScriptsAdded && window.__ntlpScriptsAdded[file])
+        ) {
           resolve(true);
           return;
         }
         var head =
-          document.head || document.getElementsByTagName("head")[0] || document.documentElement;
+          document.head ||
+          document.getElementsByTagName("head")[0] ||
+          document.documentElement;
         if (!head) {
           resolve(false);
           return;
