@@ -119,10 +119,16 @@ function handleFile(file) {
     return;
   }
 
-  const out = html.replace(
-    /<\/body>/i,
-    `  ${BEGIN}\n  ${SCRIPT_TAG}\n  ${END}\n</body>`,
-  );
+  // Inject before the LAST </body> — the document's real body close. Pages with
+  // a print/report generator embed a literal "</body>" inside a JS template
+  // string; injecting at the first match would land inside that string and the
+  // injected </script> would terminate the page's main inline script early.
+  const bodies = [...html.matchAll(/<\/body>/gi)];
+  const at = bodies[bodies.length - 1].index;
+  const out =
+    html.slice(0, at) +
+    `${BEGIN}\n  ${SCRIPT_TAG}\n  ${END}\n  ` +
+    html.slice(at);
   if (!DRY) writeFileSync(file, out);
   report.injected++;
 }
