@@ -45,14 +45,61 @@
     a.target = "_blank";
     a.rel = "noopener";
     a.setAttribute("aria-label", "Open the Math Workbench in a new tab");
-    a.setAttribute(
-      "title",
-      "Math Workbench — scratch space (opens in a new tab)",
-    );
+    a.setAttribute("title", "Math Workbench — scratch space (opens in a new tab)");
     a.innerHTML =
       '<span class="mwb-star" aria-hidden="true">✱</span>' +
       '<span class="mwb-label">Math Workbench</span>';
     document.body.appendChild(a);
+
+    // Some pages mount a fixed, full-width bottom action bar (e.g. the
+    // nt-page-enhance "Save as PDF/DOC" bar, .nt-pe-bar) at a higher z-index.
+    // That bar would cover and click-block the lower-left launcher. Detect any
+    // such fixed bottom-anchored full-width bar and lift the launcher clear of
+    // it so it stays visible and clickable. Re-check after load since bars may
+    // mount asynchronously. Launcher CSS only — no page/content changes.
+    avoidBottomBar(a);
+    if (document.readyState !== "complete") {
+      window.addEventListener("load", function () {
+        avoidBottomBar(a);
+      });
+    }
+    window.addEventListener("resize", function () {
+      avoidBottomBar(a);
+    });
+  }
+
+  // Measure the tallest fixed element pinned to the bottom edge that spans
+  // most of the viewport width and would overlap the launcher, then offset the
+  // launcher above it (plus a small gap). Falls back to the default position.
+  function avoidBottomBar(a) {
+    var base = 12; // matches the default bottom offset
+    var clearance = base;
+    try {
+      var nodes = document.body.querySelectorAll("*");
+      for (var i = 0; i < nodes.length; i++) {
+        var el = nodes[i];
+        if (el === a || el.id === "mwb-launcher") continue;
+        var cs = getComputedStyle(el);
+        if (cs.position !== "fixed") continue;
+        if (cs.display === "none" || cs.visibility === "hidden") continue;
+        if (cs.pointerEvents === "none") continue;
+        var b = el.getBoundingClientRect();
+        if (b.height === 0 || b.width === 0) continue;
+        // Anchored to the bottom edge and spanning most of the width.
+        var atBottom = window.innerHeight - b.bottom <= 2;
+        var fullWidth = b.width >= window.innerWidth * 0.6;
+        if (!atBottom || !fullWidth) continue;
+        // Only react to bars that stack above the launcher.
+        var z = parseInt(cs.zIndex, 10);
+        if (isNaN(z) || z < 2147483000) continue;
+        var need = Math.round(b.height) + 10;
+        if (need > clearance) clearance = need;
+      }
+    } catch (e) {
+      /* defensive: keep default position on any failure */
+    }
+    a.style.bottom =
+      clearance > base ? "calc(" + clearance + "px + env(safe-area-inset-bottom))" : "";
   }
 
   if (document.readyState === "loading") {
