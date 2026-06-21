@@ -54,6 +54,8 @@
   </head>
   <body>
     <div id="game-container"></div>
+    <!-- games-2d metadata source of truth (window.Games2DData) -->
+    <script src="/assets/games2d-data.js"></script>
     <script>
       // ============================================================
       //  COORDINATE TREASURE HUNT — 6.NS.C.6
@@ -63,6 +65,14 @@
       const W = 800,
         H = 600;
       const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+      // Metadata source of truth: window.Games2DData (from scripts/games2d/data.mjs
+      // via assets/games2d-data.js). The vocab-gate art (drawn pictures) stays
+      // inline; the term + definition TEXT is pulled from the SoT when present so
+      // teachers edit copy in one place. Inline values below act as a fallback.
+      const GAME_ID = "6-ns-c-6game";
+      const GAME_DATA =
+        (window.Games2DData && window.Games2DData[GAME_ID]) || {};
 
       function synth(f, d, t = "square", v = 0.1) {
         try {
@@ -182,6 +192,19 @@
               },
             },
           ];
+
+          // Overlay term + definition text from the source of truth (data.mjs),
+          // keeping the inline drawn picture for each card. Falls back to inline
+          // copy if the artifact is missing or has fewer entries.
+          const sotVocab = (GAME_DATA && GAME_DATA.vocab) || [];
+          this.terms.forEach((card, i) => {
+            const src = sotVocab[i];
+            if (src) {
+              card.term = src.term || card.term;
+              card.def = src.defn || src.def || card.def;
+            }
+          });
+
           this.idx = 0;
           this.renderCard();
         }
@@ -609,919 +632,934 @@
       // ============================================================
       // GAME
       // ============================================================
-class GameScene extends Phaser.Scene {
-  constructor() {
-    super("Game");
-  }
+      class GameScene extends Phaser.Scene {
+        constructor() {
+          super("Game");
+        }
 
-  init(data) {
-    this.shipTint = data.shipTint || 0x8b5cf6;
-    this.level = data.level || 1;
-    this.score = 0;
-    this.lives = 3;
-    this.combo = 0;
-    this.maxCombo = 0;
-    this.qCorrect = 0;
-    this.qTotal = 0;
-    this.canMove = true;
-    this.gridRange = 6; // -6 to 6
-    this.cellSize = 40;
-    this.shipGridX = 0;
-    this.shipGridY = 0;
-    this.moveDelay = 0;
-    // How many missions (treasures) this voyage.
-    this.totalMissions = 3 + Math.min(this.level - 1, 3);
-    this.missionsDone = 0;
-    this.missionLocked = false; // true while showing result of a drop
-  }
+        init(data) {
+          this.shipTint = data.shipTint || 0x8b5cf6;
+          this.level = data.level || 1;
+          this.score = 0;
+          this.lives = 3;
+          this.combo = 0;
+          this.maxCombo = 0;
+          this.qCorrect = 0;
+          this.qTotal = 0;
+          this.canMove = true;
+          this.gridRange = 6; // -6 to 6
+          this.cellSize = 40;
+          this.shipGridX = 0;
+          this.shipGridY = 0;
+          this.moveDelay = 0;
+          // How many missions (treasures) this voyage.
+          this.totalMissions = 3 + Math.min(this.level - 1, 3);
+          this.missionsDone = 0;
+          this.missionLocked = false; // true while showing result of a drop
+        }
 
-  create() {
-    if (audioCtx.state === "suspended") audioCtx.resume();
-    this.cameras.main.setBackgroundColor("#051225");
+        create() {
+          if (audioCtx.state === "suspended") audioCtx.resume();
+          this.cameras.main.setBackgroundColor("#051225");
 
-    const range = this.gridRange;
-    const cs = this.cellSize;
-    const ox = W / 2; // origin screen x
-    const oy = H / 2 + 20; // origin screen y (room for prompt at top)
+          const range = this.gridRange;
+          const cs = this.cellSize;
+          const ox = W / 2; // origin screen x
+          const oy = H / 2 + 20; // origin screen y (room for prompt at top)
 
-    this.ox = ox;
-    this.oy = oy;
-    this.cs = cs;
-    this.range = range;
+          this.ox = ox;
+          this.oy = oy;
+          this.cs = cs;
+          this.range = range;
 
-    // Ocean background
-    for (let gx = -range; gx <= range; gx++) {
-      for (let gy = -range; gy <= range; gy++) {
-        const sx = ox + gx * cs;
-        const sy = oy - gy * cs;
-        this.add.image(sx, sy, "water").setAlpha(0.3);
+          // Ocean background
+          for (let gx = -range; gx <= range; gx++) {
+            for (let gy = -range; gy <= range; gy++) {
+              const sx = ox + gx * cs;
+              const sy = oy - gy * cs;
+              this.add.image(sx, sy, "water").setAlpha(0.3);
+            }
+          }
+
+          this.drawGrid();
+
+          // Quadrant labels (faint, for orientation — they do NOT reveal answers)
+          const qlSize = "20px";
+          const qlAlpha = 0.18;
+          const half = (range * cs) / 2;
+          this.add
+            .text(ox + half, oy - half, "I", {
+              fontSize: qlSize,
+              color: "#4ade80",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setAlpha(qlAlpha);
+          this.add
+            .text(ox - half, oy - half, "II", {
+              fontSize: qlSize,
+              color: "#38bdf8",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setAlpha(qlAlpha);
+          this.add
+            .text(ox - half, oy + half, "III", {
+              fontSize: qlSize,
+              color: "#fbbf24",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setAlpha(qlAlpha);
+          this.add
+            .text(ox + half, oy + half, "IV", {
+              fontSize: qlSize,
+              color: "#c084fc",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setAlpha(qlAlpha);
+
+          // Marker (used by reflection missions — the point to transform)
+          this.marker = this.add
+            .image(ox, oy, "map_pin")
+            .setScale(2)
+            .setDepth(6)
+            .setVisible(false);
+          this.markerLabel = this.add
+            .text(ox, oy - 18, "", {
+              fontSize: "12px",
+              color: "#fca5a5",
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 3,
+            })
+            .setOrigin(0.5)
+            .setDepth(7)
+            .setVisible(false);
+
+          // Decorative coins (bonus collectibles — navigation reward only)
+          this.coins = [];
+          this.placeCoins();
+
+          // Ship
+          this.ship = this.add
+            .image(ox, oy, "ship")
+            .setScale(2.2)
+            .setTint(this.shipTint)
+            .setDepth(10);
+
+          // Coordinate label following ship — this is the ONLY readout, it shows
+          // where the SHIP is, never where the target is.
+          this.coordLabel = this.add
+            .text(ox, oy + 24, "(0, 0)", {
+              fontSize: "14px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 3,
+            })
+            .setOrigin(0.5)
+            .setDepth(11);
+
+          this.createHUD();
+
+          this.cursors = this.input.keyboard.createCursorKeys();
+          this.wasd = this.input.keyboard.addKeys("W,A,S,D");
+          this.spaceKey = this.input.keyboard.addKey(
+            Phaser.Input.Keyboard.KeyCodes.SPACE,
+          );
+          this.spaceKey.on("down", () => this.dropAnchor());
+
+          this.createTouchControls();
+          this.createAnchorButton();
+
+          // Build all missions for this voyage, then start the first.
+          this.buildMissions();
+          this.showLevelIntro();
+
+          this.cameras.main.fadeIn(500);
+        }
+
+        drawGrid() {
+          const g = this.add.graphics();
+          const { ox, oy, cs, range } = this;
+
+          g.lineStyle(1, 0x38bdf8, 0.08);
+          for (let i = -range; i <= range; i++) {
+            g.moveTo(ox + i * cs, oy - range * cs);
+            g.lineTo(ox + i * cs, oy + range * cs);
+            g.moveTo(ox - range * cs, oy + i * cs);
+            g.lineTo(ox + range * cs, oy + i * cs);
+          }
+          g.strokePath();
+
+          g.lineStyle(2, 0x38bdf8, 0.4);
+          g.moveTo(ox - range * cs, oy);
+          g.lineTo(ox + range * cs, oy);
+          g.moveTo(ox, oy - range * cs);
+          g.lineTo(ox, oy + range * cs);
+          g.strokePath();
+
+          for (let i = -range; i <= range; i++) {
+            if (i === 0) continue;
+            this.add
+              .text(ox + i * cs, oy + 6, `${i}`, {
+                fontSize: "10px",
+                color: "#64748b",
+              })
+              .setOrigin(0.5, 0);
+            this.add
+              .text(ox - 14, oy - i * cs, `${i}`, {
+                fontSize: "10px",
+                color: "#64748b",
+              })
+              .setOrigin(0.5);
+          }
+          this.add.text(ox - 10, oy + 6, "0", {
+            fontSize: "11px",
+            color: "#fbbf24",
+          });
+          this.add
+            .text(ox + range * cs + 6, oy, "x", {
+              fontSize: "13px",
+              color: "#38bdf8",
+              fontStyle: "bold",
+            })
+            .setOrigin(0, 0.5);
+          this.add
+            .text(ox, oy - range * cs - 12, "y", {
+              fontSize: "13px",
+              color: "#38bdf8",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+        }
+
+        placeCoins() {
+          const count = 4 + this.level;
+          const used = new Set(["0,0"]);
+          for (let i = 0; i < count; i++) {
+            let gx,
+              gy,
+              tries = 0;
+            do {
+              gx = Phaser.Math.Between(-this.range + 1, this.range - 1);
+              gy = Phaser.Math.Between(-this.range + 1, this.range - 1);
+              tries++;
+            } while (used.has(`${gx},${gy}`) && tries < 30);
+            used.add(`${gx},${gy}`);
+            const sx = this.ox + gx * this.cs;
+            const sy = this.oy - gy * this.cs;
+            const c = this.add
+              .image(sx, sy, "coin")
+              .setScale(1.4)
+              .setDepth(4)
+              .setAlpha(0.85);
+            this.tweens.add({
+              targets: c,
+              y: sy - 4,
+              duration: 500 + i * 80,
+              yoyo: true,
+              repeat: -1,
+              ease: "Sine.InOut",
+            });
+            this.coins.push({ gx, gy, sprite: c, collected: false });
+          }
+        }
+
+        // ----------------------------------------------------------------
+        // MISSION GENERATION — MATH IS THE MECHANIC.
+        // The prompt asks the student to REASON about a coordinate; it never
+        // states the target screen position and there are no answer options.
+        // Each mission validates the ship's grid cell, so wrong math places the
+        // ship in the wrong place = a visible miss.
+        // ----------------------------------------------------------------
+        buildMissions() {
+          this.missions = [];
+          const R = this.range - 1; // keep targets off the very edge
+          const nz = (lo, hi) => {
+            // random int in [lo,hi] excluding 0
+            let v;
+            do {
+              v = Phaser.Math.Between(lo, hi);
+            } while (v === 0);
+            return v;
+          };
+          const quadName = ["I", "II", "III", "IV"];
+
+          const makers = [
+            // 0) Quadrant — any cell in the named quadrant is correct.
+            () => {
+              const qi = Phaser.Math.Between(0, 3);
+              const sx = qi === 0 || qi === 3 ? 1 : -1;
+              const sy = qi === 0 || qi === 1 ? 1 : -1;
+              return {
+                prompt: `Sail to ANY point in Quadrant ${quadName[qi]}, then drop anchor.`,
+                hint: "Quadrant I = (+x, +y), II = (-x, +y), III = (-x, -y), IV = (+x, -y).",
+                test: (x, y) => Math.sign(x) === sx && Math.sign(y) === sy,
+              };
+            },
+            // 1) Ordered pair from a worded description (must compute x and y).
+            () => {
+              const x = nz(-R, R);
+              const y = nz(-R, R);
+              const xPhrase =
+                x < 0
+                  ? `${Math.abs(x)} to the LEFT of 0`
+                  : `${x} to the RIGHT of 0`;
+              const yPhrase =
+                y < 0 ? `${Math.abs(y)} DOWN from 0` : `${y} UP from 0`;
+              return {
+                prompt: `Sail to the point that is ${xPhrase} and ${yPhrase}.`,
+                hint: "Left = negative x, right = positive x. Up = positive y, down = negative y.",
+                test: (gx, gy) => gx === x && gy === y,
+              };
+            },
+            // 2) Reflection across the x-axis (marker shown, target = (a, -b)).
+            () => {
+              const a = nz(-R, R);
+              const b = nz(-R, R);
+              return {
+                marker: { gx: a, gy: b },
+                prompt: `Sail to the REFLECTION of the marked point across the x-axis.`,
+                hint: "Reflecting across the x-axis keeps x the same and flips the sign of y.",
+                test: (gx, gy) => gx === a && gy === -b,
+              };
+            },
+            // 3) Reflection across the y-axis (marker shown, target = (-a, b)).
+            () => {
+              const a = nz(-R, R);
+              const b = nz(-R, R);
+              return {
+                marker: { gx: a, gy: b },
+                prompt: `Sail to the REFLECTION of the marked point across the y-axis.`,
+                hint: "Reflecting across the y-axis keeps y the same and flips the sign of x.",
+                test: (gx, gy) => gx === -a && gy === b,
+              };
+            },
+            // 4) Opposite of both coordinates (marker shown, target = (-a,-b)).
+            () => {
+              const a = nz(-R, R);
+              const b = nz(-R, R);
+              return {
+                marker: { gx: a, gy: b },
+                prompt: `Sail to the point whose coordinates are the OPPOSITES of the marked point's.`,
+                hint: "The opposite of a number flips its sign: opposite of 3 is -3, opposite of -5 is 5.",
+                test: (gx, gy) => gx === -a && gy === -b,
+              };
+            },
+            // 5) Distance from origin — any cell with |x|+|y| = d is correct.
+            () => {
+              const d = Phaser.Math.Between(3, Math.min(R + 2, 8));
+              return {
+                prompt: `Sail to ANY point that is exactly ${d} steps from the center (count |x| + |y|), then drop anchor.`,
+                hint: "Steps = the distance along x plus the distance along y, ignoring signs.",
+                test: (gx, gy) =>
+                  Math.abs(gx) + Math.abs(gy) === d && (gx !== 0 || gy !== 0),
+              };
+            },
+          ];
+
+          // Early levels favor the simpler mission types.
+          const pool =
+            this.level === 1
+              ? [0, 1, 5]
+              : this.level === 2
+                ? [0, 1, 2, 3, 5]
+                : [0, 1, 2, 3, 4, 5];
+
+          for (let i = 0; i < this.totalMissions; i++) {
+            const type = Phaser.Utils.Array.GetRandom(pool);
+            this.missions.push(makers[type]());
+          }
+        }
+
+        startMission() {
+          if (this.missionsDone >= this.missions.length) {
+            this.levelComplete();
+            return;
+          }
+          const m = this.missions[this.missionsDone];
+          this.activeMission = m;
+
+          // Show/hide the reference marker.
+          if (m.marker) {
+            const sx = this.ox + m.marker.gx * this.cs;
+            const sy = this.oy - m.marker.gy * this.cs;
+            this.marker.setPosition(sx, sy).setVisible(true);
+            this.markerLabel
+              .setText(`marked point (${m.marker.gx}, ${m.marker.gy})`)
+              .setPosition(sx, sy - 20)
+              .setVisible(true);
+          } else {
+            this.marker.setVisible(false);
+            this.markerLabel.setVisible(false);
+          }
+
+          this.promptText.setText(m.prompt);
+          this.hintText.setText("");
+          this.missionLabel.setText(
+            `Mission ${this.missionsDone + 1} of ${this.missions.length}`,
+          );
+          this.missionLocked = false;
+          this.canMove = true;
+        }
+
+        // ----------------------------------------------------------------
+        // DROP ANCHOR — the win condition. The student decides WHERE the math
+        // says to go, then commits. No options, no announced coordinates.
+        // ----------------------------------------------------------------
+        dropAnchor() {
+          if (!this.canMove || this.missionLocked || !this.activeMission)
+            return;
+          this.missionLocked = true;
+          this.canMove = false;
+          this.qTotal++;
+
+          const x = this.shipGridX;
+          const y = this.shipGridY;
+          const ok = this.activeMission.test(x, y);
+
+          if (ok) {
+            this.qCorrect++;
+            this.missionsDone++;
+            this.combo++;
+            if (this.combo > this.maxCombo) this.maxCombo = this.combo;
+            const pts = 200 * this.combo;
+            this.score += pts;
+            sndTreasure();
+            this.showTreasureAt(x, y, pts);
+          } else {
+            this.combo = 0;
+            this.lives--;
+            sndWrong();
+            this.showMiss(x, y);
+          }
+          this.updateHUD();
+        }
+
+        showTreasureAt(x, y, pts) {
+          const sx = this.ox + x * this.cs;
+          const sy = this.oy - y * this.cs;
+
+          const chest = this.add
+            .image(sx, sy, "treasure")
+            .setScale(0.5)
+            .setDepth(20);
+          this.tweens.add({
+            targets: chest,
+            scale: 3,
+            duration: 350,
+            ease: "Back.Out",
+          });
+          this.add
+            .particles(sx, sy, "particle", {
+              speed: { min: 60, max: 200 },
+              scale: { start: 1.6, end: 0 },
+              lifespan: 700,
+              quantity: 18,
+              tint: 0xfbbf24,
+              emitting: false,
+            })
+            .explode(18);
+
+          const fb = this.add
+            .text(sx, sy - 40, `Treasure! +${pts}`, {
+              fontSize: "20px",
+              color: "#4ade80",
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 4,
+            })
+            .setOrigin(0.5)
+            .setDepth(21);
+          this.tweens.add({
+            targets: fb,
+            y: fb.y - 30,
+            alpha: 0,
+            duration: 1400,
+            onComplete: () => fb.destroy(),
+          });
+
+          if (window.GameFX && GameFX.successBurst) {
+            try {
+              GameFX.successBurst();
+            } catch (e) {}
+          }
+
+          this.time.delayedCall(1500, () => {
+            chest.destroy();
+            if (this.lives <= 0) {
+              this.endGame();
+              return;
+            }
+            this.startMission();
+          });
+        }
+
+        showMiss(x, y) {
+          const sx = this.ox + x * this.cs;
+          const sy = this.oy - y * this.cs;
+          this.cameras.main.shake(220, 0.008);
+
+          // Visible miss: a red splash X on the wrong cell.
+          const miss = this.add.graphics().setDepth(20);
+          miss.lineStyle(4, 0xf87171, 1);
+          miss.lineBetween(sx - 14, sy - 14, sx + 14, sy + 14);
+          miss.lineBetween(sx + 14, sy - 14, sx - 14, sy + 14);
+          const ring = this.add.circle(sx, sy, 6, 0xf87171, 0.4).setDepth(19);
+          this.tweens.add({ targets: ring, scale: 4, alpha: 0, duration: 600 });
+
+          const fb = this.add
+            .text(sx, sy - 38, "Splash! Not here.", {
+              fontSize: "18px",
+              color: "#f87171",
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 4,
+            })
+            .setOrigin(0.5)
+            .setDepth(21);
+          this.tweens.add({
+            targets: fb,
+            y: fb.y - 24,
+            alpha: 0,
+            duration: 1500,
+            onComplete: () => fb.destroy(),
+          });
+
+          // A hint re-states the RULE, never the target coordinates.
+          this.hintText.setText("Hint: " + (this.activeMission.hint || ""));
+
+          this.time.delayedCall(900, () => {
+            miss.destroy();
+            if (this.lives <= 0) {
+              this.endGame();
+              return;
+            }
+            // Same mission stays active — try again. No giveaway.
+            this.missionLocked = false;
+            this.canMove = true;
+          });
+        }
+
+        createHUD() {
+          this.add.rectangle(W / 2, 18, W, 36, 0x0f172a, 0.9).setDepth(100);
+          this.scoreText = this.add
+            .text(12, 8, "Score: 0", {
+              fontSize: "14px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+            })
+            .setDepth(101);
+          this.missionLabel = this.add
+            .text(12, 24, "Mission 1", { fontSize: "12px", color: "#c084fc" })
+            .setDepth(101);
+          this.levelText = this.add
+            .text(W / 2, 8, `Level ${this.level}`, {
+              fontSize: "14px",
+              color: "#38bdf8",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5, 0)
+            .setDepth(101);
+          this.comboText = this.add
+            .text(W / 2, 24, "", { fontSize: "11px", color: "#4ade80" })
+            .setOrigin(0.5, 0)
+            .setDepth(101);
+
+          this.hearts = [];
+          for (let i = 0; i < 3; i++) {
+            this.hearts.push(
+              this.add
+                .image(W - 50 + i * 18, 18, "heart")
+                .setScale(1.3)
+                .setDepth(101),
+            );
+          }
+
+          // Mission prompt (the math instruction) — top banner.
+          this.add
+            .rectangle(W / 2, 56, W - 24, 40, 0x102a4c, 0.85)
+            .setDepth(100);
+          this.promptText = this.add
+            .text(W / 2, 56, "", {
+              fontSize: "16px",
+              color: "#e2e8f0",
+              fontStyle: "bold",
+              align: "center",
+              wordWrap: { width: W - 60 },
+            })
+            .setOrigin(0.5)
+            .setDepth(101);
+
+          // Hint line (only fills after a miss).
+          this.hintText = this.add
+            .text(W / 2, H - 16, "", {
+              fontSize: "13px",
+              color: "#fbbf24",
+              align: "center",
+              wordWrap: { width: W - 60 },
+              stroke: "#000",
+              strokeThickness: 3,
+            })
+            .setOrigin(0.5)
+            .setDepth(101);
+        }
+
+        createTouchControls() {
+          const a = 0.25,
+            s = 36;
+          const bx = 70,
+            by = H - 75;
+          const mk = (dx, dy, sym) => {
+            const c = this.add
+              .circle(bx + dx, by + dy, s, 0x38bdf8, a)
+              .setDepth(200)
+              .setInteractive();
+            this.add
+              .text(bx + dx, by + dy, sym, {
+                fontSize: "22px",
+                color: "#fff",
+                fontStyle: "bold",
+              })
+              .setOrigin(0.5)
+              .setDepth(201);
+            return c;
+          };
+          this.tUp = mk(0, -s, "^");
+          this.tDown = mk(0, s, "v");
+          this.tLeft = mk(-s, 0, "<");
+          this.tRight = mk(s, 0, ">");
+
+          this.touchDir = null;
+          const setDir = (d) => () => {
+            this.touchDir = d;
+          };
+          const clearDir = () => {
+            this.touchDir = null;
+          };
+          [
+            ["tUp", "up"],
+            ["tDown", "down"],
+            ["tLeft", "left"],
+            ["tRight", "right"],
+          ].forEach(([k, d]) => {
+            this[k].on("pointerdown", setDir(d));
+            this[k].on("pointerup", clearDir);
+            this[k].on("pointerout", clearDir);
+          });
+        }
+
+        createAnchorButton() {
+          const x = W - 90,
+            y = H - 75;
+          const btn = this.add
+            .image(x, y, "btn")
+            .setScale(0.62)
+            .setDepth(200)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(x, y, "DROP\nANCHOR", {
+              fontSize: "14px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+              align: "center",
+            })
+            .setOrigin(0.5)
+            .setDepth(201);
+          btn.on("pointerover", () => btn.setScale(0.66));
+          btn.on("pointerout", () => btn.setScale(0.62));
+          btn.on("pointerdown", () => this.dropAnchor());
+        }
+
+        showLevelIntro() {
+          const ov = this.add
+            .rectangle(W / 2, H / 2, W, H, 0x000000, 0.78)
+            .setDepth(500);
+          const t1 = this.add
+            .text(W / 2, H / 2 - 50, `Level ${this.level}`, {
+              fontSize: "44px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 6,
+            })
+            .setOrigin(0.5)
+            .setDepth(501);
+          const t2 = this.add
+            .text(
+              W / 2,
+              H / 2 + 4,
+              `Read each mission. Sail to the right spot, then DROP ANCHOR.`,
+              {
+                fontSize: "16px",
+                color: "#cbd5e1",
+                align: "center",
+                wordWrap: { width: 560 },
+              },
+            )
+            .setOrigin(0.5)
+            .setDepth(501);
+          const t3 = this.add
+            .text(
+              W / 2,
+              H / 2 + 50,
+              `Move: Arrow keys / WASD / touch  •  Anchor: SPACE or the button`,
+              { fontSize: "13px", color: "#64748b", align: "center" },
+            )
+            .setOrigin(0.5)
+            .setDepth(501);
+
+          this.canMove = false;
+          this.tweens.add({
+            targets: [ov, t1, t2, t3],
+            alpha: 0,
+            delay: 2200,
+            duration: 500,
+            onComplete: () => {
+              ov.destroy();
+              t1.destroy();
+              t2.destroy();
+              t3.destroy();
+              this.startMission();
+            },
+          });
+        }
+
+        moveShip(dx, dy) {
+          if (!this.canMove || this.missionLocked) return;
+          if (this.moveDelay > 0) return;
+
+          const nx = this.shipGridX + dx;
+          const ny = this.shipGridY + dy;
+          if (
+            nx < -this.range ||
+            nx > this.range ||
+            ny < -this.range ||
+            ny > this.range
+          )
+            return;
+
+          sndMove();
+          this.shipGridX = nx;
+          this.shipGridY = ny;
+          this.moveDelay = 8;
+
+          const sx = this.ox + nx * this.cs;
+          const sy = this.oy - ny * this.cs;
+          this.tweens.add({
+            targets: this.ship,
+            x: sx,
+            y: sy,
+            duration: 120,
+            ease: "Power2",
+          });
+          this.coordLabel.setText(`(${nx}, ${ny})`);
+          this.tweens.add({
+            targets: this.coordLabel,
+            x: sx,
+            y: sy + 24,
+            duration: 120,
+          });
+
+          if (dx > 0) this.ship.setAngle(-90);
+          else if (dx < 0) this.ship.setAngle(90);
+          else if (dy > 0) this.ship.setAngle(0);
+          else if (dy < 0) this.ship.setAngle(180);
+
+          // Bonus coin pickup (navigation reward, not the win condition).
+          const coin = this.coins.find(
+            (c) => !c.collected && c.gx === nx && c.gy === ny,
+          );
+          if (coin) {
+            coin.collected = true;
+            this.score += 25;
+            sndCorrect();
+            const ft = this.add
+              .text(coin.sprite.x, coin.sprite.y - 15, "+25", {
+                fontSize: "13px",
+                color: "#fbbf24",
+                fontStyle: "bold",
+                stroke: "#000",
+                strokeThickness: 3,
+              })
+              .setOrigin(0.5)
+              .setDepth(50);
+            this.tweens.add({
+              targets: ft,
+              y: ft.y - 22,
+              alpha: 0,
+              duration: 600,
+              onComplete: () => ft.destroy(),
+            });
+            coin.sprite.destroy();
+            this.updateHUD();
+          }
+        }
+
+        levelComplete() {
+          sndLevelUp();
+          this.canMove = false;
+          this.missionLocked = true;
+
+          this.add.rectangle(W / 2, H / 2, W, H, 0x000000, 0.85).setDepth(600);
+          this.add
+            .text(W / 2, 130, "ALL TREASURES FOUND!", {
+              fontSize: "34px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+              stroke: "#000",
+              strokeThickness: 6,
+            })
+            .setOrigin(0.5)
+            .setDepth(601);
+
+          const pct = this.qTotal > 0 ? this.qCorrect / this.qTotal : 0;
+          const stars = pct >= 0.85 ? 3 : pct >= 0.6 ? 2 : 1;
+          this.add
+            .text(W / 2, 190, "★".repeat(stars) + "☆".repeat(3 - stars), {
+              fontSize: "40px",
+              color: "#fbbf24",
+            })
+            .setOrigin(0.5)
+            .setDepth(601);
+          this.add
+            .text(
+              W / 2,
+              240,
+              `Score: ${this.score}  |  Drops: ${this.qCorrect} good / ${this.qTotal} total  |  Combo: ${this.maxCombo}x`,
+              { fontSize: "15px", color: "#e2e8f0" },
+            )
+            .setOrigin(0.5)
+            .setDepth(601);
+
+          for (let i = 0; i < 30; i++) {
+            const c = this.add
+              .circle(
+                Phaser.Math.Between(50, W - 50),
+                -10,
+                Phaser.Math.Between(3, 6),
+                Phaser.Math.RND.pick([0x38bdf8, 0xfbbf24, 0x4ade80, 0xc084fc]),
+              )
+              .setDepth(602);
+            this.tweens.add({
+              targets: c,
+              y: H + 20,
+              x: c.x + Phaser.Math.Between(-80, 80),
+              duration: Phaser.Math.Between(1500, 3000),
+            });
+          }
+
+          const nextBtn = this.add
+            .image(W / 2 - 110, 320, "btn")
+            .setDepth(601)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(W / 2 - 110, 320, "Next Level", {
+              fontSize: "16px",
+              color: "#4ade80",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setDepth(602);
+          nextBtn.on("pointerdown", () => {
+            this.cameras.main.fadeOut(400);
+            this.time.delayedCall(400, () =>
+              this.scene.restart({
+                shipTint: this.shipTint,
+                level: this.level + 1,
+              }),
+            );
+          });
+
+          const resBtn = this.add
+            .image(W / 2 + 110, 320, "btn")
+            .setDepth(601)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(W / 2 + 110, 320, "Results", {
+              fontSize: "16px",
+              color: "#fbbf24",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setDepth(602);
+          resBtn.on("pointerdown", () => {
+            this.scene.start("Results", {
+              score: this.score,
+              level: this.level,
+              treasures: this.missionsDone,
+              qCorrect: this.qCorrect,
+              qTotal: this.qTotal,
+              maxCombo: this.maxCombo,
+              shipTint: this.shipTint,
+            });
+          });
+        }
+
+        endGame() {
+          this.canMove = false;
+          this.missionLocked = true;
+          this.cameras.main.shake(400, 0.02);
+          this.time.delayedCall(500, () => {
+            this.scene.start("Results", {
+              score: this.score,
+              level: this.level,
+              treasures: this.missionsDone,
+              qCorrect: this.qCorrect,
+              qTotal: this.qTotal,
+              maxCombo: this.maxCombo,
+              shipTint: this.shipTint,
+              gameOver: true,
+            });
+          });
+        }
+
+        updateHUD() {
+          this.scoreText.setText(`Score: ${this.score}`);
+          if (this.combo > 1) this.comboText.setText(`${this.combo}x Combo!`);
+          else this.comboText.setText("");
+          for (let i = 0; i < 3; i++)
+            this.hearts[i].setAlpha(i < this.lives ? 1 : 0.2);
+        }
+
+        update() {
+          if (this.moveDelay > 0) this.moveDelay--;
+
+          if (
+            Phaser.Input.Keyboard.JustDown(this.cursors.left) ||
+            Phaser.Input.Keyboard.JustDown(this.wasd.A)
+          )
+            this.moveShip(-1, 0);
+          else if (
+            Phaser.Input.Keyboard.JustDown(this.cursors.right) ||
+            Phaser.Input.Keyboard.JustDown(this.wasd.D)
+          )
+            this.moveShip(1, 0);
+          else if (
+            Phaser.Input.Keyboard.JustDown(this.cursors.up) ||
+            Phaser.Input.Keyboard.JustDown(this.wasd.W)
+          )
+            this.moveShip(0, 1);
+          else if (
+            Phaser.Input.Keyboard.JustDown(this.cursors.down) ||
+            Phaser.Input.Keyboard.JustDown(this.wasd.S)
+          )
+            this.moveShip(0, -1);
+
+          if (this.touchDir && this.moveDelay <= 0) {
+            if (this.touchDir === "left") this.moveShip(-1, 0);
+            else if (this.touchDir === "right") this.moveShip(1, 0);
+            else if (this.touchDir === "up") this.moveShip(0, 1);
+            else if (this.touchDir === "down") this.moveShip(0, -1);
+          }
+
+          // Water shimmer on ship
+          this.ship.setAlpha(0.95 + Math.sin(this.time.now * 0.003) * 0.05);
+        }
       }
-    }
-
-    this.drawGrid();
-
-    // Quadrant labels (faint, for orientation — they do NOT reveal answers)
-    const qlSize = "20px";
-    const qlAlpha = 0.18;
-    const half = (range * cs) / 2;
-    this.add
-      .text(ox + half, oy - half, "I", {
-        fontSize: qlSize,
-        color: "#4ade80",
-        fontStyle: "bold",
-      })
-      .setOrigin(0.5)
-      .setAlpha(qlAlpha);
-    this.add
-      .text(ox - half, oy - half, "II", {
-        fontSize: qlSize,
-        color: "#38bdf8",
-        fontStyle: "bold",
-      })
-      .setOrigin(0.5)
-      .setAlpha(qlAlpha);
-    this.add
-      .text(ox - half, oy + half, "III", {
-        fontSize: qlSize,
-        color: "#fbbf24",
-        fontStyle: "bold",
-      })
-      .setOrigin(0.5)
-      .setAlpha(qlAlpha);
-    this.add
-      .text(ox + half, oy + half, "IV", {
-        fontSize: qlSize,
-        color: "#c084fc",
-        fontStyle: "bold",
-      })
-      .setOrigin(0.5)
-      .setAlpha(qlAlpha);
-
-    // Marker (used by reflection missions — the point to transform)
-    this.marker = this.add
-      .image(ox, oy, "map_pin")
-      .setScale(2)
-      .setDepth(6)
-      .setVisible(false);
-    this.markerLabel = this.add
-      .text(ox, oy - 18, "", {
-        fontSize: "12px",
-        color: "#fca5a5",
-        fontStyle: "bold",
-        stroke: "#000",
-        strokeThickness: 3,
-      })
-      .setOrigin(0.5)
-      .setDepth(7)
-      .setVisible(false);
-
-    // Decorative coins (bonus collectibles — navigation reward only)
-    this.coins = [];
-    this.placeCoins();
-
-    // Ship
-    this.ship = this.add
-      .image(ox, oy, "ship")
-      .setScale(2.2)
-      .setTint(this.shipTint)
-      .setDepth(10);
-
-    // Coordinate label following ship — this is the ONLY readout, it shows
-    // where the SHIP is, never where the target is.
-    this.coordLabel = this.add
-      .text(ox, oy + 24, "(0, 0)", {
-        fontSize: "14px",
-        color: "#fbbf24",
-        fontStyle: "bold",
-        stroke: "#000",
-        strokeThickness: 3,
-      })
-      .setOrigin(0.5)
-      .setDepth(11);
-
-    this.createHUD();
-
-    this.cursors = this.input.keyboard.createCursorKeys();
-    this.wasd = this.input.keyboard.addKeys("W,A,S,D");
-    this.spaceKey = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.SPACE,
-    );
-    this.spaceKey.on("down", () => this.dropAnchor());
-
-    this.createTouchControls();
-    this.createAnchorButton();
-
-    // Build all missions for this voyage, then start the first.
-    this.buildMissions();
-    this.showLevelIntro();
-
-    this.cameras.main.fadeIn(500);
-  }
-
-  drawGrid() {
-    const g = this.add.graphics();
-    const { ox, oy, cs, range } = this;
-
-    g.lineStyle(1, 0x38bdf8, 0.08);
-    for (let i = -range; i <= range; i++) {
-      g.moveTo(ox + i * cs, oy - range * cs);
-      g.lineTo(ox + i * cs, oy + range * cs);
-      g.moveTo(ox - range * cs, oy + i * cs);
-      g.lineTo(ox + range * cs, oy + i * cs);
-    }
-    g.strokePath();
-
-    g.lineStyle(2, 0x38bdf8, 0.4);
-    g.moveTo(ox - range * cs, oy);
-    g.lineTo(ox + range * cs, oy);
-    g.moveTo(ox, oy - range * cs);
-    g.lineTo(ox, oy + range * cs);
-    g.strokePath();
-
-    for (let i = -range; i <= range; i++) {
-      if (i === 0) continue;
-      this.add
-        .text(ox + i * cs, oy + 6, `${i}`, {
-          fontSize: "10px",
-          color: "#64748b",
-        })
-        .setOrigin(0.5, 0);
-      this.add
-        .text(ox - 14, oy - i * cs, `${i}`, {
-          fontSize: "10px",
-          color: "#64748b",
-        })
-        .setOrigin(0.5);
-    }
-    this.add.text(ox - 10, oy + 6, "0", { fontSize: "11px", color: "#fbbf24" });
-    this.add
-      .text(ox + range * cs + 6, oy, "x", {
-        fontSize: "13px",
-        color: "#38bdf8",
-        fontStyle: "bold",
-      })
-      .setOrigin(0, 0.5);
-    this.add
-      .text(ox, oy - range * cs - 12, "y", {
-        fontSize: "13px",
-        color: "#38bdf8",
-        fontStyle: "bold",
-      })
-      .setOrigin(0.5);
-  }
-
-  placeCoins() {
-    const count = 4 + this.level;
-    const used = new Set(["0,0"]);
-    for (let i = 0; i < count; i++) {
-      let gx,
-        gy,
-        tries = 0;
-      do {
-        gx = Phaser.Math.Between(-this.range + 1, this.range - 1);
-        gy = Phaser.Math.Between(-this.range + 1, this.range - 1);
-        tries++;
-      } while (used.has(`${gx},${gy}`) && tries < 30);
-      used.add(`${gx},${gy}`);
-      const sx = this.ox + gx * this.cs;
-      const sy = this.oy - gy * this.cs;
-      const c = this.add
-        .image(sx, sy, "coin")
-        .setScale(1.4)
-        .setDepth(4)
-        .setAlpha(0.85);
-      this.tweens.add({
-        targets: c,
-        y: sy - 4,
-        duration: 500 + i * 80,
-        yoyo: true,
-        repeat: -1,
-        ease: "Sine.InOut",
-      });
-      this.coins.push({ gx, gy, sprite: c, collected: false });
-    }
-  }
-
-  // ----------------------------------------------------------------
-  // MISSION GENERATION — MATH IS THE MECHANIC.
-  // The prompt asks the student to REASON about a coordinate; it never
-  // states the target screen position and there are no answer options.
-  // Each mission validates the ship's grid cell, so wrong math places the
-  // ship in the wrong place = a visible miss.
-  // ----------------------------------------------------------------
-  buildMissions() {
-    this.missions = [];
-    const R = this.range - 1; // keep targets off the very edge
-    const nz = (lo, hi) => {
-      // random int in [lo,hi] excluding 0
-      let v;
-      do {
-        v = Phaser.Math.Between(lo, hi);
-      } while (v === 0);
-      return v;
-    };
-    const quadName = ["I", "II", "III", "IV"];
-
-    const makers = [
-      // 0) Quadrant — any cell in the named quadrant is correct.
-      () => {
-        const qi = Phaser.Math.Between(0, 3);
-        const sx = qi === 0 || qi === 3 ? 1 : -1;
-        const sy = qi === 0 || qi === 1 ? 1 : -1;
-        return {
-          prompt: `Sail to ANY point in Quadrant ${quadName[qi]}, then drop anchor.`,
-          hint: "Quadrant I = (+x, +y), II = (-x, +y), III = (-x, -y), IV = (+x, -y).",
-          test: (x, y) => Math.sign(x) === sx && Math.sign(y) === sy,
-        };
-      },
-      // 1) Ordered pair from a worded description (must compute x and y).
-      () => {
-        const x = nz(-R, R);
-        const y = nz(-R, R);
-        const xPhrase =
-          x < 0 ? `${Math.abs(x)} to the LEFT of 0` : `${x} to the RIGHT of 0`;
-        const yPhrase = y < 0 ? `${Math.abs(y)} DOWN from 0` : `${y} UP from 0`;
-        return {
-          prompt: `Sail to the point that is ${xPhrase} and ${yPhrase}.`,
-          hint: "Left = negative x, right = positive x. Up = positive y, down = negative y.",
-          test: (gx, gy) => gx === x && gy === y,
-        };
-      },
-      // 2) Reflection across the x-axis (marker shown, target = (a, -b)).
-      () => {
-        const a = nz(-R, R);
-        const b = nz(-R, R);
-        return {
-          marker: { gx: a, gy: b },
-          prompt: `Sail to the REFLECTION of the marked point across the x-axis.`,
-          hint: "Reflecting across the x-axis keeps x the same and flips the sign of y.",
-          test: (gx, gy) => gx === a && gy === -b,
-        };
-      },
-      // 3) Reflection across the y-axis (marker shown, target = (-a, b)).
-      () => {
-        const a = nz(-R, R);
-        const b = nz(-R, R);
-        return {
-          marker: { gx: a, gy: b },
-          prompt: `Sail to the REFLECTION of the marked point across the y-axis.`,
-          hint: "Reflecting across the y-axis keeps y the same and flips the sign of x.",
-          test: (gx, gy) => gx === -a && gy === b,
-        };
-      },
-      // 4) Opposite of both coordinates (marker shown, target = (-a,-b)).
-      () => {
-        const a = nz(-R, R);
-        const b = nz(-R, R);
-        return {
-          marker: { gx: a, gy: b },
-          prompt: `Sail to the point whose coordinates are the OPPOSITES of the marked point's.`,
-          hint: "The opposite of a number flips its sign: opposite of 3 is -3, opposite of -5 is 5.",
-          test: (gx, gy) => gx === -a && gy === -b,
-        };
-      },
-      // 5) Distance from origin — any cell with |x|+|y| = d is correct.
-      () => {
-        const d = Phaser.Math.Between(3, Math.min(R + 2, 8));
-        return {
-          prompt: `Sail to ANY point that is exactly ${d} steps from the center (count |x| + |y|), then drop anchor.`,
-          hint: "Steps = the distance along x plus the distance along y, ignoring signs.",
-          test: (gx, gy) =>
-            Math.abs(gx) + Math.abs(gy) === d && (gx !== 0 || gy !== 0),
-        };
-      },
-    ];
-
-    // Early levels favor the simpler mission types.
-    const pool =
-      this.level === 1
-        ? [0, 1, 5]
-        : this.level === 2
-          ? [0, 1, 2, 3, 5]
-          : [0, 1, 2, 3, 4, 5];
-
-    for (let i = 0; i < this.totalMissions; i++) {
-      const type = Phaser.Utils.Array.GetRandom(pool);
-      this.missions.push(makers[type]());
-    }
-  }
-
-  startMission() {
-    if (this.missionsDone >= this.missions.length) {
-      this.levelComplete();
-      return;
-    }
-    const m = this.missions[this.missionsDone];
-    this.activeMission = m;
-
-    // Show/hide the reference marker.
-    if (m.marker) {
-      const sx = this.ox + m.marker.gx * this.cs;
-      const sy = this.oy - m.marker.gy * this.cs;
-      this.marker.setPosition(sx, sy).setVisible(true);
-      this.markerLabel
-        .setText(`marked point (${m.marker.gx}, ${m.marker.gy})`)
-        .setPosition(sx, sy - 20)
-        .setVisible(true);
-    } else {
-      this.marker.setVisible(false);
-      this.markerLabel.setVisible(false);
-    }
-
-    this.promptText.setText(m.prompt);
-    this.hintText.setText("");
-    this.missionLabel.setText(
-      `Mission ${this.missionsDone + 1} of ${this.missions.length}`,
-    );
-    this.missionLocked = false;
-    this.canMove = true;
-  }
-
-  // ----------------------------------------------------------------
-  // DROP ANCHOR — the win condition. The student decides WHERE the math
-  // says to go, then commits. No options, no announced coordinates.
-  // ----------------------------------------------------------------
-  dropAnchor() {
-    if (!this.canMove || this.missionLocked || !this.activeMission) return;
-    this.missionLocked = true;
-    this.canMove = false;
-    this.qTotal++;
-
-    const x = this.shipGridX;
-    const y = this.shipGridY;
-    const ok = this.activeMission.test(x, y);
-
-    if (ok) {
-      this.qCorrect++;
-      this.missionsDone++;
-      this.combo++;
-      if (this.combo > this.maxCombo) this.maxCombo = this.combo;
-      const pts = 200 * this.combo;
-      this.score += pts;
-      sndTreasure();
-      this.showTreasureAt(x, y, pts);
-    } else {
-      this.combo = 0;
-      this.lives--;
-      sndWrong();
-      this.showMiss(x, y);
-    }
-    this.updateHUD();
-  }
-
-  showTreasureAt(x, y, pts) {
-    const sx = this.ox + x * this.cs;
-    const sy = this.oy - y * this.cs;
-
-    const chest = this.add.image(sx, sy, "treasure").setScale(0.5).setDepth(20);
-    this.tweens.add({
-      targets: chest,
-      scale: 3,
-      duration: 350,
-      ease: "Back.Out",
-    });
-    this.add
-      .particles(sx, sy, "particle", {
-        speed: { min: 60, max: 200 },
-        scale: { start: 1.6, end: 0 },
-        lifespan: 700,
-        quantity: 18,
-        tint: 0xfbbf24,
-        emitting: false,
-      })
-      .explode(18);
-
-    const fb = this.add
-      .text(sx, sy - 40, `Treasure! +${pts}`, {
-        fontSize: "20px",
-        color: "#4ade80",
-        fontStyle: "bold",
-        stroke: "#000",
-        strokeThickness: 4,
-      })
-      .setOrigin(0.5)
-      .setDepth(21);
-    this.tweens.add({
-      targets: fb,
-      y: fb.y - 30,
-      alpha: 0,
-      duration: 1400,
-      onComplete: () => fb.destroy(),
-    });
-
-    if (window.GameFX && GameFX.successBurst) {
-      try {
-        GameFX.successBurst();
-      } catch (e) {}
-    }
-
-    this.time.delayedCall(1500, () => {
-      chest.destroy();
-      if (this.lives <= 0) {
-        this.endGame();
-        return;
-      }
-      this.startMission();
-    });
-  }
-
-  showMiss(x, y) {
-    const sx = this.ox + x * this.cs;
-    const sy = this.oy - y * this.cs;
-    this.cameras.main.shake(220, 0.008);
-
-    // Visible miss: a red splash X on the wrong cell.
-    const miss = this.add.graphics().setDepth(20);
-    miss.lineStyle(4, 0xf87171, 1);
-    miss.lineBetween(sx - 14, sy - 14, sx + 14, sy + 14);
-    miss.lineBetween(sx + 14, sy - 14, sx - 14, sy + 14);
-    const ring = this.add.circle(sx, sy, 6, 0xf87171, 0.4).setDepth(19);
-    this.tweens.add({ targets: ring, scale: 4, alpha: 0, duration: 600 });
-
-    const fb = this.add
-      .text(sx, sy - 38, "Splash! Not here.", {
-        fontSize: "18px",
-        color: "#f87171",
-        fontStyle: "bold",
-        stroke: "#000",
-        strokeThickness: 4,
-      })
-      .setOrigin(0.5)
-      .setDepth(21);
-    this.tweens.add({
-      targets: fb,
-      y: fb.y - 24,
-      alpha: 0,
-      duration: 1500,
-      onComplete: () => fb.destroy(),
-    });
-
-    // A hint re-states the RULE, never the target coordinates.
-    this.hintText.setText("Hint: " + (this.activeMission.hint || ""));
-
-    this.time.delayedCall(900, () => {
-      miss.destroy();
-      if (this.lives <= 0) {
-        this.endGame();
-        return;
-      }
-      // Same mission stays active — try again. No giveaway.
-      this.missionLocked = false;
-      this.canMove = true;
-    });
-  }
-
-  createHUD() {
-    this.add.rectangle(W / 2, 18, W, 36, 0x0f172a, 0.9).setDepth(100);
-    this.scoreText = this.add
-      .text(12, 8, "Score: 0", {
-        fontSize: "14px",
-        color: "#fbbf24",
-        fontStyle: "bold",
-      })
-      .setDepth(101);
-    this.missionLabel = this.add
-      .text(12, 24, "Mission 1", { fontSize: "12px", color: "#c084fc" })
-      .setDepth(101);
-    this.levelText = this.add
-      .text(W / 2, 8, `Level ${this.level}`, {
-        fontSize: "14px",
-        color: "#38bdf8",
-        fontStyle: "bold",
-      })
-      .setOrigin(0.5, 0)
-      .setDepth(101);
-    this.comboText = this.add
-      .text(W / 2, 24, "", { fontSize: "11px", color: "#4ade80" })
-      .setOrigin(0.5, 0)
-      .setDepth(101);
-
-    this.hearts = [];
-    for (let i = 0; i < 3; i++) {
-      this.hearts.push(
-        this.add
-          .image(W - 50 + i * 18, 18, "heart")
-          .setScale(1.3)
-          .setDepth(101),
-      );
-    }
-
-    // Mission prompt (the math instruction) — top banner.
-    this.add.rectangle(W / 2, 56, W - 24, 40, 0x102a4c, 0.85).setDepth(100);
-    this.promptText = this.add
-      .text(W / 2, 56, "", {
-        fontSize: "16px",
-        color: "#e2e8f0",
-        fontStyle: "bold",
-        align: "center",
-        wordWrap: { width: W - 60 },
-      })
-      .setOrigin(0.5)
-      .setDepth(101);
-
-    // Hint line (only fills after a miss).
-    this.hintText = this.add
-      .text(W / 2, H - 16, "", {
-        fontSize: "13px",
-        color: "#fbbf24",
-        align: "center",
-        wordWrap: { width: W - 60 },
-        stroke: "#000",
-        strokeThickness: 3,
-      })
-      .setOrigin(0.5)
-      .setDepth(101);
-  }
-
-  createTouchControls() {
-    const a = 0.25,
-      s = 36;
-    const bx = 70,
-      by = H - 75;
-    const mk = (dx, dy, sym) => {
-      const c = this.add
-        .circle(bx + dx, by + dy, s, 0x38bdf8, a)
-        .setDepth(200)
-        .setInteractive();
-      this.add
-        .text(bx + dx, by + dy, sym, {
-          fontSize: "22px",
-          color: "#fff",
-          fontStyle: "bold",
-        })
-        .setOrigin(0.5)
-        .setDepth(201);
-      return c;
-    };
-    this.tUp = mk(0, -s, "^");
-    this.tDown = mk(0, s, "v");
-    this.tLeft = mk(-s, 0, "<");
-    this.tRight = mk(s, 0, ">");
-
-    this.touchDir = null;
-    const setDir = (d) => () => {
-      this.touchDir = d;
-    };
-    const clearDir = () => {
-      this.touchDir = null;
-    };
-    [
-      ["tUp", "up"],
-      ["tDown", "down"],
-      ["tLeft", "left"],
-      ["tRight", "right"],
-    ].forEach(([k, d]) => {
-      this[k].on("pointerdown", setDir(d));
-      this[k].on("pointerup", clearDir);
-      this[k].on("pointerout", clearDir);
-    });
-  }
-
-  createAnchorButton() {
-    const x = W - 90,
-      y = H - 75;
-    const btn = this.add
-      .image(x, y, "btn")
-      .setScale(0.62)
-      .setDepth(200)
-      .setInteractive({ useHandCursor: true });
-    this.add
-      .text(x, y, "DROP\nANCHOR", {
-        fontSize: "14px",
-        color: "#fbbf24",
-        fontStyle: "bold",
-        align: "center",
-      })
-      .setOrigin(0.5)
-      .setDepth(201);
-    btn.on("pointerover", () => btn.setScale(0.66));
-    btn.on("pointerout", () => btn.setScale(0.62));
-    btn.on("pointerdown", () => this.dropAnchor());
-  }
-
-  showLevelIntro() {
-    const ov = this.add
-      .rectangle(W / 2, H / 2, W, H, 0x000000, 0.78)
-      .setDepth(500);
-    const t1 = this.add
-      .text(W / 2, H / 2 - 50, `Level ${this.level}`, {
-        fontSize: "44px",
-        color: "#fbbf24",
-        fontStyle: "bold",
-        stroke: "#000",
-        strokeThickness: 6,
-      })
-      .setOrigin(0.5)
-      .setDepth(501);
-    const t2 = this.add
-      .text(
-        W / 2,
-        H / 2 + 4,
-        `Read each mission. Sail to the right spot, then DROP ANCHOR.`,
-        {
-          fontSize: "16px",
-          color: "#cbd5e1",
-          align: "center",
-          wordWrap: { width: 560 },
-        },
-      )
-      .setOrigin(0.5)
-      .setDepth(501);
-    const t3 = this.add
-      .text(
-        W / 2,
-        H / 2 + 50,
-        `Move: Arrow keys / WASD / touch  •  Anchor: SPACE or the button`,
-        { fontSize: "13px", color: "#64748b", align: "center" },
-      )
-      .setOrigin(0.5)
-      .setDepth(501);
-
-    this.canMove = false;
-    this.tweens.add({
-      targets: [ov, t1, t2, t3],
-      alpha: 0,
-      delay: 2200,
-      duration: 500,
-      onComplete: () => {
-        ov.destroy();
-        t1.destroy();
-        t2.destroy();
-        t3.destroy();
-        this.startMission();
-      },
-    });
-  }
-
-  moveShip(dx, dy) {
-    if (!this.canMove || this.missionLocked) return;
-    if (this.moveDelay > 0) return;
-
-    const nx = this.shipGridX + dx;
-    const ny = this.shipGridY + dy;
-    if (
-      nx < -this.range ||
-      nx > this.range ||
-      ny < -this.range ||
-      ny > this.range
-    )
-      return;
-
-    sndMove();
-    this.shipGridX = nx;
-    this.shipGridY = ny;
-    this.moveDelay = 8;
-
-    const sx = this.ox + nx * this.cs;
-    const sy = this.oy - ny * this.cs;
-    this.tweens.add({
-      targets: this.ship,
-      x: sx,
-      y: sy,
-      duration: 120,
-      ease: "Power2",
-    });
-    this.coordLabel.setText(`(${nx}, ${ny})`);
-    this.tweens.add({
-      targets: this.coordLabel,
-      x: sx,
-      y: sy + 24,
-      duration: 120,
-    });
-
-    if (dx > 0) this.ship.setAngle(-90);
-    else if (dx < 0) this.ship.setAngle(90);
-    else if (dy > 0) this.ship.setAngle(0);
-    else if (dy < 0) this.ship.setAngle(180);
-
-    // Bonus coin pickup (navigation reward, not the win condition).
-    const coin = this.coins.find(
-      (c) => !c.collected && c.gx === nx && c.gy === ny,
-    );
-    if (coin) {
-      coin.collected = true;
-      this.score += 25;
-      sndCorrect();
-      const ft = this.add
-        .text(coin.sprite.x, coin.sprite.y - 15, "+25", {
-          fontSize: "13px",
-          color: "#fbbf24",
-          fontStyle: "bold",
-          stroke: "#000",
-          strokeThickness: 3,
-        })
-        .setOrigin(0.5)
-        .setDepth(50);
-      this.tweens.add({
-        targets: ft,
-        y: ft.y - 22,
-        alpha: 0,
-        duration: 600,
-        onComplete: () => ft.destroy(),
-      });
-      coin.sprite.destroy();
-      this.updateHUD();
-    }
-  }
-
-  levelComplete() {
-    sndLevelUp();
-    this.canMove = false;
-    this.missionLocked = true;
-
-    this.add.rectangle(W / 2, H / 2, W, H, 0x000000, 0.85).setDepth(600);
-    this.add
-      .text(W / 2, 130, "ALL TREASURES FOUND!", {
-        fontSize: "34px",
-        color: "#fbbf24",
-        fontStyle: "bold",
-        stroke: "#000",
-        strokeThickness: 6,
-      })
-      .setOrigin(0.5)
-      .setDepth(601);
-
-    const pct = this.qTotal > 0 ? this.qCorrect / this.qTotal : 0;
-    const stars = pct >= 0.85 ? 3 : pct >= 0.6 ? 2 : 1;
-    this.add
-      .text(W / 2, 190, "★".repeat(stars) + "☆".repeat(3 - stars), {
-        fontSize: "40px",
-        color: "#fbbf24",
-      })
-      .setOrigin(0.5)
-      .setDepth(601);
-    this.add
-      .text(
-        W / 2,
-        240,
-        `Score: ${this.score}  |  Drops: ${this.qCorrect} good / ${this.qTotal} total  |  Combo: ${this.maxCombo}x`,
-        { fontSize: "15px", color: "#e2e8f0" },
-      )
-      .setOrigin(0.5)
-      .setDepth(601);
-
-    for (let i = 0; i < 30; i++) {
-      const c = this.add
-        .circle(
-          Phaser.Math.Between(50, W - 50),
-          -10,
-          Phaser.Math.Between(3, 6),
-          Phaser.Math.RND.pick([0x38bdf8, 0xfbbf24, 0x4ade80, 0xc084fc]),
-        )
-        .setDepth(602);
-      this.tweens.add({
-        targets: c,
-        y: H + 20,
-        x: c.x + Phaser.Math.Between(-80, 80),
-        duration: Phaser.Math.Between(1500, 3000),
-      });
-    }
-
-    const nextBtn = this.add
-      .image(W / 2 - 110, 320, "btn")
-      .setDepth(601)
-      .setInteractive({ useHandCursor: true });
-    this.add
-      .text(W / 2 - 110, 320, "Next Level", {
-        fontSize: "16px",
-        color: "#4ade80",
-        fontStyle: "bold",
-      })
-      .setOrigin(0.5)
-      .setDepth(602);
-    nextBtn.on("pointerdown", () => {
-      this.cameras.main.fadeOut(400);
-      this.time.delayedCall(400, () =>
-        this.scene.restart({ shipTint: this.shipTint, level: this.level + 1 }),
-      );
-    });
-
-    const resBtn = this.add
-      .image(W / 2 + 110, 320, "btn")
-      .setDepth(601)
-      .setInteractive({ useHandCursor: true });
-    this.add
-      .text(W / 2 + 110, 320, "Results", {
-        fontSize: "16px",
-        color: "#fbbf24",
-        fontStyle: "bold",
-      })
-      .setOrigin(0.5)
-      .setDepth(602);
-    resBtn.on("pointerdown", () => {
-      this.scene.start("Results", {
-        score: this.score,
-        level: this.level,
-        treasures: this.missionsDone,
-        qCorrect: this.qCorrect,
-        qTotal: this.qTotal,
-        maxCombo: this.maxCombo,
-        shipTint: this.shipTint,
-      });
-    });
-  }
-
-  endGame() {
-    this.canMove = false;
-    this.missionLocked = true;
-    this.cameras.main.shake(400, 0.02);
-    this.time.delayedCall(500, () => {
-      this.scene.start("Results", {
-        score: this.score,
-        level: this.level,
-        treasures: this.missionsDone,
-        qCorrect: this.qCorrect,
-        qTotal: this.qTotal,
-        maxCombo: this.maxCombo,
-        shipTint: this.shipTint,
-        gameOver: true,
-      });
-    });
-  }
-
-  updateHUD() {
-    this.scoreText.setText(`Score: ${this.score}`);
-    if (this.combo > 1) this.comboText.setText(`${this.combo}x Combo!`);
-    else this.comboText.setText("");
-    for (let i = 0; i < 3; i++)
-      this.hearts[i].setAlpha(i < this.lives ? 1 : 0.2);
-  }
-
-  update() {
-    if (this.moveDelay > 0) this.moveDelay--;
-
-    if (
-      Phaser.Input.Keyboard.JustDown(this.cursors.left) ||
-      Phaser.Input.Keyboard.JustDown(this.wasd.A)
-    )
-      this.moveShip(-1, 0);
-    else if (
-      Phaser.Input.Keyboard.JustDown(this.cursors.right) ||
-      Phaser.Input.Keyboard.JustDown(this.wasd.D)
-    )
-      this.moveShip(1, 0);
-    else if (
-      Phaser.Input.Keyboard.JustDown(this.cursors.up) ||
-      Phaser.Input.Keyboard.JustDown(this.wasd.W)
-    )
-      this.moveShip(0, 1);
-    else if (
-      Phaser.Input.Keyboard.JustDown(this.cursors.down) ||
-      Phaser.Input.Keyboard.JustDown(this.wasd.S)
-    )
-      this.moveShip(0, -1);
-
-    if (this.touchDir && this.moveDelay <= 0) {
-      if (this.touchDir === "left") this.moveShip(-1, 0);
-      else if (this.touchDir === "right") this.moveShip(1, 0);
-      else if (this.touchDir === "up") this.moveShip(0, 1);
-      else if (this.touchDir === "down") this.moveShip(0, -1);
-    }
-
-    // Water shimmer on ship
-    this.ship.setAlpha(0.95 + Math.sin(this.time.now * 0.003) * 0.05);
-  }
-}
 
       // ============================================================
       // RESULTS
