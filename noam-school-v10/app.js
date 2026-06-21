@@ -1229,12 +1229,54 @@
       (s.studentName || "Noam").split(" ")[0] + " School";
   }
 
+  function updateHeaderStatus() {
+    const chip = $("#connChip");
+    if (!chip) return;
+    const textEl = $("#connText");
+    const online = navigator.onLine;
+
+    chip.classList.remove("online", "offline", "syncing", "synced", "offline-sync", "local");
+
+    if (!online) {
+      chip.classList.add("offline");
+      chip.title = "Offline — changes will save locally and sync when you're back online";
+      if (textEl) textEl.textContent = "Offline — saved locally";
+      return;
+    }
+
+    if (state && state.settings && state.settings.sync && state.settings.sync.enabled) {
+      if (cloud.status === "syncing") {
+        chip.classList.add("syncing");
+        chip.title = "Syncing with Cloudflare KV...";
+        if (textEl) textEl.innerHTML = `Syncing... <span class="sync-spinner">🔄</span>`;
+      } else if (cloud.status === "synced") {
+        chip.classList.add("synced");
+        chip.title = "All changes synced to the cloud";
+        if (textEl) textEl.textContent = "Synced ☁️";
+      } else if (cloud.status === "offline") {
+        chip.classList.add("offline-sync");
+        chip.title = "Could not reach sync server (stored locally)";
+        if (textEl) textEl.textContent = "Offline (Local)";
+      } else {
+        chip.classList.add("online");
+        chip.title = "Connected to internet & ready to sync";
+        if (textEl) textEl.textContent = "Online";
+      }
+    } else {
+      chip.classList.add("local");
+      chip.title = "Cloud sync is disabled. Storing locally.";
+      if (textEl) textEl.textContent = "Local Only";
+    }
+  }
+
   function render() {
     applyAppearance();
     renderHero();
     $("#main").innerHTML = (VIEWS[view] || VIEWS.home)();
     renderTabbar();
+    updateHeaderStatus();
   }
+
 
   function renderTabbar() {
     $("#tabbar").innerHTML = TABS.map(
@@ -2130,6 +2172,7 @@ Due May 31"></textarea>
         : '<span class="pill">Off by default</span>';
       // When sync is ON, show the linking code + status. When OFF, show the
       // one-tap "Turn on sync" plus an "Enter a code" path for the 2nd device.
+      const syncLink = linkURL(s.code);
       const onBody = `
           <p class="sub" style="margin-top:0">Sync is on. Your data keeps itself up to date across every device that uses this code — automatically.</p>
           ${syncStatusHTML()}
@@ -2140,6 +2183,12 @@ Due May 31"></textarea>
             <button class="btn" data-act="copy-link">🔗 Copy link</button>
             <button class="btn navy" data-act="sync-now">🔄 Sync now</button>
             <button class="btn danger" data-act="toggle-sync">Turn off sync</button>
+          </div>
+          <div class="qr-pairing-box" style="margin-top: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 12px; background: rgba(255,255,255,0.03); border: 1.5px dashed var(--line); border-radius: 12px; text-align: center;">
+            <span style="font-size: 0.85rem; font-weight: 800; color: var(--ink);">📱 Scan to Pair Your Phone</span>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(syncLink)}&size=160x160" alt="Pairing QR Code" style="border: 4px solid white; border-radius: 8px; width: 160px; height: 160px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+            <span style="display:none; font-size: 0.85rem; color: var(--muted)">QR Code generation offline. Copy the link above to pair!</span>
+            <small class="muted" style="font-size: 0.75rem; margin-top: 4px">Scan this with your mobile camera to instantly sync and access your planner on the go.</small>
           </div>
           <p class="sub" style="margin-top:10px"><b>Link another device:</b> paste this code there (Backup &amp; sync → “Enter a code”), or send yourself the <b>link</b> and open it on the other device — it links automatically.</p>`;
       const offBody = `
@@ -2937,6 +2986,7 @@ Due May 31"></textarea>
       this.status = next;
       const el = document.getElementById("syncStatus");
       if (el) el.outerHTML = syncStatusHTML();
+      if (typeof updateHeaderStatus === "function") updateHeaderStatus();
     },
     async push() {
       const code = state.settings.sync.code;
@@ -4468,6 +4518,19 @@ ${name}`;
     },
 
     "close-modal": () => closeModal(),
+    "show-shortcuts": () => {
+      openModal(
+        "⌨️ Keyboard Shortcuts",
+        `<div style="display:flex;flex-direction:column;gap:12px;font-weight:700">
+          <p class="sub">Use these shortcuts to navigate faster on desktop:</p>
+          <div class="row"><span class="pill">Cmd+K</span><span>or</span><span class="pill">/</span><span>Open search &amp; command bar</span></div>
+          <div class="row"><span class="pill">1</span><span>to</span><span class="pill">6</span><span>Switch tabs (Now, Today, Tasks...)</span></div>
+          <div class="row"><span class="pill">f</span><span>Start/stop focus session for today's task</span></div>
+          <div class="row"><span class="pill">Esc</span><span>Close any open modal or overlay</span></div>
+          <div class="row"><span class="pill">?</span><span>Show this shortcuts guide</span></div>
+         </div>`
+      );
+    },
     "set-reflection-rating": (_, arg) => {
       const [field, val] = arg.split(":");
       if (field === "focus") window._pendingReflectionFocus = Number(val);
@@ -4672,19 +4735,15 @@ ${name}`;
     // avoid losing a half-typed assignment/routine. Use ✕ or Escape instead.
 
     // connection status
-    const setConn = () => {
-      const online = navigator.onLine;
-      const chip = $("#connChip");
-      chip.className = "chip " + (online ? "online" : "offline");
-      $("#connText").textContent = online ? "Online" : "Offline — still works";
-      if (online && state.settings.sync.enabled)
+    window.addEventListener("online", () => {
+      updateHeaderStatus();
+      if (state.settings.sync.enabled)
         cloud.pull().then((p) => p && render());
-    };
-    window.addEventListener("online", setConn);
-    window.addEventListener("offline", setConn);
-    setConn();
+    });
+    window.addEventListener("offline", updateHeaderStatus);
+    updateHeaderStatus();
 
-    // Global keyboard listeners for Command Bar
+    // Global keyboard listeners for Command Bar & Shortcuts
     window.addEventListener("keydown", (ev) => {
       const modal = document.getElementById("commandBarBack");
       const isOpen = modal && modal.classList.contains("open");
@@ -4702,7 +4761,27 @@ ${name}`;
         return;
       }
 
-      if (!isOpen) return;
+      if (!isOpen) {
+        if (ev.key === "?" && document.activeElement.tagName !== "INPUT" && document.activeElement.tagName !== "TEXTAREA") {
+          ev.preventDefault();
+          ACTIONS["show-shortcuts"]();
+          return;
+        }
+        if (ev.key === "f" && document.activeElement.tagName !== "INPUT" && document.activeElement.tagName !== "TEXTAREA") {
+          ev.preventDefault();
+          const next = rightNowTask();
+          if (next) focus.start(next.id);
+          else toast("No assignments to focus on!");
+          return;
+        }
+        if (["1", "2", "3", "4", "5", "6"].includes(ev.key) && document.activeElement.tagName !== "INPUT" && document.activeElement.tagName !== "TEXTAREA") {
+          ev.preventDefault();
+          const tabs = ["home", "today", "tasks", "calendar", "routines", "more"];
+          setView(tabs[Number(ev.key) - 1]);
+          return;
+        }
+        return;
+      }
 
       if (ev.key === "Escape") {
         ev.preventDefault();
@@ -4723,6 +4802,52 @@ ${name}`;
         }
       }
     });
+
+    // Touch Swipe Navigation for PWA
+    let touchStartX = 0;
+    let touchStartY = 0;
+    document.addEventListener("touchstart", (ev) => {
+      if (document.getElementById("modalBack").classList.contains("open") ||
+          document.getElementById("focusOverlay").classList.contains("open") ||
+          document.getElementById("guideOverlay").classList.contains("open") ||
+          document.getElementById("commandBarBack").classList.contains("open")) {
+        return;
+      }
+      if (ev.target.closest("input[type='range']") || ev.target.closest(".seg") || ev.target.closest(".accent-row") || ev.target.closest(".theme-gradient-grid")) {
+        return;
+      }
+      touchStartX = ev.changedTouches[0].screenX;
+      touchStartY = ev.changedTouches[0].screenY;
+    }, { passive: true });
+
+    document.addEventListener("touchend", (ev) => {
+      if (document.getElementById("modalBack").classList.contains("open") ||
+          document.getElementById("focusOverlay").classList.contains("open") ||
+          document.getElementById("guideOverlay").classList.contains("open") ||
+          document.getElementById("commandBarBack").classList.contains("open")) {
+        return;
+      }
+      if (ev.target.closest("input[type='range']") || ev.target.closest(".seg") || ev.target.closest(".accent-row") || ev.target.closest(".theme-gradient-grid")) {
+        return;
+      }
+      const touchEndX = ev.changedTouches[0].screenX;
+      const touchEndY = ev.changedTouches[0].screenY;
+      const diffX = touchEndX - touchStartX;
+      const diffY = touchEndY - touchStartY;
+      if (Math.abs(diffX) > 80 && Math.abs(diffY) < 40) {
+        const tabsOrder = ["home", "today", "tasks", "calendar", "routines", "more"];
+        const currentIdx = tabsOrder.indexOf(view);
+        if (currentIdx !== -1) {
+          if (diffX < 0) {
+            const nextIdx = currentIdx + 1;
+            if (nextIdx < tabsOrder.length) setView(tabsOrder[nextIdx]);
+          } else {
+            const prevIdx = currentIdx - 1;
+            if (prevIdx >= 0) setView(tabsOrder[prevIdx]);
+          }
+        }
+      }
+    }, { passive: true });
 
     // Wire cmdInput input handler
     document.addEventListener("input", (ev) => {
