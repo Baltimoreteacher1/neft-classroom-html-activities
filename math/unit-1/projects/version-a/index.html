@@ -1392,9 +1392,10 @@
     </div>
 
     <script>
-      document.getElementById("yr").textContent = new Date().getFullYear();
+      const yrEl = document.getElementById("yr");
+      if (yrEl) yrEl.textContent = new Date().getFullYear();
       const $ = (id) => document.getElementById(id);
-      const num = (id) => parseFloat($(id).value);
+      const num = (id) => { const e = $(id); return e ? parseFloat(e.value) : NaN; };
 
       /* ---- Dynamic SVG Draw Functions ---- */
       function getFactors(n) {
