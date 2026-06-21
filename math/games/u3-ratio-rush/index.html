@@ -4,10 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/assets/math-mobile.css" />
-    <title>Ratio Rush — Lessons 3.1–3.5 Game | Neft Teacher</title>
+    <title>Ratio Rush — Smoothie Bar | Neft Teacher</title>
     <meta
       name="description"
-      content="A 2D lily-pad hopper game for Grade 6 lessons 3.1–3.5: ratios, equivalent ratios, and unit rates (6.RP.1–3). Hop to the pad with the correct answer."
+      content="A Grade 6 smoothie-bar game for ratios (6.RP.A.1): pour berry and mango scoops into two tubes to hit a target ratio. Equivalent ratios fill the same order, wrong ratios blend the wrong color."
     />
     <style>
       * {
@@ -211,6 +211,7 @@
         }
       });
     </script>
+    <script src="/assets/games2d-data.js"></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:end -->
@@ -251,26 +252,94 @@
     </script>
     <script>
       // ════════════════════════════════════════════════════════════════════
-      // RATIO RUSH — Lily-Pad Hopper  ·  Grade 6  ·  6.RP.1–3
-      // Lessons 3.1–3.5: simplify ratios, equivalent ratios, unit rates.
+      // RATIO RUSH — Smoothie Bar  ·  Grade 6  ·  6.RP.A.1
       //
-      // MECHANIC: Your frog stands on a river bank. Each turn, three lily pads
-      //   appear ahead — left, center, right — each carrying a candidate answer.
-      //   Read the prompt, then HOP onto the pad with the correct answer
-      //   (← / ↑ / → , or A / W / D, or tap a pad). Land right → the frog leaps
-      //   forward and the river scrolls; land on a wrong pad → splash (lose a
-      //   life). Pads bob faster each round.
+      // MATH-AS-MECHANIC: an order card asks for a target ratio of BERRY:MANGO
+      //   scoops (e.g. 3:4). The player POURS scoops into two tubes — the tube
+      //   fill heights ARE the ratio. A live blend swatch shows the resulting
+      //   smoothie color: hit the target ratio and the swatch matches the order;
+      //   pour the wrong ratio and it blends visibly off-color. Equivalence is
+      //   FELT: an order for 6:8 is also filled by 3:4 (any equivalent batch),
+      //   so the player discovers that 3:4 = 6:8. Correctness is decided by
+      //   integer cross-multiplication (b*tm === m*tb), never a float compare
+      //   and never by clicking A/B/C/D.
       //
-      // FLOAT SAFETY: every answer is a ratio STRING ("a:b") or an INTEGER
-      //   produced from integer arithmetic; correctness is a string/int compare,
-      //   never a float ==.
+      // CONTROLS: ← / → add a berry / mango scoop · A / D same · Z / C remove a
+      //   scoop · ↑ or Enter or Space = SERVE · tap a tube to add, tap SERVE.
       // ════════════════════════════════════════════════════════════════════
+      const GAME_ID = "u3-ratio-rush";
       const LS_KEY = "rr_ratio_rush_highscore";
+      const TIER_KEY = "rr_ratio_rush_tier";
       const W = 800,
         H = 600;
-      const ACTIVITY_TITLE = "Ratio Rush — Lessons 3.1–3.5";
-      const STANDARD = "6.RP.3";
+      const ACTIVITY_TITLE = "Ratio Rush — Smoothie Bar";
+      const STANDARD = "6.RP.A.1";
+      const MAX_SCOOPS = 12; // per tube capacity
 
+      // Metadata source of truth: window.Games2DData (scripts/games2d/data.mjs →
+      // assets/games2d-data.js). Inline fallback keeps the page alive if the
+      // artifact fails to load.
+      const DATA = (window.Games2DData && window.Games2DData[GAME_ID]) || {
+        ccss: "6.RP.A.1",
+        title: "Ratio Rush",
+        vocab: [
+          {
+            term: "ratio",
+            defn: "A way to compare two amounts, like 2 scoops of berry to 3 scoops of mango. We write it as 2:3.",
+          },
+          {
+            term: "equivalent ratios",
+            defn: "Two ratios that compare the same way, like 3:4 and 6:8. Multiply both parts by the same number.",
+          },
+          {
+            term: "part",
+            defn: "One of the two amounts in a ratio. In 3:4 the parts are 3 and 4 — the scoops in each tube.",
+          },
+        ],
+        misconceptions: [
+          {
+            tag: "added-instead-of-scaled",
+            trigger:
+              "Adds the same number to each tube instead of multiplying.",
+            feedback:
+              "Equivalent ratios MULTIPLY both parts by the same number — adding changes the flavor.",
+          },
+          {
+            tag: "scaled-one-part",
+            trigger: "Pours more into one tube but leaves the other.",
+            feedback:
+              "Fill BOTH tubes by the same factor so the ratio stays the same.",
+          },
+          {
+            tag: "matched-numbers-not-ratio",
+            trigger:
+              "Pours the exact target numbers when an equivalent batch would also fill it.",
+            feedback:
+              "An order for 6:8 is also filled by 3:4 — match the FLAVOR, not just the numbers.",
+          },
+        ],
+        tiers: {
+          0: {
+            label: "Level 0",
+            sub: "Most support",
+            desc: "Tiny ratios · matching guide shown · 5 lives",
+          },
+          1: {
+            label: "Level 1",
+            sub: "Support",
+            desc: "Simplest-form orders · color preview · 4 lives",
+          },
+          2: {
+            label: "Level 2",
+            sub: "Challenge",
+            desc: "Scaled-up orders · serve an equivalent batch · 3 lives",
+          },
+        },
+      };
+      const MIS = {};
+      (DATA.misconceptions || []).forEach((m) => (MIS[m.tag] = m));
+
+      // ── Tiny WebAudio SFX (preserved from the original shell) ──
       const SFX = {
         ctx: null,
         init() {
@@ -316,23 +385,21 @@
             s.stop(c.currentTime + d);
           } catch (e) {}
         },
-        hop() {
-          this.play("sine", 520, 0.08, 0.18);
-          this.play("sine", 780, 0.1, 0.16);
+        pour() {
+          this.play("sine", 320, 0.06, 0.14);
+          this.play("sine", 480, 0.07, 0.1);
         },
-        splash() {
-          this.noise(0.22, 0.13);
-          this.play("sawtooth", 180, 0.26, 0.15);
+        unpour() {
+          this.play("sine", 260, 0.06, 0.1);
         },
-        tick() {
-          this.play("square", 600, 0.03, 0.07);
+        serveGood() {
+          [523, 659, 784, 988].forEach((f, i) =>
+            setTimeout(() => this.play("sine", f, 0.16, 0.22), i * 70),
+          );
         },
-        streak(n) {
-          [523, 659, 784, 988, 1175]
-            .slice(0, Math.min(n, 5))
-            .forEach((f, i) =>
-              setTimeout(() => this.play("sine", f, 0.12, 0.2), i * 55),
-            );
+        serveBad() {
+          this.noise(0.2, 0.1);
+          this.play("sawtooth", 180, 0.26, 0.14);
         },
         levelUp() {
           [523, 659, 784, 1047].forEach((f, i) =>
@@ -354,149 +421,58 @@
       function randInt(a, b) {
         return Math.floor(Math.random() * (b - a + 1)) + a;
       }
-      function shuffle(a) {
-        const r = a.slice();
-        for (let i = r.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [r[i], r[j]] = [r[j], r[i]];
+      function gcd(a, b) {
+        a = Math.abs(a);
+        b = Math.abs(b);
+        while (b) {
+          [a, b] = [b, a % b];
         }
-        return r;
+        return a || 1;
       }
 
-      // Coprime pairs — simplest-form ratio bases.
-      const COPRIME_PAIRS = [
+      // Simplest-form ratio bases (coprime). The fruit story keeps both parts
+      // small enough to pour into a 12-scoop tube even after scaling.
+      const BASE_PAIRS = [
         [1, 2],
-        [1, 3],
-        [1, 4],
-        [1, 5],
         [2, 3],
-        [2, 5],
         [3, 4],
+        [2, 5],
         [3, 5],
         [4, 5],
-        [3, 7],
-        [2, 7],
-        [5, 7],
-        [5, 8],
-        [5, 9],
-        [4, 7],
-        [3, 8],
+        [1, 3],
+        [3, 2],
+        [4, 3],
+        [5, 3],
+        [5, 4],
+        [5, 2],
       ];
 
-      const UNIT_RATE_TEMPLATES = [
-        {
-          tmpl: (t, c) => "$" + t + " for " + c + " items",
-          unit: "$ per item",
-          word: "item",
-        },
-        {
-          tmpl: (t, c) => t + " miles in " + c + " hours",
-          unit: "mph",
-          word: "hour",
-        },
-        {
-          tmpl: (t, c) => t + " words in " + c + " minutes",
-          unit: "words/min",
-          word: "minute",
-        },
-        {
-          tmpl: (t, c) => "$" + t + " for " + c + " pounds",
-          unit: "$ per lb",
-          word: "pound",
-        },
-        {
-          tmpl: (t, c) => t + " pages in " + c + " days",
-          unit: "pages/day",
-          word: "day",
-        },
-      ];
-
-      // Build 3 distinct pad labels (strings) with exactly one correct.
-      function buildPads(correctLabel, makeWrong) {
-        const set = new Set([correctLabel]);
-        let guard = 0;
-        while (set.size < 3 && guard++ < 200) {
-          const w = makeWrong();
-          if (w && w !== correctLabel) set.add(w);
+      // Build one smoothie order for a given tier.
+      //   tier 0: tiny simplest-form ratios (small parts, 5 lives elsewhere)
+      //   tier 1: simplest-form ratios up to 5
+      //   tier 2: SCALED orders (e.g. 6:8) that must be served as an equivalent
+      //           batch — this is where 3:4 = 6:8 becomes a felt discovery.
+      function genOrder(tier) {
+        let pool = BASE_PAIRS;
+        if (tier === 0) pool = BASE_PAIRS.filter((p) => p[0] <= 3 && p[1] <= 3);
+        const base = pool[randInt(0, pool.length - 1)];
+        let tb = base[0],
+          tm = base[1];
+        if (tier === 2) {
+          // Scale the displayed order so the simplest form is non-obvious.
+          // Cap so both scaled parts still fit a 12-scoop tube comfortably.
+          const maxK = Math.max(2, Math.floor(8 / Math.max(tb, tm)));
+          const k = maxK >= 2 ? randInt(2, maxK) : 1;
+          tb *= k;
+          tm *= k;
         }
-        const labels = shuffle(Array.from(set));
-        return { labels: labels, correctIndex: labels.indexOf(correctLabel) };
-      }
-
-      // round 1: simplify ratio  (bigA:bigB -> a:b)
-      // round 2: equivalent ratio missing value  (a:b = ?:b·k)
-      // round 3: unit rate  (total ÷ count = rate)
-      function genQuestion(round) {
-        if (round === 1) {
-          const pair = COPRIME_PAIRS[randInt(0, COPRIME_PAIRS.length - 1)];
-          const a = pair[0],
-            b = pair[1];
-          const k = randInt(2, 6);
-          const bigA = a * k,
-            bigB = b * k;
-          const correct = a + ":" + b;
-          const g = buildPads(correct, () => {
-            const dp = COPRIME_PAIRS[randInt(0, COPRIME_PAIRS.length - 1)];
-            return dp[0] + ":" + dp[1];
-          });
-          return {
-            tag: "Simplify Ratios",
-            prompt: bigA + " : " + bigB,
-            why:
-              bigA + ":" + bigB + " = " + a + ":" + b + " (÷" + k + " each).",
-            pads: g.labels,
-            correctIndex: g.correctIndex,
-          };
-        }
-        if (round === 2) {
-          const pair = COPRIME_PAIRS[randInt(0, COPRIME_PAIRS.length - 1)];
-          const a = pair[0],
-            b = pair[1];
-          const k = randInt(2, 8);
-          const ans = a * k; // missing value
-          const bigB = b * k;
-          const g = buildPads(String(ans), () => {
-            const delta = randInt(1, 5) * (Math.random() < 0.5 ? 1 : -1);
-            let v = ans + delta;
-            if (v < 1 || v === ans) v = ans + randInt(1, 5);
-            return String(v);
-          });
-          return {
-            tag: "Equivalent Ratios",
-            prompt: a + " : " + b + " = ? : " + bigB,
-            why: a + ":" + b + " = " + ans + ":" + bigB + " (×" + k + " each).",
-            pads: g.labels,
-            correctIndex: g.correctIndex,
-          };
-        }
-        // round 3 — unit rate
-        const tpl =
-          UNIT_RATE_TEMPLATES[randInt(0, UNIT_RATE_TEMPLATES.length - 1)];
-        const count = randInt(2, 9);
-        const rate = randInt(3, 15);
-        const total = rate * count;
-        const g = buildPads(String(rate), () => {
-          const delta = randInt(1, 6) * (Math.random() < 0.5 ? 1 : -1);
-          let v = rate + delta;
-          if (v < 1 || v === rate) v = rate + randInt(1, 6);
-          return String(v);
-        });
+        const g = gcd(tb, tm);
         return {
-          tag: "Unit Rates",
-          prompt: tpl.tmpl(total, count),
-          why:
-            total +
-            " ÷ " +
-            count +
-            " = " +
-            rate +
-            " " +
-            tpl.unit +
-            " (per " +
-            tpl.word +
-            ").",
-          pads: g.labels,
-          correctIndex: g.correctIndex,
+          tb: tb,
+          tm: tm,
+          simpleB: tb / g, // simplest equivalent (smallest batch that fills it)
+          simpleM: tm / g,
+          tier: tier,
         };
       }
 
@@ -509,27 +485,22 @@
 
       // ────────────────────────────────────────────────────────────────────
       // VOCAB GATE — term + student-facing (Level-1) definition + image/emoji,
-      // shown BEFORE the first round (Title → Vocab → Play). No giveaways: the
-      // definitions teach the concepts, never the in-game answers. Shown by
-      // default; skippable on REPLAY (once seen this session) via a Skip button.
+      // shown BEFORE the first round. No giveaways: the definitions teach the
+      // concepts, never the in-game answer (there is no fixed numeric answer to
+      // give away — any equivalent ratio is accepted). Shown by default;
+      // skippable on REPLAY (once seen this session) via a Skip button.
       // ────────────────────────────────────────────────────────────────────
-      const RR_VOCAB_TERMS = [
-        {
-          term: "Ratio",
-          emoji: "🐸",
-          def: "A way to compare two amounts, like 2 frogs to 3 lily pads. We write it as 2:3.",
-        },
-        {
-          term: "Equivalent ratios",
-          emoji: "⚖️",
-          def: "Two ratios that show the same comparison. Multiply or divide BOTH parts by the same number, like 1:2 = 3:6.",
-        },
-        {
-          term: "Unit rate",
-          emoji: "🏷️",
-          def: "How much you get for just ONE of something, like miles in 1 hour. Divide the total by the number of items.",
-        },
-      ];
+      const VOCAB_EMOJI = {
+        ratio: "🥤",
+        "equivalent ratios": "⚖️",
+        part: "🫐",
+      };
+      const RR_VOCAB_TERMS = (DATA.vocab || []).map((v) => ({
+        term: v.term,
+        def: v.defn,
+        image: v.img || "",
+        emoji: VOCAB_EMOJI[v.term] || "🥤",
+      }));
       let RR_VOCAB_SEEN = false; // becomes true after the gate is completed once
 
       function rrEscapeHtml(s) {
@@ -576,7 +547,7 @@
               <div class="rr-vactions">
                 ${i > 0 ? '<button class="rr-vbtn back" type="button" data-act="back">Back</button>' : ""}
                 ${allowSkip ? '<button class="rr-vbtn back" type="button" data-act="skip">Skip ▸</button>' : ""}
-                <button class="rr-vbtn next" type="button" data-act="next">${last ? "Start hopping ▶" : "Next →"}</button>
+                <button class="rr-vbtn next" type="button" data-act="next">${last ? "Start blending ▶" : "Next →"}</button>
               </div>
               <div class="rr-vdots">${RR_VOCAB_TERMS.map((_, n) => `<span class="${n === i ? "on" : ""}"></span>`).join("")}</div>
             </div>`;
@@ -585,7 +556,7 @@
           const skipBtn = overlay.querySelector('[data-act="skip"]');
           nextBtn.addEventListener("click", () => {
             SFX.init();
-            SFX.tick();
+            SFX.pour();
             if (last) finish();
             else {
               i += 1;
@@ -615,8 +586,27 @@
         scene: [],
       };
 
-      const PAD_X = [W * 0.24, W * 0.5, W * 0.76];
-      const PAD_Y = 250;
+      // Tube + swatch colors.
+      const BERRY = 0x8e3bd6, // deep berry purple
+        MANGO = 0xf6a623, // mango orange
+        GLASS = 0x123a3e;
+
+      // Blend two RGB ints by a 0..1 fraction of the first.
+      function blend(c1, c2, f) {
+        const r1 = (c1 >> 16) & 255,
+          g1 = (c1 >> 8) & 255,
+          b1 = c1 & 255;
+        const r2 = (c2 >> 16) & 255,
+          g2 = (c2 >> 8) & 255,
+          b2 = c2 & 255;
+        const r = Math.round(r1 * f + r2 * (1 - f));
+        const g = Math.round(g1 * f + g2 * (1 - f));
+        const b = Math.round(b1 * f + b2 * (1 - f));
+        return (r << 16) | (g << 8) | b;
+      }
+      function toCss(c) {
+        return "#" + ("000000" + c.toString(16)).slice(-6);
+      }
 
       class BootScene extends Phaser.Scene {
         constructor() {
@@ -647,8 +637,8 @@
             window.matchMedia("(prefers-reduced-motion: reduce)").matches;
           this.add.rectangle(cx, H / 2, W, H, 0x0c2a2e);
           this.add
-            .text(cx, 120, "RATIO", {
-              fontSize: "70px",
+            .text(cx, 96, "RATIO", {
+              fontSize: "66px",
               fontFamily: "Impact, sans-serif",
               color: "#6be0c0",
               stroke: "#07191c",
@@ -656,8 +646,8 @@
             })
             .setOrigin(0.5);
           this.add
-            .text(cx, 188, "RUSH", {
-              fontSize: "70px",
+            .text(cx, 158, "RUSH", {
+              fontSize: "66px",
               fontFamily: "Impact, sans-serif",
               color: "#d4952a",
               stroke: "#07191c",
@@ -665,7 +655,7 @@
             })
             .setOrigin(0.5);
           this.add
-            .text(cx, 245, "Lily-Pad Hopper  ·  Lessons 3.1–3.5  ·  6.RP.1–3", {
+            .text(cx, 210, "Smoothie Bar  ·  Lesson 3  ·  6.RP.A.1", {
               fontSize: "15px",
               color: "#9fd6c0",
             })
@@ -673,34 +663,97 @@
           this.add
             .text(
               cx,
-              300,
-              "Read each ratio or unit-rate problem, then HOP your frog\nonto the lily pad with the correct answer.",
+              258,
+              "Pour BERRY and MANGO scoops into the two tubes to match\nthe order's ratio. Any equivalent batch fills the order!",
               { fontSize: "15px", color: "#7fb3a0", align: "center" },
             )
             .setOrigin(0.5);
           this.add
-            .text(cx, 356, "← ↑ → or A/W/D to hop   ·   tap a pad on touch", {
-              fontSize: "14px",
-              color: "#6ba390",
-            })
+            .text(
+              cx,
+              312,
+              "← / → add a scoop   ·   Z / C remove   ·   ↑ or Space to SERVE",
+              { fontSize: "14px", color: "#6ba390" },
+            )
             .setOrigin(0.5);
 
           const hs = localStorage.getItem(LS_KEY);
           if (hs)
             this.add
-              .text(cx, 392, "HIGH SCORE: " + hs, {
+              .text(cx, 352, "HIGH SCORE: " + hs, {
                 fontSize: "15px",
                 color: "#d4952a",
                 fontStyle: "bold",
               })
               .setOrigin(0.5);
 
+          // ── Tier picker (Level 0 / 1 / 2 — mechanic difficulty, not "ESOL") ──
+          this.selectedTier = parseInt(
+            localStorage.getItem(TIER_KEY) || "1",
+            10,
+          );
+          if (![0, 1, 2].includes(this.selectedTier)) this.selectedTier = 1;
+          const tiers = DATA.tiers || {};
+          const order = [0, 1, 2].filter((k) => tiers[k]);
+          this.tierBtns = [];
+          const startX = cx - ((order.length - 1) * 150) / 2;
+          order.forEach((k, idx) => {
+            const x = startX + idx * 150;
+            const box = this.add
+              .rectangle(x, 408, 138, 70, 0x10343a)
+              .setStrokeStyle(2, 0x1f4a52)
+              .setInteractive({ useHandCursor: true });
+            const lbl = this.add
+              .text(x, 388, tiers[k].label, {
+                fontSize: "16px",
+                fontStyle: "bold",
+                color: "#dff1f0",
+              })
+              .setOrigin(0.5);
+            const sub = this.add
+              .text(x, 410, tiers[k].sub, {
+                fontSize: "12px",
+                color: "#9fd6c0",
+              })
+              .setOrigin(0.5);
+            const hint = this.add
+              .text(x, 428, "Tap to pick", {
+                fontSize: "10px",
+                color: "#6ba390",
+              })
+              .setOrigin(0.5);
+            box.on("pointerdown", () => {
+              this.selectedTier = k;
+              try {
+                localStorage.setItem(TIER_KEY, String(k));
+              } catch (e) {}
+              this.paintTiers();
+              srSay(
+                tiers[k].label +
+                  ", " +
+                  tiers[k].sub +
+                  ". " +
+                  (tiers[k].desc || ""),
+              );
+            });
+            this.tierBtns.push({ k, box, lbl, sub, hint });
+          });
+          this.tierDesc = this.add
+            .text(cx, 458, "", {
+              fontSize: "12px",
+              color: "#7fb3a0",
+              align: "center",
+              wordWrap: { width: W - 120 },
+            })
+            .setOrigin(0.5);
+          this.paintTiers();
+
           const btn = this.add
-            .rectangle(cx, 450, 260, 56, 0x0e8a7d)
+            .rectangle(cx, 506, 260, 54, 0x0e8a7d)
             .setInteractive({ useHandCursor: true });
           const btnT = this.add
-            .text(cx, 450, "START HOPPING ▶", {
-              fontSize: "22px",
+            .text(cx, 506, "START BLENDING ▶", {
+              fontSize: "21px",
               fontStyle: "bold",
               color: "#062420",
             })
@@ -716,12 +769,14 @@
             });
           const go = () => {
             SFX.init();
-            SFX.tick();
+            SFX.pour();
             this.cameras.main.fadeOut(300);
-            // Title → Vocab → Play. Default shown; Skip only offered on replay
-            // (once the words have already been seen this session).
+            const tier = this.selectedTier;
             this.time.delayedCall(300, () =>
-              showVocabGate(() => this.scene.start("Game"), RR_VOCAB_SEEN),
+              showVocabGate(
+                () => this.scene.start("Game", { tier }),
+                RR_VOCAB_SEEN,
+              ),
             );
           };
           btn.on("pointerover", () => btn.setFillStyle(0x12a596));
@@ -729,9 +784,13 @@
           btn.on("pointerdown", go);
           this.input.keyboard.on("keydown-SPACE", go);
           this.input.keyboard.on("keydown-ENTER", go);
+          // 1/2/3 keys pick tiers without a mouse
+          this.input.keyboard.on("keydown-ONE", () => this.pickTier(0));
+          this.input.keyboard.on("keydown-TWO", () => this.pickTier(1));
+          this.input.keyboard.on("keydown-THREE", () => this.pickTier(2));
 
           const hub = this.add
-            .text(cx, 555, "← Back to Games hub", {
+            .text(cx, 560, "← Back to Games hub", {
               fontSize: "15px",
               fontStyle: "bold",
               color: "#6ba390",
@@ -744,40 +803,54 @@
 
           this.cameras.main.fadeIn(400);
         }
+        pickTier(k) {
+          if (!(DATA.tiers && DATA.tiers[k])) return;
+          this.selectedTier = k;
+          try {
+            localStorage.setItem(TIER_KEY, String(k));
+          } catch (e) {}
+          this.paintTiers();
+        }
+        paintTiers() {
+          const tiers = DATA.tiers || {};
+          this.tierBtns.forEach((b) => {
+            const on = b.k === this.selectedTier;
+            b.box.setFillStyle(on ? 0x0e8a7d : 0x10343a);
+            b.box.setStrokeStyle(2, on ? 0x6be0c0 : 0x1f4a52);
+            b.lbl.setColor(on ? "#062420" : "#dff1f0");
+            b.sub.setColor(on ? "#06302a" : "#9fd6c0");
+            b.hint.setText(on ? "Selected ✓" : "Tap to pick");
+            b.hint.setColor(on ? "#06302a" : "#6ba390");
+          });
+          const cur = tiers[this.selectedTier];
+          if (this.tierDesc && cur) this.tierDesc.setText(cur.desc || "");
+        }
       }
 
       class GameScene extends Phaser.Scene {
         constructor() {
           super("Game");
         }
-        init() {
+        init(data) {
+          this.tier = data && [0, 1, 2].includes(data.tier) ? data.tier : 1;
           this.reduce =
             window.matchMedia &&
             window.matchMedia("(prefers-reduced-motion: reduce)").matches;
           this.score = 0;
-          this.lives = 3;
+          this.lives = this.tier === 0 ? 5 : this.tier === 1 ? 4 : 3;
           this.streak = 0;
           this.maxStreak = 0;
           this.correct = 0;
           this.qIndex = 0;
-          this.TOTAL = 12;
-          this.level = 1;
+          this.TOTAL = 8;
           this.busy = false;
-          this.pads = [];
-          this.bobT = 0;
-        }
-        roundFor(i) {
-          return i < 4 ? 1 : i < 8 ? 2 : 3;
+          this.berry = 0;
+          this.mango = 0;
+          this.order = null;
         }
         create() {
           const cx = W / 2;
-          this.add.rectangle(cx, H / 2, W, H, 0x123a3e); // water
-          // gentle water stripes
-          this.stripes = [];
-          for (let y = 140; y < H; y += 46) {
-            const s = this.add.rectangle(cx, y, W, 3, 0x1c5054, 0.4);
-            this.stripes.push(s);
-          }
+          this.add.rectangle(cx, H / 2, W, H, 0x0e2e32);
 
           // HUD
           this.add.rectangle(cx, 24, W, 48, 0x07191c, 0.92).setDepth(8);
@@ -789,7 +862,7 @@
             })
             .setDepth(9);
           this.livesText = this.add
-            .text(W - 16, 12, "❤❤❤", { fontSize: "20px", color: "#ff7b6b" })
+            .text(W - 16, 12, "", { fontSize: "20px", color: "#ff7b6b" })
             .setOrigin(1, 0)
             .setDepth(9);
           this.streakText = this.add
@@ -801,50 +874,100 @@
             .setOrigin(0.5, 0)
             .setDepth(9);
 
-          // prompt
-          this.add.rectangle(cx, 80, 420, 60, 0x07191c, 0.92).setDepth(8);
-          this.tagText = this.add
-            .text(cx, 62, "", { fontSize: "13px", color: "#9fd6c0" })
+          // Order card
+          this.add.rectangle(cx, 86, 560, 64, 0x07191c, 0.92).setDepth(8);
+          this.add
+            .text(cx, 64, "SMOOTHIE ORDER", {
+              fontSize: "12px",
+              color: "#9fd6c0",
+            })
             .setOrigin(0.5)
             .setDepth(9);
-          this.promptText = this.add
-            .text(cx, 88, "", {
+          this.orderText = this.add
+            .text(cx, 90, "", {
               fontSize: "24px",
               color: "#ffffff",
               fontStyle: "bold",
-              align: "center",
-              wordWrap: { width: 400 },
             })
             .setOrigin(0.5)
             .setDepth(9);
           this.qnumText = this.add
-            .text(cx, 118, "", { fontSize: "12px", color: "#7fb3a0" })
+            .text(cx, 122, "", { fontSize: "12px", color: "#7fb3a0" })
             .setOrigin(0.5)
             .setDepth(9);
 
-          // Frog
-          this.frogHome = { x: cx, y: H - 80 };
-          this.frog = this.add
-            .container(this.frogHome.x, this.frogHome.y)
-            .setDepth(16);
-          const fg = this.add.graphics();
-          fg.fillStyle(0x57c84a, 1);
-          fg.fillEllipse(0, 0, 50, 40);
-          fg.fillStyle(0x57c84a, 1);
-          fg.fillCircle(-13, -16, 9);
-          fg.fillCircle(13, -16, 9);
-          fg.fillStyle(0xffffff, 1);
-          fg.fillCircle(-13, -17, 5);
-          fg.fillCircle(13, -17, 5);
-          fg.fillStyle(0x103018, 1);
-          fg.fillCircle(-13, -17, 2.5);
-          fg.fillCircle(13, -17, 2.5);
-          this.frog.add(fg);
+          // ── Tube geometry ──
+          this.TUBE_W = 86;
+          this.TUBE_H = 250;
+          this.TUBE_Y = 200; // top of the tube fill area
+          this.berryX = cx - 130;
+          this.mangoX = cx + 130;
 
-          // bank under frog
+          this.buildTube("berry", this.berryX);
+          this.buildTube("mango", this.mangoX);
+
+          // ── Target swatch (what the order should look like) ──
+          this.targetSwatch = this.add
+            .rectangle(cx, 232, 84, 84, 0xffffff)
+            .setStrokeStyle(3, 0x1f4a52)
+            .setDepth(9);
           this.add
-            .ellipse(this.frogHome.x, this.frogHome.y + 26, 96, 30, 0x2d6a3a)
-            .setDepth(15);
+            .text(cx, 282, "GOAL", { fontSize: "12px", color: "#9fd6c0" })
+            .setOrigin(0.5)
+            .setDepth(9);
+          // ── Live blend swatch (what the player's pour looks like) ──
+          this.blendSwatch = this.add
+            .rectangle(cx, 360, 84, 84, GLASS)
+            .setStrokeStyle(3, 0x1f4a52)
+            .setDepth(9);
+          this.blendLabel = this.add
+            .text(cx, 410, "YOUR BLEND", { fontSize: "12px", color: "#9fd6c0" })
+            .setOrigin(0.5)
+            .setDepth(9);
+          this.matchTag = this.add
+            .text(cx, 430, "", {
+              fontSize: "13px",
+              fontStyle: "bold",
+              color: "#7fb3a0",
+              align: "center",
+              wordWrap: { width: 220 },
+            })
+            .setOrigin(0.5)
+            .setDepth(9);
+
+          // ── Controls row (touch buttons) ──
+          this.makeBtn(this.berryX, 488, "− Berry", () =>
+            this.pour("berry", -1),
+          );
+          this.makeBtn(this.berryX, 520, "+ Berry", () =>
+            this.pour("berry", 1),
+          );
+          this.makeBtn(this.mangoX, 488, "− Mango", () =>
+            this.pour("mango", -1),
+          );
+          this.makeBtn(this.mangoX, 520, "+ Mango", () =>
+            this.pour("mango", 1),
+          );
+          this.serveBtn = this.add
+            .rectangle(cx, 504, 180, 56, 0x0e8a7d)
+            .setStrokeStyle(2, 0x6be0c0)
+            .setDepth(12)
+            .setInteractive({ useHandCursor: true });
+          this.serveBtnT = this.add
+            .text(cx, 504, "SERVE ▶", {
+              fontSize: "22px",
+              fontStyle: "bold",
+              color: "#062420",
+            })
+            .setOrigin(0.5)
+            .setDepth(13);
+          this.serveBtn.on("pointerover", () =>
+            this.serveBtn.setFillStyle(0x12a596),
+          );
+          this.serveBtn.on("pointerout", () =>
+            this.serveBtn.setFillStyle(0x0e8a7d),
+          );
+          this.serveBtn.on("pointerdown", () => this.serve());
 
           // particles
           this.confetti = this.add
@@ -857,7 +980,7 @@
               gravityY: 240,
               emitting: false,
               quantity: 22,
-              tint: [0x6be0c0, 0xd4952a, 0x57c84a, 0x1a6fb5],
+              tint: [0x6be0c0, 0xd4952a, 0x8e3bd6, 0xf6a623],
             })
             .setDepth(40);
           this.splashParticles = this.add
@@ -867,16 +990,16 @@
               lifespan: 500,
               emitting: false,
               quantity: 16,
-              tint: [0x6be0c0, 0x9fd6ff, 0xffffff],
+              tint: [0x8e3bd6, 0xf6a623, 0xffffff],
               gravityY: 300,
             })
             .setDepth(40);
           this.redFlash = this.add
-            .rectangle(cx, H / 2, W, H, 0x2255cc, 0)
+            .rectangle(cx, H / 2, W, H, 0xcc3322, 0)
             .setDepth(35);
           this.feedback = this.add
-            .text(cx, 155, "", {
-              fontSize: "16px",
+            .text(cx, 160, "", {
+              fontSize: "15px",
               color: "#fff",
               fontStyle: "bold",
               align: "center",
@@ -886,195 +1009,323 @@
             .setAlpha(0)
             .setDepth(20);
 
-          // input
-          this.input.keyboard.on("keydown-LEFT", () => this.choose(0));
-          this.input.keyboard.on("keydown-A", () => this.choose(0));
-          this.input.keyboard.on("keydown-UP", () => this.choose(1));
-          this.input.keyboard.on("keydown-W", () => this.choose(1));
-          this.input.keyboard.on("keydown-RIGHT", () => this.choose(2));
-          this.input.keyboard.on("keydown-D", () => this.choose(2));
-          this.input.on("pointerdown", (p) => {
-            let best = -1,
-              bd = Infinity;
-            this.pads.forEach((pad, i) => {
-              const dx = pad.sprite.x - p.worldX,
-                dy = pad.sprite.y - p.worldY;
-              const dist = dx * dx + dy * dy;
-              if (dist < bd && dist <= 70 * 70) {
-                bd = dist;
-                best = i;
-              }
-            });
-            if (best >= 0) this.choose(best);
-          });
+          // input — keyboard
+          this.input.keyboard.on("keydown-LEFT", () => this.pour("berry", 1));
+          this.input.keyboard.on("keydown-A", () => this.pour("berry", 1));
+          this.input.keyboard.on("keydown-RIGHT", () => this.pour("mango", 1));
+          this.input.keyboard.on("keydown-D", () => this.pour("mango", 1));
+          this.input.keyboard.on("keydown-Z", () => this.pour("berry", -1));
+          this.input.keyboard.on("keydown-C", () => this.pour("mango", -1));
+          this.input.keyboard.on("keydown-UP", () => this.serve());
+          this.input.keyboard.on("keydown-SPACE", () => this.serve());
+          this.input.keyboard.on("keydown-ENTER", () => this.serve());
 
-          this.nextQuestion();
+          this.updateHUD();
+          this.nextOrder();
           this.cameras.main.fadeIn(350);
         }
 
-        nextQuestion() {
+        buildTube(which, x) {
+          // glass outline
+          const top = this.TUBE_Y;
+          this.add
+            .rectangle(
+              x,
+              top + this.TUBE_H / 2,
+              this.TUBE_W,
+              this.TUBE_H,
+              GLASS,
+            )
+            .setStrokeStyle(3, 0x2a5a60)
+            .setDepth(10)
+            .setInteractive({ useHandCursor: true })
+            .on("pointerdown", () => this.pour(which, 1));
+          // fill graphics (redrawn on each pour)
+          const fill = this.add.graphics().setDepth(11);
+          // scoop-count label
+          const lbl = this.add
+            .text(x, top - 22, "", {
+              fontSize: "22px",
+              color: "#ffffff",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5)
+            .setDepth(12);
+          const name = this.add
+            .text(
+              x,
+              top + this.TUBE_H + 16,
+              which === "berry" ? "BERRY" : "MANGO",
+              {
+                fontSize: "14px",
+                fontStyle: "bold",
+                color: which === "berry" ? "#c79bf0" : "#f6c873",
+              },
+            )
+            .setOrigin(0.5)
+            .setDepth(12);
+          if (which === "berry") {
+            this.berryFill = fill;
+            this.berryLbl = lbl;
+          } else {
+            this.mangoFill = fill;
+            this.mangoLbl = lbl;
+          }
+        }
+
+        makeBtn(x, y, label, fn) {
+          const w = 92,
+            h = 26;
+          const box = this.add
+            .rectangle(x, y, w, h, 0x10343a)
+            .setStrokeStyle(1, 0x2a5a60)
+            .setDepth(12)
+            .setInteractive({ useHandCursor: true });
+          const t = this.add
+            .text(x, y, label, { fontSize: "13px", color: "#bfe6da" })
+            .setOrigin(0.5)
+            .setDepth(13);
+          box.on("pointerover", () => box.setFillStyle(0x18484e));
+          box.on("pointerout", () => box.setFillStyle(0x10343a));
+          box.on("pointerdown", fn);
+          return box;
+        }
+
+        nextOrder() {
           if (this.qIndex >= this.TOTAL || this.lives <= 0) {
             this.endGame();
             return;
           }
-          const round = this.roundFor(this.qIndex);
-          if (round !== this.level && this.qIndex > 0) SFX.levelUp();
-          this.level = round;
-          this.q = genQuestion(round);
+          this.order = genOrder(this.tier);
           this.qIndex++;
           this.busy = false;
+          this.berry = 0;
+          this.mango = 0;
 
-          this.tagText.setText(this.q.tag);
-          this.promptText.setText(this.q.prompt);
+          const o = this.order;
+          // Show the order ratio in its requested form (tier 2 shows the scaled
+          // numbers, e.g. 6:8, so the equivalent batch must be discovered).
+          this.orderText.setText("Berry : Mango  =  " + o.tb + " : " + o.tm);
           this.qnumText.setText(this.qIndex + " / " + this.TOTAL);
+          // GOAL swatch = the exact target color
+          this.targetSwatch.setFillStyle(
+            blend(BERRY, MANGO, o.tb / (o.tb + o.tm)),
+          );
           this.feedback.setAlpha(0);
-          // reset frog to bank
-          this.frog.setPosition(this.frogHome.x, this.frogHome.y).setScale(1);
+          this.matchTag.setText(
+            this.tier === 0
+              ? "Match the goal color. Tip: " +
+                  o.simpleB +
+                  " berry to " +
+                  o.simpleM +
+                  " mango works."
+              : "Pour to match the goal color, then SERVE.",
+          );
+          this.matchTag.setColor("#7fb3a0");
+          this.redraw();
 
           srSay(
-            this.q.tag +
-              ". " +
-              this.q.prompt +
-              ". Pads: left " +
-              this.q.pads[0] +
-              ", center " +
-              this.q.pads[1] +
-              ", right " +
-              this.q.pads[2] +
-              ". Hop to the correct pad.",
+            "New order. Berry to mango equals " +
+              o.tb +
+              " to " +
+              o.tm +
+              ". Pour scoops into the two tubes to match this ratio, then serve. " +
+              "Any equivalent batch works.",
           );
-
-          // build pads
-          this.pads.forEach((p) => p.sprite.destroy());
-          this.pads = [];
-          this.bobAmp = this.reduce ? 0 : 4 + (this.level - 1) * 4;
-          this.bobSpeed = 0.002 + (this.level - 1) * 0.0012;
-          for (let i = 0; i < 3; i++) {
-            const c = this.add.container(PAD_X[i], PAD_Y).setDepth(14);
-            const pad = this.add.graphics();
-            pad.fillStyle(0x2f8f5a, 0.95);
-            pad.fillEllipse(0, 0, 120, 70);
-            pad.lineStyle(4, 0x6be0c0, 0.85);
-            pad.strokeEllipse(0, 0, 120, 70);
-            // decorative notch (simple triangle wedge — safe across Phaser builds)
-            pad.fillStyle(0x123a3e, 1);
-            pad.beginPath();
-            pad.moveTo(60, 0);
-            pad.lineTo(30, -16);
-            pad.lineTo(30, 16);
-            pad.closePath();
-            pad.fillPath();
-            c.add(pad);
-            c.add(
-              this.add
-                .text(0, 0, this.q.pads[i], {
-                  fontSize: "24px",
-                  color: "#ffffff",
-                  fontStyle: "bold",
-                })
-                .setOrigin(0.5),
-            );
-            this.pads.push({
-              sprite: c,
-              baseY: PAD_Y + (i % 2) * 18,
-              phase: i * 1.3,
-              label: this.q.pads[i],
-              correct: i === this.q.correctIndex,
-            });
-            c.y = this.pads[i].baseY;
-          }
         }
 
-        update(time, delta) {
-          this.bobT += delta;
-          if (!this.reduce) {
-            this.pads.forEach((p) => {
-              p.sprite.y =
-                p.baseY +
-                Math.sin(this.bobT * this.bobSpeed + p.phase) * this.bobAmp;
-            });
-            // drift water stripes downward for motion
-            this.stripes.forEach((s) => {
-              s.y += 0.02 * delta;
-              if (s.y > H + 4) s.y = 138;
-            });
-          }
-        }
-
-        choose(i) {
-          if (this.busy || !this.pads[i]) return;
-          this.busy = true;
+        pour(which, delta) {
+          if (this.busy) return;
           SFX.init();
-          const pad = this.pads[i];
-          const right = pad.correct;
+          let v = which === "berry" ? this.berry : this.mango;
+          v = Math.max(0, Math.min(MAX_SCOOPS, v + delta));
+          if (which === "berry") this.berry = v;
+          else this.mango = v;
+          if (delta > 0) SFX.pour();
+          else SFX.unpour();
+          this.redraw();
+          // announce live ratio for screen readers
+          srSay(
+            "Berry " +
+              this.berry +
+              ", mango " +
+              this.mango +
+              (this.berry + this.mango
+                ? ". Current ratio " + this.berry + " to " + this.mango
+                : ""),
+          );
+        }
 
-          // hop the frog onto the chosen pad
-          this.tweens.add({
-            targets: this.frog,
-            x: pad.sprite.x,
-            y: pad.sprite.y - 8,
-            scaleY: { from: 1, to: 1.25 },
-            duration: this.reduce ? 1 : 260,
-            ease: "Quad.easeOut",
-            yoyo: false,
-            onComplete: () => this.frog.setScale(1),
-          });
-          SFX.hop();
+        redraw() {
+          const drawFill = (g, x, count, color) => {
+            g.clear();
+            const h = (count / MAX_SCOOPS) * this.TUBE_H;
+            const top = this.TUBE_Y + (this.TUBE_H - h);
+            if (h > 0) {
+              g.fillStyle(color, 0.95);
+              g.fillRect(x - this.TUBE_W / 2 + 4, top, this.TUBE_W - 8, h);
+              // scoop separators
+              g.lineStyle(1, 0x07191c, 0.4);
+              for (let i = 1; i < count; i++) {
+                const yy =
+                  this.TUBE_Y + this.TUBE_H - (i * this.TUBE_H) / MAX_SCOOPS;
+                g.lineBetween(
+                  x - this.TUBE_W / 2 + 4,
+                  yy,
+                  x + this.TUBE_W / 2 - 4,
+                  yy,
+                );
+              }
+            }
+          };
+          drawFill(this.berryFill, this.berryX, this.berry, BERRY);
+          drawFill(this.mangoFill, this.mangoX, this.mango, MANGO);
+          this.berryLbl.setText(String(this.berry));
+          this.mangoLbl.setText(String(this.mango));
 
-          if (right) {
+          // live blend swatch
+          const total = this.berry + this.mango;
+          if (total === 0) {
+            this.blendSwatch.setFillStyle(GLASS);
+          } else {
+            this.blendSwatch.setFillStyle(
+              blend(BERRY, MANGO, this.berry / total),
+            );
+          }
+
+          // live closeness read-out (no answer given — just "how off" the flavor is)
+          if (this.order && total > 0 && !this.busy) {
+            const o = this.order;
+            const exact = this.berry * o.tm === this.mango * o.tb;
+            if (exact) {
+              this.matchTag.setText("Flavor matches! ✓  Press SERVE.");
+              this.matchTag.setColor("#9fffc0");
+            } else {
+              // which way is it off? more berry-heavy or mango-heavy than target?
+              const playerFrac = this.berry / total;
+              const targetFrac = o.tb / (o.tb + o.tm);
+              const off =
+                playerFrac > targetFrac
+                  ? "too much BERRY — add mango or take berry out"
+                  : "too much MANGO — add berry or take mango out";
+              this.matchTag.setText("Off-color: " + off);
+              this.matchTag.setColor("#ffd27f");
+            }
+          }
+        }
+
+        serve() {
+          if (this.busy) return;
+          const o = this.order;
+          const total = this.berry + this.mango;
+          this.busy = true;
+
+          // Empty tube(s) → cannot be a ratio
+          if (this.berry === 0 || this.mango === 0) {
+            this.fail(
+              "A smoothie needs BOTH fruits. Pour at least one scoop in each tube.",
+              MIS["scaled-one-part"] ? "scaled-one-part" : "",
+            );
+            return;
+          }
+          // Equivalence check by integer cross-multiplication — 3:4 fills a 6:8
+          // order because 3·8 === 4·6. No float compare, no fixed numeric answer.
+          const exact = this.berry * o.tm === this.mango * o.tb;
+          if (exact) {
             this.correct++;
             this.streak++;
             this.maxStreak = Math.max(this.maxStreak, this.streak);
-            const gained = 10 + Math.min(this.streak, 5) * 2;
+            // bonus for serving a SMALLER equivalent batch (efficient blending)
+            const usedSimplest =
+              this.berry === o.simpleB && this.mango === o.simpleM;
+            const gained =
+              10 + Math.min(this.streak, 5) * 2 + (usedSimplest ? 5 : 0);
             this.score += gained;
-            if (this.streak >= 3) SFX.streak(this.streak);
-            this.confetti.emitParticleAt(pad.sprite.x, pad.sprite.y);
+            SFX.serveGood();
+            this.confetti.emitParticleAt(W / 2, 360);
+            const isEquiv = !(this.berry === o.tb && this.mango === o.tm);
+            const why = isEquiv
+              ? this.berry +
+                ":" +
+                this.mango +
+                " = " +
+                o.tb +
+                ":" +
+                o.tm +
+                " — equivalent ratios serve the same order!"
+              : "Exact match: " + this.berry + ":" + this.mango + ".";
             this.flash(
               "✓ +" +
                 gained +
                 (this.streak > 1 ? "   🔥 ×" + this.streak : "") +
                 "   " +
-                this.q.why,
+                why,
               "#9fffc0",
             );
-            srSay("Correct! " + this.q.why);
+            srSay("Served! " + why);
             try {
               if (window.GameFX && GameFX.celebrate && this.streak >= 3)
                 GameFX.celebrate(document.querySelector("canvas"));
             } catch (e) {}
             this.updateHUD();
-            this.time.delayedCall(950, () => this.nextQuestion());
+            this.time.delayedCall(1100, () => this.nextOrder());
           } else {
-            this.streak = 0;
-            this.lives--;
-            SFX.splash();
-            this.splashParticles.emitParticleAt(pad.sprite.x, pad.sprite.y);
-            this.doBlueFlash();
-            // sink the frog a touch
-            if (!this.reduce)
-              this.tweens.add({
-                targets: this.frog,
-                y: pad.sprite.y + 14,
-                alpha: { from: 1, to: 0.6 },
-                duration: 250,
-                yoyo: true,
-                onComplete: () => this.frog.setAlpha(1),
-              });
-            this.flash("💦 Splash! " + this.q.why + "  (−1 ❤)", "#9fd6ff");
-            srSay("Splash. " + this.q.why);
-            // highlight correct pad
-            const cp = this.pads[this.q.correctIndex];
-            if (cp)
-              this.tweens.add({
-                targets: cp.sprite,
-                scale: { from: 1, to: 1.18 },
-                duration: 300,
-                yoyo: true,
-                repeat: 1,
-              });
-            this.updateHUD();
-            this.time.delayedCall(1600, () => this.nextQuestion());
+            // Wrong ratio — figure out the misconception for the teacher report.
+            const playerSum = this.berry + this.mango;
+            const targetSum = o.tb + o.tm;
+            let tag = "matched-numbers-not-ratio";
+            // added-the-same-amount pattern: berry-tb === mango-tm (shifted both
+            // by an equal additive amount instead of scaling)
+            if (this.berry - o.tb === this.mango - o.tm && this.berry !== o.tb)
+              tag = "added-instead-of-scaled";
+            else if (
+              (this.berry === o.tb && this.mango !== o.tm) ||
+              (this.mango === o.tm && this.berry !== o.tb)
+            )
+              tag = "scaled-one-part";
+            const msg = MIS[tag]
+              ? MIS[tag].feedback
+              : "That ratio isn't equivalent to the order. Scale BOTH parts by the same number.";
+            this.fail(
+              "💥 Wrong flavor! " +
+                this.berry +
+                ":" +
+                this.mango +
+                " is not " +
+                o.tb +
+                ":" +
+                o.tm +
+                ".  " +
+                msg,
+              tag,
+            );
           }
+        }
+
+        fail(msg, tag) {
+          this.streak = 0;
+          this.lives--;
+          this.lastMiss = tag || this.lastMiss;
+          SFX.serveBad();
+          this.splashParticles.emitParticleAt(W / 2, 360);
+          this.doRedFlash();
+          // blend swatch flashes the WRONG color clearly
+          this.blendLabel.setText("OFF-COLOR ✗").setColor("#ff9b8b");
+          this.flash(msg + "  (−1 ❤)", "#ffb0a0");
+          srSay("Wrong flavor. " + msg);
+          this.matchTag.setText(
+            "Goal was " +
+              this.order.tb +
+              ":" +
+              this.order.tm +
+              ". Try the next order.",
+          );
+          this.matchTag.setColor("#ffd27f");
+          this.updateHUD();
+          this.time.delayedCall(1900, () => {
+            this.blendLabel.setText("YOUR BLEND").setColor("#9fd6c0");
+            this.nextOrder();
+          });
         }
 
         flash(msg, color) {
@@ -1086,7 +1337,7 @@
             ease: "Back.easeOut",
           });
         }
-        doBlueFlash() {
+        doRedFlash() {
           if (this.reduce) return;
           this.redFlash.setAlpha(0.3);
           this.tweens.add({ targets: this.redFlash, alpha: 0, duration: 350 });
@@ -1103,6 +1354,8 @@
             attempted: this.qIndex,
             maxStreak: this.maxStreak,
             outOfLives: this.lives <= 0,
+            lastMiss: this.lastMiss || "",
+            tier: this.tier,
           });
         }
       }
@@ -1128,8 +1381,8 @@
           else SFX.lose();
 
           this.add
-            .text(cx, 70, won ? "REACHED THE BANK!" : "OUT OF LIVES", {
-              fontSize: "36px",
+            .text(cx, 70, won ? "ORDERS COMPLETE!" : "OUT OF LIVES", {
+              fontSize: "34px",
               fontStyle: "bold",
               color: won ? "#6be0c0" : "#ff7b6b",
               stroke: "#07191c",
@@ -1164,7 +1417,7 @@
 
           const stats = [
             ["Final Score", String(d.score)],
-            ["Pads Cleared", d.correct + " / " + d.attempted],
+            ["Orders Filled", d.correct + " / " + d.attempted],
             ["Accuracy", Math.round(pct) + "%"],
             ["Best Streak", "×" + d.maxStreak],
           ];
@@ -1202,18 +1455,19 @@
                 problemsAttempted: d.attempted,
                 percent: Math.round(pct),
                 standard: STANDARD,
+                misconceptionTag: d.lastMiss || undefined,
               });
           } catch (e) {}
 
           srSay(
-            (won ? "Reached the bank. " : "Out of lives. ") +
+            (won ? "Orders complete. " : "Out of lives. ") +
               "Score " +
               d.score +
               ", " +
               d.correct +
               " of " +
               d.attempted +
-              " correct, " +
+              " orders filled, " +
               stars +
               " stars.",
           );
@@ -1222,7 +1476,7 @@
             .rectangle(cx - 95, 470, 170, 46, 0x0e8a7d)
             .setInteractive({ useHandCursor: true });
           this.add
-            .text(cx - 95, 470, "HOP AGAIN", {
+            .text(cx - 95, 470, "BLEND AGAIN", {
               fontSize: "17px",
               fontStyle: "bold",
               color: "#062420",
@@ -1230,10 +1484,14 @@
             .setOrigin(0.5);
           retry.on("pointerover", () => retry.setFillStyle(0x12a596));
           retry.on("pointerout", () => retry.setFillStyle(0x0e8a7d));
+          const tier = d.tier;
           const replay = () => {
-            SFX.tick();
+            SFX.pour();
             // Replay: words shown again but skippable (already seen this session).
-            showVocabGate(() => this.scene.start("Game"), RR_VOCAB_SEEN);
+            showVocabGate(
+              () => this.scene.start("Game", { tier }),
+              RR_VOCAB_SEEN,
+            );
           };
           retry.on("pointerdown", replay);
 
@@ -1252,6 +1510,7 @@
           hub.on("pointerdown", () => (window.location.href = "/math/games/"));
 
           this.input.keyboard.on("keydown-SPACE", replay);
+          this.input.keyboard.on("keydown-ENTER", replay);
 
           if (won && stars >= 2 && !this.reduce) {
             const p = this.add
@@ -1263,7 +1522,7 @@
                 lifespan: 1500,
                 gravityY: 160,
                 quantity: 20,
-                tint: [0x6be0c0, 0xd4952a, 0x57c84a, 0x1a6fb5],
+                tint: [0x6be0c0, 0xd4952a, 0x8e3bd6, 0xf6a623],
               })
               .setDepth(40);
             for (let i = 0; i < 5; i++)
@@ -1285,10 +1544,11 @@
           cv.setAttribute("role", "application");
           cv.setAttribute(
             "aria-label",
-            "Ratio Rush lily-pad hopper math game. Read each ratio or unit-rate " +
-              "problem, then hop your frog with the left, up, and right arrow keys " +
-              "(or A, W, D) onto the lily pad showing the correct answer. Press " +
-              "Space to start.",
+            "Ratio Rush smoothie-bar math game. Each order asks for a ratio of " +
+              "berry to mango scoops. Pour scoops into the two tubes with the left " +
+              "and right arrow keys (or A and D), remove with Z and C, then press " +
+              "Up, Space, or Enter to serve. Any equivalent ratio fills the order. " +
+              "Press Space to start.",
           );
           cv.setAttribute("aria-roledescription", "math game");
           if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
@@ -1309,8 +1569,8 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+  </body>
 </html>
