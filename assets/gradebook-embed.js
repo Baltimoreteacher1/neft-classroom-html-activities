@@ -33,6 +33,9 @@
 
   var records = []; // roster records, cached after first load
   var gradeData = null; // grades pivot, cached
+  var unitNumName = {}; // "3" -> "Unit 3 - Ratios & Proportional Relationships"
+  var titleUnit = null; // lesson title (lc) -> unit name; null until loaded
+  var unitMapReady = null; // Promise, set by ensureUnitMap()
   var activeView = null; // "codes" | "grades" | null (collapsed)
   var lastToggle = null; // button to restore focus to on Escape
 
@@ -82,9 +85,56 @@
       block: "nearest",
     });
   }
+  // Map an activity to a unit label. Three tiers, most→least reliable:
+  //   1. "Unit N" embedded in the title (normalized to the full registry name).
+  //   2. A reveal-math lesson title that appears in the activity title.
+  //   3. "Other" (non-math activities: games, WIDA, etc.).
   function deriveUnit(rec) {
-    var m = ((rec.activity || "") + "").match(/unit\s*0*(\d+)/i);
-    return m ? "Unit " + m[1] : "Other";
+    var title = (rec.activity || "") + "";
+    var m = title.match(/unit\s*0*(\d+)/i);
+    if (m) return unitNumName[m[1]] || "Unit " + m[1];
+    var lc = title.toLowerCase();
+    if (titleUnit) {
+      var best = "",
+        bestUnit = "";
+      for (var t in titleUnit) {
+        if (lc.indexOf(t) !== -1 && t.length > best.length) {
+          best = t;
+          bestUnit = titleUnit[t];
+        }
+      }
+      if (bestUnit) return bestUnit;
+    }
+    return "Other";
+  }
+  // Lazily load the lesson→unit registry once (teacher-only, on first panel
+  // open) so tier-2 mapping works; resolves immediately if already present.
+  function ensureUnitMap() {
+    if (unitMapReady) return unitMapReady;
+    unitMapReady = new Promise(function (resolve) {
+      function build() {
+        var units = window.REVEAL_MATH_UNITS || [];
+        var lessons = window.REVEAL_MATH_LESSONS || [];
+        units.forEach(function (u) {
+          var n = (u.name || "").match(/unit\s*(\d+)/i);
+          if (n) unitNumName[n[1]] = u.name;
+        });
+        titleUnit = {};
+        lessons.forEach(function (l) {
+          if (l.title && l.unit) titleUnit[l.title.toLowerCase()] = l.unit;
+        });
+        resolve();
+      }
+      if (window.REVEAL_MATH_LESSONS) return build();
+      var s = el("script");
+      s.src = "/assets/reveal-math-data.js";
+      s.onload = build;
+      s.onerror = function () {
+        resolve();
+      }; // tier-2 simply stays unavailable
+      document.head.appendChild(s);
+    });
+    return unitMapReady;
   }
   function unitSortKey(u) {
     var m = u.match(/unit\s*(\d+)/i);
@@ -358,8 +408,9 @@
   function loadCodes(panel) {
     panel.innerHTML =
       '<div class="gbx-msg" role="status">Loading saved codes…</div>';
-    fetchJson("roster")
-      .then(function (d) {
+    Promise.all([fetchJson("roster"), ensureUnitMap()])
+      .then(function (res) {
+        var d = res[0];
         if (!d || !d.ok) throw new Error("Could not load codes.");
         records = d.records || [];
         renderCodes(panel);
