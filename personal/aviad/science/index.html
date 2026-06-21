@@ -772,7 +772,7 @@
                   <option value="wrong1">
                     Sound waves travel much faster in denser iron lattices.
                   </option>
-                  <option value="correct">
+                  <option value="theory-tested-evidence">
                     A scientific theory is a thoroughly tested explanation
                     backed by massive evidence.
                   </option>
@@ -799,7 +799,7 @@
                 </div>
                 <select id="myth-2" style="font-size: 0.8rem">
                   <option value="">Select refuting science fact...</option>
-                  <option value="correct">
+                  <option value="meteor-air-compression">
                     Meteors compress the air in front of them rapidly, creating
                     extreme heat.
                   </option>
@@ -1450,8 +1450,8 @@
             >
             <select id="cell-tenet">
               <option value="">Select statement...</option>
-              <option value="incorrect">Inorganic atomic shells</option>
-              <option value="correct">
+              <option value="inorganic-shells">Inorganic atomic shells</option>
+              <option value="cells-basic-unit">
                 One or more cells (the basic unit of life)
               </option>
             </select>
@@ -2033,8 +2033,9 @@
 
         if (id === "misconception") {
           if (
-            document.getElementById("myth-1").value !== "correct" ||
-            document.getElementById("myth-2").value !== "correct"
+            document.getElementById("myth-1").value !==
+              "theory-tested-evidence" ||
+            document.getElementById("myth-2").value !== "meteor-air-compression"
           ) {
             return { success: false, message: "Match all myths to facts." };
           }
@@ -2112,7 +2113,7 @@
         }
 
         if (id === "cell-theory") {
-          if (cellT.value !== "correct") {
+          if (cellT.value !== "cells-basic-unit") {
             return {
               success: false,
               message: "Select correct tenet statement.",
@@ -2392,8 +2393,8 @@
       // Instant correct/incorrect feedback on every graded dropdown
       if (window.EWL && EWL.registerAnswers) {
         EWL.registerAnswers({
-          "myth-1": "correct",
-          "myth-2": "correct",
+          "myth-1": "theory-tested-evidence",
+          "myth-2": "meteor-air-compression",
           "unit-vol": "ml",
           "unit-mass": "g",
           "coef-a": "1",
@@ -2406,7 +2407,7 @@
           "web-fox": "secondary",
           "photo-co2": "input",
           "photo-o2": "output",
-          "cell-tenet": "correct",
+          "cell-tenet": "cells-basic-unit",
         });
       }
     </script>
