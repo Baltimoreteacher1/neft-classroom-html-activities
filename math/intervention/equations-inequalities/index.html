@@ -21,6 +21,22 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/math/intervention/assets/intervention.css" />
+    <link rel="manifest" href="/math/intervention/manifest.webmanifest" />
+    <link rel="icon" href="/assets/favicon.svg" />
+    <link rel="apple-touch-icon" href="/assets/favicon.svg" />
+    <script>
+      // Register the offline service worker so stations keep working without
+      // wifi once visited (classroom-friendly). Scoped to /math/intervention/.
+      if ("serviceWorker" in navigator) {
+        addEventListener("load", function () {
+          navigator.serviceWorker
+            .register("/math/intervention/sw.js", {
+              scope: "/math/intervention/",
+            })
+            .catch(function () {});
+        });
+      }
+    </script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -124,14 +140,14 @@
 
           <div class="panel" id="panel-game">
             <h3>Answer Drop</h3>
-            <p>Tap the falling tile that matches the problem. Five lives — how high can you climb?</p>
+            <p>Tap a falling tile — or press number keys <strong>1–4</strong> — to match the problem. Five lives — how high can you climb?</p>
             <div class="game-stage" id="game-stage">
               <div class="game-hud" aria-hidden="true"></div>
-              <canvas role="img" aria-label="Answer Drop game. Tap the falling tile that matches the problem shown at the bottom."></canvas>
+              <canvas role="img" aria-label="Answer Drop game. Tap the falling tile that matches the problem shown at the bottom, or press number keys 1 to 4 to pick the tile in that column."></canvas>
               <div class="game-overlay">
                 <div>
                   <h3>Answer Drop</h3>
-                  <p>Click the tile that solves the problem before it hits the bottom.</p>
+                  <p>Click the tile that solves the problem — or use number keys 1–4 — before it hits the bottom.</p>
                   <button class="btn btn-primary" id="game-stage-start" type="button">▶ Play</button>
                 </div>
               </div>

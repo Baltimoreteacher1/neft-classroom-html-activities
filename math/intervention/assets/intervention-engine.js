@@ -343,7 +343,7 @@
       ctx.fillText(q ? q.prompt : "", W / 2, H - 32);
 
       let allGone = true;
-      tiles.forEach((t) => {
+      tiles.forEach((t, idx) => {
         if (t.dead) return;
         allGone = false;
         t.y += speed * (1 + level * 0.08) * 1.25;
@@ -354,8 +354,14 @@
         ctx.strokeStyle = "#2d6fb0";
         ctx.lineWidth = 2;
         ctx.stroke();
+        // Key-number badge (top-left) so keyboard players know which key plays it.
+        ctx.fillStyle = "rgba(234,242,255,0.5)";
+        ctx.font = "700 12px Inter, system-ui, sans-serif";
+        ctx.textAlign = "left";
+        ctx.fillText(String(idx + 1), t.x + 7, t.y + 13);
         ctx.fillStyle = "#eaf2ff";
         ctx.font = "700 20px Inter, system-ui, sans-serif";
+        ctx.textAlign = "center";
         ctx.fillText(t.val, t.x + t.w / 2, t.y + t.h / 2);
         if (t.y > H - 64) {
           // reached bottom
@@ -387,6 +393,21 @@
       );
     }
 
+    // Resolve a chosen tile — shared by pointer and keyboard input.
+    function pick(t) {
+      if (!t || t.dead) return;
+      if (t.val === String(q.answer)) {
+        score += 10;
+        if (score % 80 === 0) {
+          level++;
+          speed += 0.1;
+        }
+        flash("#2c7d6b");
+        newQuestion();
+      } else {
+        loseLife("Not quite — that was " + t.val);
+      }
+    }
     function onTap(e) {
       if (!running) return;
       const r = canvas.getBoundingClientRect();
@@ -395,22 +416,23 @@
       for (const t of tiles) {
         if (t.dead) continue;
         if (px >= t.x && px <= t.x + t.w && py >= t.y && py <= t.y + t.h) {
-          if (t.val === String(q.answer)) {
-            score += 10;
-            if (score % 80 === 0) {
-              level++;
-              speed += 0.1;
-            }
-            flash("#2c7d6b");
-            newQuestion();
-          } else {
-            loseLife("Not quite — that was " + t.val);
-          }
+          pick(t);
           return;
         }
       }
     }
+    // Keyboard play: number keys 1–4 select the tile in that column, so the
+    // game is fully playable without a mouse or touchscreen.
+    function onKey(e) {
+      if (!running) return;
+      const idx = { 1: 0, 2: 1, 3: 2, 4: 3 }[e.key];
+      if (idx == null) return;
+      e.preventDefault();
+      pick(tiles[idx]);
+    }
+    canvas.tabIndex = 0; // focusable for keyboard players
     canvas.addEventListener("click", onTap);
+    canvas.addEventListener("keydown", onKey);
     canvas.addEventListener("touchstart", (e) => {
       e.preventDefault();
       onTap(e);
@@ -421,6 +443,9 @@
       reset();
       running = true;
       overlay.style.display = "none";
+      try {
+        canvas.focus({ preventScroll: true });
+      } catch (e) {}
       raf = requestAnimationFrame(loop);
     }
     function end(win, msg) {
