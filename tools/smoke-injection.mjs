@@ -1,7 +1,8 @@
 import { chromium } from "playwright";
 import http from "http";
 import { readFile, stat } from "fs/promises";
-import { join, extname } from "path";
+import { existsSync } from "fs";
+import { join, extname, relative } from "path";
 
 const ROOT = process.cwd();
 const EXE = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
@@ -17,6 +18,9 @@ const server = http.createServer(async (req, res) => {
   try {
     let p = decodeURIComponent(req.url.split("?")[0]);
     let fp = join(ROOT, p);
+    if (relative(ROOT, fp).startsWith("..")) {
+      res.writeHead(403); res.end("forbidden"); return;
+    }
     try {
       const s = await stat(fp);
       if (s.isDirectory()) fp = join(fp, "index.html");
@@ -42,7 +46,7 @@ const pages = [
   "/games/3d/unit-2/",              // game page
 ];
 
-const browser = await chromium.launch({ executablePath: EXE });
+const browser = await chromium.launch(existsSync(EXE) ? { executablePath: EXE } : {});
 let failures = 0;
 for (const path of pages) {
   const ctx = await browser.newContext();

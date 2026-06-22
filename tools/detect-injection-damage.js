@@ -13,7 +13,7 @@
  *
  * Exits non-zero if any page is broken. Pure read-only.
  */
-import { readFileSync, readdirSync, statSync, writeFileSync, mkdtempSync } from "fs";
+import { readFileSync, readdirSync, statSync, writeFileSync, mkdtempSync, rmSync, unlinkSync } from "fs";
 import { join, relative } from "path";
 import { tmpdir } from "os";
 import { execFileSync } from "child_process";
@@ -21,14 +21,20 @@ import vm from "vm";
 
 const ROOT = process.cwd();
 const TMP = mkdtempSync(join(tmpdir(), "injchk-"));
+process.on("exit", () => {
+  try { rmSync(TMP, { recursive: true, force: true }); } catch {}
+});
 const NSR_MARK = "nsr-injected:begin";
 const MWB_MARK = "mwb-injected:begin";
 const NSR_SCRIPT = "save-resume-engine.js";
 const MWB_SCRIPT = "math-workbench-launcher.js";
 
-const SKIP_DIRS = new Set([
-  "node_modules", "dist", ".git", "engine", "lessons", "scripts", "docs",
-]);
+// Skip only non-source trees. We deliberately DO scan lessons/, engine/, etc.:
+// the injectors run over those too, and lesson pages are student-facing — an
+// injection marker left inside a <script> or after the final </body> there must
+// be caught. `dist` is build output (a copy of source), skipped to avoid
+// double-reporting the same defect.
+const SKIP_DIRS = new Set(["node_modules", "dist", ".git"]);
 
 function walk(dir, out = []) {
   for (const name of readdirSync(dir)) {
@@ -71,6 +77,8 @@ function checkSyntax(code, isModule) {
       return null;
     } catch (e) {
       return String(e.stderr || e.message).split("\n").find((l) => /Error/.test(l)) || "syntax error";
+    } finally {
+      try { unlinkSync(f); } catch {}
     }
   }
   try {

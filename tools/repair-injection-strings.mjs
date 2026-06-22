@@ -17,7 +17,7 @@ import { readFileSync, writeFileSync } from "fs";
 import vm from "vm";
 
 const WRITE = process.argv.includes("--write");
-const files = process.argv.filter((a) => a.endsWith(".html"));
+const files = process.argv.slice(2).filter((a) => a.endsWith(".html"));
 if (!files.length) {
   console.error("Pass the HTML files to repair.");
   process.exit(2);
@@ -44,9 +44,11 @@ for (const file of files) {
     const bodyStart = m.index + m[0].indexOf(body, attrs.length);
     const isClassic = !/\bsrc\s*=/.test(attrs) &&
       !/\btype\s*=\s*["']?(application\/json|text\/template|importmap|module)/i.test(attrs);
-    if (isClassic && !parses(body) && BREAK_RE.test(body)) {
+    // Note: don't use BREAK_RE.test() here — the /g flag makes .test() stateful
+    // (advances lastIndex), which would skip matches across scripts/files.
+    if (isClassic && !parses(body)) {
       const fixed = body.replace(BREAK_RE, "$1$2");
-      if (parses(fixed)) {
+      if (fixed !== body && parses(fixed)) {
         out += html.slice(last, bodyStart) + fixed;
         last = bodyStart + body.length;
         fileChanged = true;
