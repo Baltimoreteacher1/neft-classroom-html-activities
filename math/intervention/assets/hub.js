@@ -208,5 +208,167 @@
           );
         });
     }
+
+    // ===================================================================
+    //  PREMIUM LAYER — XP/level/streak HUD, achievement wall, and a
+    //  printable student progress report. Shares the localStorage schema
+    //  written by assets/intervention-engine.js (key below).
+    // ===================================================================
+    const XKEY = "nt-intervention-xp:v1";
+    function xpRead() {
+      let d;
+      try {
+        d = JSON.parse(localStorage.getItem(XKEY) || "{}");
+      } catch (e) {
+        d = {};
+      }
+      d.xp = d.xp || 0;
+      d.streak = d.streak || { count: 0, last: null };
+      d.badges = d.badges || {};
+      d.activity = d.activity || {};
+      return d;
+    }
+    const xpLevel = (xp) => Math.floor((xp || 0) / 100) + 1;
+    // Mirror of BADGES in intervention-engine.js.
+    const BADGES = {
+      "first-steps": { icon: "🌱", name: "First Steps", desc: "Finished your first activity." },
+      sharp: { icon: "🎯", name: "Sharp Shooter", desc: "Scored 100% on a practice set." },
+      fluent: { icon: "⚡", name: "Fluency Ace", desc: "15+ correct in a fluency drill." },
+      arcade: { icon: "🕹️", name: "Arcade Ace", desc: "Scored 100+ in Answer Drop." },
+      streak3: { icon: "🔥", name: "On a Roll", desc: "3-day practice streak." },
+      streak7: { icon: "🚀", name: "Unstoppable", desc: "7-day practice streak." },
+      master1: { icon: "⭐", name: "Topic Master", desc: "Mastered your first topic (80%+)." },
+      master6: { icon: "🏅", name: "Halfway Hero", desc: "Mastered 6 topics." },
+      master12: { icon: "👑", name: "Grand Master", desc: "Mastered all 12 topics." },
+    };
+
+    const xp = xpRead();
+    const lvl = xpLevel(xp.xp);
+
+    // ---- topbar HUD pill ----
+    (function () {
+      const nav = $(".topbar nav");
+      if (!nav || $("#int-hud")) return;
+      const hud = document.createElement("div");
+      hud.id = "int-hud";
+      hud.className = "int-hud";
+      hud.title = "Your level, XP, and daily practice streak";
+      hud.innerHTML =
+        '<span class="ih-lvl">⭐ Lv ' + lvl + "</span>" +
+        '<span class="ih-bar"><i style="width:' + (xp.xp % 100) + '%"></i></span>' +
+        '<span class="ih-xp">' + xp.xp + " XP</span>" +
+        (xp.streak.count > 0
+          ? '<span class="ih-streak">🔥 ' + xp.streak.count + "</span>"
+          : "");
+      nav.parentNode.insertBefore(hud, nav);
+    })();
+
+    // ---- rewards / achievement wall ----
+    const badgeIds = Object.keys(BADGES);
+    const earnedCount = badgeIds.filter((id) => xp.badges[id]).length;
+    const badgeWall = badgeIds
+      .map((id) => {
+        const b = BADGES[id];
+        const on = !!xp.badges[id];
+        return (
+          '<div class="badge ' + (on ? "earned" : "locked") + '">' +
+          '<span class="badge-ic">' + b.icon + "</span>" +
+          '<span class="badge-name">' + b.name + "</span>" +
+          '<span class="badge-desc">' + b.desc + "</span>" +
+          "</div>"
+        );
+      })
+      .join("");
+
+    const premium = document.createElement("section");
+    premium.className = "block";
+    premium.id = "premium-section";
+    premium.innerHTML =
+      '<div class="wrap">' +
+      '<div class="section-head"><span class="eyebrow">Rewards</span>' +
+      "<h2>Level up as you learn</h2>" +
+      "<p>Earn XP for every quiz, fluency drill, and game. Keep a daily streak and collect badges as you rebuild each skill.</p></div>" +
+      '<div class="xp-panel">' +
+      '<div class="xp-stat"><b>⭐ ' + lvl + "</b><span>Level</span></div>" +
+      '<div class="xp-stat xp-grow"><div class="xp-line"><span>' + xp.xp + " XP</span><span>" + (xp.xp % 100) + " / 100 to Lv " + (lvl + 1) + "</span></div>" +
+      '<div class="xp-bar"><i style="width:' + (xp.xp % 100) + '%"></i></div></div>' +
+      '<div class="xp-stat"><b>🔥 ' + (xp.streak.count || 0) + "</b><span>Day streak</span></div>" +
+      '<div class="xp-stat"><b>🏆 ' + earnedCount + "/" + badgeIds.length + "</b><span>Badges</span></div>" +
+      "</div>" +
+      '<div class="badge-grid">' + badgeWall + "</div>" +
+      '<div class="report-actions">' +
+      '<input id="report-name" type="text" placeholder="Type your name for the report" autocomplete="name" />' +
+      '<button class="btn btn-primary btn-sm" id="print-report" type="button">🖨️ Print progress report</button>' +
+      "</div>" +
+      "</div>";
+    const progSection = $("#progress-section");
+    if (progSection && progSection.parentNode)
+      progSection.parentNode.insertBefore(premium, progSection);
+    else if (grid.closest("section"))
+      grid.closest("section").insertAdjacentElement("afterend", premium);
+
+    // ---- printable progress report ----
+    const report = document.createElement("div");
+    report.id = "report";
+    report.className = "report";
+    report.setAttribute("aria-hidden", "true");
+    document.body.appendChild(report);
+
+    const printReport = $("#print-report");
+    if (printReport)
+      printReport.addEventListener("click", function () {
+        const name = ($("#report-name").value || "").trim() || "Student";
+        const fresh = xpRead();
+        let masteredNow = 0;
+        const rows = cards
+          .map(function (card) {
+            const st = statusFor(prog[card.dataset.slug]);
+            if (st.cls === "ps-mastered") masteredNow++;
+            const stdEl = card.querySelector(".std");
+            return (
+              "<tr><td>" +
+              $(".icon", card).textContent + " " + $("h3", card).textContent +
+              "</td><td>" +
+              (stdEl ? stdEl.textContent : "") +
+              '</td><td class="rp-st ' + st.cls + '">' + st.label +
+              "</td></tr>"
+            );
+          })
+          .join("");
+        const earnedBadges = badgeIds
+          .filter(function (id) {
+            return fresh.badges[id];
+          })
+          .map(function (id) {
+            return BADGES[id].icon + " " + BADGES[id].name;
+          });
+        report.innerHTML =
+          '<div class="report-inner">' +
+          '<div class="report-head">' +
+          '<div><p class="rp-kicker">Neft Teacher · 6th-Grade Math Intervention</p>' +
+          '<h2 class="rp-title">Student Progress Report</h2></div>' +
+          '<div class="rp-meta"><p><strong>' + name + "</strong></p><p>" + new Date().toLocaleDateString() + "</p></div>" +
+          "</div>" +
+          '<div class="rp-summary">' +
+          "<div><b>" + xpLevel(fresh.xp) + "</b><span>Level</span></div>" +
+          "<div><b>" + fresh.xp + "</b><span>Total XP</span></div>" +
+          "<div><b>" + (fresh.streak.count || 0) + "</b><span>Day streak</span></div>" +
+          "<div><b>" + masteredNow + " / " + cards.length + "</b><span>Topics mastered</span></div>" +
+          "<div><b>" + earnedBadges.length + " / " + badgeIds.length + "</b><span>Badges</span></div>" +
+          "</div>" +
+          '<table class="rp-table"><thead><tr><th>Topic</th><th>Standard</th><th>Status</th></tr></thead><tbody>' +
+          rows +
+          "</tbody></table>" +
+          '<div class="rp-badges"><h3>Badges earned</h3><p>' +
+          (earnedBadges.length ? earnedBadges.join("  ·  ") : "None yet — keep practicing!") +
+          "</p></div>" +
+          '<div class="rp-foot"><span>Mr. Neft · Mathematics</span><span>eduwonderlab.com/math/intervention</span></div>' +
+          "</div>";
+        document.body.classList.add("printing-report");
+        window.print();
+        setTimeout(function () {
+          document.body.classList.remove("printing-report");
+        }, 500);
+      });
   });
 })();
