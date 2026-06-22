@@ -1147,19 +1147,32 @@ function renderActiveScene(s, chapterNum) {
   const imgCaption = s.label || s.title || `Scene ${s.n}`;
   const pageRef = s.page ? ` · ${esc(s.page)}` : "";
   
-  // Look for a scene-specific image file first (e.g. /blood-on-the-river/images/chapter-1/scene-01.png)
-  const sceneImgName = `scene-${s.n}.png`;
-  const imgPath = `/blood-on-the-river/images/chapter-${chapterNum}/${sceneImgName}`;
+  // Per-scene art resolution order (first that loads wins):
+  //   1. Accurate per-scene illustration:  art/botr/ch{NN}-scene-{nn}.webp  (NN = zero-padded chapter)
+  //   2. Colocated raster fallback:         art/botr/ch{NN}-scene-{nn}.jpg
+  //   3. Legacy per-scene raster:           images/chapter-{N}/scene-{nn}.png
+  //   4. Procedural SVG placeholder (always available; used as the initial src)
+  // s.n is already zero-padded ("01".."09"); chapter is zero-padded for the webp convention.
+  const chNN = String(chapterNum).padStart(2, "0");
+  const webpPath = `/blood-on-the-river/art/botr/ch${chNN}-scene-${s.n}.webp`;
+  const jpgPath = `/blood-on-the-river/art/botr/ch${chNN}-scene-${s.n}.jpg`;
+  const pngPath = `/blood-on-the-river/images/chapter-${chapterNum}/scene-${s.n}.png`;
   const svgDataUri = getSceneSvgDataUri(s, chapterNum);
 
-  // Background check for PNG file
+  // Probe candidates in priority order; swap the live <img> src to the first that loads.
   setTimeout(() => {
-    const tempImg = new Image();
-    tempImg.onload = () => {
-      const el = document.getElementById(`scene-img-${chapterNum}-${s.n}`);
-      if (el) el.src = imgPath;
+    const el = document.getElementById(`scene-img-${chapterNum}-${s.n}`);
+    if (!el) return;
+    const tryLoad = (candidates, i) => {
+      if (i >= candidates.length) return; // keep SVG placeholder
+      const probe = new Image();
+      probe.onload = () => {
+        el.src = candidates[i];
+      };
+      probe.onerror = () => tryLoad(candidates, i + 1);
+      probe.src = candidates[i];
     };
-    tempImg.src = imgPath;
+    tryLoad([webpPath, jpgPath, pngPath], 0);
   }, 50);
 
   return `

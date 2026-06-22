@@ -39,6 +39,7 @@ import { mountHintLadder } from "./hint-ladder.js";
 import { renderMathText } from "./math-typography.js";
 import { t, stackHtml, phaseName, badgeName } from "./i18n.js";
 import { mountCertificateDownload } from "./certificate-export.js";
+import resolveVocabImage, { vocabImageAlt } from "./vocab-images.js";
 
 export function bootLesson(config) {
   createApp({
@@ -1391,23 +1392,165 @@ function renderLaunchHeader(el, state, config) {
   });
 }
 
+// Escape a string for safe use inside a RegExp.
+function escapeRegExp(s) {
+  return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+// Underline every lesson-vocabulary term that appears inside an objective and
+// turn it into a tap-to-open button. `escapedText` is the already-HTML-escaped
+// objective string (from resolveContentObjective / resolveLanguageObjective);
+// the vocab terms are plain words, so matching on the escaped text is safe.
+// Each match is wrapped in <button class="obj-term" data-term-idx="…"> so a
+// single delegated handler can open the glossary popup for that term. Terms not
+// present in the objective are simply left untouched.
+function linkifyObjectiveTerms(escapedText, vocab) {
+  if (!escapedText || !Array.isArray(vocab) || !vocab.length) return escapedText;
+  // Skip very short terms to avoid noisy matches inside ordinary words.
+  const entries = vocab
+    .map((v, i) => ({ i, term: String((v && v.term) || "").trim() }))
+    .filter((e) => e.term.length > 2);
+  if (!entries.length) return escapedText;
+  // Normalize for lookup: lowercase and drop a single trailing plural "s".
+  const norm = (s) => s.toLowerCase().replace(/s$/, "").trim();
+  const lookup = new Map();
+  for (const e of entries) {
+    if (!lookup.has(norm(e.term))) lookup.set(norm(e.term), e.i);
+  }
+  // Longest term first so "composite number" wins over "number".
+  const alt = [...entries]
+    .sort((a, b) => b.term.length - a.term.length)
+    .map((e) => escapeRegExp(e.term))
+    .join("|");
+  const re = new RegExp(`\\b(?:${alt})(?:es|s)?\\b`, "gi");
+  return escapedText.replace(re, (match) => {
+    const idx = lookup.has(norm(match)) ? lookup.get(norm(match)) : -1;
+    if (idx < 0) return match;
+    return `<button type="button" class="obj-term" data-term-idx="${idx}" aria-haspopup="dialog">${match}</button>`;
+  });
+}
+
+// Singleton glossary popup shared across all objective terms on the page.
+let objectivePopupEl = null;
+let objectivePopupKeyHandler = null;
+let objectivePopupLastFocus = null;
+
+function getObjectivePopup() {
+  if (objectivePopupEl) return objectivePopupEl;
+  const backdrop = document.createElement("div");
+  backdrop.className = "obj-popup-backdrop";
+  backdrop.hidden = true;
+  backdrop.innerHTML = `
+    <div class="obj-popup" role="dialog" aria-modal="true" aria-labelledby="obj-popup-term">
+      <button type="button" class="obj-popup-close" aria-label="Close">&times;</button>
+      <h3 id="obj-popup-term" class="obj-popup-term"></h3>
+      <figure class="obj-popup-visual">
+        <img class="obj-popup-img" alt="" />
+        <figcaption class="obj-popup-example"></figcaption>
+      </figure>
+      <p class="obj-popup-def"></p>
+      <p class="obj-popup-def-es" lang="es"></p>
+    </div>`;
+  document.body.append(backdrop);
+  backdrop.addEventListener("click", (e) => {
+    if (e.target === backdrop) closeObjectivePopup();
+  });
+  backdrop
+    .querySelector(".obj-popup-close")
+    .addEventListener("click", () => closeObjectivePopup());
+  objectivePopupEl = backdrop;
+  return backdrop;
+}
+
+function openObjectiveTermPopup(entry) {
+  if (!entry) return;
+  const backdrop = getObjectivePopup();
+  const term = String(entry.term || "").trim();
+  backdrop.querySelector(".obj-popup-term").textContent = term;
+
+  const img = backdrop.querySelector(".obj-popup-img");
+  img.src = resolveVocabImage(term, entry.image);
+  img.alt = vocabImageAlt(term, entry.definition);
+
+  const ex = backdrop.querySelector(".obj-popup-example");
+  const visual = entry.visual ? String(entry.visual) : "";
+  ex.textContent = visual;
+  ex.hidden = !visual;
+
+  backdrop.querySelector(".obj-popup-def").textContent = entry.definition
+    ? String(entry.definition)
+    : "";
+
+  const esEl = backdrop.querySelector(".obj-popup-def-es");
+  if (entry.definitionEs) {
+    esEl.textContent = String(entry.definitionEs);
+    esEl.hidden = false;
+  } else {
+    esEl.textContent = "";
+    esEl.hidden = true;
+  }
+
+  objectivePopupLastFocus = document.activeElement;
+  backdrop.hidden = false;
+  document.body.classList.add("obj-popup-open");
+  backdrop.querySelector(".obj-popup-close").focus();
+  objectivePopupKeyHandler = (e) => {
+    if (e.key === "Escape") closeObjectivePopup();
+  };
+  document.addEventListener("keydown", objectivePopupKeyHandler);
+}
+
+function closeObjectivePopup() {
+  if (!objectivePopupEl) return;
+  objectivePopupEl.hidden = true;
+  document.body.classList.remove("obj-popup-open");
+  if (objectivePopupKeyHandler) {
+    document.removeEventListener("keydown", objectivePopupKeyHandler);
+    objectivePopupKeyHandler = null;
+  }
+  if (
+    objectivePopupLastFocus &&
+    typeof objectivePopupLastFocus.focus === "function"
+  ) {
+    objectivePopupLastFocus.focus();
+  }
+  objectivePopupLastFocus = null;
+}
+
+// Delegate clicks on underlined objective terms to the shared glossary popup.
+function wireObjectiveTermPopups(block, vocab) {
+  if (!block.querySelector(".obj-term")) return;
+  block.addEventListener("click", (e) => {
+    const btn = e.target.closest(".obj-term");
+    if (!btn || !block.contains(btn)) return;
+    const idx = Number(btn.dataset.termIdx);
+    if (Number.isInteger(idx)) openObjectiveTermPopup(vocab[idx]);
+  });
+}
+
 // Content / Language "I can…" objectives. Rendered AFTER the "Be Curious"
 // Notice & Wonder card so students get curious about the scenario before they
-// read the formal goals (see renderLaunchPhase ordering).
+// read the formal goals (see renderLaunchPhase ordering). Key vocabulary words
+// named in the objectives are underlined and open a tap-to-view popup with a
+// simple kid-friendly explanation + a visual (see linkifyObjectiveTerms).
 function renderObjectives(el, config) {
+  const vocab = Array.isArray(config.vocabulary) ? config.vocabulary : [];
+  const contentHtml = linkifyObjectiveTerms(resolveContentObjective(config), vocab);
+  const languageHtml = linkifyObjectiveTerms(resolveLanguageObjective(config), vocab);
   const block = document.createElement("div");
   block.className = "launch-objectives grid-2";
   block.innerHTML = `
     <div class="card card-teal launch-objective">
       <h4 style="color:var(--teal); margin-bottom:var(--sp-2);">Content Objective</h4>
-      <p style="margin:0; font-weight:600;">${resolveContentObjective(config)}</p>
+      <p style="margin:0; font-weight:600;">${contentHtml}</p>
     </div>
     <div class="card card-coral launch-objective">
       <h4 style="color:var(--coral); margin-bottom:var(--sp-2);">Language Objective</h4>
-      <p style="margin:0; font-weight:600;">${resolveLanguageObjective(config)}</p>
+      <p style="margin:0; font-weight:600;">${languageHtml}</p>
     </div>
   `;
   el.append(block);
+  wireObjectiveTermPopups(block, vocab);
 }
 
 function renderLaunchPhase(el, state, ctx, config) {

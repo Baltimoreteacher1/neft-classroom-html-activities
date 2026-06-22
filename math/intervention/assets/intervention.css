@@ -1581,7 +1581,8 @@ section.block {
   .speak-btn,
   .opt,
   .search-box input,
-  .cert-actions input {
+  .cert-actions input,
+  .report-actions input {
     background: var(--surface-2);
     color: var(--ink);
   }
@@ -1612,5 +1613,388 @@ section.block {
   }
   .family-letter .vocab-list b {
     color: #15487f;
+  }
+}
+
+/* ==========================================================================
+   PREMIUM LAYER — XP/level/streak HUD, achievement wall, celebrations
+   (toasts + confetti), Smart Review badge, and the printable progress
+   report. Additive; honors reduced motion and dark mode via the variables
+   already defined above.
+   ========================================================================== */
+
+/* ---------- Topbar HUD pill (level · XP · streak) ---------- */
+.int-hud {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--navy);
+  white-space: nowrap;
+}
+.int-hud + nav {
+  margin-left: 14px;
+}
+.int-hud .ih-bar {
+  width: 56px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--line);
+  overflow: hidden;
+}
+.int-hud .ih-bar > i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--teal), var(--green));
+  transition: width 0.5s ease;
+}
+.int-hud .ih-xp {
+  color: var(--muted);
+}
+.int-hud .ih-streak {
+  color: var(--amber);
+}
+@media (max-width: 640px) {
+  .int-hud .ih-bar,
+  .int-hud .ih-xp {
+    display: none;
+  }
+}
+
+/* ---------- Smart Review tab count badge ---------- */
+.tab-count {
+  display: inline-block;
+  min-width: 18px;
+  padding: 0 5px;
+  margin-left: 4px;
+  border-radius: 999px;
+  background: var(--amber);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 800;
+  line-height: 18px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* ---------- Toast notifications (XP, level-up, badges) ---------- */
+.int-toasts {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+.int-toast {
+  min-width: 220px;
+  max-width: 320px;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  background: var(--card);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--teal);
+  box-shadow: var(--shadow-hover);
+  font-size: 0.92rem;
+  opacity: 0;
+  transform: translateX(28px);
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
+.int-toast.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+.int-toast.it-level {
+  border-left-color: var(--amber);
+}
+.int-toast.it-badge {
+  border-left-color: #9333ea;
+}
+.int-toast.it-streak {
+  border-left-color: #db2777;
+}
+.int-toast strong {
+  color: var(--navy);
+}
+
+/* ---------- Confetti burst (decorative, reduced-motion off) ---------- */
+.int-confetti {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  pointer-events: none;
+  overflow: hidden;
+}
+.int-confetti > i {
+  position: absolute;
+  top: -14px;
+  width: 9px;
+  height: 14px;
+  border-radius: 2px;
+  animation-name: int-fall;
+  animation-timing-function: ease-in;
+  animation-fill-mode: forwards;
+}
+@keyframes int-fall {
+  0% {
+    opacity: 1;
+    transform: translateY(-10vh) rotate(var(--rot, 0deg));
+  }
+  100% {
+    opacity: 0.9;
+    transform: translateY(108vh) rotate(calc(var(--rot, 0deg) + 540deg));
+  }
+}
+
+/* ---------- Rewards section: XP panel + badge wall ---------- */
+.xp-panel {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: 18px;
+  align-items: center;
+  padding: 18px 22px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 18px;
+}
+.xp-stat {
+  text-align: center;
+}
+.xp-stat > b {
+  display: block;
+  font-size: 1.5rem;
+  color: var(--navy);
+  line-height: 1.1;
+}
+.xp-stat > span {
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.xp-stat.xp-grow {
+  text-align: left;
+}
+.xp-line {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.xp-bar {
+  height: 12px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+.xp-bar > i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--teal), var(--green));
+  transition: width 0.6s ease;
+}
+@media (max-width: 720px) {
+  .xp-panel {
+    grid-template-columns: 1fr 1fr;
+  }
+  .xp-stat.xp-grow {
+    grid-column: 1 / -1;
+  }
+}
+
+.badge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+  padding: 16px 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--card);
+}
+.badge.earned {
+  border-color: color-mix(in srgb, var(--amber) 45%, var(--line));
+  background: var(--amber-light);
+  box-shadow: var(--shadow);
+}
+.badge.locked {
+  opacity: 0.55;
+  filter: grayscale(0.85);
+}
+.badge-ic {
+  font-size: 2rem;
+  line-height: 1;
+}
+.badge.locked .badge-ic {
+  filter: grayscale(1);
+}
+.badge-name {
+  font-weight: 800;
+  color: var(--navy);
+  font-size: 0.92rem;
+}
+.badge-desc {
+  font-size: 0.74rem;
+  color: var(--muted);
+}
+
+.report-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.report-actions input {
+  flex: 1;
+  min-width: 220px;
+  padding: 11px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 0.95rem;
+}
+
+/* ---------- Printable progress report (screen-hidden, print-only) ---------- */
+.report {
+  display: none;
+}
+.report .report-inner {
+  padding: 8px 4px;
+}
+.report-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-bottom: 3px solid var(--navy);
+  padding-bottom: 12px;
+  margin-bottom: 18px;
+}
+.rp-kicker {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin: 0 0 4px;
+}
+.rp-title {
+  font-size: 1.9rem;
+  color: var(--navy);
+  margin: 0;
+}
+.rp-meta {
+  text-align: right;
+  color: var(--muted);
+}
+.rp-meta p {
+  margin: 0;
+}
+.rp-meta strong {
+  font-size: 1.15rem;
+  color: var(--ink);
+}
+.rp-summary {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.rp-summary > div {
+  text-align: center;
+  padding: 12px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.rp-summary b {
+  display: block;
+  font-size: 1.4rem;
+  color: var(--navy);
+}
+.rp-summary span {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.rp-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 18px;
+  font-size: 0.9rem;
+}
+.rp-table th,
+.rp-table td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line);
+}
+.rp-table th {
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.rp-st {
+  font-weight: 800;
+}
+.rp-st.ps-mastered {
+  color: var(--green);
+}
+.rp-st.ps-progress {
+  color: var(--amber);
+}
+.rp-st.ps-new {
+  color: var(--muted);
+}
+.rp-badges h3 {
+  color: var(--navy);
+  margin: 0 0 4px;
+}
+.rp-foot {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid var(--line);
+  margin-top: 18px;
+  padding-top: 12px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+@media print {
+  body.printing-report .topbar,
+  body.printing-report main > section,
+  body.printing-report .site-foot,
+  body.printing-report .int-toasts,
+  body.printing-report .int-confetti {
+    display: none !important;
+  }
+  body.printing-report .report {
+    display: block;
   }
 }
