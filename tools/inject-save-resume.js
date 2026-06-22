@@ -82,13 +82,21 @@ const SKIP_TOPLEVEL = new Set([
 // Filename patterns that are not student-facing activities.
 const SKIP_FILE_RE = /(^|[/\\])(404|sitemap|robots)\b/i;
 
-// Path patterns to skip for INJECTION ONLY (not revert). The Neft City sims
-// under living-school/neft-city-* fully self-persist their own game state to a
-// private localStorage key (see each app.js), so the generic widget only adds a
-// redundant auto-opening panel and an empty central record. Excluded by Joel's
-// call (2026-06). Revert is still allowed here so already-injected refs can be
-// stripped once.
-const SKIP_INJECT_PATH_RE = /(^|\/)living-school\/neft-city-/i;
+// Path patterns to skip for INJECTION ONLY (not revert). These surfaces have no
+// capturable student state for the generic widget, so injecting it would only
+// add a redundant auto-opening panel and an empty central record:
+//   - .../teacher/...            → teacher-facing pages (no student state;
+//     matches the audit's teacher skip in audit-save-resume-integration.js)
+//   - living-school/neft-city-*  → self-persist their own game state to a
+//     private localStorage key (see each app.js)
+//   - games-live/*               → ephemeral live multiplayer host/join lobby
+//   - games/3d/*                 → 3D game launchers (no form fields / canvas)
+//   - math/intervention/index.html → the intervention nav hub (links only)
+// (The math/intervention/<topic>/ pages DO carry student self-assessment +
+// quiz state and are intentionally NOT excluded.) Revert stays allowed so any
+// already-injected refs can still be stripped.
+const SKIP_INJECT_PATH_RE =
+  /(^|\/)teacher(\/|$)|(^|\/)living-school\/neft-city-|(^|\/)games-live\/|(^|\/)games\/3d\/|(^|\/)math\/intervention\/index\.html$/i;
 
 const args = new Set(process.argv.slice(2));
 const DRY = args.has("--dry-run");
