@@ -270,6 +270,7 @@
         theme: "light",
         accent: "teal",
         readable: false,
+        welcomeDismissed: false,
         motion: "on",
         fontScale: 1,
         notifications: false,
@@ -325,6 +326,7 @@
     const base = seed();
     if (!x || typeof x !== "object") return base;
     const s = { ...base.settings, ...(x.settings || {}) };
+    s.welcomeDismissed = !!(x.settings?.welcomeDismissed ?? base.settings.welcomeDismissed);
     s.sync = { ...base.settings.sync, ...(x.settings?.sync || {}) };
     s.themeGradient = String(x.settings?.themeGradient || "");
     let order = Array.isArray(s.homeOrder)
@@ -768,19 +770,44 @@
     animate();
   }
 
+  // Structured logger for diagnostic capabilities
+  const logger = {
+    logs: [],
+    info(msg) { this.log("info", msg); },
+    warn(msg) { this.log("warn", msg); },
+    error(msg) { this.log("error", msg); },
+    log(level, msg) {
+      const line = { level, msg, time: new Date().toLocaleTimeString() };
+      this.logs.push(line);
+      if (this.logs.length > 50) this.logs.shift();
+      console.log(`[${level.toUpperCase()}] ${msg}`);
+      const el = document.getElementById("diagLogs");
+      if (el) {
+        el.innerHTML += `<div class="log-line ${level}">[${line.time}] [${level.toUpperCase()}] ${esc(msg)}</div>`;
+        el.scrollTop = el.scrollHeight;
+      }
+    }
+  };
+
   // Web Audio API Procedural Sound Engine
   let audioCtx = null;
   let ambientSource = null;
   let ambientGain = null;
   let focusTicksTimer = null;
-  let activeSoundType = "none"; // "none" | "rain" | "rumble" | "ticks"
+  let activeSoundType = "none"; // "none" | "rain" | "rumble" | "ticks" | "ocean" | "wind" | "binaural"
+  let oceanLfo = null;
+  let windLfo = null;
+  let leftOsc = null;
+  let rightOsc = null;
+  let subOsc = null;
 
   function initAudio() {
     if (!audioCtx) {
+      logger.info("Initializing Web Audio Context.");
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     }
     if (audioCtx.state === "suspended") {
-      audioCtx.resume();
+      audioCtx.resume().then(() => logger.info("Audio Context resumed."));
     }
   }
 
@@ -819,6 +846,7 @@
   }
 
   function stopAmbientSound() {
+    logger.info("Stopping focus ambient sounds.");
     if (ambientSource) {
       try { ambientSource.stop(); } catch {}
       ambientSource.disconnect();
@@ -831,6 +859,31 @@
     if (focusTicksTimer) {
       clearInterval(focusTicksTimer);
       focusTicksTimer = null;
+    }
+    if (oceanLfo) {
+      try { oceanLfo.stop(); } catch {}
+      oceanLfo.disconnect();
+      oceanLfo = null;
+    }
+    if (windLfo) {
+      try { windLfo.stop(); } catch {}
+      windLfo.disconnect();
+      windLfo = null;
+    }
+    if (leftOsc) {
+      try { leftOsc.stop(); } catch {}
+      leftOsc.disconnect();
+      leftOsc = null;
+    }
+    if (rightOsc) {
+      try { rightOsc.stop(); } catch {}
+      rightOsc.disconnect();
+      rightOsc = null;
+    }
+    if (subOsc) {
+      try { subOsc.stop(); } catch {}
+      subOsc.disconnect();
+      subOsc = null;
     }
     activeSoundType = "none";
   }
@@ -879,6 +932,140 @@
     activeSoundType = "rumble";
   }
 
+  function playOcean() {
+    stopAmbientSound();
+    initAudio();
+    const buffer = createPinkNoiseBuffer(audioCtx, 4);
+    ambientSource = audioCtx.createBufferSource();
+    ambientSource.buffer = buffer;
+    ambientSource.loop = true;
+
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.value = 500;
+
+    const gainNode = audioCtx.createGain();
+    gainNode.gain.value = 0.115; // base offset
+
+    oceanLfo = audioCtx.createOscillator();
+    oceanLfo.frequency.value = 0.08; // ~12s swells
+
+    const lfoGain = audioCtx.createGain();
+    lfoGain.gain.value = 0.085; // +/- 0.085 swing
+
+    oceanLfo.connect(lfoGain);
+    lfoGain.connect(gainNode.gain);
+
+    const filterGain = audioCtx.createGain();
+    filterGain.gain.value = 350;
+    oceanLfo.connect(filterGain);
+    filterGain.connect(filter.frequency);
+
+    ambientGain = audioCtx.createGain();
+    ambientGain.gain.value = 0.65; // master volume adjustment
+
+    ambientSource.connect(filter);
+    filter.connect(gainNode);
+    gainNode.connect(ambientGain);
+    ambientGain.connect(audioCtx.destination);
+
+    oceanLfo.start();
+    ambientSource.start();
+    activeSoundType = "ocean";
+    logger.info("Ocean waves generator started.");
+  }
+
+  function playWind() {
+    stopAmbientSound();
+    initAudio();
+    const buffer = createPinkNoiseBuffer(audioCtx, 4);
+    ambientSource = audioCtx.createBufferSource();
+    ambientSource.buffer = buffer;
+    ambientSource.loop = true;
+
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = "bandpass";
+    filter.Q.value = 3.5;
+    filter.frequency.value = 380;
+
+    const gainNode = audioCtx.createGain();
+    gainNode.gain.value = 0.12;
+
+    windLfo = audioCtx.createOscillator();
+    windLfo.frequency.value = 0.06; // 16s gusts
+
+    const lfoGain = audioCtx.createGain();
+    lfoGain.gain.value = 160;
+
+    windLfo.connect(lfoGain);
+    lfoGain.connect(filter.frequency);
+
+    const windGainMod = audioCtx.createGain();
+    windGainMod.gain.value = 0.04;
+    windLfo.connect(windGainMod);
+    windGainMod.connect(gainNode.gain);
+
+    ambientGain = audioCtx.createGain();
+    ambientGain.gain.value = 0.75;
+
+    ambientSource.connect(filter);
+    filter.connect(gainNode);
+    gainNode.connect(ambientGain);
+    ambientGain.connect(audioCtx.destination);
+
+    windLfo.start();
+    ambientSource.start();
+    activeSoundType = "wind";
+    logger.info("Forest wind generator started.");
+  }
+
+  function playBinaural() {
+    stopAmbientSound();
+    initAudio();
+
+    leftOsc = audioCtx.createOscillator();
+    leftOsc.type = "sine";
+    leftOsc.frequency.value = 140;
+
+    rightOsc = audioCtx.createOscillator();
+    rightOsc.type = "sine";
+    rightOsc.frequency.value = 144; // 4Hz delta
+
+    subOsc = audioCtx.createOscillator();
+    subOsc.type = "sine";
+    subOsc.frequency.value = 55; // 55Hz grounding hum
+
+    const merger = audioCtx.createChannelMerger(2);
+
+    const leftGain = audioCtx.createGain();
+    leftGain.gain.value = 0.07;
+    leftOsc.connect(leftGain);
+    leftGain.connect(merger, 0, 0);
+
+    const rightGain = audioCtx.createGain();
+    rightGain.gain.value = 0.07;
+    rightOsc.connect(rightGain);
+    rightGain.connect(merger, 0, 1);
+
+    const subGain = audioCtx.createGain();
+    subGain.gain.value = 0.035;
+    subOsc.connect(subGain);
+    subGain.connect(merger, 0, 0);
+    subGain.connect(merger, 0, 1);
+
+    ambientGain = audioCtx.createGain();
+    ambientGain.gain.value = 0.8;
+
+    merger.connect(ambientGain);
+    ambientGain.connect(audioCtx.destination);
+
+    leftOsc.start();
+    rightOsc.start();
+    subOsc.start();
+    activeSoundType = "binaural";
+    logger.info("Binaural beats (Deep Space Hum) started.");
+  }
+
   function playFocusTicks() {
     stopAmbientSound();
     initAudio();
@@ -915,6 +1102,15 @@
     ["linear-gradient(135deg, #370617, #6a040f, #ffba08)", "Sunset Glow"],
     ["linear-gradient(135deg, #134e5e, #71b280)", "Tropical Emerald"],
   ];
+
+  function getGradientLevelRequired(gradientStr) {
+    if (!gradientStr) return 0;
+    if (gradientStr.includes("#0d324d")) return 3; // Aurora Twilight
+    if (gradientStr.includes("#2b1055")) return 5; // Cosmic Nebula
+    if (gradientStr.includes("#370617")) return 7; // Sunset Glow
+    if (gradientStr.includes("#134e5e")) return 9; // Tropical Emerald
+    return 0;
+  }
 
   function xpLevelCardHTML() {
     const pts = state.points || 0;
@@ -1091,6 +1287,257 @@
     `;
   }
 
+  function getBadgesList() {
+    const totalRoutines = Object.values(state.activity || {}).reduce((acc, curr) => acc + (curr.routines || 0), 0);
+    const hasDeepWork = Object.values(state.activity || {}).some(act => (act.focusMin || 0) >= 15);
+    const lvl = Math.floor((state.points || 0) / 100) + 1;
+    
+    return [
+      {
+        id: "first_steps",
+        name: "First Steps",
+        desc: "Complete 1 assignment",
+        emoji: "🏃‍♂️",
+        unlocked: state.assignments.filter(a => a.status === "done").length >= 1
+      },
+      {
+        id: "deep_work",
+        name: "Deep Work",
+        desc: "Finish a 15+ min focus session",
+        emoji: "⚡",
+        unlocked: hasDeepWork
+      },
+      {
+        id: "consistency_king",
+        name: "Consistency King",
+        desc: "Build a 3-day streak",
+        emoji: "🔥",
+        unlocked: streak() >= 3
+      },
+      {
+        id: "routine_champion",
+        name: "Routine Champion",
+        desc: "Complete 3 checklists",
+        emoji: "🔁",
+        unlocked: totalRoutines >= 3
+      },
+      {
+        id: "mindful_mind",
+        name: "Mindful Mind",
+        desc: "Complete 3 check-outs",
+        emoji: "🧠",
+        unlocked: Object.keys(state.reflections || {}).length >= 3
+      },
+      {
+        id: "grandmaster",
+        name: "Grandmaster",
+        desc: "Reach XP Level 5",
+        emoji: "🧙‍♂️",
+        unlocked: lvl >= 5
+      }
+    ];
+  }
+
+  function badgesGalleryHTML() {
+    const badges = getBadgesList();
+    const itemsHtml = badges.map(b => {
+      return `
+        <div class="badge-card ${b.unlocked ? "unlocked" : "locked"}">
+          <div class="badge-status">${b.unlocked ? "✅" : "🔒"}</div>
+          <div class="badge-icon">${b.emoji}</div>
+          <div class="badge-name">${esc(b.name)}</div>
+          <div class="badge-desc">${esc(b.desc)}</div>
+        </div>
+      `;
+    }).join("");
+
+    return `
+      <div class="card badges-section">
+        <h3>🏆 Achievements Badges</h3>
+        <p class="sub">Level up and build habits to unlock badges.</p>
+        <div class="badges-grid">
+          ${itemsHtml}
+        </div>
+      </div>
+    `;
+  }
+
+  async function selfTest() {
+    logger.info("Starting System Self-Test...");
+    
+    // 1. IndexedDB Test
+    try {
+      const dbName = "noam-school-diagnostics";
+      const request = indexedDB.open(dbName, 1);
+      request.onupgradeneeded = (e) => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains("test")) {
+          db.createObjectStore("test");
+        }
+      };
+      
+      const db = await new Promise((resolve, reject) => {
+        request.onsuccess = (e) => resolve(e.target.result);
+        request.onerror = (e) => reject(e.target.error);
+      });
+      
+      const writeStart = performance.now();
+      const transaction = db.transaction("test", "readwrite");
+      const store = transaction.objectStore("test");
+      store.put("val", "key");
+      await new Promise((resolve, reject) => {
+        transaction.oncomplete = resolve;
+        transaction.onerror = (e) => reject(e.target.error);
+      });
+      const writeTime = performance.now() - writeStart;
+      
+      const readStart = performance.now();
+      const transaction2 = db.transaction("test", "readonly");
+      const store2 = transaction2.objectStore("test");
+      const readRequest = store2.get("key");
+      const readVal = await new Promise((resolve, reject) => {
+        readRequest.onsuccess = () => resolve(readRequest.result);
+        readRequest.onerror = (e) => reject(e.target.error);
+      });
+      const readTime = performance.now() - readStart;
+      
+      db.close();
+      indexedDB.deleteDatabase(dbName);
+      
+      if (readVal === "val") {
+        logger.info(`IndexedDB: OK (Write: ${writeTime.toFixed(1)}ms, Read: ${readTime.toFixed(1)}ms)`);
+        const el = document.getElementById("diagIdbStatus");
+        if (el) {
+          el.textContent = "OK";
+          el.parentElement.className = "diag-stat ok";
+        }
+      } else {
+        throw new Error("Value mismatch");
+      }
+    } catch (err) {
+      logger.error(`IndexedDB test failed: ${err.message}`);
+      const el = document.getElementById("diagIdbStatus");
+      if (el) {
+        el.textContent = "FAIL";
+        el.parentElement.className = "diag-stat fail";
+      }
+    }
+    
+    // 2. LocalStorage Test
+    try {
+      const lsStart = performance.now();
+      localStorage.setItem("__diag_test__", "hello");
+      const lsVal = localStorage.getItem("__diag_test__");
+      localStorage.removeItem("__diag_test__");
+      const lsTime = performance.now() - lsStart;
+      
+      let totalUsed = 0;
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        totalUsed += (key.length + (localStorage.getItem(key) || "").length) * 2;
+      }
+      const totalUsedKB = (totalUsed / 1024).toFixed(1);
+      
+      if (lsVal === "hello") {
+        logger.info(`LocalStorage: OK (Speed: ${lsTime.toFixed(1)}ms, Used: ${totalUsedKB} KB)`);
+        const el = document.getElementById("diagLsStatus");
+        if (el) {
+          el.textContent = `OK (${totalUsedKB}KB)`;
+          el.parentElement.className = "diag-stat ok";
+        }
+      } else {
+        throw new Error("Value mismatch");
+      }
+    } catch (err) {
+      logger.error(`LocalStorage test failed: ${err.message}`);
+      const el = document.getElementById("diagLsStatus");
+      if (el) {
+        el.textContent = "FAIL";
+        el.parentElement.className = "diag-stat fail";
+      }
+    }
+    
+    // 3. Network Latency Test
+    try {
+      const netStart = performance.now();
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 4000);
+      
+      const res = await fetch("/api/state?ping=1", { method: "HEAD", signal: controller.signal }).catch(() => null);
+      clearTimeout(timeoutId);
+      
+      const latency = performance.now() - netStart;
+      if (res && res.ok) {
+        logger.info(`Network Latency to /api/state: ${latency.toFixed(0)}ms`);
+        const el = document.getElementById("diagNetStatus");
+        if (el) {
+          el.textContent = `${latency.toFixed(0)}ms`;
+          el.parentElement.className = "diag-stat ok";
+        }
+      } else if (res) {
+        logger.warn(`Network responded with status ${res.status}`);
+        const el = document.getElementById("diagNetStatus");
+        if (el) {
+          el.textContent = `HTTP ${res.status}`;
+          el.parentElement.className = "diag-stat fail";
+        }
+      } else {
+        logger.warn("Sync server offline / unreachable (Local Mode)");
+        const el = document.getElementById("diagNetStatus");
+        if (el) {
+          el.textContent = "Offline (Local)";
+          el.parentElement.className = "diag-stat";
+        }
+      }
+    } catch (err) {
+      logger.error(`Network test failed: ${err.message}`);
+      const el = document.getElementById("diagNetStatus");
+      if (el) {
+        el.textContent = "FAIL";
+        el.parentElement.className = "diag-stat fail";
+      }
+    }
+    
+    // 4. Service Worker Check
+    try {
+      if ("serviceWorker" in navigator) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        if (regs.length > 0) {
+          const swList = regs.map(r => r.active ? `active (${r.active.state})` : "waiting/installing").join(", ");
+          logger.info(`Service Worker: Found registered SWs: ${swList}`);
+          const el = document.getElementById("diagSwStatus");
+          if (el) {
+            el.textContent = "Registered";
+            el.parentElement.className = "diag-stat ok";
+          }
+        } else {
+          logger.warn("Service Worker: No active registrations found.");
+          const el = document.getElementById("diagSwStatus");
+          if (el) {
+            el.textContent = "None";
+            el.parentElement.className = "diag-stat fail";
+          }
+        }
+      } else {
+        logger.warn("Service Worker: Not supported.");
+        const el = document.getElementById("diagSwStatus");
+        if (el) {
+          el.textContent = "Unsupported";
+          el.parentElement.className = "diag-stat fail";
+        }
+      }
+    } catch (err) {
+      logger.error(`Service Worker check failed: ${err.message}`);
+      const el = document.getElementById("diagSwStatus");
+      if (el) {
+        el.textContent = "FAIL";
+        el.parentElement.className = "diag-stat fail";
+      }
+    }
+    
+    logger.info("Self-Test completed.");
+  }
+
   window._cmdSelectedIndex = 0;
   window._cmdItems = [];
 
@@ -1131,6 +1578,9 @@
       { title: "🎨 Cycle Theme Colors", act: "theme-cycle", badge: "cmd" },
       { title: "🌧️ Play Gentle Rain", act: "focus-sound", arg: "rain", badge: "audio" },
       { title: "🔥 Play Cozy Rumble", act: "focus-sound", arg: "rumble", badge: "audio" },
+      { title: "🌊 Play Ocean Waves", act: "focus-sound", arg: "ocean", badge: "audio" },
+      { title: "🌲 Play Forest Wind", act: "focus-sound", arg: "wind", badge: "audio" },
+      { title: "🌌 Play Deep Space Hum", act: "focus-sound", arg: "binaural", badge: "audio" },
       { title: "⏱️ Play Focus Ticks", act: "focus-sound", arg: "ticks", badge: "audio" },
       { title: "🔇 Silence Background Sounds", act: "focus-sound", arg: "none", badge: "audio" },
     ];
@@ -1695,6 +2145,87 @@
       <button class="btn primary block" data-act="save-checkin">Save check-in</button>`;
   }
 
+  function renderFilteredTasksListHtml(filters) {
+    let open = openTasks();
+
+    if (filters.query && filters.query.trim()) {
+      const q = filters.query.toLowerCase().trim();
+      open = open.filter(a => a.title.toLowerCase().includes(q) || (a.notes && a.notes.toLowerCase().includes(q)));
+    }
+
+    if (filters.classId && filters.classId !== "all") {
+      open = open.filter(a => a.classId === filters.classId);
+    }
+
+    if (filters.priority && filters.priority !== "all") {
+      open = open.filter(a => a.priority === filters.priority);
+    }
+
+    if (filters.sortBy === "urgency") {
+      open = sortByUrgency(open);
+    } else if (filters.sortBy === "due") {
+      open.sort((a, b) => {
+        if (!a.due) return 1;
+        if (!b.due) return -1;
+        return a.due.localeCompare(b.due) || (a.dueTime || "99:99").localeCompare(b.dueTime || "99:99");
+      });
+    } else if (filters.sortBy === "title") {
+      open.sort((a, b) => a.title.localeCompare(b.title));
+    } else if (filters.sortBy === "priority") {
+      const weight = { high: 3, med: 2, low: 1 };
+      open.sort((a, b) => (weight[b.priority] || 0) - (weight[a.priority] || 0) || urgency(b) - urgency(a));
+    }
+
+    let listContent = "";
+    if (open.length === 0) {
+      listContent = emptyState("🔍", "No matching tasks found. Adjust your filters!");
+    } else if (filters.sortBy === "title" || filters.sortBy === "priority") {
+      listContent = open.map(a => taskItem(a)).join("");
+    } else {
+      const buckets = [
+        ["🔴 Overdue", open.filter((a) => daysUntil(a.due) < 0)],
+        ["🟠 Today", open.filter((a) => daysUntil(a.due) === 0)],
+        ["🟡 This week", open.filter((a) => daysUntil(a.due) > 0 && daysUntil(a.due) <= 7)],
+        ["🟢 Later", open.filter((a) => daysUntil(a.due) > 7)],
+        ["🗓 No date", open.filter((a) => a.due === "")],
+      ];
+      listContent = buckets
+        .filter(([, list]) => list.length)
+        .map(([label, list]) => `<div class="section-title">${label} (${list.length})</div>${list.map(a => taskItem(a)).join("")}`)
+        .join("");
+    }
+
+    const recentDone = state.assignments
+      .filter((a) => a.status === "done")
+      .sort((a, b) => (b.completedAt > a.completedAt ? 1 : -1))
+      .slice(0, 6);
+
+    const doneContent = recentDone.length
+      ? `<div class="section-title">✓ Recently finished</div>${recentDone.map((a) => taskItem(a)).join("")}`
+      : "";
+
+    return listContent + doneContent;
+  }
+
+  window._onTaskFilterChange = () => {
+    const qInp = document.getElementById("taskSearchInput");
+    const classF = document.getElementById("taskClassFilter");
+    const priF = document.getElementById("taskPriorityFilter");
+    const sortS = document.getElementById("taskSortSelect");
+
+    window._taskFilters = {
+      query: qInp ? qInp.value : "",
+      classId: classF ? classF.value : "all",
+      priority: priF ? priF.value : "all",
+      sortBy: sortS ? sortS.value : "urgency"
+    };
+
+    const container = document.getElementById("tasksListContainer");
+    if (container) {
+      container.innerHTML = renderFilteredTasksListHtml(window._taskFilters);
+    }
+  };
+
   // ---------------------------------------------------------------------------
   // Views
   // ---------------------------------------------------------------------------
@@ -1725,7 +2256,27 @@
       const order = state.settings.homeOrder.filter(
         (k) => !state.settings.hiddenCards.includes(k),
       );
-      return `${checkinBanner()}${captureBanner()}<div class="home-grid">${order.map((k) => map[k] || "").join("")}</div>${reflectionCardHTML()}`;
+
+      let welcomeBanner = "";
+      if (state.assignments.length === 0 && !state.settings.welcomeDismissed) {
+        welcomeBanner = `
+          <div class="card feature welcome-card" style="margin-bottom: 16px;">
+            <div class="head">
+              <div>
+                <h3>👋 Welcome to Noam School!</h3>
+                <p class="sub">Sync across your devices in seconds.</p>
+              </div>
+            </div>
+            <p style="font-size: 0.88rem; margin: 0 0 12px; color: var(--muted);">If you already use Noam School on another computer or phone, click <b>Link Device</b>. Otherwise, start adding tasks!</p>
+            <div class="row">
+              <button class="btn primary sm" data-act="enter-code">⌨️ Link Device</button>
+              <button class="btn sm" data-act="dismiss-welcome">Start Fresh</button>
+            </div>
+          </div>
+        `;
+      }
+
+      return `${welcomeBanner}${checkinBanner()}${captureBanner()}<div class="home-grid">${order.map((k) => map[k] || "").join("")}</div>${reflectionCardHTML()}`;
     },
 
     calendar() {
@@ -1789,39 +2340,46 @@
     },
 
     tasks() {
-      const open = openTasks();
-      const buckets = [
-        ["🔴 Overdue", open.filter((a) => daysUntil(a.due) < 0)],
-        ["🟠 Today", open.filter((a) => daysUntil(a.due) === 0)],
-        [
-          "🟡 This week",
-          open.filter((a) => daysUntil(a.due) > 0 && daysUntil(a.due) <= 7),
-        ],
-        ["🟢 Later", open.filter((a) => daysUntil(a.due) > 7)],
-        ["🗓 No date", open.filter((a) => a.due === "")],
-      ];
-      const recentDone = state.assignments
-        .filter((a) => a.status === "done")
-        .sort((a, b) => (b.completedAt > a.completedAt ? 1 : -1))
-        .slice(0, 6);
+      const filters = window._taskFilters = window._taskFilters || {
+        query: "",
+        classId: "all",
+        priority: "all",
+        sortBy: "urgency"
+      };
+
+      const classOpts = state.classes.map(c => `<option value="${c.id}" ${filters.classId === c.id ? "selected" : ""}>${c.emoji || "📚"} ${esc(c.name)}</option>`).join("");
+
+      const filterBar = `
+        <div class="tasks-filter-bar" id="tasksFilterBar">
+          <input type="text" id="taskSearchInput" placeholder="🔍 Search tasks..." value="${esc(filters.query)}" aria-label="Search tasks">
+          <select id="taskClassFilter" aria-label="Filter by Class" onchange="window._onTaskFilterChange()">
+            <option value="all" ${filters.classId === "all" ? "selected" : ""}>All Classes</option>
+            ${classOpts}
+          </select>
+          <select id="taskPriorityFilter" aria-label="Filter by Priority" onchange="window._onTaskFilterChange()">
+            <option value="all" ${filters.priority === "all" ? "selected" : ""}>All Priorities</option>
+            <option value="high" ${filters.priority === "high" ? "selected" : ""}>🔴 High</option>
+            <option value="med" ${filters.priority === "med" ? "selected" : ""}>🟡 Medium</option>
+            <option value="low" ${filters.priority === "low" ? "selected" : ""}>🟢 Low</option>
+          </select>
+          <select id="taskSortSelect" aria-label="Sort by" onchange="window._onTaskFilterChange()">
+            <option value="urgency" ${filters.sortBy === "urgency" ? "selected" : ""}>Sort by Urgency</option>
+            <option value="due" ${filters.sortBy === "due" ? "selected" : ""}>Sort by Due Date</option>
+            <option value="title" ${filters.sortBy === "title" ? "selected" : ""}>Sort by Name</option>
+            <option value="priority" ${filters.sortBy === "priority" ? "selected" : ""}>Sort by Priority</option>
+          </select>
+        </div>
+      `;
+
+      const initialListHtml = renderFilteredTasksListHtml(filters);
+
       return `
         <div class="view-head">
           <h2 class="view-title">All tasks</h2>
           <button class="btn primary" data-act="quick-add">＋ Add assignment</button>
         </div>
-        ${open.length === 0 ? emptyState("🎉", "No open tasks. Add one or paste from Classroom (More tab).") : ""}
-        ${buckets
-          .filter(([, list]) => list.length)
-          .map(
-            ([label, list]) =>
-              `<div class="section-title">${label} (${list.length})</div>${sortByUrgency(
-                list,
-              )
-                .map((a) => taskItem(a))
-                .join("")}`,
-          )
-          .join("")}
-        ${recentDone.length ? `<div class="section-title">✓ Recently finished</div>${recentDone.map((a) => taskItem(a)).join("")}` : ""}
+        ${filterBar}
+        <div id="tasksListContainer">${initialListHtml}</div>
       `;
     },
 
@@ -2046,6 +2604,7 @@ Due May 31"></textarea>
         xpLevelCardHTML() +
         weeklyFocusChartHTML() +
         reflectionChartHTML() +
+        badgesGalleryHTML() +
         card(
           "addwin",
           "Add a win",
@@ -2058,6 +2617,8 @@ Due May 31"></textarea>
 
     settings() {
       const s = state.settings;
+      const pts = state.points || 0;
+      const lvl = Math.floor(pts / 100) + 1;
       const themeBtn = (val, label) =>
         `<button data-act="set-theme" data-arg="${val}" aria-pressed="${s.theme === val}">${label}</button>`;
       return (
@@ -2070,11 +2631,15 @@ Due May 31"></textarea>
           <div class="field"><label>Color theme</label><div class="seg">${themeBtn("light", "☀️ Light")}${themeBtn("dark", "🌙 Dark")}${themeBtn("contrast", "⬛ High contrast")}</div></div>
           <div class="field"><label>Gradient Background Preset</label>
             <div class="theme-gradient-grid">
-              ${GRADIENTS.map(g => `
-                <div class="theme-gradient-swatch" data-act="set-gradient-theme" data-arg="${esc(g[0])}" aria-pressed="${state.settings.themeGradient === g[0]}" style="background: ${g[0] || "linear-gradient(180deg, var(--bg-2), var(--bg))"}">
-                  <b>${esc(g[1])}</b>
-                </div>
-              `).join("")}
+              ${GRADIENTS.map(g => {
+                const req = getGradientLevelRequired(g[0]);
+                const isLocked = lvl < req;
+                return `
+                  <div class="theme-gradient-swatch ${isLocked ? "locked" : ""}" data-act="set-gradient-theme" data-arg="${esc(g[0])}" aria-pressed="${state.settings.themeGradient === g[0]}" style="background: ${g[0] || "linear-gradient(180deg, var(--bg-2), var(--bg))"}">
+                    <b>${isLocked ? "🔒 " : ""}${esc(g[1])}${isLocked ? ` (Lvl ${req})` : ""}</b>
+                  </div>
+                `;
+              }).join("")}
             </div>
           </div>
           <div class="field"><label>Accent color${s.theme === "light" ? "" : " (Light theme only)"}</label><div class="accent-row" role="group" aria-label="Accent color">${ACCENTS.map(
@@ -2215,6 +2780,27 @@ Due May 31"></textarea>
           <div class="row"><button class="btn primary" data-act="export">⬇️ Download backup</button><button class="btn" data-act="import">⬆️ Load from file</button></div>
           <input type="file" id="importFile" accept="application/json,.json" hidden>
         `,
+        ) +
+        card(
+          "diagnostics",
+          "🛠️ System Diagnostics & Health",
+          "Run diagnostic tests to check application caching and database status.",
+          `
+          <div class="diagnostics-panel">
+            <div class="diag-grid">
+              <div class="diag-stat" id="diagIdbCard"><b>IndexedDB</b><span id="diagIdbStatus">Untested</span></div>
+              <div class="diag-stat" id="diagLsCard"><b>LocalStorage</b><span id="diagLsStatus">Untested</span></div>
+              <div class="diag-stat" id="diagNetCard"><b>Network Status</b><span id="diagNetStatus">Untested</span></div>
+              <div class="diag-stat" id="diagSwCard"><b>Service Worker</b><span id="diagSwStatus">Untested</span></div>
+            </div>
+            <div class="diag-console" id="diagLogs">
+              ${logger.logs.map(line => `<div class="log-line ${line.level}">[${line.time}] [${line.level.toUpperCase()}] ${esc(line.msg)}</div>`).join("")}
+            </div>
+            <div class="row">
+              <button class="btn primary" data-act="run-self-test">🚀 Run Diagnostics</button>
+            </div>
+          </div>
+          `
         ) +
         `<div class="note">Your data is stored privately on this device. It only leaves when <b>you</b> download a backup or turn on cloud sync.</div>`
       );
@@ -3913,6 +4499,9 @@ Due May 31"></textarea>
     "focus-sound": (_, arg) => {
       if (arg === "rain") playRain();
       else if (arg === "rumble") playRumble();
+      else if (arg === "ocean") playOcean();
+      else if (arg === "wind") playWind();
+      else if (arg === "binaural") playBinaural();
       else if (arg === "ticks") playFocusTicks();
       else stopAmbientSound();
       updateAmbientSoundUI(arg);
@@ -4561,9 +5150,24 @@ ${name}`;
       toast("Check-out saved! +5 points 📓");
     },
     "set-gradient-theme": (_, arg) => {
+      const pts = state.points || 0;
+      const lvl = Math.floor(pts / 100) + 1;
+      const req = getGradientLevelRequired(arg);
+      if (lvl < req) {
+        toast(`🔒 Locked! Requires Level ${req}. Keep earning XP!`);
+        return;
+      }
       state.settings.themeGradient = arg;
       save();
       applyAppearance();
+      render();
+    },
+    "run-self-test": () => {
+      selfTest();
+    },
+    "dismiss-welcome": () => {
+      state.settings.welcomeDismissed = true;
+      save();
       render();
     },
     "open-command-bar": () => openCommandBar(),
@@ -4849,11 +5453,14 @@ ${name}`;
       }
     }, { passive: true });
 
-    // Wire cmdInput input handler
+    // Wire cmdInput + taskSearchInput input handlers
     document.addEventListener("input", (ev) => {
       if (ev.target.id === "cmdInput") {
         window._cmdSelectedIndex = 0;
         renderCommandBarResults(ev.target.value);
+      }
+      if (ev.target.id === "taskSearchInput") {
+        window._onTaskFilterChange();
       }
     });
   }

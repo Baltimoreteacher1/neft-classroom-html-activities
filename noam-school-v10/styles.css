@@ -496,18 +496,19 @@ html[data-theme="contrast"] .hero .now-actions .btn {
   align-items: start;
 }
 .card {
-  background: color-mix(in srgb, var(--paper) 70%, transparent);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  border: 1px solid color-mix(in srgb, var(--line) 40%, transparent);
+  background: color-mix(in srgb, var(--paper) 75%, transparent);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border: 1px solid color-mix(in srgb, var(--line) 30%, transparent);
   border-radius: var(--radius);
   padding: 16px;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.04);
-  transition: border-color var(--motion), box-shadow var(--motion);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transition: border-color var(--motion), box-shadow var(--motion), transform var(--motion);
 }
 .card:hover {
-  border-color: color-mix(in srgb, var(--teal-bright) 45%, transparent);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
+  border-color: color-mix(in srgb, var(--teal-bright) 35%, transparent);
+  box-shadow: 0 12px 36px 0 rgba(0, 0, 0, 0.06), 0 0 12px color-mix(in srgb, var(--teal-bright) 15%, transparent);
+  transform: translateY(-2px);
 }
 .card .head {
   display: flex;
@@ -1990,11 +1991,13 @@ html[data-theme="dark"] .rating-btn[aria-pressed="true"] {
   top: -100px;
   left: -50px;
   background: var(--teal);
+  animation: float-blob-1 25s infinite ease-in-out alternate;
 }
 .bg-blob-2 {
   bottom: -100px;
   right: -50px;
   background: var(--navy);
+  animation: float-blob-2 30s infinite ease-in-out alternate;
 }
 html[data-theme="dark"] .ambient-glow {
   opacity: 0.16;
@@ -2004,6 +2007,17 @@ html[data-theme="dark"] .bg-blob-1 {
 }
 html[data-theme="dark"] .bg-blob-2 {
   background: var(--navy);
+}
+
+@keyframes float-blob-1 {
+  0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+  50% { transform: translate(60px, 40px) scale(1.15) rotate(180deg); }
+  100% { transform: translate(0, 0) scale(1) rotate(360deg); }
+}
+@keyframes float-blob-2 {
+  0% { transform: translate(0, 0) scale(1) rotate(360deg); }
+  50% { transform: translate(-50px, -60px) scale(0.9) rotate(180deg); }
+  100% { transform: translate(0, 0) scale(1) rotate(0deg); }
 }
 
 /* Ambient sound panel in focus overlay */
@@ -2049,4 +2063,177 @@ html[data-theme="dark"] .bg-blob-2 {
   border-color: #ffd790;
   color: var(--navy-deep);
   box-shadow: 0 0 12px rgba(255, 215, 144, 0.4);
+}
+
+/* ---- Advanced Task Filter & Sort Bar ---- */
+.tasks-filter-bar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 14px 16px;
+  background: color-mix(in srgb, var(--paper) 60%, transparent);
+  border: 1px solid color-mix(in srgb, var(--line) 30%, transparent);
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-sm);
+}
+.tasks-filter-bar input,
+.tasks-filter-bar select {
+  min-height: 40px;
+  height: 40px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  border: 1.5px solid var(--line);
+  background: var(--paper);
+  color: var(--ink);
+  width: auto;
+}
+.tasks-filter-bar input {
+  flex: 1;
+  min-width: 150px;
+}
+@media (max-width: 600px) {
+  .tasks-filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .tasks-filter-bar input,
+  .tasks-filter-bar select {
+    width: 100%;
+  }
+}
+
+/* ---- Gamified Achievements Badges Gallery ---- */
+.badges-section {
+  margin: 20px 0;
+}
+.badges-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 14px;
+  margin-top: 12px;
+}
+.badge-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 16px 10px;
+  background: color-mix(in srgb, var(--paper) 50%, transparent);
+  border: 1px solid color-mix(in srgb, var(--line) 40%, transparent);
+  border-radius: var(--radius);
+  transition: all var(--motion);
+  position: relative;
+  overflow: hidden;
+}
+.badge-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-sm);
+  border-color: color-mix(in srgb, var(--teal-bright) 20%, transparent);
+}
+.badge-icon {
+  font-size: 2.2rem;
+  margin-bottom: 6px;
+  filter: grayscale(100%);
+  opacity: 0.35;
+  transition: all var(--motion);
+}
+.badge-card.unlocked .badge-icon {
+  filter: none;
+  opacity: 1;
+  transform: scale(1.1);
+  animation: badge-pulse-anim 2s infinite ease-in-out alternate;
+}
+.badge-card.unlocked {
+  border-color: color-mix(in srgb, var(--teal-bright) 45%, transparent);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--paper) 80%, transparent), color-mix(in srgb, var(--teal) 6%, transparent));
+}
+.badge-name {
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+.badge-desc {
+  font-size: 0.72rem;
+  color: var(--muted);
+  line-height: 1.35;
+}
+.badge-status {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-size: 0.75rem;
+}
+@keyframes badge-pulse-anim {
+  0% { filter: drop-shadow(0 0 2px rgba(20, 184, 166, 0)); }
+  100% { filter: drop-shadow(0 0 8px rgba(20, 184, 166, 0.45)); }
+}
+
+/* ---- Enterprise Diagnostics Panel & Console ---- */
+.diagnostics-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 14px;
+  text-align: left;
+}
+.diag-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+.diag-stat {
+  padding: 12px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.diag-stat b {
+  display: block;
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
+}
+.diag-stat span {
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: var(--ink);
+}
+.diag-stat.ok span {
+  color: var(--green);
+}
+.diag-stat.fail span {
+  color: var(--red);
+}
+.diag-console {
+  background: #09101a;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  padding: 12px;
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-size: 0.76rem;
+  color: #38bdf8;
+  height: 200px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+.diag-console .log-line {
+  margin-bottom: 4px;
+  line-height: 1.45;
+}
+.diag-console .log-line.warn {
+  color: var(--amber);
+}
+.diag-console .log-line.error {
+  color: var(--red);
+}
+.diag-console .log-line.info {
+  color: #38bdf8;
 }
