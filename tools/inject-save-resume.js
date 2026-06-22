@@ -82,9 +82,28 @@ const SKIP_TOPLEVEL = new Set([
 // Filename patterns that are not student-facing activities.
 const SKIP_FILE_RE = /(^|[/\\])(404|sitemap|robots)\b/i;
 
+// Path patterns to skip for INJECTION ONLY (not revert). These surfaces have no
+// capturable student state for the generic widget, so injecting it would only
+// add a redundant auto-opening panel and an empty central record:
+//   - .../teacher/...            → teacher-facing pages (no student state;
+//     matches the audit's teacher skip in audit-save-resume-integration.js)
+//   - living-school/neft-city-*  → self-persist their own game state to a
+//     private localStorage key (see each app.js)
+//   - games-live/*               → ephemeral live multiplayer host/join lobby
+//   - games/3d/*                 → 3D game launchers (no form fields / canvas)
+//   - math/intervention/index.html → the intervention nav hub (links only)
+// (The math/intervention/<topic>/ pages DO carry student self-assessment +
+// quiz state and are intentionally NOT excluded.) Revert stays allowed so any
+// already-injected refs can still be stripped.
+const SKIP_INJECT_PATH_RE =
+  /(^|\/)(?:teacher(\/|$)|living-school\/neft-city-|games-live\/|games\/3d\/|math\/intervention\/index\.html$)/i;
+
 const args = new Set(process.argv.slice(2));
 const DRY = args.has("--dry-run");
 const REVERT = args.has("--revert");
+// Optional path-substring filter (e.g. --match=living-school/neft-city-) that
+// limits BOTH inject and revert to matching files instead of every page.
+const MATCH = [...args].find((a) => a.startsWith("--match="))?.slice("--match=".length) || null;
 
 const report = {
   scanned: 0,
@@ -130,6 +149,9 @@ function handleFile(file) {
     report.skippedFile.push(rel);
     return;
   }
+  // Path-substring filter (applies to BOTH inject and revert). Checked before
+  // any disk read so non-matching files cost no I/O in a large repo.
+  if (MATCH && !rel.includes(MATCH)) return;
   let html;
   try {
     html = readFileSync(file, "utf8");
@@ -144,6 +166,12 @@ function handleFile(file) {
       if (!DRY) writeFileSync(file, cleaned);
       report.reverted++;
     }
+    return;
+  }
+
+  // Inject-only path exclusions (revert above is intentionally exempt).
+  if (SKIP_INJECT_PATH_RE.test(rel)) {
+    report.skippedFile.push(rel);
     return;
   }
 

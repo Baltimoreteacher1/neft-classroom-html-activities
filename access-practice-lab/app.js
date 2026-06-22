@@ -2,7 +2,7 @@
   const DATA = window.ACCESS_LAB_DATA;
   const $ = (id) => document.getElementById(id);
   const storagePrefix = "accessPracticeLab:v1";
-  const BUILD = "20260613-r6"; // bump with the app.js ?v= query on each release
+  const BUILD = "20260622-r3"; // bump with the app.js ?v= query on each release
 
   // Official WIDA-style Google Forms (student RESPONSE links).
   //
@@ -140,6 +140,75 @@
       DATA.tests = DATA.tests.concat(
         v7.tests.filter((t) => t && t.id && !seen.has(t.id)),
       );
+    }
+  })();
+
+  // ── v10 content module: gold-standard Level A & B pack (4 core domains) ──
+  (function mergeV10() {
+    const v10 = window.ACCESS_LAB_V10;
+    if (!v10) return;
+    const append = v10.appendActivities || {};
+    for (const [domainName, levels] of Object.entries(append)) {
+      const domain = DATA.domains[domainName];
+      if (!domain) continue;
+      for (const [levelKey, list] of Object.entries(levels)) {
+        const level = domain.levels[levelKey];
+        if (!level || !Array.isArray(list)) continue;
+        const existing = new Set((level.activities || []).map((a) => a.id));
+        level.activities = (level.activities || []).concat(
+          list.filter((a) => a && a.id && !existing.has(a.id)),
+        );
+      }
+    }
+  })();
+
+  // ── v11 content module: publisher scope & sequence — category strands within
+  //    each level + rich Level A/B differentiation + enrichment activities ──
+  (function mergeV11() {
+    const v11 = window.ACCESS_LAB_V11;
+    if (!v11) return;
+    // 1) merge enrichment activities so categories that referenced new ids resolve
+    const append = v11.appendActivities || {};
+    for (const [domainName, levels] of Object.entries(append)) {
+      const domain = DATA.domains[domainName];
+      if (!domain) continue;
+      for (const [levelKey, list] of Object.entries(levels)) {
+        const level = domain.levels[levelKey];
+        if (!level || !Array.isArray(list)) continue;
+        const existing = new Set((level.activities || []).map((a) => a.id));
+        level.activities = (level.activities || []).concat(
+          list.filter((a) => a && a.id && !existing.has(a.id)),
+        );
+      }
+    }
+    // 2) attach level descriptors + category strands (order-preserving)
+    const levelsInfo = v11.levels || {};
+    for (const [domainName, byLevel] of Object.entries(levelsInfo)) {
+      const domain = DATA.domains[domainName];
+      if (!domain) continue;
+      for (const [levelKey, info] of Object.entries(byLevel)) {
+        const level = domain.levels[levelKey];
+        if (!level) continue;
+        level.info = {
+          band: info.band || "",
+          headline: info.headline || "",
+          summary: info.summary || "",
+          distinguishes: info.distinguishes || "",
+          canDo: Array.isArray(info.canDo) ? info.canDo : [],
+          focusAreas: Array.isArray(info.focusAreas) ? info.focusAreas : [],
+        };
+        // resolve category activityIds to actual activities present on the level
+        const byId = new Map((level.activities || []).map((a) => [a.id, a]));
+        level.categories = (info.categories || [])
+          .map((c) => ({
+            id: c.id,
+            title: c.title,
+            desc: c.desc || "",
+            skillFocus: c.skillFocus || "",
+            activityIds: (c.activityIds || []).filter((id) => byId.has(id)),
+          }))
+          .filter((c) => c.activityIds.length);
+      }
     }
   })();
 
@@ -577,6 +646,29 @@
     );
   }
 
+  // Rich Level A vs B differentiation banner (publisher proficiency descriptors)
+  function levelBannerHTML(level, levelKey) {
+    const info = level?.info;
+    if (!info) return "";
+    const canDo = (info.canDo || [])
+      .map((c) => `<li>${escapeHtml(c)}</li>`)
+      .join("");
+    const focus = (info.focusAreas || [])
+      .map((f) => `<span class="level-chip-soft">${escapeHtml(f)}</span>`)
+      .join("");
+    return `
+      <div class="level-banner" data-level="${escapeHtml(levelKey)}">
+        <div class="level-banner-top">
+          ${info.band ? `<span class="level-band">${escapeHtml(info.band)}</span>` : ""}
+          ${info.headline ? `<strong class="level-headline">${escapeHtml(info.headline)}</strong>` : ""}
+        </div>
+        ${info.summary ? `<p class="level-summary">${escapeHtml(info.summary)}</p>` : ""}
+        ${info.distinguishes ? `<p class="level-distinguish"><span class="level-distinguish-tag">What makes Level ${escapeHtml(levelKey)} different</span> ${escapeHtml(info.distinguishes)}</p>` : ""}
+        ${focus ? `<div class="level-focus-row">${focus}</div>` : ""}
+        ${canDo ? `<details class="level-cando"><summary>“I can…” goals for this level</summary><ul>${canDo}</ul></details>` : ""}
+      </div>`;
+  }
+
   function pathwayKey(levelKey) {
     if (/B|3\.6|4\.5|Expanding/i.test(levelKey || "")) return "B";
     return "A";
@@ -967,8 +1059,10 @@
       $("hubTitle").textContent = `${domainName} ${levelName}`;
       $("hubLead").textContent =
         `${domain.description} Open a practice page or copy a link for students.`;
-      $("studentGoal").textContent = level.studentGoal || "";
+      const info = level.info;
+      $("studentGoal").textContent = info?.summary || level.studentGoal || "";
       $("studentObjective").innerHTML = [
+        levelBannerHTML(level, state.level),
         level.objective ? `<span>${escapeHtml(level.objective)}</span>` : "",
         level.target ? `<span>${escapeHtml(level.target)}</span>` : "",
         level.teacherSummary
@@ -977,8 +1071,9 @@
       ]
         .filter(Boolean)
         .join(" ");
+      const catCount = (level.categories || []).length;
       $("activityGridSubtitle").textContent =
-        `${activities().length} activities · ${getProgressFor(state.domain, state.level)} on this device`;
+        `${activities().length} activities${catCount ? ` across ${catCount} skill ${catCount === 1 ? "category" : "categories"}` : ""} · ${getProgressFor(state.domain, state.level)} on this device`;
       document.title = `${DATA.productTitle} · ${domainName} ${levelName}`;
       $("labHero")?.style.setProperty(
         "--domain-color",
@@ -1296,30 +1391,15 @@
       .join("");
   }
 
-  function renderActivityGrid() {
-    const grid = $("activityGrid");
-    if (!grid) return;
-    if (state.hubScope !== "level") {
-      grid.innerHTML =
-        state.hubScope === "root"
-          ? `<p class="empty-state">Choose a domain above to browse levels and activities.</p>`
-          : `<p class="empty-state">Choose a level above to see shareable activity pages.</p>`;
-      return;
-    }
-    const list = activities();
-    const itemLabel = state.domain === "Model-Test" ? "Item" : "Activity";
-    $("activityGrid").innerHTML =
-      modelTestRecapHTML() +
-        list
-          .map((activity, index) => {
-            const href = practiceUrl(state.domain, state.level, activity.id);
-            const done = state.complete.has(activity.id);
-            const result = state.results[activity.id];
-            const badge = badgeFromResult(result, done);
-            return `
+  function activityCardHTML(activity, label) {
+    const href = practiceUrl(state.domain, state.level, activity.id);
+    const done = state.complete.has(activity.id);
+    const result = state.results[activity.id];
+    const badge = badgeFromResult(result, done);
+    return `
         <article class="activity-card-hub ${done ? "is-done" : ""}">
           <div class="activity-card-head">
-            <span class="activity-card-num">${done ? "✓" : `${itemLabel} ${index + 1}`}</span>
+            <span class="activity-card-num">${done ? "✓" : escapeHtml(label)}</span>
             <span class="activity-card-time">${escapeHtml(activity.time)}</span>
           </div>
           <h3>${escapeHtml(activity.title)}</h3>
@@ -1332,7 +1412,65 @@
           </div>
         </article>
       `;
-          })
+  }
+
+  function renderActivityGrid() {
+    const grid = $("activityGrid");
+    if (!grid) return;
+    if (state.hubScope !== "level") {
+      grid.innerHTML =
+        state.hubScope === "root"
+          ? `<p class="empty-state">Choose a domain above to browse levels and activities.</p>`
+          : `<p class="empty-state">Choose a level above to see shareable activity pages.</p>`;
+      return;
+    }
+    const list = activities();
+    const level = activeLevel();
+    const itemLabel = state.domain === "Model-Test" ? "Item" : "Activity";
+
+    // ── Publisher scope & sequence: group into category strands when defined ──
+    const categories = level?.categories || [];
+    if (categories.length) {
+      const byId = new Map(list.map((a) => [a.id, a]));
+      let n = 0;
+      const sections = categories
+        .map((cat) => {
+          const acts = cat.activityIds
+            .map((id) => byId.get(id))
+            .filter(Boolean);
+          if (!acts.length) return "";
+          const doneCount = acts.filter((a) => state.complete.has(a.id)).length;
+          const cards = acts
+            .map((a) => activityCardHTML(a, `${itemLabel} ${++n}`))
+            .join("");
+          return `
+        <section class="strand" data-strand="${escapeHtml(cat.id)}">
+          <header class="strand-head">
+            <div class="strand-head-text">
+              <h3 class="strand-title">${escapeHtml(cat.title)}</h3>
+              ${cat.desc ? `<p class="strand-desc">${escapeHtml(cat.desc)}</p>` : ""}
+              ${cat.skillFocus ? `<p class="strand-focus">Skill focus: ${escapeHtml(cat.skillFocus)}</p>` : ""}
+            </div>
+            <span class="strand-progress ${doneCount === acts.length ? "is-complete" : ""}">${doneCount}/${acts.length} done</span>
+          </header>
+          <div class="strand-grid">${cards}</div>
+        </section>`;
+        })
+        .join("");
+      grid.innerHTML =
+        modelTestRecapHTML() +
+        (sections ||
+          `<p class="empty-state">No activities for this level yet.</p>`);
+      return;
+    }
+
+    // ── fallback: flat list (Model-Test items, or any level without categories) ──
+    grid.innerHTML =
+      modelTestRecapHTML() +
+        list
+          .map((activity, index) =>
+            activityCardHTML(activity, `${itemLabel} ${index + 1}`),
+          )
           .join("") ||
       `<p class="empty-state">No activities for this level yet.</p>`;
   }

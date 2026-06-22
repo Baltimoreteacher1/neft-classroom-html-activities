@@ -59,9 +59,17 @@ const SKIP_TOPLEVEL = new Set([
   "futures", // concept/demo/roadmap pages — not student activities
 ]);
 const SKIP_FILE_RE = /(^|[/\\])(404|sitemap|robots)\b/i;
-// Teacher-facing pages (any nested ".../teacher/..." path) have no student
-// state, so they are intentionally excluded from save/resume integration.
-const SKIP_PATH_RE = /(^|\/)teacher(\/|$)/i;
+// Surfaces with no capturable student state, intentionally excluded from
+// save/resume integration (these MUST stay in sync with the inject-only skips
+// in tools/inject-save-resume.js so the audit doesn't flag the deliberate
+// omissions):
+//   - .../teacher/...            → teacher-facing pages
+//   - living-school/neft-city-*  → sims that self-persist their own game state
+//   - games-live/*               → ephemeral live multiplayer host/join lobby
+//   - games/3d/*                 → 3D game launchers (no form fields)
+//   - math/intervention/index.html → the intervention nav hub (links only)
+const SKIP_PATH_RE =
+  /(^|\/)(?:teacher(\/|$)|living-school\/neft-city-|games-live\/|games\/3d\/|math\/intervention\/index\.html$)/i;
 
 const issues = [];
 const stats = {
