@@ -53,7 +53,18 @@ export async function onRequestOptions({ request }) {
 
 export async function onRequestGet({ request, env }) {
   if (!env.NOAM_SCHOOL_KV) return json({ error: "cloud sync not configured" }, 503, request);
-  const code = new URL(request.url).searchParams.get("code");
+
+  const url = new URL(request.url);
+  const pairResolve = url.searchParams.get("pair_resolve");
+  if (pairResolve) {
+    const clean = String(pairResolve).trim().replace(/[^0-9]/g, "");
+    if (clean.length !== 6) return json({ error: "pairing code must be 6 digits" }, 400, request);
+    const resolvedCode = await env.NOAM_SCHOOL_KV.get("pair:" + clean);
+    if (!resolvedCode) return json({ error: "pairing code expired or invalid" }, 404, request);
+    return json({ code: resolvedCode }, 200, request);
+  }
+
+  const code = url.searchParams.get("code");
   const key = keyFor(code);
   if (!key) return json({ error: "invalid code" }, 400, request);
   const stored = await env.NOAM_SCHOOL_KV.get(key);
@@ -69,7 +80,19 @@ export async function onRequestGet({ request, env }) {
 
 export async function onRequestPut({ request, env }) {
   if (!env.NOAM_SCHOOL_KV) return json({ error: "cloud sync not configured" }, 503, request);
-  const code = new URL(request.url).searchParams.get("code");
+
+  const url = new URL(request.url);
+  const pairGenerate = url.searchParams.get("pair_generate");
+  if (pairGenerate) {
+    const code = String(pairGenerate).trim();
+    if (code.length < 10) return json({ error: "invalid target code" }, 400, request);
+    // Generate a random 6-digit number
+    const pairCode = String(Math.floor(100000 + Math.random() * 900000));
+    await env.NOAM_SCHOOL_KV.put("pair:" + pairCode, code, { expirationTtl: 300 }); // expires in 5 mins
+    return json({ pairCode }, 200, request);
+  }
+
+  const code = url.searchParams.get("code");
   const key = keyFor(code);
   if (!key) return json({ error: "invalid code" }, 400, request);
 

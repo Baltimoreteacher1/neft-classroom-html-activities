@@ -1095,6 +1095,104 @@
     });
   }
 
+  function playSuccessChime() {
+    try {
+      initAudio();
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
+      const osc1 = audioCtx.createOscillator();
+      const osc2 = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      osc1.type = "sine";
+      osc1.frequency.setValueAtTime(523.25, now); // C5
+      osc2.type = "sine";
+      osc2.frequency.setValueAtTime(783.99, now + 0.08); // G5
+      gainNode.gain.setValueAtTime(0, now);
+      gainNode.gain.linearRampToValueAtTime(0.08, now + 0.03);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+      osc1.connect(gainNode);
+      osc2.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      osc1.start(now);
+      osc1.stop(now + 0.25);
+      osc2.start(now + 0.08);
+      osc2.stop(now + 0.35);
+    } catch (e) {
+      console.warn("Could not play success chime:", e);
+    }
+  }
+
+  function playLevelUpChime() {
+    try {
+      initAudio();
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
+      const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+      notes.forEach((freq, index) => {
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(freq, now + index * 0.08);
+        gainNode.gain.setValueAtTime(0, now + index * 0.08);
+        gainNode.gain.linearRampToValueAtTime(0.08, now + index * 0.08 + 0.02);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, now + index * 0.08 + 0.35);
+        osc.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        osc.start(now + index * 0.08);
+        osc.stop(now + index * 0.08 + 0.4);
+      });
+    } catch (e) {
+      console.warn("Could not play level up chime:", e);
+    }
+  }
+
+  function showLevelUpModal(level) {
+    openModal(
+      "🎉 Level Up!",
+      `<div style="text-align: center; padding: 12px 6px;">
+        <div style="font-size: 4.5rem; margin-bottom: 12px; line-height: 1;">🏆</div>
+        <h2 style="font-size: 2.2rem; margin: 0 0 8px; color: var(--accent); font-weight: 800;">Level ${level}</h2>
+        <p style="font-size: 1.1rem; margin-bottom: 24px; color: var(--ink);">Awesome job! You are building incredible study habits. Keep focusing! 🚀</p>
+        <button class="btn primary block" data-act="close-modal" style="font-size: 1.1rem; padding: 12px; margin-top: 16px;">Awesome! Let's go!</button>
+      </div>`
+    );
+  }
+
+  function addPoints(amount) {
+    if (!amount || amount <= 0) return;
+    const oldLevel = Math.floor((state.points || 0) / 100) + 1;
+    state.points = (state.points || 0) + amount;
+    const newLevel = Math.floor(state.points / 100) + 1;
+    save();
+
+    // Direct DOM updates for XP tracking elements to avoid full redrawing
+    const xpRemainder = state.points % 100;
+    const circ = 2 * Math.PI * 40; // radius is 40
+    const offset = circ * (1 - xpRemainder / 100);
+
+    document.querySelectorAll(".xp-level-ring circle.prog").forEach((ring) => {
+      ring.style.strokeDashoffset = offset;
+    });
+    document.querySelectorAll(".xp-level-number").forEach((el) => {
+      el.textContent = newLevel;
+    });
+    document.querySelectorAll(".xp-details h4").forEach((el) => {
+      el.textContent = `XP Level ${newLevel}`;
+    });
+    document.querySelectorAll(".points-bar-text").forEach((el) => {
+      el.textContent = `${xpRemainder} / 100 XP to next level · ${state.points} total points`;
+    });
+
+    if (newLevel > oldLevel) {
+      playLevelUpChime();
+      triggerConfetti();
+      showLevelUpModal(newLevel);
+      render(); // Full render on level-up is appropriate since modal covers screen
+    } else {
+      playSuccessChime();
+    }
+  }
+
   const GRADIENTS = [
     ["", "Default Navy"],
     ["linear-gradient(135deg, #0d324d, #7f5a83)", "Aurora Twilight"],
@@ -2760,6 +2858,15 @@ Due May 31"></textarea>
             <button class="btn navy" data-act="sync-now">🔄 Sync now</button>
             <button class="btn danger" data-act="toggle-sync">Turn off sync</button>
           </div>
+          <div class="pairing-6digit-box" style="margin-top: 15px; padding: 12px; background: rgba(255,255,255,0.03); border: 1.5px dashed var(--line); border-radius: 12px; text-align: center;">
+            <span style="font-size: 0.85rem; font-weight: 800; color: var(--ink); display: block; margin-bottom: 6px;">🔗 Get 6-Digit Code (Chromebook / Other Computer)</span>
+            <button class="btn sm" data-act="generate-pair-code" id="btnGenPairCode" style="margin: 4px auto;">⚡ Generate 6-Digit Code</button>
+            <div id="pairCodeDisplay" style="display:none; margin-top: 10px;">
+              <div style="font-size: 2.2rem; font-weight: 900; letter-spacing: 6px; color: var(--accent); margin: 8px 0; line-height: 1;" id="lblPairCode">000 000</div>
+              <small class="muted" style="display:block;">Enter this 6-digit code on your other device to link it instantly.</small>
+              <small class="muted" style="display:block; font-size: 0.7rem; color: var(--red-bright); margin-top: 4px;">Expires in 5 minutes.</small>
+            </div>
+          </div>
           <div class="qr-pairing-box" style="margin-top: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 12px; background: rgba(255,255,255,0.03); border: 1.5px dashed var(--line); border-radius: 12px; text-align: center;">
             <span style="font-size: 0.85rem; font-weight: 800; color: var(--ink);">📱 Scan to Pair Your Phone</span>
             <img src="https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(syncLink)}&size=160x160" alt="Pairing QR Code" style="border: 4px solid white; border-radius: 8px; width: 160px; height: 160px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
@@ -3081,6 +3188,17 @@ Due May 31"></textarea>
   function routineForm(r) {
     r = r || { items: [] };
     return `
+      ${!r.id ? `
+        <div style="margin-bottom: 16px;">
+          <label style="font-size:.74rem;font-weight:900;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:8px;">🚀 Quick Middle School Templates</label>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            <button type="button" class="btn sm" data-act="apply-routine-template" data-template="after-school" style="font-size:0.8rem;padding:6px 10px;">🎒 After School Reset</button>
+            <button type="button" class="btn sm" data-act="apply-routine-template" data-template="morning" style="font-size:0.8rem;padding:6px 10px;">🧠 Morning Launchpad</button>
+            <button type="button" class="btn sm" data-act="apply-routine-template" data-template="study-prep" style="font-size:0.8rem;padding:6px 10px;">📝 Study Prep</button>
+            <button type="button" class="btn sm" data-act="apply-routine-template" data-template="evening" style="font-size:0.8rem;padding:6px 10px;">🌙 Bedtime Prep</button>
+          </div>
+        </div>
+      ` : ""}
       <div class="g2 grid">
         <div class="field"><label>Routine name</label><input id="rName" value="${esc(r.name || "")}" placeholder="Morning Launch"></div>
         <div class="field"><label>Emoji</label><input id="rEmoji" value="${esc(r.emoji || "🔁")}" maxlength="4"></div>
@@ -3095,6 +3213,101 @@ Due May 31"></textarea>
       <div class="row"><input id="newRItem" placeholder="Add a step..." style="flex:1"><button class="btn" data-act="add-ritem" data-id="${r.id || ""}">＋</button></div>
       <button class="btn primary block" data-act="save-routine" data-id="${esc(r.id || "")}" style="margin-top:12px">Save routine</button>
       ${r.id ? `<button class="btn danger block" data-act="delete-routine" data-id="${r.id}" style="margin-top:8px">Delete routine</button>` : ""}`;
+  }
+
+  const ROUTINE_TEMPLATES = {
+    "after-school": {
+      name: "After School Reset",
+      emoji: "🎒",
+      steps: [
+        "Unpack my backpack",
+        "Put any trash/recycling in the bin",
+        "Put my lunchbox in the kitchen",
+        "Plug in my school Chromebook/laptop",
+        "Open Focus School to check what is due"
+      ]
+    },
+    "morning": {
+      name: "Morning Launchpad",
+      emoji: "🧠",
+      steps: [
+        "Eat breakfast",
+        "Double-check Chromebook is in my bag",
+        "Pack binders, books, and homework folder",
+        "Grab water bottle and house keys",
+        "Put on shoes and backpack"
+      ]
+    },
+    "study-prep": {
+      name: "Study Space Prep",
+      emoji: "📝",
+      steps: [
+        "Clear my desk of clutter",
+        "Close all browser tabs (except schoolwork)",
+        "Get a glass of water",
+        "Put my phone in another room or on silent",
+        "Start a 25-minute study timer"
+      ]
+    },
+    "evening": {
+      name: "Bedtime Prep",
+      emoji: "🌙",
+      steps: [
+        "Put completed homework in my binder/backpack",
+        "Plug in Chromebook so it charges overnight",
+        "Lay out my clothes for tomorrow",
+        "Set my alarm clock",
+        "Put phone away from my bed"
+      ]
+    }
+  };
+
+  const BRAIN_BREAKS = {
+    stretch: [
+      { icon: "🧘", title: "Desk Stretch", desc: "Reach your arms up to the sky, hold for 10 seconds, then roll your shoulders backward 5 times." },
+      { icon: "🦒", title: "Neck Release", desc: "Gently tilt your head toward your left shoulder. Hold for 10 seconds. Switch to the right. Roll your neck in a slow circle." },
+      { icon: "🦖", title: "Spine Twister", desc: "Sit up straight, twist your torso to the right and hold your chair back for 5 seconds. Repeat on the left." }
+    ],
+    active: [
+      { icon: "🏃", title: "Energy Recharge", desc: "Do 10 jumping jacks, or try to balance on one leg for 30 seconds. Get that blood pumping!" },
+      { icon: "🤸", title: "Squat Challenge", desc: "Stand up and do 10 slow, controlled squats. Feel the energy return to your legs!" },
+      { icon: "🕺", title: "Quick Shakeout", desc: "Stand up and shake out your arms, legs, and hands for 20 seconds. Release all the sitting tension!" }
+    ],
+    relax: [
+      { icon: "👀", title: "The 20-20-20 Rule", desc: "Look at something at least 20 feet away for 20 seconds. Blink slowly 5 times to let your eye muscles relax." },
+      { icon: "🌬️", title: "Box Breathing", desc: "Inhale for 4 seconds, hold your breath for 4 seconds, exhale for 4 seconds, and hold empty for 4 seconds. Repeat 3 times." },
+      { icon: "🧘‍♀️", title: "Mind Clearing", desc: "Close your eyes. Listen to the room around you. Name 3 quiet sounds you hear to anchor your attention." }
+    ],
+    hydration: [
+      { icon: "💧", title: "Water Run", desc: "Go walk to the kitchen or water fountain, fill up your bottle, and drink 5 big gulps of cool water." },
+      { icon: "🥤", title: "Power Sip", desc: "Locate your water bottle. Take 3 slow, deep gulps to rehydrate your brain cells." }
+    ]
+  };
+
+  let currentBrainBreak = null;
+  function getRandomBrainBreak(category = "all") {
+    let list = [];
+    if (category === "all") {
+      Object.keys(BRAIN_BREAKS).forEach((cat) => {
+        list = list.concat(BRAIN_BREAKS[cat]);
+      });
+    } else {
+      list = BRAIN_BREAKS[category] || [];
+    }
+    const idx = Math.floor(Math.random() * list.length);
+    return list[idx] || { icon: "💧", title: "Water Run", desc: "Go get a glass of water!" };
+  }
+
+  function renderBrainBreakCardHTML(brk) {
+    return `
+      <div class="brain-break-card">
+        <div class="break-icon" aria-hidden="true">${esc(brk.icon)}</div>
+        <div style="flex:1">
+          <div class="break-title">${esc(brk.title)}</div>
+          <div class="break-desc">${esc(brk.desc)}</div>
+        </div>
+      </div>
+    `;
   }
 
   // ---------------------------------------------------------------------------
@@ -3157,8 +3370,7 @@ Due May 31"></textarea>
       if (this.phase !== "focus" || this.phaseAwarded || m <= 0) return 0;
       this.phaseAwarded = true;
       bumpActivity("focusMin", m);
-      state.points += m;
-      save();
+      addPoints(m);
       return m;
     },
     tick(first) {
@@ -3180,13 +3392,23 @@ Due May 31"></textarea>
         const earned = this.awardFocus(this.total);
         toast(`Great focus! +${earned} points 🎉`);
         $("#fPhase").textContent = "Break time";
+        currentBrainBreak = getRandomBrainBreak("all");
         openModal(
           "Nice work! 🎉",
-          `<p>You focused for ${earned} minutes. Take a ${state.settings.breakMin}-minute break, then keep going.</p>
+          `<p>You focused for <b>${earned} minutes</b> and earned <b>+${earned} XP</b>!</p>
+          <div id="brainBreakContainer">${renderBrainBreakCardHTML(currentBrainBreak)}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 16px;justify-content:center;">
+            <button class="btn sm" data-act="spin-break" style="background:var(--accent);color:white">🔄 Spin Break Wheel</button>
+            <button class="btn sm" data-act="choose-break" data-arg="stretch">🧘 Stretch</button>
+            <button class="btn sm" data-act="choose-break" data-arg="active">🏃 Active</button>
+            <button class="btn sm" data-act="choose-break" data-arg="relax">👀 Relax</button>
+            <button class="btn sm" data-act="choose-break" data-arg="hydration">💧 Hydration</button>
+          </div>
           <div class="row"><button class="btn primary" data-act="focus-break">Start break</button><button class="btn" data-act="focus-again">Keep focusing</button><button class="btn" data-act="focus-stop">I'm done</button></div>`,
         );
       } else {
         toast("Break's over — ready for one more?");
+        addPoints(5);
         openModal(
           "Break finished",
           `<div class="row"><button class="btn primary" data-act="focus-again">Focus again</button><button class="btn" data-act="focus-stop">I'm done</button></div>`,
@@ -3289,7 +3511,7 @@ Due May 31"></textarea>
       const awarded = (day.__awarded = day.__awarded || []);
       if (arr.length === r.items.length && !awarded.includes(r.id)) {
         awarded.push(r.id);
-        state.points += 5;
+        addPoints(5);
         bumpActivity("routines");
       }
       save();
@@ -4558,6 +4780,17 @@ Due May 31"></textarea>
     "view-sync": () => setView("sync"),
     "view-about": () => setView("about"),
 
+    "spin-break": () => {
+      currentBrainBreak = getRandomBrainBreak("all");
+      const container = $("#brainBreakContainer");
+      if (container) container.innerHTML = renderBrainBreakCardHTML(currentBrainBreak);
+    },
+    "choose-break": (_, arg) => {
+      currentBrainBreak = getRandomBrainBreak(arg);
+      const container = $("#brainBreakContainer");
+      if (container) container.innerHTML = renderBrainBreakCardHTML(currentBrainBreak);
+    },
+
     "quick-add": () => {
       quickAddForm._due = "";
       openModal("Quick add", quickAddForm());
@@ -4878,6 +5111,18 @@ Due May 31"></textarea>
       toast("Check-in saved 👋");
     },
 
+    "apply-routine-template": (_, arg) => {
+      const t = ROUTINE_TEMPLATES[arg];
+      if (!t) return;
+      $("#rName").value = t.name;
+      $("#rEmoji").value = t.emoji;
+      const ul = $("#rSteps");
+      ul.innerHTML = t.steps.map((text) => {
+        const iid = uid("i");
+        return `<li data-iid="${esc(iid)}"><span class="steptext">${esc(text)}</span><button class="btn danger sm" data-act="del-ritem" data-id="" data-sid="${iid}" aria-label="Delete step: ${esc(text)}">✕</button></li>`;
+      }).join("");
+    },
+
     "add-routine": () => openModal("New routine", routineForm()),
     "edit-routine": (id) =>
       openModal(
@@ -4906,8 +5151,9 @@ Due May 31"></textarea>
       if (!v) return;
       const ul = $("#rSteps");
       const li = document.createElement("li");
-      li.dataset.iid = uid("i");
-      li.innerHTML = `<span class="steptext"></span>`;
+      const iid = uid("i");
+      li.dataset.iid = iid;
+      li.innerHTML = `<span class="steptext"></span><button class="btn danger sm" data-act="del-ritem" data-id="${id || ""}" data-sid="${iid}" aria-label="Delete step">✕</button>`;
       li.querySelector(".steptext").textContent = v; // textContent avoids injection
       ul.appendChild(li);
       $("#newRItem").value = "";
@@ -4970,9 +5216,7 @@ Due May 31"></textarea>
       const v = $("#winInput").value.trim();
       if (v) {
         state.wins.push({ text: v, date: new Date().toLocaleString() });
-        state.points += 2;
-        save();
-        render();
+        addPoints(2);
         toast("Win added 🏆");
       }
     },
@@ -5142,8 +5386,8 @@ ${name}`;
     "enter-code": () => {
       openModal(
         "Enter your sync code",
-        `<p class="sub">On your first device, open Backup &amp; sync and copy the code. Paste it below to link this device.</p>
-        <div class="field"><input id="linkCodeInput" placeholder="focus-..." autocomplete="off" autocapitalize="off"></div>
+        `<p class="sub">Enter the 6-digit pairing code (e.g. 123456) or paste your full sync code below to link this device.</p>
+        <div class="field"><input id="linkCodeInput" placeholder="123456 or focus-..." autocomplete="off" autocapitalize="off" style="text-align: center; font-size: 1.2rem; font-weight: bold; letter-spacing: 2px;"></div>
         <div class="row">
           <button class="btn primary" data-act="link-code">Link this device</button>
           <button class="btn" data-act="close-modal">Cancel</button>
@@ -5152,10 +5396,27 @@ ${name}`;
       setTimeout(() => $("#linkCodeInput")?.focus(), 50);
     },
     "link-code": async () => {
-      const code = ($("#linkCodeInput")?.value || "").trim();
-      if (!code) return toast("Paste a code first.");
-      if (code.length < 12)
-        return toast("That code looks too short — copy the full code.");
+      let code = ($("#linkCodeInput")?.value || "").trim().replace(/\s+/g, "");
+      if (!code) return toast("Enter a code first.");
+      if (/^[0-9]{6}$/.test(code)) {
+        toast("Resolving pairing code... 🔍");
+        try {
+          const res = await fetch(`/api/state?pair_resolve=${code}`);
+          if (!res.ok) {
+            return toast("Pairing code expired or invalid ❌");
+          }
+          const data = await res.json();
+          if (data && data.code) {
+            code = data.code;
+          } else {
+            return toast("Could not resolve code ❌");
+          }
+        } catch {
+          return toast("Network error resolving pairing code ❌");
+        }
+      } else if (code.length < 12) {
+        return toast("That code looks too short — enter a 6-digit number or copy the full code.");
+      }
       state.settings.sync.code = code;
       state.settings.sync.enabled = true;
       save();
@@ -5167,6 +5428,39 @@ ${name}`;
       await cloud.push();
       render();
       toast(pulled ? "Linked — your data is here ✅" : "Linked 🔄");
+    },
+    "generate-pair-code": async () => {
+      try {
+        const genBtn = $("#btnGenPairCode");
+        if (genBtn) {
+          genBtn.disabled = true;
+          genBtn.textContent = "Generating...";
+        }
+        const res = await fetch(`/api/state?pair_generate=${encodeURIComponent(state.settings.sync.code)}`, { method: "PUT" });
+        if (!res.ok) {
+          throw new Error("fail");
+        }
+        const data = await res.json();
+        if (data && data.pairCode) {
+          const codeStr = String(data.pairCode);
+          const formatted = codeStr.slice(0, 3) + " " + codeStr.slice(3);
+          $("#lblPairCode").textContent = formatted;
+          $("#pairCodeDisplay").style.display = "block";
+          if (genBtn) {
+            genBtn.style.display = "none";
+          }
+          toast("Pairing code generated! ⚡");
+        } else {
+          throw new Error("missing code");
+        }
+      } catch {
+        toast("Failed to generate pairing code ❌");
+        const genBtn = $("#btnGenPairCode");
+        if (genBtn) {
+          genBtn.disabled = false;
+          genBtn.textContent = "⚡ Generate 6-Digit Code";
+        }
+      }
     },
     "copy-link": async () => {
       const url = linkURL(state.settings.sync.code);
@@ -5335,13 +5629,11 @@ ${name}`;
         text: textVal,
         timestamp: new Date().toISOString()
       };
-      state.points += 5;
-      save();
+      addPoints(5);
       window._pendingReflectionFocus = 0;
       window._pendingReflectionMood = 0;
       window._pendingReflectionText = "";
       triggerConfetti();
-      render();
       toast("Check-out saved! +5 points 📓");
     },
     "set-gradient-theme": (_, arg) => {
@@ -5455,7 +5747,7 @@ ${name}`;
           // (prevents farming points by toggling a checkbox repeatedly).
           if (box.checked && !st.credited) {
             st.credited = true;
-            state.points += 1;
+            addPoints(1);
           }
           // auto-complete when all steps checked
           if (a.steps.length && a.steps.every((s) => s.done)) {
@@ -5486,7 +5778,7 @@ ${name}`;
           !awarded.includes(id)
         ) {
           awarded.push(id);
-          state.points += 5;
+          addPoints(5);
           bumpActivity("routines");
           toast(`${r.name} complete! +5 🎉`);
           triggerConfetti();
@@ -5500,7 +5792,7 @@ ${name}`;
         if (td) {
           td.done = box.checked;
           if (box.checked) {
-            state.points += 1;
+            addPoints(1);
             bumpActivity("tasks");
             triggerConfetti();
           }

@@ -2259,3 +2259,65 @@ html[data-theme="dark"] .bg-blob-2 {
     display: none !important;
   }
 }
+
+/* Premium Middle School Features */
+
+/* Smooth spring transition for the XP progress ring */
+.xp-level-ring circle.prog {
+  transition: stroke-dashoffset 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Frosted glassmorphic card for Brain Breaks */
+.brain-break-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: color-mix(in srgb, var(--paper) 70%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid color-mix(in srgb, var(--line) 50%, transparent);
+  border-radius: 18px;
+  padding: 16px;
+  margin: 16px 0;
+  box-shadow: var(--shadow-sm);
+  text-align: left;
+  animation: breakCardPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.brain-break-card .break-icon {
+  font-size: 3rem;
+  line-height: 1;
+  background: var(--bg-2);
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+.brain-break-card .break-title {
+  font-weight: 800;
+  font-size: 1.15rem;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+
+.brain-break-card .break-desc {
+  font-size: 0.9rem;
+  color: var(--ink);
+  line-height: 1.45;
+}
+
+@keyframes breakCardPop {
+  from {
+    transform: scale(0.92) translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
