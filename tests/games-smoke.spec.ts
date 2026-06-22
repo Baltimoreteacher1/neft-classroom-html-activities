@@ -80,6 +80,25 @@ for (const url of GAMES) {
     });
 
     await page.goto(url, { waitUntil: "load", timeout: 30_000 });
+
+    // Some games show a one-time "vocab gate" modal (id ending in -vocab) BEFORE
+    // play; a few (e.g. u2-fraction-frenzy) defer creating the Phaser canvas
+    // until it is dismissed. Dismiss it so the real game flow runs. This repo's
+    // gates are single "I'm ready" buttons (#fr-vocab-go, #vocab-go, …) — there
+    // are no Back/Next step controls — so click the gate's primary (last visible)
+    // button; the loop also tolerates any future step-through gate. Wait for the
+    // gate rather than sleeping blindly. No-op for games without a gate.
+    const vocabGate = page.locator('[id$="-vocab"]').first();
+    await vocabGate.waitFor({ state: "visible", timeout: 1500 }).catch(() => {});
+    for (let i = 0; i < 8 && (await vocabGate.isVisible()); i++) {
+      await vocabGate
+        .locator("button:visible")
+        .last()
+        .click({ timeout: 3_000 })
+        .catch(() => {});
+      await page.waitForTimeout(300);
+    }
+
     // Allow the game engine to boot, build textures, and start the first scene.
     await page.waitForTimeout(2500);
 
@@ -89,23 +108,7 @@ for (const url of GAMES) {
     const phaserLoaded = await page.evaluate(
       () => typeof (window as unknown as { Phaser?: unknown }).Phaser !== "undefined",
     );
-    let canvasCount = await page.locator("canvas").count();
-
-    // Vocab-gate games (e.g. u2-fraction-frenzy) eagerly load the Phaser library
-    // but boot the canvas only AFTER the student clicks through a "words to know
-    // first" gate (the vocab/SoT gate; button id ends in `vocab-go`). When Phaser
-    // is present but no canvas has rendered yet, dismiss the gate — mirroring the
-    // real student flow — then re-check. No-op for games without a gate or that
-    // already booted their canvas.
-    if (phaserLoaded && canvasCount === 0) {
-      const gate = page.locator('[id$="vocab-go"], .fr-vgo').first();
-      if ((await gate.count()) > 0) {
-        await gate.click({ timeout: 5_000 }).catch(() => {});
-        await page.waitForTimeout(2500);
-        canvasCount = await page.locator("canvas").count();
-      }
-    }
-
+    const canvasCount = await page.locator("canvas").count();
     const bodyTextLen = await page.evaluate(
       () => (document.body?.innerText || "").trim().length,
     );
