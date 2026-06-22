@@ -73,7 +73,7 @@ redirects.split("\n").forEach((line, index) => {
   const parts = trimmed.split(/\s+/);
   if (parts.length < 2) errors.push(`_redirects:${index + 1}: invalid redirect line`);
   if (!parts[0].startsWith("/")) errors.push(`_redirects:${index + 1}: source should start with /`);
-  if (!parts[1].startsWith("/"))
+  if (!parts[1].startsWith("/") && !parts[1].startsWith("http"))
     warnings.push(`_redirects:${index + 1}: destination is not a local route`);
 });
 

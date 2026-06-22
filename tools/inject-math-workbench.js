@@ -19,8 +19,7 @@ import { fileURLToPath } from "url";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 const MARK = "mwb-injected";
-const SCRIPT_TAG =
-  '<script src="/assets/math-workbench-launcher.js" defer></script>';
+const SCRIPT_TAG = '<script src="/assets/math-workbench-launcher.js" defer></script>';
 const BEGIN = `<!-- ${MARK}:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->`;
 const END = `<!-- ${MARK}:end -->`;
 
@@ -125,19 +124,13 @@ function handleFile(file) {
   // injected </script> would terminate the page's main inline script early.
   const bodies = [...html.matchAll(/<\/body>/gi)];
   const at = bodies[bodies.length - 1].index;
-  const out =
-    html.slice(0, at) +
-    `${BEGIN}\n  ${SCRIPT_TAG}\n  ${END}\n  ` +
-    html.slice(at);
+  const out = html.slice(0, at) + `${BEGIN}\n  ${SCRIPT_TAG}\n  ${END}\n  ` + html.slice(at);
   if (!DRY) writeFileSync(file, out);
   report.injected++;
 }
 
 function stripInjection(html) {
-  const re = new RegExp(
-    `\\s*${escapeRe(BEGIN)}[\\s\\S]*?${escapeRe(END)}`,
-    "g",
-  );
+  const re = new RegExp(`\\s*${escapeRe(BEGIN)}[\\s\\S]*?${escapeRe(END)}`, "g");
   return html.replace(re, "");
 }
 function escapeRe(s) {

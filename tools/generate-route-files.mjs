@@ -64,7 +64,7 @@ function validateRegistry(value) {
   for (const redirect of value.redirects || []) {
     if (!redirect.source?.startsWith("/"))
       errors.push(`invalid redirect source: ${redirect.source}`);
-    if (!redirect.destination?.startsWith("/"))
+    if (!redirect.destination?.startsWith("/") && !redirect.destination?.startsWith("http"))
       errors.push(`invalid redirect destination for ${redirect.source}`);
     if (![301, 302, 307, 308].includes(Number(redirect.status || 301)))
       errors.push(`invalid redirect status for ${redirect.source}`);

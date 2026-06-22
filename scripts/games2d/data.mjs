@@ -992,8 +992,7 @@ export const GAMES_2D = {
       {
         tag: "reflection-wrong-axis",
         trigger: "Flips the wrong coordinate when reflecting across an axis.",
-        feedback:
-          "Across the x-axis, keep x and flip y. Across the y-axis, keep y and flip x.",
+        feedback: "Across the x-axis, keep x and flip y. Across the y-axis, keep y and flip x.",
       },
     ],
     tiers: {
@@ -1040,7 +1039,8 @@ export const GAMES_2D = {
       },
       {
         tag: "added-instead-of-subtracted",
-        trigger: "Adds the two coordinates instead of subtracting to find a straight-line distance.",
+        trigger:
+          "Adds the two coordinates instead of subtracting to find a straight-line distance.",
         feedback:
           "On the same row or column, SUBTRACT the coordinates that differ, then drop the sign.",
       },
@@ -1080,7 +1080,8 @@ export const GAMES_2D = {
     misconceptions: [
       {
         tag: "topic-not-variability",
-        trigger: "Calls a question statistical because it sounds 'sciency' or has numbers, even when every answer is the same.",
+        trigger:
+          "Calls a question statistical because it sounds 'sciency' or has numbers, even when every answer is the same.",
         feedback:
           "A question is statistical only if the answers VARY. If every poller lands on one spot, it has one answer — not statistical.",
       },

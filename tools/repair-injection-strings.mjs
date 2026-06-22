@@ -27,7 +27,12 @@ const SCRIPT_RE = /<script\b([^>]*)>([\s\S]*?)<\/script>/gi;
 const BREAK_RE = /(['"])\n[ \t]*(<\/body>)/g;
 
 function parses(code) {
-  try { new vm.Script(code); return true; } catch { return false; }
+  try {
+    new vm.Script(code);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 let changed = 0;
@@ -42,7 +47,8 @@ for (const file of files) {
     const attrs = m[1] || "";
     const body = m[2];
     const bodyStart = m.index + m[0].indexOf(body, attrs.length);
-    const isClassic = !/\bsrc\s*=/.test(attrs) &&
+    const isClassic =
+      !/\bsrc\s*=/.test(attrs) &&
       !/\btype\s*=\s*["']?(application\/json|text\/template|importmap|module)/i.test(attrs);
     // Note: don't use BREAK_RE.test() here — the /g flag makes .test() stateful
     // (advances lastIndex), which would skip matches across scripts/files.

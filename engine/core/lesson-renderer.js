@@ -1455,9 +1455,7 @@ function getObjectivePopup() {
   backdrop.addEventListener("click", (e) => {
     if (e.target === backdrop) closeObjectivePopup();
   });
-  backdrop
-    .querySelector(".obj-popup-close")
-    .addEventListener("click", () => closeObjectivePopup());
+  backdrop.querySelector(".obj-popup-close").addEventListener("click", () => closeObjectivePopup());
   objectivePopupEl = backdrop;
   return backdrop;
 }
@@ -1508,10 +1506,7 @@ function closeObjectivePopup() {
     document.removeEventListener("keydown", objectivePopupKeyHandler);
     objectivePopupKeyHandler = null;
   }
-  if (
-    objectivePopupLastFocus &&
-    typeof objectivePopupLastFocus.focus === "function"
-  ) {
+  if (objectivePopupLastFocus && typeof objectivePopupLastFocus.focus === "function") {
     objectivePopupLastFocus.focus();
   }
   objectivePopupLastFocus = null;

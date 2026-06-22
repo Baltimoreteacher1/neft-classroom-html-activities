@@ -34,10 +34,8 @@ import { dirname } from "path";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 const MARK = "nsr-injected"; // sentinel in an HTML comment
-const LINK_TAG =
-  '<link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">';
-const SCRIPT_TAG =
-  '<script src="/shared/save-resume/save-resume-engine.js" defer></script>';
+const LINK_TAG = '<link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">';
+const SCRIPT_TAG = '<script src="/shared/save-resume/save-resume-engine.js" defer></script>';
 const BEGIN = `<!-- ${MARK}:begin (multi-day save/resume — tools/inject-save-resume.js) -->`;
 const END = `<!-- ${MARK}:end -->`;
 
@@ -190,26 +188,17 @@ function handleFile(file) {
   // the LAST </body> — the real document close. The first </body> can be a literal
   // inside a JS template string (print/report generators); injecting there would
   // put the </script> inside the page's main inline script and terminate it early.
-  let out = html.replace(
-    /<\/head>/i,
-    `  ${BEGIN}\n  ${LINK_TAG}\n  ${END}\n</head>`,
-  );
+  let out = html.replace(/<\/head>/i, `  ${BEGIN}\n  ${LINK_TAG}\n  ${END}\n</head>`);
   const bodies = [...out.matchAll(/<\/body>/gi)];
   const at = bodies[bodies.length - 1].index;
-  out =
-    out.slice(0, at) +
-    `${BEGIN}\n  ${SCRIPT_TAG}\n  ${END}\n  ` +
-    out.slice(at);
+  out = out.slice(0, at) + `${BEGIN}\n  ${SCRIPT_TAG}\n  ${END}\n  ` + out.slice(at);
   if (!DRY) writeFileSync(file, out);
   report.injected++;
 }
 
 // Remove exactly the blocks we injected (BEGIN..END), leaving everything else.
 function stripInjection(html) {
-  const re = new RegExp(
-    `\\s*${escapeRe(BEGIN)}[\\s\\S]*?${escapeRe(END)}`,
-    "g",
-  );
+  const re = new RegExp(`\\s*${escapeRe(BEGIN)}[\\s\\S]*?${escapeRe(END)}`, "g");
   return html.replace(re, "");
 }
 function escapeRe(s) {
@@ -237,9 +226,5 @@ console.log(
   report.skippedNoTags.length,
   report.skippedNoTags.slice(0, 10),
 );
-console.log(
-  "  skipped (filename) :",
-  report.skippedFile.length,
-  report.skippedFile.slice(0, 10),
-);
+console.log("  skipped (filename) :", report.skippedFile.length, report.skippedFile.slice(0, 10));
 if (DRY) console.log("\n(dry-run: no files were written)");

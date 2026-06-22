@@ -13,7 +13,15 @@
  *
  * Exits non-zero if any page is broken. Pure read-only.
  */
-import { readFileSync, readdirSync, statSync, writeFileSync, mkdtempSync, rmSync, unlinkSync } from "fs";
+import {
+  readFileSync,
+  readdirSync,
+  statSync,
+  writeFileSync,
+  mkdtempSync,
+  rmSync,
+  unlinkSync,
+} from "fs";
 import { join, relative } from "path";
 import { tmpdir } from "os";
 import { execFileSync } from "child_process";
@@ -22,7 +30,9 @@ import vm from "vm";
 const ROOT = process.cwd();
 const TMP = mkdtempSync(join(tmpdir(), "injchk-"));
 process.on("exit", () => {
-  try { rmSync(TMP, { recursive: true, force: true }); } catch {}
+  try {
+    rmSync(TMP, { recursive: true, force: true });
+  } catch {}
 });
 const NSR_MARK = "nsr-injected:begin";
 const MWB_MARK = "mwb-injected:begin";
@@ -76,9 +86,15 @@ function checkSyntax(code, isModule) {
       execFileSync(process.execPath, ["--check", f], { stdio: "pipe" });
       return null;
     } catch (e) {
-      return String(e.stderr || e.message).split("\n").find((l) => /Error/.test(l)) || "syntax error";
+      return (
+        String(e.stderr || e.message)
+          .split("\n")
+          .find((l) => /Error/.test(l)) || "syntax error"
+      );
     } finally {
-      try { unlinkSync(f); } catch {}
+      try {
+        unlinkSync(f);
+      } catch {}
     }
   }
   try {
@@ -152,9 +168,7 @@ for (const file of pages) {
 }
 
 // (4) Workbench page must not be self-injected
-const wbCandidates = pages.filter((p) =>
-  /math-workbench\/index\.html$/.test(relative(ROOT, p)),
-);
+const wbCandidates = pages.filter((p) => /math-workbench\/index\.html$/.test(relative(ROOT, p)));
 for (const wb of wbCandidates) {
   const html = readFileSync(wb, "utf8");
   if (html.includes(MWB_MARK)) {
