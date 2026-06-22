@@ -60,9 +60,10 @@
   // Topics that count toward "mastery" (best diagnostic/practice ≥ 80%).
   function masteredCount() {
     const all = Progress.all();
-    return Object.keys(all).filter(
-      (s) => Math.max(all[s].diagnostic || 0, all[s].practice || 0) >= 80,
-    ).length;
+    return Object.keys(all).filter((s) => {
+      const it = all[s];
+      return it && Math.max(it.diagnostic || 0, it.practice || 0) >= 80;
+    }).length;
   }
 
   /* ============================================================== *
@@ -72,7 +73,14 @@
    *  hub (assets/hub.js) under the key below.                      *
    * ============================================================== */
   const XKEY = "nt-intervention-xp:v1";
-  const dayStr = (d) => (d || new Date()).toISOString().slice(0, 10);
+  // Local calendar date (YYYY-MM-DD). Uses local fields, not UTC, so an
+  // evening session never rolls the streak into "tomorrow".
+  const dayStr = (d) => {
+    const t = d || new Date();
+    const m = String(t.getMonth() + 1).padStart(2, "0");
+    const day = String(t.getDate()).padStart(2, "0");
+    return t.getFullYear() + "-" + m + "-" + day;
+  };
   const qkey = (q) => String(q && q.prompt != null ? q.prompt : q);
 
   // id → { icon, name, desc }. Mirrored in hub.js for the badge wall.
@@ -121,6 +129,7 @@
       let d;
       try {
         d = JSON.parse(localStorage.getItem(XKEY) || "{}");
+        if (!d || typeof d !== "object") d = {};
       } catch (e) {
         d = {};
       }
@@ -144,7 +153,11 @@
     touchStreak(d) {
       const today = dayStr();
       if (d.streak.last === today) return false;
-      const yest = dayStr(new Date(Date.now() - 864e5));
+      // Compute "yesterday" via calendar arithmetic so DST shifts don't
+      // miscount the gap.
+      const y = new Date();
+      y.setDate(y.getDate() - 1);
+      const yest = dayStr(y);
       d.streak.count = d.streak.last === yest ? d.streak.count + 1 : 1;
       d.streak.last = today;
       return true;
@@ -285,6 +298,26 @@
         : "");
   }
 
+  /* ----------- Live Smart Review tab-count badge ---------------- */
+  // Reflects the current miss count for this topic without a reload.
+  function refreshReviewBadge() {
+    const T = window.TOPIC;
+    const tab = document.querySelector('.tab[data-tab="review"]');
+    if (!T || !T.slug || !tab) return;
+    const n = (Premium.read().missed[T.slug] || []).length;
+    let badge = tab.querySelector(".tab-count");
+    if (n > 0) {
+      if (!badge) {
+        badge = document.createElement("span");
+        badge.className = "tab-count";
+        tab.appendChild(badge);
+      }
+      badge.textContent = String(n);
+    } else if (badge) {
+      badge.remove();
+    }
+  }
+
   /* --------- Award XP + badges when an activity completes --------- */
   // mode: "practice" | "diagnostic" | "fluency" | "game".
   // For "game", `correct` carries the final score.
@@ -292,6 +325,7 @@
     const xpFor = {
       practice: correct * 3 + (pct >= 80 ? 20 : 0),
       diagnostic: correct * 1,
+      review: correct * 2,
       fluency: correct * 2,
       game: Math.floor((correct || 0) / 5),
     };
@@ -521,12 +555,14 @@
               // Answering a trouble-spot question correctly retires it from
               // the student's Smart Review set.
               Premium.clearMiss(slug, q);
+              refreshReviewBadge();
             } else {
               fb.className = "feedback no";
               fb.textContent =
                 "✗ Answer: " + q.answer + ". " + (q.explain || "");
               // Track the miss so it resurfaces in Smart Review.
               Premium.recordMiss(slug, q);
+              refreshReviewBadge();
             }
             setTimeout(
               () => {
@@ -549,19 +585,20 @@
 
       function finish() {
         const pct = Math.round((correct / total) * 100);
-        if (window.TOPIC && window.TOPIC.slug)
-          Progress.save(window.TOPIC.slug, {
-            [mode === "diagnostic" ? "diagnostic" : "practice"]: pct,
-          });
+        // Smart Review ("review" mode) must NOT write to mastery progress — a
+        // 1-question review at 100% should never mark the whole topic mastered
+        // or unlock mastery badges. Only real practice/diagnostic sets count.
+        if (
+          window.TOPIC &&
+          window.TOPIC.slug &&
+          (mode === "practice" || mode === "diagnostic")
+        )
+          Progress.save(window.TOPIC.slug, { [mode]: pct });
         // Premium: award XP + badges (after Progress.save so mastery counts
         // reflect this run), then celebrate strong scores.
-        awardCompletion(
-          mode === "diagnostic" ? "diagnostic" : "practice",
-          pct,
-          correct,
-          total,
-        );
-        if (pct >= 80) confetti(90);
+        awardCompletion(mode, pct, correct, total);
+        if ((mode === "practice" || mode === "diagnostic") && pct >= 80)
+          confetti(90);
         let msg, sub;
         if (mode === "diagnostic") {
           if (pct >= 80) {
@@ -973,7 +1010,7 @@
     if (reviewMount && T.slug) {
       const items = Premium.missedItems(T.slug, T.bank);
       if (items.length)
-        quizWidget("review-widget", items, "practice", items.length);
+        quizWidget("review-widget", items, "review", items.length);
       else
         reviewMount.innerHTML =
           '<div class="qcard" style="padding:30px;text-align:center">' +

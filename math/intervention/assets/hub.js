@@ -145,6 +145,9 @@
       reset.addEventListener("click", () => {
         if (confirm("Clear saved intervention progress on this device?")) {
           localStorage.removeItem("nt-intervention:v1");
+          // Also clear XP/streak/badges + Smart Review misses so a reset is a
+          // true fresh start (these live under a separate key).
+          localStorage.removeItem("nt-intervention-xp:v1");
           location.reload();
         }
       });
@@ -219,6 +222,7 @@
       let d;
       try {
         d = JSON.parse(localStorage.getItem(XKEY) || "{}");
+        if (!d || typeof d !== "object") d = {};
       } catch (e) {
         d = {};
       }
@@ -347,7 +351,7 @@
           '<div class="report-head">' +
           '<div><p class="rp-kicker">Neft Teacher · 6th-Grade Math Intervention</p>' +
           '<h2 class="rp-title">Student Progress Report</h2></div>' +
-          '<div class="rp-meta"><p><strong>' + name + "</strong></p><p>" + new Date().toLocaleDateString() + "</p></div>" +
+          '<div class="rp-meta"><p><strong class="rp-name"></strong></p><p>' + new Date().toLocaleDateString() + "</p></div>" +
           "</div>" +
           '<div class="rp-summary">' +
           "<div><b>" + xpLevel(fresh.xp) + "</b><span>Level</span></div>" +
@@ -364,6 +368,9 @@
           "</p></div>" +
           '<div class="rp-foot"><span>Mr. Neft · Mathematics</span><span>eduwonderlab.com/math/intervention</span></div>' +
           "</div>";
+        // Assign the student-entered name safely (avoids HTML injection).
+        const nameEl = report.querySelector(".rp-name");
+        if (nameEl) nameEl.textContent = name;
         document.body.classList.add("printing-report");
         window.print();
         setTimeout(function () {
