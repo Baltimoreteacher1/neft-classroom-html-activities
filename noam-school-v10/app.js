@@ -1786,6 +1786,16 @@
           ${t.steps.length ? `<span class="tag">${pct}% done</span>` : ""}
         </div>
         <p class="now-cue">${cue}</p>
+        ${t.steps.length ? `
+          <ul class="steps" style="margin-top:12px; margin-bottom:8px; text-align:left; color:white; list-style:none; padding-left:0;">
+            ${t.steps.map(s => `
+              <li style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+                <input class="check" type="checkbox" data-check="step" data-id="${t.id}" data-sid="${s.id}" ${s.done ? "checked" : ""} aria-label="${esc(s.text)}" style="accent-color:var(--teal-bright);">
+                <span class="steptext ${s.done ? "done" : ""}" style="color:white; ${s.done ? "opacity:0.6; text-decoration:line-through;" : ""}">${esc(s.text)}</span>
+              </li>
+            `).join("")}
+          </ul>
+        ` : ""}
       </div>
       <div class="now-actions">
         <button class="btn go big" data-act="focus-start" data-id="${t.id}">▶ Start this now</button>
@@ -2605,6 +2615,7 @@ Due May 31"></textarea>
         weeklyFocusChartHTML() +
         reflectionChartHTML() +
         badgesGalleryHTML() +
+        weeklyReportCardHTML() +
         card(
           "addwin",
           "Add a win",
@@ -3111,6 +3122,12 @@ Due May 31"></textarea>
       const ov = $("#focusOverlay");
       ov.classList.add("open");
       this.renderSteps();
+      const defMin = state.settings.defaultFocusMin;
+      const presetBtns = document.querySelectorAll("#fPresetsControls button[data-act='set-focus-preset']");
+      presetBtns.forEach(btn => {
+        const isPressed = Number(btn.dataset.arg) === defMin;
+        btn.setAttribute("aria-pressed", isPressed ? "true" : "false");
+      });
       // Move focus into the dialog for keyboard/screen-reader users.
       $("#focusOverlay [data-act='focus-stop']")?.focus();
       try {
@@ -3557,6 +3574,179 @@ Due May 31"></textarea>
     reader.readAsText(file);
   }
 
+  function mergeStates(local, remote) {
+    const merged = { ...local };
+    // Merge assignments
+    const localMap = new Map(local.assignments.map(a => [a.id, a]));
+    const remoteMap = new Map(remote.assignments.map(a => [a.id, a]));
+    
+    const allIds = new Set([...localMap.keys(), ...remoteMap.keys()]);
+    const mergedAssignments = [];
+    for (const id of allIds) {
+      const loc = localMap.get(id);
+      const rem = remoteMap.get(id);
+      if (loc && rem) {
+        if ((loc.updatedAt || 0) >= (rem.updatedAt || 0)) {
+          mergedAssignments.push(loc);
+        } else {
+          mergedAssignments.push(rem);
+        }
+      } else if (loc) {
+        mergedAssignments.push(loc);
+      } else {
+        mergedAssignments.push(rem);
+      }
+    }
+    merged.assignments = mergedAssignments;
+    
+    // Merge classes
+    const classesMap = new Map(local.classes.map(c => [c.id, c]));
+    for (const c of remote.classes || []) {
+      if (!classesMap.has(c.id)) {
+        classesMap.set(c.id, c);
+      }
+    }
+    merged.classes = [...classesMap.values()];
+    
+    // Merge activity
+    merged.activity = { ...local.activity };
+    for (const [date, remAct] of Object.entries(remote.activity || {})) {
+      const locAct = merged.activity[date] || { tasks: 0, focusMin: 0, routines: 0 };
+      merged.activity[date] = {
+        tasks: Math.max(locAct.tasks || 0, remAct.tasks || 0),
+        focusMin: Math.max(locAct.focusMin || 0, remAct.focusMin || 0),
+        routines: Math.max(locAct.routines || 0, remAct.routines || 0)
+      };
+    }
+    
+    // Merge wins
+    const winsMap = new Map(local.wins.map(w => [w.text + w.date, w]));
+    for (const w of remote.wins || []) {
+      winsMap.set(w.text + w.date, w);
+    }
+    merged.wins = [...winsMap.values()];
+    
+    // Merge reflections
+    merged.reflections = { ...local.reflections };
+    for (const [date, remRef] of Object.entries(remote.reflections || {})) {
+      const locRef = merged.reflections[date];
+      if (!locRef || new Date(remRef.timestamp || 0) > new Date(locRef.timestamp || 0)) {
+        merged.reflections[date] = remRef;
+      }
+    }
+    
+    merged.updatedAt = Date.now();
+    return merged;
+  }
+
+  function showConflictResolver(localState, cloudState) {
+    const addedLocally = localState.assignments.filter(a => !cloudState.assignments.some(x => x.id === a.id));
+    const addedInCloud = cloudState.assignments.filter(a => !localState.assignments.some(x => x.id === a.id));
+    
+    let diffHtml = "";
+    if (addedLocally.length || addedInCloud.length) {
+      diffHtml = `
+        <div class="conflict-diffs" style="margin-top: 12px; font-size: 0.82rem; text-align: left; max-height: 120px; overflow-y: auto; border: 1px solid var(--line); border-radius: 8px; padding: 8px; background: rgba(0,0,0,0.1);">
+          <b style="color: var(--muted); display: block; margin-bottom: 4px;">Difference Summary:</b>
+          ${addedLocally.map(a => `<div style="color: var(--teal); font-weight: 700; margin-bottom: 2px;">💻 Local: "${esc(a.title)}"</div>`).join("")}
+          ${addedInCloud.map(a => `<div style="color: var(--amber); font-weight: 700; margin-bottom: 2px;">☁️ Cloud: "${esc(a.title)}"</div>`).join("")}
+        </div>
+      `;
+    }
+    
+    const bodyHtml = `
+      <div style="text-align: center;">
+        <p class="sub" style="margin-top:0">We found newer changes on another device. How would you like to sync?</p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0;">
+          <div class="card" style="border-color: var(--teal); background: color-mix(in srgb, var(--teal) 5%, transparent); padding: 10px; text-align: left;">
+            <h4 style="color: var(--teal); margin: 0 0 6px; font-size: 0.88rem;">💻 Local Device</h4>
+            <div style="font-size: 0.76rem; line-height: 1.45; color: var(--ink);">
+              <b>Last Edited:</b><br>${new Date(localState.updatedAt || 0).toLocaleString()}<br>
+              <b>Tasks:</b> ${localState.assignments.length}<br>
+              <b>Classes:</b> ${localState.classes.length}
+            </div>
+          </div>
+          <div class="card" style="border-color: var(--amber); background: color-mix(in srgb, var(--amber) 5%, transparent); padding: 10px; text-align: left;">
+            <h4 style="color: var(--amber); margin: 0 0 6px; font-size: 0.88rem;">☁️ Cloud Backup</h4>
+            <div style="font-size: 0.76rem; line-height: 1.45; color: var(--ink);">
+              <b>Last Edited:</b><br>${new Date(cloudState.updatedAt || 0).toLocaleString()}<br>
+              <b>Tasks:</b> ${cloudState.assignments.length}<br>
+              <b>Classes:</b> ${cloudState.classes.length}
+            </div>
+          </div>
+        </div>
+        ${diffHtml}
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 16px;">
+          <button class="btn primary block" data-act="resolve-conflict-merge">🔀 Merge Both (Recommended)</button>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <button class="btn block" data-act="resolve-conflict-local">💻 Keep Local</button>
+            <button class="btn block" data-act="resolve-conflict-cloud">☁️ Keep Cloud</button>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    window._pendingLocalConflictState = localState;
+    window._pendingCloudConflictState = cloudState;
+    
+    openModal("⚠️ Sync Conflict Found", bodyHtml);
+  }
+
+  function getWeeklyStats() {
+    const stats = {
+      focusMin: 0,
+      tasks: 0,
+      routines: 0,
+      moodSum: 0,
+      moodCount: 0,
+      focusSum: 0,
+      focusCount: 0
+    };
+    for (let i = 0; i < 7; i++) {
+      const k = isoForOffset(-i);
+      const act = state.activity[k] || { focusMin: 0, tasks: 0, routines: 0 };
+      stats.focusMin += act.focusMin || 0;
+      stats.tasks += act.tasks || 0;
+      stats.routines += act.routines || 0;
+      
+      const ref = state.reflections && state.reflections[k];
+      if (ref) {
+        if (ref.mood) {
+          stats.moodSum += ref.mood;
+          stats.moodCount++;
+        }
+        if (ref.focus) {
+          stats.focusSum += ref.focus;
+          stats.focusCount++;
+        }
+      }
+    }
+    stats.avgMood = stats.moodCount ? (stats.moodSum / stats.moodCount).toFixed(1) : "N/A";
+    stats.avgFocus = stats.focusCount ? (stats.focusSum / stats.focusCount).toFixed(1) : "N/A";
+    return stats;
+  }
+
+  function weeklyReportCardHTML() {
+    const stats = getWeeklyStats();
+    return `
+      <div class="card weekly-report-card" id="weeklyReportCard" style="margin-bottom:16px;">
+        <div class="head">
+          <div>
+            <h3>📊 Weekly Report Card</h3>
+            <p class="sub">Overview of your productivity and reflection scores over the last 7 days.</p>
+          </div>
+          <button class="btn sm" data-act="print-report">🖨️ Print Report</button>
+        </div>
+        <div class="diag-grid" style="margin-top: 12px;">
+          <div class="diag-stat"><b>⚡ Focused</b><span>${stats.focusMin}m</span></div>
+          <div class="diag-stat"><b>✅ Tasks Completed</b><span>${stats.tasks}</span></div>
+          <div class="diag-stat"><b>🔁 Routines Run</b><span>${stats.routines}</span></div>
+          <div class="diag-stat"><b>🧠 Avg Mood</b><span>${stats.avgMood}${stats.avgMood !== "N/A" ? " / 5" : ""}</span></div>
+        </div>
+      </div>
+    `;
+  }
+
   const cloud = {
     available() {
       return location.protocol.startsWith("http"); // endpoint reachable on hosted site
@@ -3621,7 +3811,12 @@ Due May 31"></textarea>
           data.state &&
           (data.updatedAt || 0) > (state.updatedAt || 0)
         ) {
-          // Newer cloud wins. Apply WITHOUT pushing it straight back (echo guard).
+          const localSig = JSON.stringify(state.assignments.map(a => ({ id: a.id, done: a.status === "done" })));
+          const cloudSig = JSON.stringify(data.state.assignments.map(a => ({ id: a.id, done: a.status === "done" })));
+          if (localSig !== cloudSig) {
+            showConflictResolver(state, data.state);
+            return true;
+          }
           const prev = suppressPush;
           suppressPush = true;
           state = normalize(data.state);
@@ -5169,6 +5364,54 @@ ${name}`;
       state.settings.welcomeDismissed = true;
       save();
       render();
+    },
+    "resolve-conflict-merge": () => {
+      if (window._pendingLocalConflictState && window._pendingCloudConflictState) {
+        state = normalize(mergeStates(window._pendingLocalConflictState, window._pendingCloudConflictState));
+        save({ touch: true, immediate: true });
+        closeModal();
+        render();
+        toast("Merged local and remote changes successfully! 🔀");
+      }
+    },
+    "resolve-conflict-local": () => {
+      if (window._pendingLocalConflictState) {
+        state = normalize(window._pendingLocalConflictState);
+        state.updatedAt = Date.now();
+        save({ touch: true, immediate: true });
+        closeModal();
+        render();
+        toast("Kept local changes. Syncing to cloud... 💻");
+      }
+    },
+    "resolve-conflict-cloud": () => {
+      if (window._pendingCloudConflictState) {
+        const prev = suppressPush;
+        suppressPush = true;
+        state = normalize(window._pendingCloudConflictState);
+        save({ touch: false, immediate: true });
+        suppressPush = prev;
+        closeModal();
+        render();
+        toast("Overwritten with cloud changes. ☁️");
+      }
+    },
+    "print-report": () => {
+      window.print();
+    },
+    "set-focus-preset": (_, arg) => {
+      const mins = Number(arg);
+      if (focus.phase === "focus") {
+        focus.total = mins * 60;
+        focus.remaining = focus.total;
+        focus.tick(true);
+      }
+      const buttons = document.querySelectorAll("#fPresetsControls button[data-act='set-focus-preset']");
+      buttons.forEach(btn => {
+        const isPressed = btn.dataset.arg === arg;
+        btn.setAttribute("aria-pressed", isPressed ? "true" : "false");
+      });
+      toast(`Timer set to ${mins} minutes! ⏱️`);
     },
     "open-command-bar": () => openCommandBar(),
     "close-command-bar": () => closeCommandBar(),
