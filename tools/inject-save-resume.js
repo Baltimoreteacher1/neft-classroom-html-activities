@@ -93,8 +93,8 @@ const SKIP_INJECT_PATH_RE = /(^|\/)living-school\/neft-city-/i;
 const args = new Set(process.argv.slice(2));
 const DRY = args.has("--dry-run");
 const REVERT = args.has("--revert");
-// Optional substring filter (e.g. --match=living-school/neft-city-) so revert
-// can target a subset of files instead of every injected page.
+// Optional path-substring filter (e.g. --match=living-school/neft-city-) that
+// limits BOTH inject and revert to matching files instead of every page.
 const MATCH = [...args].find((a) => a.startsWith("--match="))?.slice("--match=".length) || null;
 
 const report = {
@@ -141,6 +141,9 @@ function handleFile(file) {
     report.skippedFile.push(rel);
     return;
   }
+  // Path-substring filter (applies to BOTH inject and revert). Checked before
+  // any disk read so non-matching files cost no I/O in a large repo.
+  if (MATCH && !rel.includes(MATCH)) return;
   let html;
   try {
     html = readFileSync(file, "utf8");
@@ -150,7 +153,6 @@ function handleFile(file) {
   }
 
   if (REVERT) {
-    if (MATCH && !rel.includes(MATCH)) return; // targeted revert: skip non-matches
     if (html.includes(MARK)) {
       const cleaned = stripInjection(html);
       if (!DRY) writeFileSync(file, cleaned);
