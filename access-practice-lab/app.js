@@ -2,7 +2,7 @@
   const DATA = window.ACCESS_LAB_DATA;
   const $ = (id) => document.getElementById(id);
   const storagePrefix = "accessPracticeLab:v1";
-  const BUILD = "20260613-r6"; // bump with the app.js ?v= query on each release
+  const BUILD = "20260622-r1"; // bump with the app.js ?v= query on each release
 
   // Official WIDA-style Google Forms (student RESPONSE links).
   //
@@ -140,6 +140,25 @@
       DATA.tests = DATA.tests.concat(
         v7.tests.filter((t) => t && t.id && !seen.has(t.id)),
       );
+    }
+  })();
+
+  // ── v10 content module: gold-standard Level A & B pack (4 core domains) ──
+  (function mergeV10() {
+    const v10 = window.ACCESS_LAB_V10;
+    if (!v10) return;
+    const append = v10.appendActivities || {};
+    for (const [domainName, levels] of Object.entries(append)) {
+      const domain = DATA.domains[domainName];
+      if (!domain) continue;
+      for (const [levelKey, list] of Object.entries(levels)) {
+        const level = domain.levels[levelKey];
+        if (!level || !Array.isArray(list)) continue;
+        const existing = new Set((level.activities || []).map((a) => a.id));
+        level.activities = (level.activities || []).concat(
+          list.filter((a) => a && a.id && !existing.has(a.id)),
+        );
+      }
     }
   })();
 
