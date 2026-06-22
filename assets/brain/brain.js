@@ -182,4 +182,97 @@
       return data;
     });
   };
+
+  // Teacher-facing "assign the next step": one row per standard with the current
+  // mastery band and a direct link to the right-level activity to assign —
+  // struggling → on-ramp (L0), developing → core (L1), proficient → enrichment
+  // (L2). Turns the heatmap into action. Single-device view like renderHeatmap;
+  // pass opts.results for a specific student.
+  var DIFF_WANT = { struggling: [0, 1, 2], developing: [1, 0, 2], proficient: [2, 1] };
+  var DIFF_LABEL = {
+    struggling: "On-ramp · support",
+    developing: "Core practice",
+    proficient: "Enrichment · stretch",
+  };
+  B.renderDifferentiation = function (target, opts) {
+    var host = typeof target === "string" ? document.querySelector(target) : target;
+    if (!host) return Promise.resolve();
+    opts = opts || {};
+    host.innerHTML = "<p class='nb-loading'>Loading differentiation…</p>";
+    return B.load(opts).then(function (data) {
+      var tax = data.taxonomy;
+      var mastery = data.mastery;
+      // Index real activities by standard → level → [entries].
+      var byStd = {};
+      (data.graph.entries || []).forEach(function (e) {
+        if (!e.standard || e.standard === "MIXED" || e.standard === "NON_MATH") return;
+        var lv = byStd[e.standard] || (byStd[e.standard] = {});
+        (lv[e.level] || (lv[e.level] = [])).push(e);
+      });
+      // Activities the student already completed — prefer assigning something new.
+      var done = {};
+      (opts.results || getResults()).forEach(function (r) {
+        if (r && r.activityId) done[r.activityId] = true;
+      });
+      function pick(std, band) {
+        var lv = byStd[std];
+        if (!lv) return null;
+        var order = DIFF_WANT[band] || [1, 0, 2];
+        var fallback = null; // best-fit even if already completed
+        for (var i = 0; i < order.length; i++) {
+          var arr = lv[order[i]];
+          if (!arr || !arr.length) continue;
+          if (!fallback) fallback = { entry: arr[0], level: order[i] };
+          for (var j = 0; j < arr.length; j++) {
+            if (!done[arr[j].url]) return { entry: arr[j], level: order[i] };
+          }
+        }
+        return fallback; // all completed → fall back to the best-fit (a repeat)
+      }
+      host.innerHTML = "";
+      var stds = (mastery && mastery.standards) || {};
+      var rows = tax.standards.map(function (s) {
+        var st = stds[s.id];
+        var assessed = !!st;
+        var band = assessed ? st.band : "developing"; // unassessed → suggest core
+        var bandCls = assessed ? st.band : "none";
+        var bandText = assessed ? st.band : "not assessed";
+        var pct = assessed ? Math.round(st.mastery * 100) + "%" : "—";
+        var rec = pick(s.id, band);
+        var action = rec
+          ? "<a class='nb-rec nb-l" +
+            rec.level +
+            "' href='" +
+            esc(rec.entry.url) +
+            "'><span class='nb-rec-title'>" +
+            esc(rec.entry.title) +
+            "</span><span class='nb-rec-why'>" +
+            esc(DIFF_LABEL[band] || "Start here") +
+            "</span></a>"
+          : "<span class='nb-diff-empty'>no activity tagged yet</span>";
+        return (
+          "<tr><td class='nb-name' title='" +
+          esc(s.label) +
+          "'>" +
+          esc(s.id.replace(/^6\./, "")) +
+          "</td><td class='nb-cell nb-" +
+          bandCls +
+          "'>" +
+          esc(bandText) +
+          "</td><td class='nb-diff-pct'>" +
+          pct +
+          "</td><td class='nb-diff-action'>" +
+          action +
+          "</td></tr>"
+        );
+      });
+      var table = el("table", "nb-diff");
+      table.innerHTML =
+        "<thead><tr><th>Standard</th><th>Band</th><th>Mastery</th><th>Assign next step</th></tr></thead><tbody>" +
+        rows.join("") +
+        "</tbody>";
+      host.appendChild(table);
+      return data;
+    });
+  };
 })();

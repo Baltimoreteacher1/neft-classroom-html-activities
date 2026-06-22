@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex" />
-    <title>Standards Heatmap (CCSS) — Teacher Tools</title>
+    <title>Standards Heatmap (MCAP) — Teacher Tools</title>
     <link rel="stylesheet" href="/assets/brain/brain.css" />
     <style>
       body {
@@ -71,7 +71,7 @@
   <body>
     <h1>🧠 Standards Heatmap <span class="badge">Teacher</span></h1>
     <p class="lead">
-      Per-CCSS-standard mastery from real activity results (the Math Brain
+      Per-standard (2025 MCAP) mastery from real activity results (the Math Brain
       content graph). Complements the telemetry
       <a href="/teacher-tools/mastery/">Mastery Dashboard</a>.
     </p>
@@ -99,6 +99,18 @@
       once a results backend is wired — the renderer already accepts a roster.
       Hover any cell for the standard and score.
     </p>
+
+    <h2 style="margin-top: 2rem">🎯 Assign the next step</h2>
+    <p class="lead">
+      For each standard: the current mastery band and a one-click link to the
+      right activity to assign — <strong>struggling → on-ramp</strong>,
+      <strong>developing → core practice</strong>,
+      <strong>proficient → enrichment</strong>. Turns the heatmap into action.
+    </p>
+    <div class="panel">
+      <div id="differentiation"></div>
+    </div>
+
     <script src="/assets/brain/mastery-engine.js"></script>
     <script src="/assets/brain/recommend-engine.js"></script>
     <script src="/assets/brain/brain.js"></script>
@@ -108,6 +120,12 @@
           NeftBrain.renderHeatmap("#heatmap").catch(function () {
             document.getElementById("heatmap").innerHTML =
               "<p class='note'>Mastery data unavailable (content graph not built).</p>";
+          });
+        }
+        if (window.NeftBrain && NeftBrain.renderDifferentiation) {
+          NeftBrain.renderDifferentiation("#differentiation").catch(function () {
+            document.getElementById("differentiation").innerHTML =
+              "<p class='note'>Differentiation data unavailable (content graph not built).</p>";
           });
         }
       });
