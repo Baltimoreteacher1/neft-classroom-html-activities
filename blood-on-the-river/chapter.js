@@ -1152,10 +1152,20 @@ function renderActiveScene(s, chapterNum) {
   const imgPath = `/blood-on-the-river/images/chapter-${chapterNum}/${sceneImgName}`;
   const svgDataUri = getSceneSvgDataUri(s, chapterNum);
 
+  // Background check for PNG file
+  setTimeout(() => {
+    const tempImg = new Image();
+    tempImg.onload = () => {
+      const el = document.getElementById(`scene-img-${chapterNum}-${s.n}`);
+      if (el) el.src = imgPath;
+    };
+    tempImg.src = imgPath;
+  }, 50);
+
   return `
     <div class="scene-illustration-container">
       <button class="scene-img-btn" type="button" aria-label="Zoom illustration">
-        <img class="scene-img" src="${imgPath}" onerror="this.src='${svgDataUri}'; this.onerror=null;" alt="${esc(imgCaption)}" loading="lazy">
+        <img class="scene-img" id="scene-img-${chapterNum}-${s.n}" src="${svgDataUri}" alt="${esc(imgCaption)}" loading="lazy">
       </button>
       <div class="scene-img-caption">${esc(imgCaption)}</div>
     </div>
