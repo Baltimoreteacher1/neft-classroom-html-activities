@@ -2,7 +2,7 @@
   const DATA = window.ACCESS_LAB_DATA;
   const $ = (id) => document.getElementById(id);
   const storagePrefix = "accessPracticeLab:v1";
-  const BUILD = "20260622-r2"; // bump with the app.js ?v= query on each release
+  const BUILD = "20260622-r3"; // bump with the app.js ?v= query on each release
 
   // Official WIDA-style Google Forms (student RESPONSE links).
   //

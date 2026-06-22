@@ -1440,22 +1440,30 @@ window.ACCESS_LAB_V11 = {
             ]
           },
           {
-            "id": "inference-evidence-purpose",
-            "title": "Inference, Evidence & Author's Purpose",
-            "desc": "Draw inferences, choose the strongest text evidence, analyze cause and effect, and judge author's purpose across texts.",
-            "skillFocus": "Infer from clues, cite the best evidence, trace cause/effect, and determine author's purpose, including across two texts.",
+            "id": "inference-cause-effect",
+            "title": "Inference & Cause–Effect",
+            "desc": "Read closely to draw conclusions the text does not state directly and trace why events happen.",
+            "skillFocus": "Making inferences, identifying cause and effect, and reasoning about the author’s purpose.",
             "activityIds": [
               "read-infer-meaning",
-              "read-best-evidence",
               "read-cause-effect",
-              "read-table-evidence",
               "rv5-info-volcano-3",
               "rv5-sort-cause-effect",
-              "rv5-mc-authors-purpose",
-              "rv5-constructed-compare-texts",
+              "read-table-evidence",
+              "rv5-mc-authors-purpose"
+            ]
+          },
+          {
+            "id": "citing-evidence-compare-texts",
+            "title": "Citing Evidence & Comparing Texts",
+            "desc": "Find and quote the strongest text evidence, and connect ideas across more than one passage.",
+            "skillFocus": "Selecting and citing supporting evidence, and comparing information across two texts.",
+            "activityIds": [
+              "read-best-evidence",
               "v7-read-b-monarch-evidence",
               "v7-read-b-rosa-parks-constructed",
               "v10-r-b-evidence-hot",
+              "rv5-constructed-compare-texts",
               "v10-r-b-compare-texts"
             ]
           },
