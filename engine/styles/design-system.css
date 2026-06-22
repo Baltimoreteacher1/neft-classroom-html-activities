@@ -783,6 +783,131 @@ h4 {
   }
 }
 
+/* ── Objective vocabulary terms + glossary popup ── */
+/* Underlined key vocab words inside the Content/Language objectives. Tapping one
+   opens .obj-popup-backdrop with a simple explanation + a visual. */
+.obj-term {
+  display: inline;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 2px;
+  text-decoration-color: var(--teal, #1c8c8c);
+}
+.obj-term:hover,
+.obj-term:focus-visible {
+  text-decoration-style: solid;
+  background: var(--teal-light, rgba(28, 140, 140, 0.12));
+  border-radius: 4px;
+  outline: none;
+}
+
+@keyframes objFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.obj-popup-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-4, 18px);
+  background: rgba(15, 23, 42, 0.55);
+  animation: objFadeIn 0.15s ease;
+}
+.obj-popup-backdrop[hidden] {
+  display: none;
+}
+
+.obj-popup {
+  position: relative;
+  width: min(420px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--white, #fff);
+  border-radius: var(--radius-lg, 16px);
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.3);
+  padding: var(--sp-6, 24px) var(--sp-5, 20px) var(--sp-5, 20px);
+  text-align: center;
+  animation: bannerIn 0.2s var(--ease-spring, ease);
+}
+
+.obj-popup-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--cream, #f4f1ea);
+  color: var(--navy, #1f2a44);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.obj-popup-close:hover {
+  background: var(--teal-light, rgba(28, 140, 140, 0.15));
+}
+
+.obj-popup-term {
+  margin: 0 0 var(--sp-3, 14px);
+  color: var(--teal, #1c8c8c);
+  text-transform: capitalize;
+}
+
+.obj-popup-visual {
+  margin: 0 0 var(--sp-3, 14px);
+}
+.obj-popup-img {
+  display: block;
+  width: 100%;
+  max-width: 240px;
+  height: auto;
+  margin: 0 auto var(--sp-2, 10px);
+}
+.obj-popup-example {
+  margin: 0;
+  font-weight: 600;
+  color: var(--navy, #1f2a44);
+}
+.obj-popup-example[hidden] {
+  display: none;
+}
+
+.obj-popup-def {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.5;
+  color: var(--navy, #1f2a44);
+}
+.obj-popup-def-es {
+  margin: var(--sp-2, 10px) 0 0;
+  font-style: italic;
+  color: var(--gray-600, #555);
+}
+.obj-popup-def-es[hidden] {
+  display: none;
+}
+
+body.obj-popup-open {
+  overflow: hidden;
+}
+
 /* ── Phase Transition ── */
 .phase-complete-banner {
   display: none;
