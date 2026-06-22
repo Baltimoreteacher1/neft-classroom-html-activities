@@ -1890,7 +1890,11 @@
     n === null ? "🗓" : n < 0 ? "🔴" : n === 0 ? "🟠" : n <= 2 ? "🟡" : "🟢";
 
   function card(key, title, sub, body) {
-    return `<section class="card" data-card="${key}"><div class="head"><div><h3>${esc(title)}</h3>${sub ? `<p class="sub">${esc(sub)}</p>` : ""}</div></div>${body}</section>`;
+    const handle =
+      view === "home"
+        ? `<button class="card-drag-handle" aria-label="Drag to reorder" title="Drag to reorder">⋮⋮</button>`
+        : "";
+    return `<section class="card" data-card="${key}"><div class="head"><div><h3>${esc(title)}</h3>${sub ? `<p class="sub">${esc(sub)}</p>` : ""}</div>${handle}</div>${body}</section>`;
   }
   function emptyState(emoji, text) {
     return `<div class="empty"><div class="big-emoji" aria-hidden="true">${emoji}</div><p>${esc(text)}</p></div>`;
@@ -5429,6 +5433,80 @@ ${name}`;
   // Event wiring (delegated, attached once)
   // ---------------------------------------------------------------------------
   function wire() {
+    document.addEventListener("pointerdown", (ev) => {
+      const handle = ev.target.closest(".card-drag-handle");
+      if (!handle) return;
+
+      const cardEl = handle.closest(".card");
+      if (!cardEl) return;
+
+      ev.preventDefault();
+      cardEl.setPointerCapture(ev.pointerId);
+
+      const startX = ev.clientX;
+      const startY = ev.clientY;
+      const cardId = cardEl.dataset.card;
+
+      cardEl.classList.add("dragging");
+
+      let lastOverCardId = null;
+
+      function onPointerMove(moveEv) {
+        if (moveEv.pointerId !== ev.pointerId) return;
+        const dx = moveEv.clientX - startX;
+        const dy = moveEv.clientY - startY;
+        cardEl.style.transform = `translate(${dx}px, ${dy}px) scale(1.02)`;
+
+        cardEl.style.pointerEvents = "none";
+        const targetEl = document.elementFromPoint(moveEv.clientX, moveEv.clientY);
+        cardEl.style.pointerEvents = "";
+        const overCard = targetEl ? targetEl.closest(".card") : null;
+
+        document.querySelectorAll(".card.drag-over").forEach((el) => {
+          if (el !== overCard) el.classList.remove("drag-over");
+        });
+
+        if (overCard && overCard !== cardEl && overCard.closest(".home-grid")) {
+          overCard.classList.add("drag-over");
+          lastOverCardId = overCard.dataset.card;
+        } else {
+          lastOverCardId = null;
+        }
+      }
+
+      function onPointerUp(upEv) {
+        if (upEv.pointerId !== ev.pointerId) return;
+        cardEl.releasePointerCapture(ev.pointerId);
+        cardEl.classList.remove("dragging");
+        cardEl.style.transform = "";
+
+        document.querySelectorAll(".card.drag-over").forEach((el) => {
+          el.classList.remove("drag-over");
+        });
+
+        document.removeEventListener("pointermove", onPointerMove);
+        document.removeEventListener("pointerup", onPointerUp);
+        document.removeEventListener("pointercancel", onPointerUp);
+
+        if (lastOverCardId && lastOverCardId !== cardId) {
+          const order = state.settings.homeOrder;
+          const i = order.indexOf(cardId);
+          const j = order.indexOf(lastOverCardId);
+          if (i >= 0 && j >= 0) {
+            order.splice(i, 1);
+            order.splice(j, 0, cardId);
+            save();
+            render();
+            toast("Layout updated");
+          }
+        }
+      }
+
+      document.addEventListener("pointermove", onPointerMove);
+      document.addEventListener("pointerup", onPointerUp);
+      document.addEventListener("pointercancel", onPointerUp);
+    });
+
     document.addEventListener("click", (ev) => {
       const btn = ev.target.closest("[data-act]");
       if (!btn) return;

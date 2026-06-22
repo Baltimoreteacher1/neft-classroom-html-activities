@@ -2311,32 +2311,6 @@ function renderReflectPhase(el, state, ctx, config) {
   const cfg = config.reflect;
   phaseHeader(el, "💡", "section-icon-coral", phaseName(4), t("reflectDesc"));
 
-  // 3-2-1
-  const rCard = document.createElement("div");
-  rCard.className = "card";
-  rCard.innerHTML = `<div class="badge badge-teal mb-4">${stackHtml(t("reflection321", "en"), t("reflection321", "es"))}</div>`;
-  [
-    { n: 3, color: "teal", label: t("thingsLearned"), icon: "📝" },
-    { n: 2, color: "amber", label: t("connectionsMade"), icon: "🔗" },
-    { n: 1, color: "coral", label: t("questionStillHave"), icon: "❓" },
-  ].forEach((r) => {
-    const row = document.createElement("div");
-    row.style.cssText =
-      "display:grid; grid-template-columns:auto 1fr; gap:var(--sp-3); align-items:start; margin-bottom:var(--sp-3);";
-    row.innerHTML = `<span class="badge badge-${r.color}">${r.icon} ${r.n}</span>`;
-    const ta = document.createElement("textarea");
-    ta.className = "text-input";
-    ta.rows = r.n > 1 ? 2 : 1;
-    ta.placeholder = `${r.n} ${r.label}...`;
-    ta.value = state.getResponse(4, `reflect_${r.n}`) || "";
-    ta.addEventListener("input", () =>
-      state.saveResponse(4, `reflect_${r.n}`, ta.value),
-    );
-    row.append(ta);
-    rCard.append(row);
-  });
-  el.append(rCard);
-
   // One thing I learned (exit ticket prep)
   const learnedCard = document.createElement("div");
   learnedCard.className = "card card-amber";

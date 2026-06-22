@@ -104,7 +104,5 @@ function attach(host) {
 // Public: enable annotation on every word-problem text block inside `root`.
 export function enableWordProblemAnnotation(root = document) {
   const scope = root && root.querySelectorAll ? root : document;
-  scope
-    .querySelectorAll('[data-annotate="word-problem"]')
-    .forEach((el) => attach(el));
+  scope.querySelectorAll('[data-annotate="word-problem"]').forEach((el) => attach(el));
 }

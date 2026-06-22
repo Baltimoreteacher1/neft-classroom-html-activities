@@ -2321,3 +2321,35 @@ html[data-theme="dark"] .bg-blob-2 {
     opacity: 1;
   }
 }
+
+/* Card Drag and Drop Reordering */
+.card-drag-handle {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.1rem;
+  cursor: grab;
+  padding: 4px 8px;
+  margin: -4px -8px -4px 0;
+  border-radius: 4px;
+  touch-action: none;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.card-drag-handle:hover {
+  color: var(--teal-bright);
+  background: rgba(255, 255, 255, 0.08);
+}
+.card.dragging {
+  transition: none !important;
+  opacity: 0.6;
+  transform: scale(1.02);
+  z-index: 1000;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+.card.drag-over {
+  border-color: var(--teal-bright) !important;
+  box-shadow: 0 0 16px color-mix(in srgb, var(--teal-bright) 30%, transparent) !important;
+}

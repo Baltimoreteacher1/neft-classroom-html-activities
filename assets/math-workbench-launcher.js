@@ -13,8 +13,18 @@
   var WORKBENCH_URL = "/curriculum/math-workbench/";
 
   function init() {
-    // Never show the launcher on the Workbench page itself.
-    if (location.pathname.indexOf("/curriculum/math-workbench") === 0) return;
+    // Never show the launcher on the Workbench page itself or on school planner pages/domains.
+    var path = location.pathname.toLowerCase();
+    if (
+      path.indexOf("/curriculum/math-workbench") === 0 ||
+      path.indexOf("/noam-school") >= 0 ||
+      path.indexOf("/focus-school") >= 0
+    )
+      return;
+
+    var host = location.hostname.toLowerCase();
+    if (host === "noam.eduwonderlab.com" || host === "focus.eduwonderlab.com") return;
+
     // Idempotent: never inject twice (some pages load shared scripts more than once).
     if (document.getElementById("mwb-launcher")) return;
 

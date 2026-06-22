@@ -7,6 +7,18 @@
 (() => {
   "use strict";
 
+  let deviceId = "";
+  function getDeviceName() {
+    const ua = navigator.userAgent;
+    if (/CrOS/.test(ua)) return "Chromebook";
+    if (/iPad|iPhone|iPod/.test(ua)) return "iOS Device";
+    if (/Android/.test(ua)) return "Android Device";
+    if (/Macintosh/.test(ua)) return "Mac";
+    if (/Windows/.test(ua)) return "Windows PC";
+    if (/Linux/.test(ua)) return "Linux PC";
+    return "Web Browser";
+  }
+
   // ---------------------------------------------------------------------------
   // Small DOM + value helpers
   // ---------------------------------------------------------------------------
@@ -318,6 +330,7 @@
       // capture prompt was answered, so it only nudges once per day.
       captureLog: {},
       reflections: {},
+      deletedIds: {},
       updatedAt: Date.now(),
     };
   }
@@ -393,6 +406,7 @@
           : { messages: [], fetchedAt: "" },
       checkins: x.checkins && typeof x.checkins === "object" ? x.checkins : {},
       reflections: x.reflections && typeof x.reflections === "object" ? x.reflections : {},
+      deletedIds: x.deletedIds && typeof x.deletedIds === "object" ? x.deletedIds : {},
     };
   }
 
@@ -419,6 +433,7 @@
         ? c.meetDays.filter((d) => DAYS.includes(d))
         : [],
       color: safeColor(c.color),
+      updatedAt: c.updatedAt || Date.now(),
     };
   }
 
@@ -436,6 +451,7 @@
       repeat: REPEATS.includes(r.repeat) ? r.repeat : "none",
       lastShown: DATE_RE.test(r.lastShown) ? r.lastShown : "", // last notify date
       lastDone: DATE_RE.test(r.lastDone) ? r.lastDone : "", // last done-for-today date
+      updatedAt: r.updatedAt || r.createdAt || Date.now(),
     };
   }
 
@@ -473,6 +489,7 @@
       source: a.source || "Manual",
       created: a.created || todayKey(),
       completedAt: a.completedAt || "",
+      updatedAt: a.updatedAt || Date.now(),
     };
   }
 
@@ -484,6 +501,9 @@
       done: !!t.done,
       date: DATE_RE.test(t.date) ? t.date : todayKey(),
       createdAt: t.createdAt || Date.now(),
+      repeat: ["none", "daily", "weekly"].includes(t.repeat) ? t.repeat : "none",
+      lastDone: DATE_RE.test(t.lastDone) ? t.lastDone : "",
+      updatedAt: t.updatedAt || t.createdAt || Date.now(),
     };
   }
 
@@ -567,6 +587,20 @@
     weekly: "Weekly",
   };
 
+  // ---- To-do recurrence helpers ----
+  const isTodoRecurring = (t) => t.repeat && t.repeat !== "none";
+  function todoOccursOn(t, iso) {
+    if (t.repeat === "daily") return true;
+    if (t.repeat === "weekly") {
+      const anchor = t.date || new Date(t.createdAt).toISOString().slice(0, 10);
+      if (!DATE_RE.test(anchor)) return true;
+      return parseLocal(iso).getDay() === parseLocal(anchor).getDay();
+    }
+    return false;
+  }
+  const todoDoneToday = (t) =>
+    isTodoRecurring(t) ? t.lastDone === todayKey() : !!t.done;
+
   // Reminders sorted: open first, then by date/time (undated last), newest-created last.
   const reminderSortKey = (r) => {
     const d = reminderShownDate(r);
@@ -601,10 +635,17 @@
   const todaysTodos = () => {
     const t = todayKey();
     return state.todos
-      .filter((td) => td.date === t || (!td.done && td.date < t))
-      .sort((a, b) =>
-        a.done === b.done ? a.createdAt - b.createdAt : a.done ? 1 : -1,
-      );
+      .filter((td) => {
+        if (isTodoRecurring(td)) {
+          return todoOccursOn(td, t);
+        }
+        return td.date === t || (!td.done && td.date < t);
+      })
+      .sort((a, b) => {
+        const aDone = todoDoneToday(a);
+        const bDone = todoDoneToday(b);
+        return aDone === bDone ? a.createdAt - b.createdAt : aDone ? 1 : -1;
+      });
   };
   // Upcoming assignment due dates (today onward), soonest first.
   function upcomingItems(limit = 15) {
@@ -1988,7 +2029,11 @@
     n === null ? "🗓" : n < 0 ? "🔴" : n === 0 ? "🟠" : n <= 2 ? "🟡" : "🟢";
 
   function card(key, title, sub, body) {
-    return `<section class="card" data-card="${key}"><div class="head"><div><h3>${esc(title)}</h3>${sub ? `<p class="sub">${esc(sub)}</p>` : ""}</div></div>${body}</section>`;
+    const handle =
+      view === "home"
+        ? `<button class="card-drag-handle" aria-label="Drag to reorder" title="Drag to reorder">⋮⋮</button>`
+        : "";
+    return `<section class="card" data-card="${key}"><div class="head"><div><h3>${esc(title)}</h3>${sub ? `<p class="sub">${esc(sub)}</p>` : ""}</div>${handle}</div>${body}</section>`;
   }
   function emptyState(emoji, text) {
     return `<div class="empty"><div class="big-emoji" aria-hidden="true">${emoji}</div><p>${esc(text)}</p></div>`;
@@ -2784,23 +2829,43 @@ Due May 31"></textarea>
         ) +
         card(
           "gcal",
-          "📅 Google Calendar",
-          "Show your Google events in the app (read-only).",
+          "📅 Google Calendar & School Mail",
+          "Show your Google events and emails in the app.",
           `
-          <div class="field"><label>Google OAuth Web Client ID</label><input id="gClientId" value="${esc(s.googleClientId)}" placeholder="xxxxxxxx.apps.googleusercontent.com" autocomplete="off"></div>
-          <button class="btn primary" data-act="save-google-id">Save Client ID</button>
-          ${s.googleClientId.trim() ? `<button class="btn navy" data-act="gcal-connect" style="margin-left:8px">Connect now</button><button class="btn" data-act="gcal-choose" style="margin-left:8px">📋 Choose calendars</button><button class="btn" data-act="view-mail" style="margin-left:8px">Open School Mail</button>` : ""}
-          <div class="note" style="margin-top:12px"><b>One-time setup</b> (an adult does this once):
-            <ol style="margin:6px 0 0;padding-left:18px;line-height:1.6">
-              <li>Go to <b>Google Cloud Console</b> → APIs &amp; Services.</li>
-              <li><b>Enable</b> the <b>Google Calendar API</b> and the <b>Gmail API</b>.</li>
-              <li>Create an <b>OAuth client ID</b> of type <b>Web application</b>.</li>
-              <li>Under <b>Authorized JavaScript origins</b> add: <code>https://neft-classroom-html-activities.pages.dev</code></li>
-              <li>On the <b>OAuth consent screen</b>, add the scope <code>gmail.readonly</code> (a sensitive scope — fine for the owner's own / test-user account; full public verification is a later step).</li>
-              <li>Copy the Client ID (ends in <code>.apps.googleusercontent.com</code>) and paste it above.</li>
-            </ol>
-            The same Client ID powers Calendar and <b>School Mail</b>. Only this Client ID and your chosen calendar list are saved — never tokens. After connecting, tap <b>Choose calendars</b> to pick which of your Google calendars to show; their events are merged into one list and color-coded by calendar. Google sign-in gives temporary access tokens that stay in memory and are never stored. Scopes used: <code>calendar.readonly</code> and <code>gmail.readonly</code> (Gmail is requested separately when you connect School Mail).
-          </div>
+          ${gcal.clientId() ? `
+            <div style="margin: 8px 0 16px;">
+              <p class="sub" style="margin-top: 0;">Connected Calendar: ${gcal.connected ? `<span class="pill green">● Connected</span>` : `<span class="pill">Not connected</span>`}</p>
+              <p class="sub" style="margin-top: 0;">Connected School Mail: ${gmail.connected ? `<span class="pill green">● Connected</span>` : `<span class="pill">Not connected</span>`}</p>
+              <div class="row" style="gap:10px;">
+                <button class="btn primary" data-act="gcal-connect">${gcal.connected ? "🔄 Reconnect Calendar" : "⚡ Connect Calendar"}</button>
+                <button class="btn navy" data-act="gmail-connect">${gmail.connected ? "✉️ Reconnect School Mail" : "✉️ Connect School Mail"}</button>
+              </div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px;">
+                ${gcal.connected ? `<button class="btn sm" data-act="gcal-choose">📋 Choose calendars</button><button class="btn sm danger" data-act="gcal-disconnect">Disconnect Cal</button>` : ""}
+                ${gmail.connected ? `<button class="btn sm" data-act="view-mail">✉️ Open School Mail</button><button class="btn sm danger" data-act="gmail-disconnect">Disconnect Mail</button>` : ""}
+              </div>
+            </div>
+          ` : `
+            <p class="sub" style="color: var(--red-bright); margin-top:0;">Google integration requires a Client ID from the site administrator, or you can enter your own below.</p>
+          `}
+          <details style="margin-top: 15px; border-top: 1px solid var(--line); padding-top: 10px;">
+            <summary style="font-size: 0.8rem; cursor: pointer; color: var(--muted); font-weight: bold; outline: none; user-select: none;">🛠️ Advanced Google Settings</summary>
+            <div class="field" style="margin-top: 8px;">
+              <label>Custom Web Client ID</label>
+              <input id="gClientId" value="${esc(s.googleClientId)}" placeholder="xxxxxxxx.apps.googleusercontent.com" autocomplete="off">
+            </div>
+            <button class="btn primary" data-act="save-google-id">Save Client ID</button>
+            <div class="note" style="margin-top:12px"><b>One-time setup</b> (an adult does this once):
+              <ol style="margin:6px 0 0;padding-left:18px;line-height:1.6;font-size: 0.75rem;">
+                <li>Go to <b>Google Cloud Console</b> → APIs &amp; Services.</li>
+                <li><b>Enable</b> the <b>Google Calendar API</b> and the <b>Gmail API</b>.</li>
+                <li>Create an <b>OAuth client ID</b> of type <b>Web application</b>.</li>
+                <li>Under <b>Authorized JavaScript origins</b> add: <code>https://focus.eduwonderlab.com</code></li>
+                <li>On the <b>OAuth consent screen</b>, add scope <code>gmail.readonly</code>.</li>
+                <li>Copy the Client ID (ends in <code>.apps.googleusercontent.com</code>) and paste it above.</li>
+              </ol>
+            </div>
+          </details>
         `,
         ) +
         card(
@@ -2851,13 +2916,32 @@ Due May 31"></textarea>
           <p class="sub" style="margin-top:0">Sync is on. Your data keeps itself up to date across every device that uses this code — automatically.</p>
           ${syncStatusHTML()}
           <div class="field"><label>Your sync code</label>
-            <input id="syncCode" value="${esc(s.code)}" readonly onclick="this.select()"></div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <input id="syncCode" value="${esc(s.code)}" readonly onclick="this.select()" style="flex: 1; min-width: 0; font-family: monospace;">
+              <button class="btn sm" data-act="change-sync-code" style="white-space: nowrap; padding: 6px 12px; height: 36px; line-height: 24px; font-size: 0.8rem; margin: 0;">✏️ Customize Code</button>
+            </div>
+          </div>
           <div class="row">
             <button class="btn primary" data-act="copy-code">📋 Copy code</button>
             <button class="btn" data-act="copy-link">🔗 Copy link</button>
             <button class="btn navy" data-act="sync-now">🔄 Sync now</button>
             <button class="btn danger" data-act="toggle-sync">Turn off sync</button>
           </div>
+          ${(state.syncDevices || []).length ? `
+            <div class="sync-devices-box" style="margin-top: 15px; padding: 12px; background: rgba(255,255,255,0.03); border: 1.5px dashed var(--line); border-radius: 12px; text-align: left;">
+              <span style="font-size: 0.85rem; font-weight: 800; color: var(--ink); display: block; margin-bottom: 8px;">💻 Synced Devices</span>
+              <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.8rem; line-height: 1.6;">
+                ${state.syncDevices.map(d => {
+                  const isMe = d.id === (deviceId || localStorage.getItem("focus-school:device-id") || "unknown");
+                  const activeStr = isMe ? "<span class='pill green' style='font-size:0.65rem; padding: 1px 4px; font-weight: bold;'>This device</span>" : `active ${timeAgo(d.lastActive)}`;
+                  return `<li style="display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.02);">
+                    <span>📱 <b>${esc(d.name)}</b></span>
+                    <span class="muted" style="font-size:0.75rem;">${activeStr}</span>
+                  </li>`;
+                }).join("")}
+              </ul>
+            </div>
+          ` : ""}
           <div class="pairing-6digit-box" style="margin-top: 15px; padding: 12px; background: rgba(255,255,255,0.03); border: 1.5px dashed var(--line); border-radius: 12px; text-align: center;">
             <span style="font-size: 0.85rem; font-weight: 800; color: var(--ink); display: block; margin-bottom: 6px;">🔗 Get 6-Digit Code (Chromebook / Other Computer)</span>
             <button class="btn sm" data-act="generate-pair-code" id="btnGenPairCode" style="margin: 4px auto;">⚡ Generate 6-Digit Code</button>
@@ -3798,39 +3882,107 @@ Due May 31"></textarea>
 
   function mergeStates(local, remote) {
     const merged = { ...local };
-    // Merge assignments
+
+    // 1. Merge tombstones (deletedIds)
+    const mergedDeletedIds = { ...(local.deletedIds || {}) };
+    for (const [id, time] of Object.entries(remote.deletedIds || {})) {
+      mergedDeletedIds[id] = Math.max(mergedDeletedIds[id] || 0, time);
+    }
+    merged.deletedIds = mergedDeletedIds;
+
+    // Helper to check if an item was deleted
+    const isDeleted = (id, updatedAt) => {
+      const delTime = mergedDeletedIds[id];
+      if (delTime === undefined) return false;
+      return (updatedAt || 0) <= delTime;
+    };
+
+    // 2. Merge assignments
     const localMap = new Map(local.assignments.map(a => [a.id, a]));
     const remoteMap = new Map(remote.assignments.map(a => [a.id, a]));
-    
     const allIds = new Set([...localMap.keys(), ...remoteMap.keys()]);
     const mergedAssignments = [];
     for (const id of allIds) {
       const loc = localMap.get(id);
       const rem = remoteMap.get(id);
-      if (loc && rem) {
-        if ((loc.updatedAt || 0) >= (rem.updatedAt || 0)) {
-          mergedAssignments.push(loc);
-        } else {
-          mergedAssignments.push(rem);
-        }
-      } else if (loc) {
-        mergedAssignments.push(loc);
-      } else {
-        mergedAssignments.push(rem);
+      const chosen = (loc && rem)
+        ? ((loc.updatedAt || 0) >= (rem.updatedAt || 0) ? loc : rem)
+        : (loc || rem);
+      if (!isDeleted(id, chosen.updatedAt)) {
+        mergedAssignments.push(chosen);
       }
     }
     merged.assignments = mergedAssignments;
-    
-    // Merge classes
-    const classesMap = new Map(local.classes.map(c => [c.id, c]));
-    for (const c of remote.classes || []) {
-      if (!classesMap.has(c.id)) {
-        classesMap.set(c.id, c);
+
+    // 3. Merge classes
+    const localClassesMap = new Map(local.classes.map(c => [c.id, c]));
+    const remoteClassesMap = new Map((remote.classes || []).map(c => [c.id, c]));
+    const allClassIds = new Set([...localClassesMap.keys(), ...remoteClassesMap.keys()]);
+    const mergedClasses = [];
+    for (const id of allClassIds) {
+      const loc = localClassesMap.get(id);
+      const rem = remoteClassesMap.get(id);
+      const chosen = (loc && rem)
+        ? ((loc.updatedAt || 0) >= (rem.updatedAt || 0) ? loc : rem)
+        : (loc || rem);
+      if (!isDeleted(id, chosen.updatedAt)) {
+        mergedClasses.push(chosen);
       }
     }
-    merged.classes = [...classesMap.values()];
-    
-    // Merge activity
+    merged.classes = mergedClasses;
+
+    // 4. Merge routines
+    const localRoutinesMap = new Map(local.routines.map(r => [r.id, r]));
+    const remoteRoutinesMap = new Map((remote.routines || []).map(r => [r.id, r]));
+    const allRoutineIds = new Set([...localRoutinesMap.keys(), ...remoteRoutinesMap.keys()]);
+    const mergedRoutines = [];
+    for (const id of allRoutineIds) {
+      const loc = localRoutinesMap.get(id);
+      const rem = remoteRoutinesMap.get(id);
+      const chosen = (loc && rem)
+        ? ((loc.updatedAt || 0) >= (rem.updatedAt || 0) ? loc : rem)
+        : (loc || rem);
+      if (!isDeleted(id, chosen.updatedAt)) {
+        mergedRoutines.push(chosen);
+      }
+    }
+    merged.routines = mergedRoutines;
+
+    // 5. Merge reminders
+    const localRemindersMap = new Map((local.reminders || []).map(r => [r.id, r]));
+    const remoteRemindersMap = new Map((remote.reminders || []).map(r => [r.id, r]));
+    const allReminderIds = new Set([...localRemindersMap.keys(), ...remoteRemindersMap.keys()]);
+    const mergedReminders = [];
+    for (const id of allReminderIds) {
+      const loc = localRemindersMap.get(id);
+      const rem = remoteRemindersMap.get(id);
+      const chosen = (loc && rem)
+        ? ((loc.updatedAt || 0) >= (rem.updatedAt || 0) ? loc : rem)
+        : (loc || rem);
+      if (!isDeleted(id, chosen.updatedAt || chosen.createdAt)) {
+        mergedReminders.push(chosen);
+      }
+    }
+    merged.reminders = mergedReminders;
+
+    // 6. Merge todos
+    const localTodosMap = new Map((local.todos || []).map(t => [t.id, t]));
+    const remoteTodosMap = new Map((remote.todos || []).map(t => [t.id, t]));
+    const allTodoIds = new Set([...localTodosMap.keys(), ...remoteTodosMap.keys()]);
+    const mergedTodos = [];
+    for (const id of allTodoIds) {
+      const loc = localTodosMap.get(id);
+      const rem = remoteTodosMap.get(id);
+      const chosen = (loc && rem)
+        ? ((loc.updatedAt || 0) >= (rem.updatedAt || 0) ? loc : rem)
+        : (loc || rem);
+      if (!isDeleted(id, chosen.updatedAt || chosen.createdAt)) {
+        mergedTodos.push(chosen);
+      }
+    }
+    merged.todos = mergedTodos;
+
+    // 7. Merge activity
     merged.activity = { ...local.activity };
     for (const [date, remAct] of Object.entries(remote.activity || {})) {
       const locAct = merged.activity[date] || { tasks: 0, focusMin: 0, routines: 0 };
@@ -3840,15 +3992,15 @@ Due May 31"></textarea>
         routines: Math.max(locAct.routines || 0, remAct.routines || 0)
       };
     }
-    
-    // Merge wins
+
+    // 8. Merge wins
     const winsMap = new Map(local.wins.map(w => [w.text + w.date, w]));
     for (const w of remote.wins || []) {
       winsMap.set(w.text + w.date, w);
     }
     merged.wins = [...winsMap.values()];
-    
-    // Merge reflections
+
+    // 9. Merge reflections
     merged.reflections = { ...local.reflections };
     for (const [date, remRef] of Object.entries(remote.reflections || {})) {
       const locRef = merged.reflections[date];
@@ -3856,7 +4008,28 @@ Due May 31"></textarea>
         merged.reflections[date] = remRef;
       }
     }
-    
+
+    // 10. Merge points / XP
+    merged.points = Math.max(local.points || 0, remote.points || 0);
+
+    // 11. Merge settings (take remote if remote is newer, but preserve local sync config)
+    if ((remote.updatedAt || 0) > (local.updatedAt || 0)) {
+      merged.settings = { ...local.settings, ...(remote.settings || {}) };
+    } else {
+      merged.settings = { ...(remote.settings || {}), ...local.settings };
+    }
+    merged.settings.sync = { ...local.settings.sync };
+
+    // 12. Merge synced devices registry by ID, keeping newer lastActive
+    const devMap = new Map((local.syncDevices || []).map(d => [d.id, d]));
+    for (const d of remote.syncDevices || []) {
+      const loc = devMap.get(d.id);
+      if (!loc || (d.lastActive || 0) > (loc.lastActive || 0)) {
+        devMap.set(d.id, d);
+      }
+    }
+    merged.syncDevices = [...devMap.values()];
+
     merged.updatedAt = Date.now();
     return merged;
   }
@@ -3992,6 +4165,23 @@ Due May 31"></textarea>
       this._busy = true;
       this._setStatus("syncing");
       try {
+        const myName = getDeviceName();
+        const now = Date.now();
+        if (!Array.isArray(state.syncDevices)) {
+          state.syncDevices = [];
+        }
+        // Cleanup old devices (> 30 days)
+        state.syncDevices = state.syncDevices.filter(d => (now - (d.lastActive || 0)) < 30 * 24 * 60 * 60 * 1000);
+        
+        const myDeviceId = deviceId || localStorage.getItem("focus-school:device-id") || "unknown";
+        const existingIdx = state.syncDevices.findIndex(d => d.id === myDeviceId);
+        if (existingIdx >= 0) {
+          state.syncDevices[existingIdx].lastActive = now;
+          state.syncDevices[existingIdx].name = myName;
+        } else {
+          state.syncDevices.push({ id: myDeviceId, name: myName, lastActive: now });
+        }
+
         const res = await fetch(
           `${this.base}?code=${encodeURIComponent(code)}`,
           {
@@ -4015,7 +4205,7 @@ Due May 31"></textarea>
         this._busy = false;
       }
     },
-    async pull() {
+    async pull({ forceMerge = false } = {}) {
       const code = state.settings.sync.code;
       if (!code || !this.available()) return false;
       this._setStatus("syncing");
@@ -4028,26 +4218,24 @@ Due May 31"></textarea>
           return false;
         }
         const data = await res.json();
-        if (
-          data &&
-          data.state &&
-          (data.updatedAt || 0) > (state.updatedAt || 0)
-        ) {
-          const localSig = JSON.stringify(state.assignments.map(a => ({ id: a.id, done: a.status === "done" })));
-          const cloudSig = JSON.stringify(data.state.assignments.map(a => ({ id: a.id, done: a.status === "done" })));
-          if (localSig !== cloudSig) {
-            showConflictResolver(state, data.state);
-            return true;
+        if (data && data.state) {
+          const remoteUpdated = data.updatedAt || 0;
+          const localUpdated = state.updatedAt || 0;
+          if (remoteUpdated > localUpdated || forceMerge) {
+            const merged = mergeStates(state, data.state);
+            const changed = remoteUpdated > localUpdated || JSON.stringify(merged) !== JSON.stringify(state);
+            if (changed) {
+              const prev = suppressPush;
+              suppressPush = true;
+              state = normalize(merged);
+              await save({ touch: false, immediate: true });
+              suppressPush = prev;
+            }
+            state.settings.sync.lastAt = new Date().toISOString();
+            mirror();
+            this._setStatus("synced");
+            return changed;
           }
-          const prev = suppressPush;
-          suppressPush = true;
-          state = normalize(data.state);
-          await save({ touch: false, immediate: true });
-          suppressPush = prev;
-          state.settings.sync.lastAt = new Date().toISOString();
-          mirror();
-          this._setStatus("synced");
-          return true;
         }
         // Local is same/newer — nothing to apply, but we're in sync.
         state.settings.sync.lastAt = new Date().toISOString();
@@ -4162,12 +4350,12 @@ Due May 31"></textarea>
   const GCAL_SCOPE = "https://www.googleapis.com/auth/calendar.readonly";
   const GIS_SRC = "https://accounts.google.com/gsi/client";
   const gcal = {
-    token: "", // access token — memory only
+    token: sessionStorage.getItem("focus-school:gcal-token") || "", // access token — session only
     tokenClient: null,
-    connected: false,
+    connected: !!sessionStorage.getItem("focus-school:gcal-token"),
     _gisLoaded: false,
     clientId() {
-      return state.settings.googleClientId.trim();
+      return state.settings.googleClientId.trim() || window._defaultGoogleClientId || "";
     },
     // The calendar IDs to include. Defaults to ["primary"] when none chosen yet.
     selectedIds() {
@@ -4222,6 +4410,7 @@ Due May 31"></textarea>
         callback: async (resp) => {
           if (resp && resp.access_token) {
             this.token = resp.access_token;
+            sessionStorage.setItem("focus-school:gcal-token", resp.access_token);
             this.connected = true;
             // Always refresh the calendar list so the picker stays current and
             // events can be labeled with calendar names/colors.
@@ -4251,6 +4440,7 @@ Due May 31"></textarea>
         if (!res.ok) {
           if (res.status === 401) {
             this.token = "";
+            sessionStorage.removeItem("focus-school:gcal-token");
             this.connected = false;
           }
           return state.gcal?.calendars || [];
@@ -4302,6 +4492,7 @@ Due May 31"></textarea>
         // 401 anywhere means the token expired — drop it so a reconnect prompts.
         if (results.every((r) => r === null)) {
           this.token = "";
+          sessionStorage.removeItem("focus-school:gcal-token");
           this.connected = false;
           toast("Couldn't load Google events.");
           return;
@@ -4373,6 +4564,7 @@ Due May 31"></textarea>
           google.accounts.oauth2.revoke(this.token, () => {});
       } catch {}
       this.token = "";
+      sessionStorage.removeItem("focus-school:gcal-token");
       this.connected = false;
       state.gcal = { events: [], fetchedAt: "", calendars: [] };
       save();
@@ -4467,11 +4659,11 @@ Due May 31"></textarea>
   // gmail.readonly scope. Read-only — the mailbox is never modified.
   const GMAIL_SCOPE = "https://www.googleapis.com/auth/gmail.readonly";
   const gmail = {
-    token: "", // access token — memory only
+    token: sessionStorage.getItem("focus-school:gmail-token") || "", // access token — session only
     tokenClient: null,
-    connected: false,
+    connected: !!sessionStorage.getItem("focus-school:gmail-token"),
     clientId() {
-      return state.settings.googleClientId.trim();
+      return state.settings.googleClientId.trim() || window._defaultGoogleClientId || "";
     },
     async connect() {
       const cid = this.clientId();
@@ -4493,6 +4685,7 @@ Due May 31"></textarea>
         callback: (resp) => {
           if (resp && resp.access_token) {
             this.token = resp.access_token;
+            sessionStorage.setItem("focus-school:gmail-token", resp.access_token);
             this.connected = true;
             this.fetchMessages();
           } else {
@@ -4516,6 +4709,7 @@ Due May 31"></textarea>
         if (!res.ok) {
           if (res.status === 401) {
             this.token = "";
+            sessionStorage.removeItem("focus-school:gmail-token");
             this.connected = false;
           }
           toast("Couldn't load Gmail.");
@@ -4582,6 +4776,7 @@ Due May 31"></textarea>
           google.accounts.oauth2.revoke(this.token, () => {});
       } catch {}
       this.token = "";
+      sessionStorage.removeItem("focus-school:gmail-token");
       this.connected = false;
       state.gmail = { messages: [], fetchedAt: "" };
       save();
@@ -4874,6 +5069,7 @@ Due May 31"></textarea>
     },
     "confirm-delete-task": (id) => {
       state.assignments = state.assignments.filter((a) => a.id !== id);
+      state.deletedIds[id] = Date.now();
       save();
       closeModal();
       render();
@@ -4989,6 +5185,7 @@ Due May 31"></textarea>
     },
     "confirm-delete-class": (id) => {
       state.classes = state.classes.filter((c) => c.id !== id);
+      state.deletedIds[id] = Date.now();
       state.assignments.forEach((a) => {
         if (a.classId === id) a.classId = "";
       });
@@ -5042,10 +5239,15 @@ Due May 31"></textarea>
     },
     "del-reminder": (id) => {
       state.reminders = state.reminders.filter((r) => r.id !== id);
+      state.deletedIds[id] = Date.now();
       save();
       render();
     },
     "clear-done-reminders": () => {
+      const doneReminders = state.reminders.filter((r) => r.done);
+      doneReminders.forEach((r) => {
+        state.deletedIds[r.id] = Date.now();
+      });
       state.reminders = state.reminders.filter((r) => !r.done);
       save();
       render();
@@ -5141,6 +5343,7 @@ Due May 31"></textarea>
       r.name = $("#rName").value.trim() || "Routine";
       r.emoji = $("#rEmoji").value.trim() || "🔁";
       r.items = items.length ? items : r.items;
+      r.updatedAt = Date.now();
       if (!existing) state.routines.push(r);
       save();
       closeModal();
@@ -5164,6 +5367,7 @@ Due May 31"></textarea>
     },
     "delete-routine": (id) => {
       state.routines = state.routines.filter((r) => r.id !== id);
+      state.deletedIds[id] = Date.now();
       save();
       closeModal();
       render();
@@ -5209,6 +5413,7 @@ Due May 31"></textarea>
     },
     "del-todo": (id) => {
       state.todos = state.todos.filter((t) => t.id !== id);
+      state.deletedIds[id] = Date.now();
       save();
       render();
     },
@@ -5424,10 +5629,45 @@ ${name}`;
       closeModal();
       toast("Linking… pulling your data ⬇️");
       // Pull first so this device adopts the existing shared data.
-      const pulled = await cloud.pull();
+      const pulled = await cloud.pull({ forceMerge: true });
       await cloud.push();
       render();
       toast(pulled ? "Linked — your data is here ✅" : "Linked 🔄");
+    },
+    "change-sync-code": () => {
+      openModal(
+        "Customize sync code",
+        `<p class="sub">Change your sync code to a memorable word or phrase (e.g. <b>noam-focus-2026</b>) to sync other devices easily without typing long keys.</p>
+        <div class="field">
+          <label>Memorable Sync Code</label>
+          <input id="customSyncCodeInput" value="${esc(state.settings.sync.code)}" placeholder="e.g. noam-focus-2026" autocomplete="off" autocapitalize="off" style="text-align: center; font-size: 1.1rem;">
+          <small class="muted" style="display:block; margin-top: 4px;">Must be at least 10 characters long. Only letters, numbers, and dashes.</small>
+          <small class="muted" style="display:block; margin-top: 2px; color: var(--accent);">Tip: Use your name/school name to keep it unique!</small>
+        </div>
+        <div class="row">
+          <button class="btn primary" data-act="save-custom-sync-code">Save &amp; Link</button>
+          <button class="btn" data-act="close-modal">Cancel</button>
+        </div>`
+      );
+      setTimeout(() => $("#customSyncCodeInput")?.focus(), 50);
+    },
+    "save-custom-sync-code": async () => {
+      const inputVal = ($("#customSyncCodeInput")?.value || "").trim();
+      const cleaned = inputVal.toLowerCase().replace(/[^a-z0-9-]/g, "");
+      if (cleaned.length < 10) {
+        return toast("Sync code must be at least 10 characters long (letters, numbers, dashes) ❌");
+      }
+      state.settings.sync.code = cleaned;
+      state.settings.sync.enabled = true;
+      save();
+      cloud.startAuto();
+      closeModal();
+      toast("Saving and syncing custom code... 🔄");
+      
+      const pulled = await cloud.pull({ forceMerge: true });
+      await cloud.push();
+      render();
+      toast(pulled ? "Successfully linked custom code and merged data! ☁️" : "Linked custom code! ☁️");
     },
     "generate-pair-code": async () => {
       try {
@@ -5721,6 +5961,80 @@ ${name}`;
   // Event wiring (delegated, attached once)
   // ---------------------------------------------------------------------------
   function wire() {
+    document.addEventListener("pointerdown", (ev) => {
+      const handle = ev.target.closest(".card-drag-handle");
+      if (!handle) return;
+
+      const cardEl = handle.closest(".card");
+      if (!cardEl) return;
+
+      ev.preventDefault();
+      cardEl.setPointerCapture(ev.pointerId);
+
+      const startX = ev.clientX;
+      const startY = ev.clientY;
+      const cardId = cardEl.dataset.card;
+
+      cardEl.classList.add("dragging");
+
+      let lastOverCardId = null;
+
+      function onPointerMove(moveEv) {
+        if (moveEv.pointerId !== ev.pointerId) return;
+        const dx = moveEv.clientX - startX;
+        const dy = moveEv.clientY - startY;
+        cardEl.style.transform = `translate(${dx}px, ${dy}px) scale(1.02)`;
+
+        cardEl.style.pointerEvents = "none";
+        const targetEl = document.elementFromPoint(moveEv.clientX, moveEv.clientY);
+        cardEl.style.pointerEvents = "";
+        const overCard = targetEl ? targetEl.closest(".card") : null;
+
+        document.querySelectorAll(".card.drag-over").forEach((el) => {
+          if (el !== overCard) el.classList.remove("drag-over");
+        });
+
+        if (overCard && overCard !== cardEl && overCard.closest(".home-grid")) {
+          overCard.classList.add("drag-over");
+          lastOverCardId = overCard.dataset.card;
+        } else {
+          lastOverCardId = null;
+        }
+      }
+
+      function onPointerUp(upEv) {
+        if (upEv.pointerId !== ev.pointerId) return;
+        cardEl.releasePointerCapture(ev.pointerId);
+        cardEl.classList.remove("dragging");
+        cardEl.style.transform = "";
+
+        document.querySelectorAll(".card.drag-over").forEach((el) => {
+          el.classList.remove("drag-over");
+        });
+
+        document.removeEventListener("pointermove", onPointerMove);
+        document.removeEventListener("pointerup", onPointerUp);
+        document.removeEventListener("pointercancel", onPointerUp);
+
+        if (lastOverCardId && lastOverCardId !== cardId) {
+          const order = state.settings.homeOrder;
+          const i = order.indexOf(cardId);
+          const j = order.indexOf(lastOverCardId);
+          if (i >= 0 && j >= 0) {
+            order.splice(i, 1);
+            order.splice(j, 0, cardId);
+            save();
+            render();
+            toast("Layout updated");
+          }
+        }
+      }
+
+      document.addEventListener("pointermove", onPointerMove);
+      document.addEventListener("pointerup", onPointerUp);
+      document.addEventListener("pointercancel", onPointerUp);
+    });
+
     document.addEventListener("click", (ev) => {
       const btn = ev.target.closest("[data-act]");
       if (!btn) return;
@@ -6015,6 +6329,38 @@ ${name}`;
   // Init
   // ---------------------------------------------------------------------------
   async function init() {
+    try {
+      const configRes = await fetch("/api/config");
+      if (configRes.ok) {
+        const configData = await configRes.json();
+        if (configData.googleClientId) {
+          window._defaultGoogleClientId = configData.googleClientId;
+        }
+      }
+    } catch {}
+
+    deviceId = localStorage.getItem("focus-school:device-id");
+    if (!deviceId) {
+      deviceId = "dev-" + Math.random().toString(36).substring(2, 10);
+      localStorage.setItem("focus-school:device-id", deviceId);
+    }
+
+    window.addEventListener("storage", async (e) => {
+      if (e.key === MIRROR_KEY && e.newValue) {
+        try {
+          const incoming = JSON.parse(e.newValue);
+          if (incoming && (incoming.updatedAt || 0) > (state.updatedAt || 0)) {
+            const prev = suppressPush;
+            suppressPush = true;
+            state = normalize(mergeStates(state, incoming));
+            await save({ touch: false, immediate: true });
+            suppressPush = prev;
+            render();
+          }
+        } catch {}
+      }
+    });
+
     await idb.open();
     let stored = await idb.get(STATE_KEY);
 
@@ -6126,6 +6472,14 @@ ${name}`;
         scheduleReminders();
       }
     });
+
+    // Fetch Google Calendar & School Mail events on startup if token is available
+    if (gcal.token) {
+      gcal.fetchEvents().catch(() => {});
+    }
+    if (gmail.token) {
+      gmail.fetchMessages().catch(() => {});
+    }
 
     // register service worker + let the user know when an update is ready
     if ("serviceWorker" in navigator) {

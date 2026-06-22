@@ -57,7 +57,9 @@ export async function onRequestGet({ request, env }) {
   const url = new URL(request.url);
   const pairResolve = url.searchParams.get("pair_resolve");
   if (pairResolve) {
-    const clean = String(pairResolve).trim().replace(/[^0-9]/g, "");
+    const clean = String(pairResolve)
+      .trim()
+      .replace(/[^0-9]/g, "");
     if (clean.length !== 6) return json({ error: "pairing code must be 6 digits" }, 400, request);
     const resolvedCode = await env.NOAM_SCHOOL_KV.get("pair:" + clean);
     if (!resolvedCode) return json({ error: "pairing code expired or invalid" }, 404, request);
