@@ -209,15 +209,25 @@
         var lv = byStd[e.standard] || (byStd[e.standard] = {});
         (lv[e.level] || (lv[e.level] = [])).push(e);
       });
+      // Activities the student already completed — prefer assigning something new.
+      var done = {};
+      (opts.results || getResults()).forEach(function (r) {
+        if (r && r.activityId) done[r.activityId] = true;
+      });
       function pick(std, band) {
         var lv = byStd[std];
         if (!lv) return null;
         var order = DIFF_WANT[band] || [1, 0, 2];
+        var fallback = null; // best-fit even if already completed
         for (var i = 0; i < order.length; i++) {
           var arr = lv[order[i]];
-          if (arr && arr.length) return { entry: arr[0], level: order[i] };
+          if (!arr || !arr.length) continue;
+          if (!fallback) fallback = { entry: arr[0], level: order[i] };
+          for (var j = 0; j < arr.length; j++) {
+            if (!done[arr[j].url]) return { entry: arr[j], level: order[i] };
+          }
         }
-        return null;
+        return fallback; // all completed → fall back to the best-fit (a repeat)
       }
       host.innerHTML = "";
       var stds = (mastery && mastery.standards) || {};
