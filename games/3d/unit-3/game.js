@@ -4,11 +4,14 @@ import { initClarity } from "/games/3d/_clarity/clarity-kit.js";
 
 // ============================================================================
 // Unit 3 — RATIO RALLY: HIGHWAY TUNER  (CCSS 6.RP.A.2–3)
-// Continuous arcade highway racer. The car NEVER stops — you steer between
-// lanes, dodge cones, and tune a live dial (↑/↓) WHILE driving. Your dial
-// sets the car's speed; hit the target rate and HOLD it in the green zone to
-// clear each segment. Compare rounds = fuel-stop: steer to the cheapest pump
-// ($ and liters shown — you compute $/L). Math is the throttle, not a quiz.
+// Self-paced highway driving game. The car waits at the start of each segment
+// while you THINK — there is no timer and no forced motion. You tune a dial
+// (↑/↓) to the correct rate, then press Space to confirm. Only a correct
+// answer drives the car forward to clear the segment. Compare rounds =
+// fuel-stop: steer to the cheapest pump ($ and liters shown — you compute
+// $/L) and confirm. Cones are gentle steering practice: bumping one just gives
+// a friendly hint, never a penalty and never a rush. Math is the throttle.
+// Level 1 vs Level 2 differ ONLY in math difficulty, not speed or time.
 // ============================================================================
 
 const COLORS = {
@@ -44,7 +47,6 @@ function makeLevel(level) {
   if (level === 1) {
     return {
       hints: true,
-      holdSec: 4.2,
       problems: [
         {
           type: "unitrate",
@@ -135,7 +137,6 @@ function makeLevel(level) {
   }
   return {
     hints: false,
-    holdSec: 3.4,
     problems: [
       {
         type: "multistep",
@@ -265,11 +266,11 @@ export default {
     const reduced = feel.reducedMotion;
     const carColor = level === 2 ? COLORS.carEnrich : COLORS.car;
 
-    const BASE_SPEED = level === 2 ? 20 : 16;
-    const BOOST_SPEED = level === 2 ? 38 : 30;
-    const START_LIVES = level === 2 ? 3 : 4;
-    const CONE_GAP = level === 2 ? 14 : 18;
-    const HOLD_SEC = cfg.holdSec;
+    // Pacing is student-controlled. The car sits still until the student
+    // confirms a correct answer; then it drives forward at DRIVE_SPEED purely
+    // as a reward animation between segments. No timers, no forced motion.
+    const DRIVE_SPEED = 26;
+    const CONE_GAP = 18;
 
     const clarityMount = renderer.domElement.parentElement || document.body;
     let clarity = null;
@@ -538,23 +539,25 @@ export default {
     }
 
     // ---- State ---------------------------------------------------------------
+    // Phases: "tune"  = car parked, student sets the dial (no timer)
+    //         "fuel"  = car parked at fuel stop, student picks a pump
+    //         "drive" = brief reward animation after a correct confirm
+    //         "finish"= final reward drive to the checkered line
+    //         "idle"  = not started / game over
     let segIndex = 0;
     const total = cfg.problems.length;
     let problem = null;
-    let phase = "idle"; // run | fuel | finish | idle
+    let phase = "idle";
     let dial = 0;
     let targetLane = 1;
-    let holdTime = 0;
-    let traveled = 0;
-    let nextConeAt = CONE_GAP;
-    let streak = 0;
+    let driveLeft = 0; // remaining distance for the reward-drive animation
+    let driveThen = null; // callback when the reward drive finishes
+    let streak = 0; // count of correct answers in a row (progress, not speed)
     let bestStreak = 0;
     let solved = 0;
-    let lives = START_LIVES;
     let running = false;
     let gameOver = false;
-    let boostT = 0;
-    let hitCooldown = 0;
+    let hintCooldown = 0; // gentle cone-hint debounce (seconds), never a penalty
     let flash = null;
     let segmentLock = false;
 
@@ -605,29 +608,22 @@ export default {
       if (!problem) return;
       let obj;
       if (phase === "fuel" || isCompare()) {
-        obj = `${problem.prompt} ▶ ${readout()}`;
+        obj = `${problem.prompt} ▶ ${readout()} — press Space to choose this pump`;
       } else if (inGreen()) {
-        const left = Math.max(0, HOLD_SEC - holdTime).toFixed(1);
-        obj = `${problem.prompt} ▶ GREEN ZONE ${readout()} — hold ${left}s${tableHint()}`;
+        obj = `${problem.prompt} ▶ ${readout()} looks right — press Space to drive${tableHint()}`;
       } else {
-        obj = `${problem.prompt} ▶ Tune: ${readout()} (↑/↓ while driving)${tableHint()}`;
+        obj = `${problem.prompt} ▶ Tune: ${readout()} (↑/↓, take your time)${tableHint()}`;
       }
       hud.setObjective(obj);
       if (clarity?.setTarget) {
         clarity.setTarget(
           isCompare()
             ? "Steer to cheapest pump, Space to fuel"
-            : `Hold ${problem.answer} ${problem.unit || ""}`,
+            : `Set the dial to ${problem.answer} ${problem.unit || ""}, then Space`,
         );
       }
-      const bg = inGreen()
-        ? "rgba(47,169,120,0.96)"
-        : "rgba(242,193,91,0.96)";
       updateLabel(speedo, readout());
       speedo.material.color.set(inGreen() ? "#ffffff" : "#0c1a33");
-      if (speedo.material.map) {
-        // refresh label texture color via remake is heavy; tint via children
-      }
     }
 
     function stepSize(coarse) {
@@ -645,17 +641,35 @@ export default {
     }
 
     function changeDial(delta) {
-      if (phase !== "run" || isCompare()) return;
-      const next = Math.max(
-        problem.min,
-        Math.min(problem.max, dial + delta),
-      );
+      if (phase !== "tune" || isCompare()) return;
+      const next = Math.max(problem.min, Math.min(problem.max, dial + delta));
       if (next !== dial) {
         dial = next;
-        holdTime = inGreen() ? holdTime : 0;
         updateHud();
         feel.sfx(delta > 0 ? "add" : "remove");
         announce(`Tuned to ${dial} ${problem.unit || ""}`);
+      }
+    }
+
+    // Student confirms their dial. Only a correct rate drives the car forward.
+    // A wrong dial is never a failure — it gives a gentle nudge to keep tuning.
+    function confirmDial() {
+      if (phase !== "tune" || isCompare()) return;
+      if (inGreen()) {
+        completeSegment("rate");
+      } else {
+        feel.sfx("select");
+        const tip = `Not yet — keep tuning. ${cfg.hints ? problem.help : "Check your math and try the dial again."}`;
+        hud.feedback?.(
+          false,
+          "Not quite — take your time and adjust the dial.",
+        ) ||
+          hud.message("Keep tuning — no rush.", {
+            tone: "info",
+            duration: 1800,
+          });
+        announce(tip);
+        if (!reduced) feel.shake(0.08);
       }
     }
 
@@ -678,42 +692,35 @@ export default {
       }
     }
 
+    // Cones are gentle steering practice during the reward drive. Bumping one
+    // is never a penalty — it just gives a friendly "steer around" hint and the
+    // car keeps rolling. No lives, no failure, no rush.
     function checkConeHits() {
-      if (phase !== "run" || hitCooldown > 0) return;
+      if (phase !== "drive" || hintCooldown > 0) return;
       const carLane = nearestLane(playerCar.position.x);
       for (const c of cones) {
         if (!c.userData.active) continue;
         if (Math.abs(c.position.z - CAR_Z) > 1.1) continue;
         if (c.userData.lane !== carLane) continue;
-        hitCone();
+        bumpCone();
         c.position.z = SPAWN_Z - 20;
         break;
       }
     }
 
-    function hitCone() {
-      hitCooldown = 1.2;
-      streak = 0;
-      holdTime = 0;
-      if (typeof hud.setStreak === "function") hud.setStreak(0);
-      lives = Math.max(0, lives - 1);
-      if (typeof hud.setLives === "function") hud.setLives(lives);
-      feel.sfx("wrong");
+    function bumpCone() {
+      hintCooldown = 1.2;
+      feel.sfx("select");
       if (!reduced) {
-        feel.shake(0.28);
+        feel.shake(0.1);
         feel.burst(
           { x: playerCar.position.x, y: 1.2, z: CAR_Z },
-          { color: COLORS.bad, count: 22, spread: 3.5 },
+          { color: COLORS.cone, count: 10, spread: 2.2 },
         );
       }
-      flash = { color: COLORS.bad, t: 0.35 };
-      const msg =
-        lives > 0
-          ? `Cone hit! ${lives} ${lives === 1 ? "life" : "lives"} left.`
-          : "Cone hit!";
-      hud.feedback?.(false, msg) || hud.message(msg, { tone: "warn", duration: 2000 });
+      const msg = "Tap ← / → to steer around the cones.";
+      hud.message(msg, { tone: "info", duration: 1600 });
       announce(msg);
-      if (lives <= 0) loseGame();
     }
 
     function confirmFuel() {
@@ -728,22 +735,16 @@ export default {
         }
       });
       if (targetLane !== best) {
-        streak = 0;
-        if (typeof hud.setStreak === "function") hud.setStreak(0);
-        lives = Math.max(0, lives - 1);
-        if (typeof hud.setLives === "function") hud.setLives(lives);
-        feel.sfx("wrong");
-        if (!reduced) feel.shake(0.22);
-        const msg =
-          lives > 0
-            ? `Not the best buy. ${lives} ${lives === 1 ? "life" : "lives"} left.`
-            : "Not the best buy.";
-        hud.feedback?.(false, msg);
+        // Wrong pump is never a failure — gently invite another try.
+        feel.sfx("select");
+        if (!reduced) feel.shake(0.08);
+        const msg = `Not the best buy yet — ${cfg.hints ? problem.help : "compare $ ÷ liters for each pump and pick the smallest."}`;
+        hud.feedback?.(false, "Compare $ per liter and try another pump.") ||
+          hud.message("Keep comparing — no rush.", {
+            tone: "info",
+            duration: 1800,
+          });
         announce(msg);
-        if (lives <= 0) {
-          loseGame();
-          return;
-        }
         return;
       }
       completeSegment("fuel");
@@ -757,10 +758,10 @@ export default {
       if (streak > bestStreak) bestStreak = streak;
       if (typeof hud.setStreak === "function") hud.setStreak(streak);
 
+      // Scoring is purely by correct math + progress streak — never by speed.
       const pts = 22 + (level === 2 ? 12 : 0) + Math.min(streak - 1, 6) * 4;
       onScore(pts, { segment: segIndex + 1, kind });
 
-      boostT = 1.1;
       feel.sfx("correct");
       if (!reduced) {
         feel.burst(
@@ -770,31 +771,35 @@ export default {
         feel.shake(0.2);
       }
       flash = { color: COLORS.good, t: 0.35 };
-      hud.feedback?.(true, `Segment clear! +${pts}${streak > 1 ? ` · 🔥${streak}` : ""}`);
-      announce(`Segment ${segIndex + 1} clear. ${pts} points.`);
+      hud.feedback?.(
+        true,
+        `Correct! +${pts}${streak > 1 ? ` · 🔥${streak}` : ""}`,
+      );
+      announce(`Correct. ${pts} points. Driving to the next segment.`);
 
       fuelGroup.visible = false;
-      later(() => {
+      // Reward drive: roll the highway forward a fixed distance, then advance.
+      driveThen = () => {
         if (segIndex < total - 1) {
           segIndex += 1;
           startSegment();
         } else {
           startFinish();
         }
-      }, 900);
+      };
+      driveLeft = 70;
+      phase = "drive";
     }
 
     function startSegment() {
       segmentLock = false;
       problem = cfg.problems[segIndex];
-      holdTime = 0;
-      traveled = 0;
-      nextConeAt = CONE_GAP;
       dial = isCompare() ? 0 : problem.min;
       targetLane = 1;
       playerCar.position.x = laneX(targetLane);
 
-      if (typeof hud.setProgress === "function") hud.setProgress(segIndex, total);
+      if (typeof hud.setProgress === "function")
+        hud.setProgress(segIndex, total);
 
       if (isCompare()) {
         phase = "fuel";
@@ -808,10 +813,10 @@ export default {
           hud.message(problem.help, { tone: "info", duration: 3200 });
         }
       } else {
-        phase = "run";
+        phase = "tune";
         fuelGroup.visible = false;
         announce(
-          `Segment ${segIndex + 1}. ${problem.prompt} Tune ↑/↓ and hold the green zone.`,
+          `Segment ${segIndex + 1}. ${problem.prompt} Take your time, tune ↑/↓ to the right number, then press Space to drive.`,
         );
         if (cfg.hints) {
           hud.message(problem.help, { tone: "info", duration: 3400 });
@@ -825,16 +830,18 @@ export default {
       phase = "finish";
       finish.visible = true;
       finish.position.z = SPAWN_Z + 8;
-      hud.setObjective("Final stretch — cross the finish! 🏁");
-      announce("Last segment done. Race to the finish line!");
+      hud.setObjective("All segments solved — rolling to the finish line! 🏁");
+      announce("All segments solved. Your car is rolling to the finish line.");
     }
 
     function winGame() {
       gameOver = true;
       running = false;
       finish.visible = false;
-      hud.setObjective(`You won! ${solved} segments · best streak ${bestStreak} 🏁`);
-      hud.message("🏁 Race complete!", { tone: "ok", duration: 0 });
+      hud.setObjective(
+        `You finished! ${solved} segments · best streak ${bestStreak} 🏁`,
+      );
+      hud.message("🏁 Highway complete!", { tone: "ok", duration: 0 });
       feel.sfx("fanfare");
       if (!reduced) {
         feel.burst(
@@ -843,26 +850,12 @@ export default {
         );
         feel.shake(0.32);
       }
-      announce(`Race complete! Best streak ${bestStreak}.`);
+      announce(`Highway complete! Best streak ${bestStreak}.`);
       clarity?.setTarget(null);
       clarity?.win({
         titleEn: "Highway champion!",
         badge: "🏁",
-        stats: `You cleared ${solved} segments. Best streak: ${bestStreak}.`,
-      });
-    }
-
-    function loseGame() {
-      gameOver = true;
-      running = false;
-      const msg = `Race over. You cleared ${solved} of ${total}.`;
-      hud.setObjective(msg);
-      announce(msg);
-      clarity?.setTarget(null);
-      clarity?.lose({
-        titleEn: "Race over",
-        badge: "🏁",
-        stats: `${msg} Tip: divide to find the unit rate, then hold that number in the green zone.`,
+        stats: `You solved all ${solved} segments. Best streak: ${bestStreak}.`,
       });
     }
 
@@ -870,19 +863,17 @@ export default {
       segIndex = 0;
       dial = 0;
       targetLane = 1;
-      holdTime = 0;
       streak = 0;
       bestStreak = 0;
       solved = 0;
-      lives = START_LIVES;
       gameOver = false;
       running = true;
-      boostT = 0;
-      hitCooldown = 0;
+      driveLeft = 0;
+      driveThen = null;
+      hintCooldown = 0;
       flash = null;
       finish.visible = false;
       fuelGroup.visible = false;
-      if (typeof hud.setLives === "function") hud.setLives(lives);
       if (typeof hud.setStreak === "function") hud.setStreak(0);
       hud.setLevel(level === 2 ? "Level 2" : "Level 1");
       startSegment();
@@ -937,11 +928,16 @@ export default {
               if (name === "left") steer(-1);
               else if (name === "right") steer(1);
               else if (name === "action") confirmFuel();
-            } else if (phase === "run") {
+            } else if (phase === "tune") {
               if (name === "left") steer(-1);
               else if (name === "right") steer(1);
               else if (name === "up") changeDial(stepSize(false));
               else if (name === "down") changeDial(-stepSize(false));
+              else if (name === "action") confirmDial();
+            } else if (phase === "drive") {
+              // Optional gentle steering during the reward drive.
+              if (name === "left") steer(-1);
+              else if (name === "right") steer(1);
             }
           });
           input.onTap(handleTap);
@@ -952,25 +948,25 @@ export default {
           announce,
           title: "Ratio Rally — Highway Tuner",
           objectiveEn:
-            "Steer between lanes and dodge cones. Use ↑/↓ to tune your rate WHILE driving — when the speedometer hits the green zone, HOLD it to clear the segment. Fuel stops: steer to the cheapest pump and press Space.",
+            "Your car waits at the start of each segment — there is no timer, so take all the time you need. Work out the rate, use ↑/↓ to set the dial to that number, then press Space. Only a correct answer drives the car forward. On fuel stops, steer to the cheapest pump ($ ÷ liters) and press Space.",
           objectiveEs:
-            "Conduce entre carriles y esquiva conos. Usa ↑/↓ para ajustar tu razón MIENTRAS conduces — cuando el velocímetro entre en la zona verde, MANTÉNLO. En gasolina: elige la bomba más barata y presiona Espacio.",
+            "Tu auto espera al inicio de cada tramo — no hay reloj, tómate todo el tiempo que necesites. Calcula la razón, usa ↑/↓ para poner ese número en el medidor y presiona Espacio. Solo una respuesta correcta hace avanzar el auto. En la gasolinera, ve a la bomba más barata ($ ÷ litros) y presiona Espacio.",
           standard: "6.RP.A.2–3 · Rates, Unit Rates & Percent",
           controls: [
             {
-              key: "← / →",
-              actionEn: "Steer between lanes (dodge cones)",
-              actionEs: "Gira entre carriles (esquiva conos)",
-            },
-            {
               key: "↑ / ↓",
-              actionEn: "Tune your rate while driving",
-              actionEs: "Ajusta tu razón mientras conduces",
+              actionEn: "Set the dial to the rate (no rush)",
+              actionEs: "Ajusta el medidor a la razón (sin prisa)",
             },
             {
               key: "Space",
-              actionEn: "Confirm fuel pump on fuel-stop rounds",
-              actionEs: "Confirma la bomba en paradas de gasolina",
+              actionEn: "Confirm your answer / fuel pump",
+              actionEs: "Confirma tu respuesta / la bomba",
+            },
+            {
+              key: "← / →",
+              actionEn: "Steer between lanes",
+              actionEs: "Cambia de carril",
             },
             {
               key: "Enter",
@@ -984,9 +980,9 @@ export default {
             },
           ],
           howToWinEn:
-            "Hold the correct rate in the green zone long enough to clear each highway segment. Dodge cones. On fuel rounds, pick the cheapest pump. Clear every segment and cross the finish.",
+            "Solve every segment to drive the whole highway — there is no clock and no losing. Set the dial to the correct rate and press Space to roll forward. On fuel stops, pick the cheapest pump. Bumping a cone is fine; just steer around. Finish all segments to win.",
           howToWinEs:
-            "Mantén la razón correcta en la zona verde el tiempo suficiente. Esquiva conos. En gasolina, elige la bomba más barata. Cruza la meta.",
+            "Resuelve cada tramo para recorrer toda la carretera — no hay reloj ni forma de perder. Pon la razón correcta en el medidor y presiona Espacio para avanzar. En la gasolinera, elige la bomba más barata. Chocar un cono no pasa nada; solo esquívalo. Termina todos los tramos para ganar.",
           onStart: beginGameplay,
           onPlayAgain: () => location.reload(),
         });
@@ -995,53 +991,41 @@ export default {
           if (!running || gameOver) return;
           const d = Math.min(dt, 0.05);
 
-          if (hitCooldown > 0) hitCooldown = Math.max(0, hitCooldown - d);
-          if (boostT > 0) boostT = Math.max(0, boostT - d);
+          if (hintCooldown > 0) hintCooldown = Math.max(0, hintCooldown - d);
 
-          // Steering
+          // Steering (lane follow — works while parked or during a reward drive)
           const tx = laneX(targetLane);
           const lerp = reduced ? 1 : Math.min(1, d * 12);
           playerCar.position.x += (tx - playerCar.position.x) * lerp;
           const lean = (tx - playerCar.position.x) * -1.2;
           playerCar.rotation.z = lean;
 
+          // The dial being correct lights a calm "ready" glow — NOT a timer.
+          const ready = phase === "tune" && inGreen();
+          if (ready) {
+            playerCar.userData.glowMat.emissive.set(COLORS.good);
+            playerCar.userData.glowMat.emissiveIntensity = 1.0;
+            playerCar.userData.bodyMat.emissiveIntensity = 0.4;
+          } else if (phase === "tune") {
+            playerCar.userData.glowMat.emissive.set(COLORS.spark);
+            playerCar.userData.glowMat.emissiveIntensity = 0.75;
+            playerCar.userData.bodyMat.emissiveIntensity = 0.22;
+          }
+
+          // The world only moves during reward animations. While the student is
+          // thinking (tune / fuel) the car is parked — zero forced motion.
           let scroll = 0;
-          if (phase === "run") {
-            scroll = inGreen()
-              ? BOOST_SPEED + (boostT > 0 ? 6 : 0)
-              : BASE_SPEED * (0.35 + (0.65 * dial) / Math.max(problem.max, 1));
-            if (inGreen()) {
-              holdTime += d;
-              playerCar.userData.glowMat.emissive.set(COLORS.nitro);
-              playerCar.userData.glowMat.emissiveIntensity = 1.1;
-              playerCar.userData.bodyMat.emissiveIntensity = 0.45;
-              if (!reduced && Math.random() < 0.35) {
-                feel.burst(
-                  {
-                    x: playerCar.position.x + (Math.random() - 0.5) * 0.6,
-                    y: 0.5,
-                    z: CAR_Z - 1.2,
-                  },
-                  { color: COLORS.nitro, count: 2, spread: 1.2, size: 0.12 },
-                );
-              }
-              if (holdTime >= HOLD_SEC) completeSegment("hold");
-            } else {
-              holdTime = 0;
-              playerCar.userData.glowMat.emissive.set(COLORS.spark);
-              playerCar.userData.glowMat.emissiveIntensity = 0.75;
-              playerCar.userData.bodyMat.emissiveIntensity = 0.22;
-            }
-            traveled += scroll;
-            if (traveled >= nextConeAt) {
-              spawnCone(SPAWN_Z - Math.random() * 15);
-              nextConeAt += CONE_GAP;
-            }
+          if (phase === "drive") {
+            scroll = Math.min(DRIVE_SPEED * d * 18, driveLeft);
+            driveLeft -= scroll;
             checkConeHits();
-          } else if (phase === "fuel") {
-            scroll = BASE_SPEED * 0.35;
+            if (driveLeft <= 0) {
+              const then = driveThen;
+              driveThen = null;
+              if (then) then();
+            }
           } else if (phase === "finish") {
-            scroll = BOOST_SPEED * 1.1;
+            scroll = DRIVE_SPEED * d * 22;
             finish.position.z += scroll;
             if (finish.position.z >= CAR_Z) winGame();
           }
@@ -1051,30 +1035,30 @@ export default {
             scrollCones(scroll);
             if (playerCar.userData.wheels) {
               playerCar.userData.wheels.forEach(
-                (w) => (w.rotation.x += d * scroll * 0.55),
+                (w) => (w.rotation.x += scroll * 0.55),
               );
             }
           }
 
           if (!reduced) {
+            const moving = phase === "drive" || phase === "finish";
             playerCar.position.y =
-              (inGreen() ? 0.08 : 0) + Math.sin(t * (inGreen() ? 14 : 8)) * 0.025;
-            const targetFov =
-              54 + (inGreen() ? 10 : 0) + (boostT > 0 ? 5 : 0);
+              (ready ? 0.06 : 0) + Math.sin(t * (moving ? 14 : 6)) * 0.02;
+            const targetFov = 54 + (moving ? 6 : 0);
             if (camera.isPerspectiveCamera) {
               camera.fov += (targetFov - camera.fov) * Math.min(1, d * 5);
               camera.updateProjectionMatrix();
             }
             const camX = playerCar.position.x * 0.35;
-            camera.position.x += (camX - camera.position.x) * Math.min(1, d * 3);
-            camera.lookAt(
-              playerCar.position.x * 0.2,
-              1.1,
-              CAR_Z - 10,
-            );
+            camera.position.x +=
+              (camX - camera.position.x) * Math.min(1, d * 3);
+            camera.lookAt(playerCar.position.x * 0.2, 1.1, CAR_Z - 10);
           }
 
-          if (phase === "run" && Math.floor(t * 4) !== Math.floor((t - d) * 4)) {
+          if (
+            phase === "tune" &&
+            Math.floor(t * 4) !== Math.floor((t - d) * 4)
+          ) {
             updateHud();
           }
 

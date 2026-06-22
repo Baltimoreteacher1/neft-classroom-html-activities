@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Unit 10 — Volume Vault | Volume of Prisms (6.G.A.2)</title>
     <link rel="stylesheet" href="/assets/design-tokens.css" />
     <!-- Shared clarity/onboarding kit (start overlay, how-to-play, HUD, end
@@ -68,8 +68,9 @@
          Bespoke Volume Vault overlay polish (additive, DOM/CSS only).
          These layers sit OVER the 3D canvas; none of them touch the WebGL
          scene, mechanics, scoring, or the engine HUD logic. They react to the
-         engine HUD's own DOM (timer text + message banner tone) to add
-         game-specific feedback. Every animation is gated by
+         engine HUD's own DOM (message banner tone + score change) to add
+         game-specific feedback. The game is self-paced with no timer, so there
+         is no time-pressure styling here. Every animation is gated by
          prefers-reduced-motion below.
          ===================================================================== */
 
@@ -174,43 +175,6 @@
         animation: vvShake 0.36s ease;
       }
 
-      /* Timer "red creep": as time runs low the engine HUD timer text escalates
-         teal → amber → red and gains an intensifying pulse. Driven by classes
-         added in JS (parsing the timer's own m:ss text). */
-      .e3d-hud-timer {
-        border-radius: 999px;
-        padding: 1px 9px;
-        transition:
-          color 0.35s ease,
-          background-color 0.35s ease,
-          box-shadow 0.35s ease;
-      }
-      .e3d-hud-timer.vv-time-warn {
-        color: #ffd97a;
-        background: rgba(242, 193, 91, 0.16);
-      }
-      .e3d-hud-timer.vv-time-danger {
-        color: #ffb4a6;
-        background: rgba(255, 90, 70, 0.22);
-        box-shadow: 0 0 0 1px rgba(255, 126, 107, 0.55);
-        animation: vvTimerPulse 0.85s ease-in-out infinite;
-      }
-      .e3d-hud-timer.vv-time-critical {
-        color: #fff;
-        background: rgba(255, 70, 54, 0.78);
-        box-shadow: 0 0 14px 2px rgba(255, 90, 70, 0.7);
-        animation: vvTimerPulse 0.45s ease-in-out infinite;
-      }
-      @keyframes vvTimerPulse {
-        0%,
-        100% {
-          transform: scale(1);
-        }
-        50% {
-          transform: scale(1.13);
-        }
-      }
-
       /* Score emphasis pop (paired with GameFX.pop fallback). */
       @keyframes vvScorePop {
         40% {
@@ -236,8 +200,6 @@
         body.vv-shake #game {
           animation: none !important;
         }
-        .e3d-hud-timer.vv-time-danger,
-        .e3d-hud-timer.vv-time-critical,
         .e3d-hud-score.vv-score-pop {
           animation: none !important;
         }
@@ -277,8 +239,9 @@
       Volume Vault — Pack the Prism, Find the Volume
     </div>
     <p class="e3d-intro" id="e3d-intro">
-      Slide left/right to aim the chute, then tap or press to DROP a cube. Pack
-      the prism, then pick its volume in the speed round. Volume = length × width × height.
+      Slide left/right to aim the chute, then tap or press to DROP a cube. No
+      timer — go at your own pace. Pack the prism, then pick its volume. Volume
+      = length × width × height.
     </p>
     <div class="e3d-fallback" id="fallback">
       <div>
@@ -322,12 +285,13 @@
 
     <!-- =====================================================================
          Bespoke overlay feedback (additive, DOM-only). This observes the
-         engine HUD's own elements (timer text + message banner tone) and adds
-         Volume-Vault-specific polish: timer red-creep, an overstack red-alert
-         vignette + shake, a vault-packed cheer bloom, and a score pop. It does
-         NOT import or touch the game module, the three.js scene, mechanics, or
-         scoring — it only reads HUD DOM and toggles overlay classes. Wrapped in
-         a guard so any failure is silent and never blocks the game.
+         engine HUD's own elements (message banner tone + score change) and adds
+         Volume-Vault-specific polish: an overstack red-alert vignette + shake,
+         a vault-packed cheer bloom, and a score pop. The game is self-paced
+         with no timer, so there is no time-pressure feedback. It does NOT import
+         or touch the game module, the three.js scene, mechanics, or scoring —
+         it only reads HUD DOM and toggles overlay classes. Wrapped in a guard so
+         any failure is silent and never blocks the game.
          ===================================================================== -->
     <script>
       (function () {
@@ -364,32 +328,6 @@
           }, 400);
         }
 
-        // --- Timer "red creep": parse the HUD timer m:ss and escalate styling.
-        // Thresholds in seconds; class set is idempotent (no per-frame thrash).
-        function timerSeconds(text) {
-          if (!text) return null;
-          var m = /(\d+):(\d{1,2})/.exec(text);
-          if (!m) return null;
-          return parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
-        }
-        var lastTimerClass = "";
-        function styleTimer(el) {
-          var secs = timerSeconds(el.textContent);
-          var cls;
-          if (secs == null || secs > 10) cls = "";
-          else if (secs > 6) cls = "vv-time-warn";
-          else if (secs > 3) cls = "vv-time-danger";
-          else cls = "vv-time-critical";
-          if (cls === lastTimerClass) return;
-          lastTimerClass = cls;
-          el.classList.remove(
-            "vv-time-warn",
-            "vv-time-danger",
-            "vv-time-critical",
-          );
-          if (cls) el.classList.add(cls);
-        }
-
         // --- Score pop on change (GameFX.pop if present, CSS fallback otherwise).
         var lastScore = null;
         function popScore(el) {
@@ -412,22 +350,10 @@
         var wired = false;
         function wire() {
           if (wired) return false;
-          var timerEl = document.querySelector(".e3d-hud-timer");
           var msgEl = document.querySelector(".e3d-hud-msg");
           var scoreEl = document.querySelector(".e3d-hud-score");
-          if (!timerEl && !msgEl && !scoreEl) return false;
+          if (!msgEl && !scoreEl) return false;
           wired = true;
-
-          if (timerEl) {
-            styleTimer(timerEl);
-            new MutationObserver(function () {
-              styleTimer(timerEl);
-            }).observe(timerEl, {
-              childList: true,
-              characterData: true,
-              subtree: true,
-            });
-          }
 
           if (scoreEl) {
             lastScore = scoreEl.textContent;
@@ -444,9 +370,9 @@
             var reactMsg = function () {
               if (msgEl.hidden) return;
               var tone = msgEl.dataset ? msgEl.dataset.tone : null;
-              // "warn" tone covers spills, overstacks, time-outs, wrong answers.
+              // "warn" tone covers spills, overstacks, and wrong answers.
               if (tone === "warn") {
-                // Overstack/spill/time-out/wrong answer -> red alert + shake.
+                // Overstack/spill/wrong answer -> red alert + shake.
                 flashFrame("alert");
                 shakeStage();
               } else if (tone === "ok") {
@@ -493,8 +419,8 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+  </body>
 </html>

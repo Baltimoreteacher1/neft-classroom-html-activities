@@ -5,19 +5,22 @@ import { initClarity } from "/games/3d/_clarity/clarity-kit.js";
 
 /* ============================================================================
  * Unit 10 — VOLUME VAULT  (CCSS 6.G.A.2)
- * REAL-TIME PACK-THE-PRISM ARCADE. A factory chute drops unit cubes in real
- * time. The player slides the drop column left/right; each cube SNAPS down and
- * auto-stacks layer by layer. Pack the rectangular prism with EXACTLY
- * l × w × h cubes before the timer runs out — that count IS the volume.
+ * SELF-PACED PACK-THE-PRISM BUILDER. A factory chute holds a unit cube. The
+ * player slides the drop column left/right and presses to DROP a cube; each
+ * cube SNAPS down and auto-stacks layer by layer. Pack the rectangular prism
+ * with EXACTLY l × w × h cubes — that count IS the volume. There is NO timer
+ * and nothing auto-drops: students place every cube at their own pace and are
+ * never rushed.
  *
- * Miss the vault (let a cube fall past the open mouth, or drop onto a full
- * column while empty cells remain) and you lose a life. Fill the prism in time
- * and a SPEED-ROUND answer gate appears: pick the numeric volume (l × w × h)
- * under time pressure for combo points. The math is the gameplay — you build
- * and read the volume, you never copy it.
+ * Drop onto an already-full column while empty cells remain and the cube spills
+ * (a placement mistake), costing a life. Fill the prism and an answer gate
+ * appears: pick the numeric volume (l × w × h) — also fully self-paced — for
+ * combo points. The math is the gameplay — you build and read the volume, you
+ * never copy it.
  *
- *   Level 1 (support):  smaller prisms, more time, slower drops, hints.
- *   Level 2 (enrichment): bigger prisms, tighter timer, faster drops.
+ *   Level 1 (support):  smaller prisms, more lives, hints.
+ *   Level 2 (enrichment): bigger prisms with more cubes per round (harder math),
+ *                         fewer hints — NOT a tighter timer or faster drops.
  * ==========================================================================*/
 
 const COLORS = {
@@ -36,20 +39,17 @@ const COLORS = {
 };
 
 // ---------------------------------------------------------------------------
-// Level design — a sequence of whole-number prisms. Level 2 is strictly harder:
-// bigger boxes, less time, faster cube drops.
+// Level design — a sequence of whole-number prisms. Level 2 is harder MATH, not
+// faster play: bigger boxes with more cubes per round (more counting/steps) and
+// fewer hints. No timers and no auto-drops at either level — every cube is
+// placed by the student at their own pace.
 // ---------------------------------------------------------------------------
 function makeLevel(level) {
   if (level === 1) {
     return {
       hints: true,
       startLives: 5,
-      dropInterval: 1.05, // seconds between cube drops (eases down over a round)
-      dropAccel: 0.94, // each drop multiplies the interval (slowly speeds up)
-      minInterval: 0.55,
-      fallSpeed: 9, // world units / sec the cube falls
-      timePerCube: 1.5, // round timer = cubes × this (seconds)
-      gateTime: 7, // seconds to answer the speed-round volume gate
+      fallSpeed: 9, // world units / sec the dropped cube falls (visual only)
       rounds: [
         { l: 2, w: 2, h: 1 }, // 4
         { l: 3, w: 2, h: 1 }, // 6
@@ -63,12 +63,7 @@ function makeLevel(level) {
   return {
     hints: false,
     startLives: 4,
-    dropInterval: 0.82,
-    dropAccel: 0.92,
-    minInterval: 0.4,
     fallSpeed: 12,
-    timePerCube: 1.15,
-    gateTime: 5.5,
     rounds: [
       { l: 3, w: 2, h: 2 }, // 12
       { l: 4, w: 2, h: 2 }, // 16
@@ -80,7 +75,7 @@ function makeLevel(level) {
   };
 }
 
-// ---- Speed-round answer-gate distractors (plausible volume mistakes) --------
+// ---- Answer-gate distractors (plausible volume mistakes) --------------------
 function volumeDistractors(answer, l, w, h) {
   const cands = [];
   const push = (v) => {
@@ -295,7 +290,7 @@ export default {
     }
 
     // =====================================================================
-    // SPEED-ROUND answer gate (3 floating panels). Reused each round.
+    // Answer gate (3 floating panels). Reused each round. Self-paced — no timer.
     // =====================================================================
     const gateGroup = new THREE.Group();
     gateGroup.visible = false;
@@ -364,14 +359,10 @@ export default {
     let cubeTargetX = 0;
     let cubeTargetZ = 0;
     let cubeColHex = COLORS.cube[0];
-    let dropTimer = 0;
-    let curInterval = 1;
-    let roundTime = 0; // counts down
 
     // Gate state.
     let gateCorrectLane = 0;
     let gateChoice = 1;
-    let gateTime = 0;
     let gateAnswer = 0;
 
     let unbindPress = null;
@@ -443,11 +434,6 @@ export default {
       );
       group.add(cubeMesh);
 
-      // Drop pacing + round timer.
-      curInterval = cfg.dropInterval;
-      dropTimer = 0.6; // brief grace before the first cube
-      roundTime = Math.max(8, Math.round(targetCount * cfg.timePerCube));
-
       columnMesh.visible = true;
       chute.visible = true;
       cubeFalling = false;
@@ -465,13 +451,16 @@ export default {
 
       announce(
         `Round ${roundIndex + 1}. Pack the ${round.l} by ${round.w} by ${round.h} vault. ` +
-          `Slide left and right to aim the chute, then press to drop a cube. Fill every cell before time runs out.`,
+          `Slide left and right to aim the chute, then press to drop a cube. Take your time and fill every cell.`,
       );
       if (cfg.hints) {
-        hud.message("Slide left/right to aim · press to drop a cube fast!", {
-          tone: "info",
-          duration: 3600,
-        });
+        hud.message(
+          "Slide left/right to aim · press to drop a cube — no rush!",
+          {
+            tone: "info",
+            duration: 3600,
+          },
+        );
       }
       feel.sfx("select");
     }
@@ -532,8 +521,8 @@ export default {
       announce(`Column ${x + 1}, row ${z + 1}.`);
     }
 
-    // Drop a cube into the selected column right now (player action) or let the
-    // factory auto-drop one when its timer fires.
+    // Drop a cube into the selected column right now. Always a player action —
+    // nothing auto-drops, so the student is never rushed.
     function dropCube() {
       if (phase !== "packing" || cubeFalling) return;
       const { x, z } = colXZ(colSel);
@@ -556,8 +545,6 @@ export default {
       cubeFalling = true;
       fallingCube.userData.landY = landY;
       feel.sfx("pop");
-      // Reset auto-drop timer so manual + auto don't double up.
-      dropTimer = curInterval;
     }
 
     function spillCube(x, z) {
@@ -627,7 +614,7 @@ export default {
     }
 
     // =====================================================================
-    // PRISM FILLED → SPEED-ROUND ANSWER GATE
+    // PRISM FILLED → ANSWER GATE
     // =====================================================================
     function finishPacking() {
       phase = "between";
@@ -636,9 +623,9 @@ export default {
       fallingCube.visible = false;
 
       const vol = prismVolume(round.l, round.w, round.h);
-      const timeBonus = Math.max(0, Math.round(roundTime) * 2);
-      const base = level === 2 ? 25 : 18;
-      const pts = base + timeBonus;
+      // Score comes from correct packing only — bigger prisms (Level 2) are
+      // worth more because they take more cubes. No speed/time bonus.
+      const pts = level === 2 ? 25 : 18;
       onScore(pts, {
         round: roundIndex + 1,
         volume: vol,
@@ -655,11 +642,11 @@ export default {
           spread: nx + nz + 2,
         },
       );
-      hud.feedback(true, `Vault packed! +${pts} (time bonus ${timeBonus})`, {
+      hud.feedback(true, `Vault packed! +${pts}`, {
         duration: 2200,
       });
       announce(
-        `Vault packed with ${targetCount} cubes. Now the speed round — pick the volume fast!`,
+        `Vault packed with ${targetCount} cubes. Now pick the volume — take your time.`,
       );
 
       later(() => startGate(vol), reduced ? 600 : 1000);
@@ -677,7 +664,6 @@ export default {
       );
       gateCorrectLane = correctLane;
       gateChoice = 1;
-      gateTime = cfg.gateTime;
 
       opts.forEach((v, i) => {
         updateLabel(gateLabels[i], String(v));
@@ -690,18 +676,18 @@ export default {
       refreshGateChoice();
 
       problemCard.position.set(0, 4.4, 0);
-      setProblemCard(`SPEED ROUND:  ${round.l} × ${round.w} × ${round.h} = ?`);
-      const text = `Speed round! What is ${round.l} × ${round.w} × ${round.h}? Pick the volume — left/right, then press.`;
+      setProblemCard(`VOLUME:  ${round.l} × ${round.w} × ${round.h} = ?`);
+      const text = `What is ${round.l} × ${round.w} × ${round.h}? Pick the volume — left/right, then press. Take your time.`;
       hud.setObjective(text);
       if (clarity) {
         clarity.setObjective(text);
-        clarity.setTarget(`Pick the volume before time runs out!`);
+        clarity.setTarget(`Pick the volume — no rush!`);
       }
       if (typeof hud.setTimer === "function") hud.setTimer(null);
       feel.sfx("select");
       announce(
-        `Speed round. What is ${round.l} times ${round.w} times ${round.h}? ` +
-          `Use left and right to choose, then press to lock it in.`,
+        `What is ${round.l} times ${round.w} times ${round.h}? ` +
+          `Use left and right to choose, then press to lock it in. There is no timer — take your time.`,
       );
     }
 
@@ -720,10 +706,10 @@ export default {
       feel.sfx("select");
     }
 
-    function lockGate(timedOut) {
+    function lockGate() {
       if (phase !== "gate") return;
       phase = "between";
-      const correct = !timedOut && gateChoice === gateCorrectLane;
+      const correct = gateChoice === gateCorrectLane;
       // Light the correct panel green; a wrong pick red.
       gatePanels.forEach((p, i) => {
         if (i === gateCorrectLane) {
@@ -768,9 +754,7 @@ export default {
       } else {
         streak = 0;
         if (typeof hud.setStreak === "function") hud.setStreak(0);
-        const why = timedOut
-          ? `Time! The volume was ${gateAnswer}.`
-          : `Not quite — ${round.l}×${round.w}×${round.h} = ${gateAnswer}.`;
+        const why = `Not quite — ${round.l}×${round.w}×${round.h} = ${gateAnswer}.`;
         feel.sfx("wrong");
         if (!reduced) feel.shake(0.18);
         loseLife(why, () => later(nextRound, reduced ? 1000 : 1600));
@@ -880,7 +864,7 @@ export default {
     function onPrimary() {
       if (gameOver) return;
       if (phase === "packing") dropCube();
-      else if (phase === "gate") lockGate(false);
+      else if (phase === "gate") lockGate();
     }
     function onDirection(name) {
       if (gameOver) return;
@@ -907,7 +891,7 @@ export default {
     }
 
     // =====================================================================
-    // Real-time per-frame loop
+    // Per-frame render loop (animation + highlight pulse only — no timing)
     // =====================================================================
     function frame(dt) {
       const d = Math.min(dt, 0.05);
@@ -926,44 +910,13 @@ export default {
       }
 
       if (phase === "packing") {
-        // Round timer pressure removed.
-        if (typeof hud.setTimer === "function")
-          hud.setTimer(null);
-      }
-
-        // Factory auto-drops cubes into the selected column on a tightening
-        // interval — this is the real-time pressure. The player keeps moving to
-        // a fillable column so cubes don't spill.
-        if (!cubeFalling) {
-          dropTimer -= d;
-          if (dropTimer <= 0) {
-            const { x, z } = colXZ(colSel);
-            if (heights[x][z] < ny) {
-              dropCube();
-            } else {
-              // Selected column full: nudge the player, then retry shortly.
-              if (!pickNextColumn(false)) {
-                // No fillable column? (shouldn't happen pre-fill) — skip.
-                dropTimer = curInterval;
-              } else {
-                dropTimer = 0.2;
-              }
-            }
-            curInterval = Math.max(
-              cfg.minInterval,
-              curInterval * cfg.dropAccel,
-            );
-          }
-        }
-
-        // Pulse the column highlight for visibility.
+        // No timer and no auto-drop — the student aims and drops every cube at
+        // their own pace. Just pulse the column highlight for visibility.
         if (!reduced && columnMesh.visible) {
           columnMat.opacity =
             0.18 + Math.abs(Math.sin(performance.now() * 0.004)) * 0.16;
         }
       } else if (phase === "gate") {
-        if (typeof hud.setTimer === "function")
-          hud.setTimer(null);
         // Float the gate panels gently.
         if (!reduced) {
           gateGroup.children.forEach((lane, i) => {
@@ -1048,7 +1001,7 @@ export default {
               const nxp = input.state.ndc.x;
               if (nxp < -0.25) moveGate(-1);
               else if (nxp > 0.25) moveGate(1);
-              else lockGate(false);
+              else lockGate();
             }
           });
 
@@ -1058,19 +1011,19 @@ export default {
         clarity = initClarity({
           mount: clarityMount,
           announce,
-          title: "Volume Vault — Pack the Prism Before Time Runs Out",
+          title: "Volume Vault — Pack the Prism, Find the Volume",
           objectiveEn:
-            "A factory drops unit cubes in real time. Slide the chute left/right and press to drop — pack the prism with exactly length × width × height cubes before the timer runs out. Then pick its volume in the speed round.",
+            "Slide the chute left/right and press to drop a unit cube — at your own pace, with no timer. Pack the prism with exactly length × width × height cubes; that count is the volume. Then pick its volume from the answer panels.",
           objectiveEs:
-            "Una fábrica suelta cubos en tiempo real. Mueve el surtidor a la izquierda o derecha y presiona para soltar. Llena la caja con exactamente largo × ancho × alto cubos antes de que se acabe el tiempo. Luego elige el volumen en la ronda rápida.",
+            "Mueve el surtidor a la izquierda o derecha y presiona para soltar un cubo — a tu propio ritmo, sin tiempo límite. Llena la caja con exactamente largo × ancho × alto cubos; ese total es el volumen. Luego elige el volumen en los paneles.",
           standard: "6.G.A.2 · Volume of Rectangular Prisms",
           controls: [
             {
               key: "← / →  (A / D)",
               actionEn:
-                "Slide the chute to aim at a column (gate round: choose the answer)",
+                "Slide the chute to aim at a column (answer round: choose the answer)",
               actionEs:
-                "Mueve el surtidor para apuntar a una columna (ronda rápida: elige la respuesta)",
+                "Mueve el surtidor para apuntar a una columna (ronda de respuesta: elige la respuesta)",
             },
             {
               key: "↑ / ↓  (W / S)",
@@ -1080,9 +1033,9 @@ export default {
             {
               key: "Space / Tap / ●",
               actionEn:
-                "Drop a unit cube right now — or lock in your answer in the speed round",
+                "Drop a unit cube — or lock in your answer in the answer round",
               actionEs:
-                "Suelta un cubo ahora, o confirma tu respuesta en la ronda rápida",
+                "Suelta un cubo, o confirma tu respuesta en la ronda de respuesta",
             },
             {
               key: "Enter / ✓",
@@ -1096,9 +1049,9 @@ export default {
             },
           ],
           howToWinEn:
-            "Pack every cell of the prism with unit cubes before the timer hits zero — that count is the volume. The factory keeps dropping, so keep aiming at empty columns (a cube on a full column spills and costs a life). After packing, pick the correct volume (length × width × height) in the speed round for combo points. Clear all 6 vaults to win.",
+            "Pack every cell of the prism with unit cubes — that count is the volume. There is no timer, so take all the time you need; just aim at an empty column before you drop (a cube on a full column spills and costs a life). After packing, pick the correct volume (length × width × height) from the answer panels for combo points. Clear all 6 vaults to win.",
           howToWinEs:
-            "Llena cada celda de la caja antes de que el tiempo llegue a cero — ese total es el volumen. Luego elige el volumen correcto en la ronda rápida. Completa las 6 cajas para ganar.",
+            "Llena cada celda de la caja con cubos — ese total es el volumen. No hay tiempo límite, así que tómate el tiempo que necesites. Luego elige el volumen correcto en los paneles. Completa las 6 cajas para ganar.",
           onStart: beginGameplay,
           onPlayAgain: () => location.reload(),
         });
