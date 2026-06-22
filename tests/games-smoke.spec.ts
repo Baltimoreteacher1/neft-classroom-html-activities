@@ -89,7 +89,23 @@ for (const url of GAMES) {
     const phaserLoaded = await page.evaluate(
       () => typeof (window as unknown as { Phaser?: unknown }).Phaser !== "undefined",
     );
-    const canvasCount = await page.locator("canvas").count();
+    let canvasCount = await page.locator("canvas").count();
+
+    // Vocab-gate games (e.g. u2-fraction-frenzy) eagerly load the Phaser library
+    // but boot the canvas only AFTER the student clicks through a "words to know
+    // first" gate (the vocab/SoT gate; button id ends in `vocab-go`). When Phaser
+    // is present but no canvas has rendered yet, dismiss the gate — mirroring the
+    // real student flow — then re-check. No-op for games without a gate or that
+    // already booted their canvas.
+    if (phaserLoaded && canvasCount === 0) {
+      const gate = page.locator('[id$="vocab-go"], .fr-vgo').first();
+      if ((await gate.count()) > 0) {
+        await gate.click({ timeout: 5_000 }).catch(() => {});
+        await page.waitForTimeout(2500);
+        canvasCount = await page.locator("canvas").count();
+      }
+    }
+
     const bodyTextLen = await page.evaluate(
       () => (document.body?.innerText || "").trim().length,
     );
