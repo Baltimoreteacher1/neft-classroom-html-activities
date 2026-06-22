@@ -61,7 +61,11 @@ const SKIP_TOPLEVEL = new Set([
 const SKIP_FILE_RE = /(^|[/\\])(404|sitemap|robots)\b/i;
 // Teacher-facing pages (any nested ".../teacher/..." path) have no student
 // state, so they are intentionally excluded from save/resume integration.
-const SKIP_PATH_RE = /(^|\/)teacher(\/|$)/i;
+// The Neft City sims (living-school/neft-city-*) self-persist their own game
+// state to a private localStorage key in each app.js, so the generic widget is
+// intentionally NOT injected there (matches tools/inject-save-resume.js); they
+// are excluded here too so the audit doesn't flag the deliberate omission.
+const SKIP_PATH_RE = /(^|\/)teacher(\/|$)|(^|\/)living-school\/neft-city-/i;
 
 const issues = [];
 const stats = {
