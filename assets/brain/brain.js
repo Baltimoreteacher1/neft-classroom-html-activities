@@ -196,7 +196,7 @@
   };
   B.renderDifferentiation = function (target, opts) {
     var host = typeof target === "string" ? document.querySelector(target) : target;
-    if (!host) return;
+    if (!host) return Promise.resolve();
     opts = opts || {};
     host.innerHTML = "<p class='nb-loading'>Loading differentiation…</p>";
     return B.load(opts).then(function (data) {
@@ -220,8 +220,9 @@
         return null;
       }
       host.innerHTML = "";
+      var stds = (mastery && mastery.standards) || {};
       var rows = tax.standards.map(function (s) {
-        var st = mastery.standards[s.id];
+        var st = stds[s.id];
         var assessed = !!st;
         var band = assessed ? st.band : "developing"; // unassessed → suggest core
         var bandCls = assessed ? st.band : "none";
