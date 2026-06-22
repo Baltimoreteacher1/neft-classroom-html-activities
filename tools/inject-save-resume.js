@@ -82,9 +82,20 @@ const SKIP_TOPLEVEL = new Set([
 // Filename patterns that are not student-facing activities.
 const SKIP_FILE_RE = /(^|[/\\])(404|sitemap|robots)\b/i;
 
+// Path patterns to skip for INJECTION ONLY (not revert). The Neft City sims
+// under living-school/neft-city-* fully self-persist their own game state to a
+// private localStorage key (see each app.js), so the generic widget only adds a
+// redundant auto-opening panel and an empty central record. Excluded by Joel's
+// call (2026-06). Revert is still allowed here so already-injected refs can be
+// stripped once.
+const SKIP_INJECT_PATH_RE = /(^|\/)living-school\/neft-city-/i;
+
 const args = new Set(process.argv.slice(2));
 const DRY = args.has("--dry-run");
 const REVERT = args.has("--revert");
+// Optional substring filter (e.g. --match=living-school/neft-city-) so revert
+// can target a subset of files instead of every injected page.
+const MATCH = [...args].find((a) => a.startsWith("--match="))?.slice("--match=".length) || null;
 
 const report = {
   scanned: 0,
@@ -139,11 +150,18 @@ function handleFile(file) {
   }
 
   if (REVERT) {
+    if (MATCH && !rel.includes(MATCH)) return; // targeted revert: skip non-matches
     if (html.includes(MARK)) {
       const cleaned = stripInjection(html);
       if (!DRY) writeFileSync(file, cleaned);
       report.reverted++;
     }
+    return;
+  }
+
+  // Inject-only path exclusions (revert above is intentionally exempt).
+  if (SKIP_INJECT_PATH_RE.test(rel)) {
+    report.skippedFile.push(rel);
     return;
   }
 
