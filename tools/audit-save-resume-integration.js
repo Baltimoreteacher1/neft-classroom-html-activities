@@ -69,7 +69,7 @@ const SKIP_FILE_RE = /(^|[/\\])(404|sitemap|robots)\b/i;
 //   - games/3d/*                 → 3D game launchers (no form fields)
 //   - math/intervention/index.html → the intervention nav hub (links only)
 const SKIP_PATH_RE =
-  /(^|\/)teacher(\/|$)|(^|\/)living-school\/neft-city-|(^|\/)games-live\/|(^|\/)games\/3d\/|(^|\/)math\/intervention\/index\.html$/i;
+  /(^|\/)(?:teacher(\/|$)|living-school\/neft-city-|games-live\/|games\/3d\/|math\/intervention\/index\.html$)/i;
 
 const issues = [];
 const stats = {

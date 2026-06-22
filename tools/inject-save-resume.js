@@ -96,7 +96,7 @@ const SKIP_FILE_RE = /(^|[/\\])(404|sitemap|robots)\b/i;
 // quiz state and are intentionally NOT excluded.) Revert stays allowed so any
 // already-injected refs can still be stripped.
 const SKIP_INJECT_PATH_RE =
-  /(^|\/)teacher(\/|$)|(^|\/)living-school\/neft-city-|(^|\/)games-live\/|(^|\/)games\/3d\/|(^|\/)math\/intervention\/index\.html$/i;
+  /(^|\/)(?:teacher(\/|$)|living-school\/neft-city-|games-live\/|games\/3d\/|math\/intervention\/index\.html$)/i;
 
 const args = new Set(process.argv.slice(2));
 const DRY = args.has("--dry-run");
