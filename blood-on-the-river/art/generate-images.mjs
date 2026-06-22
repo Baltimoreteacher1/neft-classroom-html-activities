@@ -35,13 +35,14 @@ const SCRIPTS = join(homedir(), ".claude", "scripts");
 const GEN_PY = join(SCRIPTS, "nano-banana-generate.py");
 
 function parseArgs(argv) {
-  const a = { chapter: null, all: false, manifestOnly: false, model: "pro", delay: 2, force: false };
+  const a = { chapter: null, chapMin: null, chapMax: null, all: false, manifestOnly: false, model: "pro", delay: 2, force: false };
   for (let i = 0; i < argv.length; i++) {
     const k = argv[i];
     if (k === "--all") a.all = true;
     else if (k === "--manifest-only") a.manifestOnly = true;
     else if (k === "--force") a.force = true;
     else if (k === "--chapter") a.chapter = parseInt(argv[++i], 10);
+    else if (k === "--chapters") { const [lo, hi] = argv[++i].split("-"); a.chapMin = parseInt(lo, 10); a.chapMax = parseInt(hi ?? lo, 10); }
     else if (k === "--model") a.model = argv[++i];
     else if (k === "--delay") a.delay = parseFloat(argv[++i]);
   }
@@ -84,8 +85,8 @@ function convert(pngPath, base) {
 
 function main() {
   const args = parseArgs(process.argv.slice(2));
-  if (!args.all && !args.chapter) {
-    console.error("Specify --chapter N (quality gate) or --all. See header for flags.");
+  if (!args.all && !args.chapter && args.chapMin == null) {
+    console.error("Specify --chapter N, --chapters A-B (shard), or --all. See header for flags.");
     process.exit(2);
   }
   mkdirSync(ART_DIR, { recursive: true });
@@ -93,12 +94,14 @@ function main() {
 
   let scenes = loadScenes();
   if (args.chapter) scenes = scenes.filter((s) => Number(s.chapter) === args.chapter);
+  else if (args.chapMin != null) scenes = scenes.filter((s) => Number(s.chapter) >= args.chapMin && Number(s.chapter) <= args.chapMax);
   if (!args.force) scenes = scenes.filter((s) => !existsSync(join(ART_DIR, `${idFor(s)}.webp`)));
-  console.log(`Scenes to generate: ${scenes.length}${args.chapter ? ` (chapter ${args.chapter})` : ""}`);
+  const tag = args.chapter ? `ch${args.chapter}` : args.chapMin != null ? `ch${args.chapMin}-${args.chapMax}` : "all";
+  console.log(`Scenes to generate: ${scenes.length} (${tag})`);
   if (!scenes.length) return console.log("Nothing to do (all targets already exist; use --force to redo).");
 
   const manifest = buildManifest(scenes);
-  const manifestPath = join(HERE, ".manifest.json");
+  const manifestPath = join(HERE, `.manifest-${tag}.json`);
   writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
   console.log(`Manifest written: ${manifestPath} (${manifest.length} items)`);
   if (args.manifestOnly) return console.log("--manifest-only: stopping before any API call.");
