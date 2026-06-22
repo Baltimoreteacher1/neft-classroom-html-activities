@@ -1106,7 +1106,7 @@ function getSceneSvgDataUri(s, chapterNum) {
 </svg>
   `.trim();
 
-  return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+  return "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svg)));
 }
 
 function renderActiveScene(s, chapterNum) {
