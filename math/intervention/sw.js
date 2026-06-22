@@ -4,9 +4,13 @@
    working without wifi. Scope: /math/intervention/ only (does not touch the
    rest of the site). Bump CACHE to ship new asset versions.
    ========================================================================== */
-const CACHE = "nt-int-v1";
+const CACHE = "nt-int-v2";
 const SCOPE = "/math/intervention/";
 const HUB = SCOPE;
+// Shared multi-day Save/Resume widget injected on the topic pages. It lives
+// outside SCOPE (at /shared/), so it must be explicitly precached + intercepted
+// or the save/resume UI breaks on an offline station reload.
+const SR_PREFIX = "/shared/save-resume/";
 
 // Core shell precached on install so the hub + engine load offline immediately.
 const CORE = [
@@ -19,6 +23,8 @@ const CORE = [
   SCOPE + "assets/forms-links.js",
   SCOPE + "manifest.webmanifest",
   "/assets/favicon.svg",
+  SR_PREFIX + "save-resume-styles.css",
+  SR_PREFIX + "save-resume-engine.js",
 ];
 
 self.addEventListener("install", (e) => {
@@ -56,8 +62,13 @@ self.addEventListener("fetch", (e) => {
   const url = new URL(req.url);
   // Same-origin only; never intercept Google Forms, fonts, analytics, etc.
   if (url.origin !== self.location.origin) return;
-  // Only manage our own scope + the shared favicon.
-  if (!url.pathname.startsWith(SCOPE) && url.pathname !== "/assets/favicon.svg")
+  // Only manage our own scope, the shared favicon, and the shared Save/Resume
+  // assets injected on the topic pages.
+  if (
+    !url.pathname.startsWith(SCOPE) &&
+    url.pathname !== "/assets/favicon.svg" &&
+    !url.pathname.startsWith(SR_PREFIX)
+  )
     return;
 
   // HTML navigations: network-first (fresh content), fall back to cache, then
