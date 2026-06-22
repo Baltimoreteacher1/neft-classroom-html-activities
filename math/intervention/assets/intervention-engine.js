@@ -57,6 +57,357 @@
   };
   window.IntProgress = Progress;
 
+  // Topics that count toward "mastery" (best diagnostic/practice ≥ 80%).
+  function masteredCount() {
+    const all = Progress.all();
+    return Object.keys(all).filter((s) => {
+      const it = all[s];
+      return it && Math.max(it.diagnostic || 0, it.practice || 0) >= 80;
+    }).length;
+  }
+
+  /* ============================================================== *
+   *  PREMIUM LAYER — XP, daily streaks, achievement badges, smart  *
+   *  review, celebrations. All local-only (no login, no network),  *
+   *  additive, and reduced-motion aware. Shared schema with the    *
+   *  hub (assets/hub.js) under the key below.                      *
+   * ============================================================== */
+  const XKEY = "nt-intervention-xp:v1";
+  // Local calendar date (YYYY-MM-DD). Uses local fields, not UTC, so an
+  // evening session never rolls the streak into "tomorrow".
+  const dayStr = (d) => {
+    const t = d || new Date();
+    const m = String(t.getMonth() + 1).padStart(2, "0");
+    const day = String(t.getDate()).padStart(2, "0");
+    return t.getFullYear() + "-" + m + "-" + day;
+  };
+  const qkey = (q) => String(q && q.prompt != null ? q.prompt : q);
+
+  // id → { icon, name, desc }. Mirrored in hub.js for the badge wall.
+  const BADGES = {
+    "first-steps": {
+      icon: "🌱",
+      name: "First Steps",
+      desc: "Finished your first activity.",
+    },
+    sharp: {
+      icon: "🎯",
+      name: "Sharp Shooter",
+      desc: "Scored 100% on a practice set.",
+    },
+    fluent: {
+      icon: "⚡",
+      name: "Fluency Ace",
+      desc: "15+ correct in a fluency drill.",
+    },
+    arcade: {
+      icon: "🕹️",
+      name: "Arcade Ace",
+      desc: "Scored 100+ in Answer Drop.",
+    },
+    streak3: { icon: "🔥", name: "On a Roll", desc: "3-day practice streak." },
+    streak7: {
+      icon: "🚀",
+      name: "Unstoppable",
+      desc: "7-day practice streak.",
+    },
+    master1: {
+      icon: "⭐",
+      name: "Topic Master",
+      desc: "Mastered your first topic (80%+).",
+    },
+    master6: { icon: "🏅", name: "Halfway Hero", desc: "Mastered 6 topics." },
+    master12: {
+      icon: "👑",
+      name: "Grand Master",
+      desc: "Mastered all 12 topics.",
+    },
+  };
+
+  const Premium = {
+    read() {
+      let d;
+      try {
+        d = JSON.parse(localStorage.getItem(XKEY) || "{}");
+        if (!d || typeof d !== "object") d = {};
+      } catch (e) {
+        d = {};
+      }
+      d.xp = d.xp || 0;
+      d.streak = d.streak || { count: 0, last: null };
+      d.badges = d.badges || {};
+      d.missed = d.missed || {};
+      d.activity = d.activity || {};
+      return d;
+    },
+    write(d) {
+      try {
+        localStorage.setItem(XKEY, JSON.stringify(d));
+      } catch (e) {}
+    },
+    // 100 XP per level — simple, legible for students.
+    level(xp) {
+      return Math.floor((xp == null ? this.read().xp : xp) / 100) + 1;
+    },
+    // Count one streak day the first time XP is earned each calendar day.
+    touchStreak(d) {
+      const today = dayStr();
+      if (d.streak.last === today) return false;
+      // Compute "yesterday" via calendar arithmetic so DST shifts don't
+      // miscount the gap.
+      const y = new Date();
+      y.setDate(y.getDate() - 1);
+      const yest = dayStr(y);
+      d.streak.count = d.streak.last === yest ? d.streak.count + 1 : 1;
+      d.streak.last = today;
+      return true;
+    },
+    addXP(n) {
+      const gained = Math.max(0, Math.round(n || 0));
+      const d = this.read();
+      const before = this.level(d.xp);
+      d.xp += gained;
+      d.activity[dayStr()] = (d.activity[dayStr()] || 0) + gained;
+      const streakUp = this.touchStreak(d);
+      this.write(d);
+      const level = this.level(d.xp);
+      return {
+        total: d.xp,
+        gained,
+        level,
+        levelUp: level > before,
+        streak: d.streak.count,
+        streakUp,
+      };
+    },
+    award(id) {
+      const d = this.read();
+      if (d.badges[id]) return false;
+      d.badges[id] = Date.now();
+      this.write(d);
+      return true;
+    },
+    recordMiss(slug, q) {
+      if (!slug) return;
+      const d = this.read();
+      const arr = d.missed[slug] || [];
+      const k = qkey(q);
+      if (!arr.includes(k)) {
+        arr.push(k);
+        d.missed[slug] = arr;
+        this.write(d);
+      }
+    },
+    clearMiss(slug, q) {
+      if (!slug) return;
+      const d = this.read();
+      const arr = d.missed[slug];
+      if (!arr || !arr.length) return;
+      const k = qkey(q);
+      const next = arr.filter((x) => x !== k);
+      if (next.length !== arr.length) {
+        d.missed[slug] = next;
+        this.write(d);
+      }
+    },
+    // Resolve stored prompts back to live bank items for the review set.
+    missedItems(slug, bank) {
+      const set = new Set(this.read().missed[slug] || []);
+      return (bank || []).filter((q) => set.has(qkey(q)));
+    },
+  };
+  window.IntPremium = Premium;
+
+  /* ------------------ Celebrations: toast + confetti -------------- */
+  function notify(html, kind) {
+    let host = document.getElementById("int-toasts");
+    if (!host) {
+      host = document.createElement("div");
+      host.id = "int-toasts";
+      host.className = "int-toasts";
+      host.setAttribute("aria-live", "polite");
+      document.body.appendChild(host);
+    }
+    const t = document.createElement("div");
+    t.className = "int-toast" + (kind ? " it-" + kind : "");
+    t.innerHTML = html;
+    host.appendChild(t);
+    requestAnimationFrame(() => t.classList.add("show"));
+    setTimeout(() => {
+      t.classList.remove("show");
+      setTimeout(() => t.remove(), 400);
+    }, 3600);
+  }
+
+  function confetti(power) {
+    if (reduceMotion()) return;
+    const n = power || 80;
+    const host = document.createElement("div");
+    host.className = "int-confetti";
+    host.setAttribute("aria-hidden", "true");
+    document.body.appendChild(host);
+    const colors = [
+      "#205fa6",
+      "#2c7d6b",
+      "#b8761b",
+      "#9333ea",
+      "#db2777",
+      "#0891b2",
+    ];
+    for (let i = 0; i < n; i++) {
+      const p = document.createElement("i");
+      p.style.left = Math.random() * 100 + "vw";
+      p.style.background = colors[i % colors.length];
+      p.style.animationDelay = Math.random() * 0.25 + "s";
+      p.style.animationDuration = 1.6 + Math.random() * 1.4 + "s";
+      p.style.setProperty("--rot", Math.random() * 360 + "deg");
+      host.appendChild(p);
+    }
+    setTimeout(() => host.remove(), 3800);
+  }
+  window.INTfx = { confetti, notify };
+
+  /* ---------------------- XP/streak HUD pill --------------------- */
+  function renderHud() {
+    const nav = document.querySelector(".topbar nav");
+    if (!nav) return;
+    const d = Premium.read();
+    const lvl = Premium.level(d.xp);
+    const into = d.xp % 100;
+    let hud = document.getElementById("int-hud");
+    if (!hud) {
+      hud = document.createElement("div");
+      hud.id = "int-hud";
+      hud.className = "int-hud";
+      hud.title = "Your level, XP, and daily practice streak";
+      hud.setAttribute("aria-label", "Level " + lvl + ", " + d.xp + " XP");
+      nav.parentNode.insertBefore(hud, nav);
+    }
+    hud.innerHTML =
+      '<span class="ih-lvl">⭐ Lv ' +
+      lvl +
+      "</span>" +
+      '<span class="ih-bar"><i style="width:' +
+      into +
+      '%"></i></span>' +
+      '<span class="ih-xp">' +
+      d.xp +
+      " XP</span>" +
+      (d.streak.count > 0
+        ? '<span class="ih-streak">🔥 ' + d.streak.count + "</span>"
+        : "");
+  }
+
+  /* ----------- Live Smart Review tab-count badge ---------------- */
+  // Reflects the current miss count for this topic without a reload.
+  function refreshReviewBadge() {
+    const T = window.TOPIC;
+    const tab = document.querySelector('.tab[data-tab="review"]');
+    if (!T || !T.slug || !tab) return;
+    const n = (Premium.read().missed[T.slug] || []).length;
+    let badge = tab.querySelector(".tab-count");
+    if (n > 0) {
+      if (!badge) {
+        badge = document.createElement("span");
+        badge.className = "tab-count";
+        tab.appendChild(badge);
+      }
+      badge.textContent = String(n);
+    } else if (badge) {
+      badge.remove();
+    }
+  }
+
+  /* --------- Award XP + badges when an activity completes --------- */
+  // mode: "practice" | "diagnostic" | "fluency" | "game".
+  // For "game", `correct` carries the final score.
+  function awardCompletion(mode, pct, correct, total) {
+    const xpFor = {
+      practice: correct * 3 + (pct >= 80 ? 20 : 0),
+      diagnostic: correct * 1,
+      review: correct * 2,
+      fluency: correct * 2,
+      game: Math.floor((correct || 0) / 5),
+    };
+    const xp = xpFor[mode] || 0;
+    if (xp > 0) {
+      const r = Premium.addXP(xp);
+      notify("✨ <strong>+" + r.gained + " XP</strong> earned!", "xp");
+      if (r.levelUp) {
+        notify(
+          "🎉 <strong>Level up!</strong> You reached Level " + r.level + ".",
+          "level",
+        );
+        confetti(130);
+      }
+      if (r.streakUp && r.streak >= 2) {
+        notify(
+          "🔥 <strong>" + r.streak + "-day streak!</strong> Keep it going.",
+          "streak",
+        );
+      }
+      renderHud();
+    }
+
+    // Badge checks (each awards at most once).
+    const newly = [];
+    if (Premium.award("first-steps")) newly.push("first-steps");
+    if (mode === "practice" && pct === 100 && Premium.award("sharp"))
+      newly.push("sharp");
+    if (mode === "fluency" && correct >= 15 && Premium.award("fluent"))
+      newly.push("fluent");
+    if (mode === "game" && (correct || 0) >= 100 && Premium.award("arcade"))
+      newly.push("arcade");
+    const streak = Premium.read().streak.count;
+    if (streak >= 3 && Premium.award("streak3")) newly.push("streak3");
+    if (streak >= 7 && Premium.award("streak7")) newly.push("streak7");
+    const mc = masteredCount();
+    if (mc >= 1 && Premium.award("master1")) newly.push("master1");
+    if (mc >= 6 && Premium.award("master6")) newly.push("master6");
+    if (mc >= 12 && Premium.award("master12")) newly.push("master12");
+    newly.forEach((id) => {
+      const b = BADGES[id];
+      notify(
+        "🏆 <strong>Badge unlocked:</strong> " + b.icon + " " + b.name,
+        "badge",
+      );
+    });
+    if (newly.length) confetti(100);
+  }
+
+  /* --------------- Smart Review tab (injected per topic) ---------- */
+  // Built from the student's own missed questions for this topic. Injected
+  // before initTabs() so it is wired into the ARIA tabs like any other tab.
+  function injectSmartReview() {
+    const T = window.TOPIC;
+    if (!T || !T.slug || !T.bank) return;
+    const tablist = document.querySelector(".tabs");
+    const practicePanel = document.getElementById("panel-practice");
+    if (!tablist || !practicePanel || document.getElementById("panel-review"))
+      return;
+    const count = Premium.missedItems(T.slug, T.bank).length;
+
+    const tab = document.createElement("button");
+    tab.className = "tab";
+    tab.setAttribute("role", "tab");
+    tab.dataset.tab = "review";
+    tab.innerHTML =
+      "🧠 Smart Review" +
+      (count ? ' <span class="tab-count">' + count + "</span>" : "");
+    const practiceTab = tablist.querySelector('[data-tab="practice"]');
+    if (practiceTab) tablist.insertBefore(tab, practiceTab.nextSibling);
+    else tablist.appendChild(tab);
+
+    const panel = document.createElement("div");
+    panel.className = "panel";
+    panel.id = "panel-review";
+    panel.innerHTML =
+      "<h3>🧠 Smart Review</h3>" +
+      "<p>This set is built from the questions <strong>you</strong> missed — your personal trouble spots. Answer one correctly to clear it.</p>" +
+      '<div id="review-widget"></div>';
+    practicePanel.parentNode.insertBefore(panel, practicePanel.nextSibling);
+  }
+
   /* ----------------------------- Tabs ----------------------------- */
   function initTabs() {
     const tabs = $$(".tab");
@@ -196,14 +547,22 @@
               if (x.dataset.v === right) x.classList.add("correct");
               else if (x === b) x.classList.add("wrong");
             });
+            const slug = window.TOPIC && window.TOPIC.slug;
             if (chosen === right) {
               correct++;
               fb.className = "feedback ok";
               fb.textContent = "✓ Correct! " + (q.explain || "");
+              // Answering a trouble-spot question correctly retires it from
+              // the student's Smart Review set.
+              Premium.clearMiss(slug, q);
+              refreshReviewBadge();
             } else {
               fb.className = "feedback no";
               fb.textContent =
                 "✗ Answer: " + q.answer + ". " + (q.explain || "");
+              // Track the miss so it resurfaces in Smart Review.
+              Premium.recordMiss(slug, q);
+              refreshReviewBadge();
             }
             setTimeout(
               () => {
@@ -226,10 +585,20 @@
 
       function finish() {
         const pct = Math.round((correct / total) * 100);
-        if (window.TOPIC && window.TOPIC.slug)
-          Progress.save(window.TOPIC.slug, {
-            [mode === "diagnostic" ? "diagnostic" : "practice"]: pct,
-          });
+        // Smart Review ("review" mode) must NOT write to mastery progress — a
+        // 1-question review at 100% should never mark the whole topic mastered
+        // or unlock mastery badges. Only real practice/diagnostic sets count.
+        if (
+          window.TOPIC &&
+          window.TOPIC.slug &&
+          (mode === "practice" || mode === "diagnostic")
+        )
+          Progress.save(window.TOPIC.slug, { [mode]: pct });
+        // Premium: award XP + badges (after Progress.save so mastery counts
+        // reflect this run), then celebrate strong scores.
+        awardCompletion(mode, pct, correct, total);
+        if ((mode === "practice" || mode === "diagnostic") && pct >= 80)
+          confetti(90);
         let msg, sub;
         if (mode === "diagnostic") {
           if (pct >= 80) {
@@ -401,6 +770,7 @@
         if (score % 80 === 0) {
           level++;
           speed += 0.1;
+          confetti(50);
         }
         flash("#2c7d6b");
         newQuestion();
@@ -453,6 +823,7 @@
       cancelAnimationFrame(raf);
       if (window.TOPIC && window.TOPIC.slug)
         Progress.save(window.TOPIC.slug, { game: score });
+      awardCompletion("game", null, score, null);
       overlay.style.display = "grid";
       overlay.innerHTML = `<div><h3>${win ? "You win!" : "Game over"}</h3>
         <p>${msg || ""}</p>
@@ -578,6 +949,7 @@
         clearInterval(timer);
         if (window.TOPIC && window.TOPIC.slug)
           Progress.save(window.TOPIC.slug, { fluency: correct });
+        awardCompletion("fluency", null, correct, attempts);
         mount.innerHTML = `<div class="result">
             <div class="score">${correct}</div>
             <p><strong>${correct} correct</strong> in ${total} seconds (${attempts} attempted).</p>
@@ -615,10 +987,13 @@
 
   /* --------------------------- Boot ------------------------------- */
   document.addEventListener("DOMContentLoaded", function () {
+    // Inject the Smart Review tab before initTabs so it gets wired up.
+    injectSmartReview();
     initTabs();
     initPrint();
     initReadAloud();
     initFlashcards();
+    renderHud();
     const T = window.TOPIC;
     if (!T || !T.bank) return;
     if (T.slug) Progress.save(T.slug, {}); // mark visited
@@ -629,7 +1004,21 @@
     if (document.getElementById("fluency-widget"))
       fluencyDrill("fluency-widget", T.bank, 60);
     if (document.getElementById("game-stage")) answerDrop("game-stage", T.bank);
+    // Smart Review: quiz the student's own missed questions, or a tidy
+    // empty state when there is nothing to review yet.
+    const reviewMount = document.getElementById("review-widget");
+    if (reviewMount && T.slug) {
+      const items = Premium.missedItems(T.slug, T.bank);
+      if (items.length)
+        quizWidget("review-widget", items, "review", items.length);
+      else
+        reviewMount.innerHTML =
+          '<div class="qcard" style="padding:30px;text-align:center">' +
+          '<p style="font-size:1.05rem;font-weight:700;color:var(--navy)">🎉 Nothing to review!</p>' +
+          '<p style="color:var(--muted)">You have no missed questions yet. Work the Practice tab — anything you miss will appear here for targeted review.</p>' +
+          "</div>";
+    }
   });
 
-  window.INT = { quizWidget, answerDrop, fluencyDrill, speak };
+  window.INT = { quizWidget, answerDrop, fluencyDrill, speak, confetti, notify };
 })();
