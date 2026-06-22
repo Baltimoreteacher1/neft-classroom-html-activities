@@ -80,6 +80,22 @@ for (const url of GAMES) {
     });
 
     await page.goto(url, { waitUntil: "load", timeout: 30_000 });
+    await page.waitForTimeout(800);
+
+    // Some games show a one-time "vocab gate" modal (id ending in -vocab) BEFORE
+    // play; a few (e.g. u2-fraction-frenzy) defer creating the Phaser canvas
+    // until it is dismissed. Click its primary button so the real game flow
+    // runs. Best-effort and a no-op for games without a gate.
+    const vocabGate = page.locator('[id$="-vocab"]').first();
+    if (await vocabGate.isVisible().catch(() => false)) {
+      await vocabGate
+        .locator("button")
+        .first()
+        .click({ timeout: 5_000 })
+        .catch(() => {});
+      await page.waitForTimeout(500);
+    }
+
     // Allow the game engine to boot, build textures, and start the first scene.
     await page.waitForTimeout(2500);
 
