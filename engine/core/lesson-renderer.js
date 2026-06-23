@@ -30,6 +30,7 @@ import { renderThemeIllustration } from "./theme-illustrations.js";
 import { deriveWorkedSteps } from "./worked-steps.js";
 import {
   buildPhaseTransitionMeta,
+  renderLaunchStoryBeats,
   buildPrintableSummary,
   checkBadges,
   getBadgeDefs,
@@ -530,14 +531,14 @@ function renderLearnItBridge(host, ctx, config) {
     <button type="button" class="btn btn-primary" data-open-learn style="flex:0 0 auto;">Open Learn It →</button>`;
   const btn = card.querySelector("[data-open-learn]");
   if (btn) {
-    // Open Learn It as its own page in a new tab so students keep the lesson
-    // open behind it (rather than replacing the Launch view inline).
     btn.addEventListener("click", () => {
-      window.open(
-        `/lessons/${config.lessonId}/learn.html`,
-        "_blank",
-        "noopener",
-      );
+      if (ctx && typeof ctx.openExtra === "function") ctx.openExtra("learn");
+      else
+        window.open(
+          `/lessons/${config.lessonId}/learn.html`,
+          "_blank",
+          "noopener",
+        );
     });
   }
   host.append(card);
@@ -1410,7 +1411,7 @@ function escapeRegExp(s) {
 // Each match is wrapped in <button class="obj-term" data-term-idx="…"> so a
 // single delegated handler can open the glossary popup for that term. Terms not
 // present in the objective are simply left untouched.
-function linkifyObjectiveTerms(escapedText, vocab) {
+export function linkifyObjectiveTerms(escapedText, vocab) {
   if (!escapedText || !Array.isArray(vocab) || !vocab.length)
     return escapedText;
   // Only linkify terms that actually have something to show in the popup —
@@ -1456,10 +1457,6 @@ function getObjectivePopup() {
     <div class="obj-popup" role="dialog" aria-modal="true" aria-labelledby="obj-popup-term">
       <button type="button" class="obj-popup-close" aria-label="Close">&times;</button>
       <h3 id="obj-popup-term" class="obj-popup-term"></h3>
-      <p class="obj-popup-translation">
-        <span class="obj-popup-tr-label">Español:</span>
-        <span class="obj-popup-tr-es" lang="es"></span>
-      </p>
       <figure class="obj-popup-visual">
         <img class="obj-popup-img" alt="" />
         <figcaption class="obj-popup-example"></figcaption>
@@ -1483,19 +1480,6 @@ function openObjectiveTermPopup(entry) {
   const backdrop = getObjectivePopup();
   const term = String(entry.term || "").trim();
   backdrop.querySelector(".obj-popup-term").textContent = term;
-
-  // Spanish translation of the word itself (e.g. Ratio → Razón). Hidden when
-  // the vocab entry has no termEs so we never show an empty "Español:" row.
-  const trRow = backdrop.querySelector(".obj-popup-translation");
-  const trEs = backdrop.querySelector(".obj-popup-tr-es");
-  const termEs = entry.termEs ? String(entry.termEs).trim() : "";
-  if (termEs) {
-    trEs.textContent = termEs;
-    trRow.hidden = false;
-  } else {
-    trEs.textContent = "";
-    trRow.hidden = true;
-  }
 
   const img = backdrop.querySelector(".obj-popup-img");
   img.src = resolveVocabImage(term, entry.image);
@@ -1547,7 +1531,7 @@ function closeObjectivePopup() {
 }
 
 // Delegate clicks on underlined objective terms to the shared glossary popup.
-function wireObjectiveTermPopups(block, vocab) {
+export function wireObjectiveTermPopups(block, vocab) {
   if (!block.querySelector(".obj-term")) return;
   block.addEventListener("click", (e) => {
     const btn = e.target.closest(".obj-term");
@@ -1605,9 +1589,10 @@ function renderLaunchPhase(el, state, ctx, config) {
   renderObjectives(el, config);
 
   // ── Be Curious ────────────────────────────────────────────────────────────
-  // Its own part, right under the objectives: the Reveal Notice & Wonder
-  // routine. Students get curious about today's math BEFORE the formal Launch
-  // problem below. No-op when the lesson has no Notice & Wonder.
+  // Its own part, right under the objectives: the scenario story beats
+  // (Set the Scene / The Challenge / What Happens Next) plus the Reveal
+  // Notice & Wonder routine. Students get curious about today's math BEFORE the
+  // formal Launch problem below. No-op pieces simply skip themselves.
   phaseHeader(
     el,
     "🔭",
@@ -1615,6 +1600,9 @@ function renderLaunchPhase(el, state, ctx, config) {
     "Be Curious",
     "Look at today's scene. What do you notice? What do you wonder?",
   );
+
+  // Tap-to-reveal story beats for multi-sentence narratives.
+  renderLaunchStoryBeats(el, config);
 
   // Notice & Wonder (Reveal data-context). No-op when absent.
   renderNoticeAndWonder(el, config, state);
