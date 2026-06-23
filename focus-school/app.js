@@ -43,6 +43,31 @@
     );
   const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
 
+  function hexToHsl(hex) {
+    const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+    hex = hex.replace(shorthandRegex, (m, r, g, b) => r + r + g + g + b + b);
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    if (!result) return "hsl(0, 0%, 0%)";
+    let r = parseInt(result[1], 16) / 255;
+    let g = parseInt(result[2], 16) / 255;
+    let b = parseInt(result[3], 16) / 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    let h, s, l = (max + min) / 2;
+    if (max === min) {
+      h = s = 0;
+    } else {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+        case g: h = (b - r) / d + 2; break;
+        case b: h = (r - g) / d + 4; break;
+      }
+      h /= 6;
+    }
+    return `hsl(${Math.round(h * 360)}, ${Math.round(s * 100)}%, ${Math.round(l * 100)}%)`;
+  }
+
   // ---- Dates (local time, normalized to noon to dodge DST/timezone drift) ----
   const startOfToday = () => {
     const d = new Date();
@@ -159,6 +184,7 @@
 
   const CARDS = [
     ["glance", "Today at a glance"],
+    ["garden", "Focus Garden"],
     ["calendar", "Calendar"],
     ["todos", "To-do list"],
     ["reminders", "Reminders"],
@@ -295,6 +321,8 @@
         leaveByTime: "",
         sync: { enabled: false, code: "", lastAt: "" },
         themeGradient: "",
+        customThemeColor1: "#0d324d",
+        customThemeColor2: "#7f5a83",
         // Google Calendar (read-only, client-side OAuth). Only the Web Client ID
         // is persisted — the access token lives in memory and is never stored.
         googleClientId: "",
@@ -331,6 +359,13 @@
       captureLog: {},
       reflections: {},
       deletedIds: {},
+      garden: {
+        xp: 0,
+        waterReservoir: 0,
+        wateredCount: 0,
+        plantStage: 0,
+        plantType: "cactus",
+      },
       updatedAt: Date.now(),
     };
   }
@@ -342,6 +377,8 @@
     s.welcomeDismissed = !!(x.settings?.welcomeDismissed ?? base.settings.welcomeDismissed);
     s.sync = { ...base.settings.sync, ...(x.settings?.sync || {}) };
     s.themeGradient = String(x.settings?.themeGradient || "");
+    s.customThemeColor1 = String(x.settings?.customThemeColor1 || "#0d324d");
+    s.customThemeColor2 = String(x.settings?.customThemeColor2 || "#7f5a83");
     let order = Array.isArray(s.homeOrder)
       ? s.homeOrder
       : base.settings.homeOrder;
@@ -407,6 +444,13 @@
       checkins: x.checkins && typeof x.checkins === "object" ? x.checkins : {},
       reflections: x.reflections && typeof x.reflections === "object" ? x.reflections : {},
       deletedIds: x.deletedIds && typeof x.deletedIds === "object" ? x.deletedIds : {},
+      garden: x.garden && typeof x.garden === "object" ? {
+        xp: Number(x.garden.xp) || 0,
+        waterReservoir: Number(x.garden.waterReservoir) || 0,
+        wateredCount: Number(x.garden.wateredCount) || 0,
+        plantStage: Number(x.garden.plantStage) || 0,
+        plantType: typeof x.garden.plantType === "string" ? x.garden.plantType : "cactus",
+      } : { xp: 0, waterReservoir: 0, wateredCount: 0, plantStage: 0, plantType: "cactus" },
     };
   }
 
@@ -503,6 +547,8 @@
       createdAt: t.createdAt || Date.now(),
       repeat: ["none", "daily", "weekly"].includes(t.repeat) ? t.repeat : "none",
       lastDone: DATE_RE.test(t.lastDone) ? t.lastDone : "",
+      time: t.time || "",
+      lastShown: t.lastShown || "",
       updatedAt: t.updatedAt || t.createdAt || Date.now(),
     };
   }
@@ -832,10 +878,16 @@
 
   // Web Audio API Procedural Sound Engine
   let audioCtx = null;
+  let audioAnalyser = null;
+  let visualizerAnimFrame = null;
+  let synthOscillators = [];
+  let synthGains = [];
+  let synthFilter = null;
+  let synthTimer = null;
   let ambientSource = null;
   let ambientGain = null;
   let focusTicksTimer = null;
-  let activeSoundType = "none"; // "none" | "rain" | "rumble" | "ticks" | "ocean" | "wind" | "binaural"
+  let activeSoundType = "none"; // "none" | "rain" | "rumble" | "ticks" | "ocean" | "wind" | "binaural" | "synth"
   let oceanLfo = null;
   let windLfo = null;
   let leftOsc = null;
@@ -849,6 +901,11 @@
     }
     if (audioCtx.state === "suspended") {
       audioCtx.resume().then(() => logger.info("Audio Context resumed."));
+    }
+    if (!audioAnalyser && audioCtx) {
+      audioAnalyser = audioCtx.createAnalyser();
+      audioAnalyser.fftSize = 64;
+      audioAnalyser.connect(audioCtx.destination);
     }
   }
 
@@ -926,6 +983,25 @@
       subOsc.disconnect();
       subOsc = null;
     }
+    if (synthTimer) {
+      clearInterval(synthTimer);
+      synthTimer = null;
+    }
+    if (synthOscillators.length) {
+      synthOscillators.forEach((o) => {
+        try { o.stop(); } catch {}
+        o.disconnect();
+      });
+      synthOscillators = [];
+    }
+    if (synthGains.length) {
+      synthGains.forEach((g) => g.disconnect());
+      synthGains = [];
+    }
+    if (synthFilter) {
+      synthFilter.disconnect();
+      synthFilter = null;
+    }
     activeSoundType = "none";
   }
 
@@ -946,7 +1022,7 @@
 
     ambientSource.connect(filter);
     filter.connect(ambientGain);
-    ambientGain.connect(audioCtx.destination);
+    ambientGain.connect(audioAnalyser || audioCtx.destination);
     ambientSource.start();
     activeSoundType = "rain";
   }
@@ -968,7 +1044,7 @@
 
     ambientSource.connect(filter);
     filter.connect(ambientGain);
-    ambientGain.connect(audioCtx.destination);
+    ambientGain.connect(audioAnalyser || audioCtx.destination);
     ambientSource.start();
     activeSoundType = "rumble";
   }
@@ -1008,7 +1084,7 @@
     ambientSource.connect(filter);
     filter.connect(gainNode);
     gainNode.connect(ambientGain);
-    ambientGain.connect(audioCtx.destination);
+    ambientGain.connect(audioAnalyser || audioCtx.destination);
 
     oceanLfo.start();
     ambientSource.start();
@@ -1052,7 +1128,7 @@
     ambientSource.connect(filter);
     filter.connect(gainNode);
     gainNode.connect(ambientGain);
-    ambientGain.connect(audioCtx.destination);
+    ambientGain.connect(audioAnalyser || audioCtx.destination);
 
     windLfo.start();
     ambientSource.start();
@@ -1098,13 +1174,145 @@
     ambientGain.gain.value = 0.8;
 
     merger.connect(ambientGain);
-    ambientGain.connect(audioCtx.destination);
+    ambientGain.connect(audioAnalyser || audioCtx.destination);
 
     leftOsc.start();
     rightOsc.start();
     subOsc.start();
     activeSoundType = "binaural";
     logger.info("Binaural beats (Deep Space Hum) started.");
+  }
+
+  function playSynth() {
+    stopAmbientSound();
+    initAudio();
+    activeSoundType = "synth";
+    
+    synthOscillators = [];
+    synthGains = [];
+    
+    synthFilter = audioCtx.createBiquadFilter();
+    synthFilter.type = "lowpass";
+    synthFilter.frequency.value = 350; // soft low-pass filter
+    
+    ambientGain = audioCtx.createGain();
+    ambientGain.gain.value = 0.45; // master synth volume
+    
+    synthFilter.connect(ambientGain);
+    ambientGain.connect(audioAnalyser || audioCtx.destination);
+    
+    const chords = [
+      [65.41, 98.00, 130.81, 164.81, 196.00], // C major-ish drone
+      [87.31, 130.81, 174.61, 220.00, 261.63], // F major-ish drone
+      [55.00, 82.41, 110.00, 130.81, 164.81],   // A minor-ish drone
+      [49.00, 73.42, 98.00, 123.47, 146.83]    // G major-ish drone
+    ];
+    
+    let currentChordIdx = 0;
+    
+    function playChord(frequencies) {
+      const now = audioCtx.currentTime;
+      
+      // Fade out current oscillators
+      synthGains.forEach((g) => {
+        g.gain.cancelScheduledValues(now);
+        g.gain.setValueAtTime(g.gain.value, now);
+        g.gain.linearRampToValueAtTime(0, now + 1.5);
+      });
+      
+      const oldOscs = [...synthOscillators];
+      setTimeout(() => {
+        oldOscs.forEach((o) => {
+          try { o.stop(); } catch {}
+          o.disconnect();
+        });
+      }, 1600);
+      
+      synthOscillators = [];
+      synthGains = [];
+      
+      // Start new notes in chord
+      frequencies.forEach((freq) => {
+        const osc = audioCtx.createOscillator();
+        osc.type = "triangle";
+        osc.frequency.value = freq;
+        
+        const gainNode = audioCtx.createGain();
+        gainNode.gain.setValueAtTime(0, now);
+        gainNode.gain.linearRampToValueAtTime(0.08 / frequencies.length, now + 2.0);
+        
+        osc.connect(gainNode);
+        gainNode.connect(synthFilter);
+        
+        osc.start(now);
+        
+        synthOscillators.push(osc);
+        synthGains.push(gainNode);
+      });
+    }
+    
+    playChord(chords[currentChordIdx]);
+    
+    synthTimer = setInterval(() => {
+      if (activeSoundType !== "synth") {
+        clearInterval(synthTimer);
+        return;
+      }
+      currentChordIdx = (currentChordIdx + 1) % chords.length;
+      playChord(chords[currentChordIdx]);
+    }, 7000);
+    
+    logger.info("Cozy Synth drone started.");
+  }
+
+  function updateVisualizer() {
+    const path = document.getElementById("fVisualizer");
+    if (!path) return;
+    
+    const isFocusOpen = document.getElementById("focusOverlay")?.classList.contains("open");
+    if (!isFocusOpen) {
+      if (visualizerAnimFrame) {
+        cancelAnimationFrame(visualizerAnimFrame);
+        visualizerAnimFrame = null;
+      }
+      return;
+    }
+    
+    visualizerAnimFrame = requestAnimationFrame(updateVisualizer);
+    
+    let dataArray = null;
+    if (audioAnalyser && activeSoundType !== "none") {
+      const bufferLength = audioAnalyser.frequencyBinCount;
+      dataArray = new Uint8Array(bufferLength);
+      audioAnalyser.getByteFrequencyData(dataArray);
+    }
+    
+    const numPoints = 64;
+    const baseRadius = 144;
+    const cx = 150;
+    const cy = 150;
+    let points = [];
+    
+    for (let i = 0; i <= numPoints; i++) {
+      const angle = (i / numPoints) * 2 * Math.PI;
+      let offset = 0;
+      
+      if (dataArray) {
+        // Map angle to frequency index (symmetrical)
+        const dataIdx = Math.floor(Math.abs(Math.sin(angle)) * (dataArray.length - 1) * 0.6);
+        offset = (dataArray[dataIdx] / 255) * 15; // max 15px pulse
+      } else {
+        // Gentle breathing animation if no sound is active
+        offset = Math.sin(Date.now() / 800 + angle * 2) * 1.5;
+      }
+      
+      const r = baseRadius + offset;
+      const x = cx + r * Math.cos(angle);
+      const y = cy + r * Math.sin(angle);
+      points.push(`${i === 0 ? "M" : "L"} ${x.toFixed(1)} ${y.toFixed(1)}`);
+    }
+    
+    path.setAttribute("d", points.join(" ") + " Z");
   }
 
   function playFocusTicks() {
@@ -1204,6 +1412,18 @@
     const oldLevel = Math.floor((state.points || 0) / 100) + 1;
     state.points = (state.points || 0) + amount;
     const newLevel = Math.floor(state.points / 100) + 1;
+
+    // Add XP to garden and award water drops
+    if (state.garden) {
+      state.garden.xp = (state.garden.xp || 0) + amount;
+      const oldWaterEarned = Math.floor((state.garden.xp - amount) / 10);
+      const newWaterEarned = Math.floor(state.garden.xp / 10);
+      if (newWaterEarned > oldWaterEarned) {
+        state.garden.waterReservoir = (state.garden.waterReservoir || 0) + (newWaterEarned - oldWaterEarned);
+      }
+      updateGardenPlantStage();
+    }
+
     save();
 
     // Direct DOM updates for XP tracking elements to avoid full redrawing
@@ -1721,6 +1941,7 @@
       { title: "🌲 Play Forest Wind", act: "focus-sound", arg: "wind", badge: "audio" },
       { title: "🌌 Play Deep Space Hum", act: "focus-sound", arg: "binaural", badge: "audio" },
       { title: "⏱️ Play Focus Ticks", act: "focus-sound", arg: "ticks", badge: "audio" },
+      { title: "🎹 Play Cozy Synth", act: "focus-sound", arg: "synth", badge: "audio" },
       { title: "🔇 Silence Background Sounds", act: "focus-sound", arg: "none", badge: "audio" },
     ];
     navs.concat(controls).forEach(item => {
@@ -2154,8 +2375,10 @@
     const rows = list.length
       ? `<ul class="steps">${list
           .map(
-            (t) =>
-              `<li><input class="check" type="checkbox" data-check="todo" data-id="${t.id}" ${t.done ? "checked" : ""} aria-label="${esc(t.text)}"><span class="steptext ${t.done ? "done" : ""}">${esc(t.text)}</span><button class="btn danger sm" data-act="del-todo" data-id="${t.id}" aria-label="Delete to-do: ${esc(t.text)}">✕</button></li>`,
+            (t) => {
+              const timeInput = t.done ? "" : `<input type="time" class="todo-time-picker" data-id="${t.id}" value="${t.time || ""}" aria-label="Set reminder time" style="font-size:0.75rem; border:none; background:transparent; padding:0; width:75px; color:var(--accent); cursor:pointer; margin-left:auto; margin-right:8px; align-self:center;">`;
+              return `<li><input class="check" type="checkbox" data-check="todo" data-id="${t.id}" ${t.done ? "checked" : ""} aria-label="${esc(t.text)}"><span class="steptext ${t.done ? "done" : ""}">${esc(t.text)}</span>${timeInput}<button class="btn danger sm" data-act="del-todo" data-id="${t.id}" aria-label="Delete to-do: ${esc(t.text)}">✕</button></li>`;
+            }
           )
           .join("")}</ul>`
       : emptyState("📝", "No to-dos yet. Add a quick one below.");
@@ -2796,6 +3019,21 @@ Due May 31"></textarea>
               }).join("")}
             </div>
           </div>
+          <div class="field" style="margin-top: 12px; border-top: 1px solid var(--border); padding-top: 12px;">
+            <label>🎨 Custom Theme Creator (Dual HSL Gradient)</label>
+            <p class="muted" style="margin: 4px 0 8px; font-size: 0.75rem;">Create a custom dual-color HSL linear gradient background.</p>
+            <div style="display:flex; align-items:center; gap:16px; margin-top:8px;">
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <span style="font-size:0.75rem; color:var(--muted)">Color 1</span>
+                <input type="color" id="customColor1" value="${esc(s.customThemeColor1 || "#0d324d")}" data-act="update-custom-gradient" aria-label="Custom Color 1" style="width:48px; height:32px; border:1px solid var(--border); border-radius:6px; cursor:pointer; background:none; padding:0;">
+              </div>
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <span style="font-size:0.75rem; color:var(--muted)">Color 2</span>
+                <input type="color" id="customColor2" value="${esc(s.customThemeColor2 || "#7f5a83")}" data-act="update-custom-gradient" aria-label="Custom Color 2" style="width:48px; height:32px; border:1px solid var(--border); border-radius:6px; cursor:pointer; background:none; padding:0;">
+              </div>
+              <button class="btn sm" data-act="apply-custom-gradient" style="margin-top: 16px;">⚡ Apply Gradient</button>
+            </div>
+          </div>
           <div class="field"><label>Accent color${s.theme === "light" ? "" : " (Light theme only)"}</label><div class="accent-row" role="group" aria-label="Accent color">${ACCENTS.map(
             (a) =>
               `<button class="accent-swatch" data-act="set-accent" data-arg="${a[0]}" aria-pressed="${s.accent === a[0]}" aria-label="${a[1]}" title="${a[1]}" style="background:${a[2]}"></button>`,
@@ -3078,6 +3316,312 @@ Due May 31"></textarea>
     );
   }
 
+  function updateGardenPlantStage() {
+    if (!state.garden) return;
+    const w = state.garden.wateredCount || 0;
+    let stage = 0;
+    if (w >= 25) stage = 4;
+    else if (w >= 15) stage = 3;
+    else if (w >= 8) stage = 2;
+    else if (w >= 3) stage = 1;
+    state.garden.plantStage = stage;
+  }
+
+  function renderPlantSvg(type, stage) {
+    // 0: Sprout, 1: Seedling, 2: Leafy, 3: Blooming, 4: Golden
+    let plantContent = "";
+    
+    const isGolden = stage === 4;
+    const mainColor = isGolden ? "#F1C40F" : (type === "bonsai" ? "#8B5A2B" : "#2ECC71");
+    const leafColor = isGolden ? "#F39C12" : "#27AE60";
+    const accentColor = isGolden ? "#F1C40F" : "#E74C3C";
+    
+    // Pot
+    const potColor = isGolden ? "#D35400" : "#E07A5F";
+    const rimColor = isGolden ? "#E67E22" : "#d4722f";
+    const soilColor = isGolden ? "#935116" : "#6E473B";
+    
+    let potSvg = `
+      <path d="M 50,120 L 90,120 L 86,145 L 54,145 Z" fill="${potColor}" />
+      <ellipse cx="70" cy="120" rx="18" ry="4" fill="${soilColor}" />
+      <rect x="48" y="116" width="44" height="5" rx="2" fill="${rimColor}" />
+    `;
+    
+    if (stage === 0) {
+      // Sprout (same for all)
+      plantContent = `
+        <!-- Stem -->
+        <path d="M 70,120 Q 69,105 67,95" stroke="${mainColor}" stroke-width="3" fill="none" stroke-linecap="round" />
+        <!-- Left Leaf -->
+        <path d="M 67,95 Q 57,90 62,85 Q 70,90 67,95 Z" fill="${leafColor}" />
+        <!-- Right Leaf -->
+        <path d="M 67,95 Q 77,90 72,85 Q 70,90 67,95 Z" fill="${leafColor}" />
+      `;
+    } else if (type === "cactus") {
+      if (stage === 1) {
+        // Seedling Cactus
+        plantContent = `
+          <!-- Main body -->
+          <ellipse cx="70" cy="98" rx="10" ry="18" fill="${mainColor}" />
+          <!-- Small spines -->
+          <line x1="57" y1="95" x2="60" y2="95" stroke="var(--ink)" stroke-width="1.2" opacity="0.4" />
+          <line x1="80" y1="95" x2="83" y2="95" stroke="var(--ink)" stroke-width="1.2" opacity="0.4" />
+          <line x1="70" y1="85" x2="70" y2="88" stroke="var(--ink)" stroke-width="1.2" opacity="0.4" />
+        `;
+      } else if (stage === 2) {
+        // Leafy (Medium) Cactus
+        plantContent = `
+          <!-- Main body -->
+          <ellipse cx="70" cy="94" rx="13" ry="22" fill="${mainColor}" />
+          <!-- Left Arm -->
+          <path d="M 59,96 Q 48,93 51,82 Q 56,83 59,90 Z" fill="${mainColor}" />
+          <!-- Spines -->
+          <line x1="53" y1="95" x2="56" y2="95" stroke="var(--ink)" stroke-width="1.2" opacity="0.4" />
+          <line x1="83" y1="95" x2="87" y2="95" stroke="var(--ink)" stroke-width="1.2" opacity="0.4" />
+          <line x1="46" y1="82" x2="49" y2="84" stroke="var(--ink)" stroke-width="1.2" opacity="0.4" />
+          <line x1="70" y1="76" x2="70" y2="80" stroke="var(--ink)" stroke-width="1.2" opacity="0.4" />
+        `;
+      } else if (stage === 3) {
+        // Blooming Cactus
+        plantContent = `
+          <!-- Main body -->
+          <ellipse cx="70" cy="92" rx="15" ry="25" fill="${mainColor}" />
+          <!-- Left Arm -->
+          <path d="M 57,96 Q 44,92 48,80 Q 54,82 57,90 Z" fill="${mainColor}" />
+          <!-- Right Arm -->
+          <path d="M 83,96 Q 96,92 92,80 Q 86,82 83,90 Z" fill="${mainColor}" />
+          <!-- Spines -->
+          <line x1="51" y1="95" x2="55" y2="95" stroke="var(--ink)" stroke-width="1.2" opacity="0.4" />
+          <line x1="85" y1="95" x2="89" y2="95" stroke="var(--ink)" stroke-width="1.2" opacity="0.4" />
+          <line x1="43" y1="80" x2="46" y2="82" stroke="var(--ink)" stroke-width="1.2" opacity="0.4" />
+          <line x1="97" y1="80" x2="94" y2="82" stroke="var(--ink)" stroke-width="1.2" opacity="0.4" />
+          <line x1="70" y1="72" x2="70" y2="76" stroke="var(--ink)" stroke-width="1.2" opacity="0.4" />
+          <!-- Pink Flowers -->
+          <circle cx="70" cy="67" r="4" fill="${accentColor}" />
+          <circle cx="70" cy="67" r="2" fill="#FFF" />
+          <circle cx="48" cy="76" r="3" fill="${accentColor}" />
+          <circle cx="92" cy="76" r="3" fill="${accentColor}" />
+        `;
+      } else {
+        // Golden Cactus
+        plantContent = `
+          <g filter="url(#goldGlow)">
+            <!-- Main body -->
+            <ellipse cx="70" cy="92" rx="16" ry="26" fill="${mainColor}" />
+            <!-- Left Arm -->
+            <path d="M 56,96 Q 42,92 46,78 Q 53,80 56,90 Z" fill="${mainColor}" />
+            <!-- Right Arm -->
+            <path d="M 84,96 Q 98,92 94,78 Q 87,80 84,90 Z" fill="${mainColor}" />
+            <!-- Golden Spines -->
+            <line x1="50" y1="95" x2="54" y2="95" stroke="#FFF" stroke-width="1.5" />
+            <line x1="90" y1="95" x2="86" y2="95" stroke="#FFF" stroke-width="1.5" />
+            <!-- Flowers -->
+            <circle cx="70" cy="66" r="5" fill="#FFF" />
+            <circle cx="46" cy="74" r="4" fill="#FFF" />
+            <circle cx="94" cy="74" r="4" fill="#FFF" />
+          </g>
+          <!-- Stars / Sparkles -->
+          <polygon points="40,60 42,65 47,67 42,69 40,74 38,69 33,67 38,65" fill="#FFF" />
+          <polygon points="100,50 102,55 107,57 102,59 100,64 98,59 93,57 98,55" fill="#FFF" />
+        `;
+      }
+    } else if (type === "flower") {
+      if (stage === 1) {
+        // Seedling Flower
+        plantContent = `
+          <path d="M 70,120 Q 72,100 68,85" stroke="${mainColor}" stroke-width="3" fill="none" stroke-linecap="round" />
+          <path d="M 70,105 Q 60,102 62,96 Q 70,98 70,105 Z" fill="${leafColor}" />
+        `;
+      } else if (stage === 2) {
+        // Leafy Flower
+        plantContent = `
+          <path d="M 70,120 Q 72,90 67,70" stroke="${mainColor}" stroke-width="3" fill="none" stroke-linecap="round" />
+          <path d="M 70,105 Q 58,102 61,95 Q 70,98 70,105 Z" fill="${leafColor}" />
+          <path d="M 68,90 Q 80,88 77,82 Q 69,84 68,90 Z" fill="${leafColor}" />
+          <!-- Green Bud -->
+          <ellipse cx="67" cy="67" rx="5" ry="7" fill="${leafColor}" />
+        `;
+      } else if (stage === 3) {
+        // Blooming Flower
+        plantContent = `
+          <path d="M 70,120 Q 72,85 67,65" stroke="${mainColor}" stroke-width="3" fill="none" stroke-linecap="round" />
+          <path d="M 70,102 Q 55,98 58,90 Q 70,93 70,102 Z" fill="${leafColor}" />
+          <path d="M 68,85 Q 83,82 80,74 Q 69,76 68,85 Z" fill="${leafColor}" />
+          <!-- Petals -->
+          <ellipse cx="67" cy="63" rx="10" ry="10" fill="${accentColor}" />
+          <circle cx="61" cy="63" r="6" fill="#F4D03F" opacity="0.8" />
+          <circle cx="73" cy="63" r="6" fill="${accentColor}" />
+          <circle cx="67" cy="57" r="6" fill="${accentColor}" />
+          <circle cx="67" cy="69" r="6" fill="${accentColor}" />
+          <!-- Center -->
+          <circle cx="67" cy="63" r="4" fill="#F39C12" />
+        `;
+      } else {
+        // Golden Flower
+        plantContent = `
+          <g filter="url(#goldGlow)">
+            <path d="M 70,120 Q 72,85 67,65" stroke="${mainColor}" stroke-width="3.5" fill="none" stroke-linecap="round" />
+            <path d="M 70,102 Q 55,98 58,90 Q 70,93 70,102 Z" fill="${leafColor}" />
+            <path d="M 68,85 Q 83,82 80,74 Q 69,76 68,85 Z" fill="${leafColor}" />
+            <!-- Large Golden Blossom -->
+            <ellipse cx="67" cy="61" rx="13" ry="13" fill="${accentColor}" />
+            <circle cx="58" cy="61" r="8" fill="#FFF" />
+            <circle cx="76" cy="61" r="8" fill="#FFF" />
+            <circle cx="67" cy="52" r="8" fill="#FFF" />
+            <circle cx="67" cy="70" r="8" fill="#FFF" />
+            <circle cx="67" cy="61" r="5" fill="${mainColor}" />
+          </g>
+          <!-- Particles -->
+          <polygon points="50,45 52,50 57,52 52,54 50,59 48,54 43,52 48,50" fill="#FFF" />
+          <polygon points="85,55 87,60 92,62 87,64 85,69 83,64 78,62 83,60" fill="#FFF" />
+        `;
+      }
+    } else if (type === "bonsai") {
+      if (stage === 1) {
+        // Seedling Bonsai
+        plantContent = `
+          <path d="M 70,120 Q 66,105 72,95" stroke="#8B5A2B" stroke-width="3" fill="none" stroke-linecap="round" />
+          <circle cx="72" cy="92" r="6" fill="${leafColor}" />
+        `;
+      } else if (stage === 2) {
+        // Leafy Bonsai
+        plantContent = `
+          <path d="M 70,120 Q 64,100 76,85" stroke="#8B5A2B" stroke-width="5" fill="none" stroke-linecap="round" />
+          <path d="M 68,105 Q 60,98 56,98" stroke="#8B5A2B" stroke-width="3" fill="none" stroke-linecap="round" />
+          <!-- Green Tufts -->
+          <circle cx="76" cy="80" r="10" fill="${leafColor}" />
+          <circle cx="54" cy="96" r="7" fill="${leafColor}" />
+        `;
+      } else if (stage === 3) {
+        // Blooming Bonsai
+        plantContent = `
+          <!-- Trunk -->
+          <path d="M 70,120 Q 62,95 78,75" stroke="#8B5A2B" stroke-width="7" fill="none" stroke-linecap="round" />
+          <path d="M 67,102 Q 54,92 50,92" stroke="#8B5A2B" stroke-width="4.5" fill="none" stroke-linecap="round" />
+          <path d="M 72,88 Q 88,82 92,84" stroke="#8B5A2B" stroke-width="4" fill="none" stroke-linecap="round" />
+          <!-- Green Cloud Tufts -->
+          <ellipse cx="78" cy="70" rx="16" ry="10" fill="${leafColor}" />
+          <ellipse cx="48" cy="90" rx="10" ry="7" fill="${leafColor}" />
+          <ellipse cx="94" cy="82" rx="11" ry="8" fill="${leafColor}" />
+          <!-- Pink Flowers -->
+          <circle cx="74" cy="68" r="2.5" fill="${accentColor}" />
+          <circle cx="84" cy="72" r="2" fill="${accentColor}" />
+          <circle cx="46" cy="88" r="2" fill="${accentColor}" />
+          <circle cx="96" cy="80" r="2" fill="${accentColor}" />
+        `;
+      } else {
+        // Golden Bonsai
+        plantContent = `
+          <g filter="url(#goldGlow)">
+            <!-- Golden Trunk -->
+            <path d="M 70,120 Q 62,95 78,75" stroke="#D35400" stroke-width="8" fill="none" stroke-linecap="round" />
+            <path d="M 67,102 Q 54,92 50,92" stroke="#D35400" stroke-width="5" fill="none" stroke-linecap="round" />
+            <path d="M 72,88 Q 88,82 92,84" stroke="#D35400" stroke-width="4.5" fill="none" stroke-linecap="round" />
+            <!-- Golden Leaf Clouds -->
+            <ellipse cx="78" cy="68" rx="18" ry="12" fill="${leafColor}" />
+            <ellipse cx="46" cy="88" rx="12" ry="8" fill="${leafColor}" />
+            <ellipse cx="96" cy="80" rx="13" ry="9" fill="${leafColor}" />
+            <!-- White Sparks -->
+            <ellipse cx="78" cy="68" rx="12" ry="6" fill="#FFF" opacity="0.3" />
+          </g>
+          <!-- Magic Sparkles -->
+          <polygon points="78,45 80,50 85,52 80,54 78,59 76,54 71,52 76,50" fill="#FFF" />
+          <polygon points="35,80 37,85 42,87 37,89 35,94 33,89 28,87 33,85" fill="#FFF" />
+          <polygon points="105,70 107,75 112,77 107,79 105,84 103,79 98,77 103,75" fill="#FFF" />
+        `;
+      }
+    }
+    
+    return `
+      <svg width="110" height="130" viewBox="0 0 140 160" style="background:transparent; overflow:visible;">
+        <defs>
+          <filter id="goldGlow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+          </filter>
+        </defs>
+        ${plantContent}
+        ${potSvg}
+      </svg>
+    `;
+  }
+
+  function gardenCard() {
+    const g = state.garden || { xp: 0, waterReservoir: 0, wateredCount: 0, plantStage: 0, plantType: "cactus" };
+    const STAGE_NAMES = ["Sprout 🌱", "Seedling 🌿", "Leafy 🍃", "Blooming 🌸", "Golden ✨"];
+    const stageName = STAGE_NAMES[g.plantStage] || "Sprout 🌱";
+    
+    const STAGE_REQUIREMENTS = [3, 8, 15, 25];
+    const currentReq = STAGE_REQUIREMENTS[g.plantStage] || 9999;
+    const prevReq = g.plantStage > 0 ? STAGE_REQUIREMENTS[g.plantStage - 1] : 0;
+    
+    let progressPct = 100;
+    let waterText = "Max growth achieved!";
+    if (g.plantStage < 4) {
+      const neededForNext = currentReq - prevReq;
+      const progressInStage = g.wateredCount - prevReq;
+      progressPct = clamp(Math.round((progressInStage / neededForNext) * 100), 0, 100);
+      waterText = `${g.wateredCount} / ${currentReq} waterings for next stage`;
+    }
+    
+    const svgHtml = renderPlantSvg(g.plantType, g.plantStage);
+    const types = [
+      ["cactus", "🌵 Cactus"],
+      ["flower", "🌸 Flower"],
+      ["bonsai", "🌳 Bonsai"]
+    ];
+    
+    const selectHtml = `
+      <select class="plant-type-select" data-act="change-plant-type" aria-label="Choose plant type" style="font-size:0.75rem; padding:2px 6px; border-radius:6px; border:1px solid var(--border); background:var(--bg-1); color:var(--ink);">
+        ${types.map(([val, name]) => `<option value="${val}" ${g.plantType === val ? "selected" : ""}>${name}</option>`).join("")}
+      </select>
+    `;
+    
+    return card(
+      "garden",
+      `<div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+        <span>🪴 Focus Garden</span>
+        ${selectHtml}
+      </div>`,
+      "",
+      `
+      <div style="display:flex; align-items:center; gap:16px;">
+        <div style="flex:1; display:flex; justify-content:center;">
+          ${svgHtml}
+        </div>
+        <div style="flex:1.2;">
+          <h4 style="margin:0 0 4px; font-size:1.1rem; color:var(--accent); font-weight:700;">${stageName}</h4>
+          <p class="muted" style="margin:0 0 10px; font-size:0.75rem;">${waterText}</p>
+          <div style="width:100%; height:6px; background:var(--bg-3); border-radius:3px; margin-bottom:12px; overflow:hidden;">
+            <div style="width:${progressPct}%; height:100%; background:var(--accent); border-radius:3px; transition: width 0.3s ease;"></div>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <button class="btn primary sm" data-act="water-plant" ${g.waterReservoir > 0 ? "" : "disabled"} style="padding:6px 12px; font-size:0.8rem; display:flex; align-items:center; gap:4px;">
+              💧 Water <span class="water-badge" style="background:rgba(255,255,255,0.2); padding:1px 5px; border-radius:8px; font-size:0.7rem;">${g.waterReservoir}</span>
+            </button>
+            <button class="btn sm ghost" data-act="garden-help" style="padding:6px 8px; font-size:0.8rem;">❓ Info</button>
+          </div>
+          <p class="muted" style="margin:8px 0 0; font-size:0.7rem; line-height:1.2;">Earn water by completing tasks & focus sessions! (1 💧 per 10 XP)</p>
+        </div>
+      </div>
+      `
+    );
+  }
+
+  function last7DaysActivity() {
+    const list = [];
+    for (let i = 6; i >= 0; i--) {
+      const k = isoForOffset(-i);
+      const act = state.activity[k] || { tasks: 0, focusMin: 0, routines: 0 };
+      list.push({
+        dateKey: k,
+        tasks: act.tasks || 0,
+        focusMin: act.focusMin || 0,
+      });
+    }
+    return list;
+  }
+
   function momentumCard() {
     const lastWin = state.wins[state.wins.length - 1];
     const todayAct = state.activity[todayKey()] || {
@@ -3085,17 +3629,83 @@ Due May 31"></textarea>
       focusMin: 0,
       routines: 0,
     };
+    
+    // Generate weekly activity SVG chart
+    const activityData = last7DaysActivity();
+    const maxFocus = Math.max(...activityData.map(d => d.focusMin), 15);
+    const maxTasks = Math.max(...activityData.map(d => d.tasks), 3);
+    
+    let barsSvg = "";
+    const step = 290 / 7;
+    activityData.forEach((d, i) => {
+      const cx = 15 + i * step + step / 2;
+      
+      // Focus bar height (max 65px)
+      const fHeight = (d.focusMin / maxFocus) * 65;
+      const fY = 85 - fHeight;
+      const fBar = d.focusMin > 0 
+        ? `<rect x="${cx - 8}" y="${fY}" width="6" height="${fHeight}" rx="3" fill="url(#focusGrad)" />` 
+        : `<circle cx="${cx - 5}" cy="83" r="1.5" fill="var(--muted)" opacity="0.3" />`;
+        
+      // Tasks bar height (max 65px)
+      const tHeight = (d.tasks / maxTasks) * 65;
+      const tY = 85 - tHeight;
+      const tBar = d.tasks > 0 
+        ? `<rect x="${cx + 2}" y="${tY}" width="6" height="${tHeight}" rx="3" fill="url(#tasksGrad)" />` 
+        : `<circle cx="${cx + 5}" cy="83" r="1.5" fill="var(--muted)" opacity="0.3" />`;
+        
+      let dayName = "Day";
+      try {
+        dayName = parseLocal(d.dateKey).toLocaleDateString(undefined, { weekday: "narrow" });
+      } catch (e) {
+        dayName = d.dateKey.slice(-2);
+      }
+      
+      barsSvg += `
+        ${fBar}
+        ${tBar}
+        <text x="${cx}" y="100" text-anchor="middle" font-size="9" fill="var(--muted)" font-weight="bold">${dayName}</text>
+      `;
+    });
+
+    const chartSvg = `
+      <svg width="100%" height="110" viewBox="0 0 320 110" style="background:transparent; overflow:visible; margin-top:12px; margin-bottom:8px;">
+        <defs>
+          <linearGradient id="focusGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="var(--accent)" />
+            <stop offset="100%" stop-color="var(--accent)" stop-opacity="0.5" />
+          </linearGradient>
+          <linearGradient id="tasksGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#be185d" />
+            <stop offset="100%" stop-color="#c2410c" stop-opacity="0.5" />
+          </linearGradient>
+        </defs>
+        <!-- Legend -->
+        <g transform="translate(10, 0)">
+          <rect x="0" y="2" width="7" height="7" rx="2" fill="var(--accent)" />
+          <text x="11" y="9" font-size="8.5" fill="var(--muted)">Focus (min)</text>
+          <rect x="90" y="2" width="7" height="7" rx="2" fill="#be185d" />
+          <text x="101" y="9" font-size="8.5" fill="var(--muted)">Tasks Done</text>
+        </g>
+        <line x1="15" y1="85" x2="305" y2="85" stroke="var(--border)" stroke-width="1" />
+        ${barsSvg}
+      </svg>
+    `;
+
     return card(
       "momentum",
       "🏆 Momentum",
       "",
-      `<div class="progress-strip" style="grid-template-columns:repeat(auto-fit,minmax(90px,1fr))">
+      `
+      <div class="progress-strip" style="grid-template-columns:repeat(auto-fit,minmax(90px,1fr))">
         <div class="statbox" style="background:var(--bg-2);color:var(--ink)"><b>${streak()}🔥</b><small class="muted">Day streak</small></div>
         <div class="statbox" style="background:var(--bg-2);color:var(--ink)"><b>${state.points}</b><small class="muted">Points</small></div>
         <div class="statbox" style="background:var(--bg-2);color:var(--ink)"><b>${todayAct.tasks}</b><small class="muted">Done today</small></div>
         <div class="statbox" style="background:var(--bg-2);color:var(--ink)"><b>${todayAct.focusMin}m</b><small class="muted">Focused</small></div>
       </div>
-      ${lastWin ? `<p class="muted" style="margin:10px 0 0">Last win: <b>${esc(lastWin.text)}</b></p>` : ""}`,
+      ${chartSvg}
+      ${lastWin ? `<p class="muted" style="margin:6px 0 0">Last win: <b>${esc(lastWin.text)}</b></p>` : ""}
+      `
     );
   }
 
@@ -3419,6 +4029,7 @@ Due May 31"></textarea>
       const ov = $("#focusOverlay");
       ov.classList.add("open");
       this.renderSteps();
+      updateVisualizer();
       const defMin = state.settings.defaultFocusMin;
       const presetBtns = document.querySelectorAll("#fPresetsControls button[data-act='set-focus-preset']");
       presetBtns.forEach(btn => {
@@ -3781,6 +4392,11 @@ Due May 31"></textarea>
       const cur = now.getHours() * 60 + now.getMinutes();
       if (hh * 60 + mm <= cur) fireReminder(r);
     });
+    dueTimedTodosForToday().forEach((td) => {
+      const [hh, mm] = td.time.split(":").map(Number);
+      const cur = now.getHours() * 60 + now.getMinutes();
+      if (hh * 60 + mm <= cur) fireTodoReminder(td);
+    });
   }
 
   // Reminders that are scheduled for today (one-time dated today, or recurring
@@ -3791,6 +4407,16 @@ Due May 31"></textarea>
       if (reminderDoneToday(r)) return false;
       if (isRecurring(r)) return recurOccursOn(r, t);
       return r.date === t;
+    });
+  }
+
+  function dueTimedTodosForToday() {
+    const t = todayKey();
+    return state.todos.filter((td) => {
+      if (todoDoneToday(td)) return false;
+      if (!td.time) return false;
+      if (isTodoRecurring(td)) return todoOccursOn(td, t);
+      return td.date === t || td.date < t;
     });
   }
 
@@ -3812,6 +4438,23 @@ Due May 31"></textarea>
     });
   }
 
+  function fireTodoReminder(td) {
+    if (
+      !state.settings.notifications ||
+      !notifSupport() ||
+      Notification.permission !== "granted"
+    )
+      return;
+    if (td.lastShown === todayKey()) return;
+    td.lastShown = todayKey();
+    save({ touch: false });
+    showNotif("📝 To-do", {
+      body: td.text,
+      tag: "todo:" + td.id + ":" + todayKey(),
+      icon: "icons/icon-192.png",
+    });
+  }
+
   // setTimeout-based scheduler for today's still-upcoming reminder times. This
   // fires precisely while the app/SW is alive. NOTE: true *background* push when
   // the app is fully closed needs a push server and is out of scope here.
@@ -3828,14 +4471,25 @@ Due May 31"></textarea>
     const now = new Date();
     const cur =
       now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+    
+    // Schedule reminders
     dueRemindersForToday().forEach((r) => {
       if (!r.time || r.lastShown === todayKey()) return;
       const [hh, mm] = r.time.split(":").map(Number);
       const at = hh * 3600 + mm * 60;
       if (at <= cur) return; // already passed — checkReminders handles it
       const ms = (at - cur) * 1000;
-      // setTimeout caps near 24.8 days; our window is < 24h so this is safe.
       reminderTimers.push(setTimeout(() => fireReminder(r), ms));
+    });
+
+    // Schedule to-dos
+    dueTimedTodosForToday().forEach((td) => {
+      if (td.lastShown === todayKey()) return;
+      const [hh, mm] = td.time.split(":").map(Number);
+      const at = hh * 3600 + mm * 60;
+      if (at <= cur) return; // already passed — checkReminders handles it
+      const ms = (at - cur) * 1000;
+      reminderTimers.push(setTimeout(() => fireTodoReminder(td), ms));
     });
   }
 
@@ -4950,7 +5604,7 @@ Due May 31"></textarea>
     if (!a || a.status === "done") return;
     a.status = "done";
     a.completedAt = new Date().toISOString();
-    state.points += 10;
+    addPoints(10);
     bumpActivity("tasks");
     state.wins.push({
       text: "Finished: " + a.title,
@@ -4964,6 +5618,51 @@ Due May 31"></textarea>
   }
 
   const ACTIONS = {
+    "water-plant": () => {
+      if (state.garden && state.garden.waterReservoir > 0) {
+        state.garden.waterReservoir--;
+        state.garden.wateredCount = (state.garden.wateredCount || 0) + 1;
+        updateGardenPlantStage();
+        save();
+        render();
+        toast("💧 Plant watered! It's growing! 🌱");
+        triggerConfetti();
+      }
+    },
+    "garden-help": () => {
+      openModal(
+        "Focus Garden Info 🪴",
+        `
+        <p>Welcome to your <b>Focus Garden</b>! Here you can grow a plant of your choice.</p>
+        <p><b>How to grow:</b></p>
+        <ul>
+          <li>Earn XP by completing tasks, checklist items, and focus sessions.</li>
+          <li>Every <b>10 XP</b> earned awards you <b>1 drop of water 💧</b> in your reservoir.</li>
+          <li>Click the <b>Water</b> button to use a drop of water and help your plant grow to the next stage!</li>
+        </ul>
+        <p><b>Plant stages:</b></p>
+        <ol>
+          <li>🌱 Sprout (0 waterings)</li>
+          <li>🌿 Seedling (3 waterings)</li>
+          <li>🍃 Leafy (8 waterings)</li>
+          <li>🌸 Blooming (15 waterings)</li>
+          <li>✨ Golden (25 waterings)</li>
+        </ol>
+        <p>Switch plant types anytime using the selector in the card header. Your growth progress is preserved!</p>
+        <button class="btn primary block" data-act="close-modal" style="margin-top:16px;">Awesome!</button>
+        `
+      );
+    },
+    "apply-custom-gradient": () => {
+      const c1 = $("#customColor1")?.value || "#0d324d";
+      const c2 = $("#customColor2")?.value || "#7f5a83";
+      state.settings.customThemeColor1 = c1;
+      state.settings.customThemeColor2 = c2;
+      state.settings.themeGradient = `linear-gradient(135deg, ${hexToHsl(c1)}, ${hexToHsl(c2)})`;
+      save();
+      applyAppearance();
+      toast("Custom gradient applied! 🎨");
+    },
     nav: (_, arg) => setView(arg),
     "view-classes": () => setView("classes"),
     "view-reminders": () => setView("reminders"),
@@ -5127,6 +5826,7 @@ Due May 31"></textarea>
       else if (arg === "wind") playWind();
       else if (arg === "binaural") playBinaural();
       else if (arg === "ticks") playFocusTicks();
+      else if (arg === "synth") playSynth();
       else stopAmbientSound();
       updateAmbientSoundUI(arg);
     },
@@ -6143,14 +6843,41 @@ ${name}`;
       }
     });
 
-    // file import
+    // file import and garden change
     document.addEventListener("change", (ev) => {
-      if (ev.target.id === "importFile" && ev.target.files[0])
+      if (ev.target.id === "importFile" && ev.target.files[0]) {
         importBackup(ev.target.files[0]);
+      } else if (ev.target.dataset.act === "change-plant-type") {
+        if (state.garden) {
+          state.garden.plantType = ev.target.value;
+          save();
+          render();
+        }
+      } else if (ev.target.classList.contains("todo-time-picker")) {
+        const id = ev.target.dataset.id;
+        const td = state.todos.find((t) => t.id === id);
+        if (td) {
+          td.time = ev.target.value;
+          td.lastShown = "";
+          save();
+          if (typeof scheduleReminders === "function") scheduleReminders();
+          toast("Time reminder updated ⏰");
+        }
+      }
     });
 
-    // range/live binds
+    // range/live binds and theme picker
     document.addEventListener("input", (ev) => {
+      if (ev.target.dataset.act === "update-custom-gradient") {
+        const c1 = $("#customColor1")?.value || "#0d324d";
+        const c2 = $("#customColor2")?.value || "#7f5a83";
+        state.settings.customThemeColor1 = c1;
+        state.settings.customThemeColor2 = c2;
+        state.settings.themeGradient = `linear-gradient(135deg, ${hexToHsl(c1)}, ${hexToHsl(c2)})`;
+        save();
+        applyAppearance();
+        return;
+      }
       const b = ev.target.dataset?.bind;
       if (!b) return;
       const val = Number(ev.target.value);
