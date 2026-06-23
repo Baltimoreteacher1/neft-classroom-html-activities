@@ -19,13 +19,22 @@ import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const [target, titleArg, idArg] = process.argv.slice(2);
+// --codes / --sheets (anywhere on the line) launches the activity in normal
+// student mode so the save-code prompt shows and progress flows to the Google
+// Sheets gradebook. Default mode keeps the Canvas auto-grade (SCORM) behavior.
+const rawArgs = process.argv.slice(2);
+const CODES_MODE = rawArgs.some((a) => a === "--codes" || a === "--sheets");
+const [target, titleArg, idArg] = rawArgs.filter((a) => !a.startsWith("--"));
+// ?lms=scorm relays the score to Canvas AND hides the save-code prompt. Codes
+// mode drops it so students enter a save code → roster/grades land in the Sheets.
+const LAUNCH_QUERY = CODES_MODE ? "?embed=1" : "?lms=scorm&embed=1";
 
 if (!target) {
   console.error(
-    'Usage: node tools/scorm/build-scorm.mjs <lessonId | /path/ | url> ["Title"]\n' +
+    'Usage: node tools/scorm/build-scorm.mjs <lessonId | /path/ | url> ["Title"] [--codes]\n' +
       "  Examples:\n" +
-      '    node tools/scorm/build-scorm.mjs 1-3 "Unit 1 Lesson 3"   # a lesson\n' +
+      '    node tools/scorm/build-scorm.mjs 1-3 "Unit 1 Lesson 3"   # Canvas auto-grade\n' +
+      '    node tools/scorm/build-scorm.mjs 1-3 "Unit 1 Lesson 3" --codes  # → Google Sheets\n' +
       "    node tools/scorm/build-scorm.mjs /ratio-color-mixer/      # any activity\n" +
       "    node tools/scorm/build-scorm.mjs https://eduwonderlab.com/fractions-soccer/",
   );
@@ -61,6 +70,7 @@ const fill = (s) =>
     .replaceAll("{{LESSON_ID}}", lessonId)
     .replaceAll("{{TITLE}}", title)
     .replaceAll("{{LESSON_URL}}", lessonUrl)
+    .replaceAll("{{LAUNCH_QUERY}}", LAUNCH_QUERY)
     .replaceAll("{{LESSON_ORIGIN}}", origin);
 
 const outRoot = resolve(__dirname, "../../scorm-packages");
@@ -75,7 +85,7 @@ for (const [src, dest] of [
   writeFileSync(resolve(stage, dest), fill(readFileSync(resolve(tplDir, src), "utf8")));
 }
 
-const zip = resolve(outRoot, `neft-lesson-${lessonId}.zip`);
+const zip = resolve(outRoot, `neft-lesson-${lessonId}${CODES_MODE ? "-codes" : ""}.zip`);
 rmSync(zip, { force: true });
 execSync(`cd "${stage}" && zip -r -q "${zip}" .`);
 rmSync(stage, { recursive: true, force: true });
@@ -83,6 +93,7 @@ rmSync(stage, { recursive: true, force: true });
 console.log("✓ SCORM package built:");
 console.log("  " + zip);
 console.log("  Lesson: " + lessonUrl);
+console.log("  Mode:   " + (CODES_MODE ? "save codes → Google Sheets gradebook" : "Canvas auto-grade (SCORM score)"));
 console.log(
   "\nUpload it in Canvas: Settings → Navigation/Apps → SCORM, or via the SCORM tool, then deploy as a graded assignment.",
 );
