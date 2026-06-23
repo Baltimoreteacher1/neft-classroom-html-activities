@@ -1414,10 +1414,15 @@ function escapeRegExp(s) {
 function linkifyObjectiveTerms(escapedText, vocab) {
   if (!escapedText || !Array.isArray(vocab) || !vocab.length)
     return escapedText;
+  // Only linkify terms that actually have something to show in the popup —
+  // otherwise students tap an underlined word and get an empty/dead popup. A
+  // term needs a definition (EN or ES) or an authored visual/example to qualify.
+  const hasPopupContent = (v) =>
+    !!(v && (v.definition || v.definitionEs || v.visual || v.example));
   // Skip very short terms to avoid noisy matches inside ordinary words.
   const entries = vocab
     .map((v, i) => ({ i, term: String((v && v.term) || "").trim() }))
-    .filter((e) => e.term.length > 2);
+    .filter((e) => e.term.length > 2 && hasPopupContent(vocab[e.i]));
   if (!entries.length) return escapedText;
   // Normalize for lookup: lowercase and drop a single trailing plural "s".
   const norm = (s) => s.toLowerCase().replace(/s$/, "").trim();
