@@ -1,6 +1,6 @@
-export function renderCoordinateGrid(
-  container,
-  {
+export function renderCoordinateGrid(container, config = {}) {
+  injectCoordinateGridStyles();
+  let {
     xMin,
     xMax,
     yMin,
@@ -9,14 +9,42 @@ export function renderCoordinateGrid(
     yStep,
     xLabel,
     yLabel,
-    targets,
-    label,
     showLine,
     onComplete,
-  },
-) {
-  injectCoordinateGridStyles();
-  targets = Array.isArray(targets) ? targets : [];
+  } = config;
+  // `targets` is the canonical field, but lessons also author the points to plot
+  // as `points`. Accept either, and `label`/`instructions` for the prompt.
+  let targets = Array.isArray(config.targets)
+    ? config.targets
+    : Array.isArray(config.points)
+      ? config.points
+      : [];
+  const label = config.label || config.instructions;
+
+  // Default the axis bounds/steps when a lesson omits them, otherwise toSvgX/Y
+  // divide by NaN and the grid renders blank. Derive a symmetric range that
+  // comfortably contains every target, rounded out to a whole step.
+  if (![xStep, yStep].every((s) => typeof s === "number" && s > 0)) {
+    xStep = typeof xStep === "number" && xStep > 0 ? xStep : 1;
+    yStep = typeof yStep === "number" && yStep > 0 ? yStep : 1;
+  }
+  const xs = targets.map((t) => Number(t.x)).filter(Number.isFinite);
+  const ys = targets.map((t) => Number(t.y)).filter(Number.isFinite);
+  const span = (vals, fallback) => {
+    if (!vals.length) return fallback;
+    const m = Math.max(5, Math.ceil(Math.max(...vals.map(Math.abs)) + 1));
+    return m;
+  };
+  if (typeof xMin !== "number" || typeof xMax !== "number") {
+    const m = span(xs, 10);
+    xMin = -m;
+    xMax = m;
+  }
+  if (typeof yMin !== "number" || typeof yMax !== "number") {
+    const m = span(ys, 10);
+    yMin = -m;
+    yMax = m;
+  }
 
   const wrapper = document.createElement("div");
   wrapper.className = "card cgrid-root";
