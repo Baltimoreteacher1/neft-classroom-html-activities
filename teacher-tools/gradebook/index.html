@@ -8,19 +8,32 @@
     <link rel="icon" href="/assets/favicon.svg" />
     <style>
       :root {
-        --bg: #0f1623;
-        --panel: #18233a;
-        --panel-2: #1f2d49;
-        --line: #2c3c5e;
-        --ink: #eaf0fb;
-        --muted: #9fb0cf;
-        --accent: #4f8bff;
-        --good: #2fbf71;
+        --bg: #0b111d;
+        --bg-2: #0d1422;
+        --panel: #161f33;
+        --panel-2: #1d2942;
+        --field: #0b1220;
+        --line: #283755;
+        --line-soft: #20304d;
+        --ink: #eef3fc;
+        --muted: #9aabca;
+        --faint: #6f819f;
+        --accent: #5b95ff;
+        --accent-2: #7aa8ff;
+        --good: #34c77b;
         --warn: #e0a32e;
-        --bad: #e5564b;
+        --bad: #f0635a;
+        --radius: 14px;
+        --radius-sm: 9px;
+        --shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.55);
+        --shadow-sm: 0 2px 8px -2px rgba(0, 0, 0, 0.4);
       }
       * {
         box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
       }
       body {
         margin: 0;
@@ -30,20 +43,47 @@
           Segoe UI,
           Roboto,
           sans-serif;
-        background: var(--bg);
+        background:
+          radial-gradient(
+            1200px 600px at 80% -10%,
+            rgba(91, 149, 255, 0.12),
+            transparent 60%
+          ),
+          var(--bg);
+        background-attachment: fixed;
         color: var(--ink);
+        -webkit-font-smoothing: antialiased;
       }
       header {
-        padding: 18px 24px;
-        border-bottom: 1px solid var(--line);
+        position: sticky;
+        top: 0;
+        z-index: 12;
+        padding: 14px 24px;
+        border-bottom: 1px solid var(--line-soft);
+        background: rgba(11, 17, 29, 0.82);
+        backdrop-filter: saturate(140%) blur(10px);
         display: flex;
         align-items: center;
         gap: 14px;
         flex-wrap: wrap;
       }
       header h1 {
-        font-size: 20px;
+        font-size: 19px;
+        letter-spacing: -0.01em;
         margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .brand-mark {
+        display: inline-grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        font-size: 18px;
+        background: linear-gradient(160deg, var(--accent), #3f6fd6);
+        box-shadow: var(--shadow-sm);
       }
       header .sub {
         color: var(--muted);
@@ -53,99 +93,137 @@
         flex: 1;
       }
       main {
-        padding: 22px;
+        padding: 24px 22px 64px;
         max-width: 1280px;
         margin: 0 auto;
       }
       button,
       .btn {
         font: inherit;
+        font-size: 14px;
         cursor: pointer;
         border: 1px solid var(--line);
         background: var(--panel-2);
         color: var(--ink);
-        border-radius: 8px;
-        padding: 8px 14px;
+        border-radius: var(--radius-sm);
+        padding: 8px 13px;
         text-decoration: none;
         display: inline-flex;
         align-items: center;
         gap: 6px;
+        transition:
+          background 0.14s,
+          border-color 0.14s,
+          transform 0.05s;
+      }
+      button:hover,
+      .btn:hover {
+        border-color: var(--accent);
+        background: #233356;
+      }
+      button:active,
+      .btn:active {
+        transform: translateY(1px);
       }
       button.primary,
       .btn.primary {
-        background: var(--accent);
-        border-color: var(--accent);
+        background: linear-gradient(160deg, var(--accent), #4274d8);
+        border-color: transparent;
         color: #fff;
+        box-shadow: var(--shadow-sm);
+      }
+      button.primary:hover,
+      .btn.primary:hover {
+        background: linear-gradient(160deg, var(--accent-2), var(--accent));
       }
       button.good {
-        background: var(--good);
-        border-color: var(--good);
-        color: #04220f;
+        background: linear-gradient(160deg, var(--good), #1f9e5d);
+        border-color: transparent;
+        color: #042617;
+        font-weight: 600;
+      }
+      button.ghost {
+        background: transparent;
       }
       button:focus-visible,
-      input:focus-visible {
+      input:focus-visible,
+      select:focus-visible,
+      summary:focus-visible {
         outline: 3px solid var(--accent);
         outline-offset: 2px;
       }
       input,
       select {
         font: inherit;
-        background: #0c1320;
+        font-size: 14px;
+        background: var(--field);
         color: var(--ink);
         border: 1px solid var(--line);
-        border-radius: 8px;
-        padding: 8px 12px;
+        border-radius: var(--radius-sm);
+        padding: 9px 12px;
+      }
+      input::placeholder {
+        color: var(--faint);
+      }
+      input:focus,
+      select:focus {
+        border-color: var(--accent);
       }
       .cards {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 14px;
+        gap: 12px;
         margin-bottom: 20px;
       }
       .card {
-        background: var(--panel);
-        border: 1px solid var(--line);
-        border-radius: 12px;
+        background: linear-gradient(180deg, var(--panel), var(--bg-2));
+        border: 1px solid var(--line-soft);
+        border-radius: var(--radius);
         padding: 14px 16px;
+        box-shadow: var(--shadow-sm);
       }
       .card .n {
-        font-size: 26px;
-        font-weight: 700;
+        font-size: 27px;
+        font-weight: 750;
+        letter-spacing: -0.02em;
+        line-height: 1.1;
       }
       .card .l {
         color: var(--muted);
-        font-size: 13px;
+        font-size: 12.5px;
+        margin-top: 2px;
       }
       .toolbar {
         display: flex;
         gap: 10px;
         flex-wrap: wrap;
         align-items: center;
-        margin-bottom: 16px;
+        margin-bottom: 18px;
       }
-      .tabs {
-        display: flex;
-        gap: 6px;
-        margin-bottom: 14px;
+      .toolbar .search {
+        position: relative;
+        flex: 1 1 240px;
+        min-width: 200px;
       }
-      .tab {
-        padding: 8px 16px;
-        border-radius: 8px 8px 0 0;
-        background: transparent;
-        border: 1px solid transparent;
-        color: var(--muted);
+      .toolbar .search input {
+        width: 100%;
+        padding-left: 34px;
       }
-      .tab[aria-selected="true"] {
-        background: var(--panel);
-        border-color: var(--line);
-        border-bottom-color: var(--panel);
-        color: var(--ink);
+      .toolbar .search::before {
+        content: "🔍";
+        position: absolute;
+        left: 11px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 13px;
+        opacity: 0.7;
+        pointer-events: none;
       }
       .table-wrap {
         overflow: auto;
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        background: var(--panel);
+        border: 1px solid var(--line-soft);
+        border-radius: var(--radius);
+        background: var(--bg-2);
       }
       table {
         border-collapse: collapse;
@@ -154,23 +232,27 @@
       }
       th,
       td {
-        padding: 8px 10px;
-        border-bottom: 1px solid var(--line);
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--line-soft);
         text-align: left;
         white-space: nowrap;
+      }
+      tbody tr:last-child td {
+        border-bottom: none;
       }
       th {
         position: sticky;
         top: 0;
         background: var(--panel-2);
         z-index: 1;
-        font-size: 12px;
+        font-size: 11.5px;
+        font-weight: 650;
         text-transform: uppercase;
-        letter-spacing: 0.03em;
+        letter-spacing: 0.04em;
         color: var(--muted);
       }
       tbody tr:hover {
-        background: rgba(79, 139, 255, 0.07);
+        background: rgba(91, 149, 255, 0.06);
       }
       td.edit input {
         width: 100%;
@@ -178,22 +260,27 @@
         padding: 5px 8px;
         border-color: transparent;
         background: transparent;
+        border-radius: 6px;
+      }
+      td.edit input:hover {
+        background: rgba(255, 255, 255, 0.03);
       }
       td.edit input:focus {
         border-color: var(--accent);
-        background: #0c1320;
+        background: var(--field);
       }
       .code {
         font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
         font-weight: 700;
-        color: #8ab4f8;
+        letter-spacing: 0.02em;
+        color: #92b6ff;
       }
       .bar {
         position: relative;
-        width: 80px;
-        height: 8px;
+        width: 84px;
+        height: 7px;
         border-radius: 6px;
-        background: #0c1320;
+        background: rgba(255, 255, 255, 0.08);
         overflow: hidden;
         display: inline-block;
         vertical-align: middle;
@@ -201,7 +288,8 @@
       .bar > i {
         position: absolute;
         inset: 0 auto 0 0;
-        background: var(--accent);
+        border-radius: 6px;
+        background: linear-gradient(90deg, var(--accent), var(--good));
       }
       .muted {
         color: var(--muted);
@@ -214,73 +302,137 @@
         border: 1px solid var(--line);
         font-size: 12px;
       }
+      /* Teacher key gate */
       .gate {
-        max-width: 460px;
-        margin: 60px auto;
-        background: var(--panel);
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        padding: 28px;
+        max-width: 440px;
+        margin: clamp(40px, 12vh, 110px) auto;
+        background: linear-gradient(180deg, var(--panel), var(--bg-2));
+        border: 1px solid var(--line-soft);
+        border-radius: 18px;
+        padding: 32px 30px;
+        box-shadow: var(--shadow);
+        text-align: center;
+      }
+      .gate .lock {
+        width: 56px;
+        height: 56px;
+        margin: 0 auto 14px;
+        display: grid;
+        place-items: center;
+        font-size: 26px;
+        border-radius: 16px;
+        background: linear-gradient(160deg, var(--accent), #3f6fd6);
+        box-shadow: var(--shadow-sm);
       }
       .gate h2 {
         margin: 0 0 6px;
+        font-size: 21px;
       }
       .gate p {
         color: var(--muted);
-        font-size: 14px;
+        font-size: 13.5px;
+        margin: 0 auto;
+        max-width: 34ch;
       }
       .gate .row {
         display: flex;
         gap: 8px;
-        margin-top: 14px;
+        margin-top: 18px;
       }
       .gate input {
         flex: 1;
+        text-align: left;
+      }
+      .gate code {
+        background: var(--field);
+        padding: 1px 6px;
+        border-radius: 5px;
+        font-size: 0.92em;
+      }
+      .gate .err {
+        color: var(--bad);
+        font-size: 13px;
+        min-height: 18px;
+        margin: 12px 0 0;
       }
       .toast {
         position: fixed;
-        bottom: 18px;
+        bottom: 22px;
         left: 50%;
-        transform: translateX(-50%);
+        transform: translateX(-50%) translateY(8px);
         background: var(--panel-2);
         border: 1px solid var(--line);
-        border-radius: 10px;
-        padding: 10px 16px;
+        border-radius: 11px;
+        padding: 11px 18px;
+        font-size: 14px;
+        box-shadow: var(--shadow);
         opacity: 0;
-        transition: opacity 0.2s;
+        transition:
+          opacity 0.2s,
+          transform 0.2s;
         pointer-events: none;
-        z-index: 9;
+        z-index: 30;
       }
       .toast.show {
         opacity: 1;
+        transform: translateX(-50%) translateY(0);
       }
       .hidden {
         display: none !important;
       }
-      .help {
-        font-size: 13px;
+      /* Compact, collapsed-by-default help */
+      details.help {
+        font-size: 13.5px;
         color: var(--muted);
         background: var(--panel);
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        padding: 14px 16px;
-        margin-bottom: 16px;
+        border: 1px solid var(--line-soft);
+        border-radius: var(--radius);
+        margin-bottom: 18px;
+        overflow: hidden;
       }
-      .help code {
-        background: #0c1320;
+      details.help > summary {
+        list-style: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 16px;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--ink);
+        user-select: none;
+      }
+      details.help > summary::-webkit-details-marker {
+        display: none;
+      }
+      details.help > summary .chev {
+        margin-left: auto;
+        color: var(--muted);
+        transition: transform 0.15s;
+      }
+      details.help[open] > summary .chev {
+        transform: rotate(180deg);
+      }
+      .help-body {
+        padding: 0 16px 14px;
+        line-height: 1.6;
+      }
+      .help-body code {
+        background: var(--field);
         padding: 1px 6px;
         border-radius: 5px;
       }
       a {
-        color: var(--accent);
+        color: var(--accent-2);
       }
       /* Collapsible "dropdown" card sections */
       details.section {
         background: var(--panel);
-        border: 1px solid var(--line);
-        border-radius: 12px;
+        border: 1px solid var(--line-soft);
+        border-radius: var(--radius);
         margin-bottom: 16px;
         overflow: hidden;
+        box-shadow: var(--shadow-sm);
       }
       details.section > summary {
         list-style: none;
@@ -288,10 +440,17 @@
         display: flex;
         align-items: center;
         gap: 12px;
-        padding: 16px 18px;
-        font-size: 17px;
+        padding: 15px 18px;
+        font-size: 16px;
         font-weight: 700;
+        letter-spacing: -0.01em;
         user-select: none;
+      }
+      details.section[open] > summary {
+        border-bottom: 1px solid var(--line-soft);
+      }
+      details.section > summary:hover {
+        background: rgba(255, 255, 255, 0.02);
       }
       details.section > summary::-webkit-details-marker {
         display: none;
@@ -310,13 +469,12 @@
         transform: rotate(180deg);
       }
       .section-body {
-        padding: 0 16px 16px;
-        border-top: 1px solid var(--line);
+        padding: 4px 16px 16px;
       }
       tr.grp td {
         background: var(--panel-2);
         font-weight: 700;
-        color: var(--accent);
+        color: var(--accent-2);
         text-transform: uppercase;
         letter-spacing: 0.04em;
         font-size: 12px;
@@ -330,43 +488,68 @@
         cursor: pointer;
         vertical-align: middle;
       }
+      button.del:hover {
+        color: #ff8a82;
+        background: transparent;
+      }
       /* Modal */
       .modal {
         position: fixed;
         inset: 0;
-        background: rgba(4, 9, 18, 0.66);
+        background: rgba(4, 9, 18, 0.72);
+        backdrop-filter: blur(3px);
         display: flex;
         align-items: center;
         justify-content: center;
-        z-index: 20;
+        z-index: 40;
         padding: 16px;
       }
       .modal-card {
-        background: var(--panel);
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        padding: 22px;
+        background: linear-gradient(180deg, var(--panel), var(--bg-2));
+        border: 1px solid var(--line-soft);
+        border-radius: 16px;
+        padding: 24px;
         width: 100%;
         max-width: 380px;
+        box-shadow: var(--shadow);
       }
       .modal-card h3 {
-        margin: 0 0 14px;
+        margin: 0 0 16px;
+        font-size: 18px;
       }
       .modal-card label {
         display: block;
         font-size: 13px;
         color: var(--muted);
-        margin-bottom: 12px;
+        margin-bottom: 14px;
       }
       .modal-card label input {
         width: 100%;
-        margin-top: 4px;
+        margin-top: 5px;
       }
       .modal-actions {
         display: flex;
         justify-content: flex-end;
         gap: 8px;
-        margin-top: 6px;
+        margin-top: 8px;
+      }
+      /* Embedded inside the curriculum hub teacher card → drop page chrome */
+      .embed header {
+        display: none;
+      }
+      .embed main {
+        padding-top: 18px;
+      }
+      @media (max-width: 560px) {
+        header {
+          padding: 12px 16px;
+        }
+        main {
+          padding: 18px 14px 56px;
+        }
+        .toolbar .search {
+          flex-basis: 100%;
+        }
       }
     </style>
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
@@ -375,19 +558,20 @@
 </head>
   <body>
     <header>
-      <h1>📊 Gradebook &amp; Save Codes</h1>
+      <h1><span class="brand-mark">📊</span> Gradebook &amp; Save Codes</h1>
       <span class="sub" id="subline">Live student progress · Neft Teacher</span>
       <span class="spacer"></span>
-      <a class="btn" href="/curriculum/">← Hub</a>
+      <a class="btn ghost" href="/curriculum/">← Hub</a>
       <button id="signout" class="hidden">Sign out</button>
     </header>
 
     <!-- Teacher key gate -->
     <section class="gate" id="gate">
+      <div class="lock">🔑</div>
       <h2>Teacher access</h2>
       <p>
-        Enter your teacher key to view live save codes and grades. The key is
-        the <code>TEACHER_KEY</code> set on the Cloudflare Pages project. It is
+        Enter your teacher key to view live save codes and grades. It's the
+        <code>TEACHER_KEY</code> on the Cloudflare Pages project, and it's
         remembered on this device only.
       </p>
       <div class="row">
@@ -399,32 +583,36 @@
         />
         <button class="primary" id="keyGo">Open</button>
       </div>
-      <p id="gateMsg" style="color: var(--bad)"></p>
+      <p class="err" id="gateMsg"></p>
     </section>
 
     <main id="app" class="hidden">
-      <div class="help">
-        <strong>How it works.</strong> Every save code a student creates appears
-        here automatically with the <strong>name</strong> and
-        <strong>class</strong> they typed. You can also
-        <strong>＋ Add student</strong> by hand (for students who have not
-        started yet) and <strong>＋ Add class</strong> to set up your sections.
-        Edits save instantly online and feed the Grades section. Use
-        <strong>Import names</strong> to bulk-fill from a CSV/Excel file, or the
-        per-section <strong>Excel / CSV</strong> buttons to download.
-      </div>
-
       <div class="cards" id="stats"></div>
 
+      <details class="help">
+        <summary>💡 How this works <span class="chev">▾</span></summary>
+        <div class="help-body">
+          Every save code a student creates appears here automatically with the
+          <strong>name</strong> and <strong>class</strong> they typed. You can
+          also <strong>＋ Add student</strong> by hand (for students who have
+          not started yet) and <strong>＋ Add class</strong> to set up your
+          sections. Edits save instantly online and feed the Grades section. Use
+          <strong>Import names</strong> to bulk-fill from a CSV/Excel file, or
+          the per-section <strong>Excel / CSV</strong> buttons to download.
+        </div>
+      </details>
+
       <div class="toolbar">
-        <input id="search" placeholder="Search name, code, activity…" />
+        <span class="search">
+          <input id="search" placeholder="Search name, code, activity…" />
+        </span>
         <select id="classFilter">
           <option value="">All classes</option>
         </select>
         <button id="addStudent">＋ Add student</button>
         <button id="addClass">＋ Add class</button>
         <span class="spacer"></span>
-        <button id="refresh">↻ Refresh</button>
+        <button class="ghost" id="refresh">↻ Refresh</button>
         <button class="primary" id="importBtn">⬆ Import names</button>
         <input id="importFile" type="file" accept=".csv,.xls,.txt" hidden />
       </div>
