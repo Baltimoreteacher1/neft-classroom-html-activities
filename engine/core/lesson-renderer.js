@@ -531,14 +531,14 @@ function renderLearnItBridge(host, ctx, config) {
     <button type="button" class="btn btn-primary" data-open-learn style="flex:0 0 auto;">Open Learn It →</button>`;
   const btn = card.querySelector("[data-open-learn]");
   if (btn) {
+    // Open Learn It as its own page in a new tab so students keep the lesson
+    // open behind it (rather than replacing the Launch view inline).
     btn.addEventListener("click", () => {
-      if (ctx && typeof ctx.openExtra === "function") ctx.openExtra("learn");
-      else
-        window.open(
-          `/lessons/${config.lessonId}/learn.html`,
-          "_blank",
-          "noopener",
-        );
+      window.open(
+        `/lessons/${config.lessonId}/learn.html`,
+        "_blank",
+        "noopener",
+      );
     });
   }
   host.append(card);
