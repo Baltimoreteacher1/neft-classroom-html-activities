@@ -6,9 +6,9 @@
 
 Hi,
 
-I've built a set of interactive Grade 6 math lessons (hosted on my own
-classroom website) that I use with my students. I'd like them to launch from
-inside Canvas and report grades back to the Canvas gradebook automatically.
+I've built a set of interactive Grade 6 math lessons that I use with my
+students. I'd like them to launch from inside Canvas and report grades back to
+the Canvas gradebook automatically.
 
 This uses **LTI 1.3**, the standards-based integration mechanism Canvas already
 supports natively — the same kind of connection used by tools like Google Drive
@@ -19,16 +19,16 @@ Could you please create **one LTI 1.3 Developer Key**, scoped to my course or
 sub-account, with the values below?
 
 **Tool name:** Neft Lessons
-**Owner:** Joel Neft (neftjd@gmail.com)
+**Owner:** Joel Neft (jdneft@gmail.com)
 
 **Configuration URLs**
 
 | Field                                | Value                                              |
 | ------------------------------------ | -------------------------------------------------- |
-| Target Link / Redirect URI           | `https://neft-lti.neftjd.workers.dev/lti/launch`   |
-| OpenID Connect Initiation URL        | `https://neft-lti.neftjd.workers.dev/lti/login`    |
-| Public JWK URL                       | `https://neft-lti.neftjd.workers.dev/lti/jwks`     |
-| Deep Linking (content selection) URL | `https://neft-lti.neftjd.workers.dev/lti/deeplink` |
+| Target Link / Redirect URI           | `https://neft-lti.jdneft.workers.dev/lti/launch`   |
+| OpenID Connect Initiation URL        | `https://neft-lti.jdneft.workers.dev/lti/login`    |
+| Public JWK URL                       | `https://neft-lti.jdneft.workers.dev/lti/jwks`     |
+| Deep Linking (content selection) URL | `https://neft-lti.jdneft.workers.dev/lti/deeplink` |
 
 **LTI Advantage services to enable**
 
@@ -42,8 +42,7 @@ sub-account, with the values below?
 
 **Scope & privacy:** my courses only. The tool receives only the student name
 and ID already present in the Canvas roster — no additional personal information
-is collected or stored. It runs on the same Cloudflare infrastructure as my
-existing classroom site.
+is collected or stored. It runs on standard cloud hosting.
 
 Once the key is created, Canvas will generate a **Client ID** and a
 **Deployment ID**. Please send those back to me and I'll complete the
