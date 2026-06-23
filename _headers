@@ -19,6 +19,16 @@
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
   Cache-Control: public, max-age=0, must-revalidate
 
+# Lesson pages only: allow embedding by ANY frame ancestor. BCPS Canvas's SCORM
+# player (an LTI tool, not SCORM Cloud) iframes the live lesson from a domain
+# that isn't a *.scorm.com/*.scormcontent.com host, so the strict /* policy
+# above blocked it (console: "Framing 'https://eduwonderlab.com/' violates
+# frame-ancestors"). Lessons carry no auth or sensitive actions, so permitting
+# framing here is low-risk; the rest of the site keeps the strict policy. This
+# is what lets a SCORM-embedded lesson render and report its grade.
+/lessons/*
+  Content-Security-Policy: frame-ancestors *
+
 # Vite build output is content-hashed (filename changes whenever content changes),
 # so these are safe to cache for a long time / immutable.
 /assets/*
