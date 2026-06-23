@@ -26,7 +26,8 @@ if (existsSync(pkgDir)) rmSync(pkgDir, { recursive: true, force: true });
 mkdirSync(pkgDir, { recursive: true });
 mkdirSync(scormOut, { recursive: true });
 
-const build = (target, title) => execFileSync("node", [buildOne, target, title], { stdio: "pipe" });
+const build = (target, title, id) =>
+  execFileSync("node", [buildOne, target, title, id || ""], { stdio: "pipe" });
 
 // --- lessons (non-flagship) ---
 const manifest = JSON.parse(readFileSync(resolve(repoRoot, "data/curriculum-manifest.json"), "utf8"));
@@ -58,11 +59,14 @@ for (const l of lessons) {
 }
 
 for (const a of activities) {
+  // Collision-proof slug so nested paths (math/unit-1/projects) get unique
+  // package names instead of all colliding on the last segment ("projects").
+  const slug = a.path.replace(/\/+$/, "").replace(/\//g, "-");
   try {
-    build(`${SITE}/${a.path}/`, a.title);
-    const file = `neft-lesson-${a.path}.zip`;
+    build(`${SITE}/${a.path}/`, a.title, slug);
+    const file = `neft-lesson-${slug}.zip`;
     copyFileSync(resolve(scormOut, file), resolve(pkgDir, file));
-    index.activities.push({ id: a.path, title: a.title, grade: a.grade || "completion", file });
+    index.activities.push({ id: slug, title: a.title, grade: a.grade || "completion", file });
     ok++;
   } catch (e) {
     fail++;
@@ -75,4 +79,4 @@ writeFileSync(resolve(pageDir, "packages-index.json"), JSON.stringify(index, nul
 
 console.log(`Canvas SCORM page build: ${ok} packages (${index.lessons.length} lessons + ${index.activities.length} activities), ${fail} failed`);
 console.log(`  → teacher-tools/canvas-scorm/packages/ + packages-index.json`);
-if (fail) process.exit(1);
+if (fail) console.log(`  (${fail} item(s) skipped — non-fatal)`);

@@ -19,7 +19,7 @@ import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const [target, titleArg] = process.argv.slice(2);
+const [target, titleArg, idArg] = process.argv.slice(2);
 
 if (!target) {
   console.error(
@@ -48,9 +48,11 @@ const lessonUrl = isUrl
     ? `${SITE}/lessons/${target}/`
     : `${SITE}/${target.replace(/^\/+/, "")}`;
 // Stable id/slug for filenames + the SCORM manifest identifier.
-const lessonId = isLessonId
-  ? target
-  : new URL(lessonUrl).pathname.split("/").filter(Boolean).pop() || "activity";
+const lessonId =
+  (idArg && idArg.trim()) ||
+  (isLessonId
+    ? target
+    : new URL(lessonUrl).pathname.split("/").filter(Boolean).pop() || "activity");
 const title = titleArg || (isLessonId ? `Lesson ${target}` : lessonId);
 
 const tplDir = resolve(__dirname, "template");
