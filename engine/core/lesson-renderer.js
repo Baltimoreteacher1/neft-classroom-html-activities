@@ -30,7 +30,6 @@ import { renderThemeIllustration } from "./theme-illustrations.js";
 import { deriveWorkedSteps } from "./worked-steps.js";
 import {
   buildPhaseTransitionMeta,
-  renderLaunchStoryBeats,
   buildPrintableSummary,
   checkBadges,
   getBadgeDefs,
@@ -1589,10 +1588,9 @@ function renderLaunchPhase(el, state, ctx, config) {
   renderObjectives(el, config);
 
   // ── Be Curious ────────────────────────────────────────────────────────────
-  // Its own part, right under the objectives: the scenario story beats
-  // (Set the Scene / The Challenge / What Happens Next) plus the Reveal
-  // Notice & Wonder routine. Students get curious about today's math BEFORE the
-  // formal Launch problem below. No-op pieces simply skip themselves.
+  // Its own part, right under the objectives: the Reveal Notice & Wonder
+  // routine. Students get curious about today's math BEFORE the formal Launch
+  // problem below. No-op when the lesson has no Notice & Wonder.
   phaseHeader(
     el,
     "🔭",
@@ -1600,9 +1598,6 @@ function renderLaunchPhase(el, state, ctx, config) {
     "Be Curious",
     "Look at today's scene. What do you notice? What do you wonder?",
   );
-
-  // Tap-to-reveal story beats for multi-sentence narratives.
-  renderLaunchStoryBeats(el, config);
 
   // Notice & Wonder (Reveal data-context). No-op when absent.
   renderNoticeAndWonder(el, config, state);
