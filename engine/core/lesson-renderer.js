@@ -1975,10 +1975,14 @@ function renderPracticePhase(el, state, ctx, config) {
   // interactive games/sorts below.
   renderSkillPractice(el, config, state);
 
-  // Non-stigmatizing Level 1 / Level 2 / Adaptive selector.
+  // Non-stigmatizing Level 1 / Level 2 / Adaptive selector. Changing the level
+  // immediately re-serves a problem at the chosen tier — without an onChange the
+  // pick only took effect on the next item, so the selector looked broken.
   const selectorSlot = document.createElement("div");
   el.append(selectorSlot);
-  mountLevelSelector(selectorSlot, state);
+  mountLevelSelector(selectorSlot, state, () => {
+    if (seq.servedCount < seq.total) next();
+  });
 
   // Sticky practice score bar
   const scoreBar = document.createElement("div");
@@ -2153,12 +2157,6 @@ function renderConnectPhase(el, state, ctx, config) {
     "Where does this math live in the wild?",
   );
 
-  instructionCallout(
-    el,
-    "🌍",
-    "<strong>Real-world math:</strong> Read the scenario. Talk with a partner using Turn & Talk, then write how this connects to today's lesson using math vocabulary.",
-  );
-
   const card = document.createElement("div");
   card.className = "card connect-scenario-card";
   card.innerHTML = `
@@ -2200,8 +2198,7 @@ function renderConnectPhase(el, state, ctx, config) {
 
   const label = document.createElement("label");
   label.setAttribute("for", fieldId);
-  label.style.cssText =
-    "display:block; font-size:1rem; font-weight:600; margin:0 0 var(--sp-3); line-height:1.5;";
+  label.className = "connect-prompt-label";
   label.textContent = promptText;
   respCard.append(label);
 
@@ -2225,13 +2222,11 @@ function renderConnectPhase(el, state, ctx, config) {
   respCard.append(textarea);
 
   const charCount = document.createElement("div");
-  charCount.style.cssText =
-    "font-size:0.78rem; color:var(--muted); margin-top:var(--sp-1); text-align:right;";
+  charCount.className = "connect-charcount";
   const updateCount = () => {
     const len = textarea.value.trim().length;
     charCount.textContent = `${len} / ${minLength} characters minimum`;
-    charCount.style.color =
-      len >= minLength ? "var(--success)" : "var(--muted)";
+    charCount.classList.toggle("is-ready", len >= minLength);
   };
   updateCount();
   respCard.append(charCount);
