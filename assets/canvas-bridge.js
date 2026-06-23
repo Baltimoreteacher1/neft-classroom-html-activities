@@ -127,7 +127,10 @@
     return {
       studentName: (sum && (sum.studentName || sum.name)) || "",
       classPeriod: (sum && (sum.section || sum.classPeriod)) || "",
-      percent: sum && typeof sum.percentComplete === "number" ? sum.percentComplete : null,
+      percent:
+        sum && typeof sum.percentComplete === "number"
+          ? sum.percentComplete
+          : null,
     };
   }
 
@@ -135,7 +138,9 @@
     return String(cfg.activityId || slugFromPath());
   }
   function activityTitle() {
-    return String(cfg.activityTitle || (document && document.title) || activityId());
+    return String(
+      cfg.activityTitle || (document && document.title) || activityId(),
+    );
   }
 
   /** SCORM passback — the SCO relays this to the Canvas gradebook. */
@@ -198,16 +203,17 @@
       }, 1600);
     }
     function doCopy() {
-      return (navigator.clipboard ? navigator.clipboard.writeText(code) : Promise.reject()).then(
-        flag,
-        function () {
-          safe(function () {
-            input.select();
-            document.execCommand("copy");
-            flag();
-          });
-        },
-      );
+      return (
+        navigator.clipboard
+          ? navigator.clipboard.writeText(code)
+          : Promise.reject()
+      ).then(flag, function () {
+        safe(function () {
+          input.select();
+          document.execCommand("copy");
+          flag();
+        });
+      });
     }
     copyBtn.addEventListener("click", doCopy);
     doCopy().catch(function () {});
@@ -233,13 +239,16 @@
     if (fired && !(opts && opts.force)) return;
     fired = true;
     var id = identity();
-    var studentName = opts && opts.studentName != null ? opts.studentName : id.studentName;
-    var classPeriod = opts && opts.classPeriod != null ? opts.classPeriod : id.classPeriod;
+    var studentName =
+      opts && opts.studentName != null ? opts.studentName : id.studentName;
+    var classPeriod =
+      opts && opts.classPeriod != null ? opts.classPeriod : id.classPeriod;
     var pct = typeof percent === "number" ? percent : id.percent;
     if (typeof pct !== "number") pct = 100; // an explicit complete() with no data = done
     pct = Math.max(0, Math.min(100, Math.round(pct)));
 
     reportScore(pct);
+    setFinishedUI();
     if (isScormLaunch()) return; // SCORM relays the score; no popup needed
 
     ensureCodec().then(function (codec) {
@@ -258,6 +267,45 @@
       }, null);
       if (code) renderCode(code, !String(studentName || "").trim());
     });
+  }
+
+  /**
+   * Universal "I'm finished" button — shown ONLY inside a SCORM launch. Open-
+   * ended activities (sandboxes, labs) never drive save/resume to 100%, so they
+   * would never auto-post. This gives every activity a guaranteed way to send
+   * completion to the Canvas gradebook. Activities that DO reach 100% auto-fire
+   * first; this button then just reads "Sent ✓".
+   */
+  function scormFinishUI() {
+    if (!isScormLaunch()) return;
+    if (!document.body || document.getElementById("nt-cb-finish")) return;
+    var b = document.createElement("button");
+    b.id = "nt-cb-finish";
+    b.type = "button";
+    b.textContent = "✓ I'm finished";
+    b.setAttribute(
+      "aria-label",
+      "Mark this activity finished and send my completion to Canvas",
+    );
+    b.style.cssText =
+      "position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:2147483646;" +
+      "background:#1c8c8c;color:#fff;border:0;border-radius:999px;padding:14px 22px;" +
+      "font:700 16px system-ui,Segoe UI,sans-serif;box-shadow:0 8px 24px rgba(15,23,42,.32);" +
+      "cursor:pointer;min-height:48px;";
+    b.addEventListener("click", function () {
+      complete(100);
+    });
+    document.body.appendChild(b);
+  }
+
+  /** Flip the finish button to a confirmed state after a completion fires. */
+  function setFinishedUI() {
+    var b = document.getElementById("nt-cb-finish");
+    if (!b) return;
+    b.textContent = "✓ Sent to Canvas";
+    b.disabled = true;
+    b.style.background = "#2e9e5b";
+    b.style.cursor = "default";
   }
 
   /** Watch save/resume progress and auto-complete once at the threshold. */
@@ -303,10 +351,15 @@
     __loaded: true,
   };
 
-  // Kick off the auto-watcher once the DOM is ready.
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", startAutoWatch, { once: true });
-  } else {
+  // On DOM ready: start the progress auto-watcher, and (in a SCORM launch only)
+  // show the universal "I'm finished" button so any activity can post completion.
+  function init() {
     startAutoWatch();
+    scormFinishUI();
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init, { once: true });
+  } else {
+    init();
   }
 })(typeof window !== "undefined" ? window : this);
