@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Canvas Auto-Grade — SCORM Packages | Neft Teacher</title>
+    <link rel="stylesheet" href="/assets/shared.css" />
+    <style>
+      :root {
+        --navy: #1f2a44;
+        --teal: #1c8c8c;
+        --gold: #d4952a;
+        --cream: #fdf3e0;
+        --line: #d8dee6;
+      }
+      body {
+        font-family: "Hanken Grotesk", system-ui, sans-serif;
+        color: var(--navy);
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 24px 18px 80px;
+        line-height: 1.55;
+      }
+      h1 {
+        font-size: 2rem;
+        margin: 0 0 6px;
+      }
+      .sub {
+        font-size: 1.1rem;
+        color: #41506a;
+        margin: 0 0 22px;
+      }
+      .how {
+        background: var(--cream);
+        border: 1px solid var(--gold);
+        border-radius: 14px;
+        padding: 18px 22px;
+        margin: 0 0 28px;
+      }
+      .how h2 {
+        margin: 0 0 10px;
+        font-size: 1.25rem;
+      }
+      .how ol {
+        margin: 0;
+        padding-left: 22px;
+        font-size: 1.08rem;
+      }
+      .how li {
+        margin: 6px 0;
+      }
+      .tabs {
+        display: flex;
+        gap: 8px;
+        margin: 0 0 16px;
+        flex-wrap: wrap;
+      }
+      .tab {
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 999px;
+        padding: 8px 16px;
+        font-weight: 700;
+        cursor: pointer;
+        min-height: 44px;
+      }
+      .tab[aria-selected="true"] {
+        background: var(--teal);
+        color: #fff;
+        border-color: var(--teal);
+      }
+      .unit-h {
+        margin: 22px 0 8px;
+        font-size: 1.2rem;
+        color: var(--teal);
+        border-bottom: 2px solid var(--line);
+        padding-bottom: 4px;
+      }
+      .row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        margin: 6px 0;
+        background: #fff;
+        flex-wrap: wrap;
+      }
+      .row .name {
+        font-weight: 600;
+        flex: 1 1 260px;
+      }
+      .row .meta {
+        font-size: 0.85rem;
+        color: #6a7686;
+      }
+      .dl {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--teal);
+        color: #fff;
+        text-decoration: none;
+        font-weight: 700;
+        padding: 10px 16px;
+        border-radius: 10px;
+        min-height: 44px;
+      }
+      .dl:hover {
+        background: #156d6d;
+      }
+      .count {
+        color: #6a7686;
+        font-weight: 600;
+      }
+      .loading {
+        padding: 30px;
+        text-align: center;
+        color: #6a7686;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🎯 Canvas Auto-Grade</h1>
+    <p class="sub">
+      Every lesson and activity, packaged for Canvas. Upload a package once and
+      it grades itself when a student finishes — no completion codes, no IT.
+    </p>
+
+    <div class="how">
+      <h2>How to set up an assignment (≈30 seconds each)</h2>
+      <ol>
+        <li><strong>Download</strong> a package below.</li>
+        <li>
+          In Canvas: <strong>SCORM</strong> (left menu) →
+          <strong>Upload</strong> → choose the <code>.zip</code>.
+        </li>
+        <li>
+          Click it → <strong>deploy as a graded assignment</strong>, give it
+          points. Done.
+        </li>
+      </ol>
+      <p style="margin: 10px 0 0; font-size: 1.02rem">
+        Students open it in Canvas, finish the lesson, and the score lands in
+        your gradebook automatically. Each package points at the live lesson, so
+        when you edit a lesson later you <strong>never re-upload</strong>.
+      </p>
+    </div>
+
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-view="lessons">
+        Lessons <span class="count" id="c-lessons"></span>
+      </button>
+      <button
+        class="tab"
+        role="tab"
+        aria-selected="false"
+        data-view="activities"
+      >
+        Activities <span class="count" id="c-activities"></span>
+      </button>
+    </div>
+
+    <div id="list" class="loading">Loading packages…</div>
+
+    <script>
+      (async function () {
+        var list = document.getElementById("list");
+        var data;
+        try {
+          data = await (await fetch("./packages-index.json")).json();
+        } catch (e) {
+          list.innerHTML = '<p class="loading">Could not load packages.</p>';
+          return;
+        }
+        document.getElementById("c-lessons").textContent =
+          "(" + data.lessons.length + ")";
+        document.getElementById("c-activities").textContent =
+          "(" + data.activities.length + ")";
+
+        var esc = function (s) {
+          return String(s).replace(/[&<>"]/g, function (c) {
+            return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+          });
+        };
+        var dl = function (file, name, meta) {
+          return (
+            '<div class="row"><span class="name">' +
+            esc(name) +
+            (meta ? ' <span class="meta">· ' + esc(meta) + "</span>" : "") +
+            '</span><a class="dl" download href="./packages/' +
+            encodeURIComponent(file) +
+            '">⬇ Download SCORM</a></div>'
+          );
+        };
+
+        function renderLessons() {
+          var byUnit = {};
+          data.lessons.forEach(function (l) {
+            (byUnit[l.unit] = byUnit[l.unit] || []).push(l);
+          });
+          var html = "";
+          Object.keys(byUnit)
+            .sort(function (a, b) {
+              return a - b;
+            })
+            .forEach(function (u) {
+              html += '<div class="unit-h">Unit ' + esc(u) + "</div>";
+              byUnit[u].forEach(function (l) {
+                html += dl(l.file, l.title, "Lesson " + l.id);
+              });
+            });
+          list.className = "";
+          list.innerHTML = html;
+        }
+        function renderActivities() {
+          var html = '<div class="unit-h">Standalone activities</div>';
+          data.activities.forEach(function (a) {
+            html += dl(
+              a.file,
+              a.title,
+              a.grade === "score" ? "scored" : "completion credit",
+            );
+          });
+          list.className = "";
+          list.innerHTML = html;
+        }
+
+        var views = { lessons: renderLessons, activities: renderActivities };
+        document.querySelectorAll(".tab").forEach(function (t) {
+          t.addEventListener("click", function () {
+            document.querySelectorAll(".tab").forEach(function (x) {
+              x.setAttribute("aria-selected", "false");
+            });
+            t.setAttribute("aria-selected", "true");
+            views[t.dataset.view]();
+          });
+        });
+        renderLessons();
+      })();
+    </script>
+  </body>
+</html>
