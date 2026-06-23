@@ -1456,6 +1456,10 @@ function getObjectivePopup() {
     <div class="obj-popup" role="dialog" aria-modal="true" aria-labelledby="obj-popup-term">
       <button type="button" class="obj-popup-close" aria-label="Close">&times;</button>
       <h3 id="obj-popup-term" class="obj-popup-term"></h3>
+      <p class="obj-popup-translation">
+        <span class="obj-popup-tr-label">Español:</span>
+        <span class="obj-popup-tr-es" lang="es"></span>
+      </p>
       <figure class="obj-popup-visual">
         <img class="obj-popup-img" alt="" />
         <figcaption class="obj-popup-example"></figcaption>
@@ -1479,6 +1483,19 @@ function openObjectiveTermPopup(entry) {
   const backdrop = getObjectivePopup();
   const term = String(entry.term || "").trim();
   backdrop.querySelector(".obj-popup-term").textContent = term;
+
+  // Spanish translation of the word itself (e.g. Ratio → Razón). Hidden when
+  // the vocab entry has no termEs so we never show an empty "Español:" row.
+  const trRow = backdrop.querySelector(".obj-popup-translation");
+  const trEs = backdrop.querySelector(".obj-popup-tr-es");
+  const termEs = entry.termEs ? String(entry.termEs).trim() : "";
+  if (termEs) {
+    trEs.textContent = termEs;
+    trRow.hidden = false;
+  } else {
+    trEs.textContent = "";
+    trRow.hidden = true;
+  }
 
   const img = backdrop.querySelector(".obj-popup-img");
   img.src = resolveVocabImage(term, entry.image);
