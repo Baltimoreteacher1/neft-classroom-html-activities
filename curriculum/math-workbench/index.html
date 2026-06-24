@@ -2136,7 +2136,7 @@
           <button
             class="tbtn solid"
             id="calcBtn"
-            title="Open the graphing calculator (TI-style: graphing, scientific, tables)"
+            title="Open the calculator (basic by default; switch to graphing at the bottom)"
             aria-pressed="false"
           >
             <span class="i">🧮</span><span class="txt">Calculator</span>
@@ -7106,7 +7106,7 @@
       class="calc-panel"
       hidden
       role="dialog"
-      aria-label="Graphing calculator"
+      aria-label="Calculator"
     >
       <div class="calc-head" id="calcHead">
         <span class="calc-title">🧮 Calculator</span>
@@ -7129,9 +7129,67 @@
           </button>
         </div>
       </div>
-      <div class="calc-body calc-applet-wrap">
-        <div id="ggbCalc"></div>
-        <div id="calcLoading" class="calc-loading">Loading calculator…</div>
+      <div class="calc-body">
+        <!-- Simple calculator (default view) -->
+        <div id="calcBasic" class="calc-basic">
+          <div class="calc-display">
+            <div id="calcExpr" class="calc-expr"></div>
+            <div id="calcOut" class="calc-out">0</div>
+          </div>
+          <div class="calc-keys">
+            <button type="button" class="calc-key calc-fn" data-act="clear">
+              C
+            </button>
+            <button type="button" class="calc-key calc-fn" data-act="back">
+              ⌫
+            </button>
+            <button type="button" class="calc-key calc-fn" data-act="percent">
+              %
+            </button>
+            <button type="button" class="calc-key calc-op" data-op="/">
+              ÷
+            </button>
+            <button type="button" class="calc-key" data-num="7">7</button>
+            <button type="button" class="calc-key" data-num="8">8</button>
+            <button type="button" class="calc-key" data-num="9">9</button>
+            <button type="button" class="calc-key calc-op" data-op="*">
+              ×
+            </button>
+            <button type="button" class="calc-key" data-num="4">4</button>
+            <button type="button" class="calc-key" data-num="5">5</button>
+            <button type="button" class="calc-key" data-num="6">6</button>
+            <button type="button" class="calc-key calc-op" data-op="-">
+              −
+            </button>
+            <button type="button" class="calc-key" data-num="1">1</button>
+            <button type="button" class="calc-key" data-num="2">2</button>
+            <button type="button" class="calc-key" data-num="3">3</button>
+            <button type="button" class="calc-key calc-op" data-op="+">
+              +
+            </button>
+            <button type="button" class="calc-key calc-fn" data-act="negate">
+              ±
+            </button>
+            <button type="button" class="calc-key" data-num="0">0</button>
+            <button type="button" class="calc-key" data-act="dot">.</button>
+            <button type="button" class="calc-key calc-eq" data-act="equals">
+              =
+            </button>
+          </div>
+        </div>
+        <!-- Graphing calculator (GeoGebra), loaded on demand -->
+        <div id="calcGraphWrap" class="calc-applet-wrap" hidden>
+          <div id="ggbCalc"></div>
+          <div id="calcLoading" class="calc-loading">Loading calculator…</div>
+        </div>
+      </div>
+      <div class="calc-modes" role="tablist" aria-label="Calculator mode">
+        <button type="button" class="calc-mode is-active" data-mode="basic">
+          Basic
+        </button>
+        <button type="button" class="calc-mode" data-mode="graphing">
+          Graphing
+        </button>
       </div>
     </div>
     <style>
@@ -7191,13 +7249,120 @@
       }
       .calc-body {
         position: relative;
+        max-width: 94vw;
+      }
+      .calc-applet-wrap {
+        position: relative;
         width: 420px;
         height: 560px;
         max-width: 94vw;
       }
+      .calc-applet-wrap[hidden] {
+        display: none !important;
+      }
       #ggbCalc {
         width: 100%;
         height: 100%;
+      }
+      /* ---- Simple (basic) calculator ---- */
+      .calc-basic {
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .calc-basic[hidden] {
+        display: none !important;
+      }
+      .calc-display {
+        background: #0f1f33;
+        color: #fff;
+        border-radius: 12px;
+        padding: 14px 16px;
+        text-align: right;
+        min-height: 78px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        gap: 4px;
+        overflow: hidden;
+      }
+      .calc-expr {
+        font-size: 14px;
+        color: #9fb3cd;
+        min-height: 18px;
+        word-break: break-all;
+      }
+      .calc-out {
+        font-size: 34px;
+        font-weight: 800;
+        line-height: 1.1;
+        word-break: break-all;
+      }
+      .calc-keys {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+      }
+      .calc-key {
+        border: 1px solid #d6e0ea;
+        background: #f4f8fc;
+        color: #12355b;
+        border-radius: 12px;
+        font-size: 20px;
+        font-weight: 700;
+        padding: 16px 0;
+        cursor: pointer;
+        user-select: none;
+        transition:
+          background 0.12s ease,
+          transform 0.05s ease;
+      }
+      .calc-key:hover {
+        background: #e7f0f9;
+      }
+      .calc-key:active {
+        transform: scale(0.96);
+      }
+      .calc-fn {
+        background: #eef2f6;
+        color: #5f6f80;
+      }
+      .calc-op {
+        background: #e3f3f1;
+        color: #11807c;
+      }
+      .calc-eq {
+        background: linear-gradient(135deg, #12355b, #1fa6a2);
+        color: #fff;
+        border: none;
+      }
+      .calc-eq:hover {
+        filter: brightness(1.06);
+        background: linear-gradient(135deg, #12355b, #1fa6a2);
+      }
+      /* ---- Mode switcher (bottom) ---- */
+      .calc-modes {
+        display: flex;
+        gap: 6px;
+        padding: 8px 12px 12px;
+        border-top: 1px solid #e6edf4;
+      }
+      .calc-mode {
+        flex: 1;
+        border: 1px solid #d6e0ea;
+        background: #fff;
+        color: #5f6f80;
+        border-radius: 10px;
+        padding: 9px 0;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .calc-mode.is-active {
+        background: #12355b;
+        border-color: #12355b;
+        color: #fff;
       }
       .calc-loading {
         position: absolute;
@@ -7214,7 +7379,7 @@
           left: 8px;
           width: auto;
         }
-        .calc-body {
+        .calc-applet-wrap {
           width: auto;
           height: 70vh;
         }
@@ -7288,7 +7453,8 @@
         function open() {
           panel.hidden = false;
           btn && btn.setAttribute("aria-pressed", "true");
-          inject();
+          // Always reopen on the basic calculator, even if graphing was used last.
+          setMode("basic");
         }
         function close() {
           panel.hidden = true;
@@ -7299,11 +7465,180 @@
             panel.hidden ? open() : close();
           });
         if (closeBtn) closeBtn.addEventListener("click", close);
+
+        // ---- Mode switching: simple basic calc (default) vs GeoGebra graphing.
+        var basicWrap = document.getElementById("calcBasic"),
+          graphWrap = document.getElementById("calcGraphWrap"),
+          modeBtns = panel.querySelectorAll(".calc-mode"),
+          mode = "basic";
+        function setMode(next) {
+          mode = next;
+          basicWrap.hidden = next !== "basic";
+          graphWrap.hidden = next !== "graphing";
+          for (var i = 0; i < modeBtns.length; i++)
+            modeBtns[i].classList.toggle(
+              "is-active",
+              modeBtns[i].getAttribute("data-mode") === next,
+            );
+          if (next === "graphing") inject();
+        }
+        for (var m = 0; m < modeBtns.length; m++)
+          modeBtns[m].addEventListener("click", function () {
+            setMode(this.getAttribute("data-mode"));
+          });
+
+        // ---- Basic calculator engine (button-driven, no free-text input). ----
+        var exprEl = document.getElementById("calcExpr"),
+          outEl = document.getElementById("calcOut"),
+          keysEl = document.querySelector(".calc-keys"),
+          buf = "", // evaluable string: digits, ., + - * /
+          justEq = false; // true right after "="; next digit starts fresh
+        var SYM = { "*": " × ", "/": " ÷ ", "+": " + ", "-": " − " };
+        function fmt(n) {
+          if (!isFinite(n)) return "Error";
+          var r = Math.round((n + Number.EPSILON) * 1e10) / 1e10;
+          return String(r);
+        }
+        function evalBuf(s) {
+          // Strip a trailing operator so live preview stays valid.
+          var clean = s.replace(/[+\-*/.]\s*$/, "");
+          if (!clean) return null;
+          if (!/^[0-9+\-*/.]+$/.test(clean)) return null; // safety guard
+          try {
+            var v = Function('"use strict";return (' + clean + ")")();
+            return typeof v === "number" ? v : null; // may be Infinity/NaN
+          } catch (e) {
+            return null;
+          }
+        }
+        function dispOf(s) {
+          return s.replace(/[*/+\-]/g, function (c) {
+            return SYM[c] || c;
+          });
+        }
+        function render(result) {
+          var disp = dispOf(buf);
+          exprEl.textContent = disp;
+          if (result === "clear") {
+            outEl.textContent = "0";
+            return;
+          }
+          if (result != null) {
+            outEl.textContent = result;
+            return;
+          }
+          var v = evalBuf(buf);
+          outEl.textContent =
+            v == null || !isFinite(v) ? disp.trim() || "0" : fmt(v);
+        }
+        function lastNumber(s) {
+          var mm = s.match(/(\d*\.?\d+)$/);
+          return mm ? mm[1] : "";
+        }
+        function pressNum(d) {
+          if (justEq) {
+            buf = "";
+            justEq = false;
+          }
+          var num = lastNumber(buf);
+          if (num === "0")
+            buf = buf.slice(0, -1) + d; // replace a lone zero (no "05")
+          else buf += d;
+          render();
+        }
+        function pressDot() {
+          if (justEq) {
+            buf = "";
+            justEq = false;
+          }
+          var num = lastNumber(buf);
+          if (num.indexOf(".") !== -1) return;
+          if (!num) buf += "0";
+          buf += ".";
+          render();
+        }
+        function pressOp(op) {
+          justEq = false; // keep the result and continue the calculation
+          if (!buf) {
+            if (op === "-") {
+              buf = "-";
+              render();
+            }
+            return;
+          }
+          if (/[+\-*/]$/.test(buf)) buf = buf.slice(0, -1); // replace operator
+          buf += op;
+          render();
+        }
+        function pressPercent() {
+          justEq = false;
+          var num = lastNumber(buf);
+          if (!num) return;
+          var pct = fmt(parseFloat(num) / 100);
+          buf = buf.slice(0, buf.length - num.length) + pct;
+          render();
+        }
+        function pressNegate() {
+          justEq = false;
+          var num = lastNumber(buf);
+          if (!num) return;
+          var start = buf.length - num.length;
+          if (buf[start - 1] === "-") {
+            buf = buf.slice(0, start - 1) + num;
+          } else {
+            buf = buf.slice(0, start) + "-" + num;
+          }
+          render();
+        }
+        function pressEquals() {
+          var v = evalBuf(buf);
+          if (v == null) return;
+          exprEl.textContent = dispOf(buf).trim();
+          if (!isFinite(v)) {
+            outEl.textContent = "Error";
+            buf = "";
+            justEq = false;
+            return;
+          }
+          buf = fmt(v);
+          outEl.textContent = buf;
+          justEq = true;
+        }
+        function clearAll() {
+          buf = "";
+          justEq = false;
+          render("clear");
+        }
+        if (keysEl)
+          keysEl.addEventListener("click", function (e) {
+            var k = e.target.closest(".calc-key");
+            if (!k) return;
+            if (k.hasAttribute("data-num"))
+              return pressNum(k.getAttribute("data-num"));
+            if (k.hasAttribute("data-op"))
+              return pressOp(k.getAttribute("data-op"));
+            var act = k.getAttribute("data-act");
+            if (act === "dot") return pressDot();
+            if (act === "percent") return pressPercent();
+            if (act === "negate") return pressNegate();
+            if (act === "equals") return pressEquals();
+            if (act === "back") {
+              justEq = false;
+              buf = buf.slice(0, -1);
+              return render();
+            }
+            if (act === "clear") return clearAll();
+          });
+
         if (resetBtn)
           resetBtn.addEventListener("click", function () {
-            try {
-              if (api && api.reset) api.reset();
-            } catch (e) {}
+            if (mode === "graphing") {
+              try {
+                if (api && api.reset) api.reset();
+              } catch (e) {}
+            } else {
+              clearAll();
+            }
           });
         // Drag by the header.
         var drag = false,
