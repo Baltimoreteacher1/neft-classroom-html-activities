@@ -2252,7 +2252,7 @@
   function card(key, title, sub, body) {
     const handle =
       view === "home"
-        ? `<button class="card-drag-handle" aria-label="Drag to reorder" title="Drag to reorder">⋮⋮</button>`
+        ? `<button class="card-drag-handle" aria-label="Reorder this card — drag, or focus and press the up and down arrow keys" title="Drag, or use ↑ ↓ keys, to reorder">⋮⋮</button>`
         : "";
     return `<section class="card" data-card="${key}"><div class="head"><div><h3>${esc(title)}</h3>${sub ? `<p class="sub">${esc(sub)}</p>` : ""}</div>${handle}</div>${body}</section>`;
   }
@@ -2652,7 +2652,19 @@
         `;
       }
 
-      return `${welcomeBanner}${checkinBanner()}${captureBanner()}<div class="home-grid">${order.map((k) => map[k] || "").join("")}</div>${reflectionCardHTML()}`;
+      // A always-present tile so adding, hiding, or rearranging cards is
+      // discoverable right from the Now screen (no digging through Settings).
+      // It also keeps the masonry columns balanced instead of leaving a gap
+      // beside a tall card like the calendar.
+      const hiddenCount = state.settings.hiddenCards.filter((k) =>
+        CARDS.some((c) => c[0] === k),
+      ).length;
+      const customizeTile = `<button type="button" class="card add-card-tile" data-act="nav" data-arg="settings" aria-label="Add, hide, or rearrange your Now-screen cards">
+        <span class="add-card-ic" aria-hidden="true">＋</span>
+        <span class="add-card-text"><b>Add or arrange cards</b><small>${hiddenCount ? `${hiddenCount} card${hiddenCount === 1 ? "" : "s"} hidden — tap to show` : "Show, hide & reorder"}</small></span>
+      </button>`;
+
+      return `${welcomeBanner}${checkinBanner()}${captureBanner()}<div class="home-grid">${order.map((k) => map[k] || "").join("")}${customizeTile}</div>${reflectionCardHTML()}`;
     },
 
     calendar() {
@@ -6678,11 +6690,14 @@ ${name}`;
       cardEl.classList.add("dragging");
 
       let lastOverCardId = null;
+      let insertAfter = false; // drop below the target card's midpoint?
+      let moved = false; // did the pointer travel far enough to be a drag?
 
       function onPointerMove(moveEv) {
         if (moveEv.pointerId !== ev.pointerId) return;
         const dx = moveEv.clientX - startX;
         const dy = moveEv.clientY - startY;
+        if (!moved && Math.abs(dx) + Math.abs(dy) > 4) moved = true;
         cardEl.style.transform = `translate(${dx}px, ${dy}px) scale(1.02)`;
 
         cardEl.style.pointerEvents = "none";
@@ -6697,6 +6712,11 @@ ${name}`;
         if (overCard && overCard !== cardEl && overCard.closest(".home-grid")) {
           overCard.classList.add("drag-over");
           lastOverCardId = overCard.dataset.card;
+          // Decide whether to drop before or after the hovered card based on
+          // where the pointer sits relative to its vertical midpoint. This
+          // keeps reordering predictable in the masonry column layout.
+          const r = overCard.getBoundingClientRect();
+          insertAfter = moveEv.clientY > r.top + r.height / 2;
         } else {
           lastOverCardId = null;
         }
@@ -6716,16 +6736,25 @@ ${name}`;
         document.removeEventListener("pointerup", onPointerUp);
         document.removeEventListener("pointercancel", onPointerUp);
 
-        if (lastOverCardId && lastOverCardId !== cardId) {
+        if (moved && lastOverCardId && lastOverCardId !== cardId) {
+          // Remove the dragged card first, THEN locate the target in the
+          // updated array so the insert index never drifts (the old code
+          // spliced against pre-removal indices and overshot by one when
+          // moving a card downward).
           const order = state.settings.homeOrder;
-          const i = order.indexOf(cardId);
-          const j = order.indexOf(lastOverCardId);
-          if (i >= 0 && j >= 0) {
-            order.splice(i, 1);
-            order.splice(j, 0, cardId);
-            save();
-            render();
-            toast("Layout updated");
+          const from = order.indexOf(cardId);
+          if (from >= 0) {
+            order.splice(from, 1);
+            let to = order.indexOf(lastOverCardId);
+            if (to < 0) {
+              order.splice(from, 0, cardId); // target vanished — restore
+            } else {
+              if (insertAfter) to += 1;
+              order.splice(to, 0, cardId);
+              save();
+              render();
+              toast("Layout updated");
+            }
           }
         }
       }
@@ -6733,6 +6762,44 @@ ${name}`;
       document.addEventListener("pointermove", onPointerMove);
       document.addEventListener("pointerup", onPointerUp);
       document.addEventListener("pointercancel", onPointerUp);
+    });
+
+    // Keyboard-accessible reordering: focus a card's reorder handle and press
+    // Arrow Up / Arrow Down to move it. Mirrors the pointer drag for students
+    // on a Chromebook keyboard or anyone using assistive tech.
+    document.addEventListener("keydown", (ev) => {
+      const handle =
+        ev.target.closest && ev.target.closest(".card-drag-handle");
+      if (!handle) return;
+      if (ev.key !== "ArrowUp" && ev.key !== "ArrowDown") return;
+      const cardEl = handle.closest(".card");
+      if (!cardEl) return;
+      const cardId = cardEl.dataset.card;
+      ev.preventDefault();
+
+      const order = state.settings.homeOrder;
+      const visible = order.filter(
+        (k) => !state.settings.hiddenCards.includes(k),
+      );
+      const vi = visible.indexOf(cardId);
+      const ni = ev.key === "ArrowUp" ? vi - 1 : vi + 1;
+      if (vi < 0 || ni < 0 || ni >= visible.length) return;
+      const neighbor = visible[ni];
+
+      order.splice(order.indexOf(cardId), 1);
+      order.splice(
+        order.indexOf(neighbor) + (ev.key === "ArrowDown" ? 1 : 0),
+        0,
+        cardId,
+      );
+      save();
+      render();
+      requestAnimationFrame(() => {
+        document
+          .querySelector(`.card[data-card="${cardId}"] .card-drag-handle`)
+          ?.focus();
+      });
+      toast("Layout updated");
     });
 
     document.addEventListener("click", (ev) => {
