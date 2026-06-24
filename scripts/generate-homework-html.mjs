@@ -11,6 +11,7 @@ import {
   renderWordsTab,
   renderTogetherTab,
   renderCheckTab,
+  renderWorkbenchTab,
   renderHelpTab,
   renderMoreTab,
   renderPlayTabPanel,
@@ -21,7 +22,11 @@ import {
   HOMEWORK_TABS_JS,
 } from "./homework-guided-notes.mjs";
 import { HOMEWORK_GAME_JS } from "./homework-games.mjs";
-import { detectVisualTopic, selectMorePracticeProblems } from "./homework-alignment.mjs";
+import {
+  detectVisualTopic,
+  selectMorePracticeProblems,
+  selectTieredQuickCheckProblems,
+} from "./homework-alignment.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -804,22 +809,36 @@ function generateHtml(lessonId, config) {
   const title = config.title || "Lesson Practice";
   const vocab = config.vocabulary || [];
 
-  const selected = selectProblems(config.practice || {}, config);
-  const moreSelected = selectMorePracticeProblems(config.practice || {}, config, selected);
+  // Two-tier Quick Check: easy "warm-up" problems first to practice the concept,
+  // then a harder "level up" set — clearly sectioned. Indices stay contiguous so
+  // per-problem checking/scoring keeps working across all sections.
+  const { warmup, challenge } = selectTieredQuickCheckProblems(config.practice || {}, config);
+  const coreSelected = [...warmup, ...challenge];
+  const moreSelected = selectMorePracticeProblems(config.practice || {}, config, coreSelected);
   const topic = detectVisualTopic(config);
 
   const welcomeHtml = renderWelcomeBanner(config, lessonId);
   const quickCheckIntroHtml = renderQuickCheckIntro();
-  const problemsHtml = selected.map((p, idx) => renderProblem(p, idx, topic)).join("\n");
+  const warmupHtml = warmup
+    .map((p, idx) => renderProblem(p, idx, topic, { badge: "Warm-up / Calentamiento", num: idx + 1 }))
+    .join("\n");
+  const challengeHtml = challenge
+    .map((p, idx) =>
+      renderProblem(p, warmup.length + idx, topic, { badge: "Level up / Reto", num: idx + 1 }),
+    )
+    .join("\n");
   const morePracticeHtml = moreSelected
-    .map((p, idx) => renderProblem(p, selected.length + idx, topic, { badge: "Bonus / Más", num: idx + 1 }))
+    .map((p, idx) =>
+      renderProblem(p, coreSelected.length + idx, topic, { badge: "Bonus / Más", num: idx + 1 }),
+    )
     .join("\n");
 
   const tabPanels = [
     renderLearnTab(config),
     renderWordsTab(vocab, resolveVocabImage, vocabImageAlt),
     renderTogetherTab(config),
-    renderCheckTab(quickCheckIntroHtml, problemsHtml, morePracticeHtml),
+    renderCheckTab(quickCheckIntroHtml, warmupHtml, challengeHtml, morePracticeHtml),
+    renderWorkbenchTab(),
     renderHelpTab(config),
     renderMoreTab(config, lessonId),
     renderPlayTabPanel(config),
@@ -2350,7 +2369,7 @@ ${helpModalHtml}
     
     <div class="score-progress-container">
       <div class="score-text">
-        Progress / Progreso: <span id="progress_text">0 / ${selected.length} Completed</span>
+        Progress / Progreso: <span id="progress_text">0 / ${coreSelected.length} Completed</span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
