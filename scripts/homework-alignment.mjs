@@ -56,13 +56,27 @@ export function detectVisualTopic(config) {
   if (/inequal/i.test(title) || standard === "6.EE.5" || standard === "6.EE.8")
     return "inequalities";
   if (/equation/i.test(title) || standard === "6.EE.6" || standard === "6.EE.7") return "equations";
-  if (standard.startsWith("6.EE.2") || standard === "6.EE.3" || standard === "6.EE.4")
+  // A graphing lesson (e.g. "Graph Ratio Tables") is about plotting on the plane,
+  // so the coordinate-plane visual fits better than a ratio table — check before ratios.
+  if (/graph/i.test(title) && /ratio|coordinate|plane|plot|ordered pair/i.test(title))
+    return "coordinate-plane";
+  // Properties of operations (commutative/associative/identity/distributive) is a
+  // distinct concept from naming the parts of an expression, even though both can
+  // carry standard 6.EE.3. Detect by title so the big-idea visual matches the lesson.
+  if (/propert/i.test(title) || /distributive/i.test(title)) return "properties";
+  if (
+    standard.startsWith("6.EE.2") ||
+    standard === "6.EE.3" ||
+    standard === "6.EE.4" ||
+    /express|algebraic|variable|coefficient|like term|simplif|equivalent expression/i.test(title)
+  )
     return "expressions";
-  if (standard.startsWith("6.RP")) return "ratios";
+  if (standard.startsWith("6.RP") || /\bratio|unit rate|\brate\b|percent/i.test(title)) return "ratios";
   if (unit === 5 || standard === "6.G.1") return "area";
   if (standard === "6.G.2" || /volume/i.test(title)) return "volume";
   if (standard === "6.G.4" || /surface/i.test(title)) return "surface-area";
-  if (standard.startsWith("6.SP")) return "statistics";
+  if (standard.startsWith("6.SP") || /box plot|dot plot|histogram|display data|data distribution/i.test(title))
+    return "statistics";
   if (/coordinate|quadrant|reflect|distance on/i.test(title)) return "coordinate-plane";
   if (/integer|absolute|rational number/i.test(title)) return "number-line";
   if (standard.startsWith("6.NS.1") || /fraction|mixed number/i.test(title)) return "fractions";

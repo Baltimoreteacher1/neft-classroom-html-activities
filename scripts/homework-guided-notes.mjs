@@ -727,6 +727,19 @@ function conceptVisualSvg(config) {
       </svg>`;
   }
 
+  if (topic === "properties") {
+    return `
+      <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Properties of operations">
+        <rect x="8" y="14" width="404" height="172" rx="12" fill="#fef7e0" stroke="#f2c15b" stroke-width="2"/>
+        <text x="210" y="40" text-anchor="middle" font-size="14" font-weight="700" fill="#12355b">Properties / Propiedades</text>
+        <text x="28" y="76" font-size="13" font-weight="700" fill="#1fa6a2">Commutative / Conmutativa</text>
+        <text x="28" y="98" font-size="18" font-weight="800" fill="#12355b">a + b = b + a</text>
+        <text x="28" y="128" font-size="13" font-weight="700" fill="#1fa6a2">Associative / Asociativa</text>
+        <text x="28" y="150" font-size="18" font-weight="800" fill="#12355b">(a + b) + c = a + (b + c)</text>
+        <text x="28" y="178" font-size="13" font-weight="700" fill="#1fa6a2">Distributive / Distributiva: a(b + c) = a·b + a·c</text>
+      </svg>`;
+  }
+
   if (topic === "expressions") {
     return `
       <svg viewBox="0 0 420 200" class="concept-svg" role="img" aria-label="Algebraic expression">
