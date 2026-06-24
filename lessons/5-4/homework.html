@@ -1708,6 +1708,48 @@ header.homework-header h1 {
 .help-modal-body { margin: 0 0 10px; font-size: 15px; line-height: 1.5; }
 body.help-modal-open { overflow: hidden; }
 
+/* Visual aid + sentence frame inside help popups */
+.help-modal-visual {
+  margin: 0 0 14px; padding: 10px; border-radius: var(--radius-sm);
+  background: var(--cream); border: 1px solid var(--line); text-align: center;
+}
+.help-modal-visual[hidden] { display: none !important; }
+.help-modal-visual svg { max-width: 100%; height: auto; }
+.help-modal-frame {
+  display: flex; flex-direction: column; gap: 4px;
+  margin: 12px 0 0; padding: 12px 14px;
+  background: var(--teal-light); border-left: 4px solid var(--teal);
+  border-radius: var(--radius-sm); font-size: 14px; line-height: 1.5;
+}
+.help-modal-frame[hidden] { display: none !important; }
+.help-frame-tag { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--teal); }
+.help-frame-es { color: var(--muted); }
+
+/* Guided "Try together" fill-in spaces + step actions */
+.together-fill { margin: 10px 0 6px; }
+.together-fill-label { display: block; font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.together-fill-input {
+  width: 100%; min-height: 48px; padding: 10px 12px;
+  border: 2px dashed var(--teal); border-radius: var(--radius-sm);
+  background: #fffef8; font-size: 15px; line-height: 1.5; resize: vertical;
+}
+.together-fill-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
+.together-step-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+
+/* "More practice" accordion in the Check tab */
+.more-practice {
+  margin-top: 20px; border: 2px solid var(--teal); border-radius: var(--radius-md);
+  background: var(--teal-light); overflow: hidden;
+}
+.more-practice > summary {
+  cursor: pointer; list-style: none; padding: 14px 18px;
+  font-family: var(--font-display); font-weight: 800; color: var(--navy); font-size: 16px;
+}
+.more-practice > summary::-webkit-details-marker { display: none; }
+.more-practice[open] > summary { border-bottom: 1px solid var(--line); background: var(--white); }
+.more-practice-note { padding: 12px 18px 0; font-size: 13px; }
+.more-practice-container { padding: 8px 14px 14px; }
+
 .external-resource-list { list-style: none; padding: 0; margin: 16px 0 0; display: flex; flex-direction: column; gap: 10px; }
 .ai-lab-cta {
   display: flex; align-items: center; gap: 14px;
@@ -2505,7 +2547,17 @@ body { font-size: 15px; line-height: 1.58; }
             </div>
             <p class="lang-en"><strong>First…</strong> First find one triangle: ½ × 4 × 3. What is 4 × 3?</p>
             <p class="lang-es" lang="es"><strong>Primero…</strong> Primero hallen un triángulo: ½ × 4 × 3. ¿Cuánto es 4 × 3?</p>
-            <p class="step-hint">💡 4 × 3 = 12, then half of 12 is 6 square centimeters. · 4 × 3 = 12, luego la mitad de 12 es 6 centímetros cuadrados.</p>
+            <div class="together-fill">
+              <label class="together-fill-label" for="together_0">
+                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
+                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
+              </label>
+              <textarea id="together_0" name="together_0" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
+            </div>
+            <div class="together-step-actions">
+              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 hint","titleEs":"Pista del paso 1","en":"4 × 3 = 12, then half of 12 is 6 square centimeters.","es":"4 × 3 = 12, luego la mitad de 12 es 6 centímetros cuadrados."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
+              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 — more help","titleEs":"Paso 1 — más ayuda","en":"Multiply base times height, then take half — just like a triangle.","es":"Multipliquen base por altura, luego tomen la mitad — igual que un triángulo."}' onclick="openHelpModalFromBtn(this)" aria-label="🤝 More help / Más ayuda">🤝 More help / Más ayuda</button>
+            </div>
           </li>
           <li class="together-step step-color-2">
             <div class="together-step-head">
@@ -2513,7 +2565,17 @@ body { font-size: 15px; line-height: 1.58; }
             </div>
             <p class="lang-en"><strong>First…</strong> How many triangles does a pentagon have? Count the sides: 5.</p>
             <p class="lang-es" lang="es"><strong>Primero…</strong> ¿Cuántos triángulos tiene un pentágono? Cuenten los lados: 5.</p>
-            <p class="step-hint">💡 The number of triangles equals the number of sides. · El número de triángulos es igual al número de lados.</p>
+            <div class="together-fill">
+              <label class="together-fill-label" for="together_1">
+                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
+                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
+              </label>
+              <textarea id="together_1" name="together_1" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
+            </div>
+            <div class="together-step-actions">
+              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 hint","titleEs":"Pista del paso 2","en":"The number of triangles equals the number of sides.","es":"El número de triángulos es igual al número de lados."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
+              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 — more help","titleEs":"Paso 2 — más ayuda","en":"A pentagon has 5 sides, so it has 5 equal triangles.","es":"Un pentágono tiene 5 lados, así que tiene 5 triángulos iguales."}' onclick="openHelpModalFromBtn(this)" aria-label="🤝 More help / Más ayuda">🤝 More help / Más ayuda</button>
+            </div>
           </li>
           <li class="together-step step-color-3">
             <div class="together-step-head">
@@ -2521,7 +2583,17 @@ body { font-size: 15px; line-height: 1.58; }
             </div>
             <p class="lang-en"><strong>First…</strong> Now multiply: 5 × 6 = 30. So the total area is 30 square centimeters.</p>
             <p class="lang-es" lang="es"><strong>Primero…</strong> Ahora multipliquen: 5 × 6 = 30. Entonces el área total es 30 centímetros cuadrados.</p>
-            <p class="step-hint">💡 Multiply one triangle&#039;s area by the 5 triangles. · Multipliquen el área de un triángulo por los 5 triángulos.</p>
+            <div class="together-fill">
+              <label class="together-fill-label" for="together_2">
+                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
+                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
+              </label>
+              <textarea id="together_2" name="together_2" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
+            </div>
+            <div class="together-step-actions">
+              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 3 hint","titleEs":"Pista del paso 3","en":"Multiply one triangle&#39;s area by the 5 triangles.","es":"Multipliquen el área de un triángulo por los 5 triángulos."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
+              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 3 — more help","titleEs":"Paso 3 — más ayuda","en":"We multiply because all the triangles are the same size.","es":"Multiplicamos porque todos los triángulos son del mismo tamaño."}' onclick="openHelpModalFromBtn(this)" aria-label="🤝 More help / Más ayuda">🤝 More help / Más ayuda</button>
+            </div>
           </li>
       </ol>
     </div>
@@ -2541,7 +2613,7 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Quick Check 1</div>
         <div class="problem-type-badge">ERROR ANALYSIS</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Which step breaks the rule you learned today?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Which step breaks the rule you learned today?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
         <h3 class="error-analysis-title">⚠️ onLevel — Spot the Common Mistake</h3>
@@ -2634,7 +2706,7 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Quick Check 2</div>
         <div class="problem-type-badge">ERROR ANALYSIS</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Which step breaks the rule you learned today?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Which step breaks the rule you learned today?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
         <h3 class="error-analysis-title">⚠️ approaching — Spot the Common Mistake</h3>
@@ -2727,7 +2799,7 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Quick Check 3</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"A = ½ × b × h = ½ × 6 × 5.2 = 15.6 square feet.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"A = ½ × b × h = ½ × 6 × 5.2 = 15.6 square feet.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
         <p class="problem-stem">A regular hexagon is divided into 6 equal triangles from the center. Each triangle has a base of 6 ft and a height of 5.2 ft. What is the area of one triangle?</p>
@@ -2799,7 +2871,7 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Quick Check 4</div>
         <div class="problem-type-badge">OPEN RESPONSE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
         <p class="problem-stem">A regular hexagon and a regular pentagon both have triangles with the same base (6 ft) and the same height (5 ft). Which polygon has the greater total area? Explain why the number of sides matters.</p>
@@ -2864,7 +2936,925 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
     </section>
+  
+
+    <section class="problem-section card" id="problem_4" data-problem-type="multiple-choice">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Quick Check 5</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"One triangle = ½ × 4 × 6 = 12 in². A pentagon has 5 triangles, so total = 5 × 12 = 60 in².","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">A regular pentagonal tile splits into 5 congruent triangles. Each triangle has a base of 4 in and a height of 6 in. What is the total area of the tile?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="One triangle = ½ × 4 × 6 = 12 in². A pentagon has 5 triangles, so total = 5 × 12 = 60 in².">
+          
+            <label class="mc-option-label" id="label_q_4_0">
+              <input type="radio" name="q_4" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">60 in²</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_4_1">
+              <input type="radio" name="q_4" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">12 in²</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_4_2">
+              <input type="radio" name="q_4" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">24 in²</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_4_3">
+              <input type="radio" name="q_4" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">120 in²</span>
+            </label>
+          
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Count or multiply the units that cover the shape (base × height).</span><span class="lang-es" lang="es">Cuenta o multiplica las unidades que cubren la figura (base × altura).</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_4"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_4" name="work_4" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_5" data-problem-type="matching-game">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Quick Check 6</div>
+        <div class="problem-type-badge">MATCHING GAME</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">Match each polygon to its total area.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
+        <div class="matching-pairs">
+          
+            <div class="matching-row" data-term="Hexagon: 6 triangles, each ½×6×5.2" data-correct="93.6 sq ft">
+              <div class="matching-term">Hexagon: 6 triangles, each ½×6×5.2</div>
+              <div class="matching-select-container">
+                <select name="q_5_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="110 sq ft">110 sq ft</option><option value="36 sq ft">36 sq ft</option><option value="50 sq ft">50 sq ft</option><option value="76.8 sq ft">76.8 sq ft</option><option value="93.6 sq ft">93.6 sq ft</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="Pentagon: 5 triangles, each ½×8×5.5" data-correct="110 sq ft">
+              <div class="matching-term">Pentagon: 5 triangles, each ½×8×5.5</div>
+              <div class="matching-select-container">
+                <select name="q_5_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="110 sq ft">110 sq ft</option><option value="36 sq ft">36 sq ft</option><option value="50 sq ft">50 sq ft</option><option value="76.8 sq ft">76.8 sq ft</option><option value="93.6 sq ft">93.6 sq ft</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="Octagon: 8 triangles, each ½×4×4.8" data-correct="76.8 sq ft">
+              <div class="matching-term">Octagon: 8 triangles, each ½×4×4.8</div>
+              <div class="matching-select-container">
+                <select name="q_5_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="110 sq ft">110 sq ft</option><option value="36 sq ft">36 sq ft</option><option value="50 sq ft">50 sq ft</option><option value="76.8 sq ft">76.8 sq ft</option><option value="93.6 sq ft">93.6 sq ft</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="Square: 2 triangles, each ½×10×5" data-correct="50 sq ft">
+              <div class="matching-term">Square: 2 triangles, each ½×10×5</div>
+              <div class="matching-select-container">
+                <select name="q_5_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="110 sq ft">110 sq ft</option><option value="36 sq ft">36 sq ft</option><option value="50 sq ft">50 sq ft</option><option value="76.8 sq ft">76.8 sq ft</option><option value="93.6 sq ft">93.6 sq ft</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="Triangle b=12, h=6" data-correct="36 sq ft">
+              <div class="matching-term">Triangle b=12, h=6</div>
+              <div class="matching-select-container">
+                <select name="q_5_pair_4" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="110 sq ft">110 sq ft</option><option value="36 sq ft">36 sq ft</option><option value="50 sq ft">50 sq ft</option><option value="76.8 sq ft">76.8 sq ft</option><option value="93.6 sq ft">93.6 sq ft</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="Parallelogram b=9, h=4" data-correct="36 sq ft">
+              <div class="matching-term">Parallelogram b=9, h=4</div>
+              <div class="matching-select-container">
+                <select name="q_5_pair_5" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="110 sq ft">110 sq ft</option><option value="36 sq ft">36 sq ft</option><option value="50 sq ft">50 sq ft</option><option value="76.8 sq ft">76.8 sq ft</option><option value="93.6 sq ft">93.6 sq ft</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Count or multiply the units that cover the shape (base × height).</span><span class="lang-es" lang="es">Cuenta o multiplica las unidades que cubren la figura (base × altura).</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
   </main>
+      
+      <details class="more-practice">
+        <summary>
+          <span class="lang-en">➕ More practice — open for extra problems</span>
+          <span class="lang-es" lang="es">➕ Más práctica — abre para más problemas</span>
+        </summary>
+        <p class="more-practice-note bilingual-block">
+          <span class="lang-en">Optional. Only if your student wants more — these are bonus problems.</span>
+          <span class="lang-es" lang="es">Opcional. Solo si tu estudiante quiere más — son problemas adicionales.</span>
+        </p>
+        <main class="problems-container more-practice-container">
+    <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 1</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"An octagon has 8 sides, so it splits into 8 triangles. One triangle = ½ × 6 × 5 = 15 sq ft. Total = 8 × 15 = 120 sq ft.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">A regular octagonal tile is split from its center into congruent triangles. Each triangle has a base of 6 ft and a height of 5 ft. First decide how many triangles an octagon has, then find the total area.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="An octagon has 8 sides, so it splits into 8 triangles. One triangle = ½ × 6 × 5 = 15 sq ft. Total = 8 × 15 = 120 sq ft.">
+          
+            <label class="mc-option-label" id="label_q_6_0">
+              <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">120 sq ft</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_6_1">
+              <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">15 sq ft</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_6_2">
+              <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">90 sq ft</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_6_3">
+              <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">105 sq ft</span>
+            </label>
+          
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Count or multiply the units that cover the shape (base × height).</span><span class="lang-es" lang="es">Cuenta o multiplica las unidades que cubren la figura (base × altura).</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_6"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_6" name="work_6" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_7" data-problem-type="error-analysis">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 2</div>
+        <div class="problem-type-badge">ERROR ANALYSIS</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Look at Step 4. The work only describes one of the six triangles in the hexagon.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <h3 class="error-analysis-title">⚠️ Level 2 Extension — Find the Tile Area Error</h3>
+        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read each step aloud and ask: does this step follow the math rules we learned?</span><span class="lang-es" lang="es">👪 Lean cada paso en voz alta y pregunten: ¿sigue las reglas que aprendimos?</span></p>
+        
+        <div class="clipboard-box">
+          <div class="clipboard-top"></div>
+          <div class="clipboard-paper">
+            
+              <div class="worked-step" id="step_q_7_1">
+                <span class="step-badge">Step 1</span>
+                <span class="step-label">Decompose the tile:</span>
+                <span class="step-work">A regular hexagonal tile = 6 congruent triangles</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_7_2">
+                <span class="step-badge">Step 2</span>
+                <span class="step-label">Identify one triangle:</span>
+                <span class="step-work">base = 8 in, height = 3.5 in</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_7_3">
+                <span class="step-badge">Step 3</span>
+                <span class="step-label">Find the area of one triangle:</span>
+                <span class="step-work">A = ½ × 8 × 3.5 = 14 sq in</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_7_4">
+                <span class="step-badge">Step 4</span>
+                <span class="step-label">State the total tile area:</span>
+                <span class="step-work">Total area = 14 sq in</span>
+              </div>
+            
+          </div>
+        </div>
+        
+        <div class="error-controls">
+          <div class="error-select-row">
+            <label for="error_step_select_7">Which step has the error?</label>
+            <select id="error_step_select_7" class="custom-select error-step-select" data-correct="4" onchange="saveState(); updateProgress();">
+              <option value="">-- Choose Step --</option>
+              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option><option value="4">Step 4</option>
+            </select>
+            <span class="feedback-badge"></span>
+          </div>
+          
+          <div class="error-explain-row">
+            <label for="error_explain_input_7">Explain the error and write the correct calculation:</label>
+            <textarea id="error_explain_input_7" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
+            <span class="feedback-badge"></span>
+          </div>
+          
+          <div class="reveal-box" id="error_correct_work_7" style="display:none;">
+            <strong>Correct Work Reference:</strong> The student stopped after finding ONE triangle. A hexagon has 6 congruent triangles, so multiply by 6: Total = 6 × 14 = 84 sq in.
+            
+          </div>
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Count or multiply the units that cover the shape (base × height).</span><span class="lang-es" lang="es">Cuenta o multiplica las unidades que cubren la figura (base × altura).</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_7"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_7" name="work_7" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_8" data-problem-type="multiple-choice">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 3</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Each triangle: ½ × 4 × 3.5 = 7 sq cm. Total: 6 × 7 = 42 sq cm.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">A regular hexagon is split into 6 triangles, each with base 4 cm and height 3.5 cm. What is the total area?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="Each triangle: ½ × 4 × 3.5 = 7 sq cm. Total: 6 × 7 = 42 sq cm.">
+          
+            <label class="mc-option-label" id="label_q_8_0">
+              <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">42 sq cm</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_8_1">
+              <input type="radio" name="q_8" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">21 sq cm</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_8_2">
+              <input type="radio" name="q_8" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">84 sq cm</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_8_3">
+              <input type="radio" name="q_8" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">14 sq cm</span>
+            </label>
+          
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Count or multiply the units that cover the shape (base × height).</span><span class="lang-es" lang="es">Cuenta o multiplica las unidades que cubren la figura (base × altura).</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_8"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_8" name="work_8" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_9" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 4</div>
+        <div class="problem-type-badge">DRAG SORT</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">Sort each polygon by whether it decomposes into more than 5 triangles or 5 or fewer.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
+        
+        <div class="drag-sort-workspace" id="dragsort_9">
+          <div class="drag-columns">
+            
+              <div class="drag-column" data-category-id="more" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'more')">
+                <div class="drag-column-header">More than 5 triangles</div>
+                <div class="drag-column-slots" id="slots_9_more" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'more')"></div>
+              </div>
+              <div class="drag-column" data-category-id="notmore" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'notmore')">
+                <div class="drag-column-header">5 or fewer triangles</div>
+                <div class="drag-column-slots" id="slots_9_notmore" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'notmore')"></div>
+              </div>
+          </div>
+          <div class="drag-source-section">
+            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
+            <div class="drag-source-pile" id="pile_9" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, '')">
+              
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_9_0"
+                     data-item-index="0"
+                     data-correct-category="more"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Regular hexagon → 6 triangles</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_0', 9); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="more">More than 5 triangles</option><option value="notmore">5 or fewer triangles</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_9_1"
+                     data-item-index="1"
+                     data-correct-category="more"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Regular octagon → 8 triangles</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_1', 9); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="more">More than 5 triangles</option><option value="notmore">5 or fewer triangles</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_9_2"
+                     data-item-index="2"
+                     data-correct-category="notmore"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Equilateral triangle → 3 triangles</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_2', 9); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="more">More than 5 triangles</option><option value="notmore">5 or fewer triangles</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_9_3"
+                     data-item-index="3"
+                     data-correct-category="notmore"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Square → 4 triangles</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_3', 9); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="more">More than 5 triangles</option><option value="notmore">5 or fewer triangles</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_9_4"
+                     data-item-index="4"
+                     data-correct-category="notmore"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Regular pentagon → 5 triangles</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_4', 9); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="more">More than 5 triangles</option><option value="notmore">5 or fewer triangles</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="drag-controls">
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(9); saveState(); updateProgress();">Reset Sorting</button>
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Count or multiply the units that cover the shape (base × height).</span><span class="lang-es" lang="es">Cuenta o multiplica las unidades que cubren la figura (base × altura).</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_10" data-problem-type="multiple-choice">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 5</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"A hexagon has 6 sides, so it splits into 6 equal triangles. Total = 6 × 12 = 72 cm².","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">A regular hexagonal floor tile splits from its center into 6 congruent triangles, each with an area of 12 cm². What is the total area of the tile?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="A hexagon has 6 sides, so it splits into 6 equal triangles. Total = 6 × 12 = 72 cm².">
+          
+            <label class="mc-option-label" id="label_q_10_0">
+              <input type="radio" name="q_10" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">72 cm²</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_10_1">
+              <input type="radio" name="q_10" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">12 cm²</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_10_2">
+              <input type="radio" name="q_10" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">36 cm²</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_10_3">
+              <input type="radio" name="q_10" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">18 cm²</span>
+            </label>
+          
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Count or multiply the units that cover the shape (base × height).</span><span class="lang-es" lang="es">Cuenta o multiplica las unidades que cubren la figura (base × altura).</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_10"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_10" name="work_10" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_11" data-problem-type="error-analysis">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 6</div>
+        <div class="problem-type-badge">ERROR ANALYSIS</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Look at Step 4. What operation should you use to combine 6 equal triangles?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <h3 class="error-analysis-title">⚠️ Find the Area Error</h3>
+        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read each step aloud and ask: does this step follow the math rules we learned?</span><span class="lang-es" lang="es">👪 Lean cada paso en voz alta y pregunten: ¿sigue las reglas que aprendimos?</span></p>
+        
+        <div class="clipboard-box">
+          <div class="clipboard-top"></div>
+          <div class="clipboard-paper">
+            
+              <div class="worked-step" id="step_q_11_1">
+                <span class="step-badge">Step 1</span>
+                <span class="step-label">Decompose the hexagon:</span>
+                <span class="step-work">A regular hexagon = 6 triangles</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_11_2">
+                <span class="step-badge">Step 2</span>
+                <span class="step-label">Find area of one triangle:</span>
+                <span class="step-work">b = 5 m, h = 4.3 m</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_11_3">
+                <span class="step-badge">Step 3</span>
+                <span class="step-label">Calculate one triangle:</span>
+                <span class="step-work">A = ½ × 5 × 4.3 = 10.75 sq m</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_11_4">
+                <span class="step-badge">Step 4</span>
+                <span class="step-label">Find total area:</span>
+                <span class="step-work">Total = 10.75 + 6 = 16.75 sq m</span>
+              </div>
+            
+          </div>
+        </div>
+        
+        <div class="error-controls">
+          <div class="error-select-row">
+            <label for="error_step_select_11">Which step has the error?</label>
+            <select id="error_step_select_11" class="custom-select error-step-select" data-correct="4" onchange="saveState(); updateProgress();">
+              <option value="">-- Choose Step --</option>
+              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option><option value="4">Step 4</option>
+            </select>
+            <span class="feedback-badge"></span>
+          </div>
+          
+          <div class="error-explain-row">
+            <label for="error_explain_input_11">Explain the error and write the correct calculation:</label>
+            <textarea id="error_explain_input_11" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
+            <span class="feedback-badge"></span>
+          </div>
+          
+          <div class="reveal-box" id="error_correct_work_11" style="display:none;">
+            <strong>Correct Work Reference:</strong> To find total area, multiply (not add): Total = 10.75 × 6 = 64.5 sq m. Six equal triangles means 6 times one triangle&#039;s area.
+            
+          </div>
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Count or multiply the units that cover the shape (base × height).</span><span class="lang-es" lang="es">Cuenta o multiplica las unidades que cubren la figura (base × altura).</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_11"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_11" name="work_11" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_12" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 7</div>
+        <div class="problem-type-badge">DRAG SORT</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">Each tile is made of congruent triangles. Find the area of ONE triangle, then sort it by size.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
+        
+        <div class="drag-sort-workspace" id="dragsort_12">
+          <div class="drag-columns">
+            
+              <div class="drag-column" data-category-id="small" ondragover="allowDrop(event)" ondrop="handleDrop(event, 12, 'small')">
+                <div class="drag-column-header">One triangle ≤ 12 sq ft</div>
+                <div class="drag-column-slots" id="slots_12_small" ondragover="allowDrop(event)" ondrop="handleDrop(event, 12, 'small')"></div>
+              </div>
+              <div class="drag-column" data-category-id="large" ondragover="allowDrop(event)" ondrop="handleDrop(event, 12, 'large')">
+                <div class="drag-column-header">One triangle &gt; 12 sq ft</div>
+                <div class="drag-column-slots" id="slots_12_large" ondragover="allowDrop(event)" ondrop="handleDrop(event, 12, 'large')"></div>
+              </div>
+          </div>
+          <div class="drag-source-section">
+            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
+            <div class="drag-source-pile" id="pile_12" ondragover="allowDrop(event)" ondrop="handleDrop(event, 12, '')">
+              
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_12_0"
+                     data-item-index="0"
+                     data-correct-category="small"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Square tile triangle: ½ × 4 × 4 = 8 sq ft</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_12_0', 12); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="small">One triangle ≤ 12 sq ft</option><option value="large">One triangle &gt; 12 sq ft</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_12_1"
+                     data-item-index="1"
+                     data-correct-category="small"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Hexagon tile triangle: ½ × 6 × 4 = 12 sq ft</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_12_1', 12); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="small">One triangle ≤ 12 sq ft</option><option value="large">One triangle &gt; 12 sq ft</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_12_2"
+                     data-item-index="2"
+                     data-correct-category="large"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Octagon tile triangle: ½ × 10 × 3 = 15 sq ft</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_12_2', 12); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="small">One triangle ≤ 12 sq ft</option><option value="large">One triangle &gt; 12 sq ft</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_12_3"
+                     data-item-index="3"
+                     data-correct-category="large"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Pentagon tile triangle: ½ × 8 × 5 = 20 sq ft</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_12_3', 12); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="small">One triangle ≤ 12 sq ft</option><option value="large">One triangle &gt; 12 sq ft</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="drag-controls">
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(12); saveState(); updateProgress();">Reset Sorting</button>
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Count or multiply the units that cover the shape (base × height).</span><span class="lang-es" lang="es">Cuenta o multiplica las unidades que cubren la figura (base × altura).</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_13" data-problem-type="matching-game">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 8</div>
+        <div class="problem-type-badge">MATCHING GAME</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">Match each polygon tile to its total area.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
+        <div class="matching-pairs">
+          
+            <div class="matching-row" data-term="Square tile: 2 triangles, each ½×9×4" data-correct="36 sq ft">
+              <div class="matching-term">Square tile: 2 triangles, each ½×9×4</div>
+              <div class="matching-select-container">
+                <select name="q_13_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="21 sq ft">21 sq ft</option><option value="36 sq ft">36 sq ft</option><option value="45 sq ft">45 sq ft</option><option value="48 sq ft">48 sq ft</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="Octagon tile: 8 triangles, each ½×3×4" data-correct="48 sq ft">
+              <div class="matching-term">Octagon tile: 8 triangles, each ½×3×4</div>
+              <div class="matching-select-container">
+                <select name="q_13_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="21 sq ft">21 sq ft</option><option value="36 sq ft">36 sq ft</option><option value="45 sq ft">45 sq ft</option><option value="48 sq ft">48 sq ft</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="Hexagon tile: 6 triangles, each ½×5×3" data-correct="45 sq ft">
+              <div class="matching-term">Hexagon tile: 6 triangles, each ½×5×3</div>
+              <div class="matching-select-container">
+                <select name="q_13_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="21 sq ft">21 sq ft</option><option value="36 sq ft">36 sq ft</option><option value="45 sq ft">45 sq ft</option><option value="48 sq ft">48 sq ft</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="Equilateral triangle tile: 1 triangle, ½×7×6" data-correct="21 sq ft">
+              <div class="matching-term">Equilateral triangle tile: 1 triangle, ½×7×6</div>
+              <div class="matching-select-container">
+                <select name="q_13_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="21 sq ft">21 sq ft</option><option value="36 sq ft">36 sq ft</option><option value="45 sq ft">45 sq ft</option><option value="48 sq ft">48 sq ft</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Outline the shape on the grid and count the square units inside.</span><span class="lang-es" lang="es">Dibuja la figura en la cuadrícula y cuenta los cuadrados de adentro.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Count or multiply the units that cover the shape (base × height).</span><span class="lang-es" lang="es">Cuenta o multiplica las unidades que cubren la figura (base × altura).</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  </main>
+      </details>
     </div>
 
     <div class="tab-panel-inner" data-tab-panel="help" id="hw_panel_help" role="tabpanel" hidden>
@@ -3070,8 +4060,14 @@ body { font-size: 15px; line-height: 1.58; }
       <div class="help-modal" role="dialog" aria-modal="true" aria-labelledby="help_modal_title" onclick="event.stopPropagation()">
         <button type="button" class="help-modal-close" onclick="closeHelpModal()" aria-label="Close help">✕</button>
         <h3 id="help_modal_title" class="help-modal-title"></h3>
+        <div class="help-modal-visual" id="help_modal_visual" hidden></div>
         <p class="help-modal-body lang-en" id="help_modal_en"></p>
         <p class="help-modal-body lang-es" lang="es" id="help_modal_es"></p>
+        <div class="help-modal-frame" id="help_modal_frame" hidden>
+          <span class="help-frame-tag">✏️ Sentence starter / Para empezar</span>
+          <span class="help-frame-en lang-en" id="help_modal_frame_en"></span>
+          <span class="help-frame-es lang-es" lang="es" id="help_modal_frame_es"></span>
+        </div>
       </div>
     </div>
 
@@ -3082,7 +4078,7 @@ body { font-size: 15px; line-height: 1.58; }
     
     <div class="score-progress-container">
       <div class="score-text">
-        Progress / Progreso: <span id="progress_text">0 / 4 Completed</span>
+        Progress / Progreso: <span id="progress_text">0 / 6 Completed</span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -3150,6 +4146,21 @@ function openHelpModal(data) {
     (data.titleEn || 'Help') + ' / ' + (data.titleEs || 'Ayuda');
   document.getElementById('help_modal_en').textContent = data.en || '';
   document.getElementById('help_modal_es').textContent = data.es || '';
+  var vis = document.getElementById('help_modal_visual');
+  if (vis) {
+    if (data.visual) { vis.innerHTML = data.visual; vis.hidden = false; }
+    else { vis.innerHTML = ''; vis.hidden = true; }
+  }
+  var frame = document.getElementById('help_modal_frame');
+  if (frame) {
+    if (data.frameEn || data.frameEs) {
+      document.getElementById('help_modal_frame_en').textContent = data.frameEn || '';
+      document.getElementById('help_modal_frame_es').textContent = data.frameEs || '';
+      frame.hidden = false;
+    } else {
+      frame.hidden = true;
+    }
+  }
   overlay.hidden = false;
   document.body.classList.add('help-modal-open');
   overlay.querySelector('.help-modal-close')?.focus();
@@ -3915,9 +4926,10 @@ function normalizeMath(val) {
 }
 
 function updateProgress() {
-  const problems = document.querySelectorAll(".problem-section");
+  const problems = Array.from(document.querySelectorAll(".problem-section"))
+    .filter((s) => !s.closest(".more-practice"));
   let completedCount = 0;
-  
+
   problems.forEach((section, idx) => {
     const type = section.dataset.problemType;
     let hasValue = false;
@@ -4305,9 +5317,10 @@ function checkProblem(idx, options) {
 }
 
 function updateScoreSummary() {
-  const problems = document.querySelectorAll(".problem-section");
-  const checked = Array.from(problems).filter((s) => s.classList.contains("correct") || s.classList.contains("incorrect"));
-  const correctCount = Array.from(problems).filter((s) => s.classList.contains("correct")).length;
+  const problems = Array.from(document.querySelectorAll(".problem-section"))
+    .filter((s) => !s.closest(".more-practice"));
+  const checked = problems.filter((s) => s.classList.contains("correct") || s.classList.contains("incorrect"));
+  const correctCount = problems.filter((s) => s.classList.contains("correct")).length;
   const total = problems.length;
   if (checked.length > 0) {
     document.getElementById("progress_text").textContent = "Score: " + correctCount + " / " + total + " Correct";
@@ -4318,15 +5331,18 @@ function updateScoreSummary() {
 }
 
 function checkWorksheet() {
-  const problems = document.querySelectorAll(".problem-section");
+  const problems = Array.from(document.querySelectorAll(".problem-section"));
   let correctCount = 0;
 
-  problems.forEach((section, idx) => {
+  problems.forEach((section) => {
+    const idx = parseInt((section.id || "").replace("problem_", ""), 10);
+    if (Number.isNaN(idx)) return;
     const result = checkProblem(idx, { silent: true });
-    if (result.correct) correctCount++;
+    // Only core (non-optional) problems count toward the worksheet score.
+    if (result.correct && !section.closest(".more-practice")) correctCount++;
   });
 
-  const total = problems.length;
+  const total = problems.filter((s) => !s.closest(".more-practice")).length;
   document.getElementById("progress_text").textContent = "Score: " + correctCount + " / " + total + " Correct";
   document.getElementById("progress_bar").style.width = (correctCount / total * 100) + "%";
 

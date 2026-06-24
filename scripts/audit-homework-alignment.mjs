@@ -77,6 +77,30 @@ if (lessons.length !== expectedCount) {
   console.warn(`⚠ Expected ${expectedCount} lessons, found ${lessons.length}`);
 }
 
+// The optional "More practice" accordion intentionally pulls a broader pool that
+// may include lower-aligned bonus problems. Alignment is judged on the core
+// (required) problems only, so strip the accordion before scoring. The block
+// contains nested <details> (step guides), so match its close by counting depth.
+function stripMorePractice(html) {
+  const start = html.indexOf('<details class="more-practice"');
+  if (start < 0) return html;
+  let pos = html.indexOf(">", start) + 1;
+  let depth = 1;
+  while (depth > 0 && pos < html.length) {
+    const open = html.indexOf("<details", pos);
+    const close = html.indexOf("</details>", pos);
+    if (close < 0) break;
+    if (open >= 0 && open < close) {
+      depth++;
+      pos = open + 8;
+    } else {
+      depth--;
+      pos = close + 10;
+    }
+  }
+  return html.slice(0, start) + html.slice(pos);
+}
+
 for (const { id, config, html } of lessons) {
   const lessonFails = [];
 
@@ -86,8 +110,9 @@ for (const { id, config, html } of lessons) {
     }
   }
 
-  const { score, issues } = scoreHomeworkAlignment(config, html);
-  const { wrongTopic } = detectVisualMismatch(config, html);
+  const coreHtml = stripMorePractice(html);
+  const { score, issues } = scoreHomeworkAlignment(config, coreHtml);
+  const { wrongTopic } = detectVisualMismatch(config, coreHtml);
   const aligned = score >= 70 && !wrongTopic;
 
   alignmentRows.push({ id, score, aligned, issues });

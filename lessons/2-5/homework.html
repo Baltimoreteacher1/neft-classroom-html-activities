@@ -1708,6 +1708,48 @@ header.homework-header h1 {
 .help-modal-body { margin: 0 0 10px; font-size: 15px; line-height: 1.5; }
 body.help-modal-open { overflow: hidden; }
 
+/* Visual aid + sentence frame inside help popups */
+.help-modal-visual {
+  margin: 0 0 14px; padding: 10px; border-radius: var(--radius-sm);
+  background: var(--cream); border: 1px solid var(--line); text-align: center;
+}
+.help-modal-visual[hidden] { display: none !important; }
+.help-modal-visual svg { max-width: 100%; height: auto; }
+.help-modal-frame {
+  display: flex; flex-direction: column; gap: 4px;
+  margin: 12px 0 0; padding: 12px 14px;
+  background: var(--teal-light); border-left: 4px solid var(--teal);
+  border-radius: var(--radius-sm); font-size: 14px; line-height: 1.5;
+}
+.help-modal-frame[hidden] { display: none !important; }
+.help-frame-tag { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--teal); }
+.help-frame-es { color: var(--muted); }
+
+/* Guided "Try together" fill-in spaces + step actions */
+.together-fill { margin: 10px 0 6px; }
+.together-fill-label { display: block; font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.together-fill-input {
+  width: 100%; min-height: 48px; padding: 10px 12px;
+  border: 2px dashed var(--teal); border-radius: var(--radius-sm);
+  background: #fffef8; font-size: 15px; line-height: 1.5; resize: vertical;
+}
+.together-fill-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
+.together-step-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+
+/* "More practice" accordion in the Check tab */
+.more-practice {
+  margin-top: 20px; border: 2px solid var(--teal); border-radius: var(--radius-md);
+  background: var(--teal-light); overflow: hidden;
+}
+.more-practice > summary {
+  cursor: pointer; list-style: none; padding: 14px 18px;
+  font-family: var(--font-display); font-weight: 800; color: var(--navy); font-size: 16px;
+}
+.more-practice > summary::-webkit-details-marker { display: none; }
+.more-practice[open] > summary { border-bottom: 1px solid var(--line); background: var(--white); }
+.more-practice-note { padding: 12px 18px 0; font-size: 13px; }
+.more-practice-container { padding: 8px 14px 14px; }
+
 .external-resource-list { list-style: none; padding: 0; margin: 16px 0 0; display: flex; flex-direction: column; gap: 10px; }
 .ai-lab-cta {
   display: flex; align-items: center; gap: 14px;
@@ -2502,7 +2544,17 @@ body { font-size: 15px; line-height: 1.58; }
             </div>
             <p class="lang-en"><strong>First…</strong> Decide the order: the total 3/4 goes first (dividend), and the bow size 1/4 goes second (divisor). Equation: 3/4 ÷ 1/4.</p>
             <p class="lang-es" lang="es"><strong>Primero…</strong> Decidan el orden: el total 3/4 va primero (dividendo), y el tamaño del moño 1/4 va segundo (divisor). Ecuación: 3/4 ÷ 1/4.</p>
-            <p class="step-hint">💡 The total amount of ribbon is the number being split up. · La cantidad total de listón es el número que se está repartiendo.</p>
+            <div class="together-fill">
+              <label class="together-fill-label" for="together_0">
+                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
+                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
+              </label>
+              <textarea id="together_0" name="together_0" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
+            </div>
+            <div class="together-step-actions">
+              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 hint","titleEs":"Pista del paso 1","en":"The total amount of ribbon is the number being split up.","es":"La cantidad total de listón es el número que se está repartiendo."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
+              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 — more help","titleEs":"Paso 1 — más ayuda","en":"Ask: what is the whole amount, and what is each piece?","es":"Pregunten: ¿cuál es la cantidad entera, y cuál es cada pieza?"}' onclick="openHelpModalFromBtn(this)" aria-label="🤝 More help / Más ayuda">🤝 More help / Más ayuda</button>
+            </div>
           </li>
           <li class="together-step step-color-2">
             <div class="together-step-head">
@@ -2510,7 +2562,17 @@ body { font-size: 15px; line-height: 1.58; }
             </div>
             <p class="lang-en"><strong>First…</strong> Solve with Keep, Change, Flip: 3/4 × 4/1 = 12/4 = 3. So you can make 3 bows.</p>
             <p class="lang-es" lang="es"><strong>Primero…</strong> Resuelvan con Mantener, Cambiar, Invertir: 3/4 × 4/1 = 12/4 = 3. Entonces pueden hacer 3 moños.</p>
-            <p class="step-hint">💡 Keep the first fraction, flip the second, then multiply. · Mantengan la primera fracción, volteen la segunda, luego multipliquen.</p>
+            <div class="together-fill">
+              <label class="together-fill-label" for="together_1">
+                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
+                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
+              </label>
+              <textarea id="together_1" name="together_1" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
+            </div>
+            <div class="together-step-actions">
+              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 hint","titleEs":"Pista del paso 2","en":"Keep the first fraction, flip the second, then multiply.","es":"Mantengan la primera fracción, volteen la segunda, luego multipliquen."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
+              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 — more help","titleEs":"Paso 2 — más ayuda","en":"12/4 means 12 ÷ 4, which is 3.","es":"12/4 significa 12 ÷ 4, que es 3."}' onclick="openHelpModalFromBtn(this)" aria-label="🤝 More help / Más ayuda">🤝 More help / Más ayuda</button>
+            </div>
           </li>
           <li class="together-step step-color-3">
             <div class="together-step-head">
@@ -2518,7 +2580,17 @@ body { font-size: 15px; line-height: 1.58; }
             </div>
             <p class="lang-en"><strong>First…</strong> Check together: multiply back. 3 × 1/4 = 3/4. It matches, so 3 bows is reasonable.</p>
             <p class="lang-es" lang="es"><strong>Primero…</strong> Revisen juntos: multipliquen de vuelta. 3 × 1/4 = 3/4. Coincide, así que 3 moños es razonable.</p>
-            <p class="step-hint">💡 If the answer times the piece size gives the total, the answer is right. · Si la respuesta por el tamaño de la pieza da el total, la respuesta es correcta.</p>
+            <div class="together-fill">
+              <label class="together-fill-label" for="together_2">
+                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
+                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
+              </label>
+              <textarea id="together_2" name="together_2" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
+            </div>
+            <div class="together-step-actions">
+              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 3 hint","titleEs":"Pista del paso 3","en":"If the answer times the piece size gives the total, the answer is right.","es":"Si la respuesta por el tamaño de la pieza da el total, la respuesta es correcta."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
+              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 3 — more help","titleEs":"Paso 3 — más ayuda","en":"Talking about why the answer makes sense matters more than speed.","es":"Hablar de por qué la respuesta tiene sentido importa más que la rapidez."}' onclick="openHelpModalFromBtn(this)" aria-label="🤝 More help / Más ayuda">🤝 More help / Más ayuda</button>
+            </div>
           </li>
       </ol>
     </div>
@@ -2538,7 +2610,7 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Quick Check 1</div>
         <div class="problem-type-badge">DRAG SORT</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
         <p class="problem-stem">Room 3 — Sort the Clues: Each safe opens only if you pick the clues that need fraction DIVISION. Sort each clue into the correct lock.</p>
@@ -2652,7 +2724,7 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Quick Check 2</div>
         <div class="problem-type-badge">DRAG SORT</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
         <p class="problem-stem">Sort each word problem: should you DIVIDE or MULTIPLY to solve it?</p>
@@ -2766,7 +2838,7 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Quick Check 3</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"2/3 ÷ 1/4 = 2/3 × 4/1 = 8/3 = 2 2/3. This IS correct. When you divide by a number less than 1, the quotient is greater than the dividend.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"2/3 ÷ 1/4 = 2/3 × 4/1 = 8/3 = 2 2/3. This IS correct. When you divide by a number less than 1, the quotient is greater than the dividend.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
         <p class="problem-stem">Marcus solved 2/3 ÷ 1/4 and got 8/3 = 2 2/3. He says &#039;That can&#039;t be right because I started with less than 1.&#039; Is Marcus&#039;s math correct? Is his reasoning correct?</p>
@@ -2838,7 +2910,7 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Quick Check 4</div>
         <div class="problem-type-badge">FILL TABLE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
         <p class="problem-stem">Solve each word problem by writing and solving an equation.</p>
@@ -2900,7 +2972,825 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
     </section>
+  
+
+    <section class="problem-section card" id="problem_4" data-problem-type="multiple-choice">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Quick Check 5</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"1/2 ÷ 1/8 = 1/2 × 8/1 = 8/2 = 4 tests.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">A detective has 1/2 gallon of solution. Each test uses 1/8 gallon. How many tests can be run?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="1/2 ÷ 1/8 = 1/2 × 8/1 = 8/2 = 4 tests.">
+          
+            <label class="mc-option-label" id="label_q_4_0">
+              <input type="radio" name="q_4" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">4</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_4_1">
+              <input type="radio" name="q_4" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">1/16</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_4_2">
+              <input type="radio" name="q_4" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">16</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_4_3">
+              <input type="radio" name="q_4" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">1/4</span>
+            </label>
+          
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">Divide la recta numérica en partes iguales para mostrar las fracciones.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Use a common denominator, or a number line, before you compare or add.</span><span class="lang-es" lang="es">Usa un denominador común, o una recta numérica, antes de comparar o sumar.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Divide la recta numérica en partes iguales para mostrar las fracciones.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_4"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_4" name="work_4" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_5" data-problem-type="open-response">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Quick Check 6</div>
+        <div class="problem-type-badge">OPEN RESPONSE</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">Write your own fraction division word problem where the answer is 8. Then show the equation, solve it step by step, and explain how you know your answer is reasonable.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 A complete sentence with math vocabulary is the goal — not a perfect paragraph.</span><span class="lang-es" lang="es">👪 Una oración completa con vocabulario matemático es la meta — no un párrafo perfecto.</span></p>
+        
+        
+          <div class="sentence-frame-card">
+            <span class="sentence-frame-tag">💡 Sentence Starter:</span>
+            <span class="sentence-frame-text" onclick="insertSentenceStarter(5, 'My word problem: ___. The equation is ___ ÷ ___ = ___. I solved it using KCF: ___ × ___ = ___. The answer 8 is reasonable because ___.')">"My word problem: ___. The equation is ___ ÷ ___ = ___. I solved it using KCF: ___ × ___ = ___. The answer 8 is reasonable because ___."</span>
+            <span class="click-to-insert-hint">(Click to insert starter)</span>
+          </div>
+        
+        
+        <div class="open-response-wrapper">
+          <textarea id="open_response_5" 
+                    class="custom-textarea open-response-textarea" 
+                    data-min-length="40" 
+                    data-keywords="[&quot;divide&quot;,&quot;= 8&quot;,&quot;reasonable&quot;,&quot;word problem&quot;,&quot;equation&quot;,&quot;reciprocal&quot;]"
+                    placeholder="Write your mathematical explanation here..." 
+                    oninput="saveState(); updateProgress();"></textarea>
+          <span class="feedback-badge"></span>
+        </div>
+        
+        
+          <div class="word-bank-container">
+            <div class="word-bank-label">Key Vocabulary to include (click to insert):</div>
+            <div class="word-bank-chips">
+              <span class="word-chip" onclick="insertWord(5, 'divide')">divide</span><span class="word-chip" onclick="insertWord(5, '= 8')">= 8</span><span class="word-chip" onclick="insertWord(5, 'reasonable')">reasonable</span><span class="word-chip" onclick="insertWord(5, 'word problem')">word problem</span><span class="word-chip" onclick="insertWord(5, 'equation')">equation</span><span class="word-chip" onclick="insertWord(5, 'reciprocal')">reciprocal</span>
+            </div>
+          </div>
+        
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">Divide la recta numérica en partes iguales para mostrar las fracciones.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Use a common denominator, or a number line, before you compare or add.</span><span class="lang-es" lang="es">Usa un denominador común, o una recta numérica, antes de comparar o sumar.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Divide la recta numérica en partes iguales para mostrar las fracciones.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_5"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_5" name="work_5" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
   </main>
+      
+      <details class="more-practice">
+        <summary>
+          <span class="lang-en">➕ More practice — open for extra problems</span>
+          <span class="lang-es" lang="es">➕ Más práctica — abre para más problemas</span>
+        </summary>
+        <p class="more-practice-note bilingual-block">
+          <span class="lang-en">Optional. Only if your student wants more — these are bonus problems.</span>
+          <span class="lang-es" lang="es">Opcional. Solo si tu estudiante quiere más — son problemas adicionales.</span>
+        </p>
+        <main class="problems-container more-practice-container">
+    <section class="problem-section card" id="problem_6" data-problem-type="error-analysis">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 1</div>
+        <div class="problem-type-badge">ERROR ANALYSIS</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Did the student flip the second fraction (the divisor) before multiplying?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <h3 class="error-analysis-title">⚠️ onLevel — Spot the Common Mistake</h3>
+        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read each step aloud and ask: does this step follow the math rules we learned?</span><span class="lang-es" lang="es">👪 Lean cada paso en voz alta y pregunten: ¿sigue las reglas que aprendimos?</span></p>
+        
+        <div class="clipboard-box">
+          <div class="clipboard-top"></div>
+          <div class="clipboard-paper">
+            
+              <div class="worked-step" id="step_q_6_1">
+                <span class="step-badge">Step 1</span>
+                <span class="step-label">Problem:</span>
+                <span class="step-work">A chemist has 3/4 liter of solution. Each test tube holds 1/8 liter. How many test tubes can be filled?</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_6_2">
+                <span class="step-badge">Step 2</span>
+                <span class="step-label">Student&#039;s equation:</span>
+                <span class="step-work">3/4 ÷ 1/8 = 3/4 × 1/8</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_6_3">
+                <span class="step-badge">Step 3</span>
+                <span class="step-label">Solve:</span>
+                <span class="step-work">3/4 × 1/8 = 3/32</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_6_4">
+                <span class="step-badge">Step 4</span>
+                <span class="step-label">Answer:</span>
+                <span class="step-work">3/32 of a test tube</span>
+              </div>
+            
+          </div>
+        </div>
+        
+        <div class="error-controls">
+          <div class="error-select-row">
+            <label for="error_step_select_6">Which step has the error?</label>
+            <select id="error_step_select_6" class="custom-select error-step-select" data-correct="2" onchange="saveState(); updateProgress();">
+              <option value="">-- Choose Step --</option>
+              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option><option value="4">Step 4</option>
+            </select>
+            <span class="feedback-badge"></span>
+          </div>
+          
+          <div class="error-explain-row">
+            <label for="error_explain_input_6">Explain the error and write the correct calculation:</label>
+            <textarea id="error_explain_input_6" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
+            <span class="feedback-badge"></span>
+          </div>
+          
+          <div class="reveal-box" id="error_correct_work_6" style="display:none;">
+            <strong>Correct Work Reference:</strong> The student set up the division correctly but forgot to flip the divisor. Keep, Change, Flip means multiply by the reciprocal of 1/8, which is 8/1: 3/4 ÷ 1/8 = 3/4 × 8/1 = 24/4 = 6 test tubes. Check: 6 × 1/8 = 6/8 = 3/4.
+            
+          </div>
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">Divide la recta numérica en partes iguales para mostrar las fracciones.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Use a common denominator, or a number line, before you compare or add.</span><span class="lang-es" lang="es">Usa un denominador común, o una recta numérica, antes de comparar o sumar.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Divide la recta numérica en partes iguales para mostrar las fracciones.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_6"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_6" name="work_6" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_7" data-problem-type="matching-game">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 2</div>
+        <div class="problem-type-badge">MATCHING GAME</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">Room 4 — Match the Lock: Drag each word problem to the division equation that unlocks it.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
+        <div class="matching-pairs">
+          
+            <div class="matching-row" data-term="A 4/5-yard cord is cut into 1/10-yard fuses for the alarm." data-correct="4/5 ÷ 1/10 = 8">
+              <div class="matching-term">A 4/5-yard cord is cut into 1/10-yard fuses for the alarm.</div>
+              <div class="matching-select-container">
+                <select name="q_7_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="1/2 ÷ 1/8 = 4">1/2 ÷ 1/8 = 4</option><option value="3/4 ÷ 3/8 = 2">3/4 ÷ 3/8 = 2</option><option value="4/5 ÷ 1/10 = 8">4/5 ÷ 1/10 = 8</option><option value="5/6 ÷ 1/12 = 10">5/6 ÷ 1/12 = 10</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="A 1/2-gallon jug of luminol is poured into 1/8-gallon sprayers." data-correct="1/2 ÷ 1/8 = 4">
+              <div class="matching-term">A 1/2-gallon jug of luminol is poured into 1/8-gallon sprayers.</div>
+              <div class="matching-select-container">
+                <select name="q_7_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="1/2 ÷ 1/8 = 4">1/2 ÷ 1/8 = 4</option><option value="3/4 ÷ 3/8 = 2">3/4 ÷ 3/8 = 2</option><option value="4/5 ÷ 1/10 = 8">4/5 ÷ 1/10 = 8</option><option value="5/6 ÷ 1/12 = 10">5/6 ÷ 1/12 = 10</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="A 3/4-mile escape route is split into 3/8-mile sprints." data-correct="3/4 ÷ 3/8 = 2">
+              <div class="matching-term">A 3/4-mile escape route is split into 3/8-mile sprints.</div>
+              <div class="matching-select-container">
+                <select name="q_7_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="1/2 ÷ 1/8 = 4">1/2 ÷ 1/8 = 4</option><option value="3/4 ÷ 3/8 = 2">3/4 ÷ 3/8 = 2</option><option value="4/5 ÷ 1/10 = 8">4/5 ÷ 1/10 = 8</option><option value="5/6 ÷ 1/12 = 10">5/6 ÷ 1/12 = 10</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="A 5/6-liter sample is divided into 1/12-liter test tubes." data-correct="5/6 ÷ 1/12 = 10">
+              <div class="matching-term">A 5/6-liter sample is divided into 1/12-liter test tubes.</div>
+              <div class="matching-select-container">
+                <select name="q_7_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="1/2 ÷ 1/8 = 4">1/2 ÷ 1/8 = 4</option><option value="3/4 ÷ 3/8 = 2">3/4 ÷ 3/8 = 2</option><option value="4/5 ÷ 1/10 = 8">4/5 ÷ 1/10 = 8</option><option value="5/6 ÷ 1/12 = 10">5/6 ÷ 1/12 = 10</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">Divide la recta numérica en partes iguales para mostrar las fracciones.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Use a common denominator, or a number line, before you compare or add.</span><span class="lang-es" lang="es">Usa un denominador común, o una recta numérica, antes de comparar o sumar.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_8" data-problem-type="multiple-choice">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 3</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The total (9/10 liter) is the dividend and each vial (3/10 liter) is the divisor: 9/10 ÷ 3/10 = 9/10 × 10/3 = 90/30 = 3 vials, so the code is 3.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">Room 5 — Final Keypad: The vault key code equals the number of 3/10-liter vials Torres can fill from a 9/10-liter bottle of fingerprint solution. What is the code?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="The total (9/10 liter) is the dividend and each vial (3/10 liter) is the divisor: 9/10 ÷ 3/10 = 9/10 × 10/3 = 90/30 = 3 vials, so the code is 3.">
+          
+            <label class="mc-option-label" id="label_q_8_0">
+              <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">3</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_8_1">
+              <input type="radio" name="q_8" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">9</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_8_2">
+              <input type="radio" name="q_8" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">1/3</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_8_3">
+              <input type="radio" name="q_8" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">6</span>
+            </label>
+          
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">Divide la recta numérica en partes iguales para mostrar las fracciones.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Use a common denominator, or a number line, before you compare or add.</span><span class="lang-es" lang="es">Usa un denominador común, o una recta numérica, antes de comparar o sumar.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Divide la recta numérica en partes iguales para mostrar las fracciones.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_8"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_8" name="work_8" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_9" data-problem-type="error-analysis">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 4</div>
+        <div class="problem-type-badge">ERROR ANALYSIS</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Which value is the total being divided — 3/4 or 1/6?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <h3 class="error-analysis-title">⚠️ Find the Problem-Solving Error</h3>
+        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read each step aloud and ask: does this step follow the math rules we learned?</span><span class="lang-es" lang="es">👪 Lean cada paso en voz alta y pregunten: ¿sigue las reglas que aprendimos?</span></p>
+        
+        <div class="clipboard-box">
+          <div class="clipboard-top"></div>
+          <div class="clipboard-paper">
+            
+              <div class="worked-step" id="step_q_9_1">
+                <span class="step-badge">Step 1</span>
+                <span class="step-label">Problem:</span>
+                <span class="step-work">A tank has 3/4 gallon of water. Each bucket holds 1/6 gallon. How many buckets can be filled?</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_9_2">
+                <span class="step-badge">Step 2</span>
+                <span class="step-label">Student&#039;s equation:</span>
+                <span class="step-work">1/6 ÷ 3/4</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_9_3">
+                <span class="step-badge">Step 3</span>
+                <span class="step-label">Solve:</span>
+                <span class="step-work">1/6 × 4/3 = 4/18 = 2/9</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_9_4">
+                <span class="step-badge">Step 4</span>
+                <span class="step-label">Answer:</span>
+                <span class="step-work">2/9 buckets</span>
+              </div>
+            
+          </div>
+        </div>
+        
+        <div class="error-controls">
+          <div class="error-select-row">
+            <label for="error_step_select_9">Which step has the error?</label>
+            <select id="error_step_select_9" class="custom-select error-step-select" data-correct="2" onchange="saveState(); updateProgress();">
+              <option value="">-- Choose Step --</option>
+              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option><option value="4">Step 4</option>
+            </select>
+            <span class="feedback-badge"></span>
+          </div>
+          
+          <div class="error-explain-row">
+            <label for="error_explain_input_9">Explain the error and write the correct calculation:</label>
+            <textarea id="error_explain_input_9" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
+            <span class="feedback-badge"></span>
+          </div>
+          
+          <div class="reveal-box" id="error_correct_work_9" style="display:none;">
+            <strong>Correct Work Reference:</strong> The equation should be 3/4 ÷ 1/6 (total ÷ group size). Then 3/4 × 6/1 = 18/4 = 4 1/2 buckets.
+            
+          </div>
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">Divide la recta numérica en partes iguales para mostrar las fracciones.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Use a common denominator, or a number line, before you compare or add.</span><span class="lang-es" lang="es">Usa un denominador común, o una recta numérica, antes de comparar o sumar.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Divide la recta numérica en partes iguales para mostrar las fracciones.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_9"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_9" name="work_9" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_10" data-problem-type="multiple-choice">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 5</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"3/4 ÷ 1/4 = 3/4 × 4/1 = 12/4 = 3 laps. This is reasonable: three 1/4-mile pieces fit into 3/4 mile.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">A trail is 3/4 mile long. A jogger runs laps of 1/4 mile each. How many laps does the jogger complete?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="3/4 ÷ 1/4 = 3/4 × 4/1 = 12/4 = 3 laps. This is reasonable: three 1/4-mile pieces fit into 3/4 mile.">
+          
+            <label class="mc-option-label" id="label_q_10_0">
+              <input type="radio" name="q_10" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">3 laps</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_10_1">
+              <input type="radio" name="q_10" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">1/3 lap</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_10_2">
+              <input type="radio" name="q_10" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">4 laps</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_10_3">
+              <input type="radio" name="q_10" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">3/16 lap</span>
+            </label>
+          
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">Divide la recta numérica en partes iguales para mostrar las fracciones.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Use a common denominator, or a number line, before you compare or add.</span><span class="lang-es" lang="es">Usa un denominador común, o una recta numérica, antes de comparar o sumar.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Divide la recta numérica en partes iguales para mostrar las fracciones.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_10"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_10" name="work_10" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_11" data-problem-type="multiple-choice">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 6</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"5/6 ÷ 1/6 = 5/6 × 6/1 = 30/6 = 5 brackets.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">A board is 5/6 foot long. Each shelf bracket needs 1/6 foot. How many brackets fit?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="5/6 ÷ 1/6 = 5/6 × 6/1 = 30/6 = 5 brackets.">
+          
+            <label class="mc-option-label" id="label_q_11_0">
+              <input type="radio" name="q_11" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">5</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_11_1">
+              <input type="radio" name="q_11" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">1/36</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_11_2">
+              <input type="radio" name="q_11" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">6</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_11_3">
+              <input type="radio" name="q_11" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">5/36</span>
+            </label>
+          
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">Divide la recta numérica en partes iguales para mostrar las fracciones.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Use a common denominator, or a number line, before you compare or add.</span><span class="lang-es" lang="es">Usa un denominador común, o una recta numérica, antes de comparar o sumar.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Divide la recta numérica en partes iguales para mostrar las fracciones.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_11"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_11" name="work_11" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_12" data-problem-type="error-analysis">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 7</div>
+        <div class="problem-type-badge">ERROR ANALYSIS</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Which value is the total being split up — 4/5 or 1/5?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <h3 class="error-analysis-title">⚠️ approaching — Spot the Common Mistake</h3>
+        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read each step aloud and ask: does this step follow the math rules we learned?</span><span class="lang-es" lang="es">👪 Lean cada paso en voz alta y pregunten: ¿sigue las reglas que aprendimos?</span></p>
+        
+        <div class="clipboard-box">
+          <div class="clipboard-top"></div>
+          <div class="clipboard-paper">
+            
+              <div class="worked-step" id="step_q_12_1">
+                <span class="step-badge">Step 1</span>
+                <span class="step-label">Problem:</span>
+                <span class="step-work">A detective has 4/5 gallon of cleaning fluid. Each spray bottle holds 1/5 gallon. How many bottles can she fill?</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_12_2">
+                <span class="step-badge">Step 2</span>
+                <span class="step-label">Student&#039;s equation:</span>
+                <span class="step-work">1/5 ÷ 4/5</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_12_3">
+                <span class="step-badge">Step 3</span>
+                <span class="step-label">Solve:</span>
+                <span class="step-work">1/5 × 5/4 = 5/20 = 1/4</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_12_4">
+                <span class="step-badge">Step 4</span>
+                <span class="step-label">Answer:</span>
+                <span class="step-work">1/4 of a bottle</span>
+              </div>
+            
+          </div>
+        </div>
+        
+        <div class="error-controls">
+          <div class="error-select-row">
+            <label for="error_step_select_12">Which step has the error?</label>
+            <select id="error_step_select_12" class="custom-select error-step-select" data-correct="2" onchange="saveState(); updateProgress();">
+              <option value="">-- Choose Step --</option>
+              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option><option value="4">Step 4</option>
+            </select>
+            <span class="feedback-badge"></span>
+          </div>
+          
+          <div class="error-explain-row">
+            <label for="error_explain_input_12">Explain the error and write the correct calculation:</label>
+            <textarea id="error_explain_input_12" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
+            <span class="feedback-badge"></span>
+          </div>
+          
+          <div class="reveal-box" id="error_correct_work_12" style="display:none;">
+            <strong>Correct Work Reference:</strong> The total amount (4/5 gallon) must be the dividend and each bottle (1/5 gallon) the divisor, so the equation is 4/5 ÷ 1/5, not 1/5 ÷ 4/5. Solve: 4/5 × 5/1 = 20/5 = 4 bottles.
+            
+          </div>
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">Divide la recta numérica en partes iguales para mostrar las fracciones.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Use a common denominator, or a number line, before you compare or add.</span><span class="lang-es" lang="es">Usa un denominador común, o una recta numérica, antes de comparar o sumar.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Divide la recta numérica en partes iguales para mostrar las fracciones.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_12"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_12" name="work_12" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_13" data-problem-type="multiple-choice">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 8</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The total (7/8 lb) is the dividend and each cast (1/8 lb) is the divisor: 7/8 ÷ 1/8 = 7/8 × 8/1 = 56/8 = 7 casts.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">Room 1 — Evidence Locker: Agent Torres has 7/8 pound of casting clay to lift footprints. Each cast uses 1/8 pound. How many casts can she make to unlock the door?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="The total (7/8 lb) is the dividend and each cast (1/8 lb) is the divisor: 7/8 ÷ 1/8 = 7/8 × 8/1 = 56/8 = 7 casts.">
+          
+            <label class="mc-option-label" id="label_q_13_0">
+              <input type="radio" name="q_13" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">7</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_13_1">
+              <input type="radio" name="q_13" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">6</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_13_2">
+              <input type="radio" name="q_13" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">8</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_13_3">
+              <input type="radio" name="q_13" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">1/7</span>
+            </label>
+          
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">Divide la recta numérica en partes iguales para mostrar las fracciones.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Use a common denominator, or a number line, before you compare or add.</span><span class="lang-es" lang="es">Usa un denominador común, o una recta numérica, antes de comparar o sumar.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Split the number line into equal parts to show the fractions.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Divide la recta numérica en partes iguales para mostrar las fracciones.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_13"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_13" name="work_13" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  </main>
+      </details>
     </div>
 
     <div class="tab-panel-inner" data-tab-panel="help" id="hw_panel_help" role="tabpanel" hidden>
@@ -3106,8 +3996,14 @@ body { font-size: 15px; line-height: 1.58; }
       <div class="help-modal" role="dialog" aria-modal="true" aria-labelledby="help_modal_title" onclick="event.stopPropagation()">
         <button type="button" class="help-modal-close" onclick="closeHelpModal()" aria-label="Close help">✕</button>
         <h3 id="help_modal_title" class="help-modal-title"></h3>
+        <div class="help-modal-visual" id="help_modal_visual" hidden></div>
         <p class="help-modal-body lang-en" id="help_modal_en"></p>
         <p class="help-modal-body lang-es" lang="es" id="help_modal_es"></p>
+        <div class="help-modal-frame" id="help_modal_frame" hidden>
+          <span class="help-frame-tag">✏️ Sentence starter / Para empezar</span>
+          <span class="help-frame-en lang-en" id="help_modal_frame_en"></span>
+          <span class="help-frame-es lang-es" lang="es" id="help_modal_frame_es"></span>
+        </div>
       </div>
     </div>
 
@@ -3118,7 +4014,7 @@ body { font-size: 15px; line-height: 1.58; }
     
     <div class="score-progress-container">
       <div class="score-text">
-        Progress / Progreso: <span id="progress_text">0 / 4 Completed</span>
+        Progress / Progreso: <span id="progress_text">0 / 6 Completed</span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -3186,6 +4082,21 @@ function openHelpModal(data) {
     (data.titleEn || 'Help') + ' / ' + (data.titleEs || 'Ayuda');
   document.getElementById('help_modal_en').textContent = data.en || '';
   document.getElementById('help_modal_es').textContent = data.es || '';
+  var vis = document.getElementById('help_modal_visual');
+  if (vis) {
+    if (data.visual) { vis.innerHTML = data.visual; vis.hidden = false; }
+    else { vis.innerHTML = ''; vis.hidden = true; }
+  }
+  var frame = document.getElementById('help_modal_frame');
+  if (frame) {
+    if (data.frameEn || data.frameEs) {
+      document.getElementById('help_modal_frame_en').textContent = data.frameEn || '';
+      document.getElementById('help_modal_frame_es').textContent = data.frameEs || '';
+      frame.hidden = false;
+    } else {
+      frame.hidden = true;
+    }
+  }
   overlay.hidden = false;
   document.body.classList.add('help-modal-open');
   overlay.querySelector('.help-modal-close')?.focus();
@@ -3951,9 +4862,10 @@ function normalizeMath(val) {
 }
 
 function updateProgress() {
-  const problems = document.querySelectorAll(".problem-section");
+  const problems = Array.from(document.querySelectorAll(".problem-section"))
+    .filter((s) => !s.closest(".more-practice"));
   let completedCount = 0;
-  
+
   problems.forEach((section, idx) => {
     const type = section.dataset.problemType;
     let hasValue = false;
@@ -4341,9 +5253,10 @@ function checkProblem(idx, options) {
 }
 
 function updateScoreSummary() {
-  const problems = document.querySelectorAll(".problem-section");
-  const checked = Array.from(problems).filter((s) => s.classList.contains("correct") || s.classList.contains("incorrect"));
-  const correctCount = Array.from(problems).filter((s) => s.classList.contains("correct")).length;
+  const problems = Array.from(document.querySelectorAll(".problem-section"))
+    .filter((s) => !s.closest(".more-practice"));
+  const checked = problems.filter((s) => s.classList.contains("correct") || s.classList.contains("incorrect"));
+  const correctCount = problems.filter((s) => s.classList.contains("correct")).length;
   const total = problems.length;
   if (checked.length > 0) {
     document.getElementById("progress_text").textContent = "Score: " + correctCount + " / " + total + " Correct";
@@ -4354,15 +5267,18 @@ function updateScoreSummary() {
 }
 
 function checkWorksheet() {
-  const problems = document.querySelectorAll(".problem-section");
+  const problems = Array.from(document.querySelectorAll(".problem-section"));
   let correctCount = 0;
 
-  problems.forEach((section, idx) => {
+  problems.forEach((section) => {
+    const idx = parseInt((section.id || "").replace("problem_", ""), 10);
+    if (Number.isNaN(idx)) return;
     const result = checkProblem(idx, { silent: true });
-    if (result.correct) correctCount++;
+    // Only core (non-optional) problems count toward the worksheet score.
+    if (result.correct && !section.closest(".more-practice")) correctCount++;
   });
 
-  const total = problems.length;
+  const total = problems.filter((s) => !s.closest(".more-practice")).length;
   document.getElementById("progress_text").textContent = "Score: " + correctCount + " / " + total + " Correct";
   document.getElementById("progress_bar").style.width = (correctCount / total * 100) + "%";
 

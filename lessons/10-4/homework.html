@@ -1708,6 +1708,48 @@ header.homework-header h1 {
 .help-modal-body { margin: 0 0 10px; font-size: 15px; line-height: 1.5; }
 body.help-modal-open { overflow: hidden; }
 
+/* Visual aid + sentence frame inside help popups */
+.help-modal-visual {
+  margin: 0 0 14px; padding: 10px; border-radius: var(--radius-sm);
+  background: var(--cream); border: 1px solid var(--line); text-align: center;
+}
+.help-modal-visual[hidden] { display: none !important; }
+.help-modal-visual svg { max-width: 100%; height: auto; }
+.help-modal-frame {
+  display: flex; flex-direction: column; gap: 4px;
+  margin: 12px 0 0; padding: 12px 14px;
+  background: var(--teal-light); border-left: 4px solid var(--teal);
+  border-radius: var(--radius-sm); font-size: 14px; line-height: 1.5;
+}
+.help-modal-frame[hidden] { display: none !important; }
+.help-frame-tag { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--teal); }
+.help-frame-es { color: var(--muted); }
+
+/* Guided "Try together" fill-in spaces + step actions */
+.together-fill { margin: 10px 0 6px; }
+.together-fill-label { display: block; font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.together-fill-input {
+  width: 100%; min-height: 48px; padding: 10px 12px;
+  border: 2px dashed var(--teal); border-radius: var(--radius-sm);
+  background: #fffef8; font-size: 15px; line-height: 1.5; resize: vertical;
+}
+.together-fill-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
+.together-step-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+
+/* "More practice" accordion in the Check tab */
+.more-practice {
+  margin-top: 20px; border: 2px solid var(--teal); border-radius: var(--radius-md);
+  background: var(--teal-light); overflow: hidden;
+}
+.more-practice > summary {
+  cursor: pointer; list-style: none; padding: 14px 18px;
+  font-family: var(--font-display); font-weight: 800; color: var(--navy); font-size: 16px;
+}
+.more-practice > summary::-webkit-details-marker { display: none; }
+.more-practice[open] > summary { border-bottom: 1px solid var(--line); background: var(--white); }
+.more-practice-note { padding: 12px 18px 0; font-size: 13px; }
+.more-practice-container { padding: 8px 14px 14px; }
+
 .external-resource-list { list-style: none; padding: 0; margin: 16px 0 0; display: flex; flex-direction: column; gap: 10px; }
 .ai-lab-cta {
   display: flex; align-items: center; gap: 14px;
@@ -2523,7 +2565,17 @@ body { font-size: 15px; line-height: 1.58; }
             </div>
             <p class="lang-en"><strong>First…</strong> Top and bottom: 5 × 4 = 20, times 2 = 40.</p>
             <p class="lang-es" lang="es"><strong>Primero…</strong> Arriba y abajo: 5 × 4 = 20, por 2 = 40.</p>
-            <p class="step-hint">💡 Find one face, then double it for its matching face. · Encuentren una cara, luego dupliquen por su cara igual.</p>
+            <div class="together-fill">
+              <label class="together-fill-label" for="together_0">
+                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
+                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
+              </label>
+              <textarea id="together_0" name="together_0" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
+            </div>
+            <div class="together-step-actions">
+              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 hint","titleEs":"Pista del paso 1","en":"Find one face, then double it for its matching face.","es":"Encuentren una cara, luego dupliquen por su cara igual."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
+              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 — more help","titleEs":"Paso 1 — más ayuda","en":"A rectangular prism has 6 faces in 3 pairs.","es":"Un prisma rectangular tiene 6 caras en 3 pares."}' onclick="openHelpModalFromBtn(this)" aria-label="🤝 More help / Más ayuda">🤝 More help / Más ayuda</button>
+            </div>
           </li>
           <li class="together-step step-color-2">
             <div class="together-step-head">
@@ -2531,7 +2583,17 @@ body { font-size: 15px; line-height: 1.58; }
             </div>
             <p class="lang-en"><strong>First…</strong> Front and back: 5 × 3 = 15, times 2 = 30. Left and right: 4 × 3 = 12, times 2 = 24.</p>
             <p class="lang-es" lang="es"><strong>Primero…</strong> Frente y atrás: 5 × 3 = 15, por 2 = 30. Izquierda y derecha: 4 × 3 = 12, por 2 = 24.</p>
-            <p class="step-hint">💡 Multiply each pair by 2. · Multipliquen cada par por 2.</p>
+            <div class="together-fill">
+              <label class="together-fill-label" for="together_1">
+                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
+                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
+              </label>
+              <textarea id="together_1" name="together_1" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
+            </div>
+            <div class="together-step-actions">
+              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 hint","titleEs":"Pista del paso 2","en":"Multiply each pair by 2.","es":"Multipliquen cada par por 2."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
+              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 — more help","titleEs":"Paso 2 — más ayuda","en":"Each face has a matching face on the opposite side.","es":"Cada cara tiene una cara igual en el lado opuesto."}' onclick="openHelpModalFromBtn(this)" aria-label="🤝 More help / Más ayuda">🤝 More help / Más ayuda</button>
+            </div>
           </li>
           <li class="together-step step-color-3">
             <div class="together-step-head">
@@ -2539,7 +2601,17 @@ body { font-size: 15px; line-height: 1.58; }
             </div>
             <p class="lang-en"><strong>First…</strong> Add all three pairs: 40 + 30 + 24 = 94. So the surface area is 94 square units.</p>
             <p class="lang-es" lang="es"><strong>Primero…</strong> Sumen los tres pares: 40 + 30 + 24 = 94. Así que el área de superficie es 94 unidades cuadradas.</p>
-            <p class="step-hint">💡 Surface area always uses square units, not cubic. · El área de superficie siempre usa unidades cuadradas, no cúbicas.</p>
+            <div class="together-fill">
+              <label class="together-fill-label" for="together_2">
+                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
+                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
+              </label>
+              <textarea id="together_2" name="together_2" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
+            </div>
+            <div class="together-step-actions">
+              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 3 hint","titleEs":"Pista del paso 3","en":"Surface area always uses square units, not cubic.","es":"El área de superficie siempre usa unidades cuadradas, no cúbicas."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
+              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 3 — more help","titleEs":"Paso 3 — más ayuda","en":"Adding every face matters more than speed.","es":"Sumar todas las caras importa más que la rapidez."}' onclick="openHelpModalFromBtn(this)" aria-label="🤝 More help / Más ayuda">🤝 More help / Más ayuda</button>
+            </div>
           </li>
       </ol>
     </div>
@@ -2559,7 +2631,7 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Quick Check 1</div>
         <div class="problem-type-badge">DRAG SORT</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
         <p class="problem-stem">Put the steps in order for finding the surface area of a triangular prism.</p>
@@ -2684,7 +2756,7 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Quick Check 2</div>
         <div class="problem-type-badge">MATCHING GAME</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
         <p class="problem-stem">Match each solid to its description.</p>
@@ -2784,7 +2856,7 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Quick Check 3</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"SA = 2(12) + 30 + 40 + 40 = 24 + 110 = 134 cm².","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"SA = 2(12) + 30 + 40 + 40 = 24 + 110 = 134 cm².","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
         <p class="problem-stem">A triangular prism has two triangular bases each with area 12 cm² and three rectangular faces with areas 30 cm², 40 cm², and 40 cm². What is the total surface area?</p>
@@ -2856,7 +2928,7 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Quick Check 4</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Triangular bases: 2 × (½ × 6 × 4) = 24 in². Three rectangular faces: 6(10) + 5(10) + 5(10) = 60 + 50 + 50 = 160 in². SA = 24 + 160 = 184 in².","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Triangular bases: 2 × (½ × 6 × 4) = 24 in². Three rectangular faces: 6(10) + 5(10) + 5(10) = 60 + 50 + 50 = 160 in². SA = 24 + 160 = 184 in².","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
         <p class="problem-stem">A triangular prism has triangular bases with base 6 in and height 4 in. The prism is 10 in long and the two slant sides of the triangle are each 5 in. What is the surface area?</p>
@@ -2921,7 +2993,957 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
     </section>
+  
+
+    <section class="problem-section card" id="problem_4" data-problem-type="error-analysis">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Quick Check 5</div>
+        <div class="problem-type-badge">ERROR ANALYSIS</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"l × w × h fills the inside (volume, cubic units). Surface area covers the outside.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <h3 class="error-analysis-title">⚠️ Spot the Common Mistake — Surface Area or Volume?</h3>
+        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read each step aloud and ask: does this step follow the math rules we learned?</span><span class="lang-es" lang="es">👪 Lean cada paso en voz alta y pregunten: ¿sigue las reglas que aprendimos?</span></p>
+        
+        <div class="clipboard-box">
+          <div class="clipboard-top"></div>
+          <div class="clipboard-paper">
+            
+              <div class="worked-step" id="step_q_4_1">
+                <span class="step-badge">Step 1</span>
+                <span class="step-label">Dimensions:</span>
+                <span class="step-work">Rectangular prism time capsule: l = 7 in, w = 4 in, h = 3 in. Find the surface area.</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_4_2">
+                <span class="step-badge">Step 2</span>
+                <span class="step-label">Formula:</span>
+                <span class="step-work">Surface area adds all 6 faces: SA = 2lw + 2lh + 2wh.</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_4_3">
+                <span class="step-badge">Step 3</span>
+                <span class="step-label">Calculate:</span>
+                <span class="step-work">The student multiplied the three dimensions: 7 × 4 × 3 = 84, so they wrote SA = 84 in².</span>
+              </div>
+            
+          </div>
+        </div>
+        
+        <div class="error-controls">
+          <div class="error-select-row">
+            <label for="error_step_select_4">Which step has the error?</label>
+            <select id="error_step_select_4" class="custom-select error-step-select" data-correct="3" onchange="saveState(); updateProgress();">
+              <option value="">-- Choose Step --</option>
+              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option>
+            </select>
+            <span class="feedback-badge"></span>
+          </div>
+          
+          <div class="error-explain-row">
+            <label for="error_explain_input_4">Explain the error and write the correct calculation:</label>
+            <textarea id="error_explain_input_4" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
+            <span class="feedback-badge"></span>
+          </div>
+          
+          <div class="reveal-box" id="error_correct_work_4" style="display:none;">
+            <strong>Correct Work Reference:</strong> Multiplying l × w × h gives the VOLUME (84 in³), not surface area. Add all six faces: SA = 2(7×4) + 2(7×3) + 2(4×3) = 56 + 42 + 24 = 122 in².
+            
+          </div>
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Label each face of the prism, then write its area.</span><span class="lang-es" lang="es">Rotula cada cara del prisma y escribe su área.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Find the area of every face, then add them all together.</span><span class="lang-es" lang="es">Halla el área de cada cara y luego súmalas todas.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Label each face of the prism, then write its area.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Rotula cada cara del prisma y escribe su área.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 220 140" class="hw-visual-svg" role="img" aria-label="Rectangular prism to label"><rect x="40" y="45" width="110" height="70" fill="#ffffff" stroke="#12355b" stroke-width="2"/><polygon points="40,45 75,20 185,20 150,45" fill="#eef5f4" stroke="#12355b" stroke-width="2"/><polyline points="150,45 185,20 185,90 150,115" fill="none" stroke="#12355b" stroke-width="2"/><line x1="150" y1="115" x2="185" y2="90" stroke="#12355b" stroke-width="2"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_4"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_4" name="work_4" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_5" data-problem-type="fill-table">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Quick Check 6</div>
+        <div class="problem-type-badge">FILL TABLE</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">A rectangular prism and a triangular prism have similar dimensions. Compare their surface areas and volumes.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
+        <div class="table-responsive">
+          <table class="fill-table">
+            <thead>
+              <tr>
+                <th>Shape</th><th>Faces</th><th>Surface Area</th><th>Volume</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>Rect prism: 6×4×3</td><td>6</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_5_table_0_2"
+                                   data-correct="108" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_5_table_0_3"
+                                   data-correct="72" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+                <tr>
+                  <td>Tri prism: base=6, h=4, length=3, sides=5</td><td>5</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_5_table_1_2"
+                                   data-correct="72" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_5_table_1_3"
+                                   data-correct="36" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+            </tbody>
+          </table>
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Label each face of the prism, then write its area.</span><span class="lang-es" lang="es">Rotula cada cara del prisma y escribe su área.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Find the area of every face, then add them all together.</span><span class="lang-es" lang="es">Halla el área de cada cara y luego súmalas todas.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Label each face of the prism, then write its area.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Rotula cada cara del prisma y escribe su área.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 220 140" class="hw-visual-svg" role="img" aria-label="Rectangular prism to label"><rect x="40" y="45" width="110" height="70" fill="#ffffff" stroke="#12355b" stroke-width="2"/><polygon points="40,45 75,20 185,20 150,45" fill="#eef5f4" stroke="#12355b" stroke-width="2"/><polyline points="150,45 185,20 185,90 150,115" fill="none" stroke="#12355b" stroke-width="2"/><line x1="150" y1="115" x2="185" y2="90" stroke="#12355b" stroke-width="2"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_5"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_5" name="work_5" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
   </main>
+      
+      <details class="more-practice">
+        <summary>
+          <span class="lang-en">➕ More practice — open for extra problems</span>
+          <span class="lang-es" lang="es">➕ Más práctica — abre para más problemas</span>
+        </summary>
+        <p class="more-practice-note bilingual-block">
+          <span class="lang-en">Optional. Only if your student wants more — these are bonus problems.</span>
+          <span class="lang-es" lang="es">Opcional. Solo si tu estudiante quiere más — son problemas adicionales.</span>
+        </p>
+        <main class="problems-container more-practice-container">
+    <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 1</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Two triangle ends: 2 × (½ × 8 × 6) = 48 in². Three rectangles: (8 + 6 + 10) × 10 = 24 × 10 = 240 in². SA = 48 + 240 = 288 in².","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">A wedge-shaped (triangular prism) capsule has triangle ends with base 8 in and height 6 in. The prism is 10 in long, and the triangle&#039;s three sides are 8 in, 6 in, and 10 in. How much wrapping paper covers it?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="Two triangle ends: 2 × (½ × 8 × 6) = 48 in². Three rectangles: (8 + 6 + 10) × 10 = 24 × 10 = 240 in². SA = 48 + 240 = 288 in².">
+          
+            <label class="mc-option-label" id="label_q_6_0">
+              <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">288 in²</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_6_1">
+              <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">240 in²</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_6_2">
+              <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">48 in²</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_6_3">
+              <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">288 in³</span>
+            </label>
+          
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Label each face of the prism, then write its area.</span><span class="lang-es" lang="es">Rotula cada cara del prisma y escribe su área.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Find the area of every face, then add them all together.</span><span class="lang-es" lang="es">Halla el área de cada cara y luego súmalas todas.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Label each face of the prism, then write its area.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Rotula cada cara del prisma y escribe su área.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 220 140" class="hw-visual-svg" role="img" aria-label="Rectangular prism to label"><rect x="40" y="45" width="110" height="70" fill="#ffffff" stroke="#12355b" stroke-width="2"/><polygon points="40,45 75,20 185,20 150,45" fill="#eef5f4" stroke="#12355b" stroke-width="2"/><polyline points="150,45 185,20 185,90 150,115" fill="none" stroke="#12355b" stroke-width="2"/><line x1="150" y1="115" x2="185" y2="90" stroke="#12355b" stroke-width="2"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_6"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_6" name="work_6" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_7" data-problem-type="open-response">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 2</div>
+        <div class="problem-type-badge">OPEN RESPONSE</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">A company ships products in two container options: a rectangular prism (8 × 6 × 4 in) or a triangular prism (triangle base 8 in, triangle height 6 in, prism length 8 in, slant sides 6.3 in each). Both must be wrapped in protective film. Which shape uses LESS film? Show your work.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 A complete sentence with math vocabulary is the goal — not a perfect paragraph.</span><span class="lang-es" lang="es">👪 Una oración completa con vocabulario matemático es la meta — no un párrafo perfecto.</span></p>
+        
+        
+          <div class="sentence-frame-card">
+            <span class="sentence-frame-tag">💡 Sentence Starter:</span>
+            <span class="sentence-frame-text" onclick="insertSentenceStarter(7, 'Rectangular prism SA = 2(___) + 2(___) + 2(___) = ___ in². Triangular prism SA = 2(___) + ___ + ___ + ___ = ___ in². The ___ uses less film because ___.')">"Rectangular prism SA = 2(___) + 2(___) + 2(___) = ___ in². Triangular prism SA = 2(___) + ___ + ___ + ___ = ___ in². The ___ uses less film because ___."</span>
+            <span class="click-to-insert-hint">(Click to insert starter)</span>
+          </div>
+        
+        
+        <div class="open-response-wrapper">
+          <textarea id="open_response_7" 
+                    class="custom-textarea open-response-textarea" 
+                    data-min-length="40" 
+                    data-keywords="[&quot;surface area&quot;,&quot;rectangular&quot;,&quot;triangular&quot;,&quot;compare&quot;,&quot;less&quot;,&quot;film&quot;,&quot;face&quot;,&quot;area&quot;]"
+                    placeholder="Write your mathematical explanation here..." 
+                    oninput="saveState(); updateProgress();"></textarea>
+          <span class="feedback-badge"></span>
+        </div>
+        
+        
+          <div class="word-bank-container">
+            <div class="word-bank-label">Key Vocabulary to include (click to insert):</div>
+            <div class="word-bank-chips">
+              <span class="word-chip" onclick="insertWord(7, 'surface area')">surface area</span><span class="word-chip" onclick="insertWord(7, 'rectangular')">rectangular</span><span class="word-chip" onclick="insertWord(7, 'triangular')">triangular</span><span class="word-chip" onclick="insertWord(7, 'compare')">compare</span><span class="word-chip" onclick="insertWord(7, 'less')">less</span><span class="word-chip" onclick="insertWord(7, 'film')">film</span><span class="word-chip" onclick="insertWord(7, 'face')">face</span><span class="word-chip" onclick="insertWord(7, 'area')">area</span>
+            </div>
+          </div>
+        
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Label each face of the prism, then write its area.</span><span class="lang-es" lang="es">Rotula cada cara del prisma y escribe su área.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Find the area of every face, then add them all together.</span><span class="lang-es" lang="es">Halla el área de cada cara y luego súmalas todas.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Label each face of the prism, then write its area.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Rotula cada cara del prisma y escribe su área.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 220 140" class="hw-visual-svg" role="img" aria-label="Rectangular prism to label"><rect x="40" y="45" width="110" height="70" fill="#ffffff" stroke="#12355b" stroke-width="2"/><polygon points="40,45 75,20 185,20 150,45" fill="#eef5f4" stroke="#12355b" stroke-width="2"/><polyline points="150,45 185,20 185,90 150,115" fill="none" stroke="#12355b" stroke-width="2"/><line x1="150" y1="115" x2="185" y2="90" stroke="#12355b" stroke-width="2"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_7"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_7" name="work_7" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_8" data-problem-type="multiple-choice">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 3</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"SA = 2(5×4) + 2(5×3) + 2(4×3) = 40 + 30 + 24 = 94 cm².","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">What is the surface area of a rectangular prism with l = 5 cm, w = 4 cm, h = 3 cm?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="SA = 2(5×4) + 2(5×3) + 2(4×3) = 40 + 30 + 24 = 94 cm².">
+          
+            <label class="mc-option-label" id="label_q_8_0">
+              <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">94 cm²</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_8_1">
+              <input type="radio" name="q_8" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">60 cm²</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_8_2">
+              <input type="radio" name="q_8" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">94 cm³</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_8_3">
+              <input type="radio" name="q_8" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">47 cm²</span>
+            </label>
+          
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Label each face of the prism, then write its area.</span><span class="lang-es" lang="es">Rotula cada cara del prisma y escribe su área.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Find the area of every face, then add them all together.</span><span class="lang-es" lang="es">Halla el área de cada cara y luego súmalas todas.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Label each face of the prism, then write its area.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Rotula cada cara del prisma y escribe su área.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 220 140" class="hw-visual-svg" role="img" aria-label="Rectangular prism to label"><rect x="40" y="45" width="110" height="70" fill="#ffffff" stroke="#12355b" stroke-width="2"/><polygon points="40,45 75,20 185,20 150,45" fill="#eef5f4" stroke="#12355b" stroke-width="2"/><polyline points="150,45 185,20 185,90 150,115" fill="none" stroke="#12355b" stroke-width="2"/><line x1="150" y1="115" x2="185" y2="90" stroke="#12355b" stroke-width="2"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_8"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_8" name="work_8" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_9" data-problem-type="error-analysis">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 4</div>
+        <div class="problem-type-badge">ERROR ANALYSIS</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"A prism has 6 faces, in 3 matching pairs — every pair gets multiplied by 2.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <h3 class="error-analysis-title">⚠️ Spot the Common Mistake — A Forgotten Face</h3>
+        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read each step aloud and ask: does this step follow the math rules we learned?</span><span class="lang-es" lang="es">👪 Lean cada paso en voz alta y pregunten: ¿sigue las reglas que aprendimos?</span></p>
+        
+        <div class="clipboard-box">
+          <div class="clipboard-top"></div>
+          <div class="clipboard-paper">
+            
+              <div class="worked-step" id="step_q_9_1">
+                <span class="step-badge">Step 1</span>
+                <span class="step-label">Dimensions:</span>
+                <span class="step-work">Rectangular prism time capsule: l = 5 in, w = 3 in, h = 2 in.</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_9_2">
+                <span class="step-badge">Step 2</span>
+                <span class="step-label">Formula:</span>
+                <span class="step-work">SA = 2lw + 2lh + 2wh (add all 6 faces).</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_9_3">
+                <span class="step-badge">Step 3</span>
+                <span class="step-label">Calculate:</span>
+                <span class="step-work">The student wrote SA = 2(5×3) + 2(5×2) + (3×2) = 30 + 20 + 6 = 56 in².</span>
+              </div>
+            
+          </div>
+        </div>
+        
+        <div class="error-controls">
+          <div class="error-select-row">
+            <label for="error_step_select_9">Which step has the error?</label>
+            <select id="error_step_select_9" class="custom-select error-step-select" data-correct="3" onchange="saveState(); updateProgress();">
+              <option value="">-- Choose Step --</option>
+              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option>
+            </select>
+            <span class="feedback-badge"></span>
+          </div>
+          
+          <div class="error-explain-row">
+            <label for="error_explain_input_9">Explain the error and write the correct calculation:</label>
+            <textarea id="error_explain_input_9" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
+            <span class="feedback-badge"></span>
+          </div>
+          
+          <div class="reveal-box" id="error_correct_work_9" style="display:none;">
+            <strong>Correct Work Reference:</strong> The student forgot to multiply the last face pair (3×2) by 2. It should be 2(3×2) = 12, not 6. Correct: SA = 30 + 20 + 12 = 62 in².
+            
+          </div>
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Label each face of the prism, then write its area.</span><span class="lang-es" lang="es">Rotula cada cara del prisma y escribe su área.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Find the area of every face, then add them all together.</span><span class="lang-es" lang="es">Halla el área de cada cara y luego súmalas todas.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Label each face of the prism, then write its area.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Rotula cada cara del prisma y escribe su área.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 220 140" class="hw-visual-svg" role="img" aria-label="Rectangular prism to label"><rect x="40" y="45" width="110" height="70" fill="#ffffff" stroke="#12355b" stroke-width="2"/><polygon points="40,45 75,20 185,20 150,45" fill="#eef5f4" stroke="#12355b" stroke-width="2"/><polyline points="150,45 185,20 185,90 150,115" fill="none" stroke="#12355b" stroke-width="2"/><line x1="150" y1="115" x2="185" y2="90" stroke="#12355b" stroke-width="2"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_9"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_9" name="work_9" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_10" data-problem-type="fill-table">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 5</div>
+        <div class="problem-type-badge">FILL TABLE</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">Calculate the surface area of each rectangular prism time capsule.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
+        <div class="table-responsive">
+          <table class="fill-table">
+            <thead>
+              <tr>
+                <th>Capsule</th><th>Length</th><th>Width</th><th>Height</th><th>Surface Area</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>Capsule E</td><td>12 in</td><td>8 in</td><td>5 in</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_10_table_0_4"
+                                   data-correct="392 in²" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+                <tr>
+                  <td>Capsule F</td><td>9 cm</td><td>6 cm</td><td>6 cm</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_10_table_1_4"
+                                   data-correct="288 cm²" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+                <tr>
+                  <td>Capsule G</td><td>15 ft</td><td>4 ft</td><td>3 ft</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_10_table_2_4"
+                                   data-correct="234 ft²" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+            </tbody>
+          </table>
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Label each face of the prism, then write its area.</span><span class="lang-es" lang="es">Rotula cada cara del prisma y escribe su área.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Find the area of every face, then add them all together.</span><span class="lang-es" lang="es">Halla el área de cada cara y luego súmalas todas.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Label each face of the prism, then write its area.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Rotula cada cara del prisma y escribe su área.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 220 140" class="hw-visual-svg" role="img" aria-label="Rectangular prism to label"><rect x="40" y="45" width="110" height="70" fill="#ffffff" stroke="#12355b" stroke-width="2"/><polygon points="40,45 75,20 185,20 150,45" fill="#eef5f4" stroke="#12355b" stroke-width="2"/><polyline points="150,45 185,20 185,90 150,115" fill="none" stroke="#12355b" stroke-width="2"/><line x1="150" y1="115" x2="185" y2="90" stroke="#12355b" stroke-width="2"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_10"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_10" name="work_10" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_11" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 6</div>
+        <div class="problem-type-badge">DRAG SORT</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">Sort these prisms from LEAST surface area to GREATEST.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
+        
+        <div class="drag-sort-workspace" id="dragsort_11">
+          <div class="drag-columns">
+            
+              <div class="drag-column" data-category-id="least-greatest-surface-area" ondragover="allowDrop(event)" ondrop="handleDrop(event, 11, 'least-greatest-surface-area')">
+                <div class="drag-column-header">Least → Greatest surface area</div>
+                <div class="drag-column-slots" id="slots_11_least-greatest-surface-area" ondragover="allowDrop(event)" ondrop="handleDrop(event, 11, 'least-greatest-surface-area')"></div>
+              </div>
+          </div>
+          <div class="drag-source-section">
+            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
+            <div class="drag-source-pile" id="pile_11" ondragover="allowDrop(event)" ondrop="handleDrop(event, 11, '')">
+              
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_11_0"
+                     data-item-index="0"
+                     data-correct-category="least-greatest-surface-area"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Cube 3×3×3: SA = 54</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_11_0', 11); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="least-greatest-surface-area">Least → Greatest surface area</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_11_1"
+                     data-item-index="1"
+                     data-correct-category="least-greatest-surface-area"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Rect prism 5×4×3: SA = 94</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_11_1', 11); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="least-greatest-surface-area">Least → Greatest surface area</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_11_2"
+                     data-item-index="2"
+                     data-correct-category="least-greatest-surface-area"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Rect prism 8×5×3: SA = 158</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_11_2', 11); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="least-greatest-surface-area">Least → Greatest surface area</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_11_3"
+                     data-item-index="3"
+                     data-correct-category="least-greatest-surface-area"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Rect prism 10×6×4: SA = 248</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_11_3', 11); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="least-greatest-surface-area">Least → Greatest surface area</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="drag-controls">
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(11); saveState(); updateProgress();">Reset Sorting</button>
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Label each face of the prism, then write its area.</span><span class="lang-es" lang="es">Rotula cada cara del prisma y escribe su área.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Find the area of every face, then add them all together.</span><span class="lang-es" lang="es">Halla el área de cada cara y luego súmalas todas.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_12" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 7</div>
+        <div class="problem-type-badge">DRAG SORT</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">A capsule crew sorts wrapping jobs by how much paper each prism needs. Order these from LEAST surface area to GREATEST.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
+        
+        <div class="drag-sort-workspace" id="dragsort_12">
+          <div class="drag-columns">
+            
+              <div class="drag-column" data-category-id="least-greatest-wrapping-paper" ondragover="allowDrop(event)" ondrop="handleDrop(event, 12, 'least-greatest-wrapping-paper')">
+                <div class="drag-column-header">Least → Greatest wrapping paper</div>
+                <div class="drag-column-slots" id="slots_12_least-greatest-wrapping-paper" ondragover="allowDrop(event)" ondrop="handleDrop(event, 12, 'least-greatest-wrapping-paper')"></div>
+              </div>
+          </div>
+          <div class="drag-source-section">
+            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
+            <div class="drag-source-pile" id="pile_12" ondragover="allowDrop(event)" ondrop="handleDrop(event, 12, '')">
+              
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_12_0"
+                     data-item-index="0"
+                     data-correct-category="least-greatest-wrapping-paper"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Rect capsule 3×4×5: SA = 94 in²</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_12_0', 12); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="least-greatest-wrapping-paper">Least → Greatest wrapping paper</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_12_1"
+                     data-item-index="1"
+                     data-correct-category="least-greatest-wrapping-paper"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Cube capsule 4×4×4: SA = 96 in²</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_12_1', 12); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="least-greatest-wrapping-paper">Least → Greatest wrapping paper</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_12_2"
+                     data-item-index="2"
+                     data-correct-category="least-greatest-wrapping-paper"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Rect capsule 6×5×4: SA = 148 in²</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_12_2', 12); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="least-greatest-wrapping-paper">Least → Greatest wrapping paper</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_12_3"
+                     data-item-index="3"
+                     data-correct-category="least-greatest-wrapping-paper"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Tri capsule (ends 8×6, length 10): SA = 288 in²</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_12_3', 12); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="least-greatest-wrapping-paper">Least → Greatest wrapping paper</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="drag-controls">
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(12); saveState(); updateProgress();">Reset Sorting</button>
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Label each face of the prism, then write its area.</span><span class="lang-es" lang="es">Rotula cada cara del prisma y escribe su área.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Find the area of every face, then add them all together.</span><span class="lang-es" lang="es">Halla el área de cada cara y luego súmalas todas.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_13" data-problem-type="error-analysis">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 8</div>
+        <div class="problem-type-badge">ERROR ANALYSIS</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Wrapping paper covers the outside faces — that is surface area, not how much fits inside.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <h3 class="error-analysis-title">⚠️ Level 2 Extension — Wrapping Paper Mix-Up</h3>
+        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read each step aloud and ask: does this step follow the math rules we learned?</span><span class="lang-es" lang="es">👪 Lean cada paso en voz alta y pregunten: ¿sigue las reglas que aprendimos?</span></p>
+        
+        <div class="clipboard-box">
+          <div class="clipboard-top"></div>
+          <div class="clipboard-paper">
+            
+              <div class="worked-step" id="step_q_13_1">
+                <span class="step-badge">Step 1</span>
+                <span class="step-label">Dimensions:</span>
+                <span class="step-work">Rectangular capsule: l = 4 in, w = 3 in, h = 2 in. Find the wrapping paper (surface area).</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_13_2">
+                <span class="step-badge">Step 2</span>
+                <span class="step-label">Formula:</span>
+                <span class="step-work">Surface area means adding the area of all 6 faces: SA = 2lw + 2lh + 2wh.</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_13_3">
+                <span class="step-badge">Step 3</span>
+                <span class="step-label">Calculate:</span>
+                <span class="step-work">The student multiplied the three dimensions: 4 × 3 × 2 = 24, so they wrote SA = 24 in².</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_13_4">
+                <span class="step-badge">Step 4</span>
+                <span class="step-label">Answer:</span>
+                <span class="step-work">Wrapping paper needed = 24 in²</span>
+              </div>
+            
+          </div>
+        </div>
+        
+        <div class="error-controls">
+          <div class="error-select-row">
+            <label for="error_step_select_13">Which step has the error?</label>
+            <select id="error_step_select_13" class="custom-select error-step-select" data-correct="3" onchange="saveState(); updateProgress();">
+              <option value="">-- Choose Step --</option>
+              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option><option value="4">Step 4</option>
+            </select>
+            <span class="feedback-badge"></span>
+          </div>
+          
+          <div class="error-explain-row">
+            <label for="error_explain_input_13">Explain the error and write the correct calculation:</label>
+            <textarea id="error_explain_input_13" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
+            <span class="feedback-badge"></span>
+          </div>
+          
+          <div class="reveal-box" id="error_correct_work_13" style="display:none;">
+            <strong>Correct Work Reference:</strong> Multiplying l × w × h gives the VOLUME (24 in³), not the surface area. To wrap the box you must add all six faces: SA = 2(4×3) + 2(4×2) + 2(3×2) = 24 + 16 + 12 = 52 in².
+            
+          </div>
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Label each face of the prism, then write its area.</span><span class="lang-es" lang="es">Rotula cada cara del prisma y escribe su área.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Find the area of every face, then add them all together.</span><span class="lang-es" lang="es">Halla el área de cada cara y luego súmalas todas.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Label each face of the prism, then write its area.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Rotula cada cara del prisma y escribe su área.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 220 140" class="hw-visual-svg" role="img" aria-label="Rectangular prism to label"><rect x="40" y="45" width="110" height="70" fill="#ffffff" stroke="#12355b" stroke-width="2"/><polygon points="40,45 75,20 185,20 150,45" fill="#eef5f4" stroke="#12355b" stroke-width="2"/><polyline points="150,45 185,20 185,90 150,115" fill="none" stroke="#12355b" stroke-width="2"/><line x1="150" y1="115" x2="185" y2="90" stroke="#12355b" stroke-width="2"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_13"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_13" name="work_13" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  </main>
+      </details>
     </div>
 
     <div class="tab-panel-inner" data-tab-panel="help" id="hw_panel_help" role="tabpanel" hidden>
@@ -3127,8 +4149,14 @@ body { font-size: 15px; line-height: 1.58; }
       <div class="help-modal" role="dialog" aria-modal="true" aria-labelledby="help_modal_title" onclick="event.stopPropagation()">
         <button type="button" class="help-modal-close" onclick="closeHelpModal()" aria-label="Close help">✕</button>
         <h3 id="help_modal_title" class="help-modal-title"></h3>
+        <div class="help-modal-visual" id="help_modal_visual" hidden></div>
         <p class="help-modal-body lang-en" id="help_modal_en"></p>
         <p class="help-modal-body lang-es" lang="es" id="help_modal_es"></p>
+        <div class="help-modal-frame" id="help_modal_frame" hidden>
+          <span class="help-frame-tag">✏️ Sentence starter / Para empezar</span>
+          <span class="help-frame-en lang-en" id="help_modal_frame_en"></span>
+          <span class="help-frame-es lang-es" lang="es" id="help_modal_frame_es"></span>
+        </div>
       </div>
     </div>
 
@@ -3139,7 +4167,7 @@ body { font-size: 15px; line-height: 1.58; }
     
     <div class="score-progress-container">
       <div class="score-text">
-        Progress / Progreso: <span id="progress_text">0 / 4 Completed</span>
+        Progress / Progreso: <span id="progress_text">0 / 6 Completed</span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -3207,6 +4235,21 @@ function openHelpModal(data) {
     (data.titleEn || 'Help') + ' / ' + (data.titleEs || 'Ayuda');
   document.getElementById('help_modal_en').textContent = data.en || '';
   document.getElementById('help_modal_es').textContent = data.es || '';
+  var vis = document.getElementById('help_modal_visual');
+  if (vis) {
+    if (data.visual) { vis.innerHTML = data.visual; vis.hidden = false; }
+    else { vis.innerHTML = ''; vis.hidden = true; }
+  }
+  var frame = document.getElementById('help_modal_frame');
+  if (frame) {
+    if (data.frameEn || data.frameEs) {
+      document.getElementById('help_modal_frame_en').textContent = data.frameEn || '';
+      document.getElementById('help_modal_frame_es').textContent = data.frameEs || '';
+      frame.hidden = false;
+    } else {
+      frame.hidden = true;
+    }
+  }
   overlay.hidden = false;
   document.body.classList.add('help-modal-open');
   overlay.querySelector('.help-modal-close')?.focus();
@@ -3972,9 +5015,10 @@ function normalizeMath(val) {
 }
 
 function updateProgress() {
-  const problems = document.querySelectorAll(".problem-section");
+  const problems = Array.from(document.querySelectorAll(".problem-section"))
+    .filter((s) => !s.closest(".more-practice"));
   let completedCount = 0;
-  
+
   problems.forEach((section, idx) => {
     const type = section.dataset.problemType;
     let hasValue = false;
@@ -4362,9 +5406,10 @@ function checkProblem(idx, options) {
 }
 
 function updateScoreSummary() {
-  const problems = document.querySelectorAll(".problem-section");
-  const checked = Array.from(problems).filter((s) => s.classList.contains("correct") || s.classList.contains("incorrect"));
-  const correctCount = Array.from(problems).filter((s) => s.classList.contains("correct")).length;
+  const problems = Array.from(document.querySelectorAll(".problem-section"))
+    .filter((s) => !s.closest(".more-practice"));
+  const checked = problems.filter((s) => s.classList.contains("correct") || s.classList.contains("incorrect"));
+  const correctCount = problems.filter((s) => s.classList.contains("correct")).length;
   const total = problems.length;
   if (checked.length > 0) {
     document.getElementById("progress_text").textContent = "Score: " + correctCount + " / " + total + " Correct";
@@ -4375,15 +5420,18 @@ function updateScoreSummary() {
 }
 
 function checkWorksheet() {
-  const problems = document.querySelectorAll(".problem-section");
+  const problems = Array.from(document.querySelectorAll(".problem-section"));
   let correctCount = 0;
 
-  problems.forEach((section, idx) => {
+  problems.forEach((section) => {
+    const idx = parseInt((section.id || "").replace("problem_", ""), 10);
+    if (Number.isNaN(idx)) return;
     const result = checkProblem(idx, { silent: true });
-    if (result.correct) correctCount++;
+    // Only core (non-optional) problems count toward the worksheet score.
+    if (result.correct && !section.closest(".more-practice")) correctCount++;
   });
 
-  const total = problems.length;
+  const total = problems.filter((s) => !s.closest(".more-practice")).length;
   document.getElementById("progress_text").textContent = "Score: " + correctCount + " / " + total + " Correct";
   document.getElementById("progress_bar").style.width = (correctCount / total * 100) + "%";
 

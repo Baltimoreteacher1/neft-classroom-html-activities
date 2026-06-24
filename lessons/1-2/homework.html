@@ -1708,6 +1708,48 @@ header.homework-header h1 {
 .help-modal-body { margin: 0 0 10px; font-size: 15px; line-height: 1.5; }
 body.help-modal-open { overflow: hidden; }
 
+/* Visual aid + sentence frame inside help popups */
+.help-modal-visual {
+  margin: 0 0 14px; padding: 10px; border-radius: var(--radius-sm);
+  background: var(--cream); border: 1px solid var(--line); text-align: center;
+}
+.help-modal-visual[hidden] { display: none !important; }
+.help-modal-visual svg { max-width: 100%; height: auto; }
+.help-modal-frame {
+  display: flex; flex-direction: column; gap: 4px;
+  margin: 12px 0 0; padding: 12px 14px;
+  background: var(--teal-light); border-left: 4px solid var(--teal);
+  border-radius: var(--radius-sm); font-size: 14px; line-height: 1.5;
+}
+.help-modal-frame[hidden] { display: none !important; }
+.help-frame-tag { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--teal); }
+.help-frame-es { color: var(--muted); }
+
+/* Guided "Try together" fill-in spaces + step actions */
+.together-fill { margin: 10px 0 6px; }
+.together-fill-label { display: block; font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.together-fill-input {
+  width: 100%; min-height: 48px; padding: 10px 12px;
+  border: 2px dashed var(--teal); border-radius: var(--radius-sm);
+  background: #fffef8; font-size: 15px; line-height: 1.5; resize: vertical;
+}
+.together-fill-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
+.together-step-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+
+/* "More practice" accordion in the Check tab */
+.more-practice {
+  margin-top: 20px; border: 2px solid var(--teal); border-radius: var(--radius-md);
+  background: var(--teal-light); overflow: hidden;
+}
+.more-practice > summary {
+  cursor: pointer; list-style: none; padding: 14px 18px;
+  font-family: var(--font-display); font-weight: 800; color: var(--navy); font-size: 16px;
+}
+.more-practice > summary::-webkit-details-marker { display: none; }
+.more-practice[open] > summary { border-bottom: 1px solid var(--line); background: var(--white); }
+.more-practice-note { padding: 12px 18px 0; font-size: 13px; }
+.more-practice-container { padding: 8px 14px 14px; }
+
 .external-resource-list { list-style: none; padding: 0; margin: 16px 0 0; display: flex; flex-direction: column; gap: 10px; }
 .ai-lab-cta {
   display: flex; align-items: center; gap: 14px;
@@ -2502,7 +2544,17 @@ body { font-size: 15px; line-height: 1.58; }
             </div>
             <p class="lang-en"><strong>First…</strong> List the factors of 8: 1, 2, 4, 8. Then the factors of 12: 1, 2, 3, 4, 6, 12.</p>
             <p class="lang-es" lang="es"><strong>Primero…</strong> Escriban los factores de 8: 1, 2, 4, 8. Luego los factores de 12: 1, 2, 3, 4, 6, 12.</p>
-            <p class="step-hint">💡 A factor divides the number with nothing left over. · Un factor divide al número sin que sobre nada.</p>
+            <div class="together-fill">
+              <label class="together-fill-label" for="together_0">
+                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
+                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
+              </label>
+              <textarea id="together_0" name="together_0" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
+            </div>
+            <div class="together-step-actions">
+              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 hint","titleEs":"Pista del paso 1","en":"A factor divides the number with nothing left over.","es":"Un factor divide al número sin que sobre nada."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
+              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 — more help","titleEs":"Paso 1 — más ayuda","en":"Try each number: does 8 divide evenly by it? Does 12?","es":"Prueben cada número: ¿el 8 se divide exacto entre él? ¿Y el 12?"}' onclick="openHelpModalFromBtn(this)" aria-label="🤝 More help / Más ayuda">🤝 More help / Más ayuda</button>
+            </div>
           </li>
           <li class="together-step step-color-2">
             <div class="together-step-head">
@@ -2510,7 +2562,17 @@ body { font-size: 15px; line-height: 1.58; }
             </div>
             <p class="lang-en"><strong>First…</strong> Which numbers are in both lists? 1, 2, and 4.</p>
             <p class="lang-es" lang="es"><strong>Primero…</strong> ¿Qué números están en las dos listas? 1, 2 y 4.</p>
-            <p class="step-hint">💡 Look for the numbers that appear twice, once in each list. · Busquen los números que aparecen dos veces, uno en cada lista.</p>
+            <div class="together-fill">
+              <label class="together-fill-label" for="together_1">
+                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
+                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
+              </label>
+              <textarea id="together_1" name="together_1" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
+            </div>
+            <div class="together-step-actions">
+              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 hint","titleEs":"Pista del paso 2","en":"Look for the numbers that appear twice, once in each list.","es":"Busquen los números que aparecen dos veces, uno en cada lista."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
+              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 — more help","titleEs":"Paso 2 — más ayuda","en":"It helps to underline the shared numbers in both lists.","es":"Ayuda subrayar los números compartidos en las dos listas."}' onclick="openHelpModalFromBtn(this)" aria-label="🤝 More help / Más ayuda">🤝 More help / Más ayuda</button>
+            </div>
           </li>
           <li class="together-step step-color-3">
             <div class="together-step-head">
@@ -2518,7 +2580,17 @@ body { font-size: 15px; line-height: 1.58; }
             </div>
             <p class="lang-en"><strong>First…</strong> The largest shared number is 4, so the GCF of 8 and 12 is 4. You could make 4 equal bags.</p>
             <p class="lang-es" lang="es"><strong>Primero…</strong> El número compartido más grande es 4, así que el MCD de 8 y 12 es 4. Podrían armar 4 bolsitas iguales.</p>
-            <p class="step-hint">💡 Pick the GREATEST shared factor, not just any one. · Elijan el factor común MÁS GRANDE, no cualquiera.</p>
+            <div class="together-fill">
+              <label class="together-fill-label" for="together_2">
+                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
+                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
+              </label>
+              <textarea id="together_2" name="together_2" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
+            </div>
+            <div class="together-step-actions">
+              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 3 hint","titleEs":"Pista del paso 3","en":"Pick the GREATEST shared factor, not just any one.","es":"Elijan el factor común MÁS GRANDE, no cualquiera."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
+              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 3 — more help","titleEs":"Paso 3 — más ayuda","en":"Talking about why 4 is the biggest matters more than speed.","es":"Hablar de por qué 4 es el más grande importa más que la rapidez."}' onclick="openHelpModalFromBtn(this)" aria-label="🤝 More help / Más ayuda">🤝 More help / Más ayuda</button>
+            </div>
           </li>
       </ol>
     </div>
@@ -2538,7 +2610,7 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Quick Check 1</div>
         <div class="problem-type-badge">ERROR ANALYSIS</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"A factor of 8 cannot be bigger than 8. Is 160 a factor of 8 and 20, or did Jordan multiply instead?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"A factor of 8 cannot be bigger than 8. Is 160 a factor of 8 and 20, or did Jordan multiply instead?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
         <h3 class="error-analysis-title">⚠️ Spot the Common Mistake — GCF or LCM?</h3>
@@ -2637,7 +2709,7 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Quick Check 2</div>
         <div class="problem-type-badge">ERROR ANALYSIS</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Sam listed the factors correctly. Look at the shared factors: 1, 2, 3, 6. Did Sam pick the largest one?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Sam listed the factors correctly. Look at the shared factors: 1, 2, 3, 6. Did Sam pick the largest one?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
         <h3 class="error-analysis-title">⚠️ Spot the Common Mistake — Not the Greatest</h3>
@@ -2736,7 +2808,7 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Quick Check 3</div>
         <div class="problem-type-badge">FILL TABLE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
         <p class="problem-stem">Use prime factorization to find the GCF.</p>
@@ -2841,7 +2913,7 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Quick Check 4</div>
         <div class="problem-type-badge">DRAG SORT</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
         <p class="problem-stem">Sort these numbers: which are common factors of 16 and 20, and which are NOT?</p>
@@ -2978,7 +3050,940 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
     </section>
+  
+
+    <section class="problem-section card" id="problem_4" data-problem-type="multiple-choice">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Quick Check 5</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"GCF(36, 48) = 12. She can make 12 bags, each with 3 pencils and 4 erasers.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">A teacher has 36 pencils and 48 erasers. She wants to make identical supply bags with no items left over. What is the greatest number of bags she can make?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="GCF(36, 48) = 12. She can make 12 bags, each with 3 pencils and 4 erasers.">
+          
+            <label class="mc-option-label" id="label_q_4_0">
+              <input type="radio" name="q_4" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">12 bags</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_4_1">
+              <input type="radio" name="q_4" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">6 bags</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_4_2">
+              <input type="radio" name="q_4" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">4 bags</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_4_3">
+              <input type="radio" name="q_4" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">36 bags</span>
+            </label>
+          
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Make a factor list or a tree to break the number apart.</span><span class="lang-es" lang="es">Haz una lista de factores o un árbol para descomponer el número.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">List factors or multiples in order so none are missed.</span><span class="lang-es" lang="es">Enumera factores o múltiplos en orden para no olvidar ninguno.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Make a factor list or a tree to break the number apart.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Haz una lista de factores o un árbol para descomponer el número.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_4"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_4" name="work_4" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_5" data-problem-type="multiple-choice">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Quick Check 6</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Factors of 40: 1, 2, 4, 5, 8, 10, 20, 40. Factors of 60: 1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30, 60. The greatest shared factor is 20, so 20 bins can be filled equally.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">The astronaut crew has 40 solar cells and 60 battery cells to load into matching storage bins with nothing left over. What is the GCF of 40 and 60?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="Factors of 40: 1, 2, 4, 5, 8, 10, 20, 40. Factors of 60: 1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30, 60. The greatest shared factor is 20, so 20 bins can be filled equally.">
+          
+            <label class="mc-option-label" id="label_q_5_0">
+              <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">20</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_5_1">
+              <input type="radio" name="q_5" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">10</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_5_2">
+              <input type="radio" name="q_5" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">4</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_5_3">
+              <input type="radio" name="q_5" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">120</span>
+            </label>
+          
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Make a factor list or a tree to break the number apart.</span><span class="lang-es" lang="es">Haz una lista de factores o un árbol para descomponer el número.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">List factors or multiples in order so none are missed.</span><span class="lang-es" lang="es">Enumera factores o múltiplos en orden para no olvidar ninguno.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Make a factor list or a tree to break the number apart.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Haz una lista de factores o un árbol para descomponer el número.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_5"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_5" name="work_5" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
   </main>
+      
+      <details class="more-practice">
+        <summary>
+          <span class="lang-en">➕ More practice — open for extra problems</span>
+          <span class="lang-es" lang="es">➕ Más práctica — abre para más problemas</span>
+        </summary>
+        <p class="more-practice-note bilingual-block">
+          <span class="lang-en">Optional. Only if your student wants more — these are bonus problems.</span>
+          <span class="lang-es" lang="es">Opcional. Solo si tu estudiante quiere más — son problemas adicionales.</span>
+        </p>
+        <main class="problems-container more-practice-container">
+    <section class="problem-section card" id="problem_6" data-problem-type="error-analysis">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 1</div>
+        <div class="problem-type-badge">ERROR ANALYSIS</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Amara found the common factors correctly. Look at Step 4 — did she pick the greatest one?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <h3 class="error-analysis-title">⚠️ Find Amara&#039;s Mistake</h3>
+        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read each step aloud and ask: does this step follow the math rules we learned?</span><span class="lang-es" lang="es">👪 Lean cada paso en voz alta y pregunten: ¿sigue las reglas que aprendimos?</span></p>
+        
+        <div class="clipboard-box">
+          <div class="clipboard-top"></div>
+          <div class="clipboard-paper">
+            
+              <div class="worked-step" id="step_q_6_1">
+                <span class="step-badge">Step 1</span>
+                <span class="step-label">Find factors of 16:</span>
+                <span class="step-work">1, 2, 4, 8, 16</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_6_2">
+                <span class="step-badge">Step 2</span>
+                <span class="step-label">Find factors of 28:</span>
+                <span class="step-work">1, 2, 4, 7, 14, 28</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_6_3">
+                <span class="step-badge">Step 3</span>
+                <span class="step-label">List common factors:</span>
+                <span class="step-work">1, 2, 4</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_6_4">
+                <span class="step-badge">Step 4</span>
+                <span class="step-label">Choose GCF:</span>
+                <span class="step-work">GCF = 2</span>
+              </div>
+            
+          </div>
+        </div>
+        
+        <div class="error-controls">
+          <div class="error-select-row">
+            <label for="error_step_select_6">Which step has the error?</label>
+            <select id="error_step_select_6" class="custom-select error-step-select" data-correct="4" onchange="saveState(); updateProgress();">
+              <option value="">-- Choose Step --</option>
+              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option><option value="4">Step 4</option>
+            </select>
+            <span class="feedback-badge"></span>
+          </div>
+          
+          <div class="error-explain-row">
+            <label for="error_explain_input_6">Explain the error and write the correct calculation:</label>
+            <textarea id="error_explain_input_6" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
+            <span class="feedback-badge"></span>
+          </div>
+          
+          <div class="reveal-box" id="error_correct_work_6" style="display:none;">
+            <strong>Correct Work Reference:</strong> GCF = 4 (the greatest of the common factors, not just any common factor). Amara found the common factors correctly but chose 2 instead of the largest one, 4.
+            
+          </div>
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Make a factor list or a tree to break the number apart.</span><span class="lang-es" lang="es">Haz una lista de factores o un árbol para descomponer el número.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">List factors or multiples in order so none are missed.</span><span class="lang-es" lang="es">Enumera factores o múltiplos en orden para no olvidar ninguno.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Make a factor list or a tree to break the number apart.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Haz una lista de factores o un árbol para descomponer el número.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_6"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_6" name="work_6" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_7" data-problem-type="matching-game">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 2</div>
+        <div class="problem-type-badge">MATCHING GAME</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">Each crew pod needs the same number of each supply with none left over. Match each supply pair to the greatest number of equal pods (the GCF).</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
+        <div class="matching-pairs">
+          
+            <div class="matching-row" data-term="Pods from 18 tanks &amp; 27 packs" data-correct="9">
+              <div class="matching-term">Pods from 18 tanks &amp; 27 packs</div>
+              <div class="matching-select-container">
+                <select name="q_7_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="16">16</option><option value="5">5</option><option value="7">7</option><option value="9">9</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="Pods from 21 tanks &amp; 28 packs" data-correct="7">
+              <div class="matching-term">Pods from 21 tanks &amp; 28 packs</div>
+              <div class="matching-select-container">
+                <select name="q_7_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="16">16</option><option value="5">5</option><option value="7">7</option><option value="9">9</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="Pods from 32 tanks &amp; 48 packs" data-correct="16">
+              <div class="matching-term">Pods from 32 tanks &amp; 48 packs</div>
+              <div class="matching-select-container">
+                <select name="q_7_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="16">16</option><option value="5">5</option><option value="7">7</option><option value="9">9</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="Pods from 25 tanks &amp; 35 packs" data-correct="5">
+              <div class="matching-term">Pods from 25 tanks &amp; 35 packs</div>
+              <div class="matching-select-container">
+                <select name="q_7_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="16">16</option><option value="5">5</option><option value="7">7</option><option value="9">9</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Make a factor list or a tree to break the number apart.</span><span class="lang-es" lang="es">Haz una lista de factores o un árbol para descomponer el número.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">List factors or multiples in order so none are missed.</span><span class="lang-es" lang="es">Enumera factores o múltiplos en orden para no olvidar ninguno.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_8" data-problem-type="open-response">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 3</div>
+        <div class="problem-type-badge">OPEN RESPONSE</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">A farmer has 54 apples and 36 oranges. She wants to make gift baskets where every basket has the same number of apples and the same number of oranges, with none left over. Find the greatest number of baskets and explain how you used GCF to solve this.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 A complete sentence with math vocabulary is the goal — not a perfect paragraph.</span><span class="lang-es" lang="es">👪 Una oración completa con vocabulario matemático es la meta — no un párrafo perfecto.</span></p>
+        
+        
+          <div class="sentence-frame-card">
+            <span class="sentence-frame-tag">💡 Sentence Starter:</span>
+            <span class="sentence-frame-text" onclick="insertSentenceStarter(8, 'The GCF of 54 and 36 is ___ because ___. So the farmer can make ___ baskets, each with ___ apples and ___ oranges.')">"The GCF of 54 and 36 is ___ because ___. So the farmer can make ___ baskets, each with ___ apples and ___ oranges."</span>
+            <span class="click-to-insert-hint">(Click to insert starter)</span>
+          </div>
+        
+        
+        <div class="open-response-wrapper">
+          <textarea id="open_response_8" 
+                    class="custom-textarea open-response-textarea" 
+                    data-min-length="30" 
+                    data-keywords="[&quot;GCF&quot;,&quot;greatest&quot;,&quot;common&quot;,&quot;factor&quot;,&quot;18&quot;,&quot;baskets&quot;,&quot;divide&quot;,&quot;equally&quot;]"
+                    placeholder="Write your mathematical explanation here..." 
+                    oninput="saveState(); updateProgress();"></textarea>
+          <span class="feedback-badge"></span>
+        </div>
+        
+        
+          <div class="word-bank-container">
+            <div class="word-bank-label">Key Vocabulary to include (click to insert):</div>
+            <div class="word-bank-chips">
+              <span class="word-chip" onclick="insertWord(8, 'GCF')">GCF</span><span class="word-chip" onclick="insertWord(8, 'greatest')">greatest</span><span class="word-chip" onclick="insertWord(8, 'common')">common</span><span class="word-chip" onclick="insertWord(8, 'factor')">factor</span><span class="word-chip" onclick="insertWord(8, '18')">18</span><span class="word-chip" onclick="insertWord(8, 'baskets')">baskets</span><span class="word-chip" onclick="insertWord(8, 'divide')">divide</span><span class="word-chip" onclick="insertWord(8, 'equally')">equally</span>
+            </div>
+          </div>
+        
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Make a factor list or a tree to break the number apart.</span><span class="lang-es" lang="es">Haz una lista de factores o un árbol para descomponer el número.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">List factors or multiples in order so none are missed.</span><span class="lang-es" lang="es">Enumera factores o múltiplos en orden para no olvidar ninguno.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Make a factor list or a tree to break the number apart.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Haz una lista de factores o un árbol para descomponer el número.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_8"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_8" name="work_8" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_9" data-problem-type="error-analysis">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 4</div>
+        <div class="problem-type-badge">ERROR ANALYSIS</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Splitting supplies INTO equal groups with none left over uses the GCF, not the LCM. The GCF is a factor that divides both numbers, so it must be 12 or smaller, not 36.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <h3 class="error-analysis-title">⚠️ Level 2 Extension — The Wrong Mission Number</h3>
+        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read each step aloud and ask: does this step follow the math rules we learned?</span><span class="lang-es" lang="es">👪 Lean cada paso en voz alta y pregunten: ¿sigue las reglas que aprendimos?</span></p>
+        
+        <div class="clipboard-box">
+          <div class="clipboard-top"></div>
+          <div class="clipboard-paper">
+            
+              <div class="worked-step" id="step_q_9_1">
+                <span class="step-badge">Step 1</span>
+                <span class="step-label">The problem:</span>
+                <span class="step-work">Split 12 oxygen tanks and 18 ration packs into the most equal crew pods with none left over.</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_9_2">
+                <span class="step-badge">Step 2</span>
+                <span class="step-label">List factors of 12:</span>
+                <span class="step-work">1, 2, 3, 4, 6, 12</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_9_3">
+                <span class="step-badge">Step 3</span>
+                <span class="step-label">List factors of 18:</span>
+                <span class="step-work">1, 2, 3, 6, 9, 18</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_9_4">
+                <span class="step-badge">Step 4</span>
+                <span class="step-label">Choose the number of pods:</span>
+                <span class="step-work">Cadet Rio says 36 pods, because 36 is the smallest number that both 12 and 18 divide into.</span>
+              </div>
+            
+          </div>
+        </div>
+        
+        <div class="error-controls">
+          <div class="error-select-row">
+            <label for="error_step_select_9">Which step has the error?</label>
+            <select id="error_step_select_9" class="custom-select error-step-select" data-correct="4" onchange="saveState(); updateProgress();">
+              <option value="">-- Choose Step --</option>
+              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option><option value="4">Step 4</option>
+            </select>
+            <span class="feedback-badge"></span>
+          </div>
+          
+          <div class="error-explain-row">
+            <label for="error_explain_input_9">Explain the error and write the correct calculation:</label>
+            <textarea id="error_explain_input_9" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
+            <span class="feedback-badge"></span>
+          </div>
+          
+          <div class="reveal-box" id="error_correct_work_9" style="display:none;">
+            <strong>Correct Work Reference:</strong> Cadet Rio found the LCM (least common multiple = 36), but making equal groups with none left over needs the GCF (greatest common factor). The common factors of 12 and 18 are 1, 2, 3, 6, and the greatest is 6. So Mission Control can fill 6 equal pods, each with 2 oxygen tanks and 3 ration packs.
+            
+          </div>
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Make a factor list or a tree to break the number apart.</span><span class="lang-es" lang="es">Haz una lista de factores o un árbol para descomponer el número.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">List factors or multiples in order so none are missed.</span><span class="lang-es" lang="es">Enumera factores o múltiplos en orden para no olvidar ninguno.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Make a factor list or a tree to break the number apart.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Haz una lista de factores o un árbol para descomponer el número.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_9"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_9" name="work_9" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_10" data-problem-type="matching-game">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 5</div>
+        <div class="problem-type-badge">MATCHING GAME</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">Match each pair of numbers to their GCF.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
+        <div class="matching-pairs">
+          
+            <div class="matching-row" data-term="GCF(6, 9)" data-correct="3">
+              <div class="matching-term">GCF(6, 9)</div>
+              <div class="matching-select-container">
+                <select name="q_10_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="10">10</option><option value="3">3</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="GCF(12, 18)" data-correct="6">
+              <div class="matching-term">GCF(12, 18)</div>
+              <div class="matching-select-container">
+                <select name="q_10_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="10">10</option><option value="3">3</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="GCF(16, 24)" data-correct="8">
+              <div class="matching-term">GCF(16, 24)</div>
+              <div class="matching-select-container">
+                <select name="q_10_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="10">10</option><option value="3">3</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="GCF(20, 30)" data-correct="10">
+              <div class="matching-term">GCF(20, 30)</div>
+              <div class="matching-select-container">
+                <select name="q_10_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="10">10</option><option value="3">3</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="GCF(15, 35)" data-correct="5">
+              <div class="matching-term">GCF(15, 35)</div>
+              <div class="matching-select-container">
+                <select name="q_10_pair_4" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="10">10</option><option value="3">3</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="GCF(14, 21)" data-correct="7">
+              <div class="matching-term">GCF(14, 21)</div>
+              <div class="matching-select-container">
+                <select name="q_10_pair_5" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="10">10</option><option value="3">3</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Make a factor list or a tree to break the number apart.</span><span class="lang-es" lang="es">Haz una lista de factores o un árbol para descomponer el número.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">List factors or multiples in order so none are missed.</span><span class="lang-es" lang="es">Enumera factores o múltiplos en orden para no olvidar ninguno.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_11" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 6</div>
+        <div class="problem-type-badge">DRAG SORT</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">Sort: which pairs have a GCF greater than 1, and which are relatively prime (GCF = 1)?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
+        
+        <div class="drag-sort-workspace" id="dragsort_11">
+          <div class="drag-columns">
+            
+              <div class="drag-column" data-category-id="greater-than-1" ondragover="allowDrop(event)" ondrop="handleDrop(event, 11, 'greater-than-1')">
+                <div class="drag-column-header">GCF Greater Than 1</div>
+                <div class="drag-column-slots" id="slots_11_greater-than-1" ondragover="allowDrop(event)" ondrop="handleDrop(event, 11, 'greater-than-1')"></div>
+              </div>
+              <div class="drag-column" data-category-id="relatively-prime" ondragover="allowDrop(event)" ondrop="handleDrop(event, 11, 'relatively-prime')">
+                <div class="drag-column-header">Relatively Prime (GCF = 1)</div>
+                <div class="drag-column-slots" id="slots_11_relatively-prime" ondragover="allowDrop(event)" ondrop="handleDrop(event, 11, 'relatively-prime')"></div>
+              </div>
+          </div>
+          <div class="drag-source-section">
+            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
+            <div class="drag-source-pile" id="pile_11" ondragover="allowDrop(event)" ondrop="handleDrop(event, 11, '')">
+              
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_11_0"
+                     data-item-index="0"
+                     data-correct-category="greater-than-1"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">8 and 12 (GCF = 4)</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_11_0', 11); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="greater-than-1">GCF Greater Than 1</option><option value="relatively-prime">Relatively Prime (GCF = 1)</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_11_1"
+                     data-item-index="1"
+                     data-correct-category="greater-than-1"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">6 and 15 (GCF = 3)</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_11_1', 11); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="greater-than-1">GCF Greater Than 1</option><option value="relatively-prime">Relatively Prime (GCF = 1)</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_11_2"
+                     data-item-index="2"
+                     data-correct-category="greater-than-1"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">10 and 25 (GCF = 5)</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_11_2', 11); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="greater-than-1">GCF Greater Than 1</option><option value="relatively-prime">Relatively Prime (GCF = 1)</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_11_3"
+                     data-item-index="3"
+                     data-correct-category="relatively-prime"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">7 and 11 (GCF = 1)</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_11_3', 11); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="greater-than-1">GCF Greater Than 1</option><option value="relatively-prime">Relatively Prime (GCF = 1)</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_11_4"
+                     data-item-index="4"
+                     data-correct-category="relatively-prime"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">8 and 15 (GCF = 1)</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_11_4', 11); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="greater-than-1">GCF Greater Than 1</option><option value="relatively-prime">Relatively Prime (GCF = 1)</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_11_5"
+                     data-item-index="5"
+                     data-correct-category="relatively-prime"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">9 and 14 (GCF = 1)</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_11_5', 11); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="greater-than-1">GCF Greater Than 1</option><option value="relatively-prime">Relatively Prime (GCF = 1)</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="drag-controls">
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(11); saveState(); updateProgress();">Reset Sorting</button>
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Make a factor list or a tree to break the number apart.</span><span class="lang-es" lang="es">Haz una lista de factores o un árbol para descomponer el número.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">List factors or multiples in order so none are missed.</span><span class="lang-es" lang="es">Enumera factores o múltiplos en orden para no olvidar ninguno.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_12" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 7</div>
+        <div class="problem-type-badge">DRAG SORT</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">Mission Control is packing supply pairs into equal pods. Sort each pair by the largest number of equal pods it can fill (its GCF).</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
+        
+        <div class="drag-sort-workspace" id="dragsort_12">
+          <div class="drag-columns">
+            
+              <div class="drag-column" data-category-id="gcf-5" ondragover="allowDrop(event)" ondrop="handleDrop(event, 12, 'gcf-5')">
+                <div class="drag-column-header">Fills 5 equal pods (GCF = 5)</div>
+                <div class="drag-column-slots" id="slots_12_gcf-5" ondragover="allowDrop(event)" ondrop="handleDrop(event, 12, 'gcf-5')"></div>
+              </div>
+              <div class="drag-column" data-category-id="gcf-6" ondragover="allowDrop(event)" ondrop="handleDrop(event, 12, 'gcf-6')">
+                <div class="drag-column-header">Fills 6 equal pods (GCF = 6)</div>
+                <div class="drag-column-slots" id="slots_12_gcf-6" ondragover="allowDrop(event)" ondrop="handleDrop(event, 12, 'gcf-6')"></div>
+              </div>
+          </div>
+          <div class="drag-source-section">
+            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
+            <div class="drag-source-pile" id="pile_12" ondragover="allowDrop(event)" ondrop="handleDrop(event, 12, '')">
+              
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_12_0"
+                     data-item-index="0"
+                     data-correct-category="gcf-5"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">15 tanks &amp; 25 packs</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_12_0', 12); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="gcf-5">Fills 5 equal pods (GCF = 5)</option><option value="gcf-6">Fills 6 equal pods (GCF = 6)</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_12_1"
+                     data-item-index="1"
+                     data-correct-category="gcf-5"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">20 tanks &amp; 35 packs</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_12_1', 12); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="gcf-5">Fills 5 equal pods (GCF = 5)</option><option value="gcf-6">Fills 6 equal pods (GCF = 6)</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_12_2"
+                     data-item-index="2"
+                     data-correct-category="gcf-6"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">30 tanks &amp; 42 packs</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_12_2', 12); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="gcf-5">Fills 5 equal pods (GCF = 5)</option><option value="gcf-6">Fills 6 equal pods (GCF = 6)</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_12_3"
+                     data-item-index="3"
+                     data-correct-category="gcf-6"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">18 tanks &amp; 24 packs</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_12_3', 12); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="gcf-5">Fills 5 equal pods (GCF = 5)</option><option value="gcf-6">Fills 6 equal pods (GCF = 6)</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="drag-controls">
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(12); saveState(); updateProgress();">Reset Sorting</button>
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Make a factor list or a tree to break the number apart.</span><span class="lang-es" lang="es">Haz una lista de factores o un árbol para descomponer el número.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">List factors or multiples in order so none are missed.</span><span class="lang-es" lang="es">Enumera factores o múltiplos en orden para no olvidar ninguno.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_13" data-problem-type="multiple-choice">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 8</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Factors of 8: 1, 2, 4, 8. Factors of 12: 1, 2, 3, 4, 6, 12. The largest common factor is 4.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 160\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank grid to draw a model\"><rect x=\"10\" y=\"10\" width=\"300\" height=\"140\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"30\" y1=\"10\" x2=\"30\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"50\" y1=\"10\" x2=\"50\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"90\" y1=\"10\" x2=\"90\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"110\" y1=\"10\" x2=\"110\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"130\" y1=\"10\" x2=\"130\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"150\" y1=\"10\" x2=\"150\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"170\" y1=\"10\" x2=\"170\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"210\" y1=\"10\" x2=\"210\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"230\" y1=\"10\" x2=\"230\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"270\" y1=\"10\" x2=\"270\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"290\" y1=\"10\" x2=\"290\" y2=\"150\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"30\" x2=\"310\" y2=\"30\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"50\" x2=\"310\" y2=\"50\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"70\" x2=\"310\" y2=\"70\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"90\" x2=\"310\" y2=\"90\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"110\" x2=\"310\" y2=\"110\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"10\" y1=\"130\" x2=\"310\" y2=\"130\" stroke=\"#d6e2ee\" stroke-width=\"1\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">What is the GCF of 8 and 12?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="Factors of 8: 1, 2, 4, 8. Factors of 12: 1, 2, 3, 4, 6, 12. The largest common factor is 4.">
+          
+            <label class="mc-option-label" id="label_q_13_0">
+              <input type="radio" name="q_13" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">4</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_13_1">
+              <input type="radio" name="q_13" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">2</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_13_2">
+              <input type="radio" name="q_13" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">8</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_13_3">
+              <input type="radio" name="q_13" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">24</span>
+            </label>
+          
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Make a factor list or a tree to break the number apart.</span><span class="lang-es" lang="es">Haz una lista de factores o un árbol para descomponer el número.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">List factors or multiples in order so none are missed.</span><span class="lang-es" lang="es">Enumera factores o múltiplos en orden para no olvidar ninguno.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Make a factor list or a tree to break the number apart.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Haz una lista de factores o un árbol para descomponer el número.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="70" y1="10" x2="70" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="90" y1="10" x2="90" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="110" y1="10" x2="110" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="130" y1="10" x2="130" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="150" y1="10" x2="150" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="170" y1="10" x2="170" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="190" y1="10" x2="190" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="210" y1="10" x2="210" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="230" y1="10" x2="230" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="250" y1="10" x2="250" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="270" y1="10" x2="270" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="290" y1="10" x2="290" y2="150" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="30" x2="310" y2="30" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="50" x2="310" y2="50" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="70" x2="310" y2="70" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="90" x2="310" y2="90" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="110" x2="310" y2="110" stroke="#d6e2ee" stroke-width="1"/><line x1="10" y1="130" x2="310" y2="130" stroke="#d6e2ee" stroke-width="1"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_13"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_13" name="work_13" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  </main>
+      </details>
     </div>
 
     <div class="tab-panel-inner" data-tab-panel="help" id="hw_panel_help" role="tabpanel" hidden>
@@ -3184,8 +4189,14 @@ body { font-size: 15px; line-height: 1.58; }
       <div class="help-modal" role="dialog" aria-modal="true" aria-labelledby="help_modal_title" onclick="event.stopPropagation()">
         <button type="button" class="help-modal-close" onclick="closeHelpModal()" aria-label="Close help">✕</button>
         <h3 id="help_modal_title" class="help-modal-title"></h3>
+        <div class="help-modal-visual" id="help_modal_visual" hidden></div>
         <p class="help-modal-body lang-en" id="help_modal_en"></p>
         <p class="help-modal-body lang-es" lang="es" id="help_modal_es"></p>
+        <div class="help-modal-frame" id="help_modal_frame" hidden>
+          <span class="help-frame-tag">✏️ Sentence starter / Para empezar</span>
+          <span class="help-frame-en lang-en" id="help_modal_frame_en"></span>
+          <span class="help-frame-es lang-es" lang="es" id="help_modal_frame_es"></span>
+        </div>
       </div>
     </div>
 
@@ -3196,7 +4207,7 @@ body { font-size: 15px; line-height: 1.58; }
     
     <div class="score-progress-container">
       <div class="score-text">
-        Progress / Progreso: <span id="progress_text">0 / 4 Completed</span>
+        Progress / Progreso: <span id="progress_text">0 / 6 Completed</span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -3264,6 +4275,21 @@ function openHelpModal(data) {
     (data.titleEn || 'Help') + ' / ' + (data.titleEs || 'Ayuda');
   document.getElementById('help_modal_en').textContent = data.en || '';
   document.getElementById('help_modal_es').textContent = data.es || '';
+  var vis = document.getElementById('help_modal_visual');
+  if (vis) {
+    if (data.visual) { vis.innerHTML = data.visual; vis.hidden = false; }
+    else { vis.innerHTML = ''; vis.hidden = true; }
+  }
+  var frame = document.getElementById('help_modal_frame');
+  if (frame) {
+    if (data.frameEn || data.frameEs) {
+      document.getElementById('help_modal_frame_en').textContent = data.frameEn || '';
+      document.getElementById('help_modal_frame_es').textContent = data.frameEs || '';
+      frame.hidden = false;
+    } else {
+      frame.hidden = true;
+    }
+  }
   overlay.hidden = false;
   document.body.classList.add('help-modal-open');
   overlay.querySelector('.help-modal-close')?.focus();
@@ -4029,9 +5055,10 @@ function normalizeMath(val) {
 }
 
 function updateProgress() {
-  const problems = document.querySelectorAll(".problem-section");
+  const problems = Array.from(document.querySelectorAll(".problem-section"))
+    .filter((s) => !s.closest(".more-practice"));
   let completedCount = 0;
-  
+
   problems.forEach((section, idx) => {
     const type = section.dataset.problemType;
     let hasValue = false;
@@ -4419,9 +5446,10 @@ function checkProblem(idx, options) {
 }
 
 function updateScoreSummary() {
-  const problems = document.querySelectorAll(".problem-section");
-  const checked = Array.from(problems).filter((s) => s.classList.contains("correct") || s.classList.contains("incorrect"));
-  const correctCount = Array.from(problems).filter((s) => s.classList.contains("correct")).length;
+  const problems = Array.from(document.querySelectorAll(".problem-section"))
+    .filter((s) => !s.closest(".more-practice"));
+  const checked = problems.filter((s) => s.classList.contains("correct") || s.classList.contains("incorrect"));
+  const correctCount = problems.filter((s) => s.classList.contains("correct")).length;
   const total = problems.length;
   if (checked.length > 0) {
     document.getElementById("progress_text").textContent = "Score: " + correctCount + " / " + total + " Correct";
@@ -4432,15 +5460,18 @@ function updateScoreSummary() {
 }
 
 function checkWorksheet() {
-  const problems = document.querySelectorAll(".problem-section");
+  const problems = Array.from(document.querySelectorAll(".problem-section"));
   let correctCount = 0;
 
-  problems.forEach((section, idx) => {
+  problems.forEach((section) => {
+    const idx = parseInt((section.id || "").replace("problem_", ""), 10);
+    if (Number.isNaN(idx)) return;
     const result = checkProblem(idx, { silent: true });
-    if (result.correct) correctCount++;
+    // Only core (non-optional) problems count toward the worksheet score.
+    if (result.correct && !section.closest(".more-practice")) correctCount++;
   });
 
-  const total = problems.length;
+  const total = problems.filter((s) => !s.closest(".more-practice")).length;
   document.getElementById("progress_text").textContent = "Score: " + correctCount + " / " + total + " Correct";
   document.getElementById("progress_bar").style.width = (correctCount / total * 100) + "%";
 

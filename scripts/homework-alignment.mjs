@@ -260,7 +260,7 @@ export function selectAlignedQuickCheckProblems(practice = {}, config = {}) {
     }))
     .sort((a, b) => b.align + b.typeBoost + b.tierBoost - (a.align + a.typeBoost + a.tierBoost));
 
-  const TARGET = 4;
+  const TARGET = 6;
   const positive = ranked.filter((r) => r.align >= 0);
   const picked = (positive.length ? positive : ranked).slice(0, TARGET).map((r) => r.p);
 
@@ -272,6 +272,27 @@ export function selectAlignedQuickCheckProblems(practice = {}, config = {}) {
   }
 
   return picked.slice(0, TARGET);
+}
+
+// Extra practice beyond the core Quick Check set, for the "More practice" accordion.
+// Returns the rest of the printable pool (best-aligned first), excluding anything
+// already shown in `exclude`, capped so the page stays manageable.
+export function selectMorePracticeProblems(practice = {}, config = {}, exclude = []) {
+  const MAX_MORE = 8;
+  const lessonMeta = extractLessonKeywords(config);
+  const onLevel = Array.isArray(practice.onLevel) ? practice.onLevel : [];
+  const approaching = Array.isArray(practice.approaching) ? practice.approaching : [];
+  const optional = Array.isArray(practice.optional) ? practice.optional : [];
+  const extending = Array.isArray(practice.extending) ? practice.extending : [];
+
+  const pool = [...approaching, ...onLevel, ...optional, ...extending].filter(isPrintableProblem);
+  const remaining = pool.filter((p) => !exclude.includes(p));
+
+  return remaining
+    .map((p) => ({ p, align: scoreProblemAlignment(p, lessonMeta) }))
+    .sort((a, b) => b.align - a.align)
+    .slice(0, MAX_MORE)
+    .map((r) => r.p);
 }
 
 export function detectVisualMismatch(config, html) {

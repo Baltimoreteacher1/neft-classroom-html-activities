@@ -939,24 +939,44 @@ export function renderTryTogether(config) {
       </p>
       <ol class="together-steps">
         ${activity.steps
-          .map(
-            (step, i) => `
+          .map((step, i) => {
+            const hintEn = step.hint || "Read it again slowly. What is the first small step?";
+            const hintEs =
+              step.hintEs || "Léanlo de nuevo despacio. ¿Cuál es el primer paso pequeño?";
+            const hintBtn = helpButton("💡 Hint / Pista", {
+              titleEn: `Step ${i + 1} hint`,
+              titleEs: `Pista del paso ${i + 1}`,
+              en: hintEn,
+              es: hintEs,
+            });
+            const helpBtn = step.helpEn
+              ? helpButton("🤝 More help / Más ayuda", {
+                  titleEn: `Step ${i + 1} — more help`,
+                  titleEs: `Paso ${i + 1} — más ayuda`,
+                  en: step.helpEn,
+                  es: step.helpEs || hintEs,
+                })
+              : "";
+            return `
           <li class="together-step step-color-${(i % 4) + 1}">
             <div class="together-step-head">
               <span class="step-badge">Step ${i + 1} / Paso ${i + 1}</span>
             </div>
             <p class="lang-en"><strong>First…</strong> ${esc(step.en)}</p>
             <p class="lang-es" lang="es"><strong>Primero…</strong> ${esc(step.es)}</p>
-            ${
-              step.hint
-                ? `<p class="step-hint">💡 ${esc(step.hint)} · ${esc(
-                    step.hintEs ||
-                      "Tómense su tiempo — el proceso importa más que la respuesta perfecta.",
-                  )}</p>`
-                : ""
-            }
-          </li>`,
-          )
+            <div class="together-fill">
+              <label class="together-fill-label" for="together_${i}">
+                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
+                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
+              </label>
+              <textarea id="together_${i}" name="together_${i}" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
+            </div>
+            <div class="together-step-actions">
+              ${hintBtn}
+              ${helpBtn}
+            </div>
+          </li>`;
+          })
           .join("")}
       </ol>
     </section>`;
@@ -1185,12 +1205,27 @@ export function renderTogetherTab(config) {
   return `<div ${tabPanelAttrs("together", true)}>${inner}</div>`;
 }
 
-export function renderCheckTab(quickCheckIntro, problemsHtml) {
+export function renderCheckTab(quickCheckIntro, problemsHtml, moreHtml = "") {
   const intro = quickCheckIntro.replace(/<section[^>]*>|<\/section>/g, "");
+  const more = moreHtml
+    ? `
+      <details class="more-practice">
+        <summary>
+          <span class="lang-en">➕ More practice — open for extra problems</span>
+          <span class="lang-es" lang="es">➕ Más práctica — abre para más problemas</span>
+        </summary>
+        <p class="more-practice-note bilingual-block">
+          <span class="lang-en">Optional. Only if your student wants more — these are bonus problems.</span>
+          <span class="lang-es" lang="es">Opcional. Solo si tu estudiante quiere más — son problemas adicionales.</span>
+        </p>
+        <main class="problems-container more-practice-container">${moreHtml}</main>
+      </details>`
+    : "";
   return `
     <div ${tabPanelAttrs("check", true)}>
       ${intro}
       <main class="problems-container">${problemsHtml}</main>
+      ${more}
     </div>`;
 }
 
@@ -1263,7 +1298,7 @@ export function renderPlayTabPanel(config) {
   return `<div ${tabPanelAttrs("play", true)}>${inner}</div>`;
 }
 
-export function renderProblemHintButton(problem) {
+export function renderProblemHintButton(problem, visual = "") {
   const hintEn =
     problem.hints?.[0] ||
     problem.explanation ||
@@ -1274,6 +1309,10 @@ export function renderProblemHintButton(problem) {
     titleEs: "Pista antes de revisar",
     en: hintEn,
     es: hintEs,
+    visual,
+    frameEn: "Draw it first, then solve. Try saying: “This problem is asking me to…”",
+    frameEs:
+      "Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”",
   });
 }
 
@@ -1326,8 +1365,14 @@ export function renderHelpModal() {
       <div class="help-modal" role="dialog" aria-modal="true" aria-labelledby="help_modal_title" onclick="event.stopPropagation()">
         <button type="button" class="help-modal-close" onclick="closeHelpModal()" aria-label="Close help">✕</button>
         <h3 id="help_modal_title" class="help-modal-title"></h3>
+        <div class="help-modal-visual" id="help_modal_visual" hidden></div>
         <p class="help-modal-body lang-en" id="help_modal_en"></p>
         <p class="help-modal-body lang-es" lang="es" id="help_modal_es"></p>
+        <div class="help-modal-frame" id="help_modal_frame" hidden>
+          <span class="help-frame-tag">✏️ Sentence starter / Para empezar</span>
+          <span class="help-frame-en lang-en" id="help_modal_frame_en"></span>
+          <span class="help-frame-es lang-es" lang="es" id="help_modal_frame_es"></span>
+        </div>
       </div>
     </div>`;
 }
@@ -1383,6 +1428,21 @@ function openHelpModal(data) {
     (data.titleEn || 'Help') + ' / ' + (data.titleEs || 'Ayuda');
   document.getElementById('help_modal_en').textContent = data.en || '';
   document.getElementById('help_modal_es').textContent = data.es || '';
+  var vis = document.getElementById('help_modal_visual');
+  if (vis) {
+    if (data.visual) { vis.innerHTML = data.visual; vis.hidden = false; }
+    else { vis.innerHTML = ''; vis.hidden = true; }
+  }
+  var frame = document.getElementById('help_modal_frame');
+  if (frame) {
+    if (data.frameEn || data.frameEs) {
+      document.getElementById('help_modal_frame_en').textContent = data.frameEn || '';
+      document.getElementById('help_modal_frame_es').textContent = data.frameEs || '';
+      frame.hidden = false;
+    } else {
+      frame.hidden = true;
+    }
+  }
   overlay.hidden = false;
   document.body.classList.add('help-modal-open');
   overlay.querySelector('.help-modal-close')?.focus();
@@ -1891,6 +1951,48 @@ export const GUIDED_NOTES_CSS = `
 .help-modal-title { margin: 0 32px 12px 0; font-family: var(--font-display); color: var(--navy); font-size: 18px; }
 .help-modal-body { margin: 0 0 10px; font-size: 15px; line-height: 1.5; }
 body.help-modal-open { overflow: hidden; }
+
+/* Visual aid + sentence frame inside help popups */
+.help-modal-visual {
+  margin: 0 0 14px; padding: 10px; border-radius: var(--radius-sm);
+  background: var(--cream); border: 1px solid var(--line); text-align: center;
+}
+.help-modal-visual[hidden] { display: none !important; }
+.help-modal-visual svg { max-width: 100%; height: auto; }
+.help-modal-frame {
+  display: flex; flex-direction: column; gap: 4px;
+  margin: 12px 0 0; padding: 12px 14px;
+  background: var(--teal-light); border-left: 4px solid var(--teal);
+  border-radius: var(--radius-sm); font-size: 14px; line-height: 1.5;
+}
+.help-modal-frame[hidden] { display: none !important; }
+.help-frame-tag { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--teal); }
+.help-frame-es { color: var(--muted); }
+
+/* Guided "Try together" fill-in spaces + step actions */
+.together-fill { margin: 10px 0 6px; }
+.together-fill-label { display: block; font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.together-fill-input {
+  width: 100%; min-height: 48px; padding: 10px 12px;
+  border: 2px dashed var(--teal); border-radius: var(--radius-sm);
+  background: #fffef8; font-size: 15px; line-height: 1.5; resize: vertical;
+}
+.together-fill-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
+.together-step-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+
+/* "More practice" accordion in the Check tab */
+.more-practice {
+  margin-top: 20px; border: 2px solid var(--teal); border-radius: var(--radius-md);
+  background: var(--teal-light); overflow: hidden;
+}
+.more-practice > summary {
+  cursor: pointer; list-style: none; padding: 14px 18px;
+  font-family: var(--font-display); font-weight: 800; color: var(--navy); font-size: 16px;
+}
+.more-practice > summary::-webkit-details-marker { display: none; }
+.more-practice[open] > summary { border-bottom: 1px solid var(--line); background: var(--white); }
+.more-practice-note { padding: 12px 18px 0; font-size: 13px; }
+.more-practice-container { padding: 8px 14px 14px; }
 
 .external-resource-list { list-style: none; padding: 0; margin: 16px 0 0; display: flex; flex-direction: column; gap: 10px; }
 .ai-lab-cta {

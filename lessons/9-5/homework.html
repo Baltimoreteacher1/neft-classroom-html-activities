@@ -1708,6 +1708,48 @@ header.homework-header h1 {
 .help-modal-body { margin: 0 0 10px; font-size: 15px; line-height: 1.5; }
 body.help-modal-open { overflow: hidden; }
 
+/* Visual aid + sentence frame inside help popups */
+.help-modal-visual {
+  margin: 0 0 14px; padding: 10px; border-radius: var(--radius-sm);
+  background: var(--cream); border: 1px solid var(--line); text-align: center;
+}
+.help-modal-visual[hidden] { display: none !important; }
+.help-modal-visual svg { max-width: 100%; height: auto; }
+.help-modal-frame {
+  display: flex; flex-direction: column; gap: 4px;
+  margin: 12px 0 0; padding: 12px 14px;
+  background: var(--teal-light); border-left: 4px solid var(--teal);
+  border-radius: var(--radius-sm); font-size: 14px; line-height: 1.5;
+}
+.help-modal-frame[hidden] { display: none !important; }
+.help-frame-tag { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--teal); }
+.help-frame-es { color: var(--muted); }
+
+/* Guided "Try together" fill-in spaces + step actions */
+.together-fill { margin: 10px 0 6px; }
+.together-fill-label { display: block; font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.together-fill-input {
+  width: 100%; min-height: 48px; padding: 10px 12px;
+  border: 2px dashed var(--teal); border-radius: var(--radius-sm);
+  background: #fffef8; font-size: 15px; line-height: 1.5; resize: vertical;
+}
+.together-fill-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
+.together-step-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+
+/* "More practice" accordion in the Check tab */
+.more-practice {
+  margin-top: 20px; border: 2px solid var(--teal); border-radius: var(--radius-md);
+  background: var(--teal-light); overflow: hidden;
+}
+.more-practice > summary {
+  cursor: pointer; list-style: none; padding: 14px 18px;
+  font-family: var(--font-display); font-weight: 800; color: var(--navy); font-size: 16px;
+}
+.more-practice > summary::-webkit-details-marker { display: none; }
+.more-practice[open] > summary { border-bottom: 1px solid var(--line); background: var(--white); }
+.more-practice-note { padding: 12px 18px 0; font-size: 13px; }
+.more-practice-container { padding: 8px 14px 14px; }
+
 .external-resource-list { list-style: none; padding: 0; margin: 16px 0 0; display: flex; flex-direction: column; gap: 10px; }
 .ai-lab-cta {
   display: flex; align-items: center; gap: 14px;
@@ -2504,7 +2546,17 @@ body { font-size: 15px; line-height: 1.58; }
             </div>
             <p class="lang-en"><strong>First…</strong> The first number is -5. Which way do we move? Left 5 units, because it is negative.</p>
             <p class="lang-es" lang="es"><strong>Primero…</strong> El primer número es -5. ¿Hacia dónde nos movemos? A la izquierda 5 unidades, porque es negativo.</p>
-            <p class="step-hint">💡 A negative first number always means move left. · Un primer número negativo siempre significa moverse a la izquierda.</p>
+            <div class="together-fill">
+              <label class="together-fill-label" for="together_0">
+                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
+                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
+              </label>
+              <textarea id="together_0" name="together_0" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
+            </div>
+            <div class="together-step-actions">
+              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 hint","titleEs":"Pista del paso 1","en":"A negative first number always means move left.","es":"Un primer número negativo siempre significa moverse a la izquierda."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
+              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 — more help","titleEs":"Paso 1 — más ayuda","en":"Start your finger at the center and count left out loud.","es":"Pongan el dedo en el centro y cuenten a la izquierda en voz alta."}' onclick="openHelpModalFromBtn(this)" aria-label="🤝 More help / Más ayuda">🤝 More help / Más ayuda</button>
+            </div>
           </li>
           <li class="together-step step-color-2">
             <div class="together-step-head">
@@ -2512,7 +2564,17 @@ body { font-size: 15px; line-height: 1.58; }
             </div>
             <p class="lang-en"><strong>First…</strong> The second number is 2. It is positive, so move up 2 units and place the dot.</p>
             <p class="lang-es" lang="es"><strong>Primero…</strong> El segundo número es 2. Es positivo, así que muévanse hacia arriba 2 unidades y pongan el punto.</p>
-            <p class="step-hint">💡 A positive second number means move up. · Un segundo número positivo significa moverse hacia arriba.</p>
+            <div class="together-fill">
+              <label class="together-fill-label" for="together_1">
+                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
+                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
+              </label>
+              <textarea id="together_1" name="together_1" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
+            </div>
+            <div class="together-step-actions">
+              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 hint","titleEs":"Pista del paso 2","en":"A positive second number means move up.","es":"Un segundo número positivo significa moverse hacia arriba."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
+              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 — more help","titleEs":"Paso 2 — más ayuda","en":"Move up only after moving sideways.","es":"Muévanse hacia arriba solo después de moverse de lado."}' onclick="openHelpModalFromBtn(this)" aria-label="🤝 More help / Más ayuda">🤝 More help / Más ayuda</button>
+            </div>
           </li>
           <li class="together-step step-color-3">
             <div class="together-step-head">
@@ -2520,7 +2582,17 @@ body { font-size: 15px; line-height: 1.58; }
             </div>
             <p class="lang-en"><strong>First…</strong> Left and up — which quadrant is that? Quadrant II.</p>
             <p class="lang-es" lang="es"><strong>Primero…</strong> Izquierda y arriba — ¿qué cuadrante es ese? El Cuadrante II.</p>
-            <p class="step-hint">💡 A point that is left and up sits in Quadrant II. · Un punto que está a la izquierda y arriba está en el Cuadrante II.</p>
+            <div class="together-fill">
+              <label class="together-fill-label" for="together_2">
+                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
+                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
+              </label>
+              <textarea id="together_2" name="together_2" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
+            </div>
+            <div class="together-step-actions">
+              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 3 hint","titleEs":"Pista del paso 3","en":"A point that is left and up sits in Quadrant II.","es":"Un punto que está a la izquierda y arriba está en el Cuadrante II."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
+              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 3 — more help","titleEs":"Paso 3 — más ayuda","en":"Talking about why the signs decide the quadrant matters more than speed.","es":"Hablar de por qué los signos deciden el cuadrante importa más que la rapidez."}' onclick="openHelpModalFromBtn(this)" aria-label="🤝 More help / Más ayuda">🤝 More help / Más ayuda</button>
+            </div>
           </li>
       </ol>
     </div>
@@ -2540,7 +2612,7 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Quick Check 1</div>
         <div class="problem-type-badge">FILL TABLE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
         <p class="problem-stem">For each ordered pair, write the signs of x and y and name the quadrant (or axis).</p>
@@ -2797,7 +2869,7 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Quick Check 2</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Positive x (right) and negative y (down) = Quadrant IV (bottom-right).","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Positive x (right) and negative y (down) = Quadrant IV (bottom-right).","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
         <p class="problem-stem">A point has a positive x-coordinate and a negative y-coordinate. Which quadrant is it in?</p>
@@ -2869,7 +2941,7 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Quick Check 3</div>
         <div class="problem-type-badge">ERROR ANALYSIS</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"In (6, -1), which number is the x-coordinate — the first or the second?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"In (6, -1), which number is the x-coordinate — the first or the second?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
         <h3 class="error-analysis-title">⚠️ onLevel — Spot the Common Mistake</h3>
@@ -2962,7 +3034,7 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Quick Check 4</div>
         <div class="problem-type-badge">MATCHING GAME</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
         <p class="problem-stem">Match each quadrant to its coordinate sign pattern.</p>
@@ -3055,7 +3127,864 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-check-result" id="problem_result_3" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
     </section>
+  
+
+    <section class="problem-section card" id="problem_4" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Quick Check 5</div>
+        <div class="problem-type-badge">DRAG SORT</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">Captain Vega spotted four enemy ships. Drag each ship&#039;s coordinates into the correct quadrant of the map.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
+        
+        <div class="drag-sort-workspace" id="dragsort_4">
+          <div class="drag-columns">
+            
+              <div class="drag-column" data-category-id="qi" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'qi')">
+                <div class="drag-column-header">Quadrant I</div>
+                <div class="drag-column-slots" id="slots_4_qi" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'qi')"></div>
+              </div>
+              <div class="drag-column" data-category-id="qii" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'qii')">
+                <div class="drag-column-header">Quadrant II</div>
+                <div class="drag-column-slots" id="slots_4_qii" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'qii')"></div>
+              </div>
+              <div class="drag-column" data-category-id="qiii" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'qiii')">
+                <div class="drag-column-header">Quadrant III</div>
+                <div class="drag-column-slots" id="slots_4_qiii" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'qiii')"></div>
+              </div>
+              <div class="drag-column" data-category-id="qiv" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'qiv')">
+                <div class="drag-column-header">Quadrant IV</div>
+                <div class="drag-column-slots" id="slots_4_qiv" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, 'qiv')"></div>
+              </div>
+          </div>
+          <div class="drag-source-section">
+            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
+            <div class="drag-source-pile" id="pile_4" ondragover="allowDrop(event)" ondrop="handleDrop(event, 4, '')">
+              
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_4_0"
+                     data-item-index="0"
+                     data-correct-category="qi"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">(3, 2)</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_0', 4); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="qi">Quadrant I</option><option value="qii">Quadrant II</option><option value="qiii">Quadrant III</option><option value="qiv">Quadrant IV</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_4_1"
+                     data-item-index="1"
+                     data-correct-category="qii"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">(-4, 1)</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_1', 4); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="qi">Quadrant I</option><option value="qii">Quadrant II</option><option value="qiii">Quadrant III</option><option value="qiv">Quadrant IV</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_4_2"
+                     data-item-index="2"
+                     data-correct-category="qiii"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">(-2, -5)</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_2', 4); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="qi">Quadrant I</option><option value="qii">Quadrant II</option><option value="qiii">Quadrant III</option><option value="qiv">Quadrant IV</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_4_3"
+                     data-item-index="3"
+                     data-correct-category="qiv"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">(6, -3)</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_4_3', 4); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="qi">Quadrant I</option><option value="qii">Quadrant II</option><option value="qiii">Quadrant III</option><option value="qiv">Quadrant IV</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="drag-controls">
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(4); saveState(); updateProgress();">Reset Sorting</button>
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Start at (0, 0). Move right/left for x, then up/down for y.</span><span class="lang-es" lang="es">Empieza en (0, 0). Muévete a los lados para x, luego arriba/abajo para y.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(4)" aria-label="Check answer for problem 5">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_4" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_5" data-problem-type="matching-game">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Quick Check 6</div>
+        <div class="problem-type-badge">MATCHING GAME</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">Match each ordered pair to its quadrant.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
+        <div class="matching-pairs">
+          
+            <div class="matching-row" data-term="(3, 4)" data-correct="Quadrant I">
+              <div class="matching-term">(3, 4)</div>
+              <div class="matching-select-container">
+                <select name="q_5_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="Quadrant I">Quadrant I</option><option value="Quadrant II">Quadrant II</option><option value="Quadrant III">Quadrant III</option><option value="Quadrant IV">Quadrant IV</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="(-2, 5)" data-correct="Quadrant II">
+              <div class="matching-term">(-2, 5)</div>
+              <div class="matching-select-container">
+                <select name="q_5_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="Quadrant I">Quadrant I</option><option value="Quadrant II">Quadrant II</option><option value="Quadrant III">Quadrant III</option><option value="Quadrant IV">Quadrant IV</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="(-6, -1)" data-correct="Quadrant III">
+              <div class="matching-term">(-6, -1)</div>
+              <div class="matching-select-container">
+                <select name="q_5_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="Quadrant I">Quadrant I</option><option value="Quadrant II">Quadrant II</option><option value="Quadrant III">Quadrant III</option><option value="Quadrant IV">Quadrant IV</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="(1, -3)" data-correct="Quadrant IV">
+              <div class="matching-term">(1, -3)</div>
+              <div class="matching-select-container">
+                <select name="q_5_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="Quadrant I">Quadrant I</option><option value="Quadrant II">Quadrant II</option><option value="Quadrant III">Quadrant III</option><option value="Quadrant IV">Quadrant IV</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="(-4, 2)" data-correct="Quadrant II">
+              <div class="matching-term">(-4, 2)</div>
+              <div class="matching-select-container">
+                <select name="q_5_pair_4" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="Quadrant I">Quadrant I</option><option value="Quadrant II">Quadrant II</option><option value="Quadrant III">Quadrant III</option><option value="Quadrant IV">Quadrant IV</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="(5, -6)" data-correct="Quadrant IV">
+              <div class="matching-term">(5, -6)</div>
+              <div class="matching-select-container">
+                <select name="q_5_pair_5" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="Quadrant I">Quadrant I</option><option value="Quadrant II">Quadrant II</option><option value="Quadrant III">Quadrant III</option><option value="Quadrant IV">Quadrant IV</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Start at (0, 0). Move right/left for x, then up/down for y.</span><span class="lang-es" lang="es">Empieza en (0, 0). Muévete a los lados para x, luego arriba/abajo para y.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_5" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
   </main>
+      
+      <details class="more-practice">
+        <summary>
+          <span class="lang-en">➕ More practice — open for extra problems</span>
+          <span class="lang-es" lang="es">➕ Más práctica — abre para más problemas</span>
+        </summary>
+        <p class="more-practice-note bilingual-block">
+          <span class="lang-en">Optional. Only if your student wants more — these are bonus problems.</span>
+          <span class="lang-es" lang="es">Opcional. Solo si tu estudiante quiere más — son problemas adicionales.</span>
+        </p>
+        <main class="problems-container more-practice-container">
+    <section class="problem-section card" id="problem_6" data-problem-type="drag-sort" data-problem-subtype="drag-order">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 1</div>
+        <div class="problem-type-badge">DRAG ORDER</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">Sort these points by their quadrant: I first, then II, III, IV.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Use the ▲ ▼ buttons to reorder steps, or drag the row handles on a computer.</span><span class="lang-es" lang="es">👪 Usen ▲ ▼ para reordenar, o arrastren las filas en la computadora.</span></p>
+        <div class="drag-order-workspace" id="dragorder_6" data-correct-order='[&quot;(5, 1) → I&quot;,&quot;(4, 3) → I&quot;,&quot;(-1, 4) → II&quot;,&quot;(-3, -2) → III&quot;,&quot;(-5, -7) → III&quot;,&quot;(2, -6) → IV&quot;]' data-initial-order='[&quot;(-3, -2) → III&quot;,&quot;(2, -6) → IV&quot;,&quot;(5, 1) → I&quot;,&quot;(-5, -7) → III&quot;,&quot;(4, 3) → I&quot;,&quot;(-1, 4) → II&quot;]'>
+          <div class="drag-order-list" id="orderlist_6">
+            
+              <div class="drag-order-row" draggable="true" id="order_6_0" data-step-text="(-3, -2) → III" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">1</span>
+                <span class="drag-order-text">(-3, -2) → III</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(6, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(6, this, 1)" aria-label="Move down">▼</button>
+                </div>
+              </div>
+              <div class="drag-order-row" draggable="true" id="order_6_1" data-step-text="(2, -6) → IV" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">2</span>
+                <span class="drag-order-text">(2, -6) → IV</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(6, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(6, this, 1)" aria-label="Move down">▼</button>
+                </div>
+              </div>
+              <div class="drag-order-row" draggable="true" id="order_6_2" data-step-text="(5, 1) → I" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">3</span>
+                <span class="drag-order-text">(5, 1) → I</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(6, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(6, this, 1)" aria-label="Move down">▼</button>
+                </div>
+              </div>
+              <div class="drag-order-row" draggable="true" id="order_6_3" data-step-text="(-5, -7) → III" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">4</span>
+                <span class="drag-order-text">(-5, -7) → III</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(6, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(6, this, 1)" aria-label="Move down">▼</button>
+                </div>
+              </div>
+              <div class="drag-order-row" draggable="true" id="order_6_4" data-step-text="(4, 3) → I" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">5</span>
+                <span class="drag-order-text">(4, 3) → I</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(6, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(6, this, 1)" aria-label="Move down">▼</button>
+                </div>
+              </div>
+              <div class="drag-order-row" draggable="true" id="order_6_5" data-step-text="(-1, 4) → II" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">6</span>
+                <span class="drag-order-text">(-1, 4) → II</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(6, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(6, this, 1)" aria-label="Move down">▼</button>
+                </div>
+              </div>
+          </div>
+        </div>
+        <div class="drag-controls">
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragOrder(6); saveState(); updateProgress();">Reset Order</button>
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Start at (0, 0). Move right/left for x, then up/down for y.</span><span class="lang-es" lang="es">Empieza en (0, 0). Muévete a los lados para x, luego arriba/abajo para y.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_6" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_7" data-problem-type="error-analysis">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 2</div>
+        <div class="problem-type-badge">ERROR ANALYSIS</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Look at the SIGN of each coordinate, not just the number. What does a negative x mean — left or right?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <h3 class="error-analysis-title">⚠️ Level 2 Extension — The Misfired Shot</h3>
+        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read each step aloud and ask: does this step follow the math rules we learned?</span><span class="lang-es" lang="es">👪 Lean cada paso en voz alta y pregunten: ¿sigue las reglas que aprendimos?</span></p>
+        
+        <div class="clipboard-box">
+          <div class="clipboard-top"></div>
+          <div class="clipboard-paper">
+            
+              <div class="worked-step" id="step_q_7_1">
+                <span class="step-badge">Step 1</span>
+                <span class="step-label">Target:</span>
+                <span class="step-work">An enemy ship is at (-3, 4). In which quadrant should Captain Vega fire?</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_7_2">
+                <span class="step-badge">Step 2</span>
+                <span class="step-label">Gunner&#039;s thinking:</span>
+                <span class="step-work">Ignore the signs and just use the numbers 3 and 4. Both numbers are there, so it must be a bottom-left target.</span>
+              </div>
+            
+              <div class="worked-step" id="step_q_7_3">
+                <span class="step-badge">Step 3</span>
+                <span class="step-label">Gunner&#039;s answer:</span>
+                <span class="step-work">Fire on Quadrant III</span>
+              </div>
+            
+          </div>
+        </div>
+        
+        <div class="error-controls">
+          <div class="error-select-row">
+            <label for="error_step_select_7">Which step has the error?</label>
+            <select id="error_step_select_7" class="custom-select error-step-select" data-correct="2" onchange="saveState(); updateProgress();">
+              <option value="">-- Choose Step --</option>
+              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option>
+            </select>
+            <span class="feedback-badge"></span>
+          </div>
+          
+          <div class="error-explain-row">
+            <label for="error_explain_input_7">Explain the error and write the correct calculation:</label>
+            <textarea id="error_explain_input_7" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
+            <span class="feedback-badge"></span>
+          </div>
+          
+          <div class="reveal-box" id="error_correct_work_7" style="display:none;">
+            <strong>Correct Work Reference:</strong> You cannot ignore the signs! The x is -3 (negative = left) and the y is 4 (positive = up). Left and up is Quadrant II, not Quadrant III. Captain Vega should fire on Quadrant II.
+            
+          </div>
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Start at (0, 0). Move right/left for x, then up/down for y.</span><span class="lang-es" lang="es">Empieza en (0, 0). Muévete a los lados para x, luego arriba/abajo para y.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 200 200" class="hw-visual-svg" role="img" aria-label="Blank four-quadrant coordinate grid"><line x1="20" y1="20" x2="20" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="20" x2="180" y2="20" stroke="#d6e2ee" stroke-width="1"/><line x1="40" y1="20" x2="40" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="40" x2="180" y2="40" stroke="#d6e2ee" stroke-width="1"/><line x1="60" y1="20" x2="60" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="60" x2="180" y2="60" stroke="#d6e2ee" stroke-width="1"/><line x1="80" y1="20" x2="80" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="80" x2="180" y2="80" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="20" x2="100" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="100" x2="180" y2="100" stroke="#d6e2ee" stroke-width="1"/><line x1="120" y1="20" x2="120" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="120" x2="180" y2="120" stroke="#d6e2ee" stroke-width="1"/><line x1="140" y1="20" x2="140" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="140" x2="180" y2="140" stroke="#d6e2ee" stroke-width="1"/><line x1="160" y1="20" x2="160" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="160" x2="180" y2="160" stroke="#d6e2ee" stroke-width="1"/><line x1="180" y1="20" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="180" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="16" x2="100" y2="184" stroke="#12355b" stroke-width="2"/><line x1="16" y1="100" x2="184" y2="100" stroke="#12355b" stroke-width="2"/><polygon points="100,16 96,26 104,26" fill="#12355b"/><polygon points="184,100 174,96 174,104" fill="#12355b"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_7"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_7" name="work_7" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(7)" aria-label="Check answer for problem 8">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_7" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_8" data-problem-type="open-response">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 3</div>
+        <div class="problem-type-badge">OPEN RESPONSE</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">A point starts in Quadrant I at (4, 6). Describe a move that puts it in Quadrant III. What must happen to both coordinates? Can you give the exact new coordinates after your move?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 A complete sentence with math vocabulary is the goal — not a perfect paragraph.</span><span class="lang-es" lang="es">👪 Una oración completa con vocabulario matemático es la meta — no un párrafo perfecto.</span></p>
+        
+        
+          <div class="sentence-frame-card">
+            <span class="sentence-frame-tag">💡 Sentence Starter:</span>
+            <span class="sentence-frame-text" onclick="insertSentenceStarter(8, 'To move from Quadrant I to Quadrant III, both coordinates must become ___. Starting at (4, 6), I could move ___ units left and ___ units down to reach (___,___), which is in Quadrant III because ___.')">"To move from Quadrant I to Quadrant III, both coordinates must become ___. Starting at (4, 6), I could move ___ units left and ___ units down to reach (___,___), which is in Quadrant III because ___."</span>
+            <span class="click-to-insert-hint">(Click to insert starter)</span>
+          </div>
+        
+        
+        <div class="open-response-wrapper">
+          <textarea id="open_response_8" 
+                    class="custom-textarea open-response-textarea" 
+                    data-min-length="30" 
+                    data-keywords="[&quot;negative&quot;,&quot;quadrant&quot;,&quot;left&quot;,&quot;down&quot;,&quot;x-coordinate&quot;,&quot;y-coordinate&quot;,&quot;sign change&quot;]"
+                    placeholder="Write your mathematical explanation here..." 
+                    oninput="saveState(); updateProgress();"></textarea>
+          <span class="feedback-badge"></span>
+        </div>
+        
+        
+          <div class="word-bank-container">
+            <div class="word-bank-label">Key Vocabulary to include (click to insert):</div>
+            <div class="word-bank-chips">
+              <span class="word-chip" onclick="insertWord(8, 'negative')">negative</span><span class="word-chip" onclick="insertWord(8, 'quadrant')">quadrant</span><span class="word-chip" onclick="insertWord(8, 'left')">left</span><span class="word-chip" onclick="insertWord(8, 'down')">down</span><span class="word-chip" onclick="insertWord(8, 'x-coordinate')">x-coordinate</span><span class="word-chip" onclick="insertWord(8, 'y-coordinate')">y-coordinate</span><span class="word-chip" onclick="insertWord(8, 'sign change')">sign change</span>
+            </div>
+          </div>
+        
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Start at (0, 0). Move right/left for x, then up/down for y.</span><span class="lang-es" lang="es">Empieza en (0, 0). Muévete a los lados para x, luego arriba/abajo para y.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 200 200" class="hw-visual-svg" role="img" aria-label="Blank four-quadrant coordinate grid"><line x1="20" y1="20" x2="20" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="20" x2="180" y2="20" stroke="#d6e2ee" stroke-width="1"/><line x1="40" y1="20" x2="40" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="40" x2="180" y2="40" stroke="#d6e2ee" stroke-width="1"/><line x1="60" y1="20" x2="60" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="60" x2="180" y2="60" stroke="#d6e2ee" stroke-width="1"/><line x1="80" y1="20" x2="80" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="80" x2="180" y2="80" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="20" x2="100" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="100" x2="180" y2="100" stroke="#d6e2ee" stroke-width="1"/><line x1="120" y1="20" x2="120" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="120" x2="180" y2="120" stroke="#d6e2ee" stroke-width="1"/><line x1="140" y1="20" x2="140" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="140" x2="180" y2="140" stroke="#d6e2ee" stroke-width="1"/><line x1="160" y1="20" x2="160" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="160" x2="180" y2="160" stroke="#d6e2ee" stroke-width="1"/><line x1="180" y1="20" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="180" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="16" x2="100" y2="184" stroke="#12355b" stroke-width="2"/><line x1="16" y1="100" x2="184" y2="100" stroke="#12355b" stroke-width="2"/><polygon points="100,16 96,26 104,26" fill="#12355b"/><polygon points="184,100 174,96 174,104" fill="#12355b"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_8"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_8" name="work_8" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_8" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_9" data-problem-type="multiple-choice">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 4</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Reflecting across the x-axis negates the y-coordinate: (3, -6) → (3, 6).","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">Reflecting the point (3, -6) across the x-axis gives which point?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="Reflecting across the x-axis negates the y-coordinate: (3, -6) → (3, 6).">
+          
+            <label class="mc-option-label" id="label_q_9_0">
+              <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">(3, 6)</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_9_1">
+              <input type="radio" name="q_9" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">(-3, -6)</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_9_2">
+              <input type="radio" name="q_9" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">(-3, 6)</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_9_3">
+              <input type="radio" name="q_9" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">(6, 3)</span>
+            </label>
+          
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Start at (0, 0). Move right/left for x, then up/down for y.</span><span class="lang-es" lang="es">Empieza en (0, 0). Muévete a los lados para x, luego arriba/abajo para y.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 200 200" class="hw-visual-svg" role="img" aria-label="Blank four-quadrant coordinate grid"><line x1="20" y1="20" x2="20" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="20" x2="180" y2="20" stroke="#d6e2ee" stroke-width="1"/><line x1="40" y1="20" x2="40" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="40" x2="180" y2="40" stroke="#d6e2ee" stroke-width="1"/><line x1="60" y1="20" x2="60" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="60" x2="180" y2="60" stroke="#d6e2ee" stroke-width="1"/><line x1="80" y1="20" x2="80" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="80" x2="180" y2="80" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="20" x2="100" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="100" x2="180" y2="100" stroke="#d6e2ee" stroke-width="1"/><line x1="120" y1="20" x2="120" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="120" x2="180" y2="120" stroke="#d6e2ee" stroke-width="1"/><line x1="140" y1="20" x2="140" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="140" x2="180" y2="140" stroke="#d6e2ee" stroke-width="1"/><line x1="160" y1="20" x2="160" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="160" x2="180" y2="160" stroke="#d6e2ee" stroke-width="1"/><line x1="180" y1="20" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="180" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="16" x2="100" y2="184" stroke="#12355b" stroke-width="2"/><line x1="16" y1="100" x2="184" y2="100" stroke="#12355b" stroke-width="2"/><polygon points="100,16 96,26 104,26" fill="#12355b"/><polygon points="184,100 174,96 174,104" fill="#12355b"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_9"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_9" name="work_9" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_10" data-problem-type="multiple-choice">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 5</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The x-coordinate is negative (left) and the y-coordinate is positive (up). Left and up is Quadrant II.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">In which quadrant is the point (-4, 5)?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="1" data-explanation="The x-coordinate is negative (left) and the y-coordinate is positive (up). Left and up is Quadrant II.">
+          
+            <label class="mc-option-label" id="label_q_10_0">
+              <input type="radio" name="q_10" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">Quadrant I</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_10_1">
+              <input type="radio" name="q_10" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">Quadrant II</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_10_2">
+              <input type="radio" name="q_10" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">Quadrant III</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_10_3">
+              <input type="radio" name="q_10" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">Quadrant IV</span>
+            </label>
+          
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Start at (0, 0). Move right/left for x, then up/down for y.</span><span class="lang-es" lang="es">Empieza en (0, 0). Muévete a los lados para x, luego arriba/abajo para y.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 200 200" class="hw-visual-svg" role="img" aria-label="Blank four-quadrant coordinate grid"><line x1="20" y1="20" x2="20" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="20" x2="180" y2="20" stroke="#d6e2ee" stroke-width="1"/><line x1="40" y1="20" x2="40" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="40" x2="180" y2="40" stroke="#d6e2ee" stroke-width="1"/><line x1="60" y1="20" x2="60" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="60" x2="180" y2="60" stroke="#d6e2ee" stroke-width="1"/><line x1="80" y1="20" x2="80" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="80" x2="180" y2="80" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="20" x2="100" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="100" x2="180" y2="100" stroke="#d6e2ee" stroke-width="1"/><line x1="120" y1="20" x2="120" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="120" x2="180" y2="120" stroke="#d6e2ee" stroke-width="1"/><line x1="140" y1="20" x2="140" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="140" x2="180" y2="140" stroke="#d6e2ee" stroke-width="1"/><line x1="160" y1="20" x2="160" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="160" x2="180" y2="160" stroke="#d6e2ee" stroke-width="1"/><line x1="180" y1="20" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="180" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="16" x2="100" y2="184" stroke="#12355b" stroke-width="2"/><line x1="16" y1="100" x2="184" y2="100" stroke="#12355b" stroke-width="2"/><polygon points="100,16 96,26 104,26" fill="#12355b"/><polygon points="184,100 174,96 174,104" fill="#12355b"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_10"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_10" name="work_10" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_11" data-problem-type="multiple-choice">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 6</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Negative x with positive y places the point in Quadrant II.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">In which quadrant is the point (-3, 5)?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="1" data-explanation="Negative x with positive y places the point in Quadrant II.">
+          
+            <label class="mc-option-label" id="label_q_11_0">
+              <input type="radio" name="q_11" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">Quadrant I</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_11_1">
+              <input type="radio" name="q_11" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">Quadrant II</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_11_2">
+              <input type="radio" name="q_11" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">Quadrant III</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_11_3">
+              <input type="radio" name="q_11" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">Quadrant IV</span>
+            </label>
+          
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Start at (0, 0). Move right/left for x, then up/down for y.</span><span class="lang-es" lang="es">Empieza en (0, 0). Muévete a los lados para x, luego arriba/abajo para y.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 200 200" class="hw-visual-svg" role="img" aria-label="Blank four-quadrant coordinate grid"><line x1="20" y1="20" x2="20" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="20" x2="180" y2="20" stroke="#d6e2ee" stroke-width="1"/><line x1="40" y1="20" x2="40" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="40" x2="180" y2="40" stroke="#d6e2ee" stroke-width="1"/><line x1="60" y1="20" x2="60" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="60" x2="180" y2="60" stroke="#d6e2ee" stroke-width="1"/><line x1="80" y1="20" x2="80" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="80" x2="180" y2="80" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="20" x2="100" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="100" x2="180" y2="100" stroke="#d6e2ee" stroke-width="1"/><line x1="120" y1="20" x2="120" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="120" x2="180" y2="120" stroke="#d6e2ee" stroke-width="1"/><line x1="140" y1="20" x2="140" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="140" x2="180" y2="140" stroke="#d6e2ee" stroke-width="1"/><line x1="160" y1="20" x2="160" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="160" x2="180" y2="160" stroke="#d6e2ee" stroke-width="1"/><line x1="180" y1="20" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="180" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="16" x2="100" y2="184" stroke="#12355b" stroke-width="2"/><line x1="16" y1="100" x2="184" y2="100" stroke="#12355b" stroke-width="2"/><polygon points="100,16 96,26 104,26" fill="#12355b"/><polygon points="184,100 174,96 174,104" fill="#12355b"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_11"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_11" name="work_11" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_12" data-problem-type="multiple-choice">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 7</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Quadrant II is up and to the left of the origin, so x is negative and y is positive: (-, +).","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">Captain Vega&#039;s lookout reports a ship in Quadrant II. What signs will its coordinates (x, y) have?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="1" data-explanation="Quadrant II is up and to the left of the origin, so x is negative and y is positive: (-, +).">
+          
+            <label class="mc-option-label" id="label_q_12_0">
+              <input type="radio" name="q_12" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">(+, +)</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_12_1">
+              <input type="radio" name="q_12" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">(-, +)</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_12_2">
+              <input type="radio" name="q_12" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">(-, -)</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_12_3">
+              <input type="radio" name="q_12" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">(+, -)</span>
+            </label>
+          
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Start at (0, 0). Move right/left for x, then up/down for y.</span><span class="lang-es" lang="es">Empieza en (0, 0). Muévete a los lados para x, luego arriba/abajo para y.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 200 200" class="hw-visual-svg" role="img" aria-label="Blank four-quadrant coordinate grid"><line x1="20" y1="20" x2="20" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="20" x2="180" y2="20" stroke="#d6e2ee" stroke-width="1"/><line x1="40" y1="20" x2="40" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="40" x2="180" y2="40" stroke="#d6e2ee" stroke-width="1"/><line x1="60" y1="20" x2="60" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="60" x2="180" y2="60" stroke="#d6e2ee" stroke-width="1"/><line x1="80" y1="20" x2="80" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="80" x2="180" y2="80" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="20" x2="100" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="100" x2="180" y2="100" stroke="#d6e2ee" stroke-width="1"/><line x1="120" y1="20" x2="120" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="120" x2="180" y2="120" stroke="#d6e2ee" stroke-width="1"/><line x1="140" y1="20" x2="140" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="140" x2="180" y2="140" stroke="#d6e2ee" stroke-width="1"/><line x1="160" y1="20" x2="160" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="160" x2="180" y2="160" stroke="#d6e2ee" stroke-width="1"/><line x1="180" y1="20" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="180" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="16" x2="100" y2="184" stroke="#12355b" stroke-width="2"/><line x1="16" y1="100" x2="184" y2="100" stroke="#12355b" stroke-width="2"/><polygon points="100,16 96,26 104,26" fill="#12355b"/><polygon points="184,100 174,96 174,104" fill="#12355b"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_12"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_12" name="work_12" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_13" data-problem-type="matching-game">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 8</div>
+        <div class="problem-type-badge">MATCHING GAME</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">Match each enemy ship&#039;s coordinates to the quadrant where Captain Vega should fire.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
+        <div class="matching-pairs">
+          
+            <div class="matching-row" data-term="(7, 5)" data-correct="Quadrant I">
+              <div class="matching-term">(7, 5)</div>
+              <div class="matching-select-container">
+                <select name="q_13_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="Quadrant I">Quadrant I</option><option value="Quadrant II">Quadrant II</option><option value="Quadrant III">Quadrant III</option><option value="Quadrant IV">Quadrant IV</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="(-6, 2)" data-correct="Quadrant II">
+              <div class="matching-term">(-6, 2)</div>
+              <div class="matching-select-container">
+                <select name="q_13_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="Quadrant I">Quadrant I</option><option value="Quadrant II">Quadrant II</option><option value="Quadrant III">Quadrant III</option><option value="Quadrant IV">Quadrant IV</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="(-1, -8)" data-correct="Quadrant III">
+              <div class="matching-term">(-1, -8)</div>
+              <div class="matching-select-container">
+                <select name="q_13_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="Quadrant I">Quadrant I</option><option value="Quadrant II">Quadrant II</option><option value="Quadrant III">Quadrant III</option><option value="Quadrant IV">Quadrant IV</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="(4, -7)" data-correct="Quadrant IV">
+              <div class="matching-term">(4, -7)</div>
+              <div class="matching-select-container">
+                <select name="q_13_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="Quadrant I">Quadrant I</option><option value="Quadrant II">Quadrant II</option><option value="Quadrant III">Quadrant III</option><option value="Quadrant IV">Quadrant IV</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Start at (0, 0). Move right/left for x, then up/down for y.</span><span class="lang-es" lang="es">Empieza en (0, 0). Muévete a los lados para x, luego arriba/abajo para y.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_13" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  </main>
+      </details>
     </div>
 
     <div class="tab-panel-inner" data-tab-panel="help" id="hw_panel_help" role="tabpanel" hidden>
@@ -3261,8 +4190,14 @@ body { font-size: 15px; line-height: 1.58; }
       <div class="help-modal" role="dialog" aria-modal="true" aria-labelledby="help_modal_title" onclick="event.stopPropagation()">
         <button type="button" class="help-modal-close" onclick="closeHelpModal()" aria-label="Close help">✕</button>
         <h3 id="help_modal_title" class="help-modal-title"></h3>
+        <div class="help-modal-visual" id="help_modal_visual" hidden></div>
         <p class="help-modal-body lang-en" id="help_modal_en"></p>
         <p class="help-modal-body lang-es" lang="es" id="help_modal_es"></p>
+        <div class="help-modal-frame" id="help_modal_frame" hidden>
+          <span class="help-frame-tag">✏️ Sentence starter / Para empezar</span>
+          <span class="help-frame-en lang-en" id="help_modal_frame_en"></span>
+          <span class="help-frame-es lang-es" lang="es" id="help_modal_frame_es"></span>
+        </div>
       </div>
     </div>
 
@@ -3273,7 +4208,7 @@ body { font-size: 15px; line-height: 1.58; }
     
     <div class="score-progress-container">
       <div class="score-text">
-        Progress / Progreso: <span id="progress_text">0 / 4 Completed</span>
+        Progress / Progreso: <span id="progress_text">0 / 6 Completed</span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -3341,6 +4276,21 @@ function openHelpModal(data) {
     (data.titleEn || 'Help') + ' / ' + (data.titleEs || 'Ayuda');
   document.getElementById('help_modal_en').textContent = data.en || '';
   document.getElementById('help_modal_es').textContent = data.es || '';
+  var vis = document.getElementById('help_modal_visual');
+  if (vis) {
+    if (data.visual) { vis.innerHTML = data.visual; vis.hidden = false; }
+    else { vis.innerHTML = ''; vis.hidden = true; }
+  }
+  var frame = document.getElementById('help_modal_frame');
+  if (frame) {
+    if (data.frameEn || data.frameEs) {
+      document.getElementById('help_modal_frame_en').textContent = data.frameEn || '';
+      document.getElementById('help_modal_frame_es').textContent = data.frameEs || '';
+      frame.hidden = false;
+    } else {
+      frame.hidden = true;
+    }
+  }
   overlay.hidden = false;
   document.body.classList.add('help-modal-open');
   overlay.querySelector('.help-modal-close')?.focus();
@@ -4106,9 +5056,10 @@ function normalizeMath(val) {
 }
 
 function updateProgress() {
-  const problems = document.querySelectorAll(".problem-section");
+  const problems = Array.from(document.querySelectorAll(".problem-section"))
+    .filter((s) => !s.closest(".more-practice"));
   let completedCount = 0;
-  
+
   problems.forEach((section, idx) => {
     const type = section.dataset.problemType;
     let hasValue = false;
@@ -4496,9 +5447,10 @@ function checkProblem(idx, options) {
 }
 
 function updateScoreSummary() {
-  const problems = document.querySelectorAll(".problem-section");
-  const checked = Array.from(problems).filter((s) => s.classList.contains("correct") || s.classList.contains("incorrect"));
-  const correctCount = Array.from(problems).filter((s) => s.classList.contains("correct")).length;
+  const problems = Array.from(document.querySelectorAll(".problem-section"))
+    .filter((s) => !s.closest(".more-practice"));
+  const checked = problems.filter((s) => s.classList.contains("correct") || s.classList.contains("incorrect"));
+  const correctCount = problems.filter((s) => s.classList.contains("correct")).length;
   const total = problems.length;
   if (checked.length > 0) {
     document.getElementById("progress_text").textContent = "Score: " + correctCount + " / " + total + " Correct";
@@ -4509,15 +5461,18 @@ function updateScoreSummary() {
 }
 
 function checkWorksheet() {
-  const problems = document.querySelectorAll(".problem-section");
+  const problems = Array.from(document.querySelectorAll(".problem-section"));
   let correctCount = 0;
 
-  problems.forEach((section, idx) => {
+  problems.forEach((section) => {
+    const idx = parseInt((section.id || "").replace("problem_", ""), 10);
+    if (Number.isNaN(idx)) return;
     const result = checkProblem(idx, { silent: true });
-    if (result.correct) correctCount++;
+    // Only core (non-optional) problems count toward the worksheet score.
+    if (result.correct && !section.closest(".more-practice")) correctCount++;
   });
 
-  const total = problems.length;
+  const total = problems.filter((s) => !s.closest(".more-practice")).length;
   document.getElementById("progress_text").textContent = "Score: " + correctCount + " / " + total + " Correct";
   document.getElementById("progress_bar").style.width = (correctCount / total * 100) + "%";
 
