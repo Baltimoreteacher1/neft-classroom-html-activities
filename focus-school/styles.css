@@ -2386,6 +2386,58 @@ html[data-theme="dark"] .bg-blob-2 {
   box-shadow: 0 0 16px color-mix(in srgb, var(--teal-bright) 30%, transparent) !important;
 }
 
+/* "Arrange cards" mode — makes rearranging the Now screen super easy: every
+   card becomes a big grab target and gently wobbles so it clearly reads as
+   "movable", iOS-home-screen style. */
+.arrange-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 0 0 12px;
+}
+.arrange-hint {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.arrange-hint b {
+  color: var(--ink);
+}
+.home-grid.arranging .card {
+  cursor: grab;
+  touch-action: none;
+  outline: 2px dashed color-mix(in srgb, var(--teal-bright) 55%, transparent);
+  outline-offset: 3px;
+  animation: card-wobble 0.5s ease-in-out infinite alternate;
+}
+/* Mute inner buttons/links so a tap anywhere grabs the whole card to drag. */
+.home-grid.arranging .card * {
+  pointer-events: none;
+}
+.home-grid.arranging .card-drag-handle {
+  pointer-events: auto;
+  color: var(--teal-bright);
+  font-size: 1.3rem;
+}
+.home-grid.arranging .card.dragging {
+  animation: none;
+  cursor: grabbing;
+  outline-color: var(--teal-bright);
+}
+@keyframes card-wobble {
+  from {
+    transform: rotate(-0.55deg);
+  }
+  to {
+    transform: rotate(0.55deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-grid.arranging .card {
+    animation: none;
+  }
+}
+
 /* "Add or arrange cards" tile on the Now screen */
 .add-card-tile {
   display: flex;

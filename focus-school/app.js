@@ -768,9 +768,15 @@
     ["more", "More", "⋯"],
   ];
   let view = "home";
+  // "Arrange" mode turns the Now screen into an easy drag-to-rearrange board:
+  // every card becomes grabbable (not just the small ⋮⋮ handle) and gently
+  // wobbles so kids can clearly see what to move. Runtime-only (not saved).
+  let arrangeMode = false;
   const expanded = new Set(); // task ids expanded inline
 
   function setView(v) {
+    // Leaving the Now screen always exits arrange mode so it can't get "stuck".
+    if (v !== "home") arrangeMode = false;
     view = v;
     const url = new URL(location.href);
     url.searchParams.set("view", v);
@@ -2664,7 +2670,14 @@
         <span class="add-card-text"><b>Add or arrange cards</b><small>${hiddenCount ? `${hiddenCount} card${hiddenCount === 1 ? "" : "s"} hidden — tap to show` : "Show, hide & reorder"}</small></span>
       </button>`;
 
-      return `${welcomeBanner}${checkinBanner()}${captureBanner()}<div class="home-grid">${order.map((k) => map[k] || "").join("")}${customizeTile}</div>${reflectionCardHTML()}`;
+      const arrangeBar =
+        order.length > 1
+          ? `<div class="arrange-bar${arrangeMode ? " on" : ""}">
+              <button class="btn sm${arrangeMode ? " primary" : ""}" data-act="toggle-arrange" aria-pressed="${arrangeMode}">${arrangeMode ? "✓ Done arranging" : "⠿ Arrange cards"}</button>
+              ${arrangeMode ? `<span class="arrange-hint" role="status">Drag any card to move it, then tap <b>Done</b>.</span>` : ""}
+            </div>`
+          : "";
+      return `${welcomeBanner}${checkinBanner()}${captureBanner()}${arrangeBar}<div class="home-grid${arrangeMode ? " arranging" : ""}">${order.map((k) => map[k] || "").join("")}${arrangeMode ? "" : customizeTile}</div>${reflectionCardHTML()}`;
     },
 
     calendar() {
@@ -6182,6 +6195,11 @@ Due May 31"></textarea>
       render();
       toast("Saved");
     },
+    "toggle-arrange": () => {
+      arrangeMode = !arrangeMode;
+      render();
+      toast(arrangeMode ? "Drag cards to rearrange them" : "Layout saved");
+    },
     "move-card": (id, arg) => {
       const a = state.settings.homeOrder,
         i = a.indexOf(id),
@@ -6674,11 +6692,13 @@ ${name}`;
   // ---------------------------------------------------------------------------
   function wire() {
     document.addEventListener("pointerdown", (ev) => {
+      // Two ways to start a drag: grab the small ⋮⋮ handle (always), or — when
+      // "Arrange cards" mode is on — grab anywhere on a Now-screen card.
       const handle = ev.target.closest(".card-drag-handle");
-      if (!handle) return;
-
-      const cardEl = handle.closest(".card");
-      if (!cardEl) return;
+      const arrangingCard = ev.target.closest(".home-grid.arranging .card");
+      const cardEl = handle ? handle.closest(".card") : arrangingCard;
+      if (!cardEl || !cardEl.closest(".home-grid") || !cardEl.dataset.card)
+        return;
 
       ev.preventDefault();
       cardEl.setPointerCapture(ev.pointerId);
