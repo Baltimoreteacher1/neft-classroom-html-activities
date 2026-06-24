@@ -295,6 +295,69 @@ export function selectMorePracticeProblems(practice = {}, config = {}, exclude =
     .map((r) => r.p);
 }
 
+// Split the core Quick Check set into two clearly-sectioned tiers so families
+// practice the concept on EASY problems first, then move to a slightly harder
+// challenge set. Difficulty comes straight from the lesson's practice tiers:
+//   approaching (easiest, scaffolded) → onLevel → extending (hardest).
+// Within each tier we order by topic alignment so the most on-point problems
+// surface first. Returns { warmup, challenge } with no overlap.
+export function selectTieredQuickCheckProblems(practice = {}, config = {}) {
+  const WARMUP_TARGET = 3;
+  const CHALLENGE_TARGET = 3;
+  const lessonMeta = extractLessonKeywords(config);
+
+  const tier = (key) =>
+    (Array.isArray(practice[key]) ? practice[key] : []).filter(isPrintableProblem);
+  const approaching = tier("approaching");
+  const onLevel = tier("onLevel");
+  const optional = tier("optional");
+  const extending = tier("extending");
+
+  // Best-aligned first within a pool, de-duplicated.
+  const byAlign = (arr) => {
+    const seen = new Set();
+    return arr
+      .filter((p) => (seen.has(p) ? false : (seen.add(p), true)))
+      .map((p) => ({ p, align: scoreProblemAlignment(p, lessonMeta) }))
+      .sort((a, b) => b.align - a.align)
+      .map((r) => r.p);
+  };
+
+  // Easy pool leans on scaffolded "approaching" problems, then on-level basics.
+  const easyPool = byAlign([...approaching, ...onLevel, ...optional]);
+  // Hard pool leans on "extending" stretch problems, then remaining on-level.
+  const hardPool = byAlign([...extending, ...onLevel, ...optional]);
+
+  const warmup = [];
+  for (const p of easyPool) {
+    if (warmup.length >= WARMUP_TARGET) break;
+    warmup.push(p);
+  }
+
+  const challenge = [];
+  for (const p of hardPool) {
+    if (challenge.length >= CHALLENGE_TARGET) break;
+    if (!warmup.includes(p)) challenge.push(p);
+  }
+
+  // Sparse-tier fallbacks: keep both sections populated when one tier is thin,
+  // pulling the hardest leftovers into challenge and easiest leftovers into warmup.
+  if (challenge.length < CHALLENGE_TARGET) {
+    for (const p of [...easyPool].reverse()) {
+      if (challenge.length >= CHALLENGE_TARGET) break;
+      if (!warmup.includes(p) && !challenge.includes(p)) challenge.push(p);
+    }
+  }
+  if (warmup.length < WARMUP_TARGET) {
+    for (const p of easyPool) {
+      if (warmup.length >= WARMUP_TARGET) break;
+      if (!warmup.includes(p) && !challenge.includes(p)) warmup.push(p);
+    }
+  }
+
+  return { warmup, challenge };
+}
+
 export function detectVisualMismatch(config, html) {
   const topic = detectVisualTopic(config);
   const checks = {

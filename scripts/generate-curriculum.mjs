@@ -65,6 +65,46 @@ function lessonConfigs() {
 // True if a path exists relative to repo root.
 const has = (...parts) => existsSync(join(root, ...parts));
 
+// Per-LESSON graphic novels (finer grain than the per-UNIT novels). Sourced from
+// graphic-novels/lessons/manifest.json. Only novels whose built HTML actually
+// exists on disk are surfaced, so the hub never shows a dead link. Returns a map
+// of lessonId -> [{ tier, label, sub, href }], so each novel appears under the
+// specific lesson(s) it teaches rather than as a whole-unit resource.
+function loadLessonNovelMap() {
+  const map = {};
+  const manifestPath = join(root, "graphic-novels", "lessons", "manifest.json");
+  if (!existsSync(manifestPath)) return map;
+  let manifest;
+  try {
+    manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+  } catch (e) {
+    console.error("Failed to parse graphic-novels/lessons/manifest.json:", e);
+    return map;
+  }
+  for (const group of manifest.groups || []) {
+    const lessons = Array.isArray(group.lessons) ? group.lessons : [];
+    const coverage = lessons.length > 1 ? ` · Covers ${lessons.join(", ")}` : "";
+    for (const novel of group.novels || []) {
+      const tier = novel.tier;
+      if (!has("graphic-novels", "lessons", group.groupId, `graphic-novel-${tier}.html`)) continue;
+      const levelWord = novel.levelWord || (tier === 1 ? "Support" : "Enrichment");
+      const entry = {
+        tier,
+        label: `📖 Lesson Novel #${tier}`,
+        sub: `Level ${tier} · ${levelWord}${coverage}`,
+        href: `/graphic-novels/lessons/${group.groupId}/graphic-novel-${tier}.html`,
+      };
+      for (const lessonId of lessons) {
+        (map[lessonId] ||= []).push(entry);
+      }
+    }
+  }
+  for (const list of Object.values(map)) list.sort((a, b) => a.tier - b.tier);
+  return map;
+}
+
+const lessonNovelMap = loadLessonNovelMap();
+
 // Find the post-test "base" file for a unit (e.g. unit1-space-mission-control.html),
 // skipping the -level-0/-1/-2 variants. Returns the filename or null.
 function findPostTestBase(unit) {
@@ -100,7 +140,7 @@ function unitResources(unit) {
         "Graphic Novel #1",
         `/graphic-novels/unit${unit}/graphic-novel-1.html`,
         true,
-        "Level 1 · Support",
+        "Whole unit · Level 1 Support",
       ),
     );
   }
@@ -110,7 +150,7 @@ function unitResources(unit) {
         "Graphic Novel #2",
         `/graphic-novels/unit${unit}/graphic-novel-2.html`,
         true,
-        "Level 2 · Enrichment",
+        "Whole unit · Level 2 Enrichment",
       ),
     );
   }
@@ -156,6 +196,12 @@ function unitResources(unit) {
 // Build the resource pills for a single lesson, stat-checking each file.
 function lessonResources(id) {
   const pills = [];
+
+  // Lesson-specific graphic novels first, so families see the novel that matches
+  // this exact lesson (the per-unit novels stay up top under "Unit resources").
+  for (const nv of lessonNovelMap[id] || []) {
+    pills.push(resLink(nv.label, nv.href, true, nv.sub));
+  }
 
   if (has("lessons", id, "index.html")) {
     pills.push(resLink("Interactive Lesson", `/lessons/${id}/`, true));
@@ -447,15 +493,28 @@ function main() {
   // passed. To intentionally regenerate from scratch: `node scripts/generate-curriculum.mjs --force`.
   const outPath = join(outDir, "index.html");
   const force = process.argv.includes("--force");
+  // Markers for augmented content this generator does NOT reproduce (Teacher
+  // Tools panel, the role-aware Top1 layer, the featured tools/mailbox cards, the
+  // embedded Math Workbench). If the live file carries any marker the freshly
+  // generated HTML lacks, overwriting would silently strip that work — the exact
+  // clobber that has repeatedly reverted the live hub. Skip unless `--force`.
+  const PROTECTED_MARKERS = [
+    "tt-link",
+    "Teacher Tools",
+    "actPlaceholder",
+    "curriculum-top1.js",
+    "mailbox-feature",
+    "/curriculum/math-workbench/",
+  ];
   if (!force && existsSync(outPath)) {
     const cur = readFileSync(outPath, "utf8");
-    if (
-      /tt-link|Teacher Tools|actPlaceholder/.test(cur) &&
-      !/tt-link|Teacher Tools|actPlaceholder/.test(html)
-    ) {
+    const lost = PROTECTED_MARKERS.filter((m) => cur.includes(m) && !html.includes(m));
+    if (lost.length) {
       console.warn(
-        "SKIPPED curriculum/index.html — it is the hand-maintained version (Teacher Tools / dropdown). " +
-          "Run with --force to overwrite it with the generated version.",
+        "SKIPPED curriculum/index.html — the live file contains augmented content this " +
+          "generator does not reproduce (" +
+          lost.join(", ") +
+          "). Run with --force to overwrite it anyway.",
       );
       return;
     }
