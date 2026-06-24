@@ -256,8 +256,59 @@ function tryTogetherActivity(config) {
       ? translateConceptLine(narrative.split(".")[0], config.vocabulary || []) ||
         "Usen la historia de la lección para conectar la matemática con la vida real."
       : "",
-    steps: steps.slice(0, 4),
+    steps: steps.slice(0, 6),
   };
+}
+
+// Compact, graduated practice ladder for the "Try Together" tab: real problems
+// drawn from the lesson's practice tiers, ordered EASIEST → HARDEST so families
+// build confidence first, then stretch. We only keep problem shapes that compact
+// cleanly to a one-line "question → answer" (multiple-choice, open-response) and
+// never include "find the error" / error-analysis here.
+function ladderCard(prob) {
+  if (!prob || typeof prob !== "object") return null;
+  if (prob.type === "multiple-choice") {
+    const q = prob.stem || prob.question || "";
+    if (!q || !Array.isArray(prob.choices) || !Number.isInteger(prob.correctIndex)) return null;
+    const a = prob.choices[prob.correctIndex];
+    if (a == null) return null;
+    return { q, a: String(a) };
+  }
+  if (prob.type === "open-response") {
+    const q = prob.prompt || prob.question || prob.stem || "";
+    if (!q) return null;
+    const a = prob.sampleAnswer || prob.answer || prob.exemplar || "";
+    return { q, a: String(a) };
+  }
+  return null;
+}
+
+export function buildTogetherLadder(config = {}) {
+  const p = config.practice || {};
+  // Difficulty ladder: 1★ approaching (scaffolded), 2★ on-level / optional,
+  // 3★ extending (stretch). Take a few from each so the set spans easy → hard.
+  const tiers = [
+    { keys: ["approaching"], stars: "★", labelEn: "Start easy", labelEs: "Empieza fácil", take: 2 },
+    { keys: ["onLevel", "optional"], stars: "★★", labelEn: "Keep going", labelEs: "Sigan", take: 2 },
+    { keys: ["extending"], stars: "★★★", labelEn: "Challenge", labelEs: "Reto", take: 1 },
+  ];
+
+  const ladder = [];
+  for (const tier of tiers) {
+    let taken = 0;
+    for (const key of tier.keys) {
+      const arr = Array.isArray(p[key]) ? p[key] : [];
+      for (const prob of arr) {
+        if (taken >= tier.take) break;
+        const card = ladderCard(prob);
+        if (!card) continue;
+        if (ladder.some((x) => x.q === card.q)) continue;
+        ladder.push({ ...card, stars: tier.stars, tierEn: tier.labelEn, tierEs: tier.labelEs });
+        taken += 1;
+      }
+    }
+  }
+  return ladder;
 }
 
 function stuckTips(config) {
@@ -958,28 +1009,66 @@ export function renderTryTogether(config) {
                 })
               : "";
             return `
-          <li class="together-step step-color-${(i % 4) + 1}">
+          <li class="together-step together-step--compact step-color-${(i % 4) + 1}">
             <div class="together-step-head">
               <span class="step-badge">Step ${i + 1} / Paso ${i + 1}</span>
+              <div class="together-step-actions">
+                ${hintBtn}
+                ${helpBtn}
+              </div>
             </div>
-            <p class="lang-en"><strong>First…</strong> ${esc(step.en)}</p>
-            <p class="lang-es" lang="es"><strong>Primero…</strong> ${esc(step.es)}</p>
+            <p class="lang-en">${esc(step.en)}</p>
+            <p class="lang-es" lang="es">${esc(step.es)}</p>
             <div class="together-fill">
-              <label class="together-fill-label" for="together_${i}">
-                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
-                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
-              </label>
-              <textarea id="together_${i}" name="together_${i}" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
-            </div>
-            <div class="together-step-actions">
-              ${hintBtn}
-              ${helpBtn}
+              <textarea id="together_${i}" name="together_${i}" class="custom-textarea together-fill-input" rows="1" placeholder="✏️ Your turn / Tu turno…" oninput="saveState();" aria-label="Your work for step ${i + 1}"></textarea>
             </div>
           </li>`;
           })
           .join("")}
       </ol>
+      ${renderTogetherLadder(config)}
     </section>`;
+}
+
+// Graduated practice ladder rendered under the guided steps — compact problems
+// families do side by side, easiest first, with a no-JS reveal for each answer.
+function renderTogetherLadder(config) {
+  const ladder = buildTogetherLadder(config);
+  if (!ladder.length) return "";
+
+  const items = ladder
+    .map((item, i) => {
+      const answer = item.a
+        ? `<details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text">${esc(item.a)}</p>
+           </details>`
+        : "";
+      return `
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">${item.stars}</span>
+            <span class="ladder-tier"><span class="lang-en">${esc(item.tierEn)}</span><span class="lang-es" lang="es">${esc(item.tierEs)}</span></span>
+          </div>
+          <p class="ladder-q">${esc(item.q)}</p>
+          <input type="text" id="ladder_${i}" name="ladder_${i}" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem ${i + 1}" />
+          ${answer}
+        </li>`;
+    })
+    .join("");
+
+  return `
+    <div class="together-ladder">
+      <h3 class="ladder-title">
+        <span class="lang-en">📈 Practice ladder — easiest first</span>
+        <span class="lang-es" lang="es">📈 Escalera de práctica — del más fácil al más difícil</span>
+      </h3>
+      <p class="ladder-note bilingual-block">
+        <span class="lang-en">Do these together. Start at ★ and climb to ★★★ when ready.</span>
+        <span class="lang-es" lang="es">Háganlos juntos. Empiecen en ★ y suban a ★★★ cuando estén listos.</span>
+      </p>
+      <ol class="ladder-list">${items}</ol>
+    </div>`;
 }
 
 export function renderStuckSection(config) {
@@ -2052,6 +2141,32 @@ body.help-modal-open { overflow: hidden; }
 }
 .together-fill-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
 .together-step-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+
+/* Compact "Try Together" steps: tighter padding, inline action buttons, single-row input. */
+.together-steps { gap: 8px; }
+.together-step--compact { padding: 9px 11px; }
+.together-step--compact .together-step-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.together-step--compact .step-badge { margin-bottom: 0; }
+.together-step--compact .together-step-actions { margin-top: 0; }
+.together-step--compact p { margin: 6px 0 0; font-size: 14px; }
+.together-step--compact .together-fill { margin: 7px 0 0; }
+.together-step--compact .together-fill-input { min-height: 40px; }
+
+/* Graduated practice ladder under the guided steps. */
+.together-ladder { margin-top: 16px; padding-top: 14px; border-top: 2px dashed var(--line); }
+.ladder-title { font-family: var(--font-display); font-size: 16px; margin: 0 0 4px; color: var(--navy); }
+.ladder-note { font-size: 13px; margin: 0 0 12px; }
+.ladder-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; counter-reset: ladder; }
+.ladder-item { border: 1px solid var(--line); border-left: 4px solid #5b8def; border-radius: var(--radius-sm); padding: 9px 11px; background: var(--white); }
+.ladder-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.ladder-stars { color: #f5a623; font-size: 13px; letter-spacing: 1px; }
+.ladder-tier { font-family: var(--font-display); font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: var(--navy); }
+.ladder-q { margin: 0 0 8px; font-size: 14.5px; line-height: 1.4; }
+.ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
+.ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
+.ladder-answer { margin-top: 7px; }
+.ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
+.ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
 
 /* "More practice" accordion in the Check tab */
 /* Tiered practice sections (warm-up first, then a harder challenge set) */

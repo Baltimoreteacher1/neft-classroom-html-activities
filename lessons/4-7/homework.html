@@ -1736,6 +1736,32 @@ body.help-modal-open { overflow: hidden; }
 .together-fill-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
 .together-step-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 
+/* Compact "Try Together" steps: tighter padding, inline action buttons, single-row input. */
+.together-steps { gap: 8px; }
+.together-step--compact { padding: 9px 11px; }
+.together-step--compact .together-step-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.together-step--compact .step-badge { margin-bottom: 0; }
+.together-step--compact .together-step-actions { margin-top: 0; }
+.together-step--compact p { margin: 6px 0 0; font-size: 14px; }
+.together-step--compact .together-fill { margin: 7px 0 0; }
+.together-step--compact .together-fill-input { min-height: 40px; }
+
+/* Graduated practice ladder under the guided steps. */
+.together-ladder { margin-top: 16px; padding-top: 14px; border-top: 2px dashed var(--line); }
+.ladder-title { font-family: var(--font-display); font-size: 16px; margin: 0 0 4px; color: var(--navy); }
+.ladder-note { font-size: 13px; margin: 0 0 12px; }
+.ladder-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; counter-reset: ladder; }
+.ladder-item { border: 1px solid var(--line); border-left: 4px solid #5b8def; border-radius: var(--radius-sm); padding: 9px 11px; background: var(--white); }
+.ladder-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.ladder-stars { color: #f5a623; font-size: 13px; letter-spacing: 1px; }
+.ladder-tier { font-family: var(--font-display); font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: var(--navy); }
+.ladder-q { margin: 0 0 8px; font-size: 14.5px; line-height: 1.4; }
+.ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
+.ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
+.ladder-answer { margin-top: 7px; }
+.ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
+.ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
+
 /* "More practice" accordion in the Check tab */
 /* Tiered practice sections (warm-up first, then a harder challenge set) */
 .practice-tier { margin: 0 0 22px; }
@@ -2593,61 +2619,118 @@ body { font-size: 15px; line-height: 1.58; }
       </p>
       <ol class="together-steps">
         
-          <li class="together-step step-color-1">
+          <li class="together-step together-step--compact step-color-1">
             <div class="together-step-head">
               <span class="step-badge">Step 1 / Paso 1</span>
+              <div class="together-step-actions">
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 hint","titleEs":"Pista del paso 1","en":"Divide the price by the notebooks: $8.00 ÷ 5.","es":"Dividan el precio entre los cuadernos: $8.00 ÷ 5."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 — more help","titleEs":"Paso 1 — más ayuda","en":"$8.00 ÷ 5 = $1.60 per notebook.","es":"$8.00 ÷ 5 = $1.60 por cuaderno."}' onclick="openHelpModalFromBtn(this)" aria-label="🤝 More help / Más ayuda">🤝 More help / Más ayuda</button>
+              </div>
             </div>
-            <p class="lang-en"><strong>First…</strong> Find the price per notebook for Store A. What do you divide?</p>
-            <p class="lang-es" lang="es"><strong>Primero…</strong> Hallen el precio por cuaderno de la tienda A. ¿Qué dividen?</p>
+            <p class="lang-en">Find the price per notebook for Store A. What do you divide?</p>
+            <p class="lang-es" lang="es">Hallen el precio por cuaderno de la tienda A. ¿Qué dividen?</p>
             <div class="together-fill">
-              <label class="together-fill-label" for="together_0">
-                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
-                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
-              </label>
-              <textarea id="together_0" name="together_0" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
-            </div>
-            <div class="together-step-actions">
-              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 hint","titleEs":"Pista del paso 1","en":"Divide the price by the notebooks: $8.00 ÷ 5.","es":"Dividan el precio entre los cuadernos: $8.00 ÷ 5."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
-              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 — more help","titleEs":"Paso 1 — más ayuda","en":"$8.00 ÷ 5 = $1.60 per notebook.","es":"$8.00 ÷ 5 = $1.60 por cuaderno."}' onclick="openHelpModalFromBtn(this)" aria-label="🤝 More help / Más ayuda">🤝 More help / Más ayuda</button>
+              <textarea id="together_0" name="together_0" class="custom-textarea together-fill-input" rows="1" placeholder="✏️ Your turn / Tu turno…" oninput="saveState();" aria-label="Your work for step 1"></textarea>
             </div>
           </li>
-          <li class="together-step step-color-2">
+          <li class="together-step together-step--compact step-color-2">
             <div class="together-step-head">
               <span class="step-badge">Step 2 / Paso 2</span>
+              <div class="together-step-actions">
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 hint","titleEs":"Pista del paso 2","en":"Divide the price by the notebooks, just like before.","es":"Dividan el precio entre los cuadernos, igual que antes."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 — more help","titleEs":"Paso 2 — más ayuda","en":"$5.25 ÷ 3 = $1.75 per notebook.","es":"$5.25 ÷ 3 = $1.75 por cuaderno."}' onclick="openHelpModalFromBtn(this)" aria-label="🤝 More help / Más ayuda">🤝 More help / Más ayuda</button>
+              </div>
             </div>
-            <p class="lang-en"><strong>First…</strong> Now find the price per notebook for Store B: $5.25 ÷ 3.</p>
-            <p class="lang-es" lang="es"><strong>Primero…</strong> Ahora hallen el precio por cuaderno de la tienda B: $5.25 ÷ 3.</p>
+            <p class="lang-en">Now find the price per notebook for Store B: $5.25 ÷ 3.</p>
+            <p class="lang-es" lang="es">Ahora hallen el precio por cuaderno de la tienda B: $5.25 ÷ 3.</p>
             <div class="together-fill">
-              <label class="together-fill-label" for="together_1">
-                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
-                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
-              </label>
-              <textarea id="together_1" name="together_1" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
-            </div>
-            <div class="together-step-actions">
-              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 hint","titleEs":"Pista del paso 2","en":"Divide the price by the notebooks, just like before.","es":"Dividan el precio entre los cuadernos, igual que antes."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
-              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 — more help","titleEs":"Paso 2 — más ayuda","en":"$5.25 ÷ 3 = $1.75 per notebook.","es":"$5.25 ÷ 3 = $1.75 por cuaderno."}' onclick="openHelpModalFromBtn(this)" aria-label="🤝 More help / Más ayuda">🤝 More help / Más ayuda</button>
+              <textarea id="together_1" name="together_1" class="custom-textarea together-fill-input" rows="1" placeholder="✏️ Your turn / Tu turno…" oninput="saveState();" aria-label="Your work for step 2"></textarea>
             </div>
           </li>
-          <li class="together-step step-color-3">
+          <li class="together-step together-step--compact step-color-3">
             <div class="together-step-head">
               <span class="step-badge">Step 3 / Paso 3</span>
+              <div class="together-step-actions">
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 3 hint","titleEs":"Pista del paso 3","en":"The lower price per notebook wins.","es":"El menor precio por cuaderno gana."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 3 — more help","titleEs":"Paso 3 — más ayuda","en":"Store A is the better buy because $1.60 is less than $1.75.","es":"La tienda A es la mejor compra porque $1.60 es menos que $1.75."}' onclick="openHelpModalFromBtn(this)" aria-label="🤝 More help / Más ayuda">🤝 More help / Más ayuda</button>
+              </div>
             </div>
-            <p class="lang-en"><strong>First…</strong> Compare: $1.60 or $1.75 per notebook. Which store is the better buy?</p>
-            <p class="lang-es" lang="es"><strong>Primero…</strong> Comparen: $1.60 o $1.75 por cuaderno. ¿Qué tienda es la mejor compra?</p>
+            <p class="lang-en">Compare: $1.60 or $1.75 per notebook. Which store is the better buy?</p>
+            <p class="lang-es" lang="es">Comparen: $1.60 o $1.75 por cuaderno. ¿Qué tienda es la mejor compra?</p>
             <div class="together-fill">
-              <label class="together-fill-label" for="together_2">
-                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
-                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
-              </label>
-              <textarea id="together_2" name="together_2" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
-            </div>
-            <div class="together-step-actions">
-              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 3 hint","titleEs":"Pista del paso 3","en":"The lower price per notebook wins.","es":"El menor precio por cuaderno gana."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
-              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 3 — more help","titleEs":"Paso 3 — más ayuda","en":"Store A is the better buy because $1.60 is less than $1.75.","es":"La tienda A es la mejor compra porque $1.60 es menos que $1.75."}' onclick="openHelpModalFromBtn(this)" aria-label="🤝 More help / Más ayuda">🤝 More help / Más ayuda</button>
+              <textarea id="together_2" name="together_2" class="custom-textarea together-fill-input" rows="1" placeholder="✏️ Your turn / Tu turno…" oninput="saveState();" aria-label="Your work for step 3"></textarea>
             </div>
           </li>
       </ol>
+      
+    <div class="together-ladder">
+      <h3 class="ladder-title">
+        <span class="lang-en">📈 Practice ladder — easiest first</span>
+        <span class="lang-es" lang="es">📈 Escalera de práctica — del más fácil al más difícil</span>
+      </h3>
+      <p class="ladder-note bilingual-block">
+        <span class="lang-en">Do these together. Start at ★ and climb to ★★★ when ready.</span>
+        <span class="lang-es" lang="es">Háganlos juntos. Empiecen en ★ y suban a ★★★ cuando estén listos.</span>
+      </p>
+      <ol class="ladder-list">
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★</span>
+            <span class="ladder-tier"><span class="lang-en">Start easy</span><span class="lang-es" lang="es">Empieza fácil</span></span>
+          </div>
+          <p class="ladder-q">Which is the better buy: 6 bouncy balls for $4.50 or 10 bouncy balls for $8.00?</p>
+          <input type="text" id="ladder_0" name="ladder_0" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 1" />
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text">6 for $4.50 — $0.75 each</p>
+           </details>
+        </li>
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★</span>
+            <span class="ladder-tier"><span class="lang-en">Start easy</span><span class="lang-es" lang="es">Empieza fácil</span></span>
+          </div>
+          <p class="ladder-q">A faucet drips 15 ounces of water in 5 minutes. What is the unit rate?</p>
+          <input type="text" id="ladder_1" name="ladder_1" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 2" />
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text">3 ounces per minute</p>
+           </details>
+        </li>
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★★</span>
+            <span class="ladder-tier"><span class="lang-en">Keep going</span><span class="lang-es" lang="es">Sigan</span></span>
+          </div>
+          <p class="ladder-q">A machine dispenses 24 tokens in 3 minutes. At this rate, how many tokens does it dispense in 10 minutes?</p>
+          <input type="text" id="ladder_2" name="ladder_2" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 3" />
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text">80 tokens</p>
+           </details>
+        </li>
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★★</span>
+            <span class="ladder-tier"><span class="lang-en">Keep going</span><span class="lang-es" lang="es">Sigan</span></span>
+          </div>
+          <p class="ladder-q">A factory produces 360 widgets in 8 hours. At the same rate, how many widgets are produced in a 12-hour shift?</p>
+          <input type="text" id="ladder_3" name="ladder_3" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 4" />
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text">540 widgets</p>
+           </details>
+        </li>
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★★★</span>
+            <span class="ladder-tier"><span class="lang-en">Challenge</span><span class="lang-es" lang="es">Reto</span></span>
+          </div>
+          <p class="ladder-q">Two arcade supply companies offer token deals. Company X: 300 tokens for $36. Company Y: 500 tokens for $55. The arcade needs 1,000 tokens. Find the unit rate for each company, determine which is cheaper per token, and calculate the total cost of buying 1,000 tokens from the better deal.</p>
+          <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
+          
+        </li></ol>
+    </div>
     </div>
 
     <div class="tab-panel-inner" data-tab-panel="check" id="hw_panel_check" role="tabpanel" hidden>
@@ -2675,63 +2758,42 @@ body { font-size: 15px; line-height: 1.58; }
           </div>
         </div>
         <main class="problems-container">
-    <section class="problem-section card" id="problem_0" data-problem-type="error-analysis">
+    <section class="problem-section card" id="problem_0" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 1</div>
-        <div class="problem-type-badge">ERROR ANALYSIS</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The packages hold different numbers of packs, so a smaller total price does not automatically win.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"12 oz: $3.00 ÷ 12 = $0.25 per oz. 20 oz: $4.00 ÷ 20 = $0.20 per oz. $0.20 < $0.25, so 20 oz for $4.00 is the better buy.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <h3 class="error-analysis-title">⚠️ approaching — Spot the Common Mistake</h3>
-        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Read each step aloud and ask: does this step follow the math rules we learned?</span><span class="lang-es" lang="es">👪 Lean cada paso en voz alta y pregunten: ¿sigue las reglas que aprendimos?</span></p>
-        
-        <div class="clipboard-box">
-          <div class="clipboard-top"></div>
-          <div class="clipboard-paper">
-            
-              <div class="worked-step" id="step_q_0_1">
-                <span class="step-badge">Step 1</span>
-                <span class="step-label">Read:</span>
-                <span class="step-work">Which gum deal is the better buy: 4 packs for $2.00 or 10 packs for $4.50?</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_0_2">
-                <span class="step-badge">Step 2</span>
-                <span class="step-label">Attempt:</span>
-                <span class="step-work">A student says: &quot;$2.00 is less than $4.50, so 4 packs for $2.00 is the better buy.&quot;</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_0_3">
-                <span class="step-badge">Step 3</span>
-                <span class="step-label">Check:</span>
-                <span class="step-work">The student compared the total prices instead of the cost for one pack.</span>
-              </div>
-            
-          </div>
-        </div>
-        
-        <div class="error-controls">
-          <div class="error-select-row">
-            <label for="error_step_select_0">Which step has the error?</label>
-            <select id="error_step_select_0" class="custom-select error-step-select" data-correct="2" onchange="saveState(); updateProgress();">
-              <option value="">-- Choose Step --</option>
-              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option>
-            </select>
-            <span class="feedback-badge"></span>
-          </div>
+        <p class="problem-stem">The snack bar compares two popcorn deals: 12 oz for $3.00 or 20 oz for $4.00. Which is the better buy?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="12 oz: $3.00 ÷ 12 = $0.25 per oz. 20 oz: $4.00 ÷ 20 = $0.20 per oz. $0.20 &lt; $0.25, so 20 oz for $4.00 is the better buy.">
           
-          <div class="error-explain-row">
-            <label for="error_explain_input_0">Explain the error and write the correct calculation:</label>
-            <textarea id="error_explain_input_0" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
-            <span class="feedback-badge"></span>
-          </div>
+            <label class="mc-option-label" id="label_q_0_0">
+              <input type="radio" name="q_0" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">20 oz for $4.00 — $0.20 per oz</span>
+            </label>
           
-          <div class="reveal-box" id="error_correct_work_0" style="display:none;">
-            <strong>Correct Work Reference:</strong> Find the cost per pack first. 4 packs: $2.00 ÷ 4 = $0.50 per pack. 10 packs: $4.50 ÷ 10 = $0.45 per pack. Since $0.45 &lt; $0.50, the 10-pack deal for $4.50 is actually the better buy.
-            
-          </div>
+            <label class="mc-option-label" id="label_q_0_1">
+              <input type="radio" name="q_0" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">12 oz for $3.00 — $0.25 per oz</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_0_2">
+              <input type="radio" name="q_0" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">They cost the same per ounce</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_0_3">
+              <input type="radio" name="q_0" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">Not enough information</span>
+            </label>
+          
         </div>
       </div>
     
@@ -2773,35 +2835,35 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Warm-up / Calentamiento 2</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"12 oz: $3.00 ÷ 12 = $0.25 per oz. 20 oz: $4.00 ÷ 20 = $0.20 per oz. $0.20 < $0.25, so 20 oz for $4.00 is the better buy.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"8 for $2.00: $2.00 ÷ 8 = $0.25 each. 15 for $3.00: $3.00 ÷ 15 = $0.20 each. $0.20 < $0.25, so 15 for $3.00 is cheaper per ticket.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">The snack bar compares two popcorn deals: 12 oz for $3.00 or 20 oz for $4.00. Which is the better buy?</p>
+        <p class="problem-stem">The ticket counter sells redemption tickets two ways: 8 tickets for $2.00 or 15 tickets for $3.00. Which costs less per ticket?</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="12 oz: $3.00 ÷ 12 = $0.25 per oz. 20 oz: $4.00 ÷ 20 = $0.20 per oz. $0.20 &lt; $0.25, so 20 oz for $4.00 is the better buy.">
+        <div class="mc-options" data-correct="0" data-explanation="8 for $2.00: $2.00 ÷ 8 = $0.25 each. 15 for $3.00: $3.00 ÷ 15 = $0.20 each. $0.20 &lt; $0.25, so 15 for $3.00 is cheaper per ticket.">
           
             <label class="mc-option-label" id="label_q_1_0">
               <input type="radio" name="q_1" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">20 oz for $4.00 — $0.20 per oz</span>
+              <span class="choice-text">15 tickets for $3.00 — $0.20 each</span>
             </label>
           
             <label class="mc-option-label" id="label_q_1_1">
               <input type="radio" name="q_1" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">12 oz for $3.00 — $0.25 per oz</span>
+              <span class="choice-text">8 tickets for $2.00 — $0.25 each</span>
             </label>
           
             <label class="mc-option-label" id="label_q_1_2">
               <input type="radio" name="q_1" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">They cost the same per ounce</span>
+              <span class="choice-text">They cost the same per ticket</span>
             </label>
           
             <label class="mc-option-label" id="label_q_1_3">
               <input type="radio" name="q_1" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Not enough information</span>
+              <span class="choice-text">Cannot determine</span>
             </label>
           
         </div>
@@ -2840,42 +2902,128 @@ body { font-size: 15px; line-height: 1.58; }
     </section>
   
 
-    <section class="problem-section card" id="problem_2" data-problem-type="multiple-choice">
+    <section class="problem-section card" id="problem_2" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 3</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge">DRAG SORT</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"8 for $2.00: $2.00 ÷ 8 = $0.25 each. 15 for $3.00: $3.00 ÷ 15 = $0.20 each. $0.20 < $0.25, so 15 for $3.00 is cheaper per ticket.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">The ticket counter sells redemption tickets two ways: 8 tickets for $2.00 or 15 tickets for $3.00. Which costs less per ticket?</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="8 for $2.00: $2.00 ÷ 8 = $0.25 each. 15 for $3.00: $3.00 ÷ 15 = $0.20 each. $0.20 &lt; $0.25, so 15 for $3.00 is cheaper per ticket.">
-          
-            <label class="mc-option-label" id="label_q_2_0">
-              <input type="radio" name="q_2" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">15 tickets for $3.00 — $0.20 each</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_2_1">
-              <input type="radio" name="q_2" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">8 tickets for $2.00 — $0.25 each</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_2_2">
-              <input type="radio" name="q_2" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">They cost the same per ticket</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_2_3">
-              <input type="radio" name="q_2" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Cannot determine</span>
-            </label>
-          
+        <p class="problem-stem">For each prize item, find the unit rate of both deals and sort each card into Better Buy or Worse Buy.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
+        
+        <div class="drag-sort-workspace" id="dragsort_2">
+          <div class="drag-columns">
+            
+              <div class="drag-column" data-category-id="better" ondragover="allowDrop(event)" ondrop="handleDrop(event, 2, 'better')">
+                <div class="drag-column-header">Better Buy (lower unit rate)</div>
+                <div class="drag-column-slots" id="slots_2_better" ondragover="allowDrop(event)" ondrop="handleDrop(event, 2, 'better')"></div>
+              </div>
+              <div class="drag-column" data-category-id="worse" ondragover="allowDrop(event)" ondrop="handleDrop(event, 2, 'worse')">
+                <div class="drag-column-header">Worse Buy (higher unit rate)</div>
+                <div class="drag-column-slots" id="slots_2_worse" ondragover="allowDrop(event)" ondrop="handleDrop(event, 2, 'worse')"></div>
+              </div>
+          </div>
+          <div class="drag-source-section">
+            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
+            <div class="drag-source-pile" id="pile_2" ondragover="allowDrop(event)" ondrop="handleDrop(event, 2, '')">
+              
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_2_0"
+                     data-item-index="0"
+                     data-correct-category="better"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Snack packs: 4 for $5.00 ($1.25 each)</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_2_0', 2); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="better">Better Buy (lower unit rate)</option><option value="worse">Worse Buy (higher unit rate)</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_2_1"
+                     data-item-index="1"
+                     data-correct-category="worse"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Snack packs: 6 for $9.00 ($1.50 each)</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_2_1', 2); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="better">Better Buy (lower unit rate)</option><option value="worse">Worse Buy (higher unit rate)</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_2_2"
+                     data-item-index="2"
+                     data-correct-category="better"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Stickers: 25 for $8.75 ($0.35 each)</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_2_2', 2); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="better">Better Buy (lower unit rate)</option><option value="worse">Worse Buy (higher unit rate)</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_2_3"
+                     data-item-index="3"
+                     data-correct-category="worse"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Stickers: 10 for $4.00 ($0.40 each)</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_2_3', 2); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="better">Better Buy (lower unit rate)</option><option value="worse">Worse Buy (higher unit rate)</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_2_4"
+                     data-item-index="4"
+                     data-correct-category="better"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Tokens: 250 for $20.00 ($0.08 each)</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_2_4', 2); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="better">Better Buy (lower unit rate)</option><option value="worse">Worse Buy (higher unit rate)</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_2_5"
+                     data-item-index="5"
+                     data-correct-category="worse"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Tokens: 100 for $9.00 ($0.09 each)</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_2_5', 2); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="better">Better Buy (lower unit rate)</option><option value="worse">Worse Buy (higher unit rate)</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="drag-controls">
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(2); saveState(); updateProgress();">Reset Sorting</button>
         </div>
       </div>
     
@@ -2889,20 +3037,6 @@ body { font-size: 15px; line-height: 1.58; }
           <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
         </ol>
       </details>
-      <div class="hw-workspace">
-        <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Fill the ratio table — keep both rows multiplying by the same number.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Llena la tabla de razones — multiplica ambas filas por el mismo número.</span></div>
-          <div class="hw-visual-frame hw-drawable" data-draw-frame>
-            <svg viewBox="0 0 320 110" class="hw-visual-svg" role="img" aria-label="Blank ratio table"><rect x="10" y="15" width="300" height="80" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="10" y1="55" x2="310" y2="55" stroke="#12355b" stroke-width="1.5"/><line x1="85" y1="15" x2="85" y2="95" stroke="#12355b" stroke-width="1.5"/><line x1="160" y1="15" x2="160" y2="95" stroke="#12355b" stroke-width="1.5"/><line x1="235" y1="15" x2="235" y2="95" stroke="#12355b" stroke-width="1.5"/></svg>
-            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
-            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
-          </div>
-        </div>
-        <div class="hw-work">
-          <label class="hw-work-label" for="work_2"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
-          <textarea id="work_2" name="work_2" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
-        </div>
-      </div>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">
           ✓ Check This Problem / Revisar
@@ -3000,69 +3134,83 @@ body { font-size: 15px; line-height: 1.58; }
     </section>
   
 
-    <section class="problem-section card" id="problem_4" data-problem-type="error-analysis">
+    <section class="problem-section card" id="problem_4" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 2</div>
-        <div class="problem-type-badge">ERROR ANALYSIS</div>
+        <div class="problem-type-badge">FILL TABLE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The student divided quantity by price instead of price by quantity.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <h3 class="error-analysis-title">⚠️ Find the Unit Rate Error</h3>
-        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Read each step aloud and ask: does this step follow the math rules we learned?</span><span class="lang-es" lang="es">👪 Lean cada paso en voz alta y pregunten: ¿sigue las reglas que aprendimos?</span></p>
-        
-        <div class="clipboard-box">
-          <div class="clipboard-top"></div>
-          <div class="clipboard-paper">
-            
-              <div class="worked-step" id="step_q_4_1">
-                <span class="step-badge">Step 1</span>
-                <span class="step-label">Which is the better buy: 5 lb for $8.75 or 3 lb for $5.10?:</span>
-                <span class="step-work">Compare two deals</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_4_2">
-                <span class="step-badge">Step 2</span>
-                <span class="step-label">Find unit rate for Deal 1:</span>
-                <span class="step-work">5 ÷ $8.75 = 0.57 lb per dollar</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_4_3">
-                <span class="step-badge">Step 3</span>
-                <span class="step-label">Find unit rate for Deal 2:</span>
-                <span class="step-work">3 ÷ $5.10 = 0.59 lb per dollar</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_4_4">
-                <span class="step-badge">Step 4</span>
-                <span class="step-label">Compare:</span>
-                <span class="step-work">0.59 &gt; 0.57, so Deal 2 is the better buy</span>
-              </div>
-            
-          </div>
-        </div>
-        
-        <div class="error-controls">
-          <div class="error-select-row">
-            <label for="error_step_select_4">Which step has the error?</label>
-            <select id="error_step_select_4" class="custom-select error-step-select" data-correct="2" onchange="saveState(); updateProgress();">
-              <option value="">-- Choose Step --</option>
-              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option><option value="4">Step 4</option>
-            </select>
-            <span class="feedback-badge"></span>
-          </div>
-          
-          <div class="error-explain-row">
-            <label for="error_explain_input_4">Explain the error and write the correct calculation:</label>
-            <textarea id="error_explain_input_4" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
-            <span class="feedback-badge"></span>
-          </div>
-          
-          <div class="reveal-box" id="error_correct_work_4" style="display:none;">
-            <strong>Correct Work Reference:</strong> To find cost per pound, divide price by pounds: $8.75 ÷ 5 = $1.75 per lb, $5.10 ÷ 3 = $1.70 per lb. Deal 2 ($1.70/lb) is still the better buy — but the correct unit rates are dollars per pound, not pounds per dollar.
-            
-          </div>
+        <p class="problem-stem">Two delivery drones fly at different rates. Drone A travels 9 miles in 12 minutes. Drone B travels 7 miles in 10 minutes. Complete the table and determine which drone delivers faster.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
+        <div class="table-responsive">
+          <table class="fill-table">
+            <thead>
+              <tr>
+                <th>Drone</th><th>Distance</th><th>Time</th><th>Miles per Minute</th><th>Faster?</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>Drone A</td><td>9 miles</td><td>12 min</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_4_table_0_3"
+                                   data-correct="0.75" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_4_table_0_4"
+                                   data-correct="" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+                <tr>
+                  <td>Drone B</td><td>7 miles</td><td>10 min</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_4_table_1_3"
+                                   data-correct="0.70" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_4_table_1_4"
+                                   data-correct="Drone A is faster" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+            </tbody>
+          </table>
         </div>
       </div>
     
@@ -3107,37 +3255,25 @@ body { font-size: 15px; line-height: 1.58; }
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Two delivery drones fly at different rates. Drone A travels 9 miles in 12 minutes. Drone B travels 7 miles in 10 minutes. Complete the table and determine which drone delivers faster.</p>
+        <p class="problem-stem">Find the unit rate for each deal and identify the better buy.</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
         <div class="table-responsive">
           <table class="fill-table">
             <thead>
               <tr>
-                <th>Drone</th><th>Distance</th><th>Time</th><th>Miles per Minute</th><th>Faster?</th>
+                <th>Option</th><th>Deal</th><th>Unit Rate</th>
               </tr>
             </thead>
             <tbody>
               
                 <tr>
-                  <td>Drone A</td><td>9 miles</td><td>12 min</td>
+                  <td>Store A Batteries</td><td>8 for $6.00</td>
                         <td>
                           <div class="table-input-wrapper">
                             <input type="text" 
                                    class="custom-input table-input" 
-                                   name="q_5_table_0_3"
-                                   data-correct="0.75" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_5_table_0_4"
-                                   data-correct="" 
+                                   name="q_5_table_0_2"
+                                   data-correct="$0.75 each" 
                                    placeholder="Type answer..." 
                                    oninput="saveState(); updateProgress();">
                             <span class="feedback-badge"></span>
@@ -3147,25 +3283,45 @@ body { font-size: 15px; line-height: 1.58; }
                 </tr>
               
                 <tr>
-                  <td>Drone B</td><td>7 miles</td><td>10 min</td>
+                  <td>Store B Batteries</td><td>12 for $8.40</td>
                         <td>
                           <div class="table-input-wrapper">
                             <input type="text" 
                                    class="custom-input table-input" 
-                                   name="q_5_table_1_3"
-                                   data-correct="0.70" 
+                                   name="q_5_table_1_2"
+                                   data-correct="$0.70 each" 
                                    placeholder="Type answer..." 
                                    oninput="saveState(); updateProgress();">
                             <span class="feedback-badge"></span>
                           </div>
                         </td>
                       
+                </tr>
+              
+                <tr>
+                  <td>Store A Candy</td><td>15 for $6.75</td>
                         <td>
                           <div class="table-input-wrapper">
                             <input type="text" 
                                    class="custom-input table-input" 
-                                   name="q_5_table_1_4"
-                                   data-correct="Drone A is faster" 
+                                   name="q_5_table_2_2"
+                                   data-correct="$0.45 each" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+                <tr>
+                  <td>Store B Candy</td><td>20 for $8.00</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_5_table_3_2"
+                                   data-correct="$0.40 each" 
                                    placeholder="Type answer..." 
                                    oninput="saveState(); updateProgress();">
                             <span class="feedback-badge"></span>
@@ -3223,128 +3379,42 @@ body { font-size: 15px; line-height: 1.58; }
           <span class="lang-es" lang="es">Opcional. Solo si tu estudiante quiere más — son problemas adicionales.</span>
         </p>
         <main class="problems-container more-practice-container">
-    <section class="problem-section card" id="problem_6" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
+    <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 1</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"$4.50 ÷ 6 = $0.75 each. $8.00 ÷ 10 = $0.80 each. $0.75 < $0.80, so 6 for $4.50 is the better buy.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">For each prize item, find the unit rate of both deals and sort each card into Better Buy or Worse Buy.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
-        
-        <div class="drag-sort-workspace" id="dragsort_6">
-          <div class="drag-columns">
-            
-              <div class="drag-column" data-category-id="better" ondragover="allowDrop(event)" ondrop="handleDrop(event, 6, 'better')">
-                <div class="drag-column-header">Better Buy (lower unit rate)</div>
-                <div class="drag-column-slots" id="slots_6_better" ondragover="allowDrop(event)" ondrop="handleDrop(event, 6, 'better')"></div>
-              </div>
-              <div class="drag-column" data-category-id="worse" ondragover="allowDrop(event)" ondrop="handleDrop(event, 6, 'worse')">
-                <div class="drag-column-header">Worse Buy (higher unit rate)</div>
-                <div class="drag-column-slots" id="slots_6_worse" ondragover="allowDrop(event)" ondrop="handleDrop(event, 6, 'worse')"></div>
-              </div>
-          </div>
-          <div class="drag-source-section">
-            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
-            <div class="drag-source-pile" id="pile_6" ondragover="allowDrop(event)" ondrop="handleDrop(event, 6, '')">
-              
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_6_0"
-                     data-item-index="0"
-                     data-correct-category="better"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Snack packs: 4 for $5.00 ($1.25 each)</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_6_0', 6); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="better">Better Buy (lower unit rate)</option><option value="worse">Worse Buy (higher unit rate)</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_6_1"
-                     data-item-index="1"
-                     data-correct-category="worse"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Snack packs: 6 for $9.00 ($1.50 each)</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_6_1', 6); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="better">Better Buy (lower unit rate)</option><option value="worse">Worse Buy (higher unit rate)</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_6_2"
-                     data-item-index="2"
-                     data-correct-category="better"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Stickers: 25 for $8.75 ($0.35 each)</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_6_2', 6); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="better">Better Buy (lower unit rate)</option><option value="worse">Worse Buy (higher unit rate)</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_6_3"
-                     data-item-index="3"
-                     data-correct-category="worse"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Stickers: 10 for $4.00 ($0.40 each)</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_6_3', 6); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="better">Better Buy (lower unit rate)</option><option value="worse">Worse Buy (higher unit rate)</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_6_4"
-                     data-item-index="4"
-                     data-correct-category="better"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Tokens: 250 for $20.00 ($0.08 each)</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_6_4', 6); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="better">Better Buy (lower unit rate)</option><option value="worse">Worse Buy (higher unit rate)</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_6_5"
-                     data-item-index="5"
-                     data-correct-category="worse"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Tokens: 100 for $9.00 ($0.09 each)</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_6_5', 6); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="better">Better Buy (lower unit rate)</option><option value="worse">Worse Buy (higher unit rate)</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-            </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(6); saveState(); updateProgress();">Reset Sorting</button>
+        <p class="problem-stem">Which is the better buy: 6 bouncy balls for $4.50 or 10 bouncy balls for $8.00?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="$4.50 ÷ 6 = $0.75 each. $8.00 ÷ 10 = $0.80 each. $0.75 &lt; $0.80, so 6 for $4.50 is the better buy.">
+          
+            <label class="mc-option-label" id="label_q_6_0">
+              <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">6 for $4.50 — $0.75 each</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_6_1">
+              <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">10 for $8.00 — $0.80 each</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_6_2">
+              <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">They cost the same per ball</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_6_3">
+              <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">Not enough information</span>
+            </label>
+          
         </div>
       </div>
     
@@ -3358,6 +3428,20 @@ body { font-size: 15px; line-height: 1.58; }
           <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
         </ol>
       </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Fill the ratio table — keep both rows multiplying by the same number.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Llena la tabla de razones — multiplica ambas filas por el mismo número.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 320 110" class="hw-visual-svg" role="img" aria-label="Blank ratio table"><rect x="10" y="15" width="300" height="80" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="10" y1="55" x2="310" y2="55" stroke="#12355b" stroke-width="1.5"/><line x1="85" y1="15" x2="85" y2="95" stroke="#12355b" stroke-width="1.5"/><line x1="160" y1="15" x2="160" y2="95" stroke="#12355b" stroke-width="1.5"/><line x1="235" y1="15" x2="235" y2="95" stroke="#12355b" stroke-width="1.5"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_6"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_6" name="work_6" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(6)" aria-label="Check answer for problem 7">
           ✓ Check This Problem / Revisar
@@ -3372,35 +3456,35 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Bonus / Más 2</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"$4.50 ÷ 6 = $0.75 each. $8.00 ÷ 10 = $0.80 each. $0.75 < $0.80, so 6 for $4.50 is the better buy.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Store A: $8 ÷ 5 = $1.60. Store B: $5.25 ÷ 3 = $1.75. $1.60 < $1.75, so Store A is cheaper per notebook.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Which is the better buy: 6 bouncy balls for $4.50 or 10 bouncy balls for $8.00?</p>
+        <p class="problem-stem">Store A sells 5 notebooks for $8. Store B sells 3 notebooks for $5.25. Which has the lower price per notebook?</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="$4.50 ÷ 6 = $0.75 each. $8.00 ÷ 10 = $0.80 each. $0.75 &lt; $0.80, so 6 for $4.50 is the better buy.">
+        <div class="mc-options" data-correct="0" data-explanation="Store A: $8 ÷ 5 = $1.60. Store B: $5.25 ÷ 3 = $1.75. $1.60 &lt; $1.75, so Store A is cheaper per notebook.">
           
             <label class="mc-option-label" id="label_q_7_0">
               <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">6 for $4.50 — $0.75 each</span>
+              <span class="choice-text">Store A ($1.60 each)</span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_1">
               <input type="radio" name="q_7" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">10 for $8.00 — $0.80 each</span>
+              <span class="choice-text">Store B ($1.75 each)</span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_2">
               <input type="radio" name="q_7" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">They cost the same per ball</span>
+              <span class="choice-text">Same price</span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_3">
               <input type="radio" name="q_7" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Not enough information</span>
+              <span class="choice-text">Cannot determine</span>
             </label>
           
         </div>
@@ -3439,63 +3523,63 @@ body { font-size: 15px; line-height: 1.58; }
     </section>
   
 
-    <section class="problem-section card" id="problem_8" data-problem-type="error-analysis">
+    <section class="problem-section card" id="problem_8" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 3</div>
-        <div class="problem-type-badge">ERROR ANALYSIS</div>
+        <div class="problem-type-badge">FILL TABLE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"A smaller total price does not mean a better buy when the quantities are different.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <h3 class="error-analysis-title">⚠️ Level 2 Extension — Which Water Deal Wins?</h3>
-        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Read each step aloud and ask: does this step follow the math rules we learned?</span><span class="lang-es" lang="es">👪 Lean cada paso en voz alta y pregunten: ¿sigue las reglas que aprendimos?</span></p>
-        
-        <div class="clipboard-box">
-          <div class="clipboard-top"></div>
-          <div class="clipboard-paper">
-            
-              <div class="worked-step" id="step_q_8_1">
-                <span class="step-badge">Step 1</span>
-                <span class="step-label">Which is the better buy: 4 bottles for $5.00 or 6 bottles for $7.20?:</span>
-                <span class="step-work">Compare two water deals for the snack bar</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_8_2">
-                <span class="step-badge">Step 2</span>
-                <span class="step-label">Compare the deals:</span>
-                <span class="step-work">$5.00 is less than $7.20, so the 4-bottle deal is the better buy.</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_8_3">
-                <span class="step-badge">Step 3</span>
-                <span class="step-label">Conclusion:</span>
-                <span class="step-work">Buy the 4 bottles for $5.00.</span>
-              </div>
-            
-          </div>
-        </div>
-        
-        <div class="error-controls">
-          <div class="error-select-row">
-            <label for="error_step_select_8">Which step has the error?</label>
-            <select id="error_step_select_8" class="custom-select error-step-select" data-correct="2" onchange="saveState(); updateProgress();">
-              <option value="">-- Choose Step --</option>
-              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option>
-            </select>
-            <span class="feedback-badge"></span>
-          </div>
-          
-          <div class="error-explain-row">
-            <label for="error_explain_input_8">Explain the error and write the correct calculation:</label>
-            <textarea id="error_explain_input_8" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
-            <span class="feedback-badge"></span>
-          </div>
-          
-          <div class="reveal-box" id="error_correct_work_8" style="display:none;">
-            <strong>Correct Work Reference:</strong> You must compare the unit rate (cost per bottle), not the totals. 4 for $5.00: $5.00 ÷ 4 = $1.25 per bottle. 6 for $7.20: $7.20 ÷ 6 = $1.20 per bottle. $1.20 &lt; $1.25, so the 6-bottle deal for $7.20 is actually the better buy.
-            
-          </div>
+        <p class="problem-stem">Find the unit rate for each deal to determine which is cheaper.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
+        <div class="table-responsive">
+          <table class="fill-table">
+            <thead>
+              <tr>
+                <th>Item</th><th>Deal</th><th>Unit Rate</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>Erasers Pack A</td><td>12 for $3.60</td><td>$0.30 each</td>
+                </tr>
+              
+                <tr>
+                  <td>Erasers Pack B</td><td>8 for $2.80</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_8_table_1_2"
+                                   data-correct="$0.35 each" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+                <tr>
+                  <td>Erasers Pack C</td><td>20 for $5.00</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_8_table_2_2"
+                                   data-correct="$0.25 each" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+            </tbody>
+          </table>
         </div>
       </div>
     
@@ -3537,35 +3621,35 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Bonus / Más 4</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Store A: $8 ÷ 5 = $1.60. Store B: $5.25 ÷ 3 = $1.75. $1.60 < $1.75, so Store A is cheaper per notebook.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"150 ÷ 3 = 50 miles per hour.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Store A sells 5 notebooks for $8. Store B sells 3 notebooks for $5.25. Which has the lower price per notebook?</p>
+        <p class="problem-stem">The delivery van brings arcade supplies 150 miles in 3 hours. What is the unit rate in miles per hour?</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Store A: $8 ÷ 5 = $1.60. Store B: $5.25 ÷ 3 = $1.75. $1.60 &lt; $1.75, so Store A is cheaper per notebook.">
+        <div class="mc-options" data-correct="0" data-explanation="150 ÷ 3 = 50 miles per hour.">
           
             <label class="mc-option-label" id="label_q_9_0">
               <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Store A ($1.60 each)</span>
+              <span class="choice-text">50 miles per hour</span>
             </label>
           
             <label class="mc-option-label" id="label_q_9_1">
               <input type="radio" name="q_9" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Store B ($1.75 each)</span>
+              <span class="choice-text">45 miles per hour</span>
             </label>
           
             <label class="mc-option-label" id="label_q_9_2">
               <input type="radio" name="q_9" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Same price</span>
+              <span class="choice-text">153 miles per hour</span>
             </label>
           
             <label class="mc-option-label" id="label_q_9_3">
               <input type="radio" name="q_9" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Cannot determine</span>
+              <span class="choice-text">30 miles per hour</span>
             </label>
           
         </div>
@@ -3604,63 +3688,87 @@ body { font-size: 15px; line-height: 1.58; }
     </section>
   
 
-    <section class="problem-section card" id="problem_10" data-problem-type="fill-table">
+    <section class="problem-section card" id="problem_10" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 5</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge">DRAG SORT</div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Find the unit rate for each deal to determine which is cheaper.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
-        <div class="table-responsive">
-          <table class="fill-table">
-            <thead>
-              <tr>
-                <th>Item</th><th>Deal</th><th>Unit Rate</th>
-              </tr>
-            </thead>
-            <tbody>
+        <p class="problem-stem">Three friends each walked different distances in different times. Sort them from fastest to slowest.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
+        
+        <div class="drag-sort-workspace" id="dragsort_10">
+          <div class="drag-columns">
+            
+              <div class="drag-column" data-category-id="fastest" ondragover="allowDrop(event)" ondrop="handleDrop(event, 10, 'fastest')">
+                <div class="drag-column-header">Fastest</div>
+                <div class="drag-column-slots" id="slots_10_fastest" ondragover="allowDrop(event)" ondrop="handleDrop(event, 10, 'fastest')"></div>
+              </div>
+              <div class="drag-column" data-category-id="middle" ondragover="allowDrop(event)" ondrop="handleDrop(event, 10, 'middle')">
+                <div class="drag-column-header">Middle</div>
+                <div class="drag-column-slots" id="slots_10_middle" ondragover="allowDrop(event)" ondrop="handleDrop(event, 10, 'middle')"></div>
+              </div>
+              <div class="drag-column" data-category-id="slowest" ondragover="allowDrop(event)" ondrop="handleDrop(event, 10, 'slowest')">
+                <div class="drag-column-header">Slowest</div>
+                <div class="drag-column-slots" id="slots_10_slowest" ondragover="allowDrop(event)" ondrop="handleDrop(event, 10, 'slowest')"></div>
+              </div>
+          </div>
+          <div class="drag-source-section">
+            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
+            <div class="drag-source-pile" id="pile_10" ondragover="allowDrop(event)" ondrop="handleDrop(event, 10, '')">
               
-                <tr>
-                  <td>Erasers Pack A</td><td>12 for $3.60</td><td>$0.30 each</td>
-                </tr>
-              
-                <tr>
-                  <td>Erasers Pack B</td><td>8 for $2.80</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_10_table_1_2"
-                                   data-correct="$0.35 each" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>Erasers Pack C</td><td>20 for $5.00</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_10_table_2_2"
-                                   data-correct="$0.25 each" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-            </tbody>
-          </table>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_10_0"
+                     data-item-index="0"
+                     data-correct-category="fastest"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Aiden: 6 miles in 2 hours (3 mph)</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_10_0', 10); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="fastest">Fastest</option><option value="middle">Middle</option><option value="slowest">Slowest</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_10_1"
+                     data-item-index="1"
+                     data-correct-category="middle"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Bella: 10 miles in 4 hours (2.5 mph)</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_10_1', 10); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="fastest">Fastest</option><option value="middle">Middle</option><option value="slowest">Slowest</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_10_2"
+                     data-item-index="2"
+                     data-correct-category="slowest"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Carlos: 4 miles in 2 hours (2 mph)</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_10_2', 10); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="fastest">Fastest</option><option value="middle">Middle</option><option value="slowest">Slowest</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="drag-controls">
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(10); saveState(); updateProgress();">Reset Sorting</button>
         </div>
       </div>
     
@@ -3674,20 +3782,6 @@ body { font-size: 15px; line-height: 1.58; }
           <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
         </ol>
       </details>
-      <div class="hw-workspace">
-        <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Fill the ratio table — keep both rows multiplying by the same number.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Llena la tabla de razones — multiplica ambas filas por el mismo número.</span></div>
-          <div class="hw-visual-frame hw-drawable" data-draw-frame>
-            <svg viewBox="0 0 320 110" class="hw-visual-svg" role="img" aria-label="Blank ratio table"><rect x="10" y="15" width="300" height="80" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="10" y1="55" x2="310" y2="55" stroke="#12355b" stroke-width="1.5"/><line x1="85" y1="15" x2="85" y2="95" stroke="#12355b" stroke-width="1.5"/><line x1="160" y1="15" x2="160" y2="95" stroke="#12355b" stroke-width="1.5"/><line x1="235" y1="15" x2="235" y2="95" stroke="#12355b" stroke-width="1.5"/></svg>
-            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
-            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
-          </div>
-        </div>
-        <div class="hw-work">
-          <label class="hw-work-label" for="work_10"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
-          <textarea id="work_10" name="work_10" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
-        </div>
-      </div>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">
           ✓ Check This Problem / Revisar
@@ -3697,91 +3791,62 @@ body { font-size: 15px; line-height: 1.58; }
     </section>
   
 
-    <section class="problem-section card" id="problem_11" data-problem-type="fill-table">
+    <section class="problem-section card" id="problem_11" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 6</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge">MATCHING GAME</div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Find the unit rate for each deal and identify the better buy.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
-        <div class="table-responsive">
-          <table class="fill-table">
-            <thead>
-              <tr>
-                <th>Option</th><th>Deal</th><th>Unit Rate</th>
-              </tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>Store A Batteries</td><td>8 for $6.00</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_11_table_0_2"
-                                   data-correct="$0.75 each" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>Store B Batteries</td><td>12 for $8.40</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_11_table_1_2"
-                                   data-correct="$0.70 each" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>Store A Candy</td><td>15 for $6.75</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_11_table_2_2"
-                                   data-correct="$0.45 each" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>Store B Candy</td><td>20 for $8.00</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_11_table_3_2"
-                                   data-correct="$0.40 each" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-            </tbody>
-          </table>
+        <p class="problem-stem">Match each prize deal to its unit price (price ÷ quantity).</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
+        <div class="matching-pairs">
+          
+            <div class="matching-row" data-term="Glow bracelets: 5 for $4.50" data-correct="$0.90 each">
+              <div class="matching-term">Glow bracelets: 5 for $4.50</div>
+              <div class="matching-select-container">
+                <select name="q_11_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="$0.35 each">$0.35 each</option><option value="$0.75 each">$0.75 each</option><option value="$0.80 each">$0.80 each</option><option value="$0.90 each">$0.90 each</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="Bouncy balls: 8 for $6.00" data-correct="$0.75 each">
+              <div class="matching-term">Bouncy balls: 8 for $6.00</div>
+              <div class="matching-select-container">
+                <select name="q_11_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="$0.35 each">$0.35 each</option><option value="$0.75 each">$0.75 each</option><option value="$0.80 each">$0.80 each</option><option value="$0.90 each">$0.90 each</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="Mini erasers: 3 for $2.40" data-correct="$0.80 each">
+              <div class="matching-term">Mini erasers: 3 for $2.40</div>
+              <div class="matching-select-container">
+                <select name="q_11_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="$0.35 each">$0.35 each</option><option value="$0.75 each">$0.75 each</option><option value="$0.80 each">$0.80 each</option><option value="$0.90 each">$0.90 each</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="Temporary tattoos: 10 for $3.50" data-correct="$0.35 each">
+              <div class="matching-term">Temporary tattoos: 10 for $3.50</div>
+              <div class="matching-select-container">
+                <select name="q_11_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="$0.35 each">$0.35 each</option><option value="$0.75 each">$0.75 each</option><option value="$0.80 each">$0.80 each</option><option value="$0.90 each">$0.90 each</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
         </div>
       </div>
     
@@ -3795,20 +3860,6 @@ body { font-size: 15px; line-height: 1.58; }
           <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
         </ol>
       </details>
-      <div class="hw-workspace">
-        <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Fill the ratio table — keep both rows multiplying by the same number.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Llena la tabla de razones — multiplica ambas filas por el mismo número.</span></div>
-          <div class="hw-visual-frame hw-drawable" data-draw-frame>
-            <svg viewBox="0 0 320 110" class="hw-visual-svg" role="img" aria-label="Blank ratio table"><rect x="10" y="15" width="300" height="80" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="10" y1="55" x2="310" y2="55" stroke="#12355b" stroke-width="1.5"/><line x1="85" y1="15" x2="85" y2="95" stroke="#12355b" stroke-width="1.5"/><line x1="160" y1="15" x2="160" y2="95" stroke="#12355b" stroke-width="1.5"/><line x1="235" y1="15" x2="235" y2="95" stroke="#12355b" stroke-width="1.5"/></svg>
-            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
-            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
-          </div>
-        </div>
-        <div class="hw-work">
-          <label class="hw-work-label" for="work_11"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
-          <textarea id="work_11" name="work_11" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
-        </div>
-      </div>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">
           ✓ Check This Problem / Revisar
@@ -3823,35 +3874,35 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Bonus / Más 7</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"150 ÷ 3 = 50 miles per hour.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"15 ÷ 5 = 3 ounces per minute.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">The delivery van brings arcade supplies 150 miles in 3 hours. What is the unit rate in miles per hour?</p>
+        <p class="problem-stem">A faucet drips 15 ounces of water in 5 minutes. What is the unit rate?</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="150 ÷ 3 = 50 miles per hour.">
+        <div class="mc-options" data-correct="0" data-explanation="15 ÷ 5 = 3 ounces per minute.">
           
             <label class="mc-option-label" id="label_q_12_0">
               <input type="radio" name="q_12" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">50 miles per hour</span>
+              <span class="choice-text">3 ounces per minute</span>
             </label>
           
             <label class="mc-option-label" id="label_q_12_1">
               <input type="radio" name="q_12" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">45 miles per hour</span>
+              <span class="choice-text">5 ounces per minute</span>
             </label>
           
             <label class="mc-option-label" id="label_q_12_2">
               <input type="radio" name="q_12" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">153 miles per hour</span>
+              <span class="choice-text">15 ounces per minute</span>
             </label>
           
             <label class="mc-option-label" id="label_q_12_3">
               <input type="radio" name="q_12" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">30 miles per hour</span>
+              <span class="choice-text">0.33 ounces per minute</span>
             </label>
           
         </div>
@@ -3890,87 +3941,42 @@ body { font-size: 15px; line-height: 1.58; }
     </section>
   
 
-    <section class="problem-section card" id="problem_13" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
+    <section class="problem-section card" id="problem_13" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 8</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Unit rate: 360 ÷ 8 = 45 widgets per hour. In 12 hours: 45 × 12 = 540 widgets.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Three friends each walked different distances in different times. Sort them from fastest to slowest.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
-        
-        <div class="drag-sort-workspace" id="dragsort_13">
-          <div class="drag-columns">
-            
-              <div class="drag-column" data-category-id="fastest" ondragover="allowDrop(event)" ondrop="handleDrop(event, 13, 'fastest')">
-                <div class="drag-column-header">Fastest</div>
-                <div class="drag-column-slots" id="slots_13_fastest" ondragover="allowDrop(event)" ondrop="handleDrop(event, 13, 'fastest')"></div>
-              </div>
-              <div class="drag-column" data-category-id="middle" ondragover="allowDrop(event)" ondrop="handleDrop(event, 13, 'middle')">
-                <div class="drag-column-header">Middle</div>
-                <div class="drag-column-slots" id="slots_13_middle" ondragover="allowDrop(event)" ondrop="handleDrop(event, 13, 'middle')"></div>
-              </div>
-              <div class="drag-column" data-category-id="slowest" ondragover="allowDrop(event)" ondrop="handleDrop(event, 13, 'slowest')">
-                <div class="drag-column-header">Slowest</div>
-                <div class="drag-column-slots" id="slots_13_slowest" ondragover="allowDrop(event)" ondrop="handleDrop(event, 13, 'slowest')"></div>
-              </div>
-          </div>
-          <div class="drag-source-section">
-            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
-            <div class="drag-source-pile" id="pile_13" ondragover="allowDrop(event)" ondrop="handleDrop(event, 13, '')">
-              
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_13_0"
-                     data-item-index="0"
-                     data-correct-category="fastest"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Aiden: 6 miles in 2 hours (3 mph)</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_13_0', 13); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="fastest">Fastest</option><option value="middle">Middle</option><option value="slowest">Slowest</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_13_1"
-                     data-item-index="1"
-                     data-correct-category="middle"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Bella: 10 miles in 4 hours (2.5 mph)</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_13_1', 13); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="fastest">Fastest</option><option value="middle">Middle</option><option value="slowest">Slowest</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_13_2"
-                     data-item-index="2"
-                     data-correct-category="slowest"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">Carlos: 4 miles in 2 hours (2 mph)</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_13_2', 13); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="fastest">Fastest</option><option value="middle">Middle</option><option value="slowest">Slowest</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-            </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(13); saveState(); updateProgress();">Reset Sorting</button>
+        <p class="problem-stem">A factory produces 360 widgets in 8 hours. At the same rate, how many widgets are produced in a 12-hour shift?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="Unit rate: 360 ÷ 8 = 45 widgets per hour. In 12 hours: 45 × 12 = 540 widgets.">
+          
+            <label class="mc-option-label" id="label_q_13_0">
+              <input type="radio" name="q_13" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">540 widgets</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_13_1">
+              <input type="radio" name="q_13" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">480 widgets</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_13_2">
+              <input type="radio" name="q_13" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">360 widgets</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_13_3">
+              <input type="radio" name="q_13" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">720 widgets</span>
+            </label>
+          
         </div>
       </div>
     
@@ -3984,6 +3990,20 @@ body { font-size: 15px; line-height: 1.58; }
           <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
         </ol>
       </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Fill the ratio table — keep both rows multiplying by the same number.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Llena la tabla de razones — multiplica ambas filas por el mismo número.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 320 110" class="hw-visual-svg" role="img" aria-label="Blank ratio table"><rect x="10" y="15" width="300" height="80" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><line x1="10" y1="55" x2="310" y2="55" stroke="#12355b" stroke-width="1.5"/><line x1="85" y1="15" x2="85" y2="95" stroke="#12355b" stroke-width="1.5"/><line x1="160" y1="15" x2="160" y2="95" stroke="#12355b" stroke-width="1.5"/><line x1="235" y1="15" x2="235" y2="95" stroke="#12355b" stroke-width="1.5"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_13"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_13" name="work_13" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">
           ✓ Check This Problem / Revisar

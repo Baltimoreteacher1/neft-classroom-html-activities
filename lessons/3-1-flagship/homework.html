@@ -1736,6 +1736,32 @@ body.help-modal-open { overflow: hidden; }
 .together-fill-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
 .together-step-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 
+/* Compact "Try Together" steps: tighter padding, inline action buttons, single-row input. */
+.together-steps { gap: 8px; }
+.together-step--compact { padding: 9px 11px; }
+.together-step--compact .together-step-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.together-step--compact .step-badge { margin-bottom: 0; }
+.together-step--compact .together-step-actions { margin-top: 0; }
+.together-step--compact p { margin: 6px 0 0; font-size: 14px; }
+.together-step--compact .together-fill { margin: 7px 0 0; }
+.together-step--compact .together-fill-input { min-height: 40px; }
+
+/* Graduated practice ladder under the guided steps. */
+.together-ladder { margin-top: 16px; padding-top: 14px; border-top: 2px dashed var(--line); }
+.ladder-title { font-family: var(--font-display); font-size: 16px; margin: 0 0 4px; color: var(--navy); }
+.ladder-note { font-size: 13px; margin: 0 0 12px; }
+.ladder-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; counter-reset: ladder; }
+.ladder-item { border: 1px solid var(--line); border-left: 4px solid #5b8def; border-radius: var(--radius-sm); padding: 9px 11px; background: var(--white); }
+.ladder-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.ladder-stars { color: #f5a623; font-size: 13px; letter-spacing: 1px; }
+.ladder-tier { font-family: var(--font-display); font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: var(--navy); }
+.ladder-q { margin: 0 0 8px; font-size: 14.5px; line-height: 1.4; }
+.ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
+.ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
+.ladder-answer { margin-top: 7px; }
+.ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
+.ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
+
 /* "More practice" accordion in the Check tab */
 /* Tiered practice sections (warm-up first, then a harder challenge set) */
 .practice-tier { margin: 0 0 22px; }
@@ -2565,43 +2591,107 @@ body { font-size: 15px; line-height: 1.58; }
       </p>
       <ol class="together-steps">
         
-          <li class="together-step step-color-1">
+          <li class="together-step together-step--compact step-color-1">
             <div class="together-step-head">
               <span class="step-badge">Step 1 / Paso 1</span>
+              <div class="together-step-actions">
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 hint","titleEs":"Pista del paso 1","en":"Talk through each step aloud.","es":"Hablen de cada paso en voz alta."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
+                
+              </div>
             </div>
-            <p class="lang-en"><strong>First…</strong> Pick one practice problem and solve it on paper together.</p>
-            <p class="lang-es" lang="es"><strong>Primero…</strong> Elijan un problema de práctica y resuélvanlo en papel juntos.</p>
+            <p class="lang-en">Pick one practice problem and solve it on paper together.</p>
+            <p class="lang-es" lang="es">Elijan un problema de práctica y resuélvanlo en papel juntos.</p>
             <div class="together-fill">
-              <label class="together-fill-label" for="together_0">
-                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
-                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
-              </label>
-              <textarea id="together_0" name="together_0" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
-            </div>
-            <div class="together-step-actions">
-              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 hint","titleEs":"Pista del paso 1","en":"Talk through each step aloud.","es":"Hablen de cada paso en voz alta."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
-              
+              <textarea id="together_0" name="together_0" class="custom-textarea together-fill-input" rows="1" placeholder="✏️ Your turn / Tu turno…" oninput="saveState();" aria-label="Your work for step 1"></textarea>
             </div>
           </li>
-          <li class="together-step step-color-2">
+          <li class="together-step together-step--compact step-color-2">
             <div class="together-step-head">
               <span class="step-badge">Step 2 / Paso 2</span>
+              <div class="together-step-actions">
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 hint","titleEs":"Pista del paso 2","en":"This is the flagship lesson&#39;s deepest idea.","es":"Esta es la idea más profunda de la lección estrella."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
+                
+              </div>
             </div>
-            <p class="lang-en"><strong>First…</strong> Check: does your answer follow — A ratio compares two quantities, and the order you write them in matters.?</p>
-            <p class="lang-es" lang="es"><strong>Primero…</strong> Verifiquen: ¿su respuesta sigue — A ratio compares two quantities, and the order you write them in matters.?</p>
+            <p class="lang-en">Check: does your answer follow — A ratio compares two quantities, and the order you write them in matters.?</p>
+            <p class="lang-es" lang="es">Verifiquen: ¿su respuesta sigue — A ratio compares two quantities, and the order you write them in matters.?</p>
             <div class="together-fill">
-              <label class="together-fill-label" for="together_1">
-                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
-                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
-              </label>
-              <textarea id="together_1" name="together_1" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
-            </div>
-            <div class="together-step-actions">
-              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 hint","titleEs":"Pista del paso 2","en":"This is the flagship lesson&#39;s deepest idea.","es":"Esta es la idea más profunda de la lección estrella."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
-              
+              <textarea id="together_1" name="together_1" class="custom-textarea together-fill-input" rows="1" placeholder="✏️ Your turn / Tu turno…" oninput="saveState();" aria-label="Your work for step 2"></textarea>
             </div>
           </li>
       </ol>
+      
+    <div class="together-ladder">
+      <h3 class="ladder-title">
+        <span class="lang-en">📈 Practice ladder — easiest first</span>
+        <span class="lang-es" lang="es">📈 Escalera de práctica — del más fácil al más difícil</span>
+      </h3>
+      <p class="ladder-note bilingual-block">
+        <span class="lang-en">Do these together. Start at ★ and climb to ★★★ when ready.</span>
+        <span class="lang-es" lang="es">Háganlos juntos. Empiecen en ★ y suban a ★★★ cuando estén listos.</span>
+      </p>
+      <ol class="ladder-list">
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★</span>
+            <span class="ladder-tier"><span class="lang-en">Start easy</span><span class="lang-es" lang="es">Empieza fácil</span></span>
+          </div>
+          <p class="ladder-q">A recipe uses 4 cups of milk and 1 cup of cream. What is the ratio of milk to cream?</p>
+          <input type="text" id="ladder_0" name="ladder_0" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 1" />
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text">4:1</p>
+           </details>
+        </li>
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★</span>
+            <span class="ladder-tier"><span class="lang-en">Start easy</span><span class="lang-es" lang="es">Empieza fácil</span></span>
+          </div>
+          <p class="ladder-q">Chef Reyes uses 6 strawberries and 2 bananas in a smoothie. What is the part-to-whole ratio of bananas to total fruit?</p>
+          <input type="text" id="ladder_1" name="ladder_1" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 2" />
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text">2:8</p>
+           </details>
+        </li>
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★★</span>
+            <span class="ladder-tier"><span class="lang-en">Keep going</span><span class="lang-es" lang="es">Sigan</span></span>
+          </div>
+          <p class="ladder-q">A fruit salad has 5 pieces of melon, 3 pieces of pineapple, and 2 grapes. What is the ratio of pineapple to melon?</p>
+          <input type="text" id="ladder_2" name="ladder_2" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 3" />
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text">3:5</p>
+           </details>
+        </li>
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★★</span>
+            <span class="ladder-tier"><span class="lang-en">Keep going</span><span class="lang-es" lang="es">Sigan</span></span>
+          </div>
+          <p class="ladder-q">A parking lot has 10 cars and 6 trucks. What is the part-to-whole ratio of trucks to total vehicles?</p>
+          <input type="text" id="ladder_3" name="ladder_3" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 4" />
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text">6:16</p>
+           </details>
+        </li>
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★★★</span>
+            <span class="ladder-tier"><span class="lang-en">Challenge</span><span class="lang-es" lang="es">Reto</span></span>
+          </div>
+          <p class="ladder-q">A bag of marbles has 8 red, 6 blue, and 4 green marbles. Write three different ratios using these quantities: one part-to-part ratio, one part-to-whole ratio, and explain the difference.</p>
+          <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text">Part-to-part: red to blue = 8:6. Part-to-whole: green to total = 4:18. The difference is that part-to-part compares two individual groups, while part-to-whole compares one group to the entire collection (8 + 6 + 4 = 18).</p>
+           </details>
+        </li></ol>
+    </div>
     </div>
 
     <div class="tab-panel-inner" data-tab-panel="check" id="hw_panel_check" role="tabpanel" hidden>
@@ -3373,63 +3463,42 @@ body { font-size: 15px; line-height: 1.58; }
     </section>
   
 
-    <section class="problem-section card" id="problem_7" data-problem-type="error-analysis">
+    <section class="problem-section card" id="problem_7" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 2</div>
-        <div class="problem-type-badge">ERROR ANALYSIS</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Look at Step 3. Should the second number be the oranges (4) or the total (7)?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Total berries = 4 + 6 = 10. The part-to-whole ratio of strawberries to total is 4:10.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <h3 class="error-analysis-title">⚠️ Spot Dana&#039;s Mistake</h3>
-        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Read each step aloud and ask: does this step follow the math rules we learned?</span><span class="lang-es" lang="es">👪 Lean cada paso en voz alta y pregunten: ¿sigue las reglas que aprendimos?</span></p>
-        
-        <div class="clipboard-box">
-          <div class="clipboard-top"></div>
-          <div class="clipboard-paper">
-            
-              <div class="worked-step" id="step_q_7_1">
-                <span class="step-badge">Step 1</span>
-                <span class="step-label">Read the problem:</span>
-                <span class="step-work">A bowl has 3 apples and 4 oranges. Write the part-to-whole ratio of apples to total fruit.</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_7_2">
-                <span class="step-badge">Step 2</span>
-                <span class="step-label">Find the total:</span>
-                <span class="step-work">3 + 4 = 7 pieces of fruit total.</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_7_3">
-                <span class="step-badge">Step 3</span>
-                <span class="step-label">Write the ratio:</span>
-                <span class="step-work">Apples to total = 3:4.</span>
-              </div>
-            
-          </div>
-        </div>
-        
-        <div class="error-controls">
-          <div class="error-select-row">
-            <label for="error_step_select_7">Which step has the error?</label>
-            <select id="error_step_select_7" class="custom-select error-step-select" data-correct="3" onchange="saveState(); updateProgress();">
-              <option value="">-- Choose Step --</option>
-              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option>
-            </select>
-            <span class="feedback-badge"></span>
-          </div>
+        <p class="problem-stem">Station 2 — Fruit Tray: A tray holds 4 strawberries and 6 blueberries. What is the part-to-whole ratio of strawberries to total berries?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="Total berries = 4 + 6 = 10. The part-to-whole ratio of strawberries to total is 4:10.">
           
-          <div class="error-explain-row">
-            <label for="error_explain_input_7">Explain the error and write the correct calculation:</label>
-            <textarea id="error_explain_input_7" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
-            <span class="feedback-badge"></span>
-          </div>
+            <label class="mc-option-label" id="label_q_7_0">
+              <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">4:10</span>
+            </label>
           
-          <div class="reveal-box" id="error_correct_work_7" style="display:none;">
-            <strong>Correct Work Reference:</strong> A part-to-whole ratio compares the part to the total, not to the other part. The correct ratio is 3:7 (3 apples out of 7 total), not 3:4.
-            
-          </div>
+            <label class="mc-option-label" id="label_q_7_1">
+              <input type="radio" name="q_7" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">4:6</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_7_2">
+              <input type="radio" name="q_7" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">6:10</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_7_3">
+              <input type="radio" name="q_7" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">10:4</span>
+            </label>
+          
         </div>
       </div>
     
@@ -3471,35 +3540,35 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Bonus / Más 3</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Total berries = 4 + 6 = 10. The part-to-whole ratio of strawberries to total is 4:10.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Boys = 30 − 18 = 12. Part-to-part ratio of boys to girls = 12:18. (Order matters!)","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Station 2 — Fruit Tray: A tray holds 4 strawberries and 6 blueberries. What is the part-to-whole ratio of strawberries to total berries?</p>
+        <p class="problem-stem">In a class of 30 students, 18 are girls. What is the part-to-part ratio of boys to girls?</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Total berries = 4 + 6 = 10. The part-to-whole ratio of strawberries to total is 4:10.">
+        <div class="mc-options" data-correct="0" data-explanation="Boys = 30 − 18 = 12. Part-to-part ratio of boys to girls = 12:18. (Order matters!)">
           
             <label class="mc-option-label" id="label_q_8_0">
               <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">4:10</span>
+              <span class="choice-text">12:18</span>
             </label>
           
             <label class="mc-option-label" id="label_q_8_1">
               <input type="radio" name="q_8" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">4:6</span>
+              <span class="choice-text">18:12</span>
             </label>
           
             <label class="mc-option-label" id="label_q_8_2">
               <input type="radio" name="q_8" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">6:10</span>
+              <span class="choice-text">18:30</span>
             </label>
           
             <label class="mc-option-label" id="label_q_8_3">
               <input type="radio" name="q_8" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">10:4</span>
+              <span class="choice-text">12:30</span>
             </label>
           
         </div>
@@ -3538,40 +3607,154 @@ body { font-size: 15px; line-height: 1.58; }
     </section>
   
 
-    <section class="problem-section card" id="problem_9" data-problem-type="multiple-choice">
+    <section class="problem-section card" id="problem_9" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 4</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge">DRAG SORT</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Boys = 30 − 18 = 12. Part-to-part ratio of boys to girls = 12:18. (Order matters!)","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">In a class of 30 students, 18 are girls. What is the part-to-part ratio of boys to girls?</p>
+        <p class="problem-stem">Sort each statement: does it describe a ratio or NOT describe a ratio?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
+        
+        <div class="drag-sort-workspace" id="dragsort_9">
+          <div class="drag-columns">
+            
+              <div class="drag-column" data-category-id="ratio" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'ratio')">
+                <div class="drag-column-header">IS a Ratio</div>
+                <div class="drag-column-slots" id="slots_9_ratio" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'ratio')"></div>
+              </div>
+              <div class="drag-column" data-category-id="not-ratio" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'not-ratio')">
+                <div class="drag-column-header">NOT a Ratio</div>
+                <div class="drag-column-slots" id="slots_9_not-ratio" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'not-ratio')"></div>
+              </div>
+          </div>
+          <div class="drag-source-section">
+            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
+            <div class="drag-source-pile" id="pile_9" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, '')">
+              
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_9_0"
+                     data-item-index="0"
+                     data-correct-category="ratio"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">7 pencils for every 3 erasers</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_0', 9); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="ratio">IS a Ratio</option><option value="not-ratio">NOT a Ratio</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_9_1"
+                     data-item-index="1"
+                     data-correct-category="ratio"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">10 red beads to 4 blue beads</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_1', 9); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="ratio">IS a Ratio</option><option value="not-ratio">NOT a Ratio</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_9_2"
+                     data-item-index="2"
+                     data-correct-category="not-ratio"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">There are 15 chairs in the room</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_2', 9); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="ratio">IS a Ratio</option><option value="not-ratio">NOT a Ratio</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_9_3"
+                     data-item-index="3"
+                     data-correct-category="not-ratio"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">The pizza was delicious</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_3', 9); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="ratio">IS a Ratio</option><option value="not-ratio">NOT a Ratio</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="drag-controls">
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(9); saveState(); updateProgress();">Reset Sorting</button>
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Fill the ratio table — keep both rows multiplying by the same number.</span><span class="lang-es" lang="es">Llena la tabla de razones — multiplica ambas filas por el mismo número.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Find the unit rate or use a ratio table to scale up or down.</span><span class="lang-es" lang="es">Halla la tasa unitaria o usa una tabla de razones para escalar.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_10" data-problem-type="multiple-choice">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 5</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"A ratio compares quantities in the order given. Milk to cream = 4 to 1, or 4:1.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">A recipe uses 4 cups of milk and 1 cup of cream. What is the ratio of milk to cream?</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Boys = 30 − 18 = 12. Part-to-part ratio of boys to girls = 12:18. (Order matters!)">
+        <div class="mc-options" data-correct="0" data-explanation="A ratio compares quantities in the order given. Milk to cream = 4 to 1, or 4:1.">
           
-            <label class="mc-option-label" id="label_q_9_0">
-              <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
+            <label class="mc-option-label" id="label_q_10_0">
+              <input type="radio" name="q_10" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">12:18</span>
+              <span class="choice-text">4:1</span>
             </label>
           
-            <label class="mc-option-label" id="label_q_9_1">
-              <input type="radio" name="q_9" value="1" onchange="saveState(); updateProgress();">
+            <label class="mc-option-label" id="label_q_10_1">
+              <input type="radio" name="q_10" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">18:12</span>
+              <span class="choice-text">1:4</span>
             </label>
           
-            <label class="mc-option-label" id="label_q_9_2">
-              <input type="radio" name="q_9" value="2" onchange="saveState(); updateProgress();">
+            <label class="mc-option-label" id="label_q_10_2">
+              <input type="radio" name="q_10" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">18:30</span>
+              <span class="choice-text">4:5</span>
             </label>
           
-            <label class="mc-option-label" id="label_q_9_3">
-              <input type="radio" name="q_9" value="3" onchange="saveState(); updateProgress();">
+            <label class="mc-option-label" id="label_q_10_3">
+              <input type="radio" name="q_10" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">12:30</span>
+              <span class="choice-text">5:1</span>
             </label>
           
         </div>
@@ -3597,124 +3780,10 @@ body { font-size: 15px; line-height: 1.58; }
           </div>
         </div>
         <div class="hw-work">
-          <label class="hw-work-label" for="work_9"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
-          <textarea id="work_9" name="work_9" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+          <label class="hw-work-label" for="work_10"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_10" name="work_10" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
         </div>
       </div>
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">
-          ✓ Check This Problem / Revisar
-        </button>
-        <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_10" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Bonus / Más 5</div>
-        <div class="problem-type-badge">DRAG SORT</div>
-      </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Sort each statement: does it describe a ratio or NOT describe a ratio?</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
-        
-        <div class="drag-sort-workspace" id="dragsort_10">
-          <div class="drag-columns">
-            
-              <div class="drag-column" data-category-id="ratio" ondragover="allowDrop(event)" ondrop="handleDrop(event, 10, 'ratio')">
-                <div class="drag-column-header">IS a Ratio</div>
-                <div class="drag-column-slots" id="slots_10_ratio" ondragover="allowDrop(event)" ondrop="handleDrop(event, 10, 'ratio')"></div>
-              </div>
-              <div class="drag-column" data-category-id="not-ratio" ondragover="allowDrop(event)" ondrop="handleDrop(event, 10, 'not-ratio')">
-                <div class="drag-column-header">NOT a Ratio</div>
-                <div class="drag-column-slots" id="slots_10_not-ratio" ondragover="allowDrop(event)" ondrop="handleDrop(event, 10, 'not-ratio')"></div>
-              </div>
-          </div>
-          <div class="drag-source-section">
-            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
-            <div class="drag-source-pile" id="pile_10" ondragover="allowDrop(event)" ondrop="handleDrop(event, 10, '')">
-              
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_10_0"
-                     data-item-index="0"
-                     data-correct-category="ratio"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">7 pencils for every 3 erasers</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_10_0', 10); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="ratio">IS a Ratio</option><option value="not-ratio">NOT a Ratio</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_10_1"
-                     data-item-index="1"
-                     data-correct-category="ratio"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">10 red beads to 4 blue beads</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_10_1', 10); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="ratio">IS a Ratio</option><option value="not-ratio">NOT a Ratio</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_10_2"
-                     data-item-index="2"
-                     data-correct-category="not-ratio"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">There are 15 chairs in the room</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_10_2', 10); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="ratio">IS a Ratio</option><option value="not-ratio">NOT a Ratio</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_10_3"
-                     data-item-index="3"
-                     data-correct-category="not-ratio"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">The pizza was delicious</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_10_3', 10); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="ratio">IS a Ratio</option><option value="not-ratio">NOT a Ratio</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-            </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(10); saveState(); updateProgress();">Reset Sorting</button>
-        </div>
-      </div>
-    
-      
-      <details class="hw-step-guide" open>
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Fill the ratio table — keep both rows multiplying by the same number.</span><span class="lang-es" lang="es">Llena la tabla de razones — multiplica ambas filas por el mismo número.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Find the unit rate or use a ratio table to scale up or down.</span><span class="lang-es" lang="es">Halla la tasa unitaria o usa una tabla de razones para escalar.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
-      </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">
           ✓ Check This Problem / Revisar
@@ -3724,63 +3793,42 @@ body { font-size: 15px; line-height: 1.58; }
     </section>
   
 
-    <section class="problem-section card" id="problem_11" data-problem-type="error-analysis">
+    <section class="problem-section card" id="problem_11" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 6</div>
-        <div class="problem-type-badge">ERROR ANALYSIS</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Look at Step 3. Which amount should come first in &#39;oil to water&#39;?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The ratio of dogs to cats compares dogs first, then cats: 5 to 9, or 5:9.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <h3 class="error-analysis-title">⚠️ Spot Marco&#039;s Mistake</h3>
-        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Read each step aloud and ask: does this step follow the math rules we learned?</span><span class="lang-es" lang="es">👪 Lean cada paso en voz alta y pregunten: ¿sigue las reglas que aprendimos?</span></p>
-        
-        <div class="clipboard-box">
-          <div class="clipboard-top"></div>
-          <div class="clipboard-paper">
-            
-              <div class="worked-step" id="step_q_11_1">
-                <span class="step-badge">Step 1</span>
-                <span class="step-label">Read the problem:</span>
-                <span class="step-work">A recipe uses 2 cups of oil and 5 cups of water. Write the ratio of oil to water.</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_11_2">
-                <span class="step-badge">Step 2</span>
-                <span class="step-label">Find the amounts:</span>
-                <span class="step-work">Oil = 2 cups, water = 5 cups.</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_11_3">
-                <span class="step-badge">Step 3</span>
-                <span class="step-label">Write the ratio:</span>
-                <span class="step-work">Oil to water = 5:2.</span>
-              </div>
-            
-          </div>
-        </div>
-        
-        <div class="error-controls">
-          <div class="error-select-row">
-            <label for="error_step_select_11">Which step has the error?</label>
-            <select id="error_step_select_11" class="custom-select error-step-select" data-correct="3" onchange="saveState(); updateProgress();">
-              <option value="">-- Choose Step --</option>
-              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option>
-            </select>
-            <span class="feedback-badge"></span>
-          </div>
+        <p class="problem-stem">A pet store has 5 dogs and 9 cats. What is the ratio of dogs to cats?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="The ratio of dogs to cats compares dogs first, then cats: 5 to 9, or 5:9.">
           
-          <div class="error-explain-row">
-            <label for="error_explain_input_11">Explain the error and write the correct calculation:</label>
-            <textarea id="error_explain_input_11" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
-            <span class="feedback-badge"></span>
-          </div>
+            <label class="mc-option-label" id="label_q_11_0">
+              <input type="radio" name="q_11" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">5:9</span>
+            </label>
           
-          <div class="reveal-box" id="error_correct_work_11" style="display:none;">
-            <strong>Correct Work Reference:</strong> Order matters: &#039;oil to water&#039; lists oil first. The correct ratio is 2:5, not 5:2.
-            
-          </div>
+            <label class="mc-option-label" id="label_q_11_1">
+              <input type="radio" name="q_11" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">9:5</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_11_2">
+              <input type="radio" name="q_11" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">5:14</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_11_3">
+              <input type="radio" name="q_11" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">14:5</span>
+            </label>
+          
         </div>
       </div>
     
@@ -3817,69 +3865,42 @@ body { font-size: 15px; line-height: 1.58; }
     </section>
   
 
-    <section class="problem-section card" id="problem_12" data-problem-type="error-analysis">
+    <section class="problem-section card" id="problem_12" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 7</div>
-        <div class="problem-type-badge">ERROR ANALYSIS</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Look at Step 3. A part-to-part ratio compares one part to another part — should the second number be the spinach amount or the total?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The ratio of pineapple to melon compares pineapple (3) to melon (5), so the ratio is 3:5.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <h3 class="error-analysis-title">⚠️ Level 2 Extension — Fix the Mislabeled Recipe Ratio</h3>
-        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Read each step aloud and ask: does this step follow the math rules we learned?</span><span class="lang-es" lang="es">👪 Lean cada paso en voz alta y pregunten: ¿sigue las reglas que aprendimos?</span></p>
-        
-        <div class="clipboard-box">
-          <div class="clipboard-top"></div>
-          <div class="clipboard-paper">
-            
-              <div class="worked-step" id="step_q_12_1">
-                <span class="step-badge">Step 1</span>
-                <span class="step-label">Read the recipe:</span>
-                <span class="step-work">Chef Reyes&#039;s salad uses 5 cups of lettuce and 3 cups of spinach. Write the part-to-part ratio of lettuce to spinach.</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_12_2">
-                <span class="step-badge">Step 2</span>
-                <span class="step-label">Find the total:</span>
-                <span class="step-work">5 + 3 = 8 cups of greens total.</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_12_3">
-                <span class="step-badge">Step 3</span>
-                <span class="step-label">Write the ratio:</span>
-                <span class="step-work">Lettuce to spinach = 5:8.</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_12_4">
-                <span class="step-badge">Step 4</span>
-                <span class="step-label">Label the ratio:</span>
-                <span class="step-work">This is a part-to-part ratio of lettuce to spinach.</span>
-              </div>
-            
-          </div>
-        </div>
-        
-        <div class="error-controls">
-          <div class="error-select-row">
-            <label for="error_step_select_12">Which step has the error?</label>
-            <select id="error_step_select_12" class="custom-select error-step-select" data-correct="3" onchange="saveState(); updateProgress();">
-              <option value="">-- Choose Step --</option>
-              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option><option value="4">Step 4</option>
-            </select>
-            <span class="feedback-badge"></span>
-          </div>
+        <p class="problem-stem">A fruit salad has 5 pieces of melon, 3 pieces of pineapple, and 2 grapes. What is the ratio of pineapple to melon?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="The ratio of pineapple to melon compares pineapple (3) to melon (5), so the ratio is 3:5.">
           
-          <div class="error-explain-row">
-            <label for="error_explain_input_12">Explain the error and write the correct calculation:</label>
-            <textarea id="error_explain_input_12" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
-            <span class="feedback-badge"></span>
-          </div>
+            <label class="mc-option-label" id="label_q_12_0">
+              <input type="radio" name="q_12" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">3:5</span>
+            </label>
           
-          <div class="reveal-box" id="error_correct_work_12" style="display:none;">
-            <strong>Correct Work Reference:</strong> Part-to-part compares lettuce to spinach, not lettuce to the total. The correct ratio is 5:3 (the 8 would only be used for a part-to-whole ratio like 5:8).
-            
-          </div>
+            <label class="mc-option-label" id="label_q_12_1">
+              <input type="radio" name="q_12" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">5:3</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_12_2">
+              <input type="radio" name="q_12" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">3:10</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_12_3">
+              <input type="radio" name="q_12" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">3:2</span>
+            </label>
+          
         </div>
       </div>
     
@@ -3921,35 +3942,35 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Bonus / Más 8</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"A ratio compares quantities in the order given. Milk to cream = 4 to 1, or 4:1.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"A ratio compares the two amounts in the order named. Tomato sauce to cream = 3 to 2, written 3:2.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 110\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank ratio table\"><rect x=\"10\" y=\"15\" width=\"300\" height=\"80\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"55\" x2=\"310\" y2=\"55\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"85\" y1=\"15\" x2=\"85\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"160\" y1=\"15\" x2=\"160\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"235\" y1=\"15\" x2=\"235\" y2=\"95\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A recipe uses 4 cups of milk and 1 cup of cream. What is the ratio of milk to cream?</p>
+        <p class="problem-stem">Station 1 — Sauce Bench: Chef Reyes mixes 3 cups of tomato sauce with 2 cups of cream. What is the ratio of tomato sauce to cream?</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="A ratio compares quantities in the order given. Milk to cream = 4 to 1, or 4:1.">
+        <div class="mc-options" data-correct="0" data-explanation="A ratio compares the two amounts in the order named. Tomato sauce to cream = 3 to 2, written 3:2.">
           
             <label class="mc-option-label" id="label_q_13_0">
               <input type="radio" name="q_13" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">4:1</span>
+              <span class="choice-text">3:2</span>
             </label>
           
             <label class="mc-option-label" id="label_q_13_1">
               <input type="radio" name="q_13" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">1:4</span>
+              <span class="choice-text">2:3</span>
             </label>
           
             <label class="mc-option-label" id="label_q_13_2">
               <input type="radio" name="q_13" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">4:5</span>
+              <span class="choice-text">3:5</span>
             </label>
           
             <label class="mc-option-label" id="label_q_13_3">
               <input type="radio" name="q_13" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">5:1</span>
+              <span class="choice-text">5:2</span>
             </label>
           
         </div>

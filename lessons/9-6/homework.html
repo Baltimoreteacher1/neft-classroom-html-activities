@@ -1736,6 +1736,32 @@ body.help-modal-open { overflow: hidden; }
 .together-fill-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
 .together-step-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 
+/* Compact "Try Together" steps: tighter padding, inline action buttons, single-row input. */
+.together-steps { gap: 8px; }
+.together-step--compact { padding: 9px 11px; }
+.together-step--compact .together-step-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.together-step--compact .step-badge { margin-bottom: 0; }
+.together-step--compact .together-step-actions { margin-top: 0; }
+.together-step--compact p { margin: 6px 0 0; font-size: 14px; }
+.together-step--compact .together-fill { margin: 7px 0 0; }
+.together-step--compact .together-fill-input { min-height: 40px; }
+
+/* Graduated practice ladder under the guided steps. */
+.together-ladder { margin-top: 16px; padding-top: 14px; border-top: 2px dashed var(--line); }
+.ladder-title { font-family: var(--font-display); font-size: 16px; margin: 0 0 4px; color: var(--navy); }
+.ladder-note { font-size: 13px; margin: 0 0 12px; }
+.ladder-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; counter-reset: ladder; }
+.ladder-item { border: 1px solid var(--line); border-left: 4px solid #5b8def; border-radius: var(--radius-sm); padding: 9px 11px; background: var(--white); }
+.ladder-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.ladder-stars { color: #f5a623; font-size: 13px; letter-spacing: 1px; }
+.ladder-tier { font-family: var(--font-display); font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: var(--navy); }
+.ladder-q { margin: 0 0 8px; font-size: 14.5px; line-height: 1.4; }
+.ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
+.ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
+.ladder-answer { margin-top: 7px; }
+.ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
+.ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
+
 /* "More practice" accordion in the Check tab */
 /* Tiered practice sections (warm-up first, then a harder challenge set) */
 .practice-tier { margin: 0 0 22px; }
@@ -2595,61 +2621,118 @@ body { font-size: 15px; line-height: 1.58; }
       </p>
       <ol class="together-steps">
         
-          <li class="together-step step-color-1">
+          <li class="together-step together-step--compact step-color-1">
             <div class="together-step-head">
               <span class="step-badge">Step 1 / Paso 1</span>
+              <div class="together-step-actions">
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 hint","titleEs":"Pista del paso 1","en":"-3 is below zero and 5 is above zero, so they are on opposite sides.","es":"-3 está debajo de cero y 5 está sobre cero, así que están en lados opuestos."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 — more help","titleEs":"Paso 1 — más ayuda","en":"Opposite sides means we will add.","es":"Lados opuestos significa que vamos a sumar."}' onclick="openHelpModalFromBtn(this)" aria-label="🤝 More help / Más ayuda">🤝 More help / Más ayuda</button>
+              </div>
             </div>
-            <p class="lang-en"><strong>First…</strong> Look at the y-numbers: -3 and 5. Are they on the same side of zero or opposite sides?</p>
-            <p class="lang-es" lang="es"><strong>Primero…</strong> Miren los números y: -3 y 5. ¿Están del mismo lado de cero o en lados opuestos?</p>
+            <p class="lang-en">Look at the y-numbers: -3 and 5. Are they on the same side of zero or opposite sides?</p>
+            <p class="lang-es" lang="es">Miren los números y: -3 y 5. ¿Están del mismo lado de cero o en lados opuestos?</p>
             <div class="together-fill">
-              <label class="together-fill-label" for="together_0">
-                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
-                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
-              </label>
-              <textarea id="together_0" name="together_0" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
-            </div>
-            <div class="together-step-actions">
-              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 hint","titleEs":"Pista del paso 1","en":"-3 is below zero and 5 is above zero, so they are on opposite sides.","es":"-3 está debajo de cero y 5 está sobre cero, así que están en lados opuestos."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
-              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 — more help","titleEs":"Paso 1 — más ayuda","en":"Opposite sides means we will add.","es":"Lados opuestos significa que vamos a sumar."}' onclick="openHelpModalFromBtn(this)" aria-label="🤝 More help / Más ayuda">🤝 More help / Más ayuda</button>
+              <textarea id="together_0" name="together_0" class="custom-textarea together-fill-input" rows="1" placeholder="✏️ Your turn / Tu turno…" oninput="saveState();" aria-label="Your work for step 1"></textarea>
             </div>
           </li>
-          <li class="together-step step-color-2">
+          <li class="together-step together-step--compact step-color-2">
             <div class="together-step-head">
               <span class="step-badge">Step 2 / Paso 2</span>
+              <div class="together-step-actions">
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 hint","titleEs":"Pista del paso 2","en":"Absolute value is just how far the number is from zero.","es":"El valor absoluto es solo qué tan lejos está el número de cero."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 — more help","titleEs":"Paso 2 — más ayuda","en":"Both answers are positive because distance is never negative.","es":"Ambas respuestas son positivas porque la distancia nunca es negativa."}' onclick="openHelpModalFromBtn(this)" aria-label="🤝 More help / Más ayuda">🤝 More help / Más ayuda</button>
+              </div>
             </div>
-            <p class="lang-en"><strong>First…</strong> Find each distance from zero: |-3| = 3 and |5| = 5.</p>
-            <p class="lang-es" lang="es"><strong>Primero…</strong> Encuentren cada distancia desde cero: |-3| = 3 y |5| = 5.</p>
+            <p class="lang-en">Find each distance from zero: |-3| = 3 and |5| = 5.</p>
+            <p class="lang-es" lang="es">Encuentren cada distancia desde cero: |-3| = 3 y |5| = 5.</p>
             <div class="together-fill">
-              <label class="together-fill-label" for="together_1">
-                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
-                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
-              </label>
-              <textarea id="together_1" name="together_1" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
-            </div>
-            <div class="together-step-actions">
-              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 hint","titleEs":"Pista del paso 2","en":"Absolute value is just how far the number is from zero.","es":"El valor absoluto es solo qué tan lejos está el número de cero."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
-              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 — more help","titleEs":"Paso 2 — más ayuda","en":"Both answers are positive because distance is never negative.","es":"Ambas respuestas son positivas porque la distancia nunca es negativa."}' onclick="openHelpModalFromBtn(this)" aria-label="🤝 More help / Más ayuda">🤝 More help / Más ayuda</button>
+              <textarea id="together_1" name="together_1" class="custom-textarea together-fill-input" rows="1" placeholder="✏️ Your turn / Tu turno…" oninput="saveState();" aria-label="Your work for step 2"></textarea>
             </div>
           </li>
-          <li class="together-step step-color-3">
+          <li class="together-step together-step--compact step-color-3">
             <div class="together-step-head">
               <span class="step-badge">Step 3 / Paso 3</span>
+              <div class="together-step-actions">
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 3 hint","titleEs":"Pista del paso 3","en":"Add because the points are on opposite sides of zero.","es":"Sumen porque los puntos están en lados opuestos de cero."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 3 — more help","titleEs":"Paso 3 — más ayuda","en":"Check by counting squares on a quick sketch — it should also be 8.","es":"Comprueben contando cuadros en un dibujo rápido — también debe dar 8."}' onclick="openHelpModalFromBtn(this)" aria-label="🤝 More help / Más ayuda">🤝 More help / Más ayuda</button>
+              </div>
             </div>
-            <p class="lang-en"><strong>First…</strong> Add them: 3 + 5 = 8. The two treasures are 8 units apart.</p>
-            <p class="lang-es" lang="es"><strong>Primero…</strong> Súmenlos: 3 + 5 = 8. Los dos tesoros están a 8 unidades de distancia.</p>
+            <p class="lang-en">Add them: 3 + 5 = 8. The two treasures are 8 units apart.</p>
+            <p class="lang-es" lang="es">Súmenlos: 3 + 5 = 8. Los dos tesoros están a 8 unidades de distancia.</p>
             <div class="together-fill">
-              <label class="together-fill-label" for="together_2">
-                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
-                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
-              </label>
-              <textarea id="together_2" name="together_2" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
-            </div>
-            <div class="together-step-actions">
-              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 3 hint","titleEs":"Pista del paso 3","en":"Add because the points are on opposite sides of zero.","es":"Sumen porque los puntos están en lados opuestos de cero."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
-              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 3 — more help","titleEs":"Paso 3 — más ayuda","en":"Check by counting squares on a quick sketch — it should also be 8.","es":"Comprueben contando cuadros en un dibujo rápido — también debe dar 8."}' onclick="openHelpModalFromBtn(this)" aria-label="🤝 More help / Más ayuda">🤝 More help / Más ayuda</button>
+              <textarea id="together_2" name="together_2" class="custom-textarea together-fill-input" rows="1" placeholder="✏️ Your turn / Tu turno…" oninput="saveState();" aria-label="Your work for step 3"></textarea>
             </div>
           </li>
       </ol>
+      
+    <div class="together-ladder">
+      <h3 class="ladder-title">
+        <span class="lang-en">📈 Practice ladder — easiest first</span>
+        <span class="lang-es" lang="es">📈 Escalera de práctica — del más fácil al más difícil</span>
+      </h3>
+      <p class="ladder-note bilingual-block">
+        <span class="lang-en">Do these together. Start at ★ and climb to ★★★ when ready.</span>
+        <span class="lang-es" lang="es">Háganlos juntos. Empiecen en ★ y suban a ★★★ cuando estén listos.</span>
+      </p>
+      <ol class="ladder-list">
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★</span>
+            <span class="ladder-tier"><span class="lang-en">Start easy</span><span class="lang-es" lang="es">Empieza fácil</span></span>
+          </div>
+          <p class="ladder-q">What is the distance between (-4, 3) and (2, 3)?</p>
+          <input type="text" id="ladder_0" name="ladder_0" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 1" />
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text">6 units</p>
+           </details>
+        </li>
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★</span>
+            <span class="ladder-tier"><span class="lang-en">Start easy</span><span class="lang-es" lang="es">Empieza fácil</span></span>
+          </div>
+          <p class="ladder-q">What is the distance between (5, -2) and (5, 4)?</p>
+          <input type="text" id="ladder_1" name="ladder_1" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 2" />
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text">6 units</p>
+           </details>
+        </li>
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★★</span>
+            <span class="ladder-tier"><span class="lang-en">Keep going</span><span class="lang-es" lang="es">Sigan</span></span>
+          </div>
+          <p class="ladder-q">Two points are at (-3, -7) and (-3, 5). What is the distance between them?</p>
+          <input type="text" id="ladder_2" name="ladder_2" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 3" />
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text">12 units</p>
+           </details>
+        </li>
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★★</span>
+            <span class="ladder-tier"><span class="lang-en">Keep going</span><span class="lang-es" lang="es">Sigan</span></span>
+          </div>
+          <p class="ladder-q">What is the distance between (2, 3) and (2, 8)?</p>
+          <input type="text" id="ladder_3" name="ladder_3" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 4" />
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text">5 units</p>
+           </details>
+        </li>
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★★★</span>
+            <span class="ladder-tier"><span class="lang-en">Challenge</span><span class="lang-es" lang="es">Reto</span></span>
+          </div>
+          <p class="ladder-q">A rectangle has vertices at (-4, -2), (3, -2), (3, 5), and (-4, 5). Find the length, width, perimeter, and area of the rectangle. Show your work using absolute value.</p>
+          <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
+          
+        </li></ol>
+    </div>
     </div>
 
     <div class="tab-panel-inner" data-tab-panel="check" id="hw_panel_check" role="tabpanel" hidden>
@@ -2791,63 +2874,91 @@ body { font-size: 15px; line-height: 1.58; }
     </section>
   
 
-    <section class="problem-section card" id="problem_1" data-problem-type="error-analysis">
+    <section class="problem-section card" id="problem_1" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 2</div>
-        <div class="problem-type-badge">ERROR ANALYSIS</div>
+        <div class="problem-type-badge">FILL TABLE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Are 1 and 6 on the same side of zero or opposite sides?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <h3 class="error-analysis-title">⚠️ approaching — Spot the Common Mistake</h3>
-        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Read each step aloud and ask: does this step follow the math rules we learned?</span><span class="lang-es" lang="es">👪 Lean cada paso en voz alta y pregunten: ¿sigue las reglas que aprendimos?</span></p>
-        
-        <div class="clipboard-box">
-          <div class="clipboard-top"></div>
-          <div class="clipboard-paper">
-            
-              <div class="worked-step" id="step_q_1_1">
-                <span class="step-badge">Step 1</span>
-                <span class="step-label">Problem:</span>
-                <span class="step-work">Find the distance between (2, 1) and (2, 6).</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_1_2">
-                <span class="step-badge">Step 2</span>
-                <span class="step-label">Student thinking:</span>
-                <span class="step-work">Both share x = 2, so add the absolute values: |1| + |6| = 1 + 6 = 7.</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_1_3">
-                <span class="step-badge">Step 3</span>
-                <span class="step-label">Student answer:</span>
-                <span class="step-work">The distance is 7 units.</span>
-              </div>
-            
-          </div>
-        </div>
-        
-        <div class="error-controls">
-          <div class="error-select-row">
-            <label for="error_step_select_1">Which step has the error?</label>
-            <select id="error_step_select_1" class="custom-select error-step-select" data-correct="2" onchange="saveState(); updateProgress();">
-              <option value="">-- Choose Step --</option>
-              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option>
-            </select>
-            <span class="feedback-badge"></span>
-          </div>
-          
-          <div class="error-explain-row">
-            <label for="error_explain_input_1">Explain the error and write the correct calculation:</label>
-            <textarea id="error_explain_input_1" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
-            <span class="feedback-badge"></span>
-          </div>
-          
-          <div class="reveal-box" id="error_correct_work_1" style="display:none;">
-            <strong>Correct Work Reference:</strong> Both points are on the same side of zero (1 and 6 are both positive), so you SUBTRACT instead of adding. The distance is |6 - 1| = 5 units. The student should only add the absolute values when the points are on opposite sides of zero. The correct distance is 5 units, not 7.
-            
-          </div>
+        <p class="problem-stem">Find the distance between each pair of points.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
+        <div class="table-responsive">
+          <table class="fill-table">
+            <thead>
+              <tr>
+                <th>Point 1</th><th>Point 2</th><th>Shared Coordinate</th><th>Distance</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>(-5, 1)</td><td>(3, 1)</td><td>y = 1</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_1_table_0_3"
+                                   data-correct="8" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+                <tr>
+                  <td>(2, -4)</td><td>(2, 6)</td><td>x = 2</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_1_table_1_3"
+                                   data-correct="10" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+                <tr>
+                  <td>(-3, -2)</td><td>(-3, 4)</td><td>x = -3</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_1_table_2_3"
+                                   data-correct="6" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+                <tr>
+                  <td>(-1, 5)</td><td>(4, 5)</td><td>y = 5</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_1_table_3_3"
+                                   data-correct="5" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+            </tbody>
+          </table>
         </div>
       </div>
     
@@ -2884,63 +2995,42 @@ body { font-size: 15px; line-height: 1.58; }
     </section>
   
 
-    <section class="problem-section card" id="problem_2" data-problem-type="error-analysis">
+    <section class="problem-section card" id="problem_2" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 3</div>
-        <div class="problem-type-badge">ERROR ANALYSIS</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The first x-coordinate is -5, not 5. Did the student keep the negative sign?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Same x = -3. Distance = |5 - (-7)| = |5 + 7| = 12 units.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <h3 class="error-analysis-title">⚠️ onLevel — Spot the Common Mistake</h3>
-        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Read each step aloud and ask: does this step follow the math rules we learned?</span><span class="lang-es" lang="es">👪 Lean cada paso en voz alta y pregunten: ¿sigue las reglas que aprendimos?</span></p>
-        
-        <div class="clipboard-box">
-          <div class="clipboard-top"></div>
-          <div class="clipboard-paper">
-            
-              <div class="worked-step" id="step_q_2_1">
-                <span class="step-badge">Step 1</span>
-                <span class="step-label">Problem:</span>
-                <span class="step-work">Find the distance between (-5, 2) and (3, 2).</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_2_2">
-                <span class="step-badge">Step 2</span>
-                <span class="step-label">Student thinking:</span>
-                <span class="step-work">Both share y = 2, so subtract the x-values: 5 - 3 = 2.</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_2_3">
-                <span class="step-badge">Step 3</span>
-                <span class="step-label">Student answer:</span>
-                <span class="step-work">The distance is 2 units.</span>
-              </div>
-            
-          </div>
-        </div>
-        
-        <div class="error-controls">
-          <div class="error-select-row">
-            <label for="error_step_select_2">Which step has the error?</label>
-            <select id="error_step_select_2" class="custom-select error-step-select" data-correct="2" onchange="saveState(); updateProgress();">
-              <option value="">-- Choose Step --</option>
-              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option>
-            </select>
-            <span class="feedback-badge"></span>
-          </div>
+        <p class="problem-stem">Two points are at (-3, -7) and (-3, 5). What is the distance between them?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="Same x = -3. Distance = |5 - (-7)| = |5 + 7| = 12 units.">
           
-          <div class="error-explain-row">
-            <label for="error_explain_input_2">Explain the error and write the correct calculation:</label>
-            <textarea id="error_explain_input_2" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
-            <span class="feedback-badge"></span>
-          </div>
+            <label class="mc-option-label" id="label_q_2_0">
+              <input type="radio" name="q_2" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">12 units</span>
+            </label>
           
-          <div class="reveal-box" id="error_correct_work_2" style="display:none;">
-            <strong>Correct Work Reference:</strong> The student dropped the negative sign and used 5 instead of -5. The point is at x = -5, so the two points sit on opposite sides of zero. Add the absolute values: |-5| + |3| = 5 + 3 = 8 units. (You can also write |3 - (-5)| = |3 + 5| = 8.) The correct distance is 8 units, not 2.
-            
-          </div>
+            <label class="mc-option-label" id="label_q_2_1">
+              <input type="radio" name="q_2" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">2 units</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_2_2">
+              <input type="radio" name="q_2" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">7 units</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_2_3">
+              <input type="radio" name="q_2" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">8 units</span>
+            </label>
+          
         </div>
       </div>
     
@@ -2993,63 +3083,42 @@ body { font-size: 15px; line-height: 1.58; }
           </div>
         </div>
         <main class="problems-container">
-    <section class="problem-section card" id="problem_3" data-problem-type="error-analysis">
+    <section class="problem-section card" id="problem_3" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 1</div>
-        <div class="problem-type-badge">ERROR ANALYSIS</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The Park&#39;s x-coordinate is -4, not 4. Did the student use the negative sign?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The x-coordinates match, so distance = |5 - (-3)| = 8 units.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <h3 class="error-analysis-title">⚠️ Level 2 Extension — City Block Distance Mistake</h3>
-        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Read each step aloud and ask: does this step follow the math rules we learned?</span><span class="lang-es" lang="es">👪 Lean cada paso en voz alta y pregunten: ¿sigue las reglas que aprendimos?</span></p>
-        
-        <div class="clipboard-box">
-          <div class="clipboard-top"></div>
-          <div class="clipboard-paper">
-            
-              <div class="worked-step" id="step_q_3_1">
-                <span class="step-badge">Step 1</span>
-                <span class="step-label">Problem:</span>
-                <span class="step-work">Find the blocks between the Park (-4, 5) and City Hall (3, 5).</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_3_2">
-                <span class="step-badge">Step 2</span>
-                <span class="step-label">Student thinking:</span>
-                <span class="step-work">Both have y = 5, so subtract the x-values: 4 - 3 = 1.</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_3_3">
-                <span class="step-badge">Step 3</span>
-                <span class="step-label">Student answer:</span>
-                <span class="step-work">The distance is 1 block.</span>
-              </div>
-            
-          </div>
-        </div>
-        
-        <div class="error-controls">
-          <div class="error-select-row">
-            <label for="error_step_select_3">Which step has the error?</label>
-            <select id="error_step_select_3" class="custom-select error-step-select" data-correct="2" onchange="saveState(); updateProgress();">
-              <option value="">-- Choose Step --</option>
-              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option>
-            </select>
-            <span class="feedback-badge"></span>
-          </div>
+        <p class="problem-stem">How far apart are the points (-2, 5) and (-2, -3)?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="1" data-explanation="The x-coordinates match, so distance = |5 - (-3)| = 8 units.">
           
-          <div class="error-explain-row">
-            <label for="error_explain_input_3">Explain the error and write the correct calculation:</label>
-            <textarea id="error_explain_input_3" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
-            <span class="feedback-badge"></span>
-          </div>
+            <label class="mc-option-label" id="label_q_3_0">
+              <input type="radio" name="q_3" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">2 units</span>
+            </label>
           
-          <div class="reveal-box" id="error_correct_work_3" style="display:none;">
-            <strong>Correct Work Reference:</strong> The student dropped the negative sign and used 4 instead of -4. Because the Park is at x = -4 and City Hall is at x = 3, the points sit on opposite sides of zero. Add the absolute values: |-4| + |3| = 4 + 3 = 7 blocks. (You can also write it as |3 - (-4)| = |3 + 4| = 7.) The correct distance is 7 blocks, not 1.
-            
-          </div>
+            <label class="mc-option-label" id="label_q_3_1">
+              <input type="radio" name="q_3" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">8 units</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_3_2">
+              <input type="radio" name="q_3" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">15 units</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_3_3">
+              <input type="radio" name="q_3" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">-8 units</span>
+            </label>
+          
         </div>
       </div>
     
@@ -3091,35 +3160,35 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Level up / Reto 2</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The x-coordinates match, so distance = |5 - (-3)| = 8 units.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Same x = 2, so the segment is vertical. Distance = |9 - 3| = 6 blocks.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">How far apart are the points (-2, 5) and (-2, -3)?</p>
+        <p class="problem-stem">The Bank is at (2, 3) and the Library is at (2, 9). How many blocks apart are they?</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="1" data-explanation="The x-coordinates match, so distance = |5 - (-3)| = 8 units.">
+        <div class="mc-options" data-correct="0" data-explanation="Same x = 2, so the segment is vertical. Distance = |9 - 3| = 6 blocks.">
           
             <label class="mc-option-label" id="label_q_4_0">
               <input type="radio" name="q_4" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">2 units</span>
+              <span class="choice-text">6 blocks</span>
             </label>
           
             <label class="mc-option-label" id="label_q_4_1">
               <input type="radio" name="q_4" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">8 units</span>
+              <span class="choice-text">12 blocks</span>
             </label>
           
             <label class="mc-option-label" id="label_q_4_2">
               <input type="radio" name="q_4" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">15 units</span>
+              <span class="choice-text">3 blocks</span>
             </label>
           
             <label class="mc-option-label" id="label_q_4_3">
               <input type="radio" name="q_4" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">-8 units</span>
+              <span class="choice-text">11 blocks</span>
             </label>
           
         </div>
@@ -3163,35 +3232,35 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Level up / Reto 3</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Same x = -3. Distance = |5 - (-7)| = |5 + 7| = 12 units.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Same y = 5, so the segment is horizontal. The points are on opposite sides of zero, so add the absolute values: |-4| + |3| = 4 + 3 = 7 blocks.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Two points are at (-3, -7) and (-3, 5). What is the distance between them?</p>
+        <p class="problem-stem">The Park is at (-4, 5) and City Hall is at (3, 5). How many blocks apart are they?</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Same x = -3. Distance = |5 - (-7)| = |5 + 7| = 12 units.">
+        <div class="mc-options" data-correct="1" data-explanation="Same y = 5, so the segment is horizontal. The points are on opposite sides of zero, so add the absolute values: |-4| + |3| = 4 + 3 = 7 blocks.">
           
             <label class="mc-option-label" id="label_q_5_0">
               <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">12 units</span>
+              <span class="choice-text">1 block</span>
             </label>
           
             <label class="mc-option-label" id="label_q_5_1">
               <input type="radio" name="q_5" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">2 units</span>
+              <span class="choice-text">7 blocks</span>
             </label>
           
             <label class="mc-option-label" id="label_q_5_2">
               <input type="radio" name="q_5" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">7 units</span>
+              <span class="choice-text">12 blocks</span>
             </label>
           
             <label class="mc-option-label" id="label_q_5_3">
               <input type="radio" name="q_5" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">8 units</span>
+              <span class="choice-text">5 blocks</span>
             </label>
           
         </div>
@@ -3241,91 +3310,42 @@ body { font-size: 15px; line-height: 1.58; }
           <span class="lang-es" lang="es">Opcional. Solo si tu estudiante quiere más — son problemas adicionales.</span>
         </p>
         <main class="problems-container more-practice-container">
-    <section class="problem-section card" id="problem_6" data-problem-type="fill-table">
+    <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 1</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Same x = -2, so the segment is vertical. The points are on opposite sides of zero: |1| + |-4| = 1 + 4 = 5 blocks.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Find the distance between each pair of points.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
-        <div class="table-responsive">
-          <table class="fill-table">
-            <thead>
-              <tr>
-                <th>Point 1</th><th>Point 2</th><th>Shared Coordinate</th><th>Distance</th>
-              </tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>(-5, 1)</td><td>(3, 1)</td><td>y = 1</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_6_table_0_3"
-                                   data-correct="8" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>(2, -4)</td><td>(2, 6)</td><td>x = 2</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_6_table_1_3"
-                                   data-correct="10" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>(-3, -2)</td><td>(-3, 4)</td><td>x = -3</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_6_table_2_3"
-                                   data-correct="6" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>(-1, 5)</td><td>(4, 5)</td><td>y = 5</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_6_table_3_3"
-                                   data-correct="5" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-            </tbody>
-          </table>
+        <p class="problem-stem">The Café is at (-2, 1) and the Gym is at (-2, -4). How many blocks apart are they?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="1" data-explanation="Same x = -2, so the segment is vertical. The points are on opposite sides of zero: |1| + |-4| = 1 + 4 = 5 blocks.">
+          
+            <label class="mc-option-label" id="label_q_6_0">
+              <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">3 blocks</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_6_1">
+              <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">5 blocks</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_6_2">
+              <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">6 blocks</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_6_3">
+              <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">2 blocks</span>
+            </label>
+          
         </div>
       </div>
     
@@ -3367,35 +3387,35 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Bonus / Más 2</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Same x = 2, so the segment is vertical. Distance = |9 - 3| = 6 blocks.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Both points have y = 3, so this is a horizontal distance. |2 - (-4)| = |2 + 4| = 6 units.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">The Bank is at (2, 3) and the Library is at (2, 9). How many blocks apart are they?</p>
+        <p class="problem-stem">What is the distance between (-4, 3) and (2, 3)?</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Same x = 2, so the segment is vertical. Distance = |9 - 3| = 6 blocks.">
+        <div class="mc-options" data-correct="2" data-explanation="Both points have y = 3, so this is a horizontal distance. |2 - (-4)| = |2 + 4| = 6 units.">
           
             <label class="mc-option-label" id="label_q_7_0">
               <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">6 blocks</span>
+              <span class="choice-text">2 units</span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_1">
               <input type="radio" name="q_7" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">12 blocks</span>
+              <span class="choice-text">4 units</span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_2">
               <input type="radio" name="q_7" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">3 blocks</span>
+              <span class="choice-text">6 units</span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_3">
               <input type="radio" name="q_7" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">11 blocks</span>
+              <span class="choice-text">8 units</span>
             </label>
           
         </div>
@@ -3439,35 +3459,35 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Bonus / Más 3</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Same y = 5, so the segment is horizontal. The points are on opposite sides of zero, so add the absolute values: |-4| + |3| = 4 + 3 = 7 blocks.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Both points have x = 5, so this is a vertical distance. |4 - (-2)| = |4 + 2| = 6 units.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">The Park is at (-4, 5) and City Hall is at (3, 5). How many blocks apart are they?</p>
+        <p class="problem-stem">What is the distance between (5, -2) and (5, 4)?</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="1" data-explanation="Same y = 5, so the segment is horizontal. The points are on opposite sides of zero, so add the absolute values: |-4| + |3| = 4 + 3 = 7 blocks.">
+        <div class="mc-options" data-correct="2" data-explanation="Both points have x = 5, so this is a vertical distance. |4 - (-2)| = |4 + 2| = 6 units.">
           
             <label class="mc-option-label" id="label_q_8_0">
               <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">1 block</span>
+              <span class="choice-text">2 units</span>
             </label>
           
             <label class="mc-option-label" id="label_q_8_1">
               <input type="radio" name="q_8" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">7 blocks</span>
+              <span class="choice-text">4 units</span>
             </label>
           
             <label class="mc-option-label" id="label_q_8_2">
               <input type="radio" name="q_8" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">12 blocks</span>
+              <span class="choice-text">6 units</span>
             </label>
           
             <label class="mc-option-label" id="label_q_8_3">
               <input type="radio" name="q_8" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">5 blocks</span>
+              <span class="choice-text">10 units</span>
             </label>
           
         </div>
@@ -3511,35 +3531,35 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Bonus / Más 4</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Same x = -2, so the segment is vertical. The points are on opposite sides of zero: |1| + |-4| = 1 + 4 = 5 blocks.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The x-coordinates match, so distance = |8 - 3| = 5 units.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">The Café is at (-2, 1) and the Gym is at (-2, -4). How many blocks apart are they?</p>
+        <p class="problem-stem">What is the distance between (2, 3) and (2, 8)?</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="1" data-explanation="Same x = -2, so the segment is vertical. The points are on opposite sides of zero: |1| + |-4| = 1 + 4 = 5 blocks.">
+        <div class="mc-options" data-correct="1" data-explanation="The x-coordinates match, so distance = |8 - 3| = 5 units.">
           
             <label class="mc-option-label" id="label_q_9_0">
               <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">3 blocks</span>
+              <span class="choice-text">11 units</span>
             </label>
           
             <label class="mc-option-label" id="label_q_9_1">
               <input type="radio" name="q_9" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">5 blocks</span>
+              <span class="choice-text">5 units</span>
             </label>
           
             <label class="mc-option-label" id="label_q_9_2">
               <input type="radio" name="q_9" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">6 blocks</span>
+              <span class="choice-text">6 units</span>
             </label>
           
             <label class="mc-option-label" id="label_q_9_3">
               <input type="radio" name="q_9" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">2 blocks</span>
+              <span class="choice-text">5.5 units</span>
             </label>
           
         </div>
@@ -3578,63 +3598,42 @@ body { font-size: 15px; line-height: 1.58; }
     </section>
   
 
-    <section class="problem-section card" id="problem_10" data-problem-type="error-analysis">
+    <section class="problem-section card" id="problem_10" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 5</div>
-        <div class="problem-type-badge">ERROR ANALYSIS</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The student dropped the negative sign on -3. What is the actual difference between -3 and 5?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The y-coordinates match, so distance = |3 - (-4)| = 7 units.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <h3 class="error-analysis-title">⚠️ Find the Distance Error</h3>
-        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Read each step aloud and ask: does this step follow the math rules we learned?</span><span class="lang-es" lang="es">👪 Lean cada paso en voz alta y pregunten: ¿sigue las reglas que aprendimos?</span></p>
-        
-        <div class="clipboard-box">
-          <div class="clipboard-top"></div>
-          <div class="clipboard-paper">
-            
-              <div class="worked-step" id="step_q_10_1">
-                <span class="step-badge">Step 1</span>
-                <span class="step-label">Problem:</span>
-                <span class="step-work">Find the distance between (-3, 4) and (5, 4)</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_10_2">
-                <span class="step-badge">Step 2</span>
-                <span class="step-label">Student thinking:</span>
-                <span class="step-work">Subtract: 5 - 3 = 2</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_10_3">
-                <span class="step-badge">Step 3</span>
-                <span class="step-label">Student answer:</span>
-                <span class="step-work">The distance is 2 units</span>
-              </div>
-            
-          </div>
-        </div>
-        
-        <div class="error-controls">
-          <div class="error-select-row">
-            <label for="error_step_select_10">Which step has the error?</label>
-            <select id="error_step_select_10" class="custom-select error-step-select" data-correct="2" onchange="saveState(); updateProgress();">
-              <option value="">-- Choose Step --</option>
-              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option>
-            </select>
-            <span class="feedback-badge"></span>
-          </div>
+        <p class="problem-stem">What is the distance between (-4, 1) and (3, 1)?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="2" data-explanation="The y-coordinates match, so distance = |3 - (-4)| = 7 units.">
           
-          <div class="error-explain-row">
-            <label for="error_explain_input_10">Explain the error and write the correct calculation:</label>
-            <textarea id="error_explain_input_10" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
-            <span class="feedback-badge"></span>
-          </div>
+            <label class="mc-option-label" id="label_q_10_0">
+              <input type="radio" name="q_10" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">1 unit</span>
+            </label>
           
-          <div class="reveal-box" id="error_correct_work_10" style="display:none;">
-            <strong>Correct Work Reference:</strong> The student subtracted 5 - 3, but the first x-coordinate is -3, not 3. The correct calculation is |5 - (-3)| = |5 + 3| = 8 units. When points span opposite sides of an axis, you must add the absolute values: |-3| + |5| = 3 + 5 = 8.
-            
-          </div>
+            <label class="mc-option-label" id="label_q_10_1">
+              <input type="radio" name="q_10" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">12 units</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_10_2">
+              <input type="radio" name="q_10" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">7 units</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_10_3">
+              <input type="radio" name="q_10" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">-7 units</span>
+            </label>
+          
         </div>
       </div>
     
@@ -3671,42 +3670,107 @@ body { font-size: 15px; line-height: 1.58; }
     </section>
   
 
-    <section class="problem-section card" id="problem_11" data-problem-type="multiple-choice">
+    <section class="problem-section card" id="problem_11" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 6</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge">FILL TABLE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Both points have y = 3, so this is a horizontal distance. |2 - (-4)| = |2 + 4| = 6 units.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">What is the distance between (-4, 3) and (2, 3)?</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="2" data-explanation="Both points have y = 3, so this is a horizontal distance. |2 - (-4)| = |2 + 4| = 6 units.">
-          
-            <label class="mc-option-label" id="label_q_11_0">
-              <input type="radio" name="q_11" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">2 units</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_11_1">
-              <input type="radio" name="q_11" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">4 units</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_11_2">
-              <input type="radio" name="q_11" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">6 units</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_11_3">
-              <input type="radio" name="q_11" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">8 units</span>
-            </label>
-          
+        <p class="problem-stem">Find the perimeter of each rectangle using its vertex coordinates.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
+        <div class="table-responsive">
+          <table class="fill-table">
+            <thead>
+              <tr>
+                <th>Rectangle</th><th>Vertices</th><th>Width</th><th>Height</th><th>Perimeter</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>Rect 1</td><td>(-3, 1), (4, 1), (4, 5), (-3, 5)</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_11_table_0_2"
+                                   data-correct="7" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_11_table_0_3"
+                                   data-correct="4" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_11_table_0_4"
+                                   data-correct="22" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+                <tr>
+                  <td>Rect 2</td><td>(-2, -4), (6, -4), (6, 2), (-2, 2)</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_11_table_1_2"
+                                   data-correct="8" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_11_table_1_3"
+                                   data-correct="6" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_11_table_1_4"
+                                   data-correct="28" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+            </tbody>
+          </table>
         </div>
       </div>
     
@@ -3743,41 +3807,61 @@ body { font-size: 15px; line-height: 1.58; }
     </section>
   
 
-    <section class="problem-section card" id="problem_12" data-problem-type="multiple-choice">
+    <section class="problem-section card" id="problem_12" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 7</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge">MATCHING GAME</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Both points have x = 5, so this is a vertical distance. |4 - (-2)| = |4 + 2| = 6 units.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">What is the distance between (5, -2) and (5, 4)?</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="2" data-explanation="Both points have x = 5, so this is a vertical distance. |4 - (-2)| = |4 + 2| = 6 units.">
+        <p class="problem-stem">Match each pair of city landmarks to the number of blocks between them.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
+        <div class="matching-pairs">
           
-            <label class="mc-option-label" id="label_q_12_0">
-              <input type="radio" name="q_12" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">2 units</span>
-            </label>
+            <div class="matching-row" data-term="Subway (1, 6) to Tower (8, 6)" data-correct="7 blocks">
+              <div class="matching-term">Subway (1, 6) to Tower (8, 6)</div>
+              <div class="matching-select-container">
+                <select name="q_12_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="5 blocks">5 blocks</option><option value="6 blocks">6 blocks</option><option value="7 blocks">7 blocks</option><option value="8 blocks">8 blocks</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
           
-            <label class="mc-option-label" id="label_q_12_1">
-              <input type="radio" name="q_12" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">4 units</span>
-            </label>
+            <div class="matching-row" data-term="Market (-3, -1) to Stadium (-3, 7)" data-correct="8 blocks">
+              <div class="matching-term">Market (-3, -1) to Stadium (-3, 7)</div>
+              <div class="matching-select-container">
+                <select name="q_12_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="5 blocks">5 blocks</option><option value="6 blocks">6 blocks</option><option value="7 blocks">7 blocks</option><option value="8 blocks">8 blocks</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
           
-            <label class="mc-option-label" id="label_q_12_2">
-              <input type="radio" name="q_12" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">6 units</span>
-            </label>
+            <div class="matching-row" data-term="Bank (2, 3) to Library (2, 9)" data-correct="6 blocks">
+              <div class="matching-term">Bank (2, 3) to Library (2, 9)</div>
+              <div class="matching-select-container">
+                <select name="q_12_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="5 blocks">5 blocks</option><option value="6 blocks">6 blocks</option><option value="7 blocks">7 blocks</option><option value="8 blocks">8 blocks</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
           
-            <label class="mc-option-label" id="label_q_12_3">
-              <input type="radio" name="q_12" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">10 units</span>
-            </label>
+            <div class="matching-row" data-term="Café (-2, 1) to Gym (-2, -4)" data-correct="5 blocks">
+              <div class="matching-term">Café (-2, 1) to Gym (-2, -4)</div>
+              <div class="matching-select-container">
+                <select name="q_12_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="5 blocks">5 blocks</option><option value="6 blocks">6 blocks</option><option value="7 blocks">7 blocks</option><option value="8 blocks">8 blocks</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
           
         </div>
       </div>
@@ -3792,20 +3876,6 @@ body { font-size: 15px; line-height: 1.58; }
           <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
         </ol>
       </details>
-      <div class="hw-workspace">
-        <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Plot each point on the grid and label it (x, y).</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Marca cada punto en la cuadrícula y rotúlalo (x, y).</span></div>
-          <div class="hw-visual-frame hw-drawable" data-draw-frame>
-            <svg viewBox="0 0 200 200" class="hw-visual-svg" role="img" aria-label="Blank four-quadrant coordinate grid"><line x1="20" y1="20" x2="20" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="20" x2="180" y2="20" stroke="#d6e2ee" stroke-width="1"/><line x1="40" y1="20" x2="40" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="40" x2="180" y2="40" stroke="#d6e2ee" stroke-width="1"/><line x1="60" y1="20" x2="60" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="60" x2="180" y2="60" stroke="#d6e2ee" stroke-width="1"/><line x1="80" y1="20" x2="80" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="80" x2="180" y2="80" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="20" x2="100" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="100" x2="180" y2="100" stroke="#d6e2ee" stroke-width="1"/><line x1="120" y1="20" x2="120" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="120" x2="180" y2="120" stroke="#d6e2ee" stroke-width="1"/><line x1="140" y1="20" x2="140" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="140" x2="180" y2="140" stroke="#d6e2ee" stroke-width="1"/><line x1="160" y1="20" x2="160" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="160" x2="180" y2="160" stroke="#d6e2ee" stroke-width="1"/><line x1="180" y1="20" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="20" y1="180" x2="180" y2="180" stroke="#d6e2ee" stroke-width="1"/><line x1="100" y1="16" x2="100" y2="184" stroke="#12355b" stroke-width="2"/><line x1="16" y1="100" x2="184" y2="100" stroke="#12355b" stroke-width="2"/><polygon points="100,16 96,26 104,26" fill="#12355b"/><polygon points="184,100 174,96 174,104" fill="#12355b"/></svg>
-            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
-            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
-          </div>
-        </div>
-        <div class="hw-work">
-          <label class="hw-work-label" for="work_12"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
-          <textarea id="work_12" name="work_12" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
-        </div>
-      </div>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">
           ✓ Check This Problem / Revisar
@@ -3820,35 +3890,35 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Bonus / Más 8</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The x-coordinates match, so distance = |8 - 3| = 5 units.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Width = 5 - 1 = 4. Height = 4 - 1 = 3. Perimeter = 2(4 + 3) = 14.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 200 200\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank four-quadrant coordinate grid\"><line x1=\"20\" y1=\"20\" x2=\"20\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"20\" x2=\"180\" y2=\"20\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"40\" y1=\"20\" x2=\"40\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"40\" x2=\"180\" y2=\"40\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"60\" y1=\"20\" x2=\"60\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"60\" x2=\"180\" y2=\"60\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"80\" y1=\"20\" x2=\"80\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"80\" x2=\"180\" y2=\"80\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"20\" x2=\"100\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"180\" y2=\"100\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"120\" x2=\"180\" y2=\"120\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"140\" y1=\"20\" x2=\"140\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"140\" x2=\"180\" y2=\"140\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"160\" y1=\"20\" x2=\"160\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"160\" x2=\"180\" y2=\"160\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"20\" y1=\"180\" x2=\"180\" y2=\"180\" stroke=\"#d6e2ee\" stroke-width=\"1\"/><line x1=\"100\" y1=\"16\" x2=\"100\" y2=\"184\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"16\" y1=\"100\" x2=\"184\" y2=\"100\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"100,16 96,26 104,26\" fill=\"#12355b\"/><polygon points=\"184,100 174,96 174,104\" fill=\"#12355b\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">What is the distance between (2, 3) and (2, 8)?</p>
+        <p class="problem-stem">A rectangle has vertices at (1, 1), (5, 1), (5, 4), (1, 4). What is its perimeter?</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="1" data-explanation="The x-coordinates match, so distance = |8 - 3| = 5 units.">
+        <div class="mc-options" data-correct="0" data-explanation="Width = 5 - 1 = 4. Height = 4 - 1 = 3. Perimeter = 2(4 + 3) = 14.">
           
             <label class="mc-option-label" id="label_q_13_0">
               <input type="radio" name="q_13" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">11 units</span>
+              <span class="choice-text">14 units</span>
             </label>
           
             <label class="mc-option-label" id="label_q_13_1">
               <input type="radio" name="q_13" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">5 units</span>
+              <span class="choice-text">12 units</span>
             </label>
           
             <label class="mc-option-label" id="label_q_13_2">
               <input type="radio" name="q_13" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">6 units</span>
+              <span class="choice-text">20 units</span>
             </label>
           
             <label class="mc-option-label" id="label_q_13_3">
               <input type="radio" name="q_13" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">5.5 units</span>
+              <span class="choice-text">8 units</span>
             </label>
           
         </div>

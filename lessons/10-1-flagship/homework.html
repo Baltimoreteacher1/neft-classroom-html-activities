@@ -1736,6 +1736,32 @@ body.help-modal-open { overflow: hidden; }
 .together-fill-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
 .together-step-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 
+/* Compact "Try Together" steps: tighter padding, inline action buttons, single-row input. */
+.together-steps { gap: 8px; }
+.together-step--compact { padding: 9px 11px; }
+.together-step--compact .together-step-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.together-step--compact .step-badge { margin-bottom: 0; }
+.together-step--compact .together-step-actions { margin-top: 0; }
+.together-step--compact p { margin: 6px 0 0; font-size: 14px; }
+.together-step--compact .together-fill { margin: 7px 0 0; }
+.together-step--compact .together-fill-input { min-height: 40px; }
+
+/* Graduated practice ladder under the guided steps. */
+.together-ladder { margin-top: 16px; padding-top: 14px; border-top: 2px dashed var(--line); }
+.ladder-title { font-family: var(--font-display); font-size: 16px; margin: 0 0 4px; color: var(--navy); }
+.ladder-note { font-size: 13px; margin: 0 0 12px; }
+.ladder-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; counter-reset: ladder; }
+.ladder-item { border: 1px solid var(--line); border-left: 4px solid #5b8def; border-radius: var(--radius-sm); padding: 9px 11px; background: var(--white); }
+.ladder-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.ladder-stars { color: #f5a623; font-size: 13px; letter-spacing: 1px; }
+.ladder-tier { font-family: var(--font-display); font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: var(--navy); }
+.ladder-q { margin: 0 0 8px; font-size: 14.5px; line-height: 1.4; }
+.ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
+.ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
+.ladder-answer { margin-top: 7px; }
+.ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
+.ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
+
 /* "More practice" accordion in the Check tab */
 /* Tiered practice sections (warm-up first, then a harder challenge set) */
 .practice-tier { margin: 0 0 22px; }
@@ -2586,43 +2612,104 @@ body { font-size: 15px; line-height: 1.58; }
       </p>
       <ol class="together-steps">
         
-          <li class="together-step step-color-1">
+          <li class="together-step together-step--compact step-color-1">
             <div class="together-step-head">
               <span class="step-badge">Step 1 / Paso 1</span>
+              <div class="together-step-actions">
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 hint","titleEs":"Pista del paso 1","en":"Talk through each step aloud.","es":"Hablen de cada paso en voz alta."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
+                
+              </div>
             </div>
-            <p class="lang-en"><strong>First…</strong> Pick one practice problem and solve it on paper together.</p>
-            <p class="lang-es" lang="es"><strong>Primero…</strong> Elijan un problema de práctica y resuélvanlo en papel juntos.</p>
+            <p class="lang-en">Pick one practice problem and solve it on paper together.</p>
+            <p class="lang-es" lang="es">Elijan un problema de práctica y resuélvanlo en papel juntos.</p>
             <div class="together-fill">
-              <label class="together-fill-label" for="together_0">
-                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
-                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
-              </label>
-              <textarea id="together_0" name="together_0" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
-            </div>
-            <div class="together-step-actions">
-              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 hint","titleEs":"Pista del paso 1","en":"Talk through each step aloud.","es":"Hablen de cada paso en voz alta."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
-              
+              <textarea id="together_0" name="together_0" class="custom-textarea together-fill-input" rows="1" placeholder="✏️ Your turn / Tu turno…" oninput="saveState();" aria-label="Your work for step 1"></textarea>
             </div>
           </li>
-          <li class="together-step step-color-2">
+          <li class="together-step together-step--compact step-color-2">
             <div class="together-step-head">
               <span class="step-badge">Step 2 / Paso 2</span>
+              <div class="together-step-actions">
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 hint","titleEs":"Pista del paso 2","en":"This is the flagship lesson&#39;s deepest idea.","es":"Esta es la idea más profunda de la lección estrella."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
+                
+              </div>
             </div>
-            <p class="lang-en"><strong>First…</strong> Check: does your answer follow — To find the volume of a box, multiply all three edges: V = length × width × height.?</p>
-            <p class="lang-es" lang="es"><strong>Primero…</strong> Verifiquen: ¿su respuesta sigue la idea clave — Para hallar el volumen de una caja, multiplica las tres aristas: V = largo × ancho × alto?</p>
+            <p class="lang-en">Check: does your answer follow — To find the volume of a box, multiply all three edges: V = length × width × height.?</p>
+            <p class="lang-es" lang="es">Verifiquen: ¿su respuesta sigue la idea clave — Para hallar el volumen de una caja, multiplica las tres aristas: V = largo × ancho × alto?</p>
             <div class="together-fill">
-              <label class="together-fill-label" for="together_1">
-                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
-                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
-              </label>
-              <textarea id="together_1" name="together_1" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
-            </div>
-            <div class="together-step-actions">
-              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 hint","titleEs":"Pista del paso 2","en":"This is the flagship lesson&#39;s deepest idea.","es":"Esta es la idea más profunda de la lección estrella."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
-              
+              <textarea id="together_1" name="together_1" class="custom-textarea together-fill-input" rows="1" placeholder="✏️ Your turn / Tu turno…" oninput="saveState();" aria-label="Your work for step 2"></textarea>
             </div>
           </li>
       </ol>
+      
+    <div class="together-ladder">
+      <h3 class="ladder-title">
+        <span class="lang-en">📈 Practice ladder — easiest first</span>
+        <span class="lang-es" lang="es">📈 Escalera de práctica — del más fácil al más difícil</span>
+      </h3>
+      <p class="ladder-note bilingual-block">
+        <span class="lang-en">Do these together. Start at ★ and climb to ★★★ when ready.</span>
+        <span class="lang-es" lang="es">Háganlos juntos. Empiecen en ★ y suban a ★★★ cuando estén listos.</span>
+      </p>
+      <ol class="ladder-list">
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★</span>
+            <span class="ladder-tier"><span class="lang-en">Start easy</span><span class="lang-es" lang="es">Empieza fácil</span></span>
+          </div>
+          <p class="ladder-q">What is the volume of a rectangular prism with l = 7 in, w = 3 in, h = 4 in?</p>
+          <input type="text" id="ladder_0" name="ladder_0" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 1" />
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text">84 in³</p>
+           </details>
+        </li>
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★</span>
+            <span class="ladder-tier"><span class="lang-en">Start easy</span><span class="lang-es" lang="es">Empieza fácil</span></span>
+          </div>
+          <p class="ladder-q">A time capsule box has a volume of 120 cm³. Its length is 10 cm and width is 4 cm. What is its height?</p>
+          <input type="text" id="ladder_1" name="ladder_1" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 2" />
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text">3 cm</p>
+           </details>
+        </li>
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★★</span>
+            <span class="ladder-tier"><span class="lang-en">Keep going</span><span class="lang-es" lang="es">Sigan</span></span>
+          </div>
+          <p class="ladder-q">Two storage bins: Bin A is 8 × 6 × 5 inches. Bin B is 9 × 4 × 7 inches. Which holds more and by how much?</p>
+          <input type="text" id="ladder_2" name="ladder_2" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 3" />
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text">Bin B by 12 in³</p>
+           </details>
+        </li>
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★★</span>
+            <span class="ladder-tier"><span class="lang-en">Keep going</span><span class="lang-es" lang="es">Sigan</span></span>
+          </div>
+          <p class="ladder-q">Blueprint 1: A time capsule box measures 4 in long, 3 in wide, and 2 in tall. How many unit cubes does it hold?</p>
+          <input type="text" id="ladder_3" name="ladder_3" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 4" />
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text">24 cubic inches</p>
+           </details>
+        </li>
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★★★</span>
+            <span class="ladder-tier"><span class="lang-en">Challenge</span><span class="lang-es" lang="es">Reto</span></span>
+          </div>
+          <p class="ladder-q">A box needs to hold exactly 60 cubic inches. Give three different sets of whole-number dimensions that work. Which set would make the box closest to a cube shape? Why might that matter?</p>
+          <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
+          
+        </li></ol>
+    </div>
     </div>
 
     <div class="tab-panel-inner" data-tab-panel="check" id="hw_panel_check" role="tabpanel" hidden>
@@ -2722,69 +2809,126 @@ body { font-size: 15px; line-height: 1.58; }
     </section>
   
 
-    <section class="problem-section card" id="problem_1" data-problem-type="error-analysis">
+    <section class="problem-section card" id="problem_1" data-problem-type="drag-sort" data-problem-subtype="drag-order">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 2</div>
-        <div class="problem-type-badge">ERROR ANALYSIS</div>
+        <div class="problem-type-badge">DRAG ORDER</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Look at Step 3 — how many edges did the student multiply?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <h3 class="error-analysis-title">⚠️ Spot the Mistake: A Forgotten Edge</h3>
-        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Read each step aloud and ask: does this step follow the math rules we learned?</span><span class="lang-es" lang="es">👪 Lean cada paso en voz alta y pregunten: ¿sigue las reglas que aprendimos?</span></p>
-        
-        <div class="clipboard-box">
-          <div class="clipboard-top"></div>
-          <div class="clipboard-paper">
+        <p class="problem-stem">Put these steps in order for finding the volume of a box that is 8 in long, 5 in wide, and 3 in tall.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Use the ▲ ▼ buttons to reorder steps, or drag the row handles on a computer.</span><span class="lang-es" lang="es">👪 Usen ▲ ▼ para reordenar, o arrastren las filas en la computadora.</span></p>
+        <div class="drag-order-workspace" id="dragorder_1" data-correct-order='[&quot;Identify: l = 8, w = 5, h = 3&quot;,&quot;Write the formula: V = l × w × h&quot;,&quot;Multiply: 8 × 5 = 40&quot;,&quot;Multiply: 40 × 3 = 120&quot;,&quot;Answer: V = 120 in³&quot;]' data-initial-order='[&quot;Multiply: 40 × 3 = 120&quot;,&quot;Write the formula: V = l × w × h&quot;,&quot;Multiply: 8 × 5 = 40&quot;,&quot;Answer: V = 120 in³&quot;,&quot;Identify: l = 8, w = 5, h = 3&quot;]'>
+          <div class="drag-order-list" id="orderlist_1">
             
-              <div class="worked-step" id="step_q_1_1">
-                <span class="step-badge">Step 1</span>
-                <span class="step-label">Dimensions:</span>
-                <span class="step-work">A capsule is 5 in long, 4 in wide, and 3 in tall.</span>
+              <div class="drag-order-row" draggable="true" id="order_1_0" data-step-text="Multiply: 40 × 3 = 120" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">1</span>
+                <span class="drag-order-text">Multiply: 40 × 3 = 120</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, 1)" aria-label="Move down">▼</button>
+                </div>
               </div>
-            
-              <div class="worked-step" id="step_q_1_2">
-                <span class="step-badge">Step 2</span>
-                <span class="step-label">Formula:</span>
-                <span class="step-work">V = l × w × h</span>
+              <div class="drag-order-row" draggable="true" id="order_1_1" data-step-text="Write the formula: V = l × w × h" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">2</span>
+                <span class="drag-order-text">Write the formula: V = l × w × h</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, 1)" aria-label="Move down">▼</button>
+                </div>
               </div>
-            
-              <div class="worked-step" id="step_q_1_3">
-                <span class="step-badge">Step 3</span>
-                <span class="step-label">Substitute and solve:</span>
-                <span class="step-work">V = 5 × 4 = 20 in³</span>
+              <div class="drag-order-row" draggable="true" id="order_1_2" data-step-text="Multiply: 8 × 5 = 40" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">3</span>
+                <span class="drag-order-text">Multiply: 8 × 5 = 40</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, 1)" aria-label="Move down">▼</button>
+                </div>
               </div>
-            
-              <div class="worked-step" id="step_q_1_4">
-                <span class="step-badge">Step 4</span>
-                <span class="step-label">Answer:</span>
-                <span class="step-work">Volume = 20 cubic inches</span>
+              <div class="drag-order-row" draggable="true" id="order_1_3" data-step-text="Answer: V = 120 in³" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">4</span>
+                <span class="drag-order-text">Answer: V = 120 in³</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, 1)" aria-label="Move down">▼</button>
+                </div>
               </div>
-            
+              <div class="drag-order-row" draggable="true" id="order_1_4" data-step-text="Identify: l = 8, w = 5, h = 3" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">5</span>
+                <span class="drag-order-text">Identify: l = 8, w = 5, h = 3</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, 1)" aria-label="Move down">▼</button>
+                </div>
+              </div>
           </div>
         </div>
-        
-        <div class="error-controls">
-          <div class="error-select-row">
-            <label for="error_step_select_1">Which step has the error?</label>
-            <select id="error_step_select_1" class="custom-select error-step-select" data-correct="3" onchange="saveState(); updateProgress();">
-              <option value="">-- Choose Step --</option>
-              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option><option value="4">Step 4</option>
-            </select>
-            <span class="feedback-badge"></span>
-          </div>
+        <div class="drag-controls">
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragOrder(1); saveState(); updateProgress();">Reset Order</button>
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Label the prism with its length, width, and height.</span><span class="lang-es" lang="es">Rotula el prisma con su largo, ancho y alto.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Multiply length × width × height to fill the box with unit cubes.</span><span class="lang-es" lang="es">Multiplica largo × ancho × alto para llenar la caja con cubos.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_2" data-problem-type="multiple-choice">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Warm-up / Calentamiento 3</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"V = l × w × h = 10 × 4 × 5 = 200 cubic inches. Volume always uses cubic units because it fills space in three directions.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">Blueprint 5: The principal wants a capsule that is 10 in long, 4 in wide, and 5 in tall. What is its volume?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="V = l × w × h = 10 × 4 × 5 = 200 cubic inches. Volume always uses cubic units because it fills space in three directions.">
           
-          <div class="error-explain-row">
-            <label for="error_explain_input_1">Explain the error and write the correct calculation:</label>
-            <textarea id="error_explain_input_1" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
-            <span class="feedback-badge"></span>
-          </div>
+            <label class="mc-option-label" id="label_q_2_0">
+              <input type="radio" name="q_2" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">200 cubic inches</span>
+            </label>
           
-          <div class="reveal-box" id="error_correct_work_1" style="display:none;">
-            <strong>Correct Work Reference:</strong> The student only multiplied length × width and forgot the height. Volume needs all three edges: V = 5 × 4 × 3 = 60 cubic inches.
-            
-          </div>
+            <label class="mc-option-label" id="label_q_2_1">
+              <input type="radio" name="q_2" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">19 cubic inches</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_2_2">
+              <input type="radio" name="q_2" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">200 square inches</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_2_3">
+              <input type="radio" name="q_2" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">50 cubic inches</span>
+            </label>
+          
         </div>
       </div>
     
@@ -2808,94 +2952,10 @@ body { font-size: 15px; line-height: 1.58; }
           </div>
         </div>
         <div class="hw-work">
-          <label class="hw-work-label" for="work_1"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
-          <textarea id="work_1" name="work_1" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+          <label class="hw-work-label" for="work_2"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_2" name="work_2" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
         </div>
       </div>
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(1)" aria-label="Check answer for problem 2">
-          ✓ Check This Problem / Revisar
-        </button>
-        <div class="problem-check-result" id="problem_result_1" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_2" data-problem-type="drag-sort" data-problem-subtype="drag-order">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Warm-up / Calentamiento 3</div>
-        <div class="problem-type-badge">DRAG ORDER</div>
-      </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Put these steps in order for finding the volume of a box that is 8 in long, 5 in wide, and 3 in tall.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Use the ▲ ▼ buttons to reorder steps, or drag the row handles on a computer.</span><span class="lang-es" lang="es">👪 Usen ▲ ▼ para reordenar, o arrastren las filas en la computadora.</span></p>
-        <div class="drag-order-workspace" id="dragorder_2" data-correct-order='[&quot;Identify: l = 8, w = 5, h = 3&quot;,&quot;Write the formula: V = l × w × h&quot;,&quot;Multiply: 8 × 5 = 40&quot;,&quot;Multiply: 40 × 3 = 120&quot;,&quot;Answer: V = 120 in³&quot;]' data-initial-order='[&quot;Write the formula: V = l × w × h&quot;,&quot;Answer: V = 120 in³&quot;,&quot;Multiply: 40 × 3 = 120&quot;,&quot;Multiply: 8 × 5 = 40&quot;,&quot;Identify: l = 8, w = 5, h = 3&quot;]'>
-          <div class="drag-order-list" id="orderlist_2">
-            
-              <div class="drag-order-row" draggable="true" id="order_2_0" data-step-text="Write the formula: V = l × w × h" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">1</span>
-                <span class="drag-order-text">Write the formula: V = l × w × h</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(2, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(2, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-              <div class="drag-order-row" draggable="true" id="order_2_1" data-step-text="Answer: V = 120 in³" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">2</span>
-                <span class="drag-order-text">Answer: V = 120 in³</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(2, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(2, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-              <div class="drag-order-row" draggable="true" id="order_2_2" data-step-text="Multiply: 40 × 3 = 120" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">3</span>
-                <span class="drag-order-text">Multiply: 40 × 3 = 120</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(2, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(2, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-              <div class="drag-order-row" draggable="true" id="order_2_3" data-step-text="Multiply: 8 × 5 = 40" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">4</span>
-                <span class="drag-order-text">Multiply: 8 × 5 = 40</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(2, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(2, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-              <div class="drag-order-row" draggable="true" id="order_2_4" data-step-text="Identify: l = 8, w = 5, h = 3" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">5</span>
-                <span class="drag-order-text">Identify: l = 8, w = 5, h = 3</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(2, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(2, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragOrder(2); saveState(); updateProgress();">Reset Order</button>
-        </div>
-      </div>
-    
-      
-      <details class="hw-step-guide" open>
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Label the prism with its length, width, and height.</span><span class="lang-es" lang="es">Rotula el prisma con su largo, ancho y alto.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Multiply length × width × height to fill the box with unit cubes.</span><span class="lang-es" lang="es">Multiplica largo × ancho × alto para llenar la caja con cubos.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
-      </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(2)" aria-label="Check answer for problem 3">
           ✓ Check This Problem / Revisar
@@ -2921,43 +2981,43 @@ body { font-size: 15px; line-height: 1.58; }
           </div>
         </div>
         <main class="problems-container">
-    <section class="problem-section card" id="problem_3" data-problem-type="multiple-choice">
+    <section class="problem-section card" id="problem_3" data-problem-type="open-response">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 1</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge">OPEN RESPONSE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"V = l × w × h = 10 × 4 × 5 = 200 cubic inches. Volume always uses cubic units because it fills space in three directions.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Blueprint 5: The principal wants a capsule that is 10 in long, 4 in wide, and 5 in tall. What is its volume?</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="V = l × w × h = 10 × 4 × 5 = 200 cubic inches. Volume always uses cubic units because it fills space in three directions.">
-          
-            <label class="mc-option-label" id="label_q_3_0">
-              <input type="radio" name="q_3" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">200 cubic inches</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_3_1">
-              <input type="radio" name="q_3" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">19 cubic inches</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_3_2">
-              <input type="radio" name="q_3" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">200 square inches</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_3_3">
-              <input type="radio" name="q_3" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">50 cubic inches</span>
-            </label>
-          
+        <p class="problem-stem">A box needs to hold exactly 60 cubic inches. Give three different sets of whole-number dimensions that work. Which set would make the box closest to a cube shape? Why might that matter?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 A complete sentence with math vocabulary is the goal — not a perfect paragraph.</span><span class="lang-es" lang="es">👪 Una oración completa con vocabulario matemático es la meta — no un párrafo perfecto.</span></p>
+        
+        
+          <div class="sentence-frame-card">
+            <span class="sentence-frame-tag">💡 Sentence Starter:</span>
+            <span class="sentence-frame-text" onclick="insertSentenceStarter(3, 'Option 1: ___ × ___ × ___. Option 2: ___ × ___ × ___. Option 3: ___ × ___ × ___. The ___ option is closest to a cube because ___. This matters because ___.')">"Option 1: ___ × ___ × ___. Option 2: ___ × ___ × ___. Option 3: ___ × ___ × ___. The ___ option is closest to a cube because ___. This matters because ___."</span>
+            <span class="click-to-insert-hint">(Click to insert starter)</span>
+          </div>
+        
+        
+        <div class="open-response-wrapper">
+          <textarea id="open_response_3" 
+                    class="custom-textarea open-response-textarea" 
+                    data-min-length="30" 
+                    data-keywords="[&quot;volume&quot;,&quot;dimensions&quot;,&quot;cube&quot;,&quot;equal&quot;,&quot;factor&quot;,&quot;60&quot;,&quot;length&quot;,&quot;width&quot;,&quot;height&quot;]"
+                    placeholder="Write your mathematical explanation here..." 
+                    oninput="saveState(); updateProgress();"></textarea>
+          <span class="feedback-badge"></span>
         </div>
+        
+        
+          <div class="word-bank-container">
+            <div class="word-bank-label">Key Vocabulary to include (click to insert):</div>
+            <div class="word-bank-chips">
+              <span class="word-chip" onclick="insertWord(3, 'volume')">volume</span><span class="word-chip" onclick="insertWord(3, 'dimensions')">dimensions</span><span class="word-chip" onclick="insertWord(3, 'cube')">cube</span><span class="word-chip" onclick="insertWord(3, 'equal')">equal</span><span class="word-chip" onclick="insertWord(3, 'factor')">factor</span><span class="word-chip" onclick="insertWord(3, '60')">60</span><span class="word-chip" onclick="insertWord(3, 'length')">length</span><span class="word-chip" onclick="insertWord(3, 'width')">width</span><span class="word-chip" onclick="insertWord(3, 'height')">height</span>
+            </div>
+          </div>
+        
       </div>
     
       
@@ -2993,43 +3053,112 @@ body { font-size: 15px; line-height: 1.58; }
     </section>
   
 
-    <section class="problem-section card" id="problem_4" data-problem-type="open-response">
+    <section class="problem-section card" id="problem_4" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 2</div>
-        <div class="problem-type-badge">OPEN RESPONSE</div>
+        <div class="problem-type-badge">FILL TABLE</div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A box needs to hold exactly 60 cubic inches. Give three different sets of whole-number dimensions that work. Which set would make the box closest to a cube shape? Why might that matter?</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 A complete sentence with math vocabulary is the goal — not a perfect paragraph.</span><span class="lang-es" lang="es">👪 Una oración completa con vocabulario matemático es la meta — no un párrafo perfecto.</span></p>
-        
-        
-          <div class="sentence-frame-card">
-            <span class="sentence-frame-tag">💡 Sentence Starter:</span>
-            <span class="sentence-frame-text" onclick="insertSentenceStarter(4, 'Option 1: ___ × ___ × ___. Option 2: ___ × ___ × ___. Option 3: ___ × ___ × ___. The ___ option is closest to a cube because ___. This matters because ___.')">"Option 1: ___ × ___ × ___. Option 2: ___ × ___ × ___. Option 3: ___ × ___ × ___. The ___ option is closest to a cube because ___. This matters because ___."</span>
-            <span class="click-to-insert-hint">(Click to insert starter)</span>
-          </div>
-        
-        
-        <div class="open-response-wrapper">
-          <textarea id="open_response_4" 
-                    class="custom-textarea open-response-textarea" 
-                    data-min-length="30" 
-                    data-keywords="[&quot;volume&quot;,&quot;dimensions&quot;,&quot;cube&quot;,&quot;equal&quot;,&quot;factor&quot;,&quot;60&quot;,&quot;length&quot;,&quot;width&quot;,&quot;height&quot;]"
-                    placeholder="Write your mathematical explanation here..." 
-                    oninput="saveState(); updateProgress();"></textarea>
-          <span class="feedback-badge"></span>
+        <p class="problem-stem">If you double ONE dimension of a 3 × 4 × 5 box, how does the volume change?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
+        <div class="table-responsive">
+          <table class="fill-table">
+            <thead>
+              <tr>
+                <th>Change</th><th>New Dimensions</th><th>New Volume</th><th>How did it change?</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>Double the length</td><td>6 × 4 × 5</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_4_table_0_2"
+                                   data-correct="120" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_4_table_0_3"
+                                   data-correct="Volume doubled" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+                <tr>
+                  <td>Double the width</td><td>3 × 8 × 5</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_4_table_1_2"
+                                   data-correct="120" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_4_table_1_3"
+                                   data-correct="Volume doubled" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+                <tr>
+                  <td>Double the height</td><td>3 × 4 × 10</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_4_table_2_2"
+                                   data-correct="120" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_4_table_2_3"
+                                   data-correct="Volume doubled" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+            </tbody>
+          </table>
         </div>
-        
-        
-          <div class="word-bank-container">
-            <div class="word-bank-label">Key Vocabulary to include (click to insert):</div>
-            <div class="word-bank-chips">
-              <span class="word-chip" onclick="insertWord(4, 'volume')">volume</span><span class="word-chip" onclick="insertWord(4, 'dimensions')">dimensions</span><span class="word-chip" onclick="insertWord(4, 'cube')">cube</span><span class="word-chip" onclick="insertWord(4, 'equal')">equal</span><span class="word-chip" onclick="insertWord(4, 'factor')">factor</span><span class="word-chip" onclick="insertWord(4, '60')">60</span><span class="word-chip" onclick="insertWord(4, 'length')">length</span><span class="word-chip" onclick="insertWord(4, 'width')">width</span><span class="word-chip" onclick="insertWord(4, 'height')">height</span>
-            </div>
-          </div>
-        
       </div>
     
       
@@ -3065,111 +3194,42 @@ body { font-size: 15px; line-height: 1.58; }
     </section>
   
 
-    <section class="problem-section card" id="problem_5" data-problem-type="fill-table">
+    <section class="problem-section card" id="problem_5" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 3</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"V = l × w × h → 72 = 6 × 4 × h → 72 = 24 × h → h = 72 ÷ 24 = 3 in.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">If you double ONE dimension of a 3 × 4 × 5 box, how does the volume change?</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
-        <div class="table-responsive">
-          <table class="fill-table">
-            <thead>
-              <tr>
-                <th>Change</th><th>New Dimensions</th><th>New Volume</th><th>How did it change?</th>
-              </tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>Double the length</td><td>6 × 4 × 5</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_5_table_0_2"
-                                   data-correct="120" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_5_table_0_3"
-                                   data-correct="Volume doubled" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>Double the width</td><td>3 × 8 × 5</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_5_table_1_2"
-                                   data-correct="120" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_5_table_1_3"
-                                   data-correct="Volume doubled" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-                <tr>
-                  <td>Double the height</td><td>3 × 4 × 10</td>
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_5_table_2_2"
-                                   data-correct="120" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                        <td>
-                          <div class="table-input-wrapper">
-                            <input type="text" 
-                                   class="custom-input table-input" 
-                                   name="q_5_table_2_3"
-                                   data-correct="Volume doubled" 
-                                   placeholder="Type answer..." 
-                                   oninput="saveState(); updateProgress();">
-                            <span class="feedback-badge"></span>
-                          </div>
-                        </td>
-                      
-                </tr>
-              
-            </tbody>
-          </table>
+        <p class="problem-stem">Blueprint 2: A capsule must hold exactly 72 cubic inches. Its length is 6 in and its width is 4 in. What height does the engineer need?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="V = l × w × h → 72 = 6 × 4 × h → 72 = 24 × h → h = 72 ÷ 24 = 3 in.">
+          
+            <label class="mc-option-label" id="label_q_5_0">
+              <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">3 in</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_5_1">
+              <input type="radio" name="q_5" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">12 in</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_5_2">
+              <input type="radio" name="q_5" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">62 in</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_5_3">
+              <input type="radio" name="q_5" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">9 in</span>
+            </label>
+          
         </div>
       </div>
     
@@ -3217,69 +3277,42 @@ body { font-size: 15px; line-height: 1.58; }
           <span class="lang-es" lang="es">Opcional. Solo si tu estudiante quiere más — son problemas adicionales.</span>
         </p>
         <main class="problems-container more-practice-container">
-    <section class="problem-section card" id="problem_6" data-problem-type="error-analysis">
+    <section class="problem-section card" id="problem_6" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 1</div>
-        <div class="problem-type-badge">ERROR ANALYSIS</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Look at Step 4 — are square units (in²) right for volume?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"V = l × w × h → 120 = 10 × 4 × h → 120 = 40h → h = 3 cm.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <h3 class="error-analysis-title">⚠️ Spot the Mistake: Wrong Units</h3>
-        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Read each step aloud and ask: does this step follow the math rules we learned?</span><span class="lang-es" lang="es">👪 Lean cada paso en voz alta y pregunten: ¿sigue las reglas que aprendimos?</span></p>
-        
-        <div class="clipboard-box">
-          <div class="clipboard-top"></div>
-          <div class="clipboard-paper">
-            
-              <div class="worked-step" id="step_q_6_1">
-                <span class="step-badge">Step 1</span>
-                <span class="step-label">Dimensions:</span>
-                <span class="step-work">A storage bin is 7 in long, 5 in wide, and 6 in tall.</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_6_2">
-                <span class="step-badge">Step 2</span>
-                <span class="step-label">Formula:</span>
-                <span class="step-work">V = l × w × h</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_6_3">
-                <span class="step-badge">Step 3</span>
-                <span class="step-label">Substitute and solve:</span>
-                <span class="step-work">V = 7 × 5 × 6 = 210</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_6_4">
-                <span class="step-badge">Step 4</span>
-                <span class="step-label">Answer:</span>
-                <span class="step-work">Volume = 210 in²</span>
-              </div>
-            
-          </div>
-        </div>
-        
-        <div class="error-controls">
-          <div class="error-select-row">
-            <label for="error_step_select_6">Which step has the error?</label>
-            <select id="error_step_select_6" class="custom-select error-step-select" data-correct="4" onchange="saveState(); updateProgress();">
-              <option value="">-- Choose Step --</option>
-              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option><option value="4">Step 4</option>
-            </select>
-            <span class="feedback-badge"></span>
-          </div>
+        <p class="problem-stem">A time capsule box has a volume of 120 cm³. Its length is 10 cm and width is 4 cm. What is its height?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="V = l × w × h → 120 = 10 × 4 × h → 120 = 40h → h = 3 cm.">
           
-          <div class="error-explain-row">
-            <label for="error_explain_input_6">Explain the error and write the correct calculation:</label>
-            <textarea id="error_explain_input_6" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
-            <span class="feedback-badge"></span>
-          </div>
+            <label class="mc-option-label" id="label_q_6_0">
+              <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">3 cm</span>
+            </label>
           
-          <div class="reveal-box" id="error_correct_work_6" style="display:none;">
-            <strong>Correct Work Reference:</strong> The multiplication 7 × 5 × 6 = 210 is correct, but the label is wrong. Volume measures 3D space, so it must use cubic units: Volume = 210 in³, not in².
-            
-          </div>
+            <label class="mc-option-label" id="label_q_6_1">
+              <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">6 cm</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_6_2">
+              <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">4 cm</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_6_3">
+              <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">12 cm</span>
+            </label>
+          
         </div>
       </div>
     
@@ -3321,35 +3354,35 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Bonus / Más 2</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"V = l × w × h → 120 = 10 × 4 × h → 120 = 40h → h = 3 cm.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Volume measures 3D space, so it uses cubic units like in³. Square units (in²) are for area, and inches are for length.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A time capsule box has a volume of 120 cm³. Its length is 10 cm and width is 4 cm. What is its height?</p>
+        <p class="problem-stem">Which unit is used for volume?</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="V = l × w × h → 120 = 10 × 4 × h → 120 = 40h → h = 3 cm.">
+        <div class="mc-options" data-correct="0" data-explanation="Volume measures 3D space, so it uses cubic units like in³. Square units (in²) are for area, and inches are for length.">
           
             <label class="mc-option-label" id="label_q_7_0">
               <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">3 cm</span>
+              <span class="choice-text">Cubic inches (in³)</span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_1">
               <input type="radio" name="q_7" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">6 cm</span>
+              <span class="choice-text">Square inches (in²)</span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_2">
               <input type="radio" name="q_7" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">4 cm</span>
+              <span class="choice-text">Inches (in)</span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_3">
               <input type="radio" name="q_7" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">12 cm</span>
+              <span class="choice-text">Degrees (°)</span>
             </label>
           
         </div>
@@ -3393,35 +3426,35 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Bonus / Más 3</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"V = l × w × h → 72 = 6 × 4 × h → 72 = 24 × h → h = 72 ÷ 24 = 3 in.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Bin A: 8 × 6 × 5 = 240 in³. Bin B: 9 × 4 × 7 = 252 in³. Bin B holds 12 in³ more.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Blueprint 2: A capsule must hold exactly 72 cubic inches. Its length is 6 in and its width is 4 in. What height does the engineer need?</p>
+        <p class="problem-stem">Two storage bins: Bin A is 8 × 6 × 5 inches. Bin B is 9 × 4 × 7 inches. Which holds more and by how much?</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="V = l × w × h → 72 = 6 × 4 × h → 72 = 24 × h → h = 72 ÷ 24 = 3 in.">
+        <div class="mc-options" data-correct="0" data-explanation="Bin A: 8 × 6 × 5 = 240 in³. Bin B: 9 × 4 × 7 = 252 in³. Bin B holds 12 in³ more.">
           
             <label class="mc-option-label" id="label_q_8_0">
               <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">3 in</span>
+              <span class="choice-text">Bin B by 12 in³</span>
             </label>
           
             <label class="mc-option-label" id="label_q_8_1">
               <input type="radio" name="q_8" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">12 in</span>
+              <span class="choice-text">Bin A by 12 in³</span>
             </label>
           
             <label class="mc-option-label" id="label_q_8_2">
               <input type="radio" name="q_8" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">62 in</span>
+              <span class="choice-text">Bin B by 24 in³</span>
             </label>
           
             <label class="mc-option-label" id="label_q_8_3">
               <input type="radio" name="q_8" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">9 in</span>
+              <span class="choice-text">They hold the same</span>
             </label>
           
         </div>
@@ -3465,35 +3498,35 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Bonus / Más 4</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Volume measures 3D space, so it uses cubic units like in³. Square units (in²) are for area, and inches are for length.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"V = l × w × h = 7 × 3 × 4 = 84 cubic inches.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Which unit is used for volume?</p>
+        <p class="problem-stem">What is the volume of a rectangular prism with l = 7 in, w = 3 in, h = 4 in?</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Volume measures 3D space, so it uses cubic units like in³. Square units (in²) are for area, and inches are for length.">
+        <div class="mc-options" data-correct="0" data-explanation="V = l × w × h = 7 × 3 × 4 = 84 cubic inches.">
           
             <label class="mc-option-label" id="label_q_9_0">
               <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Cubic inches (in³)</span>
+              <span class="choice-text">84 in³</span>
             </label>
           
             <label class="mc-option-label" id="label_q_9_1">
               <input type="radio" name="q_9" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Square inches (in²)</span>
+              <span class="choice-text">14 in³</span>
             </label>
           
             <label class="mc-option-label" id="label_q_9_2">
               <input type="radio" name="q_9" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Inches (in)</span>
+              <span class="choice-text">84 in²</span>
             </label>
           
             <label class="mc-option-label" id="label_q_9_3">
               <input type="radio" name="q_9" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">Degrees (°)</span>
+              <span class="choice-text">42 in³</span>
             </label>
           
         </div>
@@ -3532,42 +3565,75 @@ body { font-size: 15px; line-height: 1.58; }
     </section>
   
 
-    <section class="problem-section card" id="problem_10" data-problem-type="multiple-choice">
+    <section class="problem-section card" id="problem_10" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 5</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge">FILL TABLE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Bin A: 8 × 6 × 5 = 240 in³. Bin B: 9 × 4 × 7 = 252 in³. Bin B holds 12 in³ more.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Two storage bins: Bin A is 8 × 6 × 5 inches. Bin B is 9 × 4 × 7 inches. Which holds more and by how much?</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Bin A: 8 × 6 × 5 = 240 in³. Bin B: 9 × 4 × 7 = 252 in³. Bin B holds 12 in³ more.">
-          
-            <label class="mc-option-label" id="label_q_10_0">
-              <input type="radio" name="q_10" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Bin B by 12 in³</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_10_1">
-              <input type="radio" name="q_10" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Bin A by 12 in³</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_10_2">
-              <input type="radio" name="q_10" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">Bin B by 24 in³</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_10_3">
-              <input type="radio" name="q_10" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">They hold the same</span>
-            </label>
-          
+        <p class="problem-stem">Find the volume of each rectangular prism.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
+        <div class="table-responsive">
+          <table class="fill-table">
+            <thead>
+              <tr>
+                <th>Length</th><th>Width</th><th>Height</th><th>Volume</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>5 in</td><td>3 in</td><td>4 in</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_10_table_0_3"
+                                   data-correct="60 in³" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+                <tr>
+                  <td>6 cm</td><td>6 cm</td><td>2 cm</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_10_table_1_3"
+                                   data-correct="72 cm³" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+                <tr>
+                  <td>9 ft</td><td>2 ft</td><td>5 ft</td>
+                        <td>
+                          <div class="table-input-wrapper">
+                            <input type="text" 
+                                   class="custom-input table-input" 
+                                   name="q_10_table_2_3"
+                                   data-correct="90 ft³" 
+                                   placeholder="Type answer..." 
+                                   oninput="saveState(); updateProgress();">
+                            <span class="feedback-badge"></span>
+                          </div>
+                        </td>
+                      
+                </tr>
+              
+            </tbody>
+          </table>
         </div>
       </div>
     
@@ -3604,42 +3670,68 @@ body { font-size: 15px; line-height: 1.58; }
     </section>
   
 
-    <section class="problem-section card" id="problem_11" data-problem-type="multiple-choice">
+    <section class="problem-section card" id="problem_11" data-problem-type="drag-sort" data-problem-subtype="drag-order">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 6</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge">DRAG ORDER</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"V = l × w × h = 7 × 3 × 4 = 84 cubic inches.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">What is the volume of a rectangular prism with l = 7 in, w = 3 in, h = 4 in?</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="V = l × w × h = 7 × 3 × 4 = 84 cubic inches.">
-          
-            <label class="mc-option-label" id="label_q_11_0">
-              <input type="radio" name="q_11" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">84 in³</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_11_1">
-              <input type="radio" name="q_11" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">14 in³</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_11_2">
-              <input type="radio" name="q_11" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">84 in²</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_11_3">
-              <input type="radio" name="q_11" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">42 in³</span>
-            </label>
-          
+        <p class="problem-stem">Sort these rectangular prisms from LEAST volume to GREATEST volume.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Use the ▲ ▼ buttons to reorder steps, or drag the row handles on a computer.</span><span class="lang-es" lang="es">👪 Usen ▲ ▼ para reordenar, o arrastren las filas en la computadora.</span></p>
+        <div class="drag-order-workspace" id="dragorder_11" data-correct-order='[&quot;3 × 3 × 3 = 27&quot;,&quot;10 × 2 × 2 = 40&quot;,&quot;5 × 4 × 3 = 60&quot;,&quot;6 × 6 × 2 = 72&quot;,&quot;8 × 5 × 4 = 160&quot;]' data-initial-order='[&quot;5 × 4 × 3 = 60&quot;,&quot;8 × 5 × 4 = 160&quot;,&quot;3 × 3 × 3 = 27&quot;,&quot;10 × 2 × 2 = 40&quot;,&quot;6 × 6 × 2 = 72&quot;]'>
+          <div class="drag-order-list" id="orderlist_11">
+            
+              <div class="drag-order-row" draggable="true" id="order_11_0" data-step-text="5 × 4 × 3 = 60" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">1</span>
+                <span class="drag-order-text">5 × 4 × 3 = 60</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(11, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(11, this, 1)" aria-label="Move down">▼</button>
+                </div>
+              </div>
+              <div class="drag-order-row" draggable="true" id="order_11_1" data-step-text="8 × 5 × 4 = 160" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">2</span>
+                <span class="drag-order-text">8 × 5 × 4 = 160</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(11, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(11, this, 1)" aria-label="Move down">▼</button>
+                </div>
+              </div>
+              <div class="drag-order-row" draggable="true" id="order_11_2" data-step-text="3 × 3 × 3 = 27" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">3</span>
+                <span class="drag-order-text">3 × 3 × 3 = 27</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(11, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(11, this, 1)" aria-label="Move down">▼</button>
+                </div>
+              </div>
+              <div class="drag-order-row" draggable="true" id="order_11_3" data-step-text="10 × 2 × 2 = 40" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">4</span>
+                <span class="drag-order-text">10 × 2 × 2 = 40</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(11, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(11, this, 1)" aria-label="Move down">▼</button>
+                </div>
+              </div>
+              <div class="drag-order-row" draggable="true" id="order_11_4" data-step-text="6 × 6 × 2 = 72" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">5</span>
+                <span class="drag-order-text">6 × 6 × 2 = 72</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(11, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(11, this, 1)" aria-label="Move down">▼</button>
+                </div>
+              </div>
+          </div>
+        </div>
+        <div class="drag-controls">
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragOrder(11); saveState(); updateProgress();">Reset Order</button>
         </div>
       </div>
     
@@ -3653,20 +3745,6 @@ body { font-size: 15px; line-height: 1.58; }
           <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
         </ol>
       </details>
-      <div class="hw-workspace">
-        <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Label the prism with its length, width, and height.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Rotula el prisma con su largo, ancho y alto.</span></div>
-          <div class="hw-visual-frame hw-drawable" data-draw-frame>
-            <svg viewBox="0 0 220 140" class="hw-visual-svg" role="img" aria-label="Rectangular prism to label"><rect x="40" y="45" width="110" height="70" fill="#ffffff" stroke="#12355b" stroke-width="2"/><polygon points="40,45 75,20 185,20 150,45" fill="#eef5f4" stroke="#12355b" stroke-width="2"/><polyline points="150,45 185,20 185,90 150,115" fill="none" stroke="#12355b" stroke-width="2"/><line x1="150" y1="115" x2="185" y2="90" stroke="#12355b" stroke-width="2"/></svg>
-            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
-            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
-          </div>
-        </div>
-        <div class="hw-work">
-          <label class="hw-work-label" for="work_11"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
-          <textarea id="work_11" name="work_11" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
-        </div>
-      </div>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">
           ✓ Check This Problem / Revisar
@@ -3676,33 +3754,177 @@ body { font-size: 15px; line-height: 1.58; }
     </section>
   
 
-    <section class="problem-section card" id="problem_12" data-problem-type="fill-table">
+    <section class="problem-section card" id="problem_12" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 7</div>
+        <div class="problem-type-badge">DRAG SORT</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">Sort each time capsule box by whether it holds MORE or LESS than the 24-cubic-inch standard capsule. Multiply l × w × h first.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
+        
+        <div class="drag-sort-workspace" id="dragsort_12">
+          <div class="drag-columns">
+            
+              <div class="drag-column" data-category-id="more" ondragover="allowDrop(event)" ondrop="handleDrop(event, 12, 'more')">
+                <div class="drag-column-header">Holds MORE than 24 in³</div>
+                <div class="drag-column-slots" id="slots_12_more" ondragover="allowDrop(event)" ondrop="handleDrop(event, 12, 'more')"></div>
+              </div>
+              <div class="drag-column" data-category-id="less" ondragover="allowDrop(event)" ondrop="handleDrop(event, 12, 'less')">
+                <div class="drag-column-header">Holds LESS than 24 in³</div>
+                <div class="drag-column-slots" id="slots_12_less" ondragover="allowDrop(event)" ondrop="handleDrop(event, 12, 'less')"></div>
+              </div>
+          </div>
+          <div class="drag-source-section">
+            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
+            <div class="drag-source-pile" id="pile_12" ondragover="allowDrop(event)" ondrop="handleDrop(event, 12, '')">
+              
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_12_0"
+                     data-item-index="0"
+                     data-correct-category="more"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">4 × 3 × 3 = 36 in³</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_12_0', 12); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="more">Holds MORE than 24 in³</option><option value="less">Holds LESS than 24 in³</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_12_1"
+                     data-item-index="1"
+                     data-correct-category="more"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">5 × 4 × 2 = 40 in³</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_12_1', 12); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="more">Holds MORE than 24 in³</option><option value="less">Holds LESS than 24 in³</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_12_2"
+                     data-item-index="2"
+                     data-correct-category="more"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">6 × 5 × 1 = 30 in³</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_12_2', 12); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="more">Holds MORE than 24 in³</option><option value="less">Holds LESS than 24 in³</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_12_3"
+                     data-item-index="3"
+                     data-correct-category="less"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">2 × 3 × 3 = 18 in³</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_12_3', 12); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="more">Holds MORE than 24 in³</option><option value="less">Holds LESS than 24 in³</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_12_4"
+                     data-item-index="4"
+                     data-correct-category="less"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">4 × 2 × 2 = 16 in³</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_12_4', 12); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="more">Holds MORE than 24 in³</option><option value="less">Holds LESS than 24 in³</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_12_5"
+                     data-item-index="5"
+                     data-correct-category="less"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">5 × 2 × 2 = 20 in³</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_12_5', 12); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="more">Holds MORE than 24 in³</option><option value="less">Holds LESS than 24 in³</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="drag-controls">
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(12); saveState(); updateProgress();">Reset Sorting</button>
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Label the prism with its length, width, and height.</span><span class="lang-es" lang="es">Rotula el prisma con su largo, ancho y alto.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Multiply length × width × height to fill the box with unit cubes.</span><span class="lang-es" lang="es">Multiplica largo × ancho × alto para llenar la caja con cubos.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_13" data-problem-type="fill-table">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 8</div>
         <div class="problem-type-badge">FILL TABLE</div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Find the volume of each rectangular prism.</p>
+        <p class="problem-stem">Complete the table. Find the missing dimension or volume for each time capsule.</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
         <div class="table-responsive">
           <table class="fill-table">
             <thead>
               <tr>
-                <th>Length</th><th>Width</th><th>Height</th><th>Volume</th>
+                <th>Capsule</th><th>Length</th><th>Width</th><th>Height</th><th>Volume</th>
               </tr>
             </thead>
             <tbody>
               
                 <tr>
-                  <td>5 in</td><td>3 in</td><td>4 in</td>
+                  <td>Capsule X</td><td>9 in</td><td>5 in</td><td>2 in</td>
                         <td>
                           <div class="table-input-wrapper">
                             <input type="text" 
                                    class="custom-input table-input" 
-                                   name="q_12_table_0_3"
-                                   data-correct="60 in³" 
+                                   name="q_13_table_0_4"
+                                   data-correct="90 in³" 
                                    placeholder="Type answer..." 
                                    oninput="saveState(); updateProgress();">
                             <span class="feedback-badge"></span>
@@ -3712,35 +3934,35 @@ body { font-size: 15px; line-height: 1.58; }
                 </tr>
               
                 <tr>
-                  <td>6 cm</td><td>6 cm</td><td>2 cm</td>
+                  <td>Capsule Y</td><td>6 ft</td><td>4 ft</td>
                         <td>
                           <div class="table-input-wrapper">
                             <input type="text" 
                                    class="custom-input table-input" 
-                                   name="q_12_table_1_3"
-                                   data-correct="72 cm³" 
+                                   name="q_13_table_1_3"
+                                   data-correct="7 ft" 
                                    placeholder="Type answer..." 
                                    oninput="saveState(); updateProgress();">
                             <span class="feedback-badge"></span>
                           </div>
                         </td>
-                      
+                      <td>168 ft³</td>
                 </tr>
               
                 <tr>
-                  <td>9 ft</td><td>2 ft</td><td>5 ft</td>
+                  <td>Capsule Z</td><td>12 cm</td>
                         <td>
                           <div class="table-input-wrapper">
                             <input type="text" 
                                    class="custom-input table-input" 
-                                   name="q_12_table_2_3"
-                                   data-correct="90 ft³" 
+                                   name="q_13_table_2_2"
+                                   data-correct="6 cm" 
                                    placeholder="Type answer..." 
                                    oninput="saveState(); updateProgress();">
                             <span class="feedback-badge"></span>
                           </div>
                         </td>
-                      
+                      <td>5 cm</td><td>360 cm³</td>
                 </tr>
               
             </tbody>
@@ -3768,94 +3990,10 @@ body { font-size: 15px; line-height: 1.58; }
           </div>
         </div>
         <div class="hw-work">
-          <label class="hw-work-label" for="work_12"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
-          <textarea id="work_12" name="work_12" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+          <label class="hw-work-label" for="work_13"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_13" name="work_13" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
         </div>
       </div>
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">
-          ✓ Check This Problem / Revisar
-        </button>
-        <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_13" data-problem-type="drag-sort" data-problem-subtype="drag-order">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Bonus / Más 8</div>
-        <div class="problem-type-badge">DRAG ORDER</div>
-      </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 140\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Rectangular prism to label\"><rect x=\"40\" y=\"45\" width=\"110\" height=\"70\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"40,45 75,20 185,20 150,45\" fill=\"#eef5f4\" stroke=\"#12355b\" stroke-width=\"2\"/><polyline points=\"150,45 185,20 185,90 150,115\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><line x1=\"150\" y1=\"115\" x2=\"185\" y2=\"90\" stroke=\"#12355b\" stroke-width=\"2\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Sort these rectangular prisms from LEAST volume to GREATEST volume.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Use the ▲ ▼ buttons to reorder steps, or drag the row handles on a computer.</span><span class="lang-es" lang="es">👪 Usen ▲ ▼ para reordenar, o arrastren las filas en la computadora.</span></p>
-        <div class="drag-order-workspace" id="dragorder_13" data-correct-order='[&quot;3 × 3 × 3 = 27&quot;,&quot;10 × 2 × 2 = 40&quot;,&quot;5 × 4 × 3 = 60&quot;,&quot;6 × 6 × 2 = 72&quot;,&quot;8 × 5 × 4 = 160&quot;]' data-initial-order='[&quot;3 × 3 × 3 = 27&quot;,&quot;10 × 2 × 2 = 40&quot;,&quot;6 × 6 × 2 = 72&quot;,&quot;5 × 4 × 3 = 60&quot;,&quot;8 × 5 × 4 = 160&quot;]'>
-          <div class="drag-order-list" id="orderlist_13">
-            
-              <div class="drag-order-row" draggable="true" id="order_13_0" data-step-text="3 × 3 × 3 = 27" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">1</span>
-                <span class="drag-order-text">3 × 3 × 3 = 27</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(13, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(13, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-              <div class="drag-order-row" draggable="true" id="order_13_1" data-step-text="10 × 2 × 2 = 40" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">2</span>
-                <span class="drag-order-text">10 × 2 × 2 = 40</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(13, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(13, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-              <div class="drag-order-row" draggable="true" id="order_13_2" data-step-text="6 × 6 × 2 = 72" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">3</span>
-                <span class="drag-order-text">6 × 6 × 2 = 72</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(13, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(13, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-              <div class="drag-order-row" draggable="true" id="order_13_3" data-step-text="5 × 4 × 3 = 60" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">4</span>
-                <span class="drag-order-text">5 × 4 × 3 = 60</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(13, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(13, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-              <div class="drag-order-row" draggable="true" id="order_13_4" data-step-text="8 × 5 × 4 = 160" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">5</span>
-                <span class="drag-order-text">8 × 5 × 4 = 160</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(13, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(13, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragOrder(13); saveState(); updateProgress();">Reset Order</button>
-        </div>
-      </div>
-    
-      
-      <details class="hw-step-guide" open>
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Label the prism with its length, width, and height.</span><span class="lang-es" lang="es">Rotula el prisma con su largo, ancho y alto.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Multiply length × width × height to fill the box with unit cubes.</span><span class="lang-es" lang="es">Multiplica largo × ancho × alto para llenar la caja con cubos.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
-      </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">
           ✓ Check This Problem / Revisar

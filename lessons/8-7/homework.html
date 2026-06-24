@@ -1736,6 +1736,32 @@ body.help-modal-open { overflow: hidden; }
 .together-fill-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
 .together-step-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 
+/* Compact "Try Together" steps: tighter padding, inline action buttons, single-row input. */
+.together-steps { gap: 8px; }
+.together-step--compact { padding: 9px 11px; }
+.together-step--compact .together-step-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.together-step--compact .step-badge { margin-bottom: 0; }
+.together-step--compact .together-step-actions { margin-top: 0; }
+.together-step--compact p { margin: 6px 0 0; font-size: 14px; }
+.together-step--compact .together-fill { margin: 7px 0 0; }
+.together-step--compact .together-fill-input { min-height: 40px; }
+
+/* Graduated practice ladder under the guided steps. */
+.together-ladder { margin-top: 16px; padding-top: 14px; border-top: 2px dashed var(--line); }
+.ladder-title { font-family: var(--font-display); font-size: 16px; margin: 0 0 4px; color: var(--navy); }
+.ladder-note { font-size: 13px; margin: 0 0 12px; }
+.ladder-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; counter-reset: ladder; }
+.ladder-item { border: 1px solid var(--line); border-left: 4px solid #5b8def; border-radius: var(--radius-sm); padding: 9px 11px; background: var(--white); }
+.ladder-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.ladder-stars { color: #f5a623; font-size: 13px; letter-spacing: 1px; }
+.ladder-tier { font-family: var(--font-display); font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: var(--navy); }
+.ladder-q { margin: 0 0 8px; font-size: 14.5px; line-height: 1.4; }
+.ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
+.ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
+.ladder-answer { margin-top: 7px; }
+.ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
+.ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
+
 /* "More practice" accordion in the Check tab */
 /* Tiered practice sections (warm-up first, then a harder challenge set) */
 .practice-tier { margin: 0 0 22px; }
@@ -2597,61 +2623,118 @@ body { font-size: 15px; line-height: 1.58; }
       </p>
       <ol class="together-steps">
         
-          <li class="together-step step-color-1">
+          <li class="together-step together-step--compact step-color-1">
             <div class="together-step-head">
               <span class="step-badge">Step 1 / Paso 1</span>
+              <div class="together-step-actions">
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 hint","titleEs":"Pista del paso 1","en":"The tallest bars are on the right; the short bars (the tail) are on the left.","es":"Las barras más altas están a la derecha; las barras cortas (la cola) están a la izquierda."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 — more help","titleEs":"Paso 1 — más ayuda","en":"Point along the bars from tall to short to find the tail.","es":"Señalen a lo largo de las barras de alta a corta para encontrar la cola."}' onclick="openHelpModalFromBtn(this)" aria-label="🤝 More help / Más ayuda">🤝 More help / Más ayuda</button>
+              </div>
             </div>
-            <p class="lang-en"><strong>First…</strong> Where are the tallest bars, and which way does the tail point?</p>
-            <p class="lang-es" lang="es"><strong>Primero…</strong> ¿Dónde están las barras más altas, y hacia qué lado apunta la cola?</p>
+            <p class="lang-en">Where are the tallest bars, and which way does the tail point?</p>
+            <p class="lang-es" lang="es">¿Dónde están las barras más altas, y hacia qué lado apunta la cola?</p>
             <div class="together-fill">
-              <label class="together-fill-label" for="together_0">
-                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
-                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
-              </label>
-              <textarea id="together_0" name="together_0" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
-            </div>
-            <div class="together-step-actions">
-              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 hint","titleEs":"Pista del paso 1","en":"The tallest bars are on the right; the short bars (the tail) are on the left.","es":"Las barras más altas están a la derecha; las barras cortas (la cola) están a la izquierda."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
-              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 — more help","titleEs":"Paso 1 — más ayuda","en":"Point along the bars from tall to short to find the tail.","es":"Señalen a lo largo de las barras de alta a corta para encontrar la cola."}' onclick="openHelpModalFromBtn(this)" aria-label="🤝 More help / Más ayuda">🤝 More help / Más ayuda</button>
+              <textarea id="together_0" name="together_0" class="custom-textarea together-fill-input" rows="1" placeholder="✏️ Your turn / Tu turno…" oninput="saveState();" aria-label="Your work for step 1"></textarea>
             </div>
           </li>
-          <li class="together-step step-color-2">
+          <li class="together-step together-step--compact step-color-2">
             <div class="together-step-head">
               <span class="step-badge">Step 2 / Paso 2</span>
+              <div class="together-step-actions">
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 hint","titleEs":"Pista del paso 2","en":"We name the skew after the tail, so this is skewed left.","es":"Nombramos el sesgo según la cola, así que este está sesgado a la izquierda."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 — more help","titleEs":"Paso 2 — más ayuda","en":"Remember: the skew is named for the tail, not the tall part.","es":"Recuerden: el sesgo se nombra por la cola, no por la parte alta."}' onclick="openHelpModalFromBtn(this)" aria-label="🤝 More help / Más ayuda">🤝 More help / Más ayuda</button>
+              </div>
             </div>
-            <p class="lang-en"><strong>First…</strong> Since the tail points left, is this symmetric, skewed right, or skewed left?</p>
-            <p class="lang-es" lang="es"><strong>Primero…</strong> Como la cola apunta a la izquierda, ¿es simétrico, sesgado a la derecha o sesgado a la izquierda?</p>
+            <p class="lang-en">Since the tail points left, is this symmetric, skewed right, or skewed left?</p>
+            <p class="lang-es" lang="es">Como la cola apunta a la izquierda, ¿es simétrico, sesgado a la derecha o sesgado a la izquierda?</p>
             <div class="together-fill">
-              <label class="together-fill-label" for="together_1">
-                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
-                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
-              </label>
-              <textarea id="together_1" name="together_1" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
-            </div>
-            <div class="together-step-actions">
-              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 hint","titleEs":"Pista del paso 2","en":"We name the skew after the tail, so this is skewed left.","es":"Nombramos el sesgo según la cola, así que este está sesgado a la izquierda."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
-              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 — more help","titleEs":"Paso 2 — más ayuda","en":"Remember: the skew is named for the tail, not the tall part.","es":"Recuerden: el sesgo se nombra por la cola, no por la parte alta."}' onclick="openHelpModalFromBtn(this)" aria-label="🤝 More help / Más ayuda">🤝 More help / Más ayuda</button>
+              <textarea id="together_1" name="together_1" class="custom-textarea together-fill-input" rows="1" placeholder="✏️ Your turn / Tu turno…" oninput="saveState();" aria-label="Your work for step 2"></textarea>
             </div>
           </li>
-          <li class="together-step step-color-3">
+          <li class="together-step together-step--compact step-color-3">
             <div class="together-step-head">
               <span class="step-badge">Step 3 / Paso 3</span>
+              <div class="together-step-actions">
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 3 hint","titleEs":"Pista del paso 3","en":"Both sides are the same, so it is symmetric.","es":"Los dos lados son iguales, así que es simétrico."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 3 — more help","titleEs":"Paso 3 — más ayuda","en":"Talking about why the two sides match matters more than going fast.","es":"Hablar de por qué los dos lados coinciden importa más que ir rápido."}' onclick="openHelpModalFromBtn(this)" aria-label="🤝 More help / Más ayuda">🤝 More help / Más ayuda</button>
+              </div>
             </div>
-            <p class="lang-en"><strong>First…</strong> Now picture bar heights 2, 6, 6, 2. Do both sides match? What shape is that?</p>
-            <p class="lang-es" lang="es"><strong>Primero…</strong> Ahora imaginen las alturas de barras 2, 6, 6, 2. ¿Coinciden los dos lados? ¿Qué forma es esa?</p>
+            <p class="lang-en">Now picture bar heights 2, 6, 6, 2. Do both sides match? What shape is that?</p>
+            <p class="lang-es" lang="es">Ahora imaginen las alturas de barras 2, 6, 6, 2. ¿Coinciden los dos lados? ¿Qué forma es esa?</p>
             <div class="together-fill">
-              <label class="together-fill-label" for="together_2">
-                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
-                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
-              </label>
-              <textarea id="together_2" name="together_2" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
-            </div>
-            <div class="together-step-actions">
-              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 3 hint","titleEs":"Pista del paso 3","en":"Both sides are the same, so it is symmetric.","es":"Los dos lados son iguales, así que es simétrico."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
-              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 3 — more help","titleEs":"Paso 3 — más ayuda","en":"Talking about why the two sides match matters more than going fast.","es":"Hablar de por qué los dos lados coinciden importa más que ir rápido."}' onclick="openHelpModalFromBtn(this)" aria-label="🤝 More help / Más ayuda">🤝 More help / Más ayuda</button>
+              <textarea id="together_2" name="together_2" class="custom-textarea together-fill-input" rows="1" placeholder="✏️ Your turn / Tu turno…" oninput="saveState();" aria-label="Your work for step 3"></textarea>
             </div>
           </li>
       </ol>
+      
+    <div class="together-ladder">
+      <h3 class="ladder-title">
+        <span class="lang-en">📈 Practice ladder — easiest first</span>
+        <span class="lang-es" lang="es">📈 Escalera de práctica — del más fácil al más difícil</span>
+      </h3>
+      <p class="ladder-note bilingual-block">
+        <span class="lang-en">Do these together. Start at ★ and climb to ★★★ when ready.</span>
+        <span class="lang-es" lang="es">Háganlos juntos. Empiecen en ★ y suban a ★★★ cuando estén listos.</span>
+      </p>
+      <ol class="ladder-list">
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★</span>
+            <span class="ladder-tier"><span class="lang-en">Start easy</span><span class="lang-es" lang="es">Empieza fácil</span></span>
+          </div>
+          <p class="ladder-q">A histogram of basketball players&#039; ages shows: most players are 22–28, with a long tail of older players up to age 40. What is the shape of this distribution?</p>
+          <input type="text" id="ladder_0" name="ladder_0" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 1" />
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text">Skewed right</p>
+           </details>
+        </li>
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★</span>
+            <span class="ladder-tier"><span class="lang-en">Start easy</span><span class="lang-es" lang="es">Empieza fácil</span></span>
+          </div>
+          <p class="ladder-q">A data set is symmetric. What is likely true about the mean and median?</p>
+          <input type="text" id="ladder_1" name="ladder_1" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 2" />
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text">They are approximately equal</p>
+           </details>
+        </li>
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★★</span>
+            <span class="ladder-tier"><span class="lang-en">Keep going</span><span class="lang-es" lang="es">Sigan</span></span>
+          </div>
+          <p class="ladder-q">A dot plot of goals scored per game shows: 0(5 dots), 1(7 dots), 2(4 dots), 3(2 dots), 4(1 dot). What is the shape?</p>
+          <input type="text" id="ladder_2" name="ladder_2" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 3" />
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text">Skewed right — most values at the low end with a tail to the right</p>
+           </details>
+        </li>
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★★</span>
+            <span class="ladder-tier"><span class="lang-en">Keep going</span><span class="lang-es" lang="es">Sigan</span></span>
+          </div>
+          <p class="ladder-q">Display 1: A histogram of points-per-game has a few short bars stretching out to the high-scoring side, with a long tail of high values on the right. What shape is this distribution?</p>
+          <input type="text" id="ladder_3" name="ladder_3" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 4" />
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text">Skewed right</p>
+           </details>
+        </li>
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★★★</span>
+            <span class="ladder-tier"><span class="lang-en">Challenge</span><span class="lang-es" lang="es">Reto</span></span>
+          </div>
+          <p class="ladder-q">A teacher shows two dot plots of quiz scores from two different classes. Class A&#039;s data is symmetric with a cluster around 80. Class B&#039;s data is skewed right with most scores between 60–70 and a few scores near 100. Compare the classes: which has a higher median? Which has a higher mean? In which class does the mean better represent a typical score?</p>
+          <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
+          
+        </li></ol>
+    </div>
     </div>
 
     <div class="tab-panel-inner" data-tab-panel="check" id="hw_panel_check" role="tabpanel" hidden>
@@ -3424,102 +3507,9 @@ body { font-size: 15px; line-height: 1.58; }
     </section>
   
 
-    <section class="problem-section card" id="problem_9" data-problem-type="error-analysis">
+    <section class="problem-section card" id="problem_9" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 4</div>
-        <div class="problem-type-badge">ERROR ANALYSIS</div>
-      </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The shape call is right — check the measure-of-center choice instead.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
-      
-      <div class="problem-body">
-        <h3 class="error-analysis-title">⚠️ onLevel — Spot the Common Mistake</h3>
-        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Read each step aloud and ask: does this step follow the math rules we learned?</span><span class="lang-es" lang="es">👪 Lean cada paso en voz alta y pregunten: ¿sigue las reglas que aprendimos?</span></p>
-        
-        <div class="clipboard-box">
-          <div class="clipboard-top"></div>
-          <div class="clipboard-paper">
-            
-              <div class="worked-step" id="step_q_9_1">
-                <span class="step-badge">Step 1</span>
-                <span class="step-label">Data:</span>
-                <span class="step-work">Player salaries (millions): 1, 1, 2, 2, 2, 3, 3, 40.</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_9_2">
-                <span class="step-badge">Step 2</span>
-                <span class="step-label">Shape:</span>
-                <span class="step-work">Most salaries cluster at 1–3 million with one value way out at 40 million, so the distribution is skewed right. ✓</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_9_3">
-                <span class="step-badge">Step 3</span>
-                <span class="step-label">Best measure:</span>
-                <span class="step-work">The student picks the MEAN to describe a typical salary because the shape is skewed right.</span>
-              </div>
-            
-          </div>
-        </div>
-        
-        <div class="error-controls">
-          <div class="error-select-row">
-            <label for="error_step_select_9">Which step has the error?</label>
-            <select id="error_step_select_9" class="custom-select error-step-select" data-correct="3" onchange="saveState(); updateProgress();">
-              <option value="">-- Choose Step --</option>
-              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option>
-            </select>
-            <span class="feedback-badge"></span>
-          </div>
-          
-          <div class="error-explain-row">
-            <label for="error_explain_input_9">Explain the error and write the correct calculation:</label>
-            <textarea id="error_explain_input_9" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
-            <span class="feedback-badge"></span>
-          </div>
-          
-          <div class="reveal-box" id="error_correct_work_9" style="display:none;">
-            <strong>Correct Work Reference:</strong> The shape is correct (skewed right), but the MEDIAN — not the mean — is the better measure for skewed data. The single 40-million salary is an extreme value in the right tail that pulls the mean up to about 6.75 million, far above what most players earn. The median is 2 million, which truly represents a typical salary. Use the median whenever data is skewed.
-            
-          </div>
-        </div>
-      </div>
-    
-      
-      <details class="hw-step-guide" open>
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each data value above the number line.</span><span class="lang-es" lang="es">Marca cada valor de datos sobre la recta numérica.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Organize the data first, then find the center or spread you need.</span><span class="lang-es" lang="es">Organiza los datos primero, luego halla el centro o la dispersión.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
-      </details>
-      <div class="hw-workspace">
-        <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Plot each data value above the number line.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Marca cada valor de datos sobre la recta numérica.</span></div>
-          <div class="hw-visual-frame hw-drawable" data-draw-frame>
-            <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
-            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
-            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
-          </div>
-        </div>
-        <div class="hw-work">
-          <label class="hw-work-label" for="work_9"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
-          <textarea id="work_9" name="work_9" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
-        </div>
-      </div>
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">
-          ✓ Check This Problem / Revisar
-        </button>
-        <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_10" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Bonus / Más 5</div>
         <div class="problem-type-badge">DRAG SORT</div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Symmetric: most values cluster in the middle with equal tails on both sides.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
@@ -3528,36 +3518,36 @@ body { font-size: 15px; line-height: 1.58; }
         <p class="problem-stem">Sort each data set by its likely histogram shape.</p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
         <div class="family-hint-box"><p>💡 Symmetric: most values cluster in the middle with equal tails on both sides.</p><p>💡 Skewed RIGHT: a few very HIGH values (e.g., superstar earnings) stretch the tail right.</p><p>💡 Skewed LEFT: a few very LOW values (e.g., a few bad rounds) stretch the tail left.</p></div>
-        <div class="drag-sort-workspace" id="dragsort_10">
+        <div class="drag-sort-workspace" id="dragsort_9">
           <div class="drag-columns">
             
-              <div class="drag-column" data-category-id="symmetric" ondragover="allowDrop(event)" ondrop="handleDrop(event, 10, 'symmetric')">
+              <div class="drag-column" data-category-id="symmetric" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'symmetric')">
                 <div class="drag-column-header">Symmetric</div>
-                <div class="drag-column-slots" id="slots_10_symmetric" ondragover="allowDrop(event)" ondrop="handleDrop(event, 10, 'symmetric')"></div>
+                <div class="drag-column-slots" id="slots_9_symmetric" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'symmetric')"></div>
               </div>
-              <div class="drag-column" data-category-id="skewed-right" ondragover="allowDrop(event)" ondrop="handleDrop(event, 10, 'skewed-right')">
+              <div class="drag-column" data-category-id="skewed-right" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'skewed-right')">
                 <div class="drag-column-header">Skewed Right</div>
-                <div class="drag-column-slots" id="slots_10_skewed-right" ondragover="allowDrop(event)" ondrop="handleDrop(event, 10, 'skewed-right')"></div>
+                <div class="drag-column-slots" id="slots_9_skewed-right" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'skewed-right')"></div>
               </div>
-              <div class="drag-column" data-category-id="skewed-left" ondragover="allowDrop(event)" ondrop="handleDrop(event, 10, 'skewed-left')">
+              <div class="drag-column" data-category-id="skewed-left" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'skewed-left')">
                 <div class="drag-column-header">Skewed Left</div>
-                <div class="drag-column-slots" id="slots_10_skewed-left" ondragover="allowDrop(event)" ondrop="handleDrop(event, 10, 'skewed-left')"></div>
+                <div class="drag-column-slots" id="slots_9_skewed-left" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, 'skewed-left')"></div>
               </div>
           </div>
           <div class="drag-source-section">
             <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
-            <div class="drag-source-pile" id="pile_10" ondragover="allowDrop(event)" ondrop="handleDrop(event, 10, '')">
+            <div class="drag-source-pile" id="pile_9" ondragover="allowDrop(event)" ondrop="handleDrop(event, 9, '')">
               
                 <div class="drag-card"
                      draggable="true"
-                     id="card_10_0"
+                     id="card_9_0"
                      data-item-index="0"
                      data-correct-category="symmetric"
                      ondragstart="handleDragStart(event)"
                      ondragend="handleDragEnd(event)">
                   <span class="drag-handle" aria-hidden="true">☰</span>
                   <span class="card-text">Player heights across a league</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_10_0', 10); saveState(); updateProgress();">
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_0', 9); saveState(); updateProgress();">
                     <option value="">-- Move to --</option>
                     <option value="symmetric">Symmetric</option><option value="skewed-right">Skewed Right</option><option value="skewed-left">Skewed Left</option>
                     <option value="">Unsorted Pile</option>
@@ -3565,14 +3555,14 @@ body { font-size: 15px; line-height: 1.58; }
                 </div>
                 <div class="drag-card"
                      draggable="true"
-                     id="card_10_1"
+                     id="card_9_1"
                      data-item-index="1"
                      data-correct-category="skewed-right"
                      ondragstart="handleDragStart(event)"
                      ondragend="handleDragEnd(event)">
                   <span class="drag-handle" aria-hidden="true">☰</span>
                   <span class="card-text">Career earnings of athletes</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_10_1', 10); saveState(); updateProgress();">
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_1', 9); saveState(); updateProgress();">
                     <option value="">-- Move to --</option>
                     <option value="symmetric">Symmetric</option><option value="skewed-right">Skewed Right</option><option value="skewed-left">Skewed Left</option>
                     <option value="">Unsorted Pile</option>
@@ -3580,14 +3570,14 @@ body { font-size: 15px; line-height: 1.58; }
                 </div>
                 <div class="drag-card"
                      draggable="true"
-                     id="card_10_2"
+                     id="card_9_2"
                      data-item-index="2"
                      data-correct-category="skewed-left"
                      ondragstart="handleDragStart(event)"
                      ondragend="handleDragEnd(event)">
                   <span class="drag-handle" aria-hidden="true">☰</span>
                   <span class="card-text">An experienced archer&#039;s scores out of 100</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_10_2', 10); saveState(); updateProgress();">
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_9_2', 9); saveState(); updateProgress();">
                     <option value="">-- Move to --</option>
                     <option value="symmetric">Symmetric</option><option value="skewed-right">Skewed Right</option><option value="skewed-left">Skewed Left</option>
                     <option value="">Unsorted Pile</option>
@@ -3597,7 +3587,7 @@ body { font-size: 15px; line-height: 1.58; }
           </div>
         </div>
         <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(10); saveState(); updateProgress();">Reset Sorting</button>
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(9); saveState(); updateProgress();">Reset Sorting</button>
         </div>
       </div>
     
@@ -3612,116 +3602,17 @@ body { font-size: 15px; line-height: 1.58; }
         </ol>
       </details>
       <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(9)" aria-label="Check answer for problem 10">
           ✓ Check This Problem / Revisar
         </button>
-        <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
+        <div class="problem-check-result" id="problem_result_9" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
     </section>
   
 
-    <section class="problem-section card" id="problem_11" data-problem-type="error-analysis">
+    <section class="problem-section card" id="problem_10" data-problem-type="multiple-choice">
       <div class="problem-header-row">
-        <div class="problem-number-badge">Bonus / Más 6</div>
-        <div class="problem-type-badge">ERROR ANALYSIS</div>
-      </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The direction of the skew is the direction of the TAIL, not the peak. Where is the long tail?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
-      
-      <div class="problem-body">
-        <h3 class="error-analysis-title">⚠️ Find the Shape Error</h3>
-        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Read each step aloud and ask: does this step follow the math rules we learned?</span><span class="lang-es" lang="es">👪 Lean cada paso en voz alta y pregunten: ¿sigue las reglas que aprendimos?</span></p>
-        
-        <div class="clipboard-box">
-          <div class="clipboard-top"></div>
-          <div class="clipboard-paper">
-            
-              <div class="worked-step" id="step_q_11_1">
-                <span class="step-badge">Step 1</span>
-                <span class="step-label">Data:</span>
-                <span class="step-work">Sprint times (seconds): 10.2, 10.5, 10.8, 11.0, 11.1, 11.2, 11.3, 11.5, 14.8</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_11_2">
-                <span class="step-badge">Step 2</span>
-                <span class="step-label">Histogram:</span>
-                <span class="step-work">10.0–10.9: 3, 11.0–11.9: 5, 12.0–12.9: 0, 13.0–13.9: 0, 14.0–14.9: 1</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_11_3">
-                <span class="step-badge">Step 3</span>
-                <span class="step-label">Shape:</span>
-                <span class="step-work">Skewed left because the tall bar is on the right side</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_11_4">
-                <span class="step-badge">Step 4</span>
-                <span class="step-label">Best measure:</span>
-                <span class="step-work">Use the mean because skewed data uses the mean</span>
-              </div>
-            
-          </div>
-        </div>
-        
-        <div class="error-controls">
-          <div class="error-select-row">
-            <label for="error_step_select_11">Which step has the error?</label>
-            <select id="error_step_select_11" class="custom-select error-step-select" data-correct="3" onchange="saveState(); updateProgress();">
-              <option value="">-- Choose Step --</option>
-              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option><option value="4">Step 4</option>
-            </select>
-            <span class="feedback-badge"></span>
-          </div>
-          
-          <div class="error-explain-row">
-            <label for="error_explain_input_11">Explain the error and write the correct calculation:</label>
-            <textarea id="error_explain_input_11" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
-            <span class="feedback-badge"></span>
-          </div>
-          
-          <div class="reveal-box" id="error_correct_work_11" style="display:none;">
-            <strong>Correct Work Reference:</strong> This is skewed RIGHT, not left. The cluster of data is on the left (10–11 seconds) and the tail with the extreme value (14.8) stretches to the right. Also, for skewed data the MEDIAN is the better measure, not the mean, because the mean is pulled toward the tail.
-            
-          </div>
-        </div>
-      </div>
-    
-      
-      <details class="hw-step-guide" open>
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each data value above the number line.</span><span class="lang-es" lang="es">Marca cada valor de datos sobre la recta numérica.</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Organize the data first, then find the center or spread you need.</span><span class="lang-es" lang="es">Organiza los datos primero, luego halla el centro o la dispersión.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
-      </details>
-      <div class="hw-workspace">
-        <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Plot each data value above the number line.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Marca cada valor de datos sobre la recta numérica.</span></div>
-          <div class="hw-visual-frame hw-drawable" data-draw-frame>
-            <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
-            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
-            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
-          </div>
-        </div>
-        <div class="hw-work">
-          <label class="hw-work-label" for="work_11"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
-          <textarea id="work_11" name="work_11" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
-        </div>
-      </div>
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">
-          ✓ Check This Problem / Revisar
-        </button>
-        <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_12" data-problem-type="multiple-choice">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Bonus / Más 7</div>
+        <div class="problem-number-badge">Bonus / Más 5</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The skew direction is named after the TAIL. If the tail stretches to the right, it is skewed right, even though the peak is on the left.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
@@ -3731,26 +3622,26 @@ body { font-size: 15px; line-height: 1.58; }
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
         <div class="mc-options" data-correct="0" data-explanation="The skew direction is named after the TAIL. If the tail stretches to the right, it is skewed right, even though the peak is on the left.">
           
-            <label class="mc-option-label" id="label_q_12_0">
-              <input type="radio" name="q_12" value="0" onchange="saveState(); updateProgress();">
+            <label class="mc-option-label" id="label_q_10_0">
+              <input type="radio" name="q_10" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
               <span class="choice-text">Skew — the direction of the long tail tells you the skew direction</span>
             </label>
           
-            <label class="mc-option-label" id="label_q_12_1">
-              <input type="radio" name="q_12" value="1" onchange="saveState(); updateProgress();">
+            <label class="mc-option-label" id="label_q_10_1">
+              <input type="radio" name="q_10" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
               <span class="choice-text">Skew — the direction of the peak tells you the skew direction</span>
             </label>
           
-            <label class="mc-option-label" id="label_q_12_2">
-              <input type="radio" name="q_12" value="2" onchange="saveState(); updateProgress();">
+            <label class="mc-option-label" id="label_q_10_2">
+              <input type="radio" name="q_10" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
               <span class="choice-text">Skew — the direction the median points</span>
             </label>
           
-            <label class="mc-option-label" id="label_q_12_3">
-              <input type="radio" name="q_12" value="3" onchange="saveState(); updateProgress();">
+            <label class="mc-option-label" id="label_q_10_3">
+              <input type="radio" name="q_10" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
               <span class="choice-text">Skew — the direction of the mode</span>
             </label>
@@ -3778,22 +3669,22 @@ body { font-size: 15px; line-height: 1.58; }
           </div>
         </div>
         <div class="hw-work">
-          <label class="hw-work-label" for="work_12"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
-          <textarea id="work_12" name="work_12" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+          <label class="hw-work-label" for="work_10"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_10" name="work_10" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
         </div>
       </div>
       <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">
           ✓ Check This Problem / Revisar
         </button>
-        <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
+        <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
     </section>
   
 
-    <section class="problem-section card" id="problem_13" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
+    <section class="problem-section card" id="problem_11" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
-        <div class="problem-number-badge">Bonus / Más 8</div>
+        <div class="problem-number-badge">Bonus / Más 6</div>
         <div class="problem-type-badge">DRAG SORT</div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Symmetric: bars rise and fall evenly from the center. The pattern mirrors itself.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
@@ -3802,36 +3693,36 @@ body { font-size: 15px; line-height: 1.58; }
         <p class="problem-stem">Sort each bar pattern into the correct distribution shape.</p>
         <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
         <div class="family-hint-box"><p>💡 Symmetric: bars rise and fall evenly from the center. The pattern mirrors itself.</p><p>💡 Skewed right: tallest bars on the left, trailing off to the right. Skewed left: opposite.</p></div>
-        <div class="drag-sort-workspace" id="dragsort_13">
+        <div class="drag-sort-workspace" id="dragsort_11">
           <div class="drag-columns">
             
-              <div class="drag-column" data-category-id="symmetric" ondragover="allowDrop(event)" ondrop="handleDrop(event, 13, 'symmetric')">
+              <div class="drag-column" data-category-id="symmetric" ondragover="allowDrop(event)" ondrop="handleDrop(event, 11, 'symmetric')">
                 <div class="drag-column-header">Symmetric</div>
-                <div class="drag-column-slots" id="slots_13_symmetric" ondragover="allowDrop(event)" ondrop="handleDrop(event, 13, 'symmetric')"></div>
+                <div class="drag-column-slots" id="slots_11_symmetric" ondragover="allowDrop(event)" ondrop="handleDrop(event, 11, 'symmetric')"></div>
               </div>
-              <div class="drag-column" data-category-id="skewed-right" ondragover="allowDrop(event)" ondrop="handleDrop(event, 13, 'skewed-right')">
+              <div class="drag-column" data-category-id="skewed-right" ondragover="allowDrop(event)" ondrop="handleDrop(event, 11, 'skewed-right')">
                 <div class="drag-column-header">Skewed Right</div>
-                <div class="drag-column-slots" id="slots_13_skewed-right" ondragover="allowDrop(event)" ondrop="handleDrop(event, 13, 'skewed-right')"></div>
+                <div class="drag-column-slots" id="slots_11_skewed-right" ondragover="allowDrop(event)" ondrop="handleDrop(event, 11, 'skewed-right')"></div>
               </div>
-              <div class="drag-column" data-category-id="skewed-left" ondragover="allowDrop(event)" ondrop="handleDrop(event, 13, 'skewed-left')">
+              <div class="drag-column" data-category-id="skewed-left" ondragover="allowDrop(event)" ondrop="handleDrop(event, 11, 'skewed-left')">
                 <div class="drag-column-header">Skewed Left</div>
-                <div class="drag-column-slots" id="slots_13_skewed-left" ondragover="allowDrop(event)" ondrop="handleDrop(event, 13, 'skewed-left')"></div>
+                <div class="drag-column-slots" id="slots_11_skewed-left" ondragover="allowDrop(event)" ondrop="handleDrop(event, 11, 'skewed-left')"></div>
               </div>
           </div>
           <div class="drag-source-section">
             <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
-            <div class="drag-source-pile" id="pile_13" ondragover="allowDrop(event)" ondrop="handleDrop(event, 13, '')">
+            <div class="drag-source-pile" id="pile_11" ondragover="allowDrop(event)" ondrop="handleDrop(event, 11, '')">
               
                 <div class="drag-card"
                      draggable="true"
-                     id="card_13_0"
+                     id="card_11_0"
                      data-item-index="0"
                      data-correct-category="symmetric"
                      ondragstart="handleDragStart(event)"
                      ondragend="handleDragEnd(event)">
                   <span class="drag-handle" aria-hidden="true">☰</span>
                   <span class="card-text">Bar heights: 2, 5, 8, 5, 2</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_13_0', 13); saveState(); updateProgress();">
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_11_0', 11); saveState(); updateProgress();">
                     <option value="">-- Move to --</option>
                     <option value="symmetric">Symmetric</option><option value="skewed-right">Skewed Right</option><option value="skewed-left">Skewed Left</option>
                     <option value="">Unsorted Pile</option>
@@ -3839,14 +3730,14 @@ body { font-size: 15px; line-height: 1.58; }
                 </div>
                 <div class="drag-card"
                      draggable="true"
-                     id="card_13_1"
+                     id="card_11_1"
                      data-item-index="1"
                      data-correct-category="symmetric"
                      ondragstart="handleDragStart(event)"
                      ondragend="handleDragEnd(event)">
                   <span class="drag-handle" aria-hidden="true">☰</span>
                   <span class="card-text">Bar heights: 3, 6, 6, 3</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_13_1', 13); saveState(); updateProgress();">
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_11_1', 11); saveState(); updateProgress();">
                     <option value="">-- Move to --</option>
                     <option value="symmetric">Symmetric</option><option value="skewed-right">Skewed Right</option><option value="skewed-left">Skewed Left</option>
                     <option value="">Unsorted Pile</option>
@@ -3854,14 +3745,14 @@ body { font-size: 15px; line-height: 1.58; }
                 </div>
                 <div class="drag-card"
                      draggable="true"
-                     id="card_13_2"
+                     id="card_11_2"
                      data-item-index="2"
                      data-correct-category="skewed-right"
                      ondragstart="handleDragStart(event)"
                      ondragend="handleDragEnd(event)">
                   <span class="drag-handle" aria-hidden="true">☰</span>
                   <span class="card-text">Bar heights: 8, 5, 3, 1</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_13_2', 13); saveState(); updateProgress();">
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_11_2', 11); saveState(); updateProgress();">
                     <option value="">-- Move to --</option>
                     <option value="symmetric">Symmetric</option><option value="skewed-right">Skewed Right</option><option value="skewed-left">Skewed Left</option>
                     <option value="">Unsorted Pile</option>
@@ -3869,14 +3760,14 @@ body { font-size: 15px; line-height: 1.58; }
                 </div>
                 <div class="drag-card"
                      draggable="true"
-                     id="card_13_3"
+                     id="card_11_3"
                      data-item-index="3"
                      data-correct-category="skewed-right"
                      ondragstart="handleDragStart(event)"
                      ondragend="handleDragEnd(event)">
                   <span class="drag-handle" aria-hidden="true">☰</span>
                   <span class="card-text">Bar heights: 10, 6, 2, 1, 1</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_13_3', 13); saveState(); updateProgress();">
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_11_3', 11); saveState(); updateProgress();">
                     <option value="">-- Move to --</option>
                     <option value="symmetric">Symmetric</option><option value="skewed-right">Skewed Right</option><option value="skewed-left">Skewed Left</option>
                     <option value="">Unsorted Pile</option>
@@ -3884,14 +3775,14 @@ body { font-size: 15px; line-height: 1.58; }
                 </div>
                 <div class="drag-card"
                      draggable="true"
-                     id="card_13_4"
+                     id="card_11_4"
                      data-item-index="4"
                      data-correct-category="skewed-left"
                      ondragstart="handleDragStart(event)"
                      ondragend="handleDragEnd(event)">
                   <span class="drag-handle" aria-hidden="true">☰</span>
                   <span class="card-text">Bar heights: 1, 3, 5, 8</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_13_4', 13); saveState(); updateProgress();">
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_11_4', 11); saveState(); updateProgress();">
                     <option value="">-- Move to --</option>
                     <option value="symmetric">Symmetric</option><option value="skewed-right">Skewed Right</option><option value="skewed-left">Skewed Left</option>
                     <option value="">Unsorted Pile</option>
@@ -3899,14 +3790,14 @@ body { font-size: 15px; line-height: 1.58; }
                 </div>
                 <div class="drag-card"
                      draggable="true"
-                     id="card_13_5"
+                     id="card_11_5"
                      data-item-index="5"
                      data-correct-category="skewed-left"
                      ondragstart="handleDragStart(event)"
                      ondragend="handleDragEnd(event)">
                   <span class="drag-handle" aria-hidden="true">☰</span>
                   <span class="card-text">Bar heights: 1, 1, 2, 6, 10</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_13_5', 13); saveState(); updateProgress();">
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_11_5', 11); saveState(); updateProgress();">
                     <option value="">-- Move to --</option>
                     <option value="symmetric">Symmetric</option><option value="skewed-right">Skewed Right</option><option value="skewed-left">Skewed Left</option>
                     <option value="">Unsorted Pile</option>
@@ -3916,7 +3807,7 @@ body { font-size: 15px; line-height: 1.58; }
           </div>
         </div>
         <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(13); saveState(); updateProgress();">Reset Sorting</button>
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(11); saveState(); updateProgress();">Reset Sorting</button>
         </div>
       </div>
     
@@ -3930,6 +3821,181 @@ body { font-size: 15px; line-height: 1.58; }
           <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
         </ol>
       </details>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_11" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_12" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 7</div>
+        <div class="problem-type-badge">DRAG SORT</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Look for outliers or tails. A high outlier creates a right skew. A low outlier creates a left skew.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">Classify each data set by its distribution shape.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
+        <div class="family-hint-box"><p>💡 Look for outliers or tails. A high outlier creates a right skew. A low outlier creates a left skew.</p><p>💡 If data is roughly even on both sides of the center, it is symmetric.</p></div>
+        <div class="drag-sort-workspace" id="dragsort_12">
+          <div class="drag-columns">
+            
+              <div class="drag-column" data-category-id="symmetric" ondragover="allowDrop(event)" ondrop="handleDrop(event, 12, 'symmetric')">
+                <div class="drag-column-header">Symmetric</div>
+                <div class="drag-column-slots" id="slots_12_symmetric" ondragover="allowDrop(event)" ondrop="handleDrop(event, 12, 'symmetric')"></div>
+              </div>
+              <div class="drag-column" data-category-id="skewed-right" ondragover="allowDrop(event)" ondrop="handleDrop(event, 12, 'skewed-right')">
+                <div class="drag-column-header">Skewed Right</div>
+                <div class="drag-column-slots" id="slots_12_skewed-right" ondragover="allowDrop(event)" ondrop="handleDrop(event, 12, 'skewed-right')"></div>
+              </div>
+              <div class="drag-column" data-category-id="skewed-left" ondragover="allowDrop(event)" ondrop="handleDrop(event, 12, 'skewed-left')">
+                <div class="drag-column-header">Skewed Left</div>
+                <div class="drag-column-slots" id="slots_12_skewed-left" ondragover="allowDrop(event)" ondrop="handleDrop(event, 12, 'skewed-left')"></div>
+              </div>
+          </div>
+          <div class="drag-source-section">
+            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
+            <div class="drag-source-pile" id="pile_12" ondragover="allowDrop(event)" ondrop="handleDrop(event, 12, '')">
+              
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_12_0"
+                     data-item-index="0"
+                     data-correct-category="symmetric"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Test scores: 70, 75, 80, 80, 85, 90</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_12_0', 12); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="symmetric">Symmetric</option><option value="skewed-right">Skewed Right</option><option value="skewed-left">Skewed Left</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_12_1"
+                     data-item-index="1"
+                     data-correct-category="skewed-right"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Donations: $5, $5, $10, $10, $10, $15, $200</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_12_1', 12); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="symmetric">Symmetric</option><option value="skewed-right">Skewed Right</option><option value="skewed-left">Skewed Left</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_12_2"
+                     data-item-index="2"
+                     data-correct-category="skewed-left"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Quiz scores: 30, 75, 80, 85, 90, 90, 95</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_12_2', 12); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="symmetric">Symmetric</option><option value="skewed-right">Skewed Right</option><option value="skewed-left">Skewed Left</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="drag-controls">
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(12); saveState(); updateProgress();">Reset Sorting</button>
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each data value above the number line.</span><span class="lang-es" lang="es">Marca cada valor de datos sobre la recta numérica.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Organize the data first, then find the center or spread you need.</span><span class="lang-es" lang="es">Organiza los datos primero, luego halla el centro o la dispersión.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_12" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_13" data-problem-type="multiple-choice">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 8</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"In a symmetric distribution, the mean and median are approximately equal because the data is balanced on both sides.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 60\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Blank number line\"><line x1=\"14\" y1=\"34\" x2=\"306\" y2=\"34\" stroke=\"#12355b\" stroke-width=\"2\"/><polygon points=\"306,34 296,29 296,39\" fill=\"#12355b\"/><polygon points=\"14,34 24,29 24,39\" fill=\"#12355b\"/><line x1=\"30\" y1=\"28\" x2=\"30\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"63\" y1=\"28\" x2=\"63\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"96\" y1=\"28\" x2=\"96\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"129\" y1=\"28\" x2=\"129\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"162\" y1=\"28\" x2=\"162\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"195\" y1=\"28\" x2=\"195\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"228\" y1=\"28\" x2=\"228\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"261\" y1=\"28\" x2=\"261\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/><line x1=\"294\" y1=\"28\" x2=\"294\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">A data set is symmetric. What is likely true about the mean and median?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="In a symmetric distribution, the mean and median are approximately equal because the data is balanced on both sides.">
+          
+            <label class="mc-option-label" id="label_q_13_0">
+              <input type="radio" name="q_13" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">They are approximately equal</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_13_1">
+              <input type="radio" name="q_13" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">The mean is much higher than the median</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_13_2">
+              <input type="radio" name="q_13" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">The median is much higher than the mean</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_13_3">
+              <input type="radio" name="q_13" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">They are always exactly the same</span>
+            </label>
+          
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Plot each data value above the number line.</span><span class="lang-es" lang="es">Marca cada valor de datos sobre la recta numérica.</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Organize the data first, then find the center or spread you need.</span><span class="lang-es" lang="es">Organiza los datos primero, luego halla el centro o la dispersión.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Plot each data value above the number line.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Marca cada valor de datos sobre la recta numérica.</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_13"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_13" name="work_13" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(13)" aria-label="Check answer for problem 14">
           ✓ Check This Problem / Revisar
@@ -4041,7 +4107,7 @@ body { font-size: 15px; line-height: 1.58; }
         <span class="lang-es" lang="es">Refuercen el tema de hoy con un juego rápido en familia. ¡Ustedes preguntan; su estudiante decide!</span>
       </p>
       
-      <div class="hw-game hw-game-sort" id="hw_game_stats" data-game-type="drag-bucket" data-items='[{"text":"Heights of plants in cm","bucket":"stat"},{"text":"What is 2 + 2?","bucket":"not"},{"text":"Minutes spent on homework","bucket":"stat"},{"text":"Spell the word cat","bucket":"not"},{"text":"How many pets do students have?","bucket":"stat"},{"text":"What is your favorite color?","bucket":"stat"}]'>
+      <div class="hw-game hw-game-sort" id="hw_game_stats" data-game-type="drag-bucket" data-items='[{"text":"Minutes spent on homework","bucket":"stat"},{"text":"How many pets do students have?","bucket":"stat"},{"text":"What is your favorite color?","bucket":"stat"},{"text":"Heights of plants in cm","bucket":"stat"},{"text":"What is 2 + 2?","bucket":"not"},{"text":"Spell the word cat","bucket":"not"}]'>
         <div class="hw-game-header">
           <h3 class="hw-game-title">Stat Sort! <span lang="es">¡Estadística!</span></h3>
           <p class="hw-game-coach bilingual-block">
@@ -4064,27 +4130,27 @@ body { font-size: 15px; line-height: 1.58; }
           
             <div class="hw-game-card" draggable="true" id="hwcard_0" data-bucket="stat"
                  ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
-              Heights of plants in cm
-            </div>
-            <div class="hw-game-card" draggable="true" id="hwcard_1" data-bucket="not"
-                 ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
-              What is 2 + 2?
-            </div>
-            <div class="hw-game-card" draggable="true" id="hwcard_2" data-bucket="stat"
-                 ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
               Minutes spent on homework
             </div>
-            <div class="hw-game-card" draggable="true" id="hwcard_3" data-bucket="not"
-                 ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
-              Spell the word cat
-            </div>
-            <div class="hw-game-card" draggable="true" id="hwcard_4" data-bucket="stat"
+            <div class="hw-game-card" draggable="true" id="hwcard_1" data-bucket="stat"
                  ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
               How many pets do students have?
             </div>
-            <div class="hw-game-card" draggable="true" id="hwcard_5" data-bucket="stat"
+            <div class="hw-game-card" draggable="true" id="hwcard_2" data-bucket="stat"
                  ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
               What is your favorite color?
+            </div>
+            <div class="hw-game-card" draggable="true" id="hwcard_3" data-bucket="stat"
+                 ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
+              Heights of plants in cm
+            </div>
+            <div class="hw-game-card" draggable="true" id="hwcard_4" data-bucket="not"
+                 ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
+              What is 2 + 2?
+            </div>
+            <div class="hw-game-card" draggable="true" id="hwcard_5" data-bucket="not"
+                 ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
+              Spell the word cat
             </div>
         </div>
         <button type="button" class="btn btn-primary" onclick="hwGameCheckSort()">Check sort / Verificar</button>

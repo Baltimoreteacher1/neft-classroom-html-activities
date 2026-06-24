@@ -1736,6 +1736,32 @@ body.help-modal-open { overflow: hidden; }
 .together-fill-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
 .together-step-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 
+/* Compact "Try Together" steps: tighter padding, inline action buttons, single-row input. */
+.together-steps { gap: 8px; }
+.together-step--compact { padding: 9px 11px; }
+.together-step--compact .together-step-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.together-step--compact .step-badge { margin-bottom: 0; }
+.together-step--compact .together-step-actions { margin-top: 0; }
+.together-step--compact p { margin: 6px 0 0; font-size: 14px; }
+.together-step--compact .together-fill { margin: 7px 0 0; }
+.together-step--compact .together-fill-input { min-height: 40px; }
+
+/* Graduated practice ladder under the guided steps. */
+.together-ladder { margin-top: 16px; padding-top: 14px; border-top: 2px dashed var(--line); }
+.ladder-title { font-family: var(--font-display); font-size: 16px; margin: 0 0 4px; color: var(--navy); }
+.ladder-note { font-size: 13px; margin: 0 0 12px; }
+.ladder-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; counter-reset: ladder; }
+.ladder-item { border: 1px solid var(--line); border-left: 4px solid #5b8def; border-radius: var(--radius-sm); padding: 9px 11px; background: var(--white); }
+.ladder-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.ladder-stars { color: #f5a623; font-size: 13px; letter-spacing: 1px; }
+.ladder-tier { font-family: var(--font-display); font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: var(--navy); }
+.ladder-q { margin: 0 0 8px; font-size: 14.5px; line-height: 1.4; }
+.ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
+.ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
+.ladder-answer { margin-top: 7px; }
+.ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
+.ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
+
 /* "More practice" accordion in the Check tab */
 /* Tiered practice sections (warm-up first, then a harder challenge set) */
 .practice-tier { margin: 0 0 22px; }
@@ -2552,43 +2578,104 @@ body { font-size: 15px; line-height: 1.58; }
       </p>
       <ol class="together-steps">
         
-          <li class="together-step step-color-1">
+          <li class="together-step together-step--compact step-color-1">
             <div class="together-step-head">
               <span class="step-badge">Step 1 / Paso 1</span>
+              <div class="together-step-actions">
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 hint","titleEs":"Pista del paso 1","en":"Talk through each step aloud.","es":"Hablen de cada paso en voz alta."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
+                
+              </div>
             </div>
-            <p class="lang-en"><strong>First…</strong> Pick one practice problem and solve it on paper together.</p>
-            <p class="lang-es" lang="es"><strong>Primero…</strong> Elijan un problema de práctica y resuélvanlo en papel juntos.</p>
+            <p class="lang-en">Pick one practice problem and solve it on paper together.</p>
+            <p class="lang-es" lang="es">Elijan un problema de práctica y resuélvanlo en papel juntos.</p>
             <div class="together-fill">
-              <label class="together-fill-label" for="together_0">
-                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
-                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
-              </label>
-              <textarea id="together_0" name="together_0" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
-            </div>
-            <div class="together-step-actions">
-              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 hint","titleEs":"Pista del paso 1","en":"Talk through each step aloud.","es":"Hablen de cada paso en voz alta."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
-              
+              <textarea id="together_0" name="together_0" class="custom-textarea together-fill-input" rows="1" placeholder="✏️ Your turn / Tu turno…" oninput="saveState();" aria-label="Your work for step 1"></textarea>
             </div>
           </li>
-          <li class="together-step step-color-2">
+          <li class="together-step together-step--compact step-color-2">
             <div class="together-step-head">
               <span class="step-badge">Step 2 / Paso 2</span>
+              <div class="together-step-actions">
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 hint","titleEs":"Pista del paso 2","en":"This is the big idea of today&#39;s lesson.","es":"Esta es la idea principal de la lección de hoy."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
+                
+              </div>
             </div>
-            <p class="lang-en"><strong>First…</strong> Check together: did you find the unknown, choose a variable, and turn the words into symbols around an equal sign?</p>
-            <p class="lang-es" lang="es"><strong>Primero…</strong> Verifiquen juntos: ¿hallaron la incógnita, eligieron una variable y convirtieron las palabras en símbolos alrededor de un signo igual?</p>
+            <p class="lang-en">Check together: did you find the unknown, choose a variable, and turn the words into symbols around an equal sign?</p>
+            <p class="lang-es" lang="es">Verifiquen juntos: ¿hallaron la incógnita, eligieron una variable y convirtieron las palabras en símbolos alrededor de un signo igual?</p>
             <div class="together-fill">
-              <label class="together-fill-label" for="together_1">
-                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
-                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
-              </label>
-              <textarea id="together_1" name="together_1" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
-            </div>
-            <div class="together-step-actions">
-              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 hint","titleEs":"Pista del paso 2","en":"This is the big idea of today&#39;s lesson.","es":"Esta es la idea principal de la lección de hoy."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
-              
+              <textarea id="together_1" name="together_1" class="custom-textarea together-fill-input" rows="1" placeholder="✏️ Your turn / Tu turno…" oninput="saveState();" aria-label="Your work for step 2"></textarea>
             </div>
           </li>
       </ol>
+      
+    <div class="together-ladder">
+      <h3 class="ladder-title">
+        <span class="lang-en">📈 Practice ladder — easiest first</span>
+        <span class="lang-es" lang="es">📈 Escalera de práctica — del más fácil al más difícil</span>
+      </h3>
+      <p class="ladder-note bilingual-block">
+        <span class="lang-en">Do these together. Start at ★ and climb to ★★★ when ready.</span>
+        <span class="lang-es" lang="es">Háganlos juntos. Empiecen en ★ y suban a ★★★ cuando estén listos.</span>
+      </p>
+      <ol class="ladder-list">
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★</span>
+            <span class="ladder-tier"><span class="lang-en">Start easy</span><span class="lang-es" lang="es">Empieza fácil</span></span>
+          </div>
+          <p class="ladder-q">Which equation represents: &#039;A number plus 12 equals 30&#039;?</p>
+          <input type="text" id="ladder_0" name="ladder_0" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 1" />
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text">n + 12 = 30</p>
+           </details>
+        </li>
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★</span>
+            <span class="ladder-tier"><span class="lang-en">Start easy</span><span class="lang-es" lang="es">Empieza fácil</span></span>
+          </div>
+          <p class="ladder-q">Which equation represents: &#039;Seven less than a number is 18&#039;?</p>
+          <input type="text" id="ladder_1" name="ladder_1" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 2" />
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text">n − 7 = 18</p>
+           </details>
+        </li>
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★★</span>
+            <span class="ladder-tier"><span class="lang-en">Keep going</span><span class="lang-es" lang="es">Sigan</span></span>
+          </div>
+          <p class="ladder-q">A detective found some fingerprints on Monday and 14 more on Tuesday, for a total of 30. Which equation represents this?</p>
+          <input type="text" id="ladder_2" name="ladder_2" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 3" />
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text">f + 14 = 30</p>
+           </details>
+        </li>
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★★</span>
+            <span class="ladder-tier"><span class="lang-en">Keep going</span><span class="lang-es" lang="es">Sigan</span></span>
+          </div>
+          <p class="ladder-q">Witness statement: &#039;The number of suspects, plus 7 more, is 22.&#039; Which equation models this clue?</p>
+          <input type="text" id="ladder_3" name="ladder_3" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 4" />
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text">s + 7 = 22</p>
+           </details>
+        </li>
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★★★</span>
+            <span class="ladder-tier"><span class="lang-en">Challenge</span><span class="lang-es" lang="es">Reto</span></span>
+          </div>
+          <p class="ladder-q">Write a real-world situation that can be modeled by the equation n / 5 = 9. Explain what n represents and verify your equation makes sense.</p>
+          <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
+          
+        </li></ol>
+    </div>
     </div>
 
     <div class="tab-panel-inner" data-tab-panel="check" id="hw_panel_check" role="tabpanel" hidden>
@@ -2923,63 +3010,42 @@ body { font-size: 15px; line-height: 1.58; }
     </section>
   
 
-    <section class="problem-section card" id="problem_2" data-problem-type="error-analysis">
+    <section class="problem-section card" id="problem_2" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Warm-up / Calentamiento 3</div>
-        <div class="problem-type-badge">ERROR ANALYSIS</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Does &#39;plus&#39; tell you to add or to subtract?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"&#39;Plus&#39; means addition, so the equation is n + 12 = 30.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <h3 class="error-analysis-title">⚠️ approaching — Spot the Common Mistake</h3>
-        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Read each step aloud and ask: does this step follow the math rules we learned?</span><span class="lang-es" lang="es">👪 Lean cada paso en voz alta y pregunten: ¿sigue las reglas que aprendimos?</span></p>
-        
-        <div class="clipboard-box">
-          <div class="clipboard-top"></div>
-          <div class="clipboard-paper">
-            
-              <div class="worked-step" id="step_q_2_1">
-                <span class="step-badge">Step 1</span>
-                <span class="step-label">Clue:</span>
-                <span class="step-work">A number plus 9 equals 15</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_2_2">
-                <span class="step-badge">Step 2</span>
-                <span class="step-label">Choose a variable:</span>
-                <span class="step-work">Let n be the number</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_2_3">
-                <span class="step-badge">Step 3</span>
-                <span class="step-label">Write the equation:</span>
-                <span class="step-work">n − 9 = 15</span>
-              </div>
-            
-          </div>
-        </div>
-        
-        <div class="error-controls">
-          <div class="error-select-row">
-            <label for="error_step_select_2">Which step has the error?</label>
-            <select id="error_step_select_2" class="custom-select error-step-select" data-correct="3" onchange="saveState(); updateProgress();">
-              <option value="">-- Choose Step --</option>
-              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option>
-            </select>
-            <span class="feedback-badge"></span>
-          </div>
+        <p class="problem-stem">Which equation represents: &#039;A number plus 12 equals 30&#039;?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="&#039;Plus&#039; means addition, so the equation is n + 12 = 30.">
           
-          <div class="error-explain-row">
-            <label for="error_explain_input_2">Explain the error and write the correct calculation:</label>
-            <textarea id="error_explain_input_2" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
-            <span class="feedback-badge"></span>
-          </div>
+            <label class="mc-option-label" id="label_q_2_0">
+              <input type="radio" name="q_2" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">n + 12 = 30</span>
+            </label>
           
-          <div class="reveal-box" id="error_correct_work_2" style="display:none;">
-            <strong>Correct Work Reference:</strong> &#039;Plus 9&#039; means add 9, not subtract. The correct equation is n + 9 = 15.
-            
-          </div>
+            <label class="mc-option-label" id="label_q_2_1">
+              <input type="radio" name="q_2" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">n − 12 = 30</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_2_2">
+              <input type="radio" name="q_2" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">12n = 30</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_2_3">
+              <input type="radio" name="q_2" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">n / 12 = 30</span>
+            </label>
+          
         </div>
       </div>
     
@@ -3104,63 +3170,35 @@ body { font-size: 15px; line-height: 1.58; }
     </section>
   
 
-    <section class="problem-section card" id="problem_4" data-problem-type="error-analysis">
+    <section class="problem-section card" id="problem_4" data-problem-type="fill-table">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 2</div>
-        <div class="problem-type-badge">ERROR ANALYSIS</div>
+        <div class="problem-type-badge">FILL TABLE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Does &#39;times&#39; mean adding or multiplying?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <h3 class="error-analysis-title">⚠️ onLevel — Spot the Common Mistake</h3>
-        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Read each step aloud and ask: does this step follow the math rules we learned?</span><span class="lang-es" lang="es">👪 Lean cada paso en voz alta y pregunten: ¿sigue las reglas que aprendimos?</span></p>
-        
-        <div class="clipboard-box">
-          <div class="clipboard-top"></div>
-          <div class="clipboard-paper">
-            
-              <div class="worked-step" id="step_q_4_1">
-                <span class="step-badge">Step 1</span>
-                <span class="step-label">Clue:</span>
-                <span class="step-work">Five times the number of suspects equals 35</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_4_2">
-                <span class="step-badge">Step 2</span>
-                <span class="step-label">Choose a variable:</span>
-                <span class="step-work">Let s be the number of suspects</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_4_3">
-                <span class="step-badge">Step 3</span>
-                <span class="step-label">Write the equation:</span>
-                <span class="step-work">s + 5 = 35</span>
-              </div>
-            
-          </div>
-        </div>
-        
-        <div class="error-controls">
-          <div class="error-select-row">
-            <label for="error_step_select_4">Which step has the error?</label>
-            <select id="error_step_select_4" class="custom-select error-step-select" data-correct="3" onchange="saveState(); updateProgress();">
-              <option value="">-- Choose Step --</option>
-              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option>
-            </select>
-            <span class="feedback-badge"></span>
-          </div>
-          
-          <div class="error-explain-row">
-            <label for="error_explain_input_4">Explain the error and write the correct calculation:</label>
-            <textarea id="error_explain_input_4" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
-            <span class="feedback-badge"></span>
-          </div>
-          
-          <div class="reveal-box" id="error_correct_work_4" style="display:none;">
-            <strong>Correct Work Reference:</strong> &#039;Five times the number&#039; means multiply by 5, not add 5. The correct equation is 5s = 35.
-            
-          </div>
+        <p class="problem-stem">For each equation, explain why one situation matches and the other does not.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
+        <div class="table-responsive">
+          <table class="fill-table">
+            <thead>
+              <tr>
+                <th>Equation</th><th>Situation That MATCHES</th><th>Situation That Does NOT Match</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>5n = 35</td><td>Five identical bags hold 35 clues total.</td><td>A detective has 5 more clues than 35.</td>
+                </tr>
+              
+                <tr>
+                  <td>n − 8 = 12</td><td>After giving away 8 items, a detective has 12 left.</td><td>A detective collected 8 items and then 12 more.</td>
+                </tr>
+              
+            </tbody>
+          </table>
         </div>
       </div>
     
@@ -3197,63 +3235,42 @@ body { font-size: 15px; line-height: 1.58; }
     </section>
   
 
-    <section class="problem-section card" id="problem_5" data-problem-type="error-analysis">
+    <section class="problem-section card" id="problem_5" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 3</div>
-        <div class="problem-type-badge">ERROR ANALYSIS</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read &#39;less than&#39; carefully — what number are you starting with before you subtract?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The detective&#39;s Monday fingerprints (f) plus 14 more equals 30: f + 14 = 30.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <h3 class="error-analysis-title">⚠️ Level 2 Extension: Crack the Mis-Written Clue</h3>
-        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Read each step aloud and ask: does this step follow the math rules we learned?</span><span class="lang-es" lang="es">👪 Lean cada paso en voz alta y pregunten: ¿sigue las reglas que aprendimos?</span></p>
-        
-        <div class="clipboard-box">
-          <div class="clipboard-top"></div>
-          <div class="clipboard-paper">
-            
-              <div class="worked-step" id="step_q_5_1">
-                <span class="step-badge">Step 1</span>
-                <span class="step-label">Clue:</span>
-                <span class="step-work">5 less than the number of witnesses is 12</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_5_2">
-                <span class="step-badge">Step 2</span>
-                <span class="step-label">Choose a variable:</span>
-                <span class="step-work">Let w be the number of witnesses</span>
-              </div>
-            
-              <div class="worked-step" id="step_q_5_3">
-                <span class="step-badge">Step 3</span>
-                <span class="step-label">Write the equation:</span>
-                <span class="step-work">5 − w = 12</span>
-              </div>
-            
-          </div>
-        </div>
-        
-        <div class="error-controls">
-          <div class="error-select-row">
-            <label for="error_step_select_5">Which step has the error?</label>
-            <select id="error_step_select_5" class="custom-select error-step-select" data-correct="3" onchange="saveState(); updateProgress();">
-              <option value="">-- Choose Step --</option>
-              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option>
-            </select>
-            <span class="feedback-badge"></span>
-          </div>
+        <p class="problem-stem">A detective found some fingerprints on Monday and 14 more on Tuesday, for a total of 30. Which equation represents this?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="The detective&#039;s Monday fingerprints (f) plus 14 more equals 30: f + 14 = 30.">
           
-          <div class="error-explain-row">
-            <label for="error_explain_input_5">Explain the error and write the correct calculation:</label>
-            <textarea id="error_explain_input_5" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
-            <span class="feedback-badge"></span>
-          </div>
+            <label class="mc-option-label" id="label_q_5_0">
+              <input type="radio" name="q_5" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">f + 14 = 30</span>
+            </label>
           
-          <div class="reveal-box" id="error_correct_work_5" style="display:none;">
-            <strong>Correct Work Reference:</strong> &#039;5 less than w&#039; means start with w and take away 5, so the equation is w − 5 = 12, not 5 − w = 12. The order matters: &#039;less than&#039; flips the words but you still subtract from the number.
-            
-          </div>
+            <label class="mc-option-label" id="label_q_5_1">
+              <input type="radio" name="q_5" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">f − 14 = 30</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_5_2">
+              <input type="radio" name="q_5" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">14f = 30</span>
+            </label>
+          
+            <label class="mc-option-label" id="label_q_5_3">
+              <input type="radio" name="q_5" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">f / 14 = 30</span>
+            </label>
+          
         </div>
       </div>
     
@@ -3306,35 +3323,35 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Bonus / Más 1</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"&#39;Plus&#39; means addition, so the equation is n + 12 = 30.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"&#39;Three times&#39; means multiply by 3, so the equation is 3n = 21.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Which equation represents: &#039;A number plus 12 equals 30&#039;?</p>
+        <p class="problem-stem">Which equation represents: &#039;Three times a number equals 21&#039;?</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="&#039;Plus&#039; means addition, so the equation is n + 12 = 30.">
+        <div class="mc-options" data-correct="0" data-explanation="&#039;Three times&#039; means multiply by 3, so the equation is 3n = 21.">
           
             <label class="mc-option-label" id="label_q_6_0">
               <input type="radio" name="q_6" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">n + 12 = 30</span>
+              <span class="choice-text">3n = 21</span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_1">
               <input type="radio" name="q_6" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">n − 12 = 30</span>
+              <span class="choice-text">n + 3 = 21</span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_2">
               <input type="radio" name="q_6" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">12n = 30</span>
+              <span class="choice-text">n − 3 = 21</span>
             </label>
           
             <label class="mc-option-label" id="label_q_6_3">
               <input type="radio" name="q_6" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">n / 12 = 30</span>
+              <span class="choice-text">n / 3 = 21</span>
             </label>
           
         </div>
@@ -3378,35 +3395,35 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Bonus / Más 2</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"&#39;Three times&#39; means multiply by 3, so the equation is 3n = 21.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"&#39;Divided by 4&#39; means division: n / 4 = 8.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Which equation represents: &#039;Three times a number equals 21&#039;?</p>
+        <p class="problem-stem">Which equation represents: &#039;A number divided by 4 equals 8&#039;?</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="&#039;Three times&#039; means multiply by 3, so the equation is 3n = 21.">
+        <div class="mc-options" data-correct="0" data-explanation="&#039;Divided by 4&#039; means division: n / 4 = 8.">
           
             <label class="mc-option-label" id="label_q_7_0">
               <input type="radio" name="q_7" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">3n = 21</span>
+              <span class="choice-text">n / 4 = 8</span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_1">
               <input type="radio" name="q_7" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">n + 3 = 21</span>
+              <span class="choice-text">4n = 8</span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_2">
               <input type="radio" name="q_7" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">n − 3 = 21</span>
+              <span class="choice-text">n − 4 = 8</span>
             </label>
           
             <label class="mc-option-label" id="label_q_7_3">
               <input type="radio" name="q_7" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">n / 3 = 21</span>
+              <span class="choice-text">n + 4 = 8</span>
             </label>
           
         </div>
@@ -3450,35 +3467,35 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Bonus / Más 3</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"&#39;Divided by 4&#39; means division: n / 4 = 8.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"&#39;Seven less than a number&#39; means start with the number and subtract 7: n − 7 = 18.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Which equation represents: &#039;A number divided by 4 equals 8&#039;?</p>
+        <p class="problem-stem">Which equation represents: &#039;Seven less than a number is 18&#039;?</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="&#039;Divided by 4&#039; means division: n / 4 = 8.">
+        <div class="mc-options" data-correct="0" data-explanation="&#039;Seven less than a number&#039; means start with the number and subtract 7: n − 7 = 18.">
           
             <label class="mc-option-label" id="label_q_8_0">
               <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">n / 4 = 8</span>
+              <span class="choice-text">n − 7 = 18</span>
             </label>
           
             <label class="mc-option-label" id="label_q_8_1">
               <input type="radio" name="q_8" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">4n = 8</span>
+              <span class="choice-text">7 − n = 18</span>
             </label>
           
             <label class="mc-option-label" id="label_q_8_2">
               <input type="radio" name="q_8" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">n − 4 = 8</span>
+              <span class="choice-text">n + 7 = 18</span>
             </label>
           
             <label class="mc-option-label" id="label_q_8_3">
               <input type="radio" name="q_8" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">n + 4 = 8</span>
+              <span class="choice-text">n / 7 = 18</span>
             </label>
           
         </div>
@@ -3522,35 +3539,35 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Bonus / Más 4</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"&#39;Seven less than a number&#39; means start with the number and subtract 7: n − 7 = 18.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Let b be the total gold bars. Sharing equally into 5 cases means b / 5, and each case has 4, so b / 5 = 4.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Which equation represents: &#039;Seven less than a number is 18&#039;?</p>
+        <p class="problem-stem">Vault log: &#039;A number of gold bars shared equally into 5 cases puts 4 bars in each case.&#039; Which equation models this clue?</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="&#039;Seven less than a number&#039; means start with the number and subtract 7: n − 7 = 18.">
+        <div class="mc-options" data-correct="0" data-explanation="Let b be the total gold bars. Sharing equally into 5 cases means b / 5, and each case has 4, so b / 5 = 4.">
           
             <label class="mc-option-label" id="label_q_9_0">
               <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">n − 7 = 18</span>
+              <span class="choice-text">b / 5 = 4</span>
             </label>
           
             <label class="mc-option-label" id="label_q_9_1">
               <input type="radio" name="q_9" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">7 − n = 18</span>
+              <span class="choice-text">5b = 4</span>
             </label>
           
             <label class="mc-option-label" id="label_q_9_2">
               <input type="radio" name="q_9" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">n + 7 = 18</span>
+              <span class="choice-text">b − 5 = 4</span>
             </label>
           
             <label class="mc-option-label" id="label_q_9_3">
               <input type="radio" name="q_9" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">n / 7 = 18</span>
+              <span class="choice-text">b + 5 = 4</span>
             </label>
           
         </div>
@@ -3594,35 +3611,35 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Bonus / Más 5</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The detective&#39;s Monday fingerprints (f) plus 14 more equals 30: f + 14 = 30.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Let c be the number of stolen coins. &#39;Six times&#39; means multiply by 6, so the equation is 6c = 54.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">A detective found some fingerprints on Monday and 14 more on Tuesday, for a total of 30. Which equation represents this?</p>
+        <p class="problem-stem">Ledger note: &#039;Six times the number of stolen coins equals 54.&#039; Which equation models this clue?</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="The detective&#039;s Monday fingerprints (f) plus 14 more equals 30: f + 14 = 30.">
+        <div class="mc-options" data-correct="0" data-explanation="Let c be the number of stolen coins. &#039;Six times&#039; means multiply by 6, so the equation is 6c = 54.">
           
             <label class="mc-option-label" id="label_q_10_0">
               <input type="radio" name="q_10" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">f + 14 = 30</span>
+              <span class="choice-text">6c = 54</span>
             </label>
           
             <label class="mc-option-label" id="label_q_10_1">
               <input type="radio" name="q_10" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">f − 14 = 30</span>
+              <span class="choice-text">c + 6 = 54</span>
             </label>
           
             <label class="mc-option-label" id="label_q_10_2">
               <input type="radio" name="q_10" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">14f = 30</span>
+              <span class="choice-text">c − 6 = 54</span>
             </label>
           
             <label class="mc-option-label" id="label_q_10_3">
               <input type="radio" name="q_10" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">f / 14 = 30</span>
+              <span class="choice-text">c / 6 = 54</span>
             </label>
           
         </div>
@@ -3661,42 +3678,132 @@ body { font-size: 15px; line-height: 1.58; }
     </section>
   
 
-    <section class="problem-section card" id="problem_11" data-problem-type="multiple-choice">
+    <section class="problem-section card" id="problem_11" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 6</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge">DRAG SORT</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Let b be the total gold bars. Sharing equally into 5 cases means b / 5, and each case has 4, so b / 5 = 4.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Vault log: &#039;A number of gold bars shared equally into 5 cases puts 4 bars in each case.&#039; Which equation models this clue?</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Let b be the total gold bars. Sharing equally into 5 cases means b / 5, and each case has 4, so b / 5 = 4.">
-          
-            <label class="mc-option-label" id="label_q_11_0">
-              <input type="radio" name="q_11" value="0" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">b / 5 = 4</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_11_1">
-              <input type="radio" name="q_11" value="1" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">5b = 4</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_11_2">
-              <input type="radio" name="q_11" value="2" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">b − 5 = 4</span>
-            </label>
-          
-            <label class="mc-option-label" id="label_q_11_3">
-              <input type="radio" name="q_11" value="3" onchange="saveState(); updateProgress();">
-              <span class="custom-radio"></span>
-              <span class="choice-text">b + 5 = 4</span>
-            </label>
-          
+        <p class="problem-stem">Sort each case clue by the kind of equation it would become.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
+        
+        <div class="drag-sort-workspace" id="dragsort_11">
+          <div class="drag-columns">
+            
+              <div class="drag-column" data-category-id="add" ondragover="allowDrop(event)" ondrop="handleDrop(event, 11, 'add')">
+                <div class="drag-column-header">Addition equation (+)</div>
+                <div class="drag-column-slots" id="slots_11_add" ondragover="allowDrop(event)" ondrop="handleDrop(event, 11, 'add')"></div>
+              </div>
+              <div class="drag-column" data-category-id="subtract" ondragover="allowDrop(event)" ondrop="handleDrop(event, 11, 'subtract')">
+                <div class="drag-column-header">Subtraction equation (−)</div>
+                <div class="drag-column-slots" id="slots_11_subtract" ondragover="allowDrop(event)" ondrop="handleDrop(event, 11, 'subtract')"></div>
+              </div>
+              <div class="drag-column" data-category-id="multiply" ondragover="allowDrop(event)" ondrop="handleDrop(event, 11, 'multiply')">
+                <div class="drag-column-header">Multiplication equation (×)</div>
+                <div class="drag-column-slots" id="slots_11_multiply" ondragover="allowDrop(event)" ondrop="handleDrop(event, 11, 'multiply')"></div>
+              </div>
+          </div>
+          <div class="drag-source-section">
+            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
+            <div class="drag-source-pile" id="pile_11" ondragover="allowDrop(event)" ondrop="handleDrop(event, 11, '')">
+              
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_11_0"
+                     data-item-index="0"
+                     data-correct-category="add"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">11 more fingerprints than yesterday is 40</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_11_0', 11); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="add">Addition equation (+)</option><option value="subtract">Subtraction equation (−)</option><option value="multiply">Multiplication equation (×)</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_11_1"
+                     data-item-index="1"
+                     data-correct-category="add"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">A sum of clues and 9 equals 25</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_11_1', 11); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="add">Addition equation (+)</option><option value="subtract">Subtraction equation (−)</option><option value="multiply">Multiplication equation (×)</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_11_2"
+                     data-item-index="2"
+                     data-correct-category="subtract"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">9 fewer alibis than before leaves 14</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_11_2', 11); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="add">Addition equation (+)</option><option value="subtract">Subtraction equation (−)</option><option value="multiply">Multiplication equation (×)</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_11_3"
+                     data-item-index="3"
+                     data-correct-category="subtract"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">8 less than the tip count is 12</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_11_3', 11); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="add">Addition equation (+)</option><option value="subtract">Subtraction equation (−)</option><option value="multiply">Multiplication equation (×)</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_11_4"
+                     data-item-index="4"
+                     data-correct-category="multiply"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">Triple the number of footprints is 27</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_11_4', 11); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="add">Addition equation (+)</option><option value="subtract">Subtraction equation (−)</option><option value="multiply">Multiplication equation (×)</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_11_5"
+                     data-item-index="5"
+                     data-correct-category="multiply"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">The product of suspects and 4 is 32</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_11_5', 11); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="add">Addition equation (+)</option><option value="subtract">Subtraction equation (−)</option><option value="multiply">Multiplication equation (×)</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="drag-controls">
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(11); saveState(); updateProgress();">Reset Sorting</button>
         </div>
       </div>
     
@@ -3710,20 +3817,6 @@ body { font-size: 15px; line-height: 1.58; }
           <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
         </ol>
       </details>
-      <div class="hw-workspace">
-        <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Picture a balance: what you do to one side, do to the other.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Imagina una balanza: lo que haces a un lado, hazlo al otro.</span></div>
-          <div class="hw-visual-frame hw-drawable" data-draw-frame>
-            <svg viewBox="0 0 220 130" class="hw-visual-svg" role="img" aria-label="Balance scale for an equation"><line x1="30" y1="40" x2="190" y2="40" stroke="#12355b" stroke-width="3"/><line x1="110" y1="40" x2="110" y2="110" stroke="#12355b" stroke-width="3"/><polygon points="90,118 130,118 110,110" fill="#12355b"/><path d="M30 40 L14 70 L46 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><path d="M190 40 L174 70 L206 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><text x="110" y="34" text-anchor="middle" font-size="16" fill="#12355b">=</text></svg>
-            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
-            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
-          </div>
-        </div>
-        <div class="hw-work">
-          <label class="hw-work-label" for="work_11"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
-          <textarea id="work_11" name="work_11" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
-        </div>
-      </div>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">
           ✓ Check This Problem / Revisar
@@ -3733,35 +3826,62 @@ body { font-size: 15px; line-height: 1.58; }
     </section>
   
 
-    <section class="problem-section card" id="problem_12" data-problem-type="fill-table">
+    <section class="problem-section card" id="problem_12" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 7</div>
-        <div class="problem-type-badge">FILL TABLE</div>
+        <div class="problem-type-badge">MATCHING GAME</div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">For each equation, explain why one situation matches and the other does not.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Encourage your student to show work on paper if a box feels tricky.</span><span class="lang-es" lang="es">👪 Animen a mostrar el trabajo en papel si una casilla se siente difícil.</span></p>
-        <div class="table-responsive">
-          <table class="fill-table">
-            <thead>
-              <tr>
-                <th>Equation</th><th>Situation That MATCHES</th><th>Situation That Does NOT Match</th>
-              </tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>5n = 35</td><td>Five identical bags hold 35 clues total.</td><td>A detective has 5 more clues than 35.</td>
-                </tr>
-              
-                <tr>
-                  <td>n − 8 = 12</td><td>After giving away 8 items, a detective has 12 left.</td><td>A detective collected 8 items and then 12 more.</td>
-                </tr>
-              
-            </tbody>
-          </table>
+        <p class="problem-stem">Match each case clue to the equation that models it</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
+        <div class="matching-pairs">
+          
+            <div class="matching-row" data-term="A detective had some leads. After 10 more arrived, she had 26." data-correct="n + 10 = 26">
+              <div class="matching-term">A detective had some leads. After 10 more arrived, she had 26.</div>
+              <div class="matching-select-container">
+                <select name="q_12_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="7n = 42">7n = 42</option><option value="n + 10 = 26">n + 10 = 26</option><option value="n / 6 = 9">n / 6 = 9</option><option value="n − 5 = 18">n − 5 = 18</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="After crossing out 5 false leads, 18 leads remained." data-correct="n − 5 = 18">
+              <div class="matching-term">After crossing out 5 false leads, 18 leads remained.</div>
+              <div class="matching-select-container">
+                <select name="q_12_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="7n = 42">7n = 42</option><option value="n + 10 = 26">n + 10 = 26</option><option value="n / 6 = 9">n / 6 = 9</option><option value="n − 5 = 18">n − 5 = 18</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="Seven identical evidence boxes hold 42 clues in all." data-correct="7n = 42">
+              <div class="matching-term">Seven identical evidence boxes hold 42 clues in all.</div>
+              <div class="matching-select-container">
+                <select name="q_12_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="7n = 42">7n = 42</option><option value="n + 10 = 26">n + 10 = 26</option><option value="n / 6 = 9">n / 6 = 9</option><option value="n − 5 = 18">n − 5 = 18</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="A pile of photos split evenly into 6 folders gives 9 photos each." data-correct="n / 6 = 9">
+              <div class="matching-term">A pile of photos split evenly into 6 folders gives 9 photos each.</div>
+              <div class="matching-select-container">
+                <select name="q_12_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="7n = 42">7n = 42</option><option value="n + 10 = 26">n + 10 = 26</option><option value="n / 6 = 9">n / 6 = 9</option><option value="n − 5 = 18">n − 5 = 18</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
         </div>
       </div>
     
@@ -3775,20 +3895,6 @@ body { font-size: 15px; line-height: 1.58; }
           <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
         </ol>
       </details>
-      <div class="hw-workspace">
-        <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Picture a balance: what you do to one side, do to the other.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Imagina una balanza: lo que haces a un lado, hazlo al otro.</span></div>
-          <div class="hw-visual-frame hw-drawable" data-draw-frame>
-            <svg viewBox="0 0 220 130" class="hw-visual-svg" role="img" aria-label="Balance scale for an equation"><line x1="30" y1="40" x2="190" y2="40" stroke="#12355b" stroke-width="3"/><line x1="110" y1="40" x2="110" y2="110" stroke="#12355b" stroke-width="3"/><polygon points="90,118 130,118 110,110" fill="#12355b"/><path d="M30 40 L14 70 L46 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><path d="M190 40 L174 70 L206 70 Z" fill="none" stroke="#12355b" stroke-width="2"/><text x="110" y="34" text-anchor="middle" font-size="16" fill="#12355b">=</text></svg>
-            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
-            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
-          </div>
-        </div>
-        <div class="hw-work">
-          <label class="hw-work-label" for="work_12"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
-          <textarea id="work_12" name="work_12" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
-        </div>
-      </div>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(12)" aria-label="Check answer for problem 13">
           ✓ Check This Problem / Revisar
@@ -3803,35 +3909,35 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Bonus / Más 8</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Let c be the number of stolen coins. &#39;Six times&#39; means multiply by 6, so the equation is 6c = 54.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Let s be the number of suspects. &#39;Plus 7 more&#39; means + 7 and &#39;is 22&#39; means = 22, so s + 7 = 22.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 220 130\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Balance scale for an equation\"><line x1=\"30\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"#12355b\" stroke-width=\"3\"/><line x1=\"110\" y1=\"40\" x2=\"110\" y2=\"110\" stroke=\"#12355b\" stroke-width=\"3\"/><polygon points=\"90,118 130,118 110,110\" fill=\"#12355b\"/><path d=\"M30 40 L14 70 L46 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><path d=\"M190 40 L174 70 L206 70 Z\" fill=\"none\" stroke=\"#12355b\" stroke-width=\"2\"/><text x=\"110\" y=\"34\" text-anchor=\"middle\" font-size=\"16\" fill=\"#12355b\">=</text></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Ledger note: &#039;Six times the number of stolen coins equals 54.&#039; Which equation models this clue?</p>
+        <p class="problem-stem">Witness statement: &#039;The number of suspects, plus 7 more, is 22.&#039; Which equation models this clue?</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="Let c be the number of stolen coins. &#039;Six times&#039; means multiply by 6, so the equation is 6c = 54.">
+        <div class="mc-options" data-correct="0" data-explanation="Let s be the number of suspects. &#039;Plus 7 more&#039; means + 7 and &#039;is 22&#039; means = 22, so s + 7 = 22.">
           
             <label class="mc-option-label" id="label_q_13_0">
               <input type="radio" name="q_13" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">6c = 54</span>
+              <span class="choice-text">s + 7 = 22</span>
             </label>
           
             <label class="mc-option-label" id="label_q_13_1">
               <input type="radio" name="q_13" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">c + 6 = 54</span>
+              <span class="choice-text">s − 7 = 22</span>
             </label>
           
             <label class="mc-option-label" id="label_q_13_2">
               <input type="radio" name="q_13" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">c − 6 = 54</span>
+              <span class="choice-text">7s = 22</span>
             </label>
           
             <label class="mc-option-label" id="label_q_13_3">
               <input type="radio" name="q_13" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">c / 6 = 54</span>
+              <span class="choice-text">s / 7 = 22</span>
             </label>
           
         </div>

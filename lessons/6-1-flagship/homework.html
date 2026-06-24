@@ -1736,6 +1736,32 @@ body.help-modal-open { overflow: hidden; }
 .together-fill-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
 .together-step-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 
+/* Compact "Try Together" steps: tighter padding, inline action buttons, single-row input. */
+.together-steps { gap: 8px; }
+.together-step--compact { padding: 9px 11px; }
+.together-step--compact .together-step-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.together-step--compact .step-badge { margin-bottom: 0; }
+.together-step--compact .together-step-actions { margin-top: 0; }
+.together-step--compact p { margin: 6px 0 0; font-size: 14px; }
+.together-step--compact .together-fill { margin: 7px 0 0; }
+.together-step--compact .together-fill-input { min-height: 40px; }
+
+/* Graduated practice ladder under the guided steps. */
+.together-ladder { margin-top: 16px; padding-top: 14px; border-top: 2px dashed var(--line); }
+.ladder-title { font-family: var(--font-display); font-size: 16px; margin: 0 0 4px; color: var(--navy); }
+.ladder-note { font-size: 13px; margin: 0 0 12px; }
+.ladder-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; counter-reset: ladder; }
+.ladder-item { border: 1px solid var(--line); border-left: 4px solid #5b8def; border-radius: var(--radius-sm); padding: 9px 11px; background: var(--white); }
+.ladder-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.ladder-stars { color: #f5a623; font-size: 13px; letter-spacing: 1px; }
+.ladder-tier { font-family: var(--font-display); font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: var(--navy); }
+.ladder-q { margin: 0 0 8px; font-size: 14.5px; line-height: 1.4; }
+.ladder-input { width: 100%; box-sizing: border-box; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
+.ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
+.ladder-answer { margin-top: 7px; }
+.ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
+.ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
+
 /* "More practice" accordion in the Check tab */
 /* Tiered practice sections (warm-up first, then a harder challenge set) */
 .practice-tier { margin: 0 0 22px; }
@@ -2550,43 +2576,104 @@ body { font-size: 15px; line-height: 1.58; }
       </p>
       <ol class="together-steps">
         
-          <li class="together-step step-color-1">
+          <li class="together-step together-step--compact step-color-1">
             <div class="together-step-head">
               <span class="step-badge">Step 1 / Paso 1</span>
+              <div class="together-step-actions">
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 hint","titleEs":"Pista del paso 1","en":"Talk through each step aloud.","es":"Hablen de cada paso en voz alta."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
+                
+              </div>
             </div>
-            <p class="lang-en"><strong>First…</strong> Pick one practice problem and solve it on paper together.</p>
-            <p class="lang-es" lang="es"><strong>Primero…</strong> Elijan un problema de práctica y resuélvanlo en papel juntos.</p>
+            <p class="lang-en">Pick one practice problem and solve it on paper together.</p>
+            <p class="lang-es" lang="es">Elijan un problema de práctica y resuélvanlo en papel juntos.</p>
             <div class="together-fill">
-              <label class="together-fill-label" for="together_0">
-                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
-                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
-              </label>
-              <textarea id="together_0" name="together_0" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
-            </div>
-            <div class="together-step-actions">
-              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 1 hint","titleEs":"Pista del paso 1","en":"Talk through each step aloud.","es":"Hablen de cada paso en voz alta."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
-              
+              <textarea id="together_0" name="together_0" class="custom-textarea together-fill-input" rows="1" placeholder="✏️ Your turn / Tu turno…" oninput="saveState();" aria-label="Your work for step 1"></textarea>
             </div>
           </li>
-          <li class="together-step step-color-2">
+          <li class="together-step together-step--compact step-color-2">
             <div class="together-step-head">
               <span class="step-badge">Step 2 / Paso 2</span>
+              <div class="together-step-actions">
+                <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 hint","titleEs":"Pista del paso 2","en":"This is the flagship lesson&#39;s deepest idea.","es":"Esta es la idea más profunda de la lección estrella."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
+                
+              </div>
             </div>
-            <p class="lang-en"><strong>First…</strong> Check: does your answer follow — A power like 2³ is a short way to write repeated multiplication: 2 × 2 × 2.?</p>
-            <p class="lang-es" lang="es"><strong>Primero…</strong> Verifiquen: ¿su respuesta sigue la idea clave — una potencia como 2³ es una forma corta de escribir la multiplicación repetida: 2 × 2 × 2?</p>
+            <p class="lang-en">Check: does your answer follow — A power like 2³ is a short way to write repeated multiplication: 2 × 2 × 2.?</p>
+            <p class="lang-es" lang="es">Verifiquen: ¿su respuesta sigue la idea clave — una potencia como 2³ es una forma corta de escribir la multiplicación repetida: 2 × 2 × 2?</p>
             <div class="together-fill">
-              <label class="together-fill-label" for="together_1">
-                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
-                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
-              </label>
-              <textarea id="together_1" name="together_1" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
-            </div>
-            <div class="together-step-actions">
-              <button type="button" class="help-pop-btn" data-help='{"titleEn":"Step 2 hint","titleEs":"Pista del paso 2","en":"This is the flagship lesson&#39;s deepest idea.","es":"Esta es la idea más profunda de la lección estrella."}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Hint / Pista">💡 Hint / Pista</button>
-              
+              <textarea id="together_1" name="together_1" class="custom-textarea together-fill-input" rows="1" placeholder="✏️ Your turn / Tu turno…" oninput="saveState();" aria-label="Your work for step 2"></textarea>
             </div>
           </li>
       </ol>
+      
+    <div class="together-ladder">
+      <h3 class="ladder-title">
+        <span class="lang-en">📈 Practice ladder — easiest first</span>
+        <span class="lang-es" lang="es">📈 Escalera de práctica — del más fácil al más difícil</span>
+      </h3>
+      <p class="ladder-note bilingual-block">
+        <span class="lang-en">Do these together. Start at ★ and climb to ★★★ when ready.</span>
+        <span class="lang-es" lang="es">Háganlos juntos. Empiecen en ★ y suban a ★★★ cuando estén listos.</span>
+      </p>
+      <ol class="ladder-list">
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★</span>
+            <span class="ladder-tier"><span class="lang-en">Start easy</span><span class="lang-es" lang="es">Empieza fácil</span></span>
+          </div>
+          <p class="ladder-q">What is the value of 4³?</p>
+          <input type="text" id="ladder_0" name="ladder_0" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 1" />
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text">64</p>
+           </details>
+        </li>
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★</span>
+            <span class="ladder-tier"><span class="lang-en">Start easy</span><span class="lang-es" lang="es">Empieza fácil</span></span>
+          </div>
+          <p class="ladder-q">What is the value of 6²?</p>
+          <input type="text" id="ladder_1" name="ladder_1" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 2" />
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text">36</p>
+           </details>
+        </li>
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★★</span>
+            <span class="ladder-tier"><span class="lang-en">Keep going</span><span class="lang-es" lang="es">Sigan</span></span>
+          </div>
+          <p class="ladder-q">Track 1 is locked. The keypad shows 2³. What value unlocks it?</p>
+          <input type="text" id="ladder_2" name="ladder_2" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 3" />
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text">8</p>
+           </details>
+        </li>
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★★</span>
+            <span class="ladder-tier"><span class="lang-en">Keep going</span><span class="lang-es" lang="es">Sigan</span></span>
+          </div>
+          <p class="ladder-q">Track 2 needs the value of 5². Which number opens the door?</p>
+          <input type="text" id="ladder_3" name="ladder_3" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 4" />
+          <details class="ladder-answer">
+             <summary><span class="lang-en">👁️ Show answer</span><span class="lang-es" lang="es">👁️ Ver respuesta</span></summary>
+             <p class="ladder-answer-text">25</p>
+           </details>
+        </li>
+        <li class="ladder-item">
+          <div class="ladder-head">
+            <span class="ladder-stars" aria-hidden="true">★★★</span>
+            <span class="ladder-tier"><span class="lang-en">Challenge</span><span class="lang-es" lang="es">Reto</span></span>
+          </div>
+          <p class="ladder-q">A bacteria colony doubles every hour. Starting with 1 bacterium, write a power expression for the number after 6 hours. Explain why exponential growth is so much faster than adding the same number each hour.</p>
+          <input type="text" id="ladder_4" name="ladder_4" class="ladder-input" placeholder="Answer / Respuesta" oninput="saveState();" aria-label="Your answer for practice problem 5" />
+          
+        </li></ol>
+    </div>
     </div>
 
     <div class="tab-panel-inner" data-tab-panel="check" id="hw_panel_check" role="tabpanel" hidden>
@@ -3216,63 +3303,128 @@ body { font-size: 15px; line-height: 1.58; }
     </section>
   
 
-    <section class="problem-section card" id="problem_5" data-problem-type="error-analysis">
+    <section class="problem-section card" id="problem_5" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
       <div class="problem-header-row">
         <div class="problem-number-badge">Level up / Reto 3</div>
-        <div class="problem-type-badge">ERROR ANALYSIS</div>
+        <div class="problem-type-badge">DRAG SORT</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Does the exponent mean to multiply the base BY the exponent, or to multiply the base BY ITSELF that many times?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <h3 class="error-analysis-title">⚠️ Find the Exponent Error</h3>
-        <p class="problem-stem">Review the steps below. Identify which step contains the error, and explain why.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Read each step aloud and ask: does this step follow the math rules we learned?</span><span class="lang-es" lang="es">👪 Lean cada paso en voz alta y pregunten: ¿sigue las reglas que aprendimos?</span></p>
+        <p class="problem-stem">Sort each power by whether its value is greater than 50 or not.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
         
-        <div class="clipboard-box">
-          <div class="clipboard-top"></div>
-          <div class="clipboard-paper">
+        <div class="drag-sort-workspace" id="dragsort_5">
+          <div class="drag-columns">
             
-              <div class="worked-step" id="step_q_5_1">
-                <span class="step-badge">Step 1</span>
-                <span class="step-label">Expression:</span>
-                <span class="step-work">2³</span>
+              <div class="drag-column" data-category-id="greater" ondragover="allowDrop(event)" ondrop="handleDrop(event, 5, 'greater')">
+                <div class="drag-column-header">Value &gt; 50</div>
+                <div class="drag-column-slots" id="slots_5_greater" ondragover="allowDrop(event)" ondrop="handleDrop(event, 5, 'greater')"></div>
               </div>
-            
-              <div class="worked-step" id="step_q_5_2">
-                <span class="step-badge">Step 2</span>
-                <span class="step-label">Student&#039;s thinking:</span>
-                <span class="step-work">2 × 3</span>
+              <div class="drag-column" data-category-id="notgreater" ondragover="allowDrop(event)" ondrop="handleDrop(event, 5, 'notgreater')">
+                <div class="drag-column-header">Value ≤ 50</div>
+                <div class="drag-column-slots" id="slots_5_notgreater" ondragover="allowDrop(event)" ondrop="handleDrop(event, 5, 'notgreater')"></div>
               </div>
-            
-              <div class="worked-step" id="step_q_5_3">
-                <span class="step-badge">Step 3</span>
-                <span class="step-label">Calculate:</span>
-                <span class="step-work">= 6</span>
-              </div>
-            
+          </div>
+          <div class="drag-source-section">
+            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
+            <div class="drag-source-pile" id="pile_5" ondragover="allowDrop(event)" ondrop="handleDrop(event, 5, '')">
+              
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_5_0"
+                     data-item-index="0"
+                     data-correct-category="notgreater"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">2⁵ = 32</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_5_0', 5); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="greater">Value &gt; 50</option><option value="notgreater">Value ≤ 50</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_5_1"
+                     data-item-index="1"
+                     data-correct-category="greater"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">3⁴ = 81</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_5_1', 5); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="greater">Value &gt; 50</option><option value="notgreater">Value ≤ 50</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_5_2"
+                     data-item-index="2"
+                     data-correct-category="notgreater"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">7² = 49</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_5_2', 5); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="greater">Value &gt; 50</option><option value="notgreater">Value ≤ 50</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_5_3"
+                     data-item-index="3"
+                     data-correct-category="greater"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">10² = 100</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_5_3', 5); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="greater">Value &gt; 50</option><option value="notgreater">Value ≤ 50</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_5_4"
+                     data-item-index="4"
+                     data-correct-category="greater"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">5³ = 125</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_5_4', 5); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="greater">Value &gt; 50</option><option value="notgreater">Value ≤ 50</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+                <div class="drag-card"
+                     draggable="true"
+                     id="card_5_5"
+                     data-item-index="5"
+                     data-correct-category="notgreater"
+                     ondragstart="handleDragStart(event)"
+                     ondragend="handleDragEnd(event)">
+                  <span class="drag-handle" aria-hidden="true">☰</span>
+                  <span class="card-text">4² = 16</span>
+                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_5_5', 5); saveState(); updateProgress();">
+                    <option value="">-- Move to --</option>
+                    <option value="greater">Value &gt; 50</option><option value="notgreater">Value ≤ 50</option>
+                    <option value="">Unsorted Pile</option>
+                  </select>
+                </div>
+            </div>
           </div>
         </div>
-        
-        <div class="error-controls">
-          <div class="error-select-row">
-            <label for="error_step_select_5">Which step has the error?</label>
-            <select id="error_step_select_5" class="custom-select error-step-select" data-correct="2" onchange="saveState(); updateProgress();">
-              <option value="">-- Choose Step --</option>
-              <option value="1">Step 1</option><option value="2">Step 2</option><option value="3">Step 3</option>
-            </select>
-            <span class="feedback-badge"></span>
-          </div>
-          
-          <div class="error-explain-row">
-            <label for="error_explain_input_5">Explain the error and write the correct calculation:</label>
-            <textarea id="error_explain_input_5" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
-            <span class="feedback-badge"></span>
-          </div>
-          
-          <div class="reveal-box" id="error_correct_work_5" style="display:none;">
-            <strong>Correct Work Reference:</strong> 2³ means 2 × 2 × 2, NOT 2 × 3. The exponent tells us to multiply the base by itself 3 times: 2 × 2 × 2 = 8.
-            
-          </div>
+        <div class="drag-controls">
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(5); saveState(); updateProgress();">Reset Sorting</button>
         </div>
       </div>
     
@@ -3286,20 +3438,6 @@ body { font-size: 15px; line-height: 1.58; }
           <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
         </ol>
       </details>
-      <div class="hw-workspace">
-        <div class="hw-visual">
-          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Show the repeated multiplication (example: 2³ = 2 × 2 × 2).</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Muestra la multiplicación repetida (ejemplo: 2³ = 2 × 2 × 2).</span></div>
-          <div class="hw-visual-frame hw-drawable" data-draw-frame>
-            <svg viewBox="0 0 320 70" class="hw-visual-svg" role="img" aria-label="Repeated multiplication boxes"><rect x="15" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="72" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="93" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="150" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="171" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="228" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="249" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/></svg>
-            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
-            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
-          </div>
-        </div>
-        <div class="hw-work">
-          <label class="hw-work-label" for="work_5"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
-          <textarea id="work_5" name="work_5" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
-        </div>
-      </div>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(5)" aria-label="Check answer for problem 6">
           ✓ Check This Problem / Revisar
@@ -3409,128 +3547,84 @@ body { font-size: 15px; line-height: 1.58; }
     </section>
   
 
-    <section class="problem-section card" id="problem_7" data-problem-type="drag-sort" data-problem-subtype="drag-sort">
+    <section class="problem-section card" id="problem_7" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 2</div>
-        <div class="problem-type-badge">DRAG SORT</div>
+        <div class="problem-type-badge">MATCHING GAME</div>
       </div>
       <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Sort each power by whether its value is greater than 50 or not.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.</span><span class="lang-es" lang="es">👪 En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.</span></p>
-        
-        <div class="drag-sort-workspace" id="dragsort_7">
-          <div class="drag-columns">
-            
-              <div class="drag-column" data-category-id="greater" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'greater')">
-                <div class="drag-column-header">Value &gt; 50</div>
-                <div class="drag-column-slots" id="slots_7_greater" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'greater')"></div>
+        <p class="problem-stem">Match each power to its value.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
+        <div class="matching-pairs">
+          
+            <div class="matching-row" data-term="2⁵" data-correct="32">
+              <div class="matching-term">2⁵</div>
+              <div class="matching-select-container">
+                <select name="q_7_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="1000">1000</option><option value="128">128</option><option value="25">25</option><option value="27">27</option><option value="32">32</option><option value="64">64</option>
+                </select>
+                <span class="feedback-badge"></span>
               </div>
-              <div class="drag-column" data-category-id="notgreater" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'notgreater')">
-                <div class="drag-column-header">Value ≤ 50</div>
-                <div class="drag-column-slots" id="slots_7_notgreater" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, 'notgreater')"></div>
-              </div>
-          </div>
-          <div class="drag-source-section">
-            <div class="drag-source-header">Items to sort — drag cards, tap card then column, or use the dropdown on phones:</div>
-            <div class="drag-source-pile" id="pile_7" ondragover="allowDrop(event)" ondrop="handleDrop(event, 7, '')">
-              
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_7_0"
-                     data-item-index="0"
-                     data-correct-category="notgreater"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">2⁵ = 32</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_0', 7); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="greater">Value &gt; 50</option><option value="notgreater">Value ≤ 50</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_7_1"
-                     data-item-index="1"
-                     data-correct-category="greater"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">3⁴ = 81</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_1', 7); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="greater">Value &gt; 50</option><option value="notgreater">Value ≤ 50</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_7_2"
-                     data-item-index="2"
-                     data-correct-category="notgreater"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">7² = 49</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_2', 7); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="greater">Value &gt; 50</option><option value="notgreater">Value ≤ 50</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_7_3"
-                     data-item-index="3"
-                     data-correct-category="greater"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">10² = 100</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_3', 7); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="greater">Value &gt; 50</option><option value="notgreater">Value ≤ 50</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_7_4"
-                     data-item-index="4"
-                     data-correct-category="greater"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">5³ = 125</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_4', 7); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="greater">Value &gt; 50</option><option value="notgreater">Value ≤ 50</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
-                <div class="drag-card"
-                     draggable="true"
-                     id="card_7_5"
-                     data-item-index="5"
-                     data-correct-category="notgreater"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
-                  <span class="drag-handle" aria-hidden="true">☰</span>
-                  <span class="card-text">4² = 16</span>
-                  <select class="mobile-cat-select" onchange="mobileMoveCard(this, 'card_7_5', 7); saveState(); updateProgress();">
-                    <option value="">-- Move to --</option>
-                    <option value="greater">Value &gt; 50</option><option value="notgreater">Value ≤ 50</option>
-                    <option value="">Unsorted Pile</option>
-                  </select>
-                </div>
             </div>
-          </div>
-        </div>
-        <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(7); saveState(); updateProgress();">Reset Sorting</button>
+          
+            <div class="matching-row" data-term="3³" data-correct="27">
+              <div class="matching-term">3³</div>
+              <div class="matching-select-container">
+                <select name="q_7_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="1000">1000</option><option value="128">128</option><option value="25">25</option><option value="27">27</option><option value="32">32</option><option value="64">64</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="4³" data-correct="64">
+              <div class="matching-term">4³</div>
+              <div class="matching-select-container">
+                <select name="q_7_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="1000">1000</option><option value="128">128</option><option value="25">25</option><option value="27">27</option><option value="32">32</option><option value="64">64</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="10³" data-correct="1000">
+              <div class="matching-term">10³</div>
+              <div class="matching-select-container">
+                <select name="q_7_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="1000">1000</option><option value="128">128</option><option value="25">25</option><option value="27">27</option><option value="32">32</option><option value="64">64</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="5²" data-correct="25">
+              <div class="matching-term">5²</div>
+              <div class="matching-select-container">
+                <select name="q_7_pair_4" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="1000">1000</option><option value="128">128</option><option value="25">25</option><option value="27">27</option><option value="32">32</option><option value="64">64</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="2⁷" data-correct="128">
+              <div class="matching-term">2⁷</div>
+              <div class="matching-select-container">
+                <select name="q_7_pair_5" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="1000">1000</option><option value="128">128</option><option value="25">25</option><option value="27">27</option><option value="32">32</option><option value="64">64</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
         </div>
       </div>
     
@@ -3553,83 +3647,41 @@ body { font-size: 15px; line-height: 1.58; }
     </section>
   
 
-    <section class="problem-section card" id="problem_8" data-problem-type="matching-game">
+    <section class="problem-section card" id="problem_8" data-problem-type="multiple-choice">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 3</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"2³ means 2 × 2 × 2 = 8, so 8 unlocks Track 1.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Match each power to its value.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
-        <div class="matching-pairs">
+        <p class="problem-stem">Track 1 is locked. The keypad shows 2³. What value unlocks it?</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
+        <div class="mc-options" data-correct="0" data-explanation="2³ means 2 × 2 × 2 = 8, so 8 unlocks Track 1.">
           
-            <div class="matching-row" data-term="2⁵" data-correct="32">
-              <div class="matching-term">2⁵</div>
-              <div class="matching-select-container">
-                <select name="q_8_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="1000">1000</option><option value="128">128</option><option value="25">25</option><option value="27">27</option><option value="32">32</option><option value="64">64</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
+            <label class="mc-option-label" id="label_q_8_0">
+              <input type="radio" name="q_8" value="0" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">8</span>
+            </label>
           
-            <div class="matching-row" data-term="3³" data-correct="27">
-              <div class="matching-term">3³</div>
-              <div class="matching-select-container">
-                <select name="q_8_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="1000">1000</option><option value="128">128</option><option value="25">25</option><option value="27">27</option><option value="32">32</option><option value="64">64</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
+            <label class="mc-option-label" id="label_q_8_1">
+              <input type="radio" name="q_8" value="1" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">6</span>
+            </label>
           
-            <div class="matching-row" data-term="4³" data-correct="64">
-              <div class="matching-term">4³</div>
-              <div class="matching-select-container">
-                <select name="q_8_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="1000">1000</option><option value="128">128</option><option value="25">25</option><option value="27">27</option><option value="32">32</option><option value="64">64</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
+            <label class="mc-option-label" id="label_q_8_2">
+              <input type="radio" name="q_8" value="2" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">23</span>
+            </label>
           
-            <div class="matching-row" data-term="10³" data-correct="1000">
-              <div class="matching-term">10³</div>
-              <div class="matching-select-container">
-                <select name="q_8_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="1000">1000</option><option value="128">128</option><option value="25">25</option><option value="27">27</option><option value="32">32</option><option value="64">64</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="5²" data-correct="25">
-              <div class="matching-term">5²</div>
-              <div class="matching-select-container">
-                <select name="q_8_pair_4" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="1000">1000</option><option value="128">128</option><option value="25">25</option><option value="27">27</option><option value="32">32</option><option value="64">64</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="2⁷" data-correct="128">
-              <div class="matching-term">2⁷</div>
-              <div class="matching-select-container">
-                <select name="q_8_pair_5" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="1000">1000</option><option value="128">128</option><option value="25">25</option><option value="27">27</option><option value="32">32</option><option value="64">64</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
+            <label class="mc-option-label" id="label_q_8_3">
+              <input type="radio" name="q_8" value="3" onchange="saveState(); updateProgress();">
+              <span class="custom-radio"></span>
+              <span class="choice-text">9</span>
+            </label>
           
         </div>
       </div>
@@ -3644,6 +3696,20 @@ body { font-size: 15px; line-height: 1.58; }
           <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
         </ol>
       </details>
+      <div class="hw-workspace">
+        <div class="hw-visual">
+          <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Show the repeated multiplication (example: 2³ = 2 × 2 × 2).</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Muestra la multiplicación repetida (ejemplo: 2³ = 2 × 2 × 2).</span></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 320 70" class="hw-visual-svg" role="img" aria-label="Repeated multiplication boxes"><rect x="15" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="72" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="93" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="150" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="171" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/><text x="228" y="42" text-anchor="middle" font-size="20" fill="#12355b">×</text><rect x="249" y="18" width="50" height="36" rx="6" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_8"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_8" name="work_8" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+        </div>
+      </div>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(8)" aria-label="Check answer for problem 9">
           ✓ Check This Problem / Revisar
@@ -3658,35 +3724,35 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Bonus / Más 4</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"2³ means 2 × 2 × 2 = 8, so 8 unlocks Track 1.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The base is the number being multiplied repeatedly. In 10⁴ the base is 10 and the exponent is 4, so 10⁴ = 10 × 10 × 10 × 10 = 10000.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">Track 1 is locked. The keypad shows 2³. What value unlocks it?</p>
+        <p class="problem-stem">The vault display reads 10⁴. In the power 10⁴, which number is the base?</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="2³ means 2 × 2 × 2 = 8, so 8 unlocks Track 1.">
+        <div class="mc-options" data-correct="0" data-explanation="The base is the number being multiplied repeatedly. In 10⁴ the base is 10 and the exponent is 4, so 10⁴ = 10 × 10 × 10 × 10 = 10000.">
           
             <label class="mc-option-label" id="label_q_9_0">
               <input type="radio" name="q_9" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">8</span>
+              <span class="choice-text">10</span>
             </label>
           
             <label class="mc-option-label" id="label_q_9_1">
               <input type="radio" name="q_9" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">6</span>
+              <span class="choice-text">4</span>
             </label>
           
             <label class="mc-option-label" id="label_q_9_2">
               <input type="radio" name="q_9" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">23</span>
+              <span class="choice-text">40</span>
             </label>
           
             <label class="mc-option-label" id="label_q_9_3">
               <input type="radio" name="q_9" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">9</span>
+              <span class="choice-text">14</span>
             </label>
           
         </div>
@@ -3725,40 +3791,140 @@ body { font-size: 15px; line-height: 1.58; }
     </section>
   
 
-    <section class="problem-section card" id="problem_10" data-problem-type="multiple-choice">
+    <section class="problem-section card" id="problem_10" data-problem-type="matching-game">
       <div class="problem-header-row">
         <div class="problem-number-badge">Bonus / Más 5</div>
-        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+        <div class="problem-type-badge">MATCHING GAME</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"The base is the number being multiplied repeatedly. In 10⁴ the base is 10 and the exponent is 4, so 10⁴ = 10 × 10 × 10 × 10 = 10000.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">The vault display reads 10⁴. In the power 10⁴, which number is the base?</p>
+        <p class="problem-stem">Match each power to the value that unlocks its studio track.</p>
+        <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
+        <div class="matching-pairs">
+          
+            <div class="matching-row" data-term="2⁴" data-correct="16">
+              <div class="matching-term">2⁴</div>
+              <div class="matching-select-container">
+                <select name="q_10_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="10000">10000</option><option value="16">16</option><option value="27">27</option><option value="32">32</option><option value="36">36</option><option value="64">64</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="3³" data-correct="27">
+              <div class="matching-term">3³</div>
+              <div class="matching-select-container">
+                <select name="q_10_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="10000">10000</option><option value="16">16</option><option value="27">27</option><option value="32">32</option><option value="36">36</option><option value="64">64</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="6²" data-correct="36">
+              <div class="matching-term">6²</div>
+              <div class="matching-select-container">
+                <select name="q_10_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="10000">10000</option><option value="16">16</option><option value="27">27</option><option value="32">32</option><option value="36">36</option><option value="64">64</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="2⁵" data-correct="32">
+              <div class="matching-term">2⁵</div>
+              <div class="matching-select-container">
+                <select name="q_10_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="10000">10000</option><option value="16">16</option><option value="27">27</option><option value="32">32</option><option value="36">36</option><option value="64">64</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="10⁴" data-correct="10000">
+              <div class="matching-term">10⁴</div>
+              <div class="matching-select-container">
+                <select name="q_10_pair_4" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="10000">10000</option><option value="16">16</option><option value="27">27</option><option value="32">32</option><option value="36">36</option><option value="64">64</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+            <div class="matching-row" data-term="4³" data-correct="64">
+              <div class="matching-term">4³</div>
+              <div class="matching-select-container">
+                <select name="q_10_pair_5" class="custom-select matching-select" onchange="saveState(); updateProgress();">
+                  <option value="">-- Choose Match --</option>
+                  <option value="10000">10000</option><option value="16">16</option><option value="27">27</option><option value="32">32</option><option value="36">36</option><option value="64">64</option>
+                </select>
+                <span class="feedback-badge"></span>
+              </div>
+            </div>
+          
+        </div>
+      </div>
+    
+      
+      <details class="hw-step-guide" open>
+        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
+        <ol class="hw-steps">
+          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
+          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Show the repeated multiplication (example: 2³ = 2 × 2 × 2).</span><span class="lang-es" lang="es">Muestra la multiplicación repetida (ejemplo: 2³ = 2 × 2 × 2).</span></li>
+          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Write the base, then multiply it by itself once for each exponent.</span><span class="lang-es" lang="es">Escribe la base y multiplícala por sí misma una vez por cada exponente.</span></li>
+          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
+        </ol>
+      </details>
+      <div class="problem-check-row">
+        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">
+          ✓ Check This Problem / Revisar
+        </button>
+        <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+  
+
+    <section class="problem-section card" id="problem_11" data-problem-type="multiple-choice">
+      <div class="problem-header-row">
+        <div class="problem-number-badge">Bonus / Más 6</div>
+        <div class="problem-type-badge">MULTIPLE CHOICE</div>
+      </div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"4³ = 4 × 4 × 4 = 64.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      
+      <div class="problem-body">
+        <p class="problem-stem">What is the value of 4³?</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="The base is the number being multiplied repeatedly. In 10⁴ the base is 10 and the exponent is 4, so 10⁴ = 10 × 10 × 10 × 10 = 10000.">
+        <div class="mc-options" data-correct="0" data-explanation="4³ = 4 × 4 × 4 = 64.">
           
-            <label class="mc-option-label" id="label_q_10_0">
-              <input type="radio" name="q_10" value="0" onchange="saveState(); updateProgress();">
+            <label class="mc-option-label" id="label_q_11_0">
+              <input type="radio" name="q_11" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">10</span>
+              <span class="choice-text">64</span>
             </label>
           
-            <label class="mc-option-label" id="label_q_10_1">
-              <input type="radio" name="q_10" value="1" onchange="saveState(); updateProgress();">
+            <label class="mc-option-label" id="label_q_11_1">
+              <input type="radio" name="q_11" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">4</span>
+              <span class="choice-text">12</span>
             </label>
           
-            <label class="mc-option-label" id="label_q_10_2">
-              <input type="radio" name="q_10" value="2" onchange="saveState(); updateProgress();">
+            <label class="mc-option-label" id="label_q_11_2">
+              <input type="radio" name="q_11" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">40</span>
+              <span class="choice-text">43</span>
             </label>
           
-            <label class="mc-option-label" id="label_q_10_3">
-              <input type="radio" name="q_10" value="3" onchange="saveState(); updateProgress();">
+            <label class="mc-option-label" id="label_q_11_3">
+              <input type="radio" name="q_11" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">14</span>
+              <span class="choice-text">7</span>
             </label>
           
         </div>
@@ -3784,110 +3950,10 @@ body { font-size: 15px; line-height: 1.58; }
           </div>
         </div>
         <div class="hw-work">
-          <label class="hw-work-label" for="work_10"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
-          <textarea id="work_10" name="work_10" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
+          <label class="hw-work-label" for="work_11"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
+          <textarea id="work_11" name="work_11" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
         </div>
       </div>
-      <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(10)" aria-label="Check answer for problem 11">
-          ✓ Check This Problem / Revisar
-        </button>
-        <div class="problem-check-result" id="problem_result_10" role="status" aria-live="polite" aria-atomic="true"></div>
-      </div>
-    </section>
-  
-
-    <section class="problem-section card" id="problem_11" data-problem-type="matching-game">
-      <div class="problem-header-row">
-        <div class="problem-number-badge">Bonus / Más 6</div>
-        <div class="problem-type-badge">MATCHING GAME</div>
-      </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"Read the question aloud. What do you notice? What operation or idea fits?","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
-      
-      <div class="problem-body">
-        <p class="problem-stem">Match each power to the value that unlocks its studio track.</p>
-        <p class="family-problem-tip"><span class="lang-en">👪 Say each term out loud, then talk through which match makes sense before choosing.</span><span class="lang-es" lang="es">👪 Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.</span></p>
-        <div class="matching-pairs">
-          
-            <div class="matching-row" data-term="2⁴" data-correct="16">
-              <div class="matching-term">2⁴</div>
-              <div class="matching-select-container">
-                <select name="q_11_pair_0" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="10000">10000</option><option value="16">16</option><option value="27">27</option><option value="32">32</option><option value="36">36</option><option value="64">64</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="3³" data-correct="27">
-              <div class="matching-term">3³</div>
-              <div class="matching-select-container">
-                <select name="q_11_pair_1" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="10000">10000</option><option value="16">16</option><option value="27">27</option><option value="32">32</option><option value="36">36</option><option value="64">64</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="6²" data-correct="36">
-              <div class="matching-term">6²</div>
-              <div class="matching-select-container">
-                <select name="q_11_pair_2" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="10000">10000</option><option value="16">16</option><option value="27">27</option><option value="32">32</option><option value="36">36</option><option value="64">64</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="2⁵" data-correct="32">
-              <div class="matching-term">2⁵</div>
-              <div class="matching-select-container">
-                <select name="q_11_pair_3" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="10000">10000</option><option value="16">16</option><option value="27">27</option><option value="32">32</option><option value="36">36</option><option value="64">64</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="10⁴" data-correct="10000">
-              <div class="matching-term">10⁴</div>
-              <div class="matching-select-container">
-                <select name="q_11_pair_4" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="10000">10000</option><option value="16">16</option><option value="27">27</option><option value="32">32</option><option value="36">36</option><option value="64">64</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-            <div class="matching-row" data-term="4³" data-correct="64">
-              <div class="matching-term">4³</div>
-              <div class="matching-select-container">
-                <select name="q_11_pair_5" class="custom-select matching-select" onchange="saveState(); updateProgress();">
-                  <option value="">-- Choose Match --</option>
-                  <option value="10000">10000</option><option value="16">16</option><option value="27">27</option><option value="32">32</option><option value="36">36</option><option value="64">64</option>
-                </select>
-                <span class="feedback-badge"></span>
-              </div>
-            </div>
-          
-        </div>
-      </div>
-    
-      
-      <details class="hw-step-guide" open>
-        <summary><span class="lang-en">🧭 How to solve it — step by step</span><span class="lang-es" lang="es">🧭 Cómo resolverlo — paso a paso</span></summary>
-        <ol class="hw-steps">
-          <li><strong><span class="lang-en">Read it twice.</span><span class="lang-es" lang="es">Lee dos veces.</span></strong> <span class="lang-en">Circle the numbers and underline the question.</span><span class="lang-es" lang="es">Encierra los números y subraya la pregunta.</span></li>
-          <li><strong><span class="lang-en">Picture it.</span><span class="lang-es" lang="es">Hazte una imagen.</span></strong> <span class="lang-en">Show the repeated multiplication (example: 2³ = 2 × 2 × 2).</span><span class="lang-es" lang="es">Muestra la multiplicación repetida (ejemplo: 2³ = 2 × 2 × 2).</span></li>
-          <li><strong><span class="lang-en">Solve step by step.</span><span class="lang-es" lang="es">Resuelve paso a paso.</span></strong> <span class="lang-en">Write the base, then multiply it by itself once for each exponent.</span><span class="lang-es" lang="es">Escribe la base y multiplícala por sí misma una vez por cada exponente.</span></li>
-          <li><strong><span class="lang-en">Check it.</span><span class="lang-es" lang="es">Revísalo.</span></strong> <span class="lang-en">Does your answer make sense?</span><span class="lang-es" lang="es">¿Tiene sentido tu respuesta?</span></li>
-        </ol>
-      </details>
       <div class="problem-check-row">
         <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(11)" aria-label="Check answer for problem 12">
           ✓ Check This Problem / Revisar
@@ -3902,17 +3968,17 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Bonus / Más 7</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"4³ = 4 × 4 × 4 = 64.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"6² = 6 × 6 = 36.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">What is the value of 4³?</p>
+        <p class="problem-stem">What is the value of 6²?</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="4³ = 4 × 4 × 4 = 64.">
+        <div class="mc-options" data-correct="0" data-explanation="6² = 6 × 6 = 36.">
           
             <label class="mc-option-label" id="label_q_12_0">
               <input type="radio" name="q_12" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">64</span>
+              <span class="choice-text">36</span>
             </label>
           
             <label class="mc-option-label" id="label_q_12_1">
@@ -3924,13 +3990,13 @@ body { font-size: 15px; line-height: 1.58; }
             <label class="mc-option-label" id="label_q_12_2">
               <input type="radio" name="q_12" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">43</span>
+              <span class="choice-text">62</span>
             </label>
           
             <label class="mc-option-label" id="label_q_12_3">
               <input type="radio" name="q_12" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">7</span>
+              <span class="choice-text">8</span>
             </label>
           
         </div>
@@ -3974,35 +4040,35 @@ body { font-size: 15px; line-height: 1.58; }
         <div class="problem-number-badge">Bonus / Más 8</div>
         <div class="problem-type-badge">MULTIPLE CHOICE</div>
       </div>
-      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"6² = 6 × 6 = 36.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
+      <div class="problem-hint-row"><button type="button" class="help-pop-btn" data-help='{"titleEn":"Hint before you check","titleEs":"Pista antes de revisar","en":"4 + 2 = 6. 6² = 36. 3 × 36 = 108.","es":"Lean la pregunta en voz alta. ¿Qué observan? ¿Qué operación o idea encaja?","visual":"<svg viewBox=\"0 0 320 70\" class=\"hw-visual-svg\" role=\"img\" aria-label=\"Repeated multiplication boxes\"><rect x=\"15\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"72\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"93\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"150\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"171\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/><text x=\"228\" y=\"42\" text-anchor=\"middle\" font-size=\"20\" fill=\"#12355b\">×</text><rect x=\"249\" y=\"18\" width=\"50\" height=\"36\" rx=\"6\" fill=\"#ffffff\" stroke=\"#12355b\" stroke-width=\"1.5\"/></svg>","frameEn":"Draw it first, then solve. Try saying: “This problem is asking me to…”","frameEs":"Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”"}' onclick="openHelpModalFromBtn(this)" aria-label="💡 Stuck? Get a hint / ¿Atorado? Pista">💡 Stuck? Get a hint / ¿Atorado? Pista</button></div>
       
       <div class="problem-body">
-        <p class="problem-stem">What is the value of 6²?</p>
+        <p class="problem-stem">Evaluate: 3 × (4 + 2)²</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Read the question together, then let your student pick an answer before you discuss why.</span><span class="lang-es" lang="es">👪 Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.</span></p>
-        <div class="mc-options" data-correct="0" data-explanation="6² = 6 × 6 = 36.">
+        <div class="mc-options" data-correct="0" data-explanation="4 + 2 = 6. 6² = 36. 3 × 36 = 108.">
           
             <label class="mc-option-label" id="label_q_13_0">
               <input type="radio" name="q_13" value="0" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">36</span>
+              <span class="choice-text">108</span>
             </label>
           
             <label class="mc-option-label" id="label_q_13_1">
               <input type="radio" name="q_13" value="1" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">12</span>
+              <span class="choice-text">54</span>
             </label>
           
             <label class="mc-option-label" id="label_q_13_2">
               <input type="radio" name="q_13" value="2" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">62</span>
+              <span class="choice-text">36</span>
             </label>
           
             <label class="mc-option-label" id="label_q_13_3">
               <input type="radio" name="q_13" value="3" onchange="saveState(); updateProgress();">
               <span class="custom-radio"></span>
-              <span class="choice-text">8</span>
+              <span class="choice-text">144</span>
             </label>
           
         </div>

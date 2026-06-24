@@ -230,12 +230,14 @@ export function scoreProblemAlignment(problem, lessonMeta) {
 
 export function isPrintableProblem(it) {
   if (!it || typeof it !== "object") return false;
+  // Family homework is straight practice — no "find the error" / error-analysis
+  // problems. Families want to DO the math, easiest → hardest, not critique a
+  // fictional student's mistake.
   return [
     "multiple-choice",
     "fill-table",
     "matching-game",
     "drag-sort",
-    "error-analysis",
     "open-response",
   ].includes(it.type);
 }
