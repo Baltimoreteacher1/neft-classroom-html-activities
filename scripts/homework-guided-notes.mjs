@@ -857,8 +857,9 @@ export function renderWelcomeBanner(config, lessonId) {
 
 export function renderLearningTonight(config) {
   const { en, es } = learningTonight(config);
-  const langObj = config.languageObjective || "";
-  const langObjEs = languageTonightEs(config);
+  const vocab = (config.vocabulary || []).slice(0, 5);
+  const wordsEn = vocab.map((v) => v.term).filter(Boolean).join(", ");
+  const wordsEs = vocab.map((v) => v.termEs || v.term).filter(Boolean).join(", ");
 
   return `
     <section class="guided-section card section-learn" aria-label="What we are learning tonight">
@@ -867,12 +868,12 @@ export function renderLearningTonight(config) {
         <div class="bilingual-col lang-en">
           <span class="lang-label">English</span>
           <p class="learning-big">${esc(en.charAt(0).toUpperCase() + en.slice(1))}.</p>
-          ${langObj ? `<p class="learning-sub">Also practice saying: <em>${esc(plainObjective(langObj))}</em></p>` : ""}
+          ${wordsEn ? `<p class="learning-sub">Practice using these words while you work: <em>${esc(wordsEn)}</em>.</p>` : ""}
         </div>
         <div class="bilingual-col lang-es" lang="es">
           <span class="lang-label">Español</span>
           <p class="learning-big">${esc(es.endsWith(".") ? es : `${es}.`)}</p>
-          ${langObj ? `<p class="learning-sub">También practiquen: <em>${esc(langObjEs.replace(/^Puedo\s/i, "").replace(/\.$/, ""))}</em></p>` : ""}
+          ${wordsEs ? `<p class="learning-sub">Practiquen usar estas palabras al trabajar: <em>${esc(wordsEs)}</em>.</p>` : ""}
         </div>
       </div>
     </section>`;
@@ -1594,7 +1595,10 @@ export const GUIDED_NOTES_CSS = `
   margin-bottom: 6px;
 }
 .lang-en { margin: 0 0 6px; }
-.lang-es { margin: 0; color: var(--muted); font-style: normal; }
+/* Spanish is a primary language for our families: keep it fully legible, not a faded subtitle. */
+.lang-es { margin: 0; color: var(--ink); font-style: normal; }
+.lang-en + .lang-es, .worked-step .lang-es { padding-left: 10px; border-left: 3px solid var(--teal); }
+.welcome-lead .lang-es { color: rgba(255, 255, 255, 0.94); border-left: 3px solid var(--amber); padding-left: 10px; display: inline-block; margin-top: 6px; }
 .learning-big { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; line-height: 1.4; }
 .learning-sub { font-size: 14px; margin: 0; color: var(--ink); }
 
