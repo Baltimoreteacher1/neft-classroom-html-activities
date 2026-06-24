@@ -2337,23 +2337,36 @@ html[data-theme="dark"] .bg-blob-2 {
 
 /* Card Drag and Drop Reordering */
 .card-drag-handle {
-  background: none;
-  border: none;
-  color: var(--muted);
-  font-size: 1.1rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--teal-bright);
+  font-size: 1.4rem;
+  line-height: 1;
   cursor: grab;
-  padding: 4px 8px;
-  margin: -4px -8px -4px 0;
-  border-radius: 4px;
+  /* Big, finger-friendly tap target for young students on a touchscreen. */
+  min-width: 44px;
+  min-height: 44px;
+  padding: 4px 10px;
+  margin: -6px -6px -6px 4px;
+  border-radius: 10px;
   touch-action: none;
   user-select: none;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex: none;
+  transition:
+    background 0.12s ease,
+    transform 0.12s ease;
 }
 .card-drag-handle:hover {
   color: var(--teal-bright);
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.14);
+  transform: scale(1.05);
+}
+.card-drag-handle:active {
+  cursor: grabbing;
+  transform: scale(0.96);
 }
 .card-drag-handle:focus-visible {
   color: var(--teal-bright);

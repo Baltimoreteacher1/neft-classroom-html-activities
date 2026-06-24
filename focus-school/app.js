@@ -6693,8 +6693,30 @@ ${name}`;
       let insertAfter = false; // drop below the target card's midpoint?
       let moved = false; // did the pointer travel far enough to be a drag?
 
+      // Auto-scroll the page when the pointer nears the top/bottom edge, so a
+      // card can be dragged the whole way down a long list (a young student
+      // can't reach a card off-screen otherwise). The rAF loop keeps scrolling
+      // while the finger is parked in the hot zone.
+      let pointerY = startY;
+      let autoScrollRAF = 0;
+      const EDGE = 90; // px hot zone at top and bottom of the viewport
+      const MAX_SPEED = 16; // px per frame at the very edge
+      function autoScrollStep() {
+        const h = window.innerHeight;
+        let delta = 0;
+        if (pointerY < EDGE) {
+          delta = -MAX_SPEED * ((EDGE - pointerY) / EDGE);
+        } else if (pointerY > h - EDGE) {
+          delta = MAX_SPEED * ((pointerY - (h - EDGE)) / EDGE);
+        }
+        if (delta) window.scrollBy(0, delta);
+        autoScrollRAF = requestAnimationFrame(autoScrollStep);
+      }
+      autoScrollRAF = requestAnimationFrame(autoScrollStep);
+
       function onPointerMove(moveEv) {
         if (moveEv.pointerId !== ev.pointerId) return;
+        pointerY = moveEv.clientY;
         const dx = moveEv.clientX - startX;
         const dy = moveEv.clientY - startY;
         if (!moved && Math.abs(dx) + Math.abs(dy) > 4) moved = true;
@@ -6724,6 +6746,7 @@ ${name}`;
 
       function onPointerUp(upEv) {
         if (upEv.pointerId !== ev.pointerId) return;
+        cancelAnimationFrame(autoScrollRAF);
         cardEl.releasePointerCapture(ev.pointerId);
         cardEl.classList.remove("dragging");
         cardEl.style.transform = "";
