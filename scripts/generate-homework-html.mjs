@@ -223,6 +223,17 @@ function lessonConfigs() {
     if (!existsSync(cfgPath)) continue;
     try {
       const config = JSON.parse(readFileSync(cfgPath, "utf8"));
+      // Merge curated bilingual family-homework notes from sidecar data file.
+      // Sidecar keeps lesson configs lean; inline config.familyNotes wins on conflict.
+      const notesPath = join(root, "data", "family-homework-notes", `${dir.name}.json`);
+      if (existsSync(notesPath)) {
+        try {
+          const notes = JSON.parse(readFileSync(notesPath, "utf8"));
+          config.familyNotes = { ...notes, ...(config.familyNotes || {}) };
+        } catch (e) {
+          console.error(`Bad family-homework sidecar for ${dir.name}: ${e.message}`);
+        }
+      }
       out.push({ id: dir.name, config });
     } catch (err) {
       console.error(`Skipping ${dir.name}: ${err.message}`);

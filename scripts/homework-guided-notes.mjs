@@ -41,6 +41,7 @@ function conceptIntro(config) {
 }
 
 function keyIdea(config) {
+  if (config.familyNotes?.bigIdea?.en) return config.familyNotes.bigIdea.en;
   const intro = conceptIntro(config);
   if (intro?.keyIdea) return intro.keyIdea;
   if (intro?.intro) return intro.intro;
@@ -49,6 +50,7 @@ function keyIdea(config) {
 }
 
 function keyIdeaEs(config) {
+  if (config.familyNotes?.bigIdea?.es) return config.familyNotes.bigIdea.es;
   return spanishKeyIdea(config);
 }
 
