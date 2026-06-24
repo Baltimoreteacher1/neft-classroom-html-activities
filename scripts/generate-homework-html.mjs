@@ -418,7 +418,11 @@ function renderWorkspace(topic, pIdx) {
       <div class="hw-workspace">
         <div class="hw-visual">
           <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: ${esc(g.draw)}</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: ${esc(g.drawEs)}</span></div>
-          <div class="hw-visual-frame">${visual}</div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            ${visual}
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
         </div>
         <div class="hw-work">
           <label class="hw-work-label" for="work_${pIdx}"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
@@ -1403,6 +1407,20 @@ header.homework-header h1 {
   text-align: center;
 }
 .hw-visual-svg { width: 100%; height: auto; max-height: 180px; }
+/* Drawable model area: students draw directly on the grid (mouse/touch/stylus). */
+.hw-visual-frame.hw-drawable { position: relative; }
+.hw-draw-canvas {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  touch-action: none; cursor: crosshair; border-radius: 12px;
+}
+.hw-draw-clear {
+  position: absolute; top: 6px; right: 6px; z-index: 2;
+  font-family: var(--font-display); font-size: 12px; font-weight: 700;
+  background: #ffffff; color: var(--navy);
+  border: 1px solid var(--line); border-radius: 8px; padding: 3px 9px; cursor: pointer;
+}
+.hw-draw-clear:hover { border-color: var(--teal); }
+@media print { .hw-draw-clear { display: none; } }
 .hw-work-input {
   width: 100%;
   min-height: 96px;

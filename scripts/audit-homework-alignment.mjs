@@ -39,8 +39,15 @@ const REQUIRED_MARKERS = [
   { id: "bilingual", test: (h) => h.includes('lang="es"') && h.includes("Ayuda a tu estudiante") },
   {
     id: "no-curriculum",
-    test: (h) =>
-      !/\/curriculum\//i.test(h) && !/Back to curriculum/i.test(h) && !/Curriculum Hub/i.test(h),
+    test: (h) => {
+      // Allow student practice tools (AI Learning Lab + Math Workbench).
+      const stripped = h.replace(/\/curriculum\/(ai-hub|math-workbench)\/[^"'\s]*/gi, "");
+      return (
+        !/\/curriculum\//i.test(stripped) &&
+        !/Back to curriculum/i.test(h) &&
+        !/Curriculum Hub/i.test(h)
+      );
+    },
   },
 ];
 

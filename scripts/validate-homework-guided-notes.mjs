@@ -76,8 +76,13 @@ for (const id of lessonIds) {
     issues.push({ id, level: "HIGH", msg: "No quick check problems" });
   }
 
+  // Student practice tools (AI Learning Lab + Math Workbench) are allowed links.
+  const htmlNoAiHub = html.replace(
+    /\/curriculum\/(ai-hub|math-workbench)\/[^"'\s]*/gi,
+    "",
+  );
   if (
-    /\/curriculum\//i.test(html) ||
+    /\/curriculum\//i.test(htmlNoAiHub) ||
     /Curriculum Hub/i.test(html) ||
     /Back to curriculum/i.test(html)
   ) {

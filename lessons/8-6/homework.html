@@ -580,6 +580,20 @@ header.homework-header h1 {
   text-align: center;
 }
 .hw-visual-svg { width: 100%; height: auto; max-height: 180px; }
+/* Drawable model area: students draw directly on the grid (mouse/touch/stylus). */
+.hw-visual-frame.hw-drawable { position: relative; }
+.hw-draw-canvas {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  touch-action: none; cursor: crosshair; border-radius: 12px;
+}
+.hw-draw-clear {
+  position: absolute; top: 6px; right: 6px; z-index: 2;
+  font-family: var(--font-display); font-size: 12px; font-weight: 700;
+  background: #ffffff; color: var(--navy);
+  border: 1px solid var(--line); border-radius: 8px; padding: 3px 9px; cursor: pointer;
+}
+.hw-draw-clear:hover { border-color: var(--teal); }
+@media print { .hw-draw-clear { display: none; } }
 .hw-work-input {
   width: 100%;
   min-height: 96px;
@@ -1695,6 +1709,20 @@ header.homework-header h1 {
 body.help-modal-open { overflow: hidden; }
 
 .external-resource-list { list-style: none; padding: 0; margin: 16px 0 0; display: flex; flex-direction: column; gap: 10px; }
+.ai-lab-cta {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 18px; margin-bottom: 16px;
+  border: none; border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--navy), var(--teal));
+  color: #fff; text-decoration: none;
+  box-shadow: var(--shadow-sm);
+}
+.ai-lab-cta:hover { filter: brightness(1.06); text-decoration: none; }
+.workbench-cta { background: linear-gradient(135deg, #5b8def, var(--teal)); }
+.ai-lab-emoji { font-size: 30px; line-height: 1; flex: 0 0 auto; }
+.ai-lab-text { flex: 1 1 auto; font-size: 14px; line-height: 1.45; }
+.ai-lab-text .lang-es { color: rgba(255,255,255,0.94); border-left-color: var(--amber); }
+.ai-lab-arrow { font-size: 22px; font-weight: 800; flex: 0 0 auto; }
 .external-resource-link {
   display: flex; flex-direction: column; gap: 4px;
   padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius-sm);
@@ -2816,7 +2844,11 @@ body { font-size: 15px; line-height: 1.58; }
       <div class="hw-workspace">
         <div class="hw-visual">
           <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Plot each data value above the number line.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Marca cada valor de datos sobre la recta numérica.</span></div>
-          <div class="hw-visual-frame"><svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg></div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            <svg viewBox="0 0 320 60" class="hw-visual-svg" role="img" aria-label="Blank number line"><line x1="14" y1="34" x2="306" y2="34" stroke="#12355b" stroke-width="2"/><polygon points="306,34 296,29 296,39" fill="#12355b"/><polygon points="14,34 24,29 24,39" fill="#12355b"/><line x1="30" y1="28" x2="30" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="63" y1="28" x2="63" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="96" y1="28" x2="96" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="129" y1="28" x2="129" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="162" y1="28" x2="162" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="195" y1="28" x2="195" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="228" y1="28" x2="228" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="261" y1="28" x2="261" y2="40" stroke="#12355b" stroke-width="1.5"/><line x1="294" y1="28" x2="294" y2="40" stroke="#12355b" stroke-width="1.5"/></svg>
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
         </div>
         <div class="hw-work">
           <label class="hw-work-label" for="work_3"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
@@ -2867,6 +2899,22 @@ body { font-size: 15px; line-height: 1.58; }
     <div class="tab-panel-inner" data-tab-panel="more" id="hw_panel_more" role="tabpanel" hidden>
       <section class="guided-section card section-more" aria-label="Learn more online">
         <h2 class="section-title">🌐 Learn more online / Aprende más en línea</h2>
+        <a href="/curriculum/ai-hub/#students" target="_blank" rel="noopener" class="ai-lab-cta">
+          <span class="ai-lab-emoji" aria-hidden="true">🤖</span>
+          <span class="ai-lab-text">
+            <span class="lang-en"><strong>Practice with the AI Learning Lab</strong> — your student can ask questions and get safe, step-by-step help on tonight's topic.</span>
+            <span class="lang-es" lang="es"><strong>Practica con el Laboratorio de IA</strong> — tu estudiante puede hacer preguntas y recibir ayuda segura, paso a paso, sobre el tema de hoy.</span>
+          </span>
+          <span class="ai-lab-arrow" aria-hidden="true">→</span>
+        </a>
+        <a href="/curriculum/math-workbench/" target="_blank" rel="noopener" class="ai-lab-cta workbench-cta">
+          <span class="ai-lab-emoji" aria-hidden="true">📝</span>
+          <span class="ai-lab-text">
+            <span class="lang-en"><strong>Open the Math Workbench</strong> — a digital whiteboard to draw, write, and work out problems together.</span>
+            <span class="lang-es" lang="es"><strong>Abre el Cuaderno de Matemáticas</strong> — una pizarra digital para dibujar, escribir y resolver problemas juntos.</span>
+          </span>
+          <span class="ai-lab-arrow" aria-hidden="true">→</span>
+        </a>
         <p class="bilingual-block">
           <span class="lang-en">These links go to <strong>specific</strong> videos and lessons about tonight's topic — not general math pages.</span>
           <span class="lang-es" lang="es">Estos enlaces van a videos y lecciones <strong>específicas</strong> sobre el tema de hoy — no páginas generales.</span>
@@ -2898,7 +2946,7 @@ body { font-size: 15px; line-height: 1.58; }
         <span class="lang-es" lang="es">Refuercen el tema de hoy con un juego rápido en familia. ¡Ustedes preguntan; su estudiante decide!</span>
       </p>
       
-      <div class="hw-game hw-game-sort" id="hw_game_stats" data-game-type="drag-bucket" data-items='[{"text":"Heights of plants in cm","bucket":"stat"},{"text":"How many pets do students have?","bucket":"stat"},{"text":"Minutes spent on homework","bucket":"stat"},{"text":"What is your favorite color?","bucket":"stat"},{"text":"What is 2 + 2?","bucket":"not"},{"text":"Spell the word cat","bucket":"not"}]'>
+      <div class="hw-game hw-game-sort" id="hw_game_stats" data-game-type="drag-bucket" data-items='[{"text":"Spell the word cat","bucket":"not"},{"text":"Heights of plants in cm","bucket":"stat"},{"text":"How many pets do students have?","bucket":"stat"},{"text":"What is your favorite color?","bucket":"stat"},{"text":"What is 2 + 2?","bucket":"not"},{"text":"Minutes spent on homework","bucket":"stat"}]'>
         <div class="hw-game-header">
           <h3 class="hw-game-title">Stat Sort! <span lang="es">¡Estadística!</span></h3>
           <p class="hw-game-coach bilingual-block">
@@ -2919,17 +2967,17 @@ body { font-size: 15px; line-height: 1.58; }
         </div>
         <div class="hw-game-pile" id="hw_game_pile" ondragover="hwGameAllowDrop(event)" ondrop="hwGameDrop(event,'')">
           
-            <div class="hw-game-card" draggable="true" id="hwcard_0" data-bucket="stat"
+            <div class="hw-game-card" draggable="true" id="hwcard_0" data-bucket="not"
                  ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
-              Heights of plants in cm
+              Spell the word cat
             </div>
             <div class="hw-game-card" draggable="true" id="hwcard_1" data-bucket="stat"
                  ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
-              How many pets do students have?
+              Heights of plants in cm
             </div>
             <div class="hw-game-card" draggable="true" id="hwcard_2" data-bucket="stat"
                  ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
-              Minutes spent on homework
+              How many pets do students have?
             </div>
             <div class="hw-game-card" draggable="true" id="hwcard_3" data-bucket="stat"
                  ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
@@ -2939,9 +2987,9 @@ body { font-size: 15px; line-height: 1.58; }
                  ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
               What is 2 + 2?
             </div>
-            <div class="hw-game-card" draggable="true" id="hwcard_5" data-bucket="not"
+            <div class="hw-game-card" draggable="true" id="hwcard_5" data-bucket="stat"
                  ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
-              Spell the word cat
+              Minutes spent on homework
             </div>
         </div>
         <button type="button" class="btn btn-primary" onclick="hwGameCheckSort()">Check sort / Verificar</button>
@@ -3297,7 +3345,47 @@ document.addEventListener('DOMContentLoaded', function() {
     else switchHomeworkTab('learn');
   } catch(e) {}
   restoreParentSignoff();
+  initDrawCanvases();
 });
+
+// Make every "Draw your model" grid an actual drawable surface (mouse + touch + stylus).
+function initDrawCanvases() {
+  document.querySelectorAll('[data-draw-frame]').forEach(function(frame) {
+    const canvas = frame.querySelector('[data-draw-canvas]');
+    if (!canvas || canvas.dataset.ready) return;
+    canvas.dataset.ready = '1';
+    const ctx = canvas.getContext('2d');
+    let drawing = false, last = null;
+    function resize() {
+      const r = frame.getBoundingClientRect();
+      if (!r.width) return;
+      const prev = canvas.toDataURL && canvas.width ? canvas.toDataURL() : null;
+      canvas.width = Math.round(r.width); canvas.height = Math.round(r.height);
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.lineWidth = 2.5; ctx.strokeStyle = '#12355b';
+      if (prev) { const img = new Image(); img.onload = function(){ ctx.drawImage(img,0,0,canvas.width,canvas.height); }; img.src = prev; }
+    }
+    function pos(e) {
+      const r = canvas.getBoundingClientRect();
+      const t = e.touches ? e.touches[0] : e;
+      return { x: t.clientX - r.left, y: t.clientY - r.top };
+    }
+    function start(e) { drawing = true; last = pos(e); e.preventDefault(); }
+    function move(e) {
+      if (!drawing) return;
+      const p = pos(e);
+      ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke();
+      last = p; e.preventDefault();
+    }
+    function end() { drawing = false; }
+    canvas.addEventListener('pointerdown', start);
+    canvas.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', end);
+    const clearBtn = frame.querySelector('[data-draw-clear]');
+    if (clearBtn) clearBtn.addEventListener('click', function(){ ctx.clearRect(0,0,canvas.width,canvas.height); });
+    resize();
+    window.addEventListener('resize', resize);
+  });
+}
 
 
 let hwGameRound = 0;
