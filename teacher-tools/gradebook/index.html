@@ -563,9 +563,9 @@
       }
     </style>
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
   <body>
     <header>
       <h1><span class="brand-mark">📊</span> Gradebook &amp; Save Codes</h1>
@@ -812,6 +812,7 @@
               renderStats();
               renderClassFilter();
               render();
+              applyHashFocus();
             })
             .catch(function (err) {
               showGate(err.message || "Error loading data.");
@@ -1409,6 +1410,25 @@
           }
           return out;
         }
+
+        // --- Deep-link focus -------------------------------------------------
+        // Honor #codes / #grades so the hub's "Saved Codes" and "Grades"
+        // buttons land on the right section. Only acts once the app is shown.
+        function applyHashFocus() {
+          if ($("app").classList.contains("hidden")) return;
+          var h = (location.hash || "").toLowerCase();
+          var target = null;
+          if (h === "#grades") {
+            $("secGrades").open = true; // toggle listener renders grades
+            target = $("secGrades");
+          } else if (h === "#codes") {
+            $("secRoster").open = true;
+            target = $("secRoster");
+          }
+          if (target)
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+        window.addEventListener("hashchange", applyHashFocus);
 
         // --- Boot + autorefresh ---------------------------------------------
         if (key) load();
