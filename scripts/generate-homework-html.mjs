@@ -21,7 +21,7 @@ import {
   HOMEWORK_TABS_JS,
 } from "./homework-guided-notes.mjs";
 import { HOMEWORK_GAME_JS } from "./homework-games.mjs";
-import { detectVisualTopic } from "./homework-alignment.mjs";
+import { detectVisualTopic, selectMorePracticeProblems } from "./homework-alignment.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -418,7 +418,11 @@ function renderWorkspace(topic, pIdx) {
       <div class="hw-workspace">
         <div class="hw-visual">
           <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: ${esc(g.draw)}</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: ${esc(g.drawEs)}</span></div>
-          <div class="hw-visual-frame">${visual}</div>
+          <div class="hw-visual-frame hw-drawable" data-draw-frame>
+            ${visual}
+            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
+            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
+          </div>
         </div>
         <div class="hw-work">
           <label class="hw-work-label" for="work_${pIdx}"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
@@ -427,7 +431,7 @@ function renderWorkspace(topic, pIdx) {
       </div>`;
 }
 
-function renderProblem(it, pIdx, topic = "fallback") {
+function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
   const type = it.type;
   let problemSubtype = "";
 
@@ -780,10 +784,10 @@ function renderProblem(it, pIdx, topic = "fallback") {
   return `
     <section class="problem-section card" id="problem_${pIdx}" data-problem-type="${type}"${problemSubtype ? ` data-problem-subtype="${problemSubtype}"` : ""}>
       <div class="problem-header-row">
-        <div class="problem-number-badge">Quick Check ${pIdx + 1}</div>
+        <div class="problem-number-badge">${esc(opts.badge || "Quick Check")} ${opts.num || pIdx + 1}</div>
         <div class="problem-type-badge">${esc(displayType.replace(/-/g, " ").toUpperCase())}</div>
       </div>
-      <div class="problem-hint-row">${renderProblemHintButton(it)}</div>
+      <div class="problem-hint-row">${renderProblemHintButton(it, TOPIC_VISUAL[topic] || SVG_GRID)}</div>
       ${content}
       ${scaffold}
       <div class="problem-check-row">
@@ -801,17 +805,21 @@ function generateHtml(lessonId, config) {
   const vocab = config.vocabulary || [];
 
   const selected = selectProblems(config.practice || {}, config);
+  const moreSelected = selectMorePracticeProblems(config.practice || {}, config, selected);
   const topic = detectVisualTopic(config);
 
   const welcomeHtml = renderWelcomeBanner(config, lessonId);
   const quickCheckIntroHtml = renderQuickCheckIntro();
   const problemsHtml = selected.map((p, idx) => renderProblem(p, idx, topic)).join("\n");
+  const morePracticeHtml = moreSelected
+    .map((p, idx) => renderProblem(p, selected.length + idx, topic, { badge: "Bonus / Más", num: idx + 1 }))
+    .join("\n");
 
   const tabPanels = [
     renderLearnTab(config),
     renderWordsTab(vocab, resolveVocabImage, vocabImageAlt),
     renderTogetherTab(config),
-    renderCheckTab(quickCheckIntroHtml, problemsHtml),
+    renderCheckTab(quickCheckIntroHtml, problemsHtml, morePracticeHtml),
     renderHelpTab(config),
     renderMoreTab(config, lessonId),
     renderPlayTabPanel(config),
@@ -1403,6 +1411,20 @@ header.homework-header h1 {
   text-align: center;
 }
 .hw-visual-svg { width: 100%; height: auto; max-height: 180px; }
+/* Drawable model area: students draw directly on the grid (mouse/touch/stylus). */
+.hw-visual-frame.hw-drawable { position: relative; }
+.hw-draw-canvas {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  touch-action: none; cursor: crosshair; border-radius: 12px;
+}
+.hw-draw-clear {
+  position: absolute; top: 6px; right: 6px; z-index: 2;
+  font-family: var(--font-display); font-size: 12px; font-weight: 700;
+  background: #ffffff; color: var(--navy);
+  border: 1px solid var(--line); border-radius: 8px; padding: 3px 9px; cursor: pointer;
+}
+.hw-draw-clear:hover { border-color: var(--teal); }
+@media print { .hw-draw-clear { display: none; } }
 .hw-work-input {
   width: 100%;
   min-height: 96px;
@@ -2790,9 +2812,10 @@ function normalizeMath(val) {
 }
 
 function updateProgress() {
-  const problems = document.querySelectorAll(".problem-section");
+  const problems = Array.from(document.querySelectorAll(".problem-section"))
+    .filter((s) => !s.closest(".more-practice"));
   let completedCount = 0;
-  
+
   problems.forEach((section, idx) => {
     const type = section.dataset.problemType;
     let hasValue = false;
@@ -3180,9 +3203,10 @@ function checkProblem(idx, options) {
 }
 
 function updateScoreSummary() {
-  const problems = document.querySelectorAll(".problem-section");
-  const checked = Array.from(problems).filter((s) => s.classList.contains("correct") || s.classList.contains("incorrect"));
-  const correctCount = Array.from(problems).filter((s) => s.classList.contains("correct")).length;
+  const problems = Array.from(document.querySelectorAll(".problem-section"))
+    .filter((s) => !s.closest(".more-practice"));
+  const checked = problems.filter((s) => s.classList.contains("correct") || s.classList.contains("incorrect"));
+  const correctCount = problems.filter((s) => s.classList.contains("correct")).length;
   const total = problems.length;
   if (checked.length > 0) {
     document.getElementById("progress_text").textContent = "Score: " + correctCount + " / " + total + " Correct";
@@ -3193,15 +3217,18 @@ function updateScoreSummary() {
 }
 
 function checkWorksheet() {
-  const problems = document.querySelectorAll(".problem-section");
+  const problems = Array.from(document.querySelectorAll(".problem-section"));
   let correctCount = 0;
 
-  problems.forEach((section, idx) => {
+  problems.forEach((section) => {
+    const idx = parseInt((section.id || "").replace("problem_", ""), 10);
+    if (Number.isNaN(idx)) return;
     const result = checkProblem(idx, { silent: true });
-    if (result.correct) correctCount++;
+    // Only core (non-optional) problems count toward the worksheet score.
+    if (result.correct && !section.closest(".more-practice")) correctCount++;
   });
 
-  const total = problems.length;
+  const total = problems.filter((s) => !s.closest(".more-practice")).length;
   document.getElementById("progress_text").textContent = "Score: " + correctCount + " / " + total + " Correct";
   document.getElementById("progress_bar").style.width = (correctCount / total * 100) + "%";
 

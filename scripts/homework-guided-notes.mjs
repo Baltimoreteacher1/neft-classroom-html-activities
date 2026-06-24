@@ -857,8 +857,9 @@ export function renderWelcomeBanner(config, lessonId) {
 
 export function renderLearningTonight(config) {
   const { en, es } = learningTonight(config);
-  const langObj = config.languageObjective || "";
-  const langObjEs = languageTonightEs(config);
+  const vocab = (config.vocabulary || []).slice(0, 5);
+  const wordsEn = vocab.map((v) => v.term).filter(Boolean).join(", ");
+  const wordsEs = vocab.map((v) => v.termEs || v.term).filter(Boolean).join(", ");
 
   return `
     <section class="guided-section card section-learn" aria-label="What we are learning tonight">
@@ -867,12 +868,12 @@ export function renderLearningTonight(config) {
         <div class="bilingual-col lang-en">
           <span class="lang-label">English</span>
           <p class="learning-big">${esc(en.charAt(0).toUpperCase() + en.slice(1))}.</p>
-          ${langObj ? `<p class="learning-sub">Also practice saying: <em>${esc(plainObjective(langObj))}</em></p>` : ""}
+          ${wordsEn ? `<p class="learning-sub">Practice using these words while you work: <em>${esc(wordsEn)}</em>.</p>` : ""}
         </div>
         <div class="bilingual-col lang-es" lang="es">
           <span class="lang-label">Español</span>
           <p class="learning-big">${esc(es.endsWith(".") ? es : `${es}.`)}</p>
-          ${langObj ? `<p class="learning-sub">También practiquen: <em>${esc(langObjEs.replace(/^Puedo\s/i, "").replace(/\.$/, ""))}</em></p>` : ""}
+          ${wordsEs ? `<p class="learning-sub">Practiquen usar estas palabras al trabajar: <em>${esc(wordsEs)}</em>.</p>` : ""}
         </div>
       </div>
     </section>`;
@@ -938,24 +939,44 @@ export function renderTryTogether(config) {
       </p>
       <ol class="together-steps">
         ${activity.steps
-          .map(
-            (step, i) => `
+          .map((step, i) => {
+            const hintEn = step.hint || "Read it again slowly. What is the first small step?";
+            const hintEs =
+              step.hintEs || "Léanlo de nuevo despacio. ¿Cuál es el primer paso pequeño?";
+            const hintBtn = helpButton("💡 Hint / Pista", {
+              titleEn: `Step ${i + 1} hint`,
+              titleEs: `Pista del paso ${i + 1}`,
+              en: hintEn,
+              es: hintEs,
+            });
+            const helpBtn = step.helpEn
+              ? helpButton("🤝 More help / Más ayuda", {
+                  titleEn: `Step ${i + 1} — more help`,
+                  titleEs: `Paso ${i + 1} — más ayuda`,
+                  en: step.helpEn,
+                  es: step.helpEs || hintEs,
+                })
+              : "";
+            return `
           <li class="together-step step-color-${(i % 4) + 1}">
             <div class="together-step-head">
               <span class="step-badge">Step ${i + 1} / Paso ${i + 1}</span>
             </div>
             <p class="lang-en"><strong>First…</strong> ${esc(step.en)}</p>
             <p class="lang-es" lang="es"><strong>Primero…</strong> ${esc(step.es)}</p>
-            ${
-              step.hint
-                ? `<p class="step-hint">💡 ${esc(step.hint)} · ${esc(
-                    step.hintEs ||
-                      "Tómense su tiempo — el proceso importa más que la respuesta perfecta.",
-                  )}</p>`
-                : ""
-            }
-          </li>`,
-          )
+            <div class="together-fill">
+              <label class="together-fill-label" for="together_${i}">
+                <span class="lang-en">✏️ Your turn — write or draw it here:</span>
+                <span class="lang-es" lang="es">✏️ Tu turno — escribe o dibuja aquí:</span>
+              </label>
+              <textarea id="together_${i}" name="together_${i}" class="custom-textarea together-fill-input" rows="2" placeholder="…" oninput="saveState();"></textarea>
+            </div>
+            <div class="together-step-actions">
+              ${hintBtn}
+              ${helpBtn}
+            </div>
+          </li>`;
+          })
           .join("")}
       </ol>
     </section>`;
@@ -1184,12 +1205,27 @@ export function renderTogetherTab(config) {
   return `<div ${tabPanelAttrs("together", true)}>${inner}</div>`;
 }
 
-export function renderCheckTab(quickCheckIntro, problemsHtml) {
+export function renderCheckTab(quickCheckIntro, problemsHtml, moreHtml = "") {
   const intro = quickCheckIntro.replace(/<section[^>]*>|<\/section>/g, "");
+  const more = moreHtml
+    ? `
+      <details class="more-practice">
+        <summary>
+          <span class="lang-en">➕ More practice — open for extra problems</span>
+          <span class="lang-es" lang="es">➕ Más práctica — abre para más problemas</span>
+        </summary>
+        <p class="more-practice-note bilingual-block">
+          <span class="lang-en">Optional. Only if your student wants more — these are bonus problems.</span>
+          <span class="lang-es" lang="es">Opcional. Solo si tu estudiante quiere más — son problemas adicionales.</span>
+        </p>
+        <main class="problems-container more-practice-container">${moreHtml}</main>
+      </details>`
+    : "";
   return `
     <div ${tabPanelAttrs("check", true)}>
       ${intro}
       <main class="problems-container">${problemsHtml}</main>
+      ${more}
     </div>`;
 }
 
@@ -1219,6 +1255,22 @@ export function renderMoreTab(config, lessonId) {
     <div ${tabPanelAttrs("more", true)}>
       <section class="guided-section card section-more" aria-label="Learn more online">
         <h2 class="section-title">🌐 Learn more online / Aprende más en línea</h2>
+        <a href="/curriculum/ai-hub/#students" target="_blank" rel="noopener" class="ai-lab-cta">
+          <span class="ai-lab-emoji" aria-hidden="true">🤖</span>
+          <span class="ai-lab-text">
+            <span class="lang-en"><strong>Practice with the AI Learning Lab</strong> — your student can ask questions and get safe, step-by-step help on tonight's topic.</span>
+            <span class="lang-es" lang="es"><strong>Practica con el Laboratorio de IA</strong> — tu estudiante puede hacer preguntas y recibir ayuda segura, paso a paso, sobre el tema de hoy.</span>
+          </span>
+          <span class="ai-lab-arrow" aria-hidden="true">→</span>
+        </a>
+        <a href="/curriculum/math-workbench/" target="_blank" rel="noopener" class="ai-lab-cta workbench-cta">
+          <span class="ai-lab-emoji" aria-hidden="true">📝</span>
+          <span class="ai-lab-text">
+            <span class="lang-en"><strong>Open the Math Workbench</strong> — a digital whiteboard to draw, write, and work out problems together.</span>
+            <span class="lang-es" lang="es"><strong>Abre el Cuaderno de Matemáticas</strong> — una pizarra digital para dibujar, escribir y resolver problemas juntos.</span>
+          </span>
+          <span class="ai-lab-arrow" aria-hidden="true">→</span>
+        </a>
         <p class="bilingual-block">
           <span class="lang-en">These links go to <strong>specific</strong> videos and lessons about tonight's topic — not general math pages.</span>
           <span class="lang-es" lang="es">Estos enlaces van a videos y lecciones <strong>específicas</strong> sobre el tema de hoy — no páginas generales.</span>
@@ -1246,7 +1298,7 @@ export function renderPlayTabPanel(config) {
   return `<div ${tabPanelAttrs("play", true)}>${inner}</div>`;
 }
 
-export function renderProblemHintButton(problem) {
+export function renderProblemHintButton(problem, visual = "") {
   const hintEn =
     problem.hints?.[0] ||
     problem.explanation ||
@@ -1257,6 +1309,10 @@ export function renderProblemHintButton(problem) {
     titleEs: "Pista antes de revisar",
     en: hintEn,
     es: hintEs,
+    visual,
+    frameEn: "Draw it first, then solve. Try saying: “This problem is asking me to…”",
+    frameEs:
+      "Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”",
   });
 }
 
@@ -1309,8 +1365,14 @@ export function renderHelpModal() {
       <div class="help-modal" role="dialog" aria-modal="true" aria-labelledby="help_modal_title" onclick="event.stopPropagation()">
         <button type="button" class="help-modal-close" onclick="closeHelpModal()" aria-label="Close help">✕</button>
         <h3 id="help_modal_title" class="help-modal-title"></h3>
+        <div class="help-modal-visual" id="help_modal_visual" hidden></div>
         <p class="help-modal-body lang-en" id="help_modal_en"></p>
         <p class="help-modal-body lang-es" lang="es" id="help_modal_es"></p>
+        <div class="help-modal-frame" id="help_modal_frame" hidden>
+          <span class="help-frame-tag">✏️ Sentence starter / Para empezar</span>
+          <span class="help-frame-en lang-en" id="help_modal_frame_en"></span>
+          <span class="help-frame-es lang-es" lang="es" id="help_modal_frame_es"></span>
+        </div>
       </div>
     </div>`;
 }
@@ -1366,6 +1428,21 @@ function openHelpModal(data) {
     (data.titleEn || 'Help') + ' / ' + (data.titleEs || 'Ayuda');
   document.getElementById('help_modal_en').textContent = data.en || '';
   document.getElementById('help_modal_es').textContent = data.es || '';
+  var vis = document.getElementById('help_modal_visual');
+  if (vis) {
+    if (data.visual) { vis.innerHTML = data.visual; vis.hidden = false; }
+    else { vis.innerHTML = ''; vis.hidden = true; }
+  }
+  var frame = document.getElementById('help_modal_frame');
+  if (frame) {
+    if (data.frameEn || data.frameEs) {
+      document.getElementById('help_modal_frame_en').textContent = data.frameEn || '';
+      document.getElementById('help_modal_frame_es').textContent = data.frameEs || '';
+      frame.hidden = false;
+    } else {
+      frame.hidden = true;
+    }
+  }
   overlay.hidden = false;
   document.body.classList.add('help-modal-open');
   overlay.querySelector('.help-modal-close')?.focus();
@@ -1528,7 +1605,47 @@ document.addEventListener('DOMContentLoaded', function() {
     else switchHomeworkTab('learn');
   } catch(e) {}
   restoreParentSignoff();
+  initDrawCanvases();
 });
+
+// Make every "Draw your model" grid an actual drawable surface (mouse + touch + stylus).
+function initDrawCanvases() {
+  document.querySelectorAll('[data-draw-frame]').forEach(function(frame) {
+    const canvas = frame.querySelector('[data-draw-canvas]');
+    if (!canvas || canvas.dataset.ready) return;
+    canvas.dataset.ready = '1';
+    const ctx = canvas.getContext('2d');
+    let drawing = false, last = null;
+    function resize() {
+      const r = frame.getBoundingClientRect();
+      if (!r.width) return;
+      const prev = canvas.toDataURL && canvas.width ? canvas.toDataURL() : null;
+      canvas.width = Math.round(r.width); canvas.height = Math.round(r.height);
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.lineWidth = 2.5; ctx.strokeStyle = '#12355b';
+      if (prev) { const img = new Image(); img.onload = function(){ ctx.drawImage(img,0,0,canvas.width,canvas.height); }; img.src = prev; }
+    }
+    function pos(e) {
+      const r = canvas.getBoundingClientRect();
+      const t = e.touches ? e.touches[0] : e;
+      return { x: t.clientX - r.left, y: t.clientY - r.top };
+    }
+    function start(e) { drawing = true; last = pos(e); e.preventDefault(); }
+    function move(e) {
+      if (!drawing) return;
+      const p = pos(e);
+      ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke();
+      last = p; e.preventDefault();
+    }
+    function end() { drawing = false; }
+    canvas.addEventListener('pointerdown', start);
+    canvas.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', end);
+    const clearBtn = frame.querySelector('[data-draw-clear]');
+    if (clearBtn) clearBtn.addEventListener('click', function(){ ctx.clearRect(0,0,canvas.width,canvas.height); });
+    resize();
+    window.addEventListener('resize', resize);
+  });
+}
 `;
 
 export const GUIDED_NOTES_CSS = `
@@ -1594,7 +1711,10 @@ export const GUIDED_NOTES_CSS = `
   margin-bottom: 6px;
 }
 .lang-en { margin: 0 0 6px; }
-.lang-es { margin: 0; color: var(--muted); font-style: normal; }
+/* Spanish is a primary language for our families: keep it fully legible, not a faded subtitle. */
+.lang-es { margin: 0; color: var(--ink); font-style: normal; }
+.lang-en + .lang-es, .worked-step .lang-es { padding-left: 10px; border-left: 3px solid var(--teal); }
+.welcome-lead .lang-es { color: rgba(255, 255, 255, 0.94); border-left: 3px solid var(--amber); padding-left: 10px; display: inline-block; margin-top: 6px; }
 .learning-big { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; line-height: 1.4; }
 .learning-sub { font-size: 14px; margin: 0; color: var(--ink); }
 
@@ -1832,7 +1952,63 @@ export const GUIDED_NOTES_CSS = `
 .help-modal-body { margin: 0 0 10px; font-size: 15px; line-height: 1.5; }
 body.help-modal-open { overflow: hidden; }
 
+/* Visual aid + sentence frame inside help popups */
+.help-modal-visual {
+  margin: 0 0 14px; padding: 10px; border-radius: var(--radius-sm);
+  background: var(--cream); border: 1px solid var(--line); text-align: center;
+}
+.help-modal-visual[hidden] { display: none !important; }
+.help-modal-visual svg { max-width: 100%; height: auto; }
+.help-modal-frame {
+  display: flex; flex-direction: column; gap: 4px;
+  margin: 12px 0 0; padding: 12px 14px;
+  background: var(--teal-light); border-left: 4px solid var(--teal);
+  border-radius: var(--radius-sm); font-size: 14px; line-height: 1.5;
+}
+.help-modal-frame[hidden] { display: none !important; }
+.help-frame-tag { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--teal); }
+.help-frame-es { color: var(--muted); }
+
+/* Guided "Try together" fill-in spaces + step actions */
+.together-fill { margin: 10px 0 6px; }
+.together-fill-label { display: block; font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.together-fill-input {
+  width: 100%; min-height: 48px; padding: 10px 12px;
+  border: 2px dashed var(--teal); border-radius: var(--radius-sm);
+  background: #fffef8; font-size: 15px; line-height: 1.5; resize: vertical;
+}
+.together-fill-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
+.together-step-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+
+/* "More practice" accordion in the Check tab */
+.more-practice {
+  margin-top: 20px; border: 2px solid var(--teal); border-radius: var(--radius-md);
+  background: var(--teal-light); overflow: hidden;
+}
+.more-practice > summary {
+  cursor: pointer; list-style: none; padding: 14px 18px;
+  font-family: var(--font-display); font-weight: 800; color: var(--navy); font-size: 16px;
+}
+.more-practice > summary::-webkit-details-marker { display: none; }
+.more-practice[open] > summary { border-bottom: 1px solid var(--line); background: var(--white); }
+.more-practice-note { padding: 12px 18px 0; font-size: 13px; }
+.more-practice-container { padding: 8px 14px 14px; }
+
 .external-resource-list { list-style: none; padding: 0; margin: 16px 0 0; display: flex; flex-direction: column; gap: 10px; }
+.ai-lab-cta {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 18px; margin-bottom: 16px;
+  border: none; border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--navy), var(--teal));
+  color: #fff; text-decoration: none;
+  box-shadow: var(--shadow-sm);
+}
+.ai-lab-cta:hover { filter: brightness(1.06); text-decoration: none; }
+.workbench-cta { background: linear-gradient(135deg, #5b8def, var(--teal)); }
+.ai-lab-emoji { font-size: 30px; line-height: 1; flex: 0 0 auto; }
+.ai-lab-text { flex: 1 1 auto; font-size: 14px; line-height: 1.45; }
+.ai-lab-text .lang-es { color: rgba(255,255,255,0.94); border-left-color: var(--amber); }
+.ai-lab-arrow { font-size: 22px; font-weight: 800; flex: 0 0 auto; }
 .external-resource-link {
   display: flex; flex-direction: column; gap: 4px;
   padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius-sm);

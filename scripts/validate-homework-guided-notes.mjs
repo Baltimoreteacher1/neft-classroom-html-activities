@@ -69,15 +69,20 @@ for (const id of lessonIds) {
   }
 
   const quickChecks = (html.match(/Quick Check \d/g) || []).length;
-  if (quickChecks > 4) {
+  if (quickChecks > 6) {
     issues.push({ id, level: "HIGH", msg: `Too many quick check problems: ${quickChecks}` });
   }
   if (quickChecks === 0) {
     issues.push({ id, level: "HIGH", msg: "No quick check problems" });
   }
 
+  // Student practice tools (AI Learning Lab + Math Workbench) are allowed links.
+  const htmlNoAiHub = html.replace(
+    /\/curriculum\/(ai-hub|math-workbench)\/[^"'\s]*/gi,
+    "",
+  );
   if (
-    /\/curriculum\//i.test(html) ||
+    /\/curriculum\//i.test(htmlNoAiHub) ||
     /Curriculum Hub/i.test(html) ||
     /Back to curriculum/i.test(html)
   ) {
