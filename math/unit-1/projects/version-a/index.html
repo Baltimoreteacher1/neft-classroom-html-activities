@@ -452,6 +452,7 @@
             🔵 Level 2 (challenge)
           </button>
         </span>
+        <button class="pk-tts-toggle" data-tts-toggle type="button" aria-pressed="false" title="Read text aloud">🔊 Read aloud</button>
         <button onclick="PK.save('u1ProjectA')">💾 Save</button>
         <button
           onclick="PK.load('u1ProjectA', { show: true, after: recalcAll })"
@@ -2194,6 +2195,7 @@ function recalcAll() {
       document.addEventListener("DOMContentLoaded", function () {
         renderWorld();
         PK.initLevel({ storageKey: "u1ProjectA", default: "level-1" });
+        PK.initTts({ storageKey: "u1ProjectA" });
         PK.load("u1ProjectA", { after: recalcAll });
         updateProgress();
       });

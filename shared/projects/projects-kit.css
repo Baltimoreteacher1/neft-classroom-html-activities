@@ -217,3 +217,21 @@
     display: none !important;
   }
 }
+
+/* ---- Read-aloud (TTS) toggle — activated 2026-06-25 ----
+   Sits in the project toolbar next to the level pills; inherits .toolbar button
+   sizing. The pressed state shows students that read-aloud is ON. */
+.pk-tts-toggle[aria-pressed="true"] {
+  background: var(--pk-blue, #0369a1);
+  color: #fff;
+  border-color: var(--pk-blue, #0369a1);
+}
+.pk-tts-toggle[aria-pressed="true"]::after {
+  content: " ✓";
+}
+.pk-tts-on .pk-mt-prompt,
+.pk-tts-on .task,
+.pk-tts-on label.fld,
+.pk-tts-on .pk-step-title {
+  cursor: pointer;
+}

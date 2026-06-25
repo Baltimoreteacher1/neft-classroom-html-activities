@@ -586,6 +586,7 @@
           <button data-level-btn="level-1" type="button">🟢 Level 1</button>
           <button data-level-btn="level-2" type="button">🔵 Level 2</button>
         </span>
+        <button class="pk-tts-toggle" data-tts-toggle type="button" aria-pressed="false" title="Read text aloud">🔊 Read aloud</button>
         <button type="button" onclick="PK.save('statProjectB')">💾 Save</button>
         <button
           type="button"
@@ -2289,6 +2290,7 @@
       // ── init (runs after deferred kit script is ready) ──
       document.addEventListener("DOMContentLoaded", function () {
         PK.initLevel({ storageKey: "statProjectB", default: "level-1" });
+        PK.initTts({ storageKey: "statProjectB" });
         PK.load("statProjectB", { after: recalcAll });
         updateProgress();
       });
