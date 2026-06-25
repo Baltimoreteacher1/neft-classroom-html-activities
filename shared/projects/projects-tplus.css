@@ -632,3 +632,47 @@ body.pk #pk-theme-selector {
 body.pk .pk-step-meta {
   opacity: 0.86;
 }
+
+/* ==========================================================================
+   DECLUTTER STEP FLOW + ACCENT CONSISTENCY  (2026-06 redesign, pass 2)
+   The tab strip above already names the active step ("Step 1 of 9 · Get
+   Ready") and explains how to move, so the in-panel "In this step / N steps
+   in this part" card just repeated it. Drop it, and make every remaining
+   accent (step badge, step border, overall progress) follow the unit palette
+   instead of the old hardcoded blue/teal.
+   ========================================================================== */
+/* remove the duplicate panel header (also kills the off-palette blue card) */
+body.pk .pk-panel-header {
+  display: none !important;
+}
+/* sub-step badges + rails follow the unit accent */
+body.pk .pk-step-badge {
+  background: linear-gradient(
+    135deg,
+    var(--tp-accent),
+    var(--tp-accent2)
+  ) !important;
+}
+body.pk .pk-flow-step {
+  border-left-color: var(--tp-accent) !important;
+}
+body.pk .pk-step-goal {
+  color: var(--tp-accent) !important;
+}
+/* the overall progress bar at the top matches the unit too */
+body.pk .progress-fill {
+  background: linear-gradient(
+    90deg,
+    var(--tp-accent2),
+    var(--tp-accent)
+  ) !important;
+  box-shadow: 0 0 12px color-mix(in srgb, var(--tp-accent) 45%, transparent) !important;
+}
+/* keep the site-wide export bar from covering the last project card */
+body.pk {
+  scroll-padding-bottom: 96px;
+}
+body.pk .wrap,
+body.pk main.page-shell {
+  padding-bottom: 92px !important;
+}
