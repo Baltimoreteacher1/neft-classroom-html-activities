@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Fraction Kitchen — Pour Master</title>
     <style>
       * {
@@ -31,7 +31,10 @@
         z-index: 50;
         padding: 6px 12px;
         border-radius: 8px;
-        font: 600 13px/1 "Segoe UI", system-ui, sans-serif;
+        font:
+          600 13px/1 "Segoe UI",
+          system-ui,
+          sans-serif;
         color: #f0e6ff;
         background: rgba(26, 18, 48, 0.75);
         border: 1px solid rgba(150, 120, 200, 0.5);
@@ -64,9 +67,9 @@
     <link rel="stylesheet" href="/assets/game-fx.css" />
     <!-- gfx-injected:end -->
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
   <body>
     <a class="nt-back-hub" href="../index.html" aria-label="Back to Unit 2 hub"
       >← Back to Unit&nbsp;2</a
@@ -228,7 +231,7 @@
             .text(
               W / 2,
               320,
-              "Each order needs a fraction of a jug, like 3/4.\nHOLD to pour. RELEASE the instant the liquid\nhits the target line. Stop too late and it spills!",
+              "Each order needs a fraction of a jug, like 3/4.\nHOLD to pour slowly, RELEASE near the target line.\nNo timer, no rush — overfilling just starts the next order.",
               {
                 fontFamily: "Segoe UI",
                 fontSize: "21px",
@@ -242,7 +245,7 @@
             .text(
               W / 2,
               440,
-              "HOLD  Space / Click / Tap  to pour    •    Watch for equivalent fractions!",
+              "HOLD  Space / Click / Tap  to pour slowly    •    Watch for equivalent fractions!",
               {
                 fontFamily: "Segoe UI",
                 fontSize: "18px",
@@ -667,19 +670,19 @@
             label = "PERFECT POUR!";
             color = "#51cf66";
             sfx.perfect();
-          } else if (err <= tol * 0.5) {
+          } else if (err <= tol * 0.95) {
             pts = 50;
             this.combo = 0;
             label = "Close enough!";
             color = "#a9e34b";
             sfx.good();
           } else {
+            // Missed the line — no penalty, just try the next order (calm).
             pts = 0;
             this.combo = 0;
-            label = "Off the line!";
+            label = "Just over — try the next one!";
             color = "#ff922b";
             sfx.spill();
-            this.lives--;
           }
           this.score += pts;
           this.flashLabel(label, color, pts);
@@ -697,7 +700,7 @@
           this.pouring = false;
           this.stopPourFx();
           this.combo = 0;
-          this.lives--;
+          // No life lost on overfill (calm/forgiving) — just move to next order.
           sfx.spill();
           // Splash particle burst over the jug rim on overfill.
           this.splash(this.jugX, this.jugTop + 6);
@@ -787,10 +790,11 @@
             this.streamPhase += dt * 0.35;
           }
 
-          // ── Gameplay (UNCHANGED rate + overfill rule) ───────────────────
+          // ── Gameplay: slow, steady pour (calm — no reflex timing, no round
+          //    speed-up). Teacher preference: students fill at their own pace.
           if (!this.locked) {
             if (this.pouring) {
-              const rate = (0.00028 + this.round * 0.00003) * delta;
+              const rate = 0.00011 * delta;
               this.fill += rate;
               this.tiltTarget = -28; // spout tilts as it pours
               sfx.pour();
@@ -926,8 +930,8 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+  </body>
 </html>
