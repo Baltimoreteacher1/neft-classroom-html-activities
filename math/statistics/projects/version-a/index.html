@@ -595,6 +595,7 @@
           <button data-level-btn="level-1" type="button">🟢 Level 1</button>
           <button data-level-btn="level-2" type="button">🔵 Level 2</button>
         </span>
+        <button class="pk-tts-toggle" data-tts-toggle type="button" aria-pressed="false" title="Read text aloud">🔊 Read aloud</button>
         <button type="button" onclick="PK.save('statProjectA')">💾 Save</button>
         <button
           type="button"
@@ -2465,6 +2466,7 @@
       document.addEventListener("DOMContentLoaded", function () {
         renderWorld();
         PK.initLevel({ storageKey: "statProjectA", default: "level-1" });
+        PK.initTts({ storageKey: "statProjectA" });
         PK.load("statProjectA", { after: recalcAll });
         updateProgress();
       });

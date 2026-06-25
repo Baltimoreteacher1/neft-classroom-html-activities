@@ -484,6 +484,7 @@
           <button data-level-btn="level-1" type="button">🟢 Level 1</button>
           <button data-level-btn="level-2" type="button">🔵 Level 2</button>
         </span>
+        <button class="pk-tts-toggle" data-tts-toggle type="button" aria-pressed="false" title="Read text aloud">🔊 Read aloud</button>
         <button onclick="PK.save('u8ProjectB')">💾 Save</button>
         <button
           onclick="PK.load('u8ProjectB', { show: true, after: recalcAll })"
@@ -2709,6 +2710,7 @@
       document.addEventListener("DOMContentLoaded", function () {
         renderWorld();
         PK.initLevel({ storageKey: "u8ProjectB", default: "level-1" });
+        PK.initTts({ storageKey: "u8ProjectB" });
         PK.load("u8ProjectB", { after: recalcAll });
         updateProgress();
       });
