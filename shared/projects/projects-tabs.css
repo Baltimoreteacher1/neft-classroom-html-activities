@@ -1449,3 +1449,75 @@ body.theme-notebook select {
 }
 
 
+
+/* ==========================================================================
+   v3 — VISIBLE glow-up (appended Jun 2026)
+   The tabbed step UI is what students actually see, so the excitement lives
+   here. Calm, accessible, reduced-motion + print safe. Appended last in the
+   last-loaded sheet, so these win the cascade cleanly (no specificity hacks).
+   ========================================================================== */
+
+/* "IN THIS STEP" mission card — from near-white to a confident gradient ----- */
+.pk .pk-panel-header {
+  background:
+    radial-gradient(420px 160px at 100% 0%, rgba(244, 169, 36, 0.12), transparent 60%),
+    linear-gradient(135deg, #e7f1ff 0%, #e2f6f1 100%);
+  border-left-width: 7px;
+  border-left-color: var(--pp-blue, #1763c7);
+  box-shadow: 0 8px 22px rgba(12, 27, 42, 0.09);
+}
+.pk .pk-panel-obj-label { letter-spacing: 0.1em; }
+.pk .pk-panel-obj-text { color: #0c2342; }
+
+/* Active tab — soft focus-glow ring so the current step pops -------------- */
+.pk .pk-tab[aria-selected="true"] {
+  box-shadow:
+    0 10px 24px rgba(12, 63, 134, 0.34),
+    0 0 0 3px rgba(23, 99, 199, 0.16);
+}
+.pk .pk-tab .pk-tab-dot {
+  background: linear-gradient(135deg, #eef3f8, #dfe9f4);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+.pk .pk-tab.pk-done .pk-tab-dot {
+  background: linear-gradient(135deg, #2bc274, #149a54);
+  box-shadow: 0 3px 8px rgba(20, 154, 84, 0.34);
+}
+
+/* Step badge — glossy medallion -------------------------------------------- */
+.pk .pk-step-badge {
+  background: linear-gradient(140deg, #16b9a8, #1763c7);
+  box-shadow:
+    0 7px 16px rgba(14, 154, 140, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+/* Flow-step cards — colorful accent rail cycles per step ------------------- */
+.pk .pk-flow-steps .pk-flow-step:nth-child(4n + 1) { border-left-color: #1763c7; }
+.pk .pk-flow-steps .pk-flow-step:nth-child(4n + 2) { border-left-color: #0e9a8c; }
+.pk .pk-flow-steps .pk-flow-step:nth-child(4n + 3) { border-left-color: #6d4ad6; }
+.pk .pk-flow-steps .pk-flow-step:nth-child(4n + 4) { border-left-color: #ef6b52; }
+
+/* Primary "Next step" button — glossier, springy -------------------------- */
+.pk .pk-tabnav .pk-next {
+  background-image:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0)),
+    linear-gradient(135deg, #16b9a8, #0e9a8c);
+  box-shadow: 0 8px 20px rgba(14, 154, 140, 0.34);
+}
+.pk .pk-tabnav .pk-next:hover:not([disabled]) { transform: translateY(-2px); }
+
+/* "Choose your level" pills inside hero already pop; nudge step progress --- */
+.pk .pk-panel-progress {
+  background: rgba(255, 255, 255, 0.85);
+  border-style: solid;
+  border-color: rgba(23, 99, 199, 0.22);
+  color: #0c3f86;
+}
+
+@media print {
+  .pk .pk-panel-header { background: #f4f8ff !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pk .pk-tabnav .pk-next:hover:not([disabled]) { transform: none; }
+}
