@@ -25,7 +25,7 @@ const JSON_HEADERS = {
   "Cache-Control": "no-store",
 };
 
-const DEFAULT_MODEL = "gemini-2.0-flash";
+const DEFAULT_MODEL = "gemini-flash-latest"; // alias -> current stable Flash (avoids deprecation 404s)
 const WORKERS_AI_MODEL = "@cf/meta/llama-3.1-8b-instruct";
 
 const CAP = { turns: 12, text: 1500, output: 500, image: 8_000_000 };
