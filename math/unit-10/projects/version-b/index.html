@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Aquarium Build Lab — Unit 10 Culminating Project</title>
     <meta
       name="description"
@@ -419,9 +419,9 @@
     <link rel="stylesheet" href="/shared/projects/projects-tabs.css" />
     <link rel="stylesheet" href="/shared/projects/projects-tplus.css" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
   <body class="pk" data-pk-theme="u10">
     <header class="phero">
       <div class="deco">🐠</div>
@@ -444,7 +444,15 @@
           <button data-level-btn="level-1" type="button">🟢 Level 1</button>
           <button data-level-btn="level-2" type="button">🔵 Level 2</button>
         </span>
-        <button class="pk-tts-toggle" data-tts-toggle type="button" aria-pressed="false" title="Read text aloud">🔊 Read aloud</button>
+        <button
+          class="pk-tts-toggle"
+          data-tts-toggle
+          type="button"
+          aria-pressed="false"
+          title="Read text aloud"
+        >
+          🔊 Read aloud
+        </button>
         <button onclick="PK.save('u10ProjectB')">💾 Save</button>
         <button
           onclick="PK.load('u10ProjectB', { show: true, after: recalcAll })"
@@ -695,7 +703,30 @@
             >
               <span>📋</span> Scenario &amp; Level Options
             </h3>
-            <h2>Design YOUR Tank</h2>
+            <p style="font-size: 14px; line-height: 1.6; margin: 0 0 10px">
+              You are an <strong>aquarium designer</strong>. A classroom wants a
+              rectangular glass tank that fits a real space, and they need to
+              know the water it holds and the glass it takes.
+            </p>
+            <ul
+              style="
+                font-size: 14px;
+                line-height: 1.6;
+                margin: 0;
+                padding-left: 18px;
+              "
+            >
+              <li>
+                <strong>Level 1 (support):</strong> design a tank with
+                whole-number dimensions (like 12 × 6 × 8 in) and find its volume
+                and the glass for its five faces (open top — no lid!).
+              </li>
+              <li>
+                <strong>Level 2 (challenge):</strong> use decimal measurements,
+                find the water volume at a chosen fill height, and compare glass
+                cost with a partner's tank.
+              </li>
+            </ul>
           </div>
         </div>
         <p>
@@ -2122,7 +2153,10 @@
       const yrEl = document.getElementById("yr");
       if (yrEl) yrEl.textContent = new Date().getFullYear();
       const $ = (id) => document.getElementById(id);
-      const num = (id) => { const e = $(id); return e ? parseFloat(e.value) : NaN; };
+      const num = (id) => {
+        const e = $(id);
+        return e ? parseFloat(e.value) : NaN;
+      };
       function round2(n) {
         return Math.round(n * 100) / 100;
       }
@@ -2720,8 +2754,14 @@
         worldGo();
         calcOpt();
         updateProgress();
-      
-        if(typeof drawPrismSVG === "function"){drawPrismSVG(); drawNetSVG(); drawWaterSVG(); drawCostSVG();}}
+
+        if (typeof drawPrismSVG === "function") {
+          drawPrismSVG();
+          drawNetSVG();
+          drawWaterSVG();
+          drawCostSVG();
+        }
+      }
 
       /* ---- Report ---- */
       function reportText() {
@@ -2872,52 +2912,55 @@
         PK.load("u10ProjectB", { after: recalcAll });
         updateProgress();
       });
-    
+
       function drawPrismSVG() {
         const l = num("v-length");
         const w = num("v-width");
         const h = num("v-height");
         const svg = $("phase-svg-1a");
         if (!svg) return;
-        
+
         if (isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0) {
-          svg.innerHTML = '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter dimensions to draw 3D aquarium tank</text>';
+          svg.innerHTML =
+            '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter dimensions to draw 3D aquarium tank</text>';
           return;
         }
-        
-        const originX = 200, originY = 140;
+
+        const originX = 200,
+          originY = 140;
         const scale = Math.min(100 / l, 100 / w, 100 / h);
         const sw = l * scale;
         const sh = h * scale;
         const sd = w * scale;
-        
+
         const dx = sd * 0.866;
         const dy = -sd * 0.5;
-        
+
         svg.innerHTML = `
           <text x="250" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">3D Aquarium Isometric Blueprint</text>
-          <polygon points="${originX},${originY} ${originX+sw},${originY} ${originX+sw},${originY-sh} ${originX},${originY-sh}" fill="rgba(26,111,181,0.1)" stroke="#1a6fb5" stroke-width="1.5" />
-          <polygon points="${originX},${originY-sh} ${originX+sw},${originY-sh} ${originX+sw+dx},${originY-sh+dy} ${originX+dx},${originY-sh+dy}" fill="rgba(26,111,181,0.05)" stroke="#1a6fb5" stroke-width="1.5" />
-          <polygon points="${originX+sw},${originY} ${originX+sw},${originY-sh} ${originX+sw+dx},${originY-sh+dy} ${originX+sw+dx},${originY+dy}" fill="rgba(26,111,181,0.15)" stroke="#1a6fb5" stroke-width="1.5" />
+          <polygon points="${originX},${originY} ${originX + sw},${originY} ${originX + sw},${originY - sh} ${originX},${originY - sh}" fill="rgba(26,111,181,0.1)" stroke="#1a6fb5" stroke-width="1.5" />
+          <polygon points="${originX},${originY - sh} ${originX + sw},${originY - sh} ${originX + sw + dx},${originY - sh + dy} ${originX + dx},${originY - sh + dy}" fill="rgba(26,111,181,0.05)" stroke="#1a6fb5" stroke-width="1.5" />
+          <polygon points="${originX + sw},${originY} ${originX + sw},${originY - sh} ${originX + sw + dx},${originY - sh + dy} ${originX + sw + dx},${originY + dy}" fill="rgba(26,111,181,0.15)" stroke="#1a6fb5" stroke-width="1.5" />
           
-          <text x="${originX + sw/2}" y="${originY + 15}" text-anchor="middle" font-size="10" font-weight="bold" fill="#1a6fb5">Length: ${l} ft</text>
-          <text x="${originX + sw + dx/2 + 10}" y="${originY + dy/2 + 5}" font-size="10" font-weight="bold" fill="#1a6fb5">Width: ${w} ft</text>
-          <text x="${originX - 10}" y="${originY - sh/2}" text-anchor="end" font-size="10" font-weight="bold" fill="#1a6fb5">Height: ${h} ft</text>
+          <text x="${originX + sw / 2}" y="${originY + 15}" text-anchor="middle" font-size="10" font-weight="bold" fill="#1a6fb5">Length: ${l} ft</text>
+          <text x="${originX + sw + dx / 2 + 10}" y="${originY + dy / 2 + 5}" font-size="10" font-weight="bold" fill="#1a6fb5">Width: ${w} ft</text>
+          <text x="${originX - 10}" y="${originY - sh / 2}" text-anchor="end" font-size="10" font-weight="bold" fill="#1a6fb5">Height: ${h} ft</text>
         `;
       }
-      
+
       function drawNetSVG() {
         const l = num("v-length");
         const w = num("v-width");
         const h = num("v-height");
         const svg = $("phase-svg-1b");
         if (!svg) return;
-        
+
         if (isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0) {
-          svg.innerHTML = '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter dimensions to draw net blueprint</text>';
+          svg.innerHTML =
+            '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter dimensions to draw net blueprint</text>';
           return;
         }
-        
+
         svg.innerHTML = `
           <text x="250" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Flat Unfolded Net Blueprint</text>
           
@@ -2942,7 +2985,7 @@
           </g>
         `;
       }
-      
+
       function drawWaterSVG() {
         const l = num("v-length");
         const w = num("v-width");
@@ -2950,34 +2993,45 @@
         const wh = num("w-height");
         const svg = $("phase-svg-1c");
         if (!svg) return;
-        
-        if (isNaN(l) || isNaN(w) || isNaN(h) || isNaN(wh) || l <= 0 || w <= 0 || h <= 0 || wh <= 0) {
-          svg.innerHTML = '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter water height to draw fill blueprint</text>';
+
+        if (
+          isNaN(l) ||
+          isNaN(w) ||
+          isNaN(h) ||
+          isNaN(wh) ||
+          l <= 0 ||
+          w <= 0 ||
+          h <= 0 ||
+          wh <= 0
+        ) {
+          svg.innerHTML =
+            '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter water height to draw fill blueprint</text>';
           return;
         }
-        
-        const originX = 200, originY = 140;
+
+        const originX = 200,
+          originY = 140;
         const scale = Math.min(100 / l, 100 / w, 100 / h);
         const sw = l * scale;
         const sh = h * scale;
         const sd = w * scale;
         const swh = wh * scale;
-        
+
         const dx = sd * 0.866;
         const dy = -sd * 0.5;
-        
+
         svg.innerHTML = `
           <text x="250" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Water Fill Blueprint (wh = ${wh} ft)</text>
-          <polygon points="${originX},${originY} ${originX+sw},${originY} ${originX+sw},${originY-sh} ${originX},${originY-sh}" fill="none" stroke="#94a3b8" stroke-width="1.5" />
-          <polygon points="${originX},${originY-sh} ${originX+sw},${originY-sh} ${originX+sw+dx},${originY-sh+dy} ${originX+dx},${originY-sh+dy}" fill="none" stroke="#94a3b8" stroke-width="1.5" />
-          <polygon points="${originX+sw},${originY} ${originX+sw},${originY-sh} ${originX+sw+dx},${originY-sh+dy} ${originX+sw+dx},${originY+dy}" fill="none" stroke="#94a3b8" stroke-width="1.5" />
+          <polygon points="${originX},${originY} ${originX + sw},${originY} ${originX + sw},${originY - sh} ${originX},${originY - sh}" fill="none" stroke="#94a3b8" stroke-width="1.5" />
+          <polygon points="${originX},${originY - sh} ${originX + sw},${originY - sh} ${originX + sw + dx},${originY - sh + dy} ${originX + dx},${originY - sh + dy}" fill="none" stroke="#94a3b8" stroke-width="1.5" />
+          <polygon points="${originX + sw},${originY} ${originX + sw},${originY - sh} ${originX + sw + dx},${originY - sh + dy} ${originX + sw + dx},${originY + dy}" fill="none" stroke="#94a3b8" stroke-width="1.5" />
           
-          <polygon points="${originX},${originY} ${originX+sw},${originY} ${originX+sw},${originY-swh} ${originX},${originY-swh}" fill="rgba(30,136,229,0.3)" stroke="#1e88e5" />
-          <polygon points="${originX},${originY-swh} ${originX+sw},${originY-swh} ${originX+sw+dx},${originY-swh+dy} ${originX+dx},${originY-swh+dy}" fill="rgba(30,136,229,0.2)" stroke="#1e88e5" />
-          <polygon points="${originX+sw},${originY} ${originX+sw},${originY-swh} ${originX+sw+dx},${originY-swh+dy} ${originX+sw+dx},${originY+dy}" fill="rgba(30,136,229,0.4)" stroke="#1e88e5" />
+          <polygon points="${originX},${originY} ${originX + sw},${originY} ${originX + sw},${originY - swh} ${originX},${originY - swh}" fill="rgba(30,136,229,0.3)" stroke="#1e88e5" />
+          <polygon points="${originX},${originY - swh} ${originX + sw},${originY - swh} ${originX + sw + dx},${originY - swh + dy} ${originX + dx},${originY - swh + dy}" fill="rgba(30,136,229,0.2)" stroke="#1e88e5" />
+          <polygon points="${originX + sw},${originY} ${originX + sw},${originY - swh} ${originX + sw + dx},${originY - swh + dy} ${originX + sw + dx},${originY + dy}" fill="rgba(30,136,229,0.4)" stroke="#1e88e5" />
         `;
       }
-      
+
       function drawCostSVG() {
         const svg = $("phase-svg-1d");
         if (!svg) return;
@@ -2988,13 +3042,12 @@
           <text x="250" y="130" text-anchor="middle" font-size="10" fill="#64748b">Calculates automatically when dimensions are populated</text>
         `;
       }
-    
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
-        <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
+    <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
     <script type="application/json" id="pk-research">
       {
         "icon": "🔎",
@@ -3093,8 +3146,8 @@
       }
     </script>
     <script src="/shared/projects/projects-tabs.js" defer></script>
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+  </body>
 </html>
