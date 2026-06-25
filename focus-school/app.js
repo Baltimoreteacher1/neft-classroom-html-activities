@@ -6863,16 +6863,7 @@ ${name}`;
       render();
     },
     // Second device: paste the code from the first device to link.
-    "sync-fab": async () => {
-      if (state.settings.sync.enabled) {
-        toast("Syncing… ⬇️");
-        await cloud.pull({ forceMerge: true });
-        render();
-        toast("Up to date ✅");
-      } else {
-        ACTIONS["enter-code"]();
-      }
-    },
+    "sync-fab": () => ACTIONS["enter-code"](),
     "enter-code": () => {
       openModal(
         "Enter your sync code",
