@@ -772,3 +772,149 @@
     display: none !important;
   }
 }
+
+/* ==========================================================================
+   2. PREMIUM v2 — "TPT-seller" excitement layer (calm, gentle motion)
+   Appended Jun 2026. Pure CSS, scoped under .pk / .pk-hub, additive only.
+   Slow decorative motion (8–16s), fully disabled under reduced-motion + print.
+   ========================================================================== */
+
+@keyframes pp-aurora {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  50%  { transform: translate3d(2.5%, -2%, 0) scale(1.06); }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+@keyframes pp-float {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50%      { transform: translateY(-10px) rotate(3deg); }
+}
+@keyframes pp-stripe { from { background-position: 0 0; } to { background-position: 40px 0; } }
+@keyframes pp-pop {
+  0%   { transform: scale(0.6); opacity: 0; }
+  70%  { transform: scale(1.08); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Hero — drifting aurora + animated brand underline ------------------------ */
+.pk .phero { overflow: hidden; }
+.pk .phero::after {
+  content: "";
+  position: absolute;
+  inset: -30%;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(420px 220px at 20% 18%, rgba(244, 169, 36, 0.30), transparent 60%),
+    radial-gradient(460px 240px at 84% 88%, rgba(14, 154, 140, 0.34), transparent 60%),
+    radial-gradient(380px 200px at 60% 10%, rgba(109, 74, 214, 0.26), transparent 60%);
+  animation: pp-aurora 16s ease-in-out infinite;
+}
+.pk .phero .deco {
+  animation: pp-rise 0.7s var(--pp-ease) both, pp-float 7s ease-in-out 0.8s infinite;
+}
+.pk .phero h1 {
+  display: inline-block;
+  padding-bottom: 8px;
+  background-image: linear-gradient(90deg, var(--pp-gold), #ffe39a, var(--pp-gold));
+  background-size: 220% 3px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+}
+
+/* Phase medallions — glossy gradient, pop-in, color cycles per phase ------- */
+.pk .phase-num {
+  background: linear-gradient(140deg, var(--pp-blue), var(--pp-blue-deep));
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(12, 63, 134, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  animation: pp-pop 0.5s var(--pp-ease) both;
+}
+.pk .phase:nth-of-type(4n + 1) .phase-num { background: linear-gradient(140deg, #1763c7, #0c3f86); }
+.pk .phase:nth-of-type(4n + 2) .phase-num { background: linear-gradient(140deg, #0e9a8c, #0a6f64); }
+.pk .phase:nth-of-type(4n + 3) .phase-num { background: linear-gradient(140deg, #6d4ad6, #4a2fa0); }
+.pk .phase:nth-of-type(4n + 4) .phase-num { background: linear-gradient(140deg, #ef6b52, #c8462f); }
+
+/* Phase cards — colored top accent + hover sheen sweep --------------------- */
+.pk .phase { position: relative; overflow: hidden; }
+.pk .phase::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, var(--pp-blue), var(--pp-teal), var(--pp-violet), var(--pp-gold));
+  background-size: 300% 100%;
+  opacity: 0.9;
+}
+.pk .phase:nth-of-type(4n + 1)::after { background-position: 0% 0; }
+.pk .phase:nth-of-type(4n + 2)::after { background-position: 40% 0; }
+.pk .phase:nth-of-type(4n + 3)::after { background-position: 70% 0; }
+.pk .phase:nth-of-type(4n + 4)::after { background-position: 100% 0; }
+.pk .phase > .pp-sheen,
+.pk .phase::before { will-change: transform; }
+
+/* Arc banner ("Research Lab" featured callout) — make it a hero strip ------ */
+.pk .arc-banner {
+  background:
+    radial-gradient(600px 200px at 100% 0%, rgba(255, 255, 255, 0.18), transparent 60%),
+    linear-gradient(120deg, #15324f 0%, #1763c7 60%, #0e9a8c 120%);
+  color: #fff;
+  border: none;
+  box-shadow: var(--pp-shadow);
+  position: relative;
+  overflow: hidden;
+}
+.pk .arc-banner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.14) 1.2px, transparent 1.4px);
+  background-size: 18px 18px;
+  opacity: 0.5;
+  pointer-events: none;
+}
+.pk .arc-banner * { position: relative; z-index: 1; }
+
+/* Skill + tag chips — gradient pills --------------------------------------- */
+.pk .skill {
+  background: linear-gradient(135deg, #eaf3fe, #d8ecff);
+  border: 1px solid #bcd9f6;
+  border-radius: 999px;
+  font-weight: 700;
+}
+.pk .phero .tags .tag:not(.gold) { transition: transform 0.18s var(--pp-ease); }
+.pk .phero .tags .tag:hover { transform: translateY(-1px); }
+
+/* Buttons — glossier, springy ---------------------------------------------- */
+.pk .btn {
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0));
+  box-shadow: 0 6px 16px rgba(23, 99, 199, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+.pk .btn:hover { transform: translateY(-2px); }
+
+/* Progress — gentle candy shimmer + celebratory glow ----------------------- */
+.pk .progress-fill {
+  position: relative;
+  background-image:
+    linear-gradient(90deg, var(--pp-teal), var(--pp-blue)),
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.22) 0 10px, rgba(255, 255, 255, 0) 10px 20px);
+  background-blend-mode: overlay;
+  animation: pp-stripe 1.6s linear infinite;
+}
+
+/* Encouraging callout polish ----------------------------------------------- */
+.pk .pk-callout {
+  border-left: 5px solid var(--pp-gold);
+  background: linear-gradient(135deg, #fff8e9, #fffdf6);
+}
+
+@media print {
+  .pk .phero::after,
+  .pk .phase::after,
+  .pk .arc-banner::before { display: none !important; }
+  .pk .progress-fill { animation: none !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pk .phero::after,
+  .pk .phero .deco,
+  .pk .phase-num,
+  .pk .progress-fill { animation: none !important; }
+}
