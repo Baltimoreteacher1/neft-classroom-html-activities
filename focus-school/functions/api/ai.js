@@ -114,6 +114,8 @@ export async function onRequestPost({ request, env }) {
         }
       : null;
 
+  let geminiError = null;
+
   // 1) Gemini
   if (env.GEMINI_API_KEY) {
     try {
@@ -166,9 +168,15 @@ export async function onRequestPost({ request, env }) {
           backend: "gemini",
         });
       }
-      // fall through to Workers AI on a non-OK Gemini response
+      // The key is configured but the call failed. Show a kid-friendly,
+      // accurate message (NOT "not set up") and try Workers AI if available.
+      geminiError =
+        res.status === 429
+          ? "I'm getting a lot of questions right now — give me a minute, then ask again. ⏳"
+          : "I couldn't think of an answer just now. Try asking again in a moment. 🙂";
     } catch {
-      /* fall through */
+      geminiError =
+        "I couldn't reach my brain just now — try asking again in a moment. 🙂";
     }
   }
 
@@ -192,7 +200,11 @@ export async function onRequestPost({ request, env }) {
     }
   }
 
-  // 3) Nothing configured
+  // A backend was configured but couldn't answer (e.g. quota/429). Surface a
+  // friendly, accurate message as a normal reply — not the "not set up" notice.
+  if (geminiError) return json({ reply: geminiError, backend: "gemini-busy" });
+
+  // 3) Nothing configured at all.
   return json(
     {
       offline: true,
