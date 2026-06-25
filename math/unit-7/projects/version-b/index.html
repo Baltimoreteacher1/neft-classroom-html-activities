@@ -2150,6 +2150,111 @@ function recalcAll() {
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
+        <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
+    <script type="application/json" id="pk-research">
+      {
+        "icon": "🔎",
+        "title": "Research Lab — Map the Real Extremes",
+        "intro": "Pilots and explorers use positive and negative numbers for depth, altitude, and temperature. Look up real values, then compare them.",
+        "brief": {
+          "theme": "field",
+          "title": "🔭 Your Research Mission",
+          "hook": "Find <b>real highs and lows</b> (temperatures, elevations, depths) and compare them with integers.",
+          "steps": [
+            "Open a link (new tab — you keep your project).",
+            "Record real values in Field Notes.",
+            "Compare them in the math problems.",
+            "Check off the Investigation Checklist."
+          ]
+        },
+        "fieldNotes": {
+          "title": "Field Notes — Record What You Find",
+          "intro": "Jot the exact number or rule you find. You'll reuse these in the math below.",
+          "fields": [
+            {
+              "label": "What absolute value means",
+              "source": "Math is Fun",
+              "placeholder": "distance from 0",
+              "hint": "Always zero or positive."
+            },
+            {
+              "label": "A real LOW value (below zero)",
+              "source": "weather.gov / atlas",
+              "placeholder": "-12 °F",
+              "hint": "A cold temp or a depth below sea level."
+            },
+            {
+              "label": "A real HIGH value (above zero)",
+              "source": "weather.gov / atlas",
+              "placeholder": "+88 °F",
+              "hint": "A warm temp or an elevation."
+            },
+            {
+              "label": "A sea-level reference",
+              "source": "Atlas",
+              "placeholder": "0 ft = sea level",
+              "hint": "The zero point you compare to."
+            }
+          ]
+        },
+        "mathTasks": [
+          {
+            "title": "1 · Order them",
+            "prompt": "Place your low and high values (Field Notes 2 and 3) on a number line and order them with < or >. Which is greater?",
+            "level2": "Add a third real value and order all three."
+          },
+          {
+            "title": "2 · Distance",
+            "prompt": "Use <b>absolute value</b> to find how far each value is from 0. Which is farther from zero?",
+            "level2": "How far apart are the two values from each other? Show the math."
+          },
+          {
+            "title": "3 · Real meaning",
+            "prompt": "Write one sentence explaining what a negative value means in your context (colder than, below sea level, etc.).",
+            "level2": "Give a real example where a smaller (more negative) number is actually 'deeper' or 'colder'."
+          }
+        ],
+        "investigationChecklist": [
+          "I recorded what absolute value means.",
+          "I found a real value below zero.",
+          "I found a real value above zero.",
+          "I ordered values with < or >.",
+          "I used absolute value for distance from 0.",
+          "I explained what negative means in context."
+        ],
+        "links": [
+          {
+            "icon": "➖",
+            "name": "Math is Fun — Integers",
+            "url": "https://www.mathsisfun.com/positive-negative-integers.html",
+            "find": "How positive and negative numbers compare.",
+            "look": "left is less, right is greater on the number line"
+          },
+          {
+            "icon": "📏",
+            "name": "Math is Fun — Absolute Value",
+            "url": "https://www.mathsisfun.com/numbers/absolute-value.html",
+            "find": "Distance from zero, always positive.",
+            "look": "the | | bars"
+          },
+          {
+            "icon": "🌡️",
+            "name": "National Weather Service — Real temps",
+            "url": "https://www.weather.gov/",
+            "find": "Real high and low temperatures for a place.",
+            "look": "today's high and low"
+          },
+          {
+            "icon": "🎓",
+            "name": "Khan Academy — Negative numbers",
+            "url": "https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-negative-number-topic",
+            "find": "Videos + practice on integers.",
+            "look": "the 'Intro to negative numbers' lessons"
+          }
+        ],
+        "note": "These sites were picked for class. They open in a new tab so you keep your project. If a page asks you to sign in or buy something, just close it and come back."
+      }
+    </script>
     <script src="/shared/projects/projects-tabs.js" defer></script>
   <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
   <script src="/assets/math-workbench-launcher.js" defer></script>

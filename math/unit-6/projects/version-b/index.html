@@ -1925,6 +1925,104 @@ function recalcAll() {
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
+        <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
+    <script type="application/json" id="pk-research">
+      {
+        "icon": "🔎",
+        "title": "Research Lab — Build the Pricing Formula",
+        "intro": "App makers turn pricing into an expression you can evaluate for any input. Look up how expressions work, then model your own.",
+        "brief": {
+          "theme": "field",
+          "title": "📊 Your Research Mission",
+          "hook": "Find how to <b>write and evaluate expressions</b>, then turn your pricing into one.",
+          "steps": [
+            "Open a link (new tab — you keep your project).",
+            "Record the rules in Field Notes.",
+            "Build and evaluate your expression in the math problems.",
+            "Check off the Investigation Checklist."
+          ]
+        },
+        "fieldNotes": {
+          "title": "Field Notes — Record What You Find",
+          "intro": "Jot the exact number or rule you find. You'll reuse these in the math below.",
+          "fields": [
+            {
+              "label": "What 'evaluate an expression' means",
+              "source": "Math is Fun",
+              "placeholder": "substitute a value for the variable",
+              "hint": "Replace the letter with a number, then compute."
+            },
+            {
+              "label": "What 'like terms' are",
+              "source": "Math is Fun",
+              "placeholder": "terms with the same variable",
+              "hint": "3x and 5x are like terms."
+            },
+            {
+              "label": "Your per-item price (a real number you choose)",
+              "source": "Your plan",
+              "placeholder": "$2 per level",
+              "hint": "This becomes the coefficient."
+            },
+            {
+              "label": "Your one-time/base fee",
+              "source": "Your plan",
+              "placeholder": "$5 to start",
+              "hint": "This becomes the constant."
+            }
+          ]
+        },
+        "mathTasks": [
+          {
+            "title": "1 · Write the expression",
+            "prompt": "Using your price (Field Note 3) and base fee (Field Note 4), write an expression like <b>2x + 5</b> for total cost, where x is the number of items.",
+            "level2": "State in words what x and each number mean."
+          },
+          {
+            "title": "2 · Evaluate it",
+            "prompt": "Evaluate your expression for x = 4 and x = 10. Show each substitution and computation.",
+            "level2": "Make a small table of x = 0, 4, 10 and their totals."
+          },
+          {
+            "title": "3 · Simplify",
+            "prompt": "Combine like terms in this: 3x + 2 + 2x + 4. Then evaluate your simplified expression for x = 5.",
+            "level2": "Explain why combining like terms does not change the value."
+          }
+        ],
+        "investigationChecklist": [
+          "I recorded what 'evaluate' means.",
+          "I recorded what like terms are.",
+          "I chose a real per-item price and base fee.",
+          "I wrote a cost expression.",
+          "I evaluated it for two values.",
+          "I combined like terms in an expression."
+        ],
+        "links": [
+          {
+            "icon": "🔤",
+            "name": "Math is Fun — Substitution (evaluating)",
+            "url": "https://www.mathsisfun.com/algebra/substitution.html",
+            "find": "How to replace a variable with a number.",
+            "look": "substitute, then calculate"
+          },
+          {
+            "icon": "➕",
+            "name": "Math is Fun — Like Terms",
+            "url": "https://www.mathsisfun.com/algebra/like-terms.html",
+            "find": "Which terms you can combine.",
+            "look": "same variable to the same power"
+          },
+          {
+            "icon": "🎓",
+            "name": "Khan Academy — Expressions & equations",
+            "url": "https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-equations-and-inequalities",
+            "find": "Videos + practice on expressions.",
+            "look": "the 'Evaluating expressions' lessons"
+          }
+        ],
+        "note": "These sites were picked for class. They open in a new tab so you keep your project. If a page asks you to sign in or buy something, just close it and come back."
+      }
+    </script>
     <script src="/shared/projects/projects-tabs.js" defer></script>
   <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
   <script src="/assets/math-workbench-launcher.js" defer></script>
