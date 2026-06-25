@@ -3257,7 +3257,9 @@
             esc(a.title) +
             '</b><div class="meta">' +
             meta +
-            "</div></div></div>" +
+            '</div><button class="btn sm hw-done" data-act="complete" data-id="' +
+            a.id +
+            '">✓ Done</button></div></div>' +
             hwTimerCell(a.id, [10, 15, 20, 25]) +
             "</div>";
           const brk =
