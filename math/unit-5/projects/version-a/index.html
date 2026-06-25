@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Dream Room Designer — Unit 5 Culminating Project</title>
     <meta
       name="description"
@@ -466,9 +466,9 @@
     <link rel="stylesheet" href="/shared/projects/projects-tabs.css" />
     <link rel="stylesheet" href="/shared/projects/projects-tplus.css" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
   <body class="pk" data-pk-theme="u5">
     <header class="phero">
       <div class="deco">🏠</div>
@@ -494,7 +494,15 @@
             🔵 Level 2 (challenge)
           </button>
         </span>
-        <button class="pk-tts-toggle" data-tts-toggle type="button" aria-pressed="false" title="Read text aloud">🔊 Read aloud</button>
+        <button
+          class="pk-tts-toggle"
+          data-tts-toggle
+          type="button"
+          aria-pressed="false"
+          title="Read text aloud"
+        >
+          🔊 Read aloud
+        </button>
         <button onclick="PK.save('u5ProjectA')">💾 Save</button>
         <button
           onclick="PK.load('u5ProjectA', { show: true, after: recalcAll })"
@@ -744,7 +752,30 @@
             >
               <span>📋</span> Scenario &amp; Level Options
             </h3>
-            <h2>Measure &amp; Calculate YOUR Room</h2>
+            <p style="font-size: 14px; line-height: 1.6; margin: 0 0 10px">
+              You are an <strong>interior designer</strong>. A client wants a
+              floor plan of their bedroom, so you measure the room, find the
+              area of each part, and calculate the cost to put new flooring
+              across the whole space.
+            </p>
+            <ul
+              style="
+                font-size: 14px;
+                line-height: 1.6;
+                margin: 0;
+                padding-left: 18px;
+              "
+            >
+              <li>
+                <strong>Level 1 (support):</strong> find the area of one simple
+                rectangular room, then multiply by the price per square foot.
+              </li>
+              <li>
+                <strong>Level 2 (challenge):</strong> add a triangular nook and
+                an L-shaped composite area, total all the parts, and compare
+                your room to average bedroom sizes around the world.
+              </li>
+            </ul>
           </div>
         </div>
         <p>
@@ -2593,18 +2624,23 @@
           return;
         }
         if (isNaN(add)) {
-          $("whatIfBox").textContent = "Enter how many feet to add to the base.";
+          $("whatIfBox").textContent =
+            "Enter how many feet to add to the base.";
           return;
         }
         if (base + add <= 0) {
-          $("whatIfBox").textContent = "The new base must be greater than 0 ft.";
+          $("whatIfBox").textContent =
+            "The new base must be greater than 0 ft.";
           return;
         }
         const r = (x) => Math.round(x * 100) / 100;
         PK.whatIf(
           "whatIfBox",
           { base: base + " ft", area: r(base * height) + " sq ft" },
-          { base: r(base + add) + " ft", area: r((base + add) * height) + " sq ft" },
+          {
+            base: r(base + add) + " ft",
+            area: r((base + add) * height) + " sq ft",
+          },
           "Add " + add + " ft to the base (height stays " + height + " ft):",
         );
       }
@@ -2837,7 +2873,7 @@
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
-        <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
+    <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
     <script type="application/json" id="pk-research">
       {
         "icon": "🔎",
@@ -2940,8 +2976,8 @@
       }
     </script>
     <script src="/shared/projects/projects-tabs.js" defer></script>
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+  </body>
 </html>

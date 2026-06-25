@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Theme Park Map Designer — Unit 7 Culminating Project</title>
     <meta
       name="description"
@@ -456,9 +456,9 @@
     <link rel="stylesheet" href="/shared/projects/projects-tabs.css" />
     <link rel="stylesheet" href="/shared/projects/projects-tplus.css" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
   <body class="pk" data-pk-theme="u7">
     <header class="phero">
       <div class="deco">🎢</div>
@@ -481,7 +481,15 @@
           <button data-level-btn="level-1" type="button">🟢 Level 1</button>
           <button data-level-btn="level-2" type="button">🔵 Level 2</button>
         </span>
-        <button class="pk-tts-toggle" data-tts-toggle type="button" aria-pressed="false" title="Read text aloud">🔊 Read aloud</button>
+        <button
+          class="pk-tts-toggle"
+          data-tts-toggle
+          type="button"
+          aria-pressed="false"
+          title="Read text aloud"
+        >
+          🔊 Read aloud
+        </button>
         <button onclick="PK.save('u7ProjectA')">💾 Save</button>
         <button
           onclick="PK.load('u7ProjectA', { show: true, after: recalcAll })"
@@ -880,7 +888,30 @@
             >
               <span>📋</span> Scenario &amp; Level Options
             </h3>
-            <h2>Map the Places You Care About</h2>
+            <p style="font-size: 14px; line-height: 1.6; margin: 0 0 10px">
+              You are a <strong>theme-park map designer</strong>. You place the
+              real spots you care about on a coordinate-plane map, name their
+              integer coordinates, and measure how far apart the rides and
+              landmarks are.
+            </p>
+            <ul
+              style="
+                font-size: 14px;
+                line-height: 1.6;
+                margin: 0;
+                padding-left: 18px;
+              "
+            >
+              <li>
+                <strong>Level 1 (support):</strong> plot 2 places like Home (0,
+                0) and School (5, -3), then name the quadrant each one is in.
+              </li>
+              <li>
+                <strong>Level 2 (challenge):</strong> plot 3 places, reflect one
+                across an axis, and find the distance between two that share a
+                row, such as (2, 3) and (2, 9).
+              </li>
+            </ul>
           </div>
         </div>
         <p>
@@ -1991,7 +2022,10 @@
       const yrEl = document.getElementById("yr");
       if (yrEl) yrEl.textContent = new Date().getFullYear();
       const $ = (id) => document.getElementById(id);
-      const num = (id) => { const e = $(id); return e ? parseFloat(e.value) : NaN; };
+      const num = (id) => {
+        const e = $(id);
+        return e ? parseFloat(e.value) : NaN;
+      };
 
       function show(id, html) {
         const el = $(id);
@@ -2606,8 +2640,12 @@
         renderWorld();
         worldGo();
         updateProgress();
-      
-        if(typeof drawReflectionSVG === "function"){drawReflectionSVG(); drawDistanceSVG();}}
+
+        if (typeof drawReflectionSVG === "function") {
+          drawReflectionSVG();
+          drawDistanceSVG();
+        }
+      }
 
       /* ---- Report ---- */
       function reportText() {
@@ -2753,27 +2791,28 @@
         PK.load("u7ProjectA", { after: recalcAll });
         updateProgress();
       });
-    
+
       function drawReflectionSVG() {
         const x = num("rx");
         const y = num("ry");
         const axis = $("refAxis") ? $("refAxis").value : "x-axis";
         const svg = $("phase-svg-1a");
         if (!svg) return;
-        
+
         if (isNaN(x) || isNaN(y)) {
-          svg.innerHTML = '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter coordinates to draw reflection</text>';
+          svg.innerHTML =
+            '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter coordinates to draw reflection</text>';
           return;
         }
-        
+
         const rx = axis === "x-axis" ? x : -x;
         const ry = axis === "x-axis" ? -y : y;
-        
+
         const toX = (val) => 250 + val * 8;
         const toY = (val) => 100 - val * 8;
-        
+
         svg.innerHTML = `
-          <text x="250" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">Reflection Across ${axis === 'x-axis' ? 'X-Axis' : 'Y-Axis'}</text>
+          <text x="250" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">Reflection Across ${axis === "x-axis" ? "X-Axis" : "Y-Axis"}</text>
           <line x1="170" y1="100" x2="330" y2="100" stroke="#cbd5e1" stroke-width="1.5" />
           <line x1="250" y1="20" x2="250" y2="180" stroke="#cbd5e1" stroke-width="1.5" />
           
@@ -2788,7 +2827,7 @@
           <line x1="${toX(x)}" y1="${toY(y)}" x2="${toX(rx)}" y2="${toY(ry)}" stroke="#c45a3c" stroke-width="1" stroke-dasharray="3" />
         `;
       }
-      
+
       function drawDistanceSVG() {
         const x1 = num("d1x");
         const y1 = num("d1y");
@@ -2796,19 +2835,20 @@
         const y2 = num("d2y");
         const svg = $("phase-svg-1b");
         if (!svg) return;
-        
+
         if (isNaN(x1) || isNaN(y1) || isNaN(x2) || isNaN(y2)) {
-          svg.innerHTML = '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter points A and B to draw distance path</text>';
+          svg.innerHTML =
+            '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter points A and B to draw distance path</text>';
           return;
         }
-        
+
         const toX = (val) => 250 + val * 8;
         const toY = (val) => 100 - val * 8;
-        
+
         const sameX = x1 === x2;
         const sameY = y1 === y2;
         const dist = sameX ? Math.abs(y1 - y2) : sameY ? Math.abs(x1 - x2) : 0;
-        
+
         svg.innerHTML = `
           <text x="250" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">Distance between coordinates: |p - q|</text>
           <line x1="170" y1="100" x2="330" y2="100" stroke="#cbd5e1" stroke-width="1" />
@@ -2820,20 +2860,19 @@
           <circle cx="${toX(x2)}" cy="${toY(y2)}" r="5" fill="#ffb74d" />
           <text x="${toX(x2) + 8}" y="${toY(y2) - 4}" font-size="9" fill="#f57c00" font-weight="bold">B (${x2}, ${y2})</text>
           
-          <line x1="${toX(x1)}" y1="${toY(y1)}" x2="${toX(x2)}" y2="${toY(y2)}" stroke="${sameX || sameY ? '#0e8a7d' : '#f44336'}" stroke-width="2.5" />
+          <line x1="${toX(x1)}" y1="${toY(y1)}" x2="${toX(x2)}" y2="${toY(y2)}" stroke="${sameX || sameY ? "#0e8a7d" : "#f44336"}" stroke-width="2.5" />
           
           <text x="250" y="192" text-anchor="middle" font-size="11" fill="#0f2b3c" font-weight="bold">
-            ${sameX || sameY ? `Distance = ${dist} units` : '⚠️ Points must share the same x or same y coordinate!'}
+            ${sameX || sameY ? `Distance = ${dist} units` : "⚠️ Points must share the same x or same y coordinate!"}
           </text>
         `;
       }
-    
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
-        <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
+    <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
     <script type="application/json" id="pk-research">
       {
         "icon": "🔎",
@@ -2939,8 +2978,8 @@
       }
     </script>
     <script src="/shared/projects/projects-tabs.js" defer></script>
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+  </body>
 </html>
