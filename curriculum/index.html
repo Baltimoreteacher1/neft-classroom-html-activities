@@ -7703,7 +7703,9 @@
           var name = (act.text || "").toLowerCase();
           var href = (act.href || "").toLowerCase();
           if (
-            /get ready|readiness|pre-?lesson|vocab|warm[- ]?up/.test(name) ||
+            /get ready|readiness|pre-?lesson|pre-?test|vocab|warm[- ]?up/.test(
+              name,
+            ) ||
             /\/readiness\//.test(href)
           ) {
             return 0;
@@ -7762,16 +7764,29 @@
 
           var unitInteger = parseInt(unitNum.replace(/\D/g, ""), 10);
 
-          // Scrape unit resources
+          // Scrape unit resources. Each `.unit-res` block is labeled either
+          // "Unit resources" (unit-wide tools, shown as buttons on the card)
+          // or "End of Unit" (culminating novels/project/tests). The latter
+          // are collected separately so they can be surfaced as a dedicated
+          // "End-of-Unit" entry at the bottom of the lesson dropdown.
           var unitRes = [];
-          var resLinks = Array.prototype.slice.call(
-            u.querySelectorAll(".unit-res .res"),
+          var endOfUnitRes = [];
+          var resBlocks = Array.prototype.slice.call(
+            u.querySelectorAll(".unit-res"),
           );
-          resLinks.forEach(function (r) {
-            unitRes.push({
-              text: r.textContent.trim(),
-              href: r.getAttribute("href"),
-            });
+          resBlocks.forEach(function (block) {
+            var labelEl = block.querySelector(".unit-res-label");
+            var isEndOfUnit =
+              labelEl && /end of unit/i.test(labelEl.textContent || "");
+            var target = isEndOfUnit ? endOfUnitRes : unitRes;
+            Array.prototype.slice
+              .call(block.querySelectorAll(".res"))
+              .forEach(function (r) {
+                target.push({
+                  text: r.textContent.trim(),
+                  href: r.getAttribute("href"),
+                });
+              });
           });
 
           // Scrape lessons
@@ -7886,6 +7901,35 @@
           lessonsData.sort(function (a, b) {
             return lessonRank(a.lessonId) - lessonRank(b.lessonId);
           });
+
+          // Append an "End-of-Unit" entry at the bottom of the lesson
+          // dropdown. Selecting it surfaces the unit's culminating resources
+          // (graphic novels, project, pre/post-tests) through the same phase
+          // dropdowns + Launch flow used by lessons.
+          if (endOfUnitRes.length) {
+            lessonsData.push({
+              id: uIdx + "-eou",
+              lessonId: "",
+              title: "End-of-Unit",
+              titleHTML: "End-of-Unit",
+              objective:
+                "Culminating resources for " +
+                unitNum +
+                ": graphic novels, the unit project, and pre/post assessments.",
+              activities: endOfUnitRes,
+              projects: [],
+              dataSearch:
+                "end of unit " +
+                unitNum.toLowerCase() +
+                " " +
+                endOfUnitRes
+                  .map(function (r) {
+                    return r.text.toLowerCase();
+                  })
+                  .join(" "),
+              isEndOfUnit: true,
+            });
+          }
 
           unitsData.push({
             num: unitNum,
