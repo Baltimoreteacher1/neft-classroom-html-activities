@@ -187,7 +187,6 @@
     ["garden", "Focus Garden"],
     ["calendar", "Calendar"],
     ["todos", "To-do list"],
-    ["reminders", "Reminders"],
     ["assignments", "Assignment list"],
     ["routine", "Right routine"],
     ["momentum", "Momentum"],
@@ -284,6 +283,7 @@
       },
     ].map((r) => ({
       ...r,
+      days: [],
       items: r.items.map((t) => ({ id: uid("i"), text: t })),
     }));
 
@@ -411,13 +411,15 @@
       assignments: Array.isArray(x.assignments)
         ? x.assignments.map(normalizeTask)
         : [],
-      reminders: Array.isArray(x.reminders)
-        ? x.reminders.map(normalizeReminder)
-        : [],
-      todos: Array.isArray(x.todos) ? x.todos.map(normalizeTodo) : [],
+      // Reminders merged into the to-do list — migrate once, then keep empty.
+      reminders: [],
+      todos: [
+        ...(Array.isArray(x.todos) ? x.todos.map(normalizeTodo) : []),
+        ...(Array.isArray(x.reminders) ? x.reminders.map(reminderToTodo) : []),
+      ],
       routines:
         Array.isArray(x.routines) && x.routines.length
-          ? x.routines
+          ? x.routines.map(normalizeRoutine)
           : base.routines,
       routineLog:
         x.routineLog && typeof x.routineLog === "object" ? x.routineLog : {},
@@ -482,6 +484,15 @@
   }
 
   const REPEATS = ["none", "daily", "weekdays", "weekly"];
+  // To-dos support the same cadences plus monthly/yearly.
+  const TODO_REPEATS = [
+    "none",
+    "daily",
+    "weekdays",
+    "weekly",
+    "monthly",
+    "yearly",
+  ];
   function normalizeReminder(r) {
     r = r || {};
     return {
@@ -545,7 +556,7 @@
       done: !!t.done,
       date: DATE_RE.test(t.date) ? t.date : todayKey(),
       createdAt: t.createdAt || Date.now(),
-      repeat: ["none", "daily", "weekly"].includes(t.repeat) ? t.repeat : "none",
+      repeat: TODO_REPEATS.includes(t.repeat) ? t.repeat : "none",
       lastDone: DATE_RE.test(t.lastDone) ? t.lastDone : "",
       time: t.time || "",
       lastShown: t.lastShown || "",
@@ -553,6 +564,39 @@
     };
   }
 
+  // Reminders were folded into the to-do list; convert an old reminder into a
+  // to-do so existing data carries over (id kept so dedupe/sync stays stable).
+  function reminderToTodo(r) {
+    r = r || {};
+    return normalizeTodo({
+      id: r.id || uid("td"),
+      text: r.text,
+      done: !!r.done,
+      date: DATE_RE.test(r.date) ? r.date : todayKey(),
+      time: r.time || "",
+      repeat: TODO_REPEATS.includes(r.repeat) ? r.repeat : "none",
+      lastDone: r.lastDone || "",
+      lastShown: r.lastShown || "",
+      createdAt: r.createdAt || Date.now(),
+    });
+  }
+  // Routine schedule: days = weekday short names it runs on; empty = every day.
+  function normalizeRoutine(r) {
+    r = r || {};
+    return {
+      id: r.id || uid("r"),
+      name: String(r.name || "Routine").slice(0, 60),
+      emoji: String(r.emoji || "🔁").slice(0, 8),
+      days: Array.isArray(r.days) ? r.days.filter((d) => DAYS.includes(d)) : [],
+      items: Array.isArray(r.items)
+        ? r.items.map((it) => ({
+            id: it.id || uid("i"),
+            text: String(it.text || "").slice(0, 120),
+          }))
+        : [],
+      updatedAt: r.updatedAt || Date.now(),
+    };
+  }
   let state = seed();
   const MIRROR_KEY = "focus-school:state"; // synchronous, never-lose-data fallback
   let saveTimer = null;
@@ -631,17 +675,23 @@
     daily: "Every day",
     weekdays: "Weekdays",
     weekly: "Weekly",
+    monthly: "Monthly",
+    yearly: "Yearly",
   };
 
   // ---- To-do recurrence helpers ----
   const isTodoRecurring = (t) => t.repeat && t.repeat !== "none";
   function todoOccursOn(t, iso) {
     if (t.repeat === "daily") return true;
-    if (t.repeat === "weekly") {
-      const anchor = t.date || new Date(t.createdAt).toISOString().slice(0, 10);
-      if (!DATE_RE.test(anchor)) return true;
-      return parseLocal(iso).getDay() === parseLocal(anchor).getDay();
-    }
+    if (t.repeat === "weekdays") return isWeekday(iso);
+    const anchor = t.date || new Date(t.createdAt).toISOString().slice(0, 10);
+    if (!DATE_RE.test(anchor)) return t.repeat === "weekly";
+    const a = parseLocal(anchor),
+      d = parseLocal(iso);
+    if (t.repeat === "weekly") return d.getDay() === a.getDay();
+    if (t.repeat === "monthly") return d.getDate() === a.getDate();
+    if (t.repeat === "yearly")
+      return d.getDate() === a.getDate() && d.getMonth() === a.getMonth();
     return false;
   }
   const todoDoneToday = (t) =>
@@ -763,8 +813,11 @@
     ["home", "Now", "🎯"],
     ["today", "Today", "📅"],
     ["tasks", "Tasks", "✅"],
+    ["homework", "Homework", "📋"],
     ["calendar", "Calendar", "📆"],
     ["routines", "Routines", "🔁"],
+    ["calming", "Calming", "🧘"],
+    ["ai", "AI Help", "🤖"],
     ["more", "More", "⋯"],
   ];
   let view = "home";
@@ -2375,55 +2428,44 @@
     );
   }
 
+  const TODO_REPEAT_OPTS = [
+    ["none", "Once"],
+    ["daily", "Daily"],
+    ["weekdays", "Weekdays"],
+    ["weekly", "Weekly"],
+    ["monthly", "Monthly"],
+    ["yearly", "Yearly"],
+  ];
   function todoCard() {
     const list = todaysTodos();
-    const openCount = list.filter((t) => !t.done).length;
+    const openCount = list.filter((t) => !todoDoneToday(t)).length;
+    const repOpts = (cur) =>
+      TODO_REPEAT_OPTS.map(
+        ([v, l]) =>
+          `<option value="${v}" ${cur === v ? "selected" : ""}>${l}</option>`,
+      ).join("");
     const rows = list.length
       ? `<ul class="steps">${list
-          .map(
-            (t) => {
-              const timeInput = t.done ? "" : `<input type="time" class="todo-time-picker" data-id="${t.id}" value="${t.time || ""}" aria-label="Set reminder time" style="font-size:0.75rem; border:none; background:transparent; padding:0; width:75px; color:var(--accent); cursor:pointer; margin-left:auto; margin-right:8px; align-self:center;">`;
-              return `<li><input class="check" type="checkbox" data-check="todo" data-id="${t.id}" ${t.done ? "checked" : ""} aria-label="${esc(t.text)}"><span class="steptext ${t.done ? "done" : ""}">${esc(t.text)}</span>${timeInput}<button class="btn danger sm" data-act="del-todo" data-id="${t.id}" aria-label="Delete to-do: ${esc(t.text)}">✕</button></li>`;
-            }
-          )
+          .map((t) => {
+            const dn = todoDoneToday(t);
+            const rep = isTodoRecurring(t)
+              ? ` <small class="muted">· 🔁 ${esc(REPEAT_LABEL[t.repeat] || "Repeats")}</small>`
+              : "";
+            const controls = dn
+              ? ""
+              : `<select class="todo-repeat-picker" data-id="${t.id}" aria-label="Repeat" title="Repeat">${repOpts(t.repeat)}</select><input type="time" class="todo-time-picker" data-id="${t.id}" value="${t.time || ""}" aria-label="Set time" title="Time">`;
+            return `<li><input class="check" type="checkbox" data-check="todo" data-id="${t.id}" ${dn ? "checked" : ""} aria-label="${esc(t.text)}"><span class="steptext ${dn ? "done" : ""}">${esc(t.text)}${rep}</span>${controls}<button class="btn danger sm" data-act="del-todo" data-id="${t.id}" aria-label="Delete: ${esc(t.text)}">✕</button></li>`;
+          })
           .join("")}</ul>`
-      : emptyState("📝", "No to-dos yet. Add a quick one below.");
+      : emptyState("📝", "Nothing yet. Add a to-do or reminder below.");
     return card(
       "todos",
-      "📝 To-do list",
-      openCount ? `${openCount} left today` : "Today's quick to-dos.",
+      "✅ To-do / Reminders",
+      openCount ? `${openCount} left today` : "Your to-dos and reminders.",
       `${rows}
        <div class="row" style="margin-top:10px">
-         <input id="todoInput" placeholder="Add a quick to-do…" style="flex:1" aria-label="New to-do">
+         <input id="todoInput" placeholder="Add a to-do or reminder…" style="flex:1" aria-label="New to-do or reminder">
          <button class="btn primary" data-act="add-todo">＋ Add</button>
-       </div>`,
-    );
-  }
-
-  function remindersCard() {
-    const list = todaysReminders().slice(0, 5);
-    const total = todaysReminders().length;
-    const rows = list.length
-      ? `<ul class="steps">${list
-          .map((r) => {
-            const dn = reminderDoneToday(r);
-            const rep = isRecurring(r)
-              ? ` <small class="muted">· 🔁 ${esc(REPEAT_LABEL[r.repeat])}</small>`
-              : "";
-            return `<li><input class="check" type="checkbox" data-check="reminder" data-id="${r.id}" ${dn ? "checked" : ""} aria-label="Mark done: ${esc(r.text)}"><span class="steptext ${dn ? "done" : ""}">${esc(r.text)}${r.time ? ` <small class="muted">· ${esc(r.time)}</small>` : ""}${rep}</span></li>`;
-          })
-          .join(
-            "",
-          )}${total > list.length ? `<li><button class="btn sm" data-act="nav" data-arg="reminders">See all ${total} →</button></li>` : ""}</ul>`
-      : emptyState("🔔", "Nothing to remember right now.");
-    return card(
-      "reminders",
-      "🔔 Reminders",
-      total ? `${total} to remember` : "Quick things not to forget.",
-      `${rows}
-       <div class="row" style="margin-top:10px">
-         <input id="reminderInput" placeholder="Add a reminder…" style="flex:1" aria-label="New reminder">
-         <button class="btn primary" data-act="quick-reminder">＋ Add</button>
        </div>`,
     );
   }
@@ -2467,10 +2509,12 @@
     const due = sortByUrgency(
       open.filter((a) => daysUntil(a.due) !== null && daysUntil(a.due) <= 0),
     ).slice(0, 4);
-    const rem = todaysReminders().slice(0, 4);
+    const rem = todaysTodos()
+      .filter((t) => !todoDoneToday(t) && t.time)
+      .slice(0, 4);
     const gev = gcalToday();
-    const remRow = (r) =>
-      `<div class="item"><div class="head"><div><h4>🔔 ${esc(r.text)}</h4><p class="meta">${r.time ? "⏰ " + esc(r.time) : "Reminder"}${isRecurring(r) ? " · 🔁 " + esc(REPEAT_LABEL[r.repeat]) : ""}</p></div><div class="row"><button class="btn primary sm" data-act="reminder-done" data-id="${r.id}" aria-label="Mark done: ${esc(r.text)}">✓</button></div></div></div>`;
+    const remRow = (t) =>
+      `<div class="item"><div class="head"><div><h4>⏰ ${esc(t.text)}</h4><p class="meta">${t.time ? "⏰ " + esc(t.time) : "Reminder"}${isTodoRecurring(t) ? " · 🔁 " + esc(REPEAT_LABEL[t.repeat] || "Repeats") : ""}</p></div><div class="row"><button class="btn primary sm" data-act="todo-quickdone" data-id="${t.id}" aria-label="Mark done: ${esc(t.text)}">✓</button></div></div></div>`;
     const body =
       due.length || rem.length || gev.length
         ? due.map((a) => taskItem(a)).join("") +
@@ -2611,6 +2655,222 @@
   // ---------------------------------------------------------------------------
   // Views
   // ---------------------------------------------------------------------------
+  // ===== Helpers for Homework Plan, Calming, AI Support, goals, routines =====
+  function routineDaysLabel(r) {
+    if (!r.days || !r.days.length || r.days.length === 7) return "Every day";
+    const wd = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+    if (r.days.length === 5 && wd.every((d) => r.days.includes(d)))
+      return "Weekdays";
+    return r.days.join(", ");
+  }
+  function routineOccursToday(r) {
+    if (!r.days || !r.days.length) return true;
+    const i = (new Date().getDay() + 6) % 7; // 0=Mon..6=Sun
+    return r.days.includes(DAYS[i]);
+  }
+  const fmtClock = (s) => {
+    s = Math.max(0, Math.round(s));
+    return (
+      String(Math.floor(s / 60)).padStart(2, "0") +
+      ":" +
+      String(s % 60).padStart(2, "0")
+    );
+  };
+
+  // ---- Homework Plan inline timers (work a little, then take a break) ----
+  const HW = { t: {} }; // tid -> { remaining, total, running, handle }
+  function hwPaint(tid) {
+    const el = document.getElementById("hwt-" + tid);
+    if (!el) return;
+    const t = HW.t[tid];
+    el.textContent = fmtClock(t ? t.remaining : 0);
+    el.classList.toggle("running", !!(t && t.running));
+    el.classList.toggle("paused", !!(t && !t.running && t.remaining > 0));
+  }
+  function hwTick(tid) {
+    const t = HW.t[tid];
+    if (!t) return;
+    t.remaining -= 1;
+    if (t.remaining <= 0) {
+      t.remaining = 0;
+      hwPauseTimer(tid);
+      hwPaint(tid);
+      hwDone(tid);
+    } else hwPaint(tid);
+  }
+  function hwStart(tid, mins) {
+    const total = (Number(mins) || 5) * 60;
+    if (HW.t[tid] && HW.t[tid].handle) clearInterval(HW.t[tid].handle);
+    HW.t[tid] = { remaining: total, total, running: true, handle: null };
+    HW.t[tid].handle = setInterval(() => hwTick(tid), 1000);
+    hwPaint(tid);
+  }
+  function hwPauseTimer(tid) {
+    const t = HW.t[tid];
+    if (!t) return;
+    if (t.handle) clearInterval(t.handle);
+    t.handle = null;
+    t.running = false;
+    hwPaint(tid);
+  }
+  function hwResume(tid) {
+    const t = HW.t[tid];
+    if (!t || t.running || t.remaining <= 0) return;
+    t.running = true;
+    t.handle = setInterval(() => hwTick(tid), 1000);
+    hwPaint(tid);
+  }
+  function hwToggle(tid) {
+    const t = HW.t[tid];
+    if (t && t.running) hwPauseTimer(tid);
+    else hwResume(tid);
+  }
+  function hwReset(tid) {
+    const t = HW.t[tid];
+    if (t && t.handle) clearInterval(t.handle);
+    delete HW.t[tid];
+    hwPaint(tid);
+  }
+  function hwDone() {
+    try {
+      if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+    } catch {}
+    toast("⏰ Time's up — great work!");
+    triggerConfetti();
+  }
+  function hwTimerCell(tid, presets) {
+    const cur = HW.t[tid];
+    return (
+      '<div class="hw-timer"><div class="hw-time' +
+      (cur && cur.running ? " running" : "") +
+      '" id="hwt-' +
+      tid +
+      '">' +
+      fmtClock(cur ? cur.remaining : 0) +
+      '</div><div class="hw-chips">' +
+      presets
+        .map(
+          (m) =>
+            '<button class="btn sm" data-act="hw-start" data-id="' +
+            tid +
+            '" data-arg="' +
+            m +
+            '">' +
+            m +
+            "m</button>",
+        )
+        .join("") +
+      '<button class="btn sm" data-act="hw-custom" data-id="' +
+      tid +
+      '" aria-label="Choose your own time">✏️</button>' +
+      '<button class="btn sm" data-act="hw-toggle" data-id="' +
+      tid +
+      '" aria-label="Pause or resume">⏯</button>' +
+      '<button class="btn sm" data-act="hw-reset" data-id="' +
+      tid +
+      '" aria-label="Reset">↺</button></div></div>'
+    );
+  }
+
+  // ---- Calming content ----
+  const CALM_PHRASES = [
+    "This feeling will pass. I just have to breathe.",
+    "I can do hard things, one small step at a time.",
+    "Right now, I am safe. Right now, I am okay.",
+    "I don't have to be perfect. I just have to start.",
+    "My brain is allowed to take a break.",
+    "Slow breath in… slow breath out. I've got this.",
+    "One thing at a time. That's all I need to do.",
+    "Mistakes help me learn. They don't make me less.",
+    "I am calm. I am steady. I am ready.",
+    "It's okay to pause. Resting is part of working.",
+  ];
+  let calmIdx = 0;
+  // Guided breathing balloon: tap to start an in / hold / out cycle.
+  let breatheOn = false;
+  let breatheTimer = null;
+  const BREATHE_STEPS = [
+    ["Breathe in…", 4000, "in"],
+    ["Hold", 2000, "hold"],
+    ["Breathe out…", 4000, "out"],
+  ];
+  function breatheStop() {
+    breatheOn = false;
+    if (breatheTimer) {
+      clearTimeout(breatheTimer);
+      breatheTimer = null;
+    }
+    const b = document.getElementById("breatheBubble");
+    if (b) b.classList.remove("in", "hold", "out", "breathing");
+    const p = document.getElementById("breathePhase");
+    if (p) p.textContent = "Tap to start";
+  }
+  function breatheRun(i) {
+    if (!breatheOn) return;
+    const b = document.getElementById("breatheBubble");
+    const p = document.getElementById("breathePhase");
+    if (!b || !p) {
+      breatheStop();
+      return;
+    }
+    const [label, ms, cls] = BREATHE_STEPS[i % BREATHE_STEPS.length];
+    b.classList.remove("in", "hold", "out");
+    b.classList.add("breathing", cls);
+    p.textContent = label;
+    breatheTimer = setTimeout(() => breatheRun(i + 1), ms);
+  }
+
+  // ---- Daily goal suggestions (the visible set rotates each week) ----
+  const GOAL_BANK = [
+    "Finish my math homework before dinner",
+    "Turn in one assignment I've been putting off",
+    "Read for 20 minutes",
+    "Ask a teacher one question I'm unsure about",
+    "Pack my bag tonight so the morning is easy",
+    "Start my biggest assignment first",
+    "Study my notes for 15 minutes",
+    "Write down every assignment in my planner",
+    "Take a real break after I focus",
+    "Do my work without my phone nearby",
+    "Check my grades and pick one to improve",
+    "Break a big task into small steps",
+    "Finish one worksheet completely",
+    "Email a teacher I owe a message",
+    "Organize my backpack and folders",
+    "Review what's due this week",
+    "Spend 25 focused minutes on reading",
+    "Get one assignment fully done and checked",
+    "Plan tomorrow before I go to bed",
+    "Practice the hardest problem until it clicks",
+    "Clean up my workspace before I start",
+    "Ask for help instead of giving up",
+    "Drink water and stretch between tasks",
+    "Be proud of finishing, even if it's not perfect",
+  ];
+  function weekIndex() {
+    const d = startOfToday();
+    const jan1 = new Date(d.getFullYear(), 0, 1);
+    return d.getFullYear() * 53 + Math.floor((d - jan1) / 604800000);
+  }
+  function goalSuggestions() {
+    const wk = weekIndex();
+    const n = GOAL_BANK.length;
+    const out = [];
+    for (let i = 0; i < 6; i++) out.push(GOAL_BANK[(wk * 6 + i) % n]);
+    return out;
+  }
+
+  // ---- AI Support (Gemini) chat, runtime-only (no PII persisted) ----
+  let AI_CHAT = [];
+  let aiBusy = false;
+  let aiImage = null; // { dataUrl, mime, base64, name }
+  const AI_PROMPT_GROUPS = [
+    ["I'm stuck", ["Help me start my homework", "Break this into small steps", "Give me a hint, not the answer"]],
+    ["Explain it", ["Explain this in a simpler way", "Give me an example", "What does this word mean?"]],
+    ["Check my work", ["Check my thinking", "Did I do this right?", "How can I make this better?"]],
+    ["Feelings", ["I feel overwhelmed", "Help me focus"]],
+  ];
+
   const VIEWS = {
     home() {
       const open = openTasks();
@@ -2622,7 +2882,6 @@
         glance: glanceCard(),
         calendar: calendarCard(),
         todos: todoCard(),
-        reminders: remindersCard(),
         assignments: assignmentListCard(),
         routine: routineCard(routine),
         momentum: momentumCard(),
@@ -2677,7 +2936,7 @@
               ${arrangeMode ? `<span class="arrange-hint" role="status">Drag any card to move it, then tap <b>Done</b>.</span>` : ""}
             </div>`
           : "";
-      return `${welcomeBanner}${checkinBanner()}${captureBanner()}${arrangeBar}<div class="home-grid${arrangeMode ? " arranging" : ""}">${order.map((k) => map[k] || "").join("")}${arrangeMode ? "" : customizeTile}</div>${reflectionCardHTML()}`;
+      return `${welcomeBanner}${checkinBanner()}${captureBanner()}${arrangeBar}<div class="home-grid${arrangeMode ? " arranging" : ""}">${order.map((k) => map[k] || "").join("")}${arrangeMode ? "" : customizeTile}</div>`;
     },
 
     calendar() {
@@ -2717,8 +2976,18 @@
         ${card(
           "goal",
           "🌟 My one goal today",
-          "Pick the single thing that matters most.",
-          `<div class="field"><input id="goalInput" placeholder="Example: Finish my math worksheet" value="${esc(goalToday)}"></div>
+          "Pick a suggestion or write your own.",
+          `<div class="field"><label>Choose a goal</label><select id="goalSelect">
+             <option value="">— Pick a suggestion —</option>
+             ${goalSuggestions()
+               .map(
+                 (g) =>
+                   `<option value="${esc(g)}" ${goalToday === g ? "selected" : ""}>${esc(g)}</option>`,
+               )
+               .join("")}
+             <option value="__custom__">✏️ Write my own…</option>
+           </select></div>
+           <div class="field"><label>My goal</label><input id="goalInput" placeholder="Example: Finish my math worksheet" value="${esc(goalToday)}"></div>
            <button class="btn primary" data-act="save-goal">Save goal</button>`,
         )}
         ${totalMin ? `<div class="note">⏱ Today's work is about <b>${totalMin} minutes</b> total. That's ${Math.ceil(totalMin / state.settings.defaultFocusMin)} focus session${Math.ceil(totalMin / state.settings.defaultFocusMin) === 1 ? "" : "s"}.</div>` : ""}
@@ -2801,7 +3070,7 @@
             return card(
               "routine-" + r.id,
               `${r.emoji || "🔁"} ${r.name}`,
-              `${done.length}/${r.items.length} done today`,
+              `${done.length}/${r.items.length} done today · 🔁 ${routineDaysLabel(r)}`,
               `<div class="bar" aria-hidden="true"><span style="width:${pct}%"></span></div>
                <ul class="steps">${r.items
                  .map(
@@ -2952,6 +3221,154 @@
         <p class="view-intro">Quick nudges for things to remember — bring something, ask a teacher, sign a form.</p>
         ${open.length ? `<div class="section-title">To remember (${open.length})</div>${open.map(row).join("")}` : emptyState("🔔", "No reminders yet. Add one above.")}
         ${done.length ? `<div class="section-title">✓ Done for today (${done.length})</div>${done.map(row).join("")}<button class="btn sm" data-act="clear-done-reminders" style="margin-top:8px">Clear finished</button>` : ""}`
+      );
+    },
+
+    homework() {
+      const open = sortByUrgency(openTasks());
+      const intro =
+        '<p class="view-intro">Do one assignment, then take a break. Tap a number to start a timer. 💪</p>';
+      if (!open.length) {
+        return (
+          '<div class="view-head"><h2 class="view-title">📋 Homework Plan</h2><button class="btn primary" data-act="quick-add">＋ Add assignment</button></div>' +
+          intro +
+          emptyState(
+            "🎉",
+            "No assignments yet. Add one and a study plan builds itself here.",
+          ) +
+          '<div class="hw-row break"><div class="hw-main"><span class="hw-emoji">🌿</span><div><b>Brain break</b><div class="meta">Stretch, water, breathe.</div></div></div>' +
+          hwTimerCell("break-warmup", [3, 5, 10]) +
+          "</div>"
+        );
+      }
+      const rows = open
+        .map((a) => {
+          const c = cls(a.classId);
+          const n = daysUntil(a.due);
+          const meta =
+            (c.emoji || "📚") +
+            " " +
+            esc(c.name) +
+            (a.due ? " · " + esc(dueLabel(a.due, a.dueTime)) : "");
+          const work =
+            '<div class="hw-row work ' +
+            (n !== null && n < 0 ? "overdue" : "") +
+            '"><div class="hw-main"><span class="hw-emoji">📘</span><div><b>' +
+            esc(a.title) +
+            '</b><div class="meta">' +
+            meta +
+            "</div></div></div>" +
+            hwTimerCell(a.id, [10, 15, 20, 25]) +
+            "</div>";
+          const brk =
+            '<div class="hw-row break"><div class="hw-main"><span class="hw-emoji">🌿</span><div><b>Break</b><div class="meta">Rest your brain, then keep going.</div></div></div>' +
+            hwTimerCell("break-" + a.id, [3, 5, 10]) +
+            "</div>";
+          return work + brk;
+        })
+        .join("");
+      return (
+        '<div class="view-head"><h2 class="view-title">📋 Homework Plan</h2><button class="btn primary" data-act="quick-add">＋ Add</button></div>' +
+        intro +
+        '<div class="hw-legend"><span>📘 Assignment</span><span>🌿 Break</span><span>⏱ Tap a number to start</span></div>' +
+        rows
+      );
+    },
+
+    calming() {
+      const phrase = CALM_PHRASES[calmIdx % CALM_PHRASES.length];
+      return (
+        '<div class="view-head"><h2 class="view-title">🧘 Calming</h2></div>' +
+        '<p class="view-intro">Feeling stressed or stuck? Take a minute here. You\'re okay.</p>' +
+        '<button type="button" class="card calm-phrase" data-act="calm-next" aria-label="Show another calming phrase"><span class="calm-quote">“' +
+        esc(phrase) +
+        '”</span><span class="calm-tap">Tap for another →</span></button>' +
+        card(
+          "calm-breathe",
+          "🫧 Balloon breathing",
+          "Follow the circle.",
+          '<div class="breathe-wrap"><button type="button" class="breathe-bubble" data-act="breathe-toggle" id="breatheBubble" aria-label="Start or stop the breathing exercise"><span id="breathePhase">Tap to start</span></button></div><p class="muted" style="text-align:center;margin:12px 0 0">Tap the balloon. Breathe in as it grows, hold, then out as it shrinks.</p>',
+        ) +
+        card(
+          "calm-ground",
+          "🖐 5-4-3-2-1 grounding",
+          "Notice what's around you.",
+          '<ul class="ground-list"><li><b>5</b> things you can see 👀</li><li><b>4</b> things you can touch ✋</li><li><b>3</b> things you can hear 👂</li><li><b>2</b> things you can smell 👃</li><li><b>1</b> slow, deep breath 😮‍💨</li></ul>',
+        ) +
+        card(
+          "calm-reset",
+          "🌟 Quick resets",
+          "Pick one and do it right now.",
+          '<ul class="ground-list"><li>Roll your shoulders back 5 times.</li><li>Press your feet into the floor and count to 10.</li><li>Get a sip of water. 💧</li><li>Look out a window for 20 seconds.</li></ul>',
+        )
+      );
+    },
+
+    ai() {
+      const msgs = AI_CHAT.length
+        ? AI_CHAT.map(
+            (m) =>
+              '<div class="ai-msg ' +
+              (m.role === "user" ? "me" : "bot") +
+              '">' +
+              (m.role === "user" ? "" : '<span class="ai-ic">🤖</span>') +
+              '<span class="ai-bubble">' +
+              (m.image
+                ? '<img class="ai-img" src="' + m.image + '" alt="attached picture">'
+                : "") +
+              esc(m.text) +
+              "</span></div>",
+          ).join("")
+        : '<div class="ai-empty">' +
+          emptyState(
+            "🤖",
+            "Hi! I'm your homework helper. Ask me a question, tap a button below, or add a picture of your work.",
+          ) +
+          "</div>";
+      const chipGroups = AI_PROMPT_GROUPS.map(
+        ([title, items]) =>
+          '<div class="ai-chip-group"><span class="ai-chip-title">' +
+          esc(title) +
+          "</span>" +
+          items
+            .map(
+              (c) =>
+                '<button class="btn sm" data-act="ai-suggest" data-arg="' +
+                esc(c) +
+                '">' +
+                esc(c) +
+                "</button>",
+            )
+            .join("") +
+          "</div>",
+      ).join("");
+      return (
+        '<div class="view-head"><h2 class="view-title">🤖 AI Support</h2>' +
+        (AI_CHAT.length
+          ? '<button class="btn sm" data-act="ai-clear">Clear</button>'
+          : "") +
+        "</div>" +
+        '<p class="view-intro">A friendly helper for homework. Tap a button, type a question, or add a picture of your work — it gives hints, not just answers.</p>' +
+        '<div class="ai-scroll" id="aiScroll">' +
+        msgs +
+        (aiBusy
+          ? '<div class="ai-msg bot"><span class="ai-ic">🤖</span><span class="ai-bubble typing">Thinking…</span></div>'
+          : "") +
+        "</div>" +
+        '<div class="ai-chips">' +
+        chipGroups +
+        "</div>" +
+        (aiImage
+          ? '<div class="ai-attached"><img src="' +
+            aiImage.dataUrl +
+            '" alt="picture to send"><button class="btn sm" data-act="ai-remove-image">✕ Remove picture</button></div>'
+          : "") +
+        '<div class="ai-inputbar"><button class="btn ai-attach-btn" data-act="ai-attach" aria-label="Add a picture" title="Add a picture">📷</button><input id="aiInput" placeholder="Ask for help…" aria-label="Ask the AI for help" ' +
+        (aiBusy ? "disabled" : "") +
+        '><button class="btn primary" data-act="ai-send" ' +
+        (aiBusy ? "disabled" : "") +
+        ">Send</button></div>" +
+        '<input type="file" id="aiImageInput" accept="image/*" hidden>'
       );
     },
 
@@ -3222,12 +3639,14 @@ Due May 31"></textarea>
           </div>
           <p class="sub" style="margin-top:10px"><b>Link another device:</b> paste this code there (Backup &amp; sync → “Enter a code”), or send yourself the <b>link</b> and open it on the other device — it links automatically.</p>`;
       const offBody = `
-          <p class="sub" style="margin-top:0">Turn this on to work on your phone and laptop and see the same tasks everywhere — no account, no email, no password to remember. ${cloud.available() ? "" : "<b>Heads up:</b> this site isn't set up for cloud sync yet, so your code is saved and ready, but data stays on this device until it is."}</p>
-          <div class="row">
-            <button class="btn primary" data-act="enable-sync">✨ Turn on sync</button>
-            <button class="btn" data-act="enter-code">⌨️ Enter a code</button>
+          <p class="sub" style="margin-top:0">See the same tasks on your phone, laptop, and Chromebook — no account, no password. ${cloud.available() ? "" : "<b>Heads up:</b> cloud sync isn't enabled on this site yet, so your code is saved and ready, but data stays on this device until it is."}</p>
+          <div class="sync-cta">
+            <button class="btn primary block" data-act="enter-code">⌨️ Enter my code &amp; load my data</button>
+            <p class="sub" style="margin:8px 0 0;text-align:center">Already use Focus School somewhere else? Type your code and everything loads automatically.</p>
           </div>
-          <p class="sub" style="margin-top:10px">First device? Tap <b>Turn on sync</b> — we'll make a strong code for you. Adding a second device? Tap <b>Enter a code</b> and paste the code from your first device.</p>`;
+          <div class="row" style="margin-top:12px;justify-content:center">
+            <button class="btn" data-act="enable-sync">✨ First time here? Make me a code</button>
+          </div>`;
       return (
         backHeader("Backup & sync", "more") +
         `<p class="view-intro">Your work is always saved on this device. Choose how you want to back it up or carry it to another device.</p>` +
@@ -3236,16 +3655,11 @@ Due May 31"></textarea>
           <div class="head"><div><h3>☁️ Sync across your devices</h3><p class="sub">Optional — work on your phone and laptop and see the same tasks everywhere.</p></div>${pill}</div>
           ${s.enabled ? onBody : offBody}
         </section>` +
-        card(
-          "file",
-          "💾 Save a backup file",
-          "Always works, even offline.",
-          `
-          <p class="sub" style="margin-top:0">Download one file with everything in the app. Keep it somewhere safe, or open it on another device to load your data.</p>
-          <div class="row"><button class="btn primary" data-act="export">⬇️ Download backup</button><button class="btn" data-act="import">⬆️ Load from file</button></div>
+        `<details class="card" data-card="file"><summary style="cursor:pointer;font-weight:900">💾 Advanced: save a backup file</summary>
+          <p class="sub" style="margin-top:8px">Most people just use sync above. This downloads one file with everything, as an extra safety copy.</p>
+          <div class="row"><button class="btn" data-act="export">⬇️ Download backup</button><button class="btn" data-act="import">⬆️ Load from file</button></div>
           <input type="file" id="importFile" accept="application/json,.json" hidden>
-        `,
-        ) +
+        </details>` +
         card(
           "diagnostics",
           "🛠️ System Diagnostics & Health",
@@ -3336,9 +3750,9 @@ Due May 31"></textarea>
     const h = new Date().getHours();
     const want =
       h < 11 ? "Morning Launch" : h < 18 ? "After-School Reset" : "Shutdown";
-    return (
-      state.routines.find((r) => r.name === want) || state.routines[0] || null
-    );
+    const todayList = state.routines.filter(routineOccursToday);
+    const pool = todayList.length ? todayList : state.routines;
+    return pool.find((r) => r.name === want) || pool[0] || null;
   }
 
   function updateGardenPlantStage() {
@@ -3921,6 +4335,10 @@ Due May 31"></textarea>
       <div class="g2 grid">
         <div class="field"><label>Routine name</label><input id="rName" value="${esc(r.name || "")}" placeholder="Morning Launch"></div>
         <div class="field"><label>Emoji</label><input id="rEmoji" value="${esc(r.emoji || "🔁")}" maxlength="4"></div>
+      </div>
+      <div class="field"><label>Repeat on</label>
+        <div class="day-toggle" id="rDays">${DAYS.map((d) => `<button type="button" class="btn sm day-btn ${(r.days || []).includes(d) ? "on" : ""}" data-act="toggle-routine-day" data-arg="${d}" aria-pressed="${(r.days || []).includes(d)}">${d[0]}</button>`).join("")}</div>
+        <small class="muted">No days picked = every day.</small>
       </div>
       <label style="font-size:.74rem;font-weight:900;color:var(--muted);text-transform:uppercase">Steps</label>
       <ul class="steps" id="rSteps">${(r.items || [])
@@ -6064,9 +6482,14 @@ Due May 31"></textarea>
         id: li.dataset.iid || uid("i"),
         text: li.querySelector(".steptext")?.textContent || "",
       }));
-      const r = existing || { id: uid("r"), items: [] };
+      const days = $$("#rDays [data-arg]")
+        .filter((b) => b.getAttribute("aria-pressed") === "true")
+        .map((b) => b.dataset.arg)
+        .filter((d) => DAYS.includes(d));
+      const r = existing || { id: uid("r"), items: [], days: [] };
       r.name = $("#rName").value.trim() || "Routine";
       r.emoji = $("#rEmoji").value.trim() || "🔁";
+      r.days = days;
       r.items = items.length ? items : r.items;
       r.updatedAt = Date.now();
       if (!existing) state.routines.push(r);
@@ -6124,6 +6547,128 @@ Due May 31"></textarea>
       render();
     },
 
+    // ---- Homework Plan timers ----
+    "hw-start": (id, arg) => hwStart(id, Number(arg) || 5),
+    "hw-toggle": (id) => hwToggle(id),
+    "hw-reset": (id) => hwReset(id),
+    "hw-custom": (id) => {
+      const v = prompt("How many minutes for this timer?", "15");
+      if (v === null) return;
+      const n = Math.max(1, Math.min(180, Math.round(Number(v) || 0)));
+      if (n) hwStart(id, n);
+    },
+    // ---- Calming ----
+    "calm-next": () => {
+      calmIdx = (calmIdx + 1) % CALM_PHRASES.length;
+      render();
+    },
+    "breathe-toggle": () => {
+      if (breatheOn) {
+        breatheStop();
+        return;
+      }
+      breatheOn = true;
+      breatheRun(0);
+    },
+    // ---- Routine day-of-week toggles (in the routine editor) ----
+    "toggle-routine-day": (id, arg, ev) => {
+      const b = ev.target.closest("[data-arg]");
+      if (!b) return;
+      const on = b.getAttribute("aria-pressed") === "true";
+      b.setAttribute("aria-pressed", on ? "false" : "true");
+      b.classList.toggle("on", !on);
+    },
+    // ---- Mark a timed to-do done from the glance strip ----
+    "todo-quickdone": (id) => {
+      const t = state.todos.find((x) => x.id === id);
+      if (!t) return;
+      if (isTodoRecurring(t)) t.lastDone = todayKey();
+      else t.done = true;
+      addPoints(1);
+      bumpActivity("tasks");
+      triggerConfetti();
+      save();
+      render();
+      toast("Done ✓");
+    },
+    // ---- AI Support (Gemini via server proxy /api/ai) ----
+    "ai-suggest": (id, arg) => {
+      const i = $("#aiInput");
+      if (i) {
+        i.value = arg || "";
+        i.focus();
+      }
+    },
+    "ai-clear": () => {
+      AI_CHAT = [];
+      aiImage = null;
+      render();
+    },
+    "ai-attach": () => {
+      const f = document.getElementById("aiImageInput");
+      if (f) f.click();
+    },
+    "ai-remove-image": () => {
+      aiImage = null;
+      render();
+    },
+    "ai-send": async () => {
+      const inp = $("#aiInput");
+      const text = (inp?.value || "").trim();
+      if ((!text && !aiImage) || aiBusy) return;
+      const sentImg = aiImage;
+      AI_CHAT.push({
+        role: "user",
+        text: text || "(picture)",
+        image: sentImg ? sentImg.dataUrl : "",
+      });
+      aiBusy = true;
+      aiImage = null;
+      if (inp) inp.value = "";
+      render();
+      try {
+        const res = await fetch("/api/ai", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            messages: AI_CHAT.slice(-12).map((m) => ({
+              role: m.role,
+              text: m.text,
+            })),
+            image: sentImg ? { mime: sentImg.mime, data: sentImg.base64 } : null,
+            name: state.settings.studentName || "",
+          }),
+        });
+        if (!res.ok) {
+          const j = await res.json().catch(() => ({}));
+          AI_CHAT.push({
+            role: "model",
+            text: j.offline
+              ? "I'm not set up yet — ask an adult to add the AI key. 🛠️"
+              : "Sorry, I couldn't answer right now. Try again in a moment.",
+          });
+        } else {
+          const j = await res.json();
+          AI_CHAT.push({
+            role: "model",
+            text: (j.reply || "Hmm, I didn't catch that.").slice(0, 4000),
+          });
+        }
+      } catch {
+        AI_CHAT.push({
+          role: "model",
+          text: "I can't reach the internet right now. Check your connection and try again. 📶",
+        });
+      }
+      aiBusy = false;
+      render();
+      setTimeout(() => {
+        const m = $("#aiScroll");
+        if (m) m.scrollTop = m.scrollHeight;
+        const i = $("#aiInput");
+        if (i) i.focus();
+      }, 30);
+    },
     // ---- To-dos ----
     "add-todo": () => {
       const inp = $("#todoInput");
@@ -6318,6 +6863,16 @@ ${name}`;
       render();
     },
     // Second device: paste the code from the first device to link.
+    "sync-fab": async () => {
+      if (state.settings.sync.enabled) {
+        toast("Syncing… ⬇️");
+        await cloud.pull({ forceMerge: true });
+        render();
+        toast("Up to date ✅");
+      } else {
+        ACTIONS["enter-code"]();
+      }
+    },
     "enter-code": () => {
       openModal(
         "Enter your sync code",
@@ -6349,8 +6904,10 @@ ${name}`;
         } catch {
           return toast("Network error resolving pairing code ❌");
         }
-      } else if (code.length < 12) {
-        return toast("That code looks too short — enter a 6-digit number or copy the full code.");
+      } else {
+        // Custom codes can be any length now — normalize to the saved format.
+        code = code.toLowerCase().replace(/[^a-z0-9-]/g, "");
+        if (!code) return toast("Enter your code first.");
       }
       state.settings.sync.code = code;
       state.settings.sync.enabled = true;
@@ -6371,7 +6928,7 @@ ${name}`;
         <div class="field">
           <label>Memorable Sync Code</label>
           <input id="customSyncCodeInput" value="${esc(state.settings.sync.code)}" placeholder="e.g. noam-focus-2026" autocomplete="off" autocapitalize="off" style="text-align: center; font-size: 1.1rem;">
-          <small class="muted" style="display:block; margin-top: 4px;">Must be at least 10 characters long. Only letters, numbers, and dashes.</small>
+          <small class="muted" style="display:block; margin-top: 4px;">Any length works — short and memorable is fine. Letters, numbers, and dashes.</small>
           <small class="muted" style="display:block; margin-top: 2px; color: var(--accent);">Tip: Use your name/school name to keep it unique!</small>
         </div>
         <div class="row">
@@ -6384,8 +6941,8 @@ ${name}`;
     "save-custom-sync-code": async () => {
       const inputVal = ($("#customSyncCodeInput")?.value || "").trim();
       const cleaned = inputVal.toLowerCase().replace(/[^a-z0-9-]/g, "");
-      if (cleaned.length < 10) {
-        return toast("Sync code must be at least 10 characters long (letters, numbers, dashes) ❌");
+      if (!cleaned) {
+        return toast("Type a sync code (letters, numbers, or dashes) ❌");
       }
       state.settings.sync.code = cleaned;
       state.settings.sync.enabled = true;
@@ -6547,13 +7104,11 @@ ${name}`;
     "gmail-make-reminder": (id) => {
       const m = (state.gmail?.messages || []).find((x) => x.id === id);
       if (!m) return;
-      const r = normalizeReminder({
-        text: ("Reply / handle: " + (m.subject || "(no subject)")).slice(
-          0,
-          200,
-        ),
+      const r = normalizeTodo({
+        text: ("Reply / handle: " + (m.subject || "(no subject)")).slice(0, 200),
+        date: todayKey(),
       });
-      state.reminders.push(r);
+      state.todos.push(r);
       save();
       render();
       toast("Made a reminder from this email ⏰");
@@ -6951,12 +7506,37 @@ ${name}`;
         ev.preventDefault();
         ACTIONS["quick-reminder"]();
       }
+      if (ev.key === "Enter" && ev.target.id === "aiInput") {
+        ev.preventDefault();
+        ACTIONS["ai-send"]();
+      }
     });
 
     // file import and garden change
     document.addEventListener("change", (ev) => {
       if (ev.target.id === "importFile" && ev.target.files[0]) {
         importBackup(ev.target.files[0]);
+      } else if (ev.target.id === "aiImageInput" && ev.target.files[0]) {
+        const file = ev.target.files[0];
+        if (file.size > 5 * 1024 * 1024) {
+          toast("That picture is too big (max 5 MB).");
+          ev.target.value = "";
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = () => {
+          const dataUrl = String(reader.result || "");
+          const comma = dataUrl.indexOf(",");
+          aiImage = {
+            dataUrl,
+            mime: file.type || "image/jpeg",
+            base64: comma >= 0 ? dataUrl.slice(comma + 1) : "",
+            name: file.name || "picture",
+          };
+          render();
+        };
+        reader.readAsDataURL(file);
+        ev.target.value = "";
       } else if (ev.target.dataset.act === "change-plant-type") {
         if (state.garden) {
           state.garden.plantType = ev.target.value;
@@ -6973,6 +7553,23 @@ ${name}`;
           if (typeof scheduleReminders === "function") scheduleReminders();
           toast("Time reminder updated ⏰");
         }
+      } else if (ev.target.classList.contains("todo-repeat-picker")) {
+        const id = ev.target.dataset.id;
+        const td = state.todos.find((t) => t.id === id);
+        if (td) {
+          td.repeat = TODO_REPEATS.includes(ev.target.value)
+            ? ev.target.value
+            : "none";
+          td.lastDone = "";
+          save();
+          render();
+          toast(td.repeat === "none" ? "Repeat off" : "Repeat set 🔁");
+        }
+      } else if (ev.target.id === "goalSelect") {
+        const v = ev.target.value;
+        const inp = $("#goalInput");
+        if (inp && v && v !== "__custom__") inp.value = v;
+        if (v === "__custom__" && inp) inp.focus();
       }
     });
 

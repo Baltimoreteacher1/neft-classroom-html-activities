@@ -1,7 +1,7 @@
 /* Focus School — service worker.
  * Offline-first app shell: precache core files, serve them cache-first,
  * fall back to the cached app for navigations when offline. */
-const VERSION = "focus-school-v4";
+const VERSION = "focus-school-v5";
 const CORE = [
   "./",
   "index.html",
@@ -13,8 +13,6 @@ const CORE = [
   "icons/icon-512.png",
   "icons/icon-maskable-512.png",
   "icons/apple-touch-icon.png",
-  "shared/save-resume/save-resume-styles.css",
-  "shared/save-resume/save-resume-engine.js",
   "assets/math-workbench-launcher.js",
 ];
 
