@@ -1938,6 +1938,104 @@ function recalcAll() {
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
+        <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
+    <script type="application/json" id="pk-research">
+      {
+        "icon": "🔎",
+        "title": "Research Lab — Find the Real Better Buy",
+        "intro": "Smart shoppers compare unit prices, not sticker prices. Look up real prices and sizes, then compute who really wins.",
+        "brief": {
+          "theme": "field",
+          "title": "🧾 Your Research Mission",
+          "hook": "Find <b>real prices and sizes</b>, then use unit price to find the true better buy.",
+          "steps": [
+            "Open a link (new tab — you keep your project).",
+            "Record real prices and sizes in Field Notes.",
+            "Compute unit prices in the math problems.",
+            "Check off the Investigation Checklist."
+          ]
+        },
+        "fieldNotes": {
+          "title": "Field Notes — Record What You Find",
+          "intro": "Jot the exact number or rule you find. You'll reuse these in the math below.",
+          "fields": [
+            {
+              "label": "How to find a unit price",
+              "source": "Math is Fun",
+              "placeholder": "price ÷ amount",
+              "hint": "Cost per 1 ounce / item / gram."
+            },
+            {
+              "label": "Product A: price and size",
+              "source": "Any store site / label",
+              "placeholder": "$4.50 for 15 oz",
+              "hint": "Read it off a real label or listing."
+            },
+            {
+              "label": "Product B: price and size",
+              "source": "Any store site / label",
+              "placeholder": "$6.00 for 24 oz",
+              "hint": "Same kind of product, different size."
+            },
+            {
+              "label": "A unit conversion you need",
+              "source": "Math is Fun",
+              "placeholder": "16 oz = 1 lb",
+              "hint": "Match units before comparing."
+            }
+          ]
+        },
+        "mathTasks": [
+          {
+            "title": "1 · Unit price A",
+            "prompt": "Use Field Note 2 and <b>price ÷ size</b> to find Product A's price per unit. Show the division.",
+            "level2": "Round your unit price to the nearest cent."
+          },
+          {
+            "title": "2 · Better buy",
+            "prompt": "Find Product B's unit price, then say which is the better buy and by how much per unit.",
+            "level2": "If you buy enough to get 60 oz, how much do you save by choosing the better buy?"
+          },
+          {
+            "title": "3 · Convert and compare",
+            "prompt": "Use your conversion (Field Note 4) to rewrite one size in different units, then re-check the comparison.",
+            "level2": "Explain why comparing prices without matching units can trick a shopper."
+          }
+        ],
+        "investigationChecklist": [
+          "I recorded how to find a unit price.",
+          "I found two real products with price and size.",
+          "I computed unit price for both.",
+          "I named the better buy with a reason.",
+          "I used a unit conversion.",
+          "I explained why unit price beats sticker price."
+        ],
+        "links": [
+          {
+            "icon": "🏷️",
+            "name": "Math is Fun — Unit Price",
+            "url": "https://www.mathsisfun.com/measure/unit-price.html",
+            "find": "How to compute price per unit and compare.",
+            "look": "divide price by amount"
+          },
+          {
+            "icon": "🔁",
+            "name": "Math is Fun — Unit conversion charts",
+            "url": "https://www.mathsisfun.com/metric-imperial-conversion-charts.html",
+            "find": "Common conversions between units.",
+            "look": "ounces, pounds, grams, liters"
+          },
+          {
+            "icon": "🎓",
+            "name": "Khan Academy — Ratios & rates",
+            "url": "https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-ratios-prop-topic",
+            "find": "Videos + practice on unit rates.",
+            "look": "the 'Comparing rates' lessons"
+          }
+        ],
+        "note": "These sites were picked for class. They open in a new tab so you keep your project. If a page asks you to sign in or buy something, just close it and come back."
+      }
+    </script>
     <script src="/shared/projects/projects-tabs.js" defer></script>
   <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
   <script src="/assets/math-workbench-launcher.js" defer></script>
