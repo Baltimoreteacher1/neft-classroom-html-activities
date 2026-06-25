@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Volume Vault — Crate Packer</title>
     <style>
       * {
@@ -46,9 +46,9 @@
     <link rel="stylesheet" href="/assets/game-fx.css" />
     <!-- gfx-injected:end -->
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
   <body>
     <div id="game"></div>
     <script>
@@ -266,7 +266,7 @@
             .text(
               W / 2,
               330,
-              "Catch falling cubes and pack the crate to its EXACT volume.\nV = length × width × height. Fill every layer — no more, no less!",
+              "Tap or press SPACE to drop a cube and pack the crate to its EXACT volume.\nV = length × width × height. No timer — go at your own pace!",
               {
                 fontFamily: "Segoe UI",
                 fontSize: "20px",
@@ -280,7 +280,7 @@
             .text(
               W / 2,
               440,
-              "← →  or  A / D  to slide the crate    •    Catch cubes to stack layers",
+              "Tap / Click / SPACE / ↑  to drop a cube    •    Pack each layer to fill the crate",
               {
                 fontFamily: "Segoe UI",
                 fontSize: "18px",
@@ -415,7 +415,21 @@
             this._pointerX = p.x; // ADDITIVE: drives backdrop parallax
           });
 
+          // Self-paced placement (teacher preference: no falling/timed catch).
+          // Tap, click, or press SPACE/↑ to drop exactly one cube into the next cell.
+          this.input.on("pointerdown", () => this.placeOne());
+          this.input.keyboard.on("keydown-SPACE", () => this.placeOne());
+          this.input.keyboard.on("keydown-UP", () => this.placeOne());
+
           this.startFloor();
+        }
+
+        // Place a single cube at the student's own pace. No timer, no falling,
+        // no hazards — guarded so you can never overfill past the target volume.
+        placeOne() {
+          if (this.gameOver || this.crateLocked) return;
+          if (this.placed >= this.level.target) return;
+          this.catchCube({ getData: () => false });
         }
 
         // ── ADDITIVE: vertical layer-fill gauge. Frame + animated fill rect +
@@ -950,34 +964,8 @@
             );
           }
 
-          // spawn
-          this.spawnTimer += delta;
-          if (this.spawnTimer > this.spawnEvery && !this.crateLocked) {
-            this.spawnTimer = 0;
-            this.spawnCube();
-          }
-
-          // move falling cubes + collision with crate mouth
-          const mouthL = this.crate.x - this.halfCrate;
-          const mouthR = this.crate.x + this.halfCrate;
-          for (let i = this.fallingCubes.length - 1; i >= 0; i--) {
-            const c = this.fallingCubes[i];
-            c.y += c.vy;
-            c.angle += 1.5;
-            // caught when reaching crate rim within mouth
-            if (c.y >= this.crateY - 50) {
-              if (c.x >= mouthL && c.x <= mouthR && !this.crateLocked) {
-                this.catchCube(c);
-              } else if (!c.getData("bad")) {
-                sfx.miss();
-              }
-              c.destroy();
-              this.fallingCubes.splice(i, 1);
-            } else if (c.y > H + 40) {
-              c.destroy();
-              this.fallingCubes.splice(i, 1);
-            }
-          }
+          // Falling cubes + auto-spawn REMOVED — cubes are now placed on demand
+          // via placeOne() (tap / click / SPACE / ↑). No time pressure, no hazards.
         }
       }
 
@@ -1010,11 +998,16 @@
             })
             .setOrigin(0.5);
           this.add
-            .text(W / 2, 370, "Best: " + (localStorage.getItem(LS_KEY) || "0"), {
-              fontFamily: "Segoe UI",
-              fontSize: "22px",
-              color: "#74c0fc",
-            })
+            .text(
+              W / 2,
+              370,
+              "Best: " + (localStorage.getItem(LS_KEY) || "0"),
+              {
+                fontFamily: "Segoe UI",
+                fontSize: "22px",
+                color: "#74c0fc",
+              },
+            )
             .setOrigin(0.5);
           this.add
             .text(
@@ -1086,8 +1079,8 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+  </body>
 </html>
