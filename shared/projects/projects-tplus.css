@@ -516,3 +516,119 @@ body.pk[data-pk-theme="stats"] {
   --tp-glow1: rgba(71, 85, 105, 0.1);
   --tp-glow2: rgba(217, 119, 6, 0.09);
 }
+
+/* ==========================================================================
+   PREMIUM IDENTITY HERO  (2026-06 redesign)
+   Each unit already declares its own --tp-accent / --tp-accent2 above. The
+   earlier "editorial card" hero rendered every unit as the same pale cream
+   card, so the per-unit palette never showed. This block turns the hero into
+   a BOLD, saturated, per-unit gradient band built straight from those accents
+   — so every project reads as visibly its own thing while one shared engine
+   stays the single source of truth. Cosmetic only; no DOM/route changes.
+   ========================================================================== */
+body.pk .phero {
+  border: none !important;
+  color: #fff !important;
+  background:
+    radial-gradient(
+      680px 320px at 100% -35%,
+      rgba(255, 255, 255, 0.22),
+      transparent 60%
+    ),
+    radial-gradient(
+      520px 300px at -8% 130%,
+      rgba(255, 255, 255, 0.14),
+      transparent 58%
+    ),
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--tp-accent) 80%, #0a1130) 0%,
+      var(--tp-accent) 46%,
+      var(--tp-accent2) 118%
+    ) !important;
+  box-shadow:
+    0 22px 50px -22px color-mix(in srgb, var(--tp-accent) 70%, transparent),
+    var(--tp-shadow) !important;
+}
+/* soft dotted texture for depth */
+body.pk .phero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    rgba(255, 255, 255, 0.18) 1.3px,
+    transparent 1.5px
+  );
+  background-size: 22px 22px;
+  opacity: 0.4;
+  mask-image: linear-gradient(to bottom, #000, transparent 80%);
+  pointer-events: none;
+  z-index: 0;
+}
+/* thin top gloss instead of the multi-color bar */
+body.pk .phero::after {
+  height: 100% !important;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.16),
+    transparent 34%
+  ) !important;
+  pointer-events: none;
+}
+body.pk .phero h1 {
+  color: #fff !important;
+  text-shadow: 0 2px 18px rgba(7, 12, 30, 0.35);
+}
+body.pk .phero p {
+  color: rgba(255, 255, 255, 0.94) !important;
+}
+/* emoji emblem → frosted glass tile */
+body.pk .phero .deco {
+  background: rgba(255, 255, 255, 0.18) !important;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow:
+    0 14px 26px -12px rgba(7, 12, 30, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+  backdrop-filter: blur(4px);
+}
+/* context tags → glass chips */
+body.pk .phero .tag {
+  background: rgba(255, 255, 255, 0.16) !important;
+  border: 1px solid rgba(255, 255, 255, 0.36) !important;
+  color: #fff !important;
+  backdrop-filter: blur(6px);
+}
+body.pk .phero .tag.gold {
+  background: linear-gradient(135deg, #ffd66b, #f6a623) !important;
+  border-color: rgba(255, 255, 255, 0.55) !important;
+  color: #3a2600 !important;
+  box-shadow: 0 6px 14px -6px rgba(246, 166, 35, 0.6) !important;
+}
+/* hero toolbar (Save/Load/Read-aloud/EN-ES/Level) → glass buttons on the band */
+body.pk .phero .toolbar button,
+body.pk .phero .pk-level-toggle button {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.42) !important;
+  color: #fff !important;
+  backdrop-filter: blur(6px);
+  box-shadow: none !important;
+}
+body.pk .phero .toolbar button:hover {
+  background: rgba(255, 255, 255, 0.28) !important;
+}
+body.pk .phero .pk-level-toggle button[aria-pressed="true"],
+body.pk .phero .pk-tts-toggle[aria-pressed="true"] {
+  background: #fff !important;
+  color: color-mix(in srgb, var(--tp-accent) 78%, #11163a) !important;
+  border-color: #fff !important;
+}
+
+/* ---- DECLUTTER: drop the gimmick "🎨 Skin" picker & de-dupe step chrome --- */
+body.pk .pk-theme-selector,
+body.pk #pk-theme-selector {
+  display: none !important;
+}
+/* the tab strip already shows every step — soften the redundant numeric meta */
+body.pk .pk-step-meta {
+  opacity: 0.86;
+}
