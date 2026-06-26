@@ -573,19 +573,68 @@
         <div class="grid2" style="margin-top: 18px">
           <div class="pk-callout">
             <h3>Formula Bank</h3>
-            <p><b>Unit price:</b> total price ÷ number of units</p>
-            <p><b>Better buy:</b> the package with the LOWER unit price</p>
-            <p>
-              <b>Tip amount:</b> bill × (tip% ÷ 100) · <b>Total:</b> bill + tip
-            </p>
-            <p><b>Convert:</b> value × (to-unit / from-unit) — units cancel</p>
-            <p class="pk-lvl2">
-              <b>Stacked deal:</b> price × (1 − disc%) , then compare unit
-              prices
-            </p>
-            <p class="pk-lvl2">
-              <b>Percent decrease:</b> (old − new) ÷ old × 100
-            </p>
+            <ul class="pk-formula">
+              <li>
+                <span class="pk-f-name">Unit price</span>
+                <span class="pk-f-mean"
+                  >How much ONE unit costs. Divide the total price by the number
+                  of units.</span
+                >
+                <span class="pk-eg"
+                  >Example: $4.50 ÷ 3 lbs = $1.50 per pound</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Better buy</span>
+                <span class="pk-f-mean"
+                  >The package with the LOWER unit price is the better deal,
+                  even if the sticker price is bigger.</span
+                >
+                <span class="pk-eg"
+                  >Example: $1.50/lb beats $1.75/lb, so pick $1.50/lb</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Tip (total)</span>
+                <span class="pk-f-mean"
+                  >Add a percent of the bill as a thank-you. Total = bill +
+                  tip.</span
+                >
+                <span class="pk-eg"
+                  >Example: $20 bill, 15% tip = $3, so total = $23</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Convert units</span>
+                <span class="pk-f-mean"
+                  >Multiply by a rate so the old unit cancels and the new unit
+                  is left.</span
+                >
+                <span class="pk-eg"
+                  >Example: 2 ft × (12 in / 1 ft) = 24 inches</span
+                >
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">Stacked deal (challenge)</span>
+                <span class="pk-f-mean"
+                  >Take the discount off first, then find the new unit price
+                  before you compare.</span
+                >
+                <span class="pk-eg"
+                  >Example: $6 for 4 → 25% off = $4.50 → $1.13 per unit</span
+                >
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">Percent decrease (challenge)</span>
+                <span class="pk-f-mean"
+                  >How much smaller the new price is, as a percent of the old
+                  price.</span
+                >
+                <span class="pk-eg"
+                  >Example: $5 → $4 is ($5 − $4) ÷ $5 × 100 = 20% off</span
+                >
+              </li>
+            </ul>
           </div>
           <div class="pk-callout">
             <h3>Sentence Frames</h3>
@@ -874,6 +923,10 @@
             </div>
           </div>
         </div>
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 tip: use easy numbers first. If a 12-pack is $3.60, the unit
+          price is 3.60 ÷ 12 = $0.30 each. The smaller unit price wins.
+        </p>
         <button class="btn" type="button" onclick="calcUnitPrice()">
           Find the better buy
         </button>
@@ -915,6 +968,13 @@
           Check my answer
         </button>
         <div class="pk-fb feedback" id="check-unitAFb"></div>
+        <div class="pk-lvl2" style="margin-top: 16px">
+          <div class="task">
+            <strong>Level 2 extension:</strong> Package A is on sale for 25%
+            off. Recompute its unit price at the sale price. Does the better buy
+            change? Show both unit prices and explain.
+          </div>
+        </div>
 
         <!-- conversion from a real label -->
 
@@ -1234,6 +1294,11 @@
           >Who is the smarter shopper / better buy, and how do you know?</label
         >
         <textarea id="peerReflect" data-save placeholder=""></textarea>
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 tip: the better buy is the one with the LOWER unit price
+          (price ÷ units). Compare the two "price per unit" numbers, not the
+          sticker prices.
+        </p>
       </section>
 
       <!-- ===================== PART 3 — WORLD ===================== -->
@@ -1343,6 +1408,10 @@
           not?</label
         >
         <textarea id="worldReflect" data-save placeholder=""></textarea>
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 tip: to find a tip, multiply the bill by the percent as a
+          decimal (15% → 0.15). A $20 bill at 15% is 0.15 × 20 = $3 tip.
+        </p>
         <div class="pk-lvl2">
           <label class="fld" for="worldHard"
             >Level 2: A $20 bill with an 18% tip — what is the total, and what
@@ -2024,16 +2093,19 @@
       });
 
       function drawConvertSVG() {
-        const val = num("conv-val");
-        const from = $("conv-from").value;
-        const to = $("conv-to").value;
+        let val = num("conv-val");
+        let from = $("conv-from").value;
+        let to = $("conv-to").value;
         const svg = $("phase-svg-1a");
         if (!svg) return;
 
-        if (isNaN(val) || val <= 0 || from === to) {
-          svg.innerHTML =
-            '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter units & values to draw conversion dimensional visual</text>';
-          return;
+        // Show a worked EXAMPLE (5 feet → inches) by default so the card always
+        // has a reference; switches to the student's units once they enter them.
+        const isExample = isNaN(val) || val <= 0 || from === to;
+        if (isExample) {
+          val = 5;
+          from = "feet";
+          to = "inches";
         }
 
         const row = CONV[from];
@@ -2048,7 +2120,8 @@
 
         svg.innerHTML = `
           <text x="250" y="35" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Dimensional Conversion Scale</text>
-          
+          ${isExample ? `<rect x="372" y="16" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · 5 ft</text>` : ""}
+
           <rect x="50" y="70" width="400" height="40" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" rx="6" />
           
           <text x="120" y="95" text-anchor="middle" font-size="14" font-weight="bold" fill="#1e88e5">${val} ${from}</text>
@@ -2064,27 +2137,28 @@
       }
 
       function drawVisualizer() {
-        const ap = num("a-price");
-        const au = num("a-units");
-        const bp = num("b-price");
-        const bu = num("b-units");
+        let ap = num("a-price");
+        let au = num("a-units");
+        let bp = num("b-price");
+        let bu = num("b-units");
         const svg = $("projectVisualizer");
         if (!svg) return;
 
-        if (
+        // Show a worked EXAMPLE (Package A: $3.60 / 12 vs B: $5.25 / 20) by
+        // default so the card always has a reference; switches to the student's
+        // real packages once they enter them.
+        const isExample =
           isNaN(ap) ||
           isNaN(au) ||
           au <= 0 ||
           isNaN(bp) ||
           isNaN(bu) ||
-          bu <= 0
-        ) {
-          svg.innerHTML = `
-            <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
-              <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter prices and unit sizes to visualize the better buy</text>
-            </svg>
-          `;
-          return;
+          bu <= 0;
+        if (isExample) {
+          ap = 3.6;
+          au = 12;
+          bp = 5.25;
+          bu = 20;
         }
 
         const rateA = ap / au;
@@ -2099,7 +2173,8 @@
         svg.innerHTML = `
           <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
             <text x="250" y="35" text-anchor="middle" font-size="16" font-weight="bold" fill="#0f2b3c">Better Buy Unit Price Comparison</text>
-            
+            ${isExample ? `<rect x="372" y="16" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example buy</text>` : ""}
+
             <g transform="translate(100, 50)">
               <rect x="0" y="${120 - heightA}" width="80" height="${heightA}" fill="${better === "A" ? "rgba(14, 138, 125, 0.2)" : "rgba(244, 67, 54, 0.1)"}" stroke="${better === "A" ? "#0e8a7d" : "#f44336"}" stroke-width="2" rx="4" />
               <text x="40" y="${110 - heightA}" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Package A</text>

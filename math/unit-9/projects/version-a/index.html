@@ -620,14 +620,55 @@
         <div class="grid2" style="margin-top: 18px">
           <div class="pk-callout">
             <h3>Formula Bank</h3>
-            <p><b>The equation:</b> y = kx</p>
-            <p><b>Find y when you know x:</b> y = k × x</p>
-            <p><b>Find x when you know y:</b> x = y ÷ k</p>
-            <p><b>Steepness of the line:</b> = k (bigger k → steeper)</p>
-            <p class="pk-lvl2">
-              <b>Level 2 — with a one-time fee:</b> y = kx + b (no longer
-              proportional)
-            </p>
+            <ul class="pk-formula">
+              <li>
+                <span class="pk-f-name">y = kx (the rule)</span>
+                <span class="pk-f-mean"
+                  >Multiply your growth rate <b>k</b> by the week number
+                  <b>x</b> to get the total <b>y</b>.</span
+                >
+                <span class="pk-eg"
+                  >Example: k = 25, week 4 → 25 × 4 = 100 subscribers</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Find y from a week</span>
+                <span class="pk-f-mean"
+                  >Put the week number in for x, then multiply by k.</span
+                >
+                <span class="pk-eg"
+                  >Example: 25 × 6 = 150 subscribers by week 6</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Find the week from a goal</span>
+                <span class="pk-f-mean"
+                  >Divide your goal y by your rate k: x = y ÷ k.</span
+                >
+                <span class="pk-eg"
+                  >Example: 200 ÷ 25 = week 8 to reach 200</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Growth rate k (steepness)</span>
+                <span class="pk-f-mean"
+                  >How many subscribers you gain each week: k = y ÷ x. A bigger
+                  k makes a steeper line.</span
+                >
+                <span class="pk-eg"
+                  >Example: 150 ÷ 6 = 25 subscribers per week</span
+                >
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">With a head start (Level 2)</span>
+                <span class="pk-f-mean"
+                  >If you already have some subscribers before week 1, add that
+                  amount b: y = kx + b. The line no longer starts at (0, 0), so
+                  it is not proportional.</span
+                >
+                <span class="pk-eg">Example: y = 25x + 50</span>
+              </li>
+            </ul>
           </div>
           <div class="pk-callout">
             <h3>Sentence Frames</h3>
@@ -947,6 +988,20 @@
               </p>
             </details>
 
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: your k is just how many new subscribers you gain in
+              ONE week. Write that number, then your equation is y = (that
+              number) × x.
+            </p>
+            <div class="pk-lvl2">
+              <div class="task">
+                <strong>Level 2 extension:</strong> Imagine you ran a contest
+                and already had 200 subscribers at week 0. Write the new rule y
+                = kx + 200 and explain why it is <em>not</em> proportional
+                anymore — what happens to the point (0, 0)?
+              </div>
+            </div>
+
             <!-- 1b table -->
           </div>
 
@@ -1087,6 +1142,20 @@
                 Each row is an ordered pair (x, y) you can plot.
               </p>
             </details>
+
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: build your table one row at a time. Start at x = 0
+              (always y = 0), then add your k for each new week — that is the
+              same as multiplying k × x.
+            </p>
+            <div class="pk-lvl2">
+              <div class="task">
+                <strong>Level 2 extension:</strong> Pick two rows from your
+                table, like (2, y₂) and (5, y₅). Show that (y₅ − y₂) ÷ (5 − 2)
+                equals your k. Why does this prove the rate of change stays
+                constant?
+              </div>
+            </div>
 
             <!-- 1c graph + readings -->
           </div>
@@ -1254,6 +1323,18 @@
                 the origin (0, 0) and goes up steeply if k is large.
               </p>
             </details>
+
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: to find subscribers, multiply (y = k × x). To find
+              the week, undo it by dividing (x = y ÷ k).
+            </p>
+            <div class="pk-lvl2">
+              <div class="task">
+                <strong>Level 2 extension:</strong> Your line passes through (0,
+                0) and (1, k). Explain what the point (1, k) tells you, and why
+                it controls how steep <em>every</em> proportional line is.
+              </div>
+            </div>
 
             <!-- 1d show-your-work grid -->
           </div>
@@ -2340,32 +2421,29 @@
       }
 
       function drawVisualizer() {
-        const rpm = getK() || 4.5;
+        const kRaw = getK();
+        // Default to a worked EXAMPLE (k = 25 subscribers/week) so the dashboard
+        // always shows a line; switches to the student's own k on input.
+        const isExample = kRaw == null || kRaw <= 0;
+        const rpm = isExample ? 25 : kRaw;
 
-        let html = "";
-        if (rpm > 0) {
-          const maxViews = 100;
-          const maxEarnings = rpm * maxViews;
+        const maxViews = 100;
+        const maxEarnings = rpm * maxViews;
 
-          let points = "";
-          for (let v = 0; v <= maxViews; v += 10) {
-            const px = 100 + (v / maxViews) * 320;
-            const py = 180 - ((v * rpm) / maxEarnings) * 120;
-            points += `${px},${py} `;
-          }
+        let points = "";
+        for (let v = 0; v <= maxViews; v += 10) {
+          const px = 100 + (v / maxViews) * 320;
+          const py = 180 - ((v * rpm) / maxEarnings) * 120;
+          points += `${px},${py} `;
+        }
 
-          html = `
+        const html = `
             <polyline points="${points.trim()}" fill="none" stroke="#1a6fb5" stroke-width="3" />
             <circle cx="420" cy="60" r="5" fill="#1a6fb5" />
             <text x="410" y="55" text-anchor="end" font-size="10" font-weight="bold" fill="#1a6fb5">Week ${maxViews}: ${maxEarnings.toFixed(0)} subscribers</text>
 
             <text x="250" y="220" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Subscriber Growth Line (y = ${rpm.toFixed(1)}x)</text>
           `;
-        } else {
-          html = `
-            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter your growth rate k to draw the line</text>
-          `;
-        }
 
         const svgString = `
           <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
@@ -2374,7 +2452,7 @@
             <line x1="80" y1="180" x2="450" y2="180" stroke="#cbd5e1" stroke-width="2" />
             <text x="70" y="65" text-anchor="end" font-size="9" fill="#94a3b8">Subscribers (y)</text>
             <text x="440" y="195" text-anchor="end" font-size="9" fill="#94a3b8">Weeks (x)</text>
-            
+            ${isExample ? `<rect x="360" y="8" width="128" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="424" y="22" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · k = 25</text>` : ""}
             ${html}
           </svg>
         `;
@@ -2513,19 +2591,22 @@
       });
 
       function drawFunctionMachine() {
-        const k = getK();
+        let k = getK();
         const svg = $("phase-svg-1a");
         if (!svg) return;
 
-        if (k == null) {
-          svg.innerHTML =
-            '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter growth rate k to draw function machine</text>';
-          return;
+        // Show a worked EXAMPLE (k = 25 subscribers/week) by default so the
+        // machine always has something to read; switches to the student's own
+        // k as soon as they enter it.
+        const isExample = k == null;
+        if (isExample) {
+          k = 25;
         }
 
         svg.innerHTML = `
           <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Function Forge (y = ${k}x)</text>
-          
+          ${isExample ? `<rect x="360" y="16" width="128" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="424" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · k = 25</text>` : ""}
+
           <g transform="translate(60, 70)">
             <rect x="0" y="15" width="80" height="40" rx="8" fill="#e8f2fc" stroke="#1a6fb5" stroke-width="1.5" />
             <text x="40" y="35" text-anchor="middle" font-size="11" font-weight="bold" fill="#1a6fb5">Input x (weeks)</text>
@@ -2550,14 +2631,15 @@
       }
 
       function drawSequenceBars() {
-        const k = getK();
+        let k = getK();
         const svg = $("phase-svg-1b");
         if (!svg) return;
 
-        if (k == null) {
-          svg.innerHTML =
-            '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter growth rate k to draw growth sequence bars</text>';
-          return;
+        // Default to a worked EXAMPLE (k = 25) so the bars always show a
+        // reference; switches to the student's own k on input.
+        const isExample = k == null;
+        if (isExample) {
+          k = 25;
         }
 
         let bars = "";
@@ -2574,6 +2656,7 @@
 
         svg.innerHTML = `
           <text x="250" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Subscribers Growth by Week (k = ${k})</text>
+          ${isExample ? `<rect x="360" y="11" width="128" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="424" y="25" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · k = 25</text>` : ""}
           ${bars}
         `;
       }

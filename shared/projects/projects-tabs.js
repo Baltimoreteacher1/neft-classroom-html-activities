@@ -560,6 +560,11 @@
     });
     targets.forEach(function (el) {
       if (el.querySelector("svg, input, textarea, a, button")) return;
+      // Skip the student-friendly Formula Bank: its class names (e.g.
+      // "pk-f-mean") contain vocab words like "mean", and this string-based
+      // innerHTML replace would wrap them INSIDE the tag and corrupt markup.
+      // Formula rows are already self-explanatory and need no auto-tooltips.
+      if (el.closest(".pk-formula")) return;
       var html = el.innerHTML;
       var modified = false;
       for (var i = 0; i < keys.length; i++) {

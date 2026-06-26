@@ -703,14 +703,66 @@
         <div class="grid2" style="margin-top: 18px">
           <div class="pk-callout">
             <h3>Formula Bank</h3>
-            <p><b>Absolute value:</b> |n| = distance from 0 (sea level = 0)</p>
-            <p><b>Distance from sea level:</b> |depth|</p>
-            <p><b>Total vertical span:</b> |lowest| + |highest|</p>
-            <p>
-              <b>Order:</b> least → greatest, left → right on the number line
-            </p>
-            <p><b>Safe check:</b> |depth| ≤ limit → safe</p>
-            <p class="pk-lvl2"><b>Range (Level 2):</b> greatest − least</p>
+            <ul class="pk-formula">
+              <li>
+                <span class="pk-f-name">Absolute value</span>
+                <span class="pk-f-mean"
+                  >How far a number is from 0 (sea level) on the number line. It
+                  is never negative.</span
+                >
+                <span class="pk-eg"
+                  >Example: a diver at −18 m is |−18| = 18 m from the
+                  surface.</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Distance from sea level</span>
+                <span class="pk-f-mean"
+                  >Take the absolute value of the depth or height. Sea level is
+                  the zero point.</span
+                >
+                <span class="pk-eg"
+                  >Example: |−40| = 40 m below the surface.</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Total vertical span</span>
+                <span class="pk-f-mean"
+                  >Add how far the lowest point is below zero to how far the
+                  highest point is above zero.</span
+                >
+                <span class="pk-eg"
+                  >Example: |−40| + |25| = 40 + 25 = 65 m from bottom to
+                  top.</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Order integers</span>
+                <span class="pk-f-mean"
+                  >On a number line, numbers get bigger from left to right. The
+                  most negative number is the least.</span
+                >
+                <span class="pk-eg">Example: −12 &lt; −3 &lt; 0 &lt; 7.</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Safe check</span>
+                <span class="pk-f-mean"
+                  >Compare the distance from 0 to the limit. If |depth| ≤ limit,
+                  it is safe.</span
+                >
+                <span class="pk-eg"
+                  >Example: |−30| = 30 ≤ 40 limit → safe.</span
+                >
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">Range / spread (Level 2)</span>
+                <span class="pk-f-mean"
+                  >Range = greatest − least. It tells how spread out the
+                  readings are.</span
+                >
+                <span class="pk-eg">Example: 7 − (−12) = 19.</span>
+              </li>
+            </ul>
           </div>
           <div class="pk-callout">
             <h3>Sentence Frames</h3>
@@ -982,6 +1034,11 @@
               sea level (negative, e.g., a deep pool, a basement, a valley below
               sea level — or use a famous one).
             </div>
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: start with friendly numbers like a high of +50 m and
+              a low of −50 m. The low is the same distance below sea level as
+              the high is above it, because |−50| = 50.
+            </p>
             <div class="grid2">
               <!-- ===================== INLINE RESEARCH LAB ===================== -->
               <div class="pk-research-inline-card">
@@ -1054,6 +1111,16 @@
                 reference point — neither positive nor negative.
               </p>
             </details>
+
+            <div class="pk-lvl2">
+              <div class="task">
+                <strong>Level 2 extension:</strong> Find the
+                <em>total vertical span</em> from your lowest point to your
+                highest point by adding their distances from sea level: |lowest|
+                + |highest|. Explain why you add instead of subtract when one
+                value is below zero and the other is above.
+              </div>
+            </div>
 
             <div
               class="pk-no-print"
@@ -1224,6 +1291,10 @@
               <strong>Rule:</strong> distance from sea level = |depth|. A depth
               of −120 m means 120 m below sea level. |−120| = 120.
             </div>
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: a depth of −50 m is |−50| = 50 m below the surface.
+              Just drop the negative sign to read the distance.
+            </p>
             <label class="fld" for="av-depth">Depth reading (meters)</label>
             <input
               type="number"
@@ -1250,6 +1321,16 @@
                 the number.
               </p>
             </details>
+
+            <div class="pk-lvl2">
+              <div class="task">
+                <strong>Level 2 extension:</strong> A submarine rises from −120
+                m to −45 m. How far did it travel? Use |−120| − |−45| = 120 − 45
+                = 75 m, and explain why you <em>subtract</em> here (both points
+                are below zero, on the same side of sea level) instead of
+                adding.
+              </div>
+            </div>
 
             <div
               class="pk-no-print"
@@ -2359,9 +2440,18 @@
       }
 
       function drawVisualizer() {
-        const high = num("high");
-        const low = num("low");
-        const depth = num("av-depth");
+        let high = num("high");
+        let low = num("low");
+        let depth = num("av-depth");
+
+        // Default to a worked EXAMPLE profile so the dashboard always shows a
+        // reference; switches to the student's readings as they enter them.
+        const isExample = isNaN(high) && isNaN(low) && isNaN(depth);
+        if (isExample) {
+          high = 100;
+          low = -50;
+          depth = -30;
+        }
 
         const vals = [high, low, depth].filter((v) => !isNaN(v));
         let html = "";
@@ -2380,16 +2470,13 @@
           };
 
           html = `
+            ${isExample ? `<rect x="360" y="10" width="128" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="424" y="24" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example profile</text>` : ""}
             <line x1="120" y1="120" x2="380" y2="120" stroke="#0284c7" stroke-width="2" />
             <text x="120" y="115" font-size="10" font-weight="bold" fill="#0284c7">Sea Level (0m)</text>
             ${plot(high, "High", "#0e8a7d")}
             ${plot(low, "Low", "#c45a3c")}
             ${plot(depth, "Reading", "#d4952a")}
             <text x="250" y="220" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">Elevation &amp; Depth Profile</text>
-          `;
-        } else {
-          html = `
-            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter your high, low, and depth values to draw the profile</text>
           `;
         }
 
@@ -2528,19 +2615,22 @@
       });
 
       function drawSubmarineSVG() {
-        const high = num("high");
-        const low = num("low");
+        let high = num("high");
+        let low = num("low");
         const svg = $("phase-svg-1a");
         if (!svg) return;
 
-        if (isNaN(high) || isNaN(low)) {
-          svg.innerHTML =
-            '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter high & low depths to draw marine profile</text>';
-          return;
+        // Show a worked EXAMPLE profile (surface 100 m, trench −50 m) as the
+        // default reference; switches to the student's readings on input.
+        const isExample = isNaN(high) || isNaN(low);
+        if (isExample) {
+          high = 100;
+          low = -50;
         }
 
         svg.innerHTML = `
           <text x="250" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Sea Depth Vertical Profile</text>
+          ${isExample ? `<rect x="372" y="12" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="26" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example profile</text>` : ""}
           
           <rect x="180" y="50" width="140" height="110" fill="rgba(30,136,229,0.15)" stroke="#1e88e5" stroke-dasharray="2" />
           <line x1="160" y1="50" x2="340" y2="50" stroke="#0e8a7d" stroke-width="2" />
@@ -2555,20 +2645,22 @@
       }
 
       function drawAbsValSVG() {
-        const depth = num("av-depth");
+        let depth = num("av-depth");
         const svg = $("phase-svg-1b");
         if (!svg) return;
 
-        if (isNaN(depth)) {
-          svg.innerHTML =
-            '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter depth reading to draw absolute value</text>';
-          return;
+        // Show a worked EXAMPLE (a submarine at −50 m, |−50| = 50 m from the
+        // surface) as the default reference; switches to the reading on input.
+        const isExample = isNaN(depth);
+        if (isExample) {
+          depth = -50;
         }
 
         const dist = Math.abs(depth);
 
         svg.innerHTML = `
           <text x="250" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Absolute Value: |depth| = Distance</text>
+          ${isExample ? `<rect x="372" y="12" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="26" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · −50 m</text>` : ""}
           
           <line x1="250" y1="50" x2="250" y2="160" stroke="#cbd5e1" stroke-width="2" />
           
@@ -2584,19 +2676,24 @@
       }
 
       function drawOrderingSVG() {
-        const t1 = num("t1");
-        const t2 = num("t2");
-        const t3 = num("t3");
-        const t4 = num("t4");
-        const t5 = num("t5") || 0;
+        let t1 = num("t1");
+        let t2 = num("t2");
+        let t3 = num("t3");
+        let t4 = num("t4");
         const svg = $("phase-svg-1c");
         if (!svg) return;
 
-        if (isNaN(t1) || isNaN(t2) || isNaN(t3) || isNaN(t4)) {
-          svg.innerHTML =
-            '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter temperatures to draw thermometer ordering scale</text>';
-          return;
+        // Show a worked EXAMPLE set (12, −5, 8, −12) as the default reference so
+        // the scale always has something to read; switches to the student's
+        // temperatures once all four are entered.
+        const isExample = isNaN(t1) || isNaN(t2) || isNaN(t3) || isNaN(t4);
+        if (isExample) {
+          t1 = 12;
+          t2 = -5;
+          t3 = 8;
+          t4 = -12;
         }
+        const t5 = num("t5") || 0;
 
         const temps = [t1, t2, t3, t4];
         if (!isNaN(t5)) temps.push(t5);
@@ -2614,6 +2711,7 @@
 
         svg.innerHTML = `
           <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Colder to Warmer Temperature Order</text>
+          ${isExample ? `<rect x="372" y="14" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="28" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example set</text>` : ""}
           <line x1="50" y1="110" x2="450" y2="110" stroke="#cbd5e1" stroke-width="2" marker-end="url(#arr-arrow)" />
           ${scales}
         `;

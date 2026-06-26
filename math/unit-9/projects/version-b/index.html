@@ -632,14 +632,52 @@
         <div class="grid2" style="margin-top: 18px">
           <div class="pk-callout">
             <h3>Formula Bank</h3>
-            <p><b>The equation:</b> y = kx</p>
-            <p><b>Find y when you know x:</b> y = k × x</p>
-            <p><b>Find x when you know y:</b> x = y ÷ k</p>
-            <p><b>Steepness of the line:</b> = k (bigger k → steeper)</p>
-            <p class="pk-lvl2">
-              <b>Level 2 — with an activation fee:</b> y = kx + b (no longer
-              proportional)
-            </p>
+            <ul class="pk-formula">
+              <li>
+                <span class="pk-f-name">y = kx (the rule)</span>
+                <span class="pk-f-mean"
+                  >Multiply the monthly price <b>k</b> by the number of months
+                  <b>x</b> to get the total cost <b>y</b>.</span
+                >
+                <span class="pk-eg"
+                  >Example: k = $30, 4 months → 30 × 4 = $120</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Find the cost after some months</span>
+                <span class="pk-f-mean"
+                  >Put the number of months in for x, then multiply by k.</span
+                >
+                <span class="pk-eg"
+                  >Example: $30 × 6 = $180 after 6 months</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Find the months from a budget</span>
+                <span class="pk-f-mean"
+                  >Divide the total budget y by the monthly price k: x = y ÷
+                  k.</span
+                >
+                <span class="pk-eg">Example: $240 ÷ $30 = 8 months</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Monthly price k (steepness)</span>
+                <span class="pk-f-mean"
+                  >The cost added each month: k = y ÷ x. A bigger k makes a
+                  steeper, pricier line.</span
+                >
+                <span class="pk-eg">Example: $180 ÷ 6 = $30 per month</span>
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">With an activation fee (Level 2)</span>
+                <span class="pk-f-mean"
+                  >If the plan charges a one-time fee b at the start, the rule
+                  becomes y = kx + b. The line no longer starts at (0, 0), so it
+                  is not proportional.</span
+                >
+                <span class="pk-eg">Example: y = 30x + 25</span>
+              </li>
+            </ul>
           </div>
           <div class="pk-callout">
             <h3>Sentence Frames</h3>
@@ -984,6 +1022,19 @@
               </p>
             </details>
 
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: your k is just the price you pay for ONE month. Write
+              that dollar amount, then your equation is y = (that price) × x.
+            </p>
+            <div class="pk-lvl2">
+              <div class="task">
+                <strong>Level 2 extension:</strong> Suppose Plan A also charges
+                a $25 activation fee at the start. Write the new rule y = kx +
+                25 and explain why it is <em>not</em> proportional anymore —
+                what happens at month 0?
+              </div>
+            </div>
+
             <!-- 1b table -->
           </div>
 
@@ -1122,6 +1173,19 @@
                 row is an ordered pair (x, y) you can plot.
               </p>
             </details>
+
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: build your cost table one row at a time. Start at x =
+              0 (always $0), then add your monthly price k for each new month —
+              the same as multiplying k × x.
+            </p>
+            <div class="pk-lvl2">
+              <div class="task">
+                <strong>Level 2 extension:</strong> Pick two rows, like (2, y₂)
+                and (6, y₆). Show that (y₆ − y₂) ÷ (6 − 2) equals your monthly
+                price k. Why does this prove the cost grows at a constant rate?
+              </div>
+            </div>
 
             <!-- 1c two-line graph + readings -->
           </div>
@@ -1319,6 +1383,18 @@
                 steeper line.
               </p>
             </details>
+
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: to find a total cost, multiply (y = k × x). To find
+              how many months your budget buys, divide (x = y ÷ k).
+            </p>
+            <div class="pk-lvl2">
+              <div class="task">
+                <strong>Level 2 extension:</strong> Both plan lines start at (0,
+                0), and the steeper line has the bigger k. Explain how the point
+                (1, k) on each line lets you compare the two plans at a glance.
+              </div>
+            </div>
 
             <!-- 1d show-your-work grid -->
           </div>
@@ -2519,32 +2595,29 @@
       }
 
       function drawVisualizer() {
-        const k = getKA() || 30;
+        const kRaw = getKA();
+        // Default to a worked EXAMPLE (k = $30/month) so the dashboard always
+        // shows a line; switches to the student's own Plan A price on input.
+        const isExample = kRaw == null || kRaw <= 0;
+        const k = isExample ? 30 : kRaw;
 
-        let html = "";
-        if (k > 0) {
-          const maxMonths = 12;
-          const maxCost = k * maxMonths;
+        const maxMonths = 12;
+        const maxCost = k * maxMonths;
 
-          let points = "";
-          for (let m = 0; m <= maxMonths; m += 3) {
-            const px = 100 + (m / maxMonths) * 320;
-            const py = 180 - ((k * m) / maxCost) * 120;
-            points += `${px},${py} `;
-          }
+        let points = "";
+        for (let m = 0; m <= maxMonths; m += 3) {
+          const px = 100 + (m / maxMonths) * 320;
+          const py = 180 - ((k * m) / maxCost) * 120;
+          points += `${px},${py} `;
+        }
 
-          html = `
+        const html = `
             <polyline points="${points.trim()}" fill="none" stroke="#0e8a7d" stroke-width="3" />
             <circle cx="420" cy="60" r="5" fill="#0e8a7d" />
             <text x="410" y="55" text-anchor="end" font-size="10" font-weight="bold" fill="#0e8a7d">Month ${maxMonths}: $${maxCost.toFixed(2)}</text>
 
             <text x="250" y="220" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Plan A Cost Line (y = ${k}x)</text>
           `;
-        } else {
-          html = `
-            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter your Plan A monthly cost to draw the line</text>
-          `;
-        }
 
         const svgString = `
           <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
@@ -2553,7 +2626,7 @@
             <line x1="80" y1="180" x2="450" y2="180" stroke="#cbd5e1" stroke-width="2" />
             <text x="70" y="65" text-anchor="end" font-size="9" fill="#94a3b8">Total cost ($)</text>
             <text x="440" y="195" text-anchor="end" font-size="9" fill="#94a3b8">Months (x)</text>
-
+            ${isExample ? `<rect x="360" y="8" width="128" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="424" y="22" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · k = $30</text>` : ""}
             ${html}
           </svg>
         `;
@@ -2696,19 +2769,22 @@
       });
 
       function drawFunctionMachine() {
-        const k = getKA();
+        let k = getKA();
         const svg = $("phase-svg-1a");
         if (!svg) return;
 
-        if (k == null) {
-          svg.innerHTML =
-            '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter prepaid rate to draw function machine</text>';
-          return;
+        // Show a worked EXAMPLE (k = $30/month) by default so the machine
+        // always has something to read; switches to the student's own rate as
+        // soon as they enter it.
+        const isExample = k == null;
+        if (isExample) {
+          k = 30;
         }
 
         svg.innerHTML = `
           <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Phone Cost Function (y = ${k}x)</text>
-          
+          ${isExample ? `<rect x="360" y="16" width="128" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="424" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · k = $30</text>` : ""}
+
           <g transform="translate(60, 70)">
             <rect x="0" y="15" width="80" height="40" rx="8" fill="#e8f2fc" stroke="#1a6fb5" stroke-width="1.5" />
             <text x="40" y="35" text-anchor="middle" font-size="11" font-weight="bold" fill="#1a6fb5">Input x (months)</text>
@@ -2733,14 +2809,15 @@
       }
 
       function drawSequenceBars() {
-        const k = getKA();
+        let k = getKA();
         const svg = $("phase-svg-1b");
         if (!svg) return;
 
-        if (k == null) {
-          svg.innerHTML =
-            '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter prepaid rate to draw cost sequence bars</text>';
-          return;
+        // Default to a worked EXAMPLE (k = $30) so the bars always show a
+        // reference; switches to the student's own rate on input.
+        const isExample = k == null;
+        if (isExample) {
+          k = 30;
         }
 
         let bars = "";
@@ -2757,6 +2834,7 @@
 
         svg.innerHTML = `
           <text x="250" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Phone Cost Growth by Month (k = $${k})</text>
+          ${isExample ? `<rect x="360" y="11" width="128" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="424" y="25" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · k = $30</text>` : ""}
           ${bars}
         `;
       }

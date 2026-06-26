@@ -582,16 +582,56 @@
         <div class="grid2" style="margin-top: 18px">
           <div class="pk-callout">
             <h3>Formula Bank</h3>
-            <p><b>Ratio:</b> a : b (fruit : yogurt)</p>
-            <p>
-              <b>Equivalent ratio:</b> multiply both parts by the same factor
-            </p>
-            <p><b>Unit rate:</b> total ÷ quantity</p>
-            <p><b>Better buy:</b> price ÷ number of cups → smaller is better</p>
-            <p class="pk-lvl2">
-              <b>Rate as data (preview):</b> mean of the per-cup prices = (sum
-              of prices) ÷ (how many)
-            </p>
+            <ul class="pk-formula">
+              <li>
+                <span class="pk-f-name">Ratio</span>
+                <span class="pk-f-mean"
+                  >A way to compare two amounts, like cups of fruit to cups of
+                  yogurt. Write it as <b>fruit : yogurt</b>.</span
+                >
+                <span class="pk-eg"
+                  >Example: 4 cups fruit : 2 cups yogurt = 4 : 2</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Equivalent ratio</span>
+                <span class="pk-f-mean"
+                  >The same recipe made bigger or smaller. Multiply (or divide)
+                  <b>both</b> parts by the same number.</span
+                >
+                <span class="pk-eg"
+                  >Example: 4 : 2 = 8 : 4 (both parts × 2)</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Unit rate</span>
+                <span class="pk-f-mean"
+                  >How much for just <b>one</b>. Divide the total by the number
+                  of items.</span
+                >
+                <span class="pk-eg">Example: $6 ÷ 4 cups = $1.50 per cup</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Better buy</span>
+                <span class="pk-f-mean"
+                  >Find the price for one cup of each pack. The
+                  <b>smaller</b> price per cup is the better buy.</span
+                >
+                <span class="pk-eg"
+                  >Example: $1.50 per cup beats $2.00 per cup</span
+                >
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">Average price (preview)</span>
+                <span class="pk-f-mean"
+                  >Add up all the per-cup prices, then divide by how many prices
+                  you added.</span
+                >
+                <span class="pk-eg"
+                  >Example: ($1.50 + $2.00 + $2.50) ÷ 3 = $2.00 each</span
+                >
+              </li>
+            </ul>
           </div>
           <div class="pk-callout">
             <h3>Sentence Frames</h3>
@@ -975,6 +1015,16 @@
               </p>
             </details>
 
+            <div class="pk-lvl2">
+              <div class="task">
+                <strong>Level 2 extension (6.RP.1):</strong> Write your recipe
+                as a <em>part-to-whole</em> ratio too. If your recipe is 4 cups
+                fruit to 2 cups yogurt, that is 6 cups total, so fruit is
+                <code>4 : 6</code> of the whole batch. What fraction of your own
+                batch is fruit? Simplify it.
+              </div>
+            </div>
+
             <!-- 1b Ratio table -->
           </div>
 
@@ -1182,6 +1232,19 @@
                 to 3:2.
               </p>
             </details>
+
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: to go from 1× to 2×, just double both numbers. 6:4
+              doubled is 12:8 — the taste stays the same.
+            </p>
+            <div class="pk-lvl2">
+              <div class="task">
+                <strong>Level 2 extension (6.RP.3):</strong> A customer orders
+                <strong>10×</strong> your batch. Extend your ratio table to 10×
+                and find both amounts. Then explain how you know it is still the
+                same recipe.
+              </div>
+            </div>
 
             <!-- 1c Unit rate -->
           </div>
@@ -1438,6 +1501,18 @@
               Calculate cost per smoothie
             </button>
             <div class="readout" id="unit-out"></div>
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: unit rate means "for ONE." Divide the total cost by
+              the number of smoothies. $6 ÷ 4 smoothies = $1.50 each.
+            </p>
+            <div class="pk-lvl2">
+              <div class="task">
+                <strong>Level 2 extension (6.RP.2):</strong> Use your cost per
+                smoothie to predict the price of <strong>7</strong> smoothies.
+                Then explain why multiplying the unit rate by 7 gives the right
+                total.
+              </div>
+            </div>
 
             <!-- 1d Better buy -->
           </div>
@@ -1716,6 +1791,14 @@
               Level 1 worked step: GCF(12, 18) = 6 → 12 ÷ 6 = 2 and 18 ÷ 6 = 3 →
               2:3.
             </p>
+            <div class="pk-lvl2">
+              <div class="task">
+                <strong>Level 2 extension (6.RP.3):</strong> Pack A is 32 oz for
+                $4.00 and Pack B is 48 oz for $5.40. Find the price per ounce of
+                each and decide the better buy. Which is cheaper per ounce, and
+                by how much?
+              </div>
+            </div>
           </div>
 
           <div
@@ -2564,18 +2647,24 @@
       }
 
       function drawVisualizer() {
-        const s = num("r-fruit") || 0;
-        const b = num("r-yogurt") || 0;
+        let s = num("r-fruit") || 0;
+        let b = num("r-yogurt") || 0;
 
-        let html = "";
-        if (s > 0 || b > 0) {
-          const sum = s + b;
-          const pctS = (s / sum) * 100;
-          const fillH = 120;
-          const sH = (s / sum) * fillH;
-          const bH = (b / sum) * fillH;
+        // Show a worked EXAMPLE recipe (4 cups fruit : 2 cups yogurt) by default
+        // so the blender always has something to look at; switches to the
+        // student's own recipe as soon as they enter it.
+        const isExample = !(s > 0 || b > 0);
+        if (isExample) {
+          s = 4;
+          b = 2;
+        }
 
-          html = `
+        const sum = s + b;
+        const fillH = 120;
+        const sH = (s / sum) * fillH;
+        const bH = (b / sum) * fillH;
+
+        const html = `
             <!-- Blender Jar -->
             <path d="M 210 50 L 290 50 L 275 180 L 225 180 Z" fill="none" stroke="#0f2b3c" stroke-width="3" />
             <path d="M 290 80 C 315 80, 315 140, 280 140" fill="none" stroke="#0f2b3c" stroke-width="2.5" />
@@ -2589,14 +2678,10 @@
             <text x="310" y="100" text-anchor="start" font-size="11" font-weight="bold" fill="#b45309">Yogurt/Milk: ${b} cups</text>
             <text x="250" y="210" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">Fruit-to-Yogurt Ratio = ${s} : ${b}</text>
           `;
-        } else {
-          html = `
-            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter your recipe ratio to blend</text>
-          `;
-        }
 
         const svgString = `
           <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            ${isExample ? `<rect x="372" y="12" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="26" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · 4 : 2</text>` : ""}
             ${html}
           </svg>
         `;

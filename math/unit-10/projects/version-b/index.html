@@ -557,14 +557,65 @@
         <div class="grid2" style="margin-top: 18px">
           <div class="pk-callout">
             <h3>Formula Bank</h3>
-            <p><b>Full volume:</b> V = l × w × h</p>
-            <p><b>Water volume:</b> V<sub>water</sub> = l × w × fill height</p>
-            <p><b>Open-top SA (no lid):</b> SA = lw + 2lh + 2wh</p>
-            <p><b>Closed-box SA (for comparison):</b> SA = 2(lw + lh + wh)</p>
-            <p><b>Glass cost:</b> cost = SA × cost per square unit</p>
-            <p class="pk-lvl2">
-              <b>Efficiency:</b> glass per cube = SA ÷ V (smaller is better)
-            </p>
+            <ul class="pk-formula">
+              <li>
+                <span class="pk-f-name">Full volume</span>
+                <span class="pk-f-mean"
+                  >How much water fits if the tank is filled to the very top.
+                  Multiply length × width × height.</span
+                >
+                <span class="pk-eg">Example: 5 × 2 × 3 = 30 cubic units</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Water volume (partial fill)</span>
+                <span class="pk-f-mean"
+                  >How much water fits at the height you actually fill. Use the
+                  fill height instead of the full height: l × w × fill
+                  height.</span
+                >
+                <span class="pk-eg">Example: 5 × 2 × 2 = 20 cubic units</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Open-top glass (no lid)</span>
+                <span class="pk-f-mean"
+                  >The glass for a fish tank — only <b>5 faces</b>, because the
+                  top is open. Bottom plus the four sides: lw + 2lh + 2wh.</span
+                >
+                <span class="pk-eg"
+                  >Example: 10 + 2(15) + 2(6) = 52 square units</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name"
+                  >Closed-box surface area (to compare)</span
+                >
+                <span class="pk-f-mean"
+                  >All 6 faces, like a box with a lid. Add the three face pairs
+                  and double them: 2(lw + lh + wh).</span
+                >
+                <span class="pk-eg"
+                  >Example: 2(10 + 15 + 6) = 62 square units</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Glass cost</span>
+                <span class="pk-f-mean"
+                  >What the glass costs. Multiply the glass area by the price
+                  for one square unit.</span
+                >
+                <span class="pk-eg">Example: 52 × $3.50 = $182.00</span>
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">Glass per cube (efficiency)</span>
+                <span class="pk-f-mean"
+                  >How much glass each unit of space costs. Divide surface area
+                  by volume — a smaller number is better.</span
+                >
+                <span class="pk-eg"
+                  >Example: 52 ÷ 30 ≈ 1.73 sq units per cube</span
+                >
+              </li>
+            </ul>
           </div>
           <div class="pk-callout">
             <h3>Sentence Frames</h3>
@@ -973,7 +1024,12 @@
               Calculate full volume
             </button>
             <div class="readout" id="tankvol-out"></div>
-        <div class="pki-manip" data-manip="cube-builder" data-unit="in" data-mode="tank"></div>
+            <div
+              class="pki-manip"
+              data-manip="cube-builder"
+              data-unit="in"
+              data-mode="tank"
+            ></div>
             <svg
               id="phase-svg-1a"
               class="pk-phase-svg no-print"
@@ -996,12 +1052,7 @@
             <label class="fld" for="check-vol"
               >My full volume (cubic units)</label
             >
-            <input
-              type="number"
-              id="check-vol"
-              data-save
-              placeholder=""
-            />
+            <input type="number" id="check-vol" data-save placeholder="" />
             <button class="btn alt" type="button" onclick="checkVol()">
               Check my work
             </button>
@@ -1015,6 +1066,15 @@
                 3 = 30 cubic units.
               </p>
             </details>
+
+            <div class="pk-lvl2" style="margin-top: 16px">
+              <div class="task">
+                <strong>Level 2 extension:</strong> Re-size one edge to a
+                decimal length (like 5.5 in) so the tank fits the space exactly,
+                then recompute the full volume. How did the decimal edge change
+                your answer?
+              </div>
+            </div>
 
             <!-- 1b Water volume / % full -->
           </div>
@@ -1192,6 +1252,10 @@
               Uses your length and width above. Pick how high you fill the water
               (less than the tank height).
             </p>
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: pick a whole-number fill height smaller than your
+              tank height, then multiply length × width × fill height.
+            </p>
             <div class="grid3">
               <div>
                 <label class="fld" for="f-fill">Fill height (in)</label>
@@ -1232,12 +1296,7 @@
             <label class="fld" for="check-water"
               >My water volume (cubic units)</label
             >
-            <input
-              type="number"
-              id="check-water"
-              data-save
-              placeholder=""
-            />
+            <input type="number" id="check-water" data-save placeholder="" />
             <button class="btn alt" type="button" onclick="checkWaterAns()">
               Check my work
             </button>
@@ -1251,6 +1310,14 @@
                 ≈ 67% full.
               </p>
             </details>
+
+            <div class="pk-lvl2" style="margin-top: 16px">
+              <div class="task">
+                <strong>Level 2 extension:</strong> What fill height would make
+                your tank exactly 75% full? Set the water volume equal to 0.75 ×
+                full volume and solve for the fill height.
+              </div>
+            </div>
 
             <!-- 1c Glass / open-top SA -->
           </div>
@@ -1428,6 +1495,10 @@
               A fish tank is open at the top — no glass lid. Uses your tank
               dimensions above.
             </p>
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: count the five glass faces — one bottom and four
+              sides — and add their areas. Leave the top out.
+            </p>
             <button class="btn" type="button" onclick="calcGlass()">
               Calculate glass needed
             </button>
@@ -1454,12 +1525,7 @@
             <label class="fld" for="check-sa"
               >My glass area (square units)</label
             >
-            <input
-              type="number"
-              id="check-sa"
-              data-save
-              placeholder=""
-            />
+            <input type="number" id="check-sa" data-save placeholder="" />
             <button class="btn alt" type="button" onclick="checkSA()">
               Check my work
             </button>
@@ -1473,6 +1539,14 @@
                 2(15) + 2(6) = 10 + 30 + 12 = 52 sq units.
               </p>
             </details>
+
+            <div class="pk-lvl2" style="margin-top: 16px">
+              <div class="task">
+                <strong>Level 2 extension:</strong> How many more square units
+                of glass would a closed box (with a lid) need than your open-top
+                tank? Find both surface areas and subtract.
+              </div>
+            </div>
 
             <!-- 1d glass cost -->
           </div>
@@ -1662,6 +1736,10 @@
                 />
               </div>
             </div>
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: try a friendly price like $1.50 per square unit, then
+              multiply it by your glass area to get the cost.
+            </p>
             <button class="btn" type="button" onclick="calcGlassCost()">
               Calculate glass cost
             </button>
@@ -1887,21 +1965,11 @@
             <label class="fld" for="partnerName"
               >Partner name or initials</label
             >
-            <input
-              type="text"
-              id="partnerName"
-              data-save
-              placeholder=""
-            />
+            <input type="text" id="partnerName" data-save placeholder="" />
           </div>
           <div>
             <label class="fld" for="p-space">Partner: space designed for</label>
-            <input
-              type="text"
-              id="p-space"
-              data-save
-              placeholder=""
-            />
+            <input type="text" id="p-space" data-save placeholder="" />
           </div>
           <div>
             <label class="fld" for="p-l">Partner: length (in)</label>
@@ -1949,11 +2017,18 @@
         <label class="fld" for="peerReflect"
           >Who used less glass per cubic unit, and why?</label
         >
-        <textarea
-          id="peerReflect"
-          data-save
-          placeholder=""
-        ></textarea>
+        <textarea id="peerReflect" data-save placeholder=""></textarea>
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 tip: the tank with the <em>smaller</em> SA ÷ V number used
+          less glass for each cubic unit of water it holds.
+        </p>
+        <div class="pk-lvl2">
+          <div class="task">
+            <strong>Level 2 extension:</strong> Whose tank holds more water per
+            square unit of glass? Divide each full volume by its glass area (V ÷
+            SA) and compare the two results.
+          </div>
+        </div>
       </section>
 
       <!-- ===================== PART 3 — WORLD ===================== -->
@@ -2051,20 +2126,24 @@
           isn't always better" — when would a smaller tank be the better
           choice?</label
         >
-        <textarea
-          id="worldReflect"
-          data-save
-          placeholder=""
-        ></textarea>
+        <textarea id="worldReflect" data-save placeholder=""></textarea>
         <label class="fld" for="careful"
           >Careful thinking: a taller tank and a wider tank can hold the same
           water but need different amounts of glass. Why?</label
         >
-        <textarea
-          id="careful"
-          data-save
-          placeholder=""
-        ></textarea>
+        <textarea id="careful" data-save placeholder=""></textarea>
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 tip: read your full volume from the table — more cubic inches
+          means the tank holds more water.
+        </p>
+        <div class="pk-lvl2">
+          <label class="fld" for="worldHard"
+            >Level 2 question: A standard 10-gallon tank is 20 × 10 × 12 in.
+            About how many of your tanks would fit inside its volume? Show the
+            division you used.</label
+          >
+          <textarea id="worldHard" data-save placeholder=""></textarea>
+        </div>
       </section>
 
       <!-- ===================== DELIVERABLE ===================== -->
@@ -2079,11 +2158,7 @@
         <p>
           Write a 3–5 sentence build plan using your real numbers from above.
         </p>
-        <textarea
-          id="pitch"
-          data-save
-          placeholder=""
-        ></textarea>
+        <textarea id="pitch" data-save placeholder=""></textarea>
 
         <h3 style="margin: 22px 0 6px">Build Plan Checklist</h3>
         <ul class="checklist" id="checklist">
@@ -2725,9 +2800,18 @@
       }
 
       function drawVisualizer() {
-        const l = num("t-length") || 0;
-        const w = num("t-width") || 0;
-        const h = num("t-height") || 0;
+        let l = num("t-length") || 0;
+        let w = num("t-width") || 0;
+        let h = num("t-height") || 0;
+
+        // Default to a worked EXAMPLE (5 × 2 × 3) so the dashboard always shows
+        // a reference; switches to the student's real tank once they enter it.
+        const isExample = !(l > 0 && w > 0 && h > 0);
+        if (isExample) {
+          l = 5;
+          w = 2;
+          h = 3;
+        }
 
         let html = "";
         if (l > 0 && w > 0 && h > 0) {
@@ -2761,6 +2845,7 @@
             ny = 120;
 
           html = `
+            ${isExample ? `<rect x="206" y="4" width="88" height="18" rx="9" fill="#eef4ff" stroke="#1763c7" /><text x="250" y="17" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example tank</text>` : ""}
             <polygon points="${p0.x},${p0.y} ${p1.x},${p1.y} ${p2.x},${p2.y} ${p3.x},${p3.y}" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5" />
             <polygon points="${p0.x},${p0.y} ${p1.x},${p1.y} ${p5.x},${p5.y} ${p4.x},${p4.y}" fill="rgba(26, 111, 181, 0.15)" stroke="#1a6fb5" stroke-width="2" />
             <polygon points="${p1.x},${p1.y} ${p2.x},${p2.y} ${p6.x},${p6.y} ${p5.x},${p5.y}" fill="rgba(14, 138, 125, 0.15)" stroke="#0e8a7d" stroke-width="2" />
@@ -2785,10 +2870,6 @@
             <text x="250" y="220" text-anchor="middle" font-size="12" font-weight="bold" fill="#2d874b">
               Volume = ${(l * w * h).toFixed(0)} cu ft | Glass (open-top SA) = ${(l * w + 2 * l * h + 2 * w * h).toFixed(0)} sq ft
             </text>
-          `;
-        } else {
-          html = `
-            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Dimensions to draw 3D net folder</text>
           `;
         }
 
@@ -2972,16 +3053,20 @@
       });
 
       function drawPrismSVG() {
-        const l = num("t-length");
-        const w = num("t-width");
-        const h = num("t-height");
+        let l = num("t-length");
+        let w = num("t-width");
+        let h = num("t-height");
         const svg = $("phase-svg-1a");
         if (!svg) return;
 
-        if (isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0) {
-          svg.innerHTML =
-            '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter dimensions to draw 3D aquarium tank</text>';
-          return;
+        // Default to a worked EXAMPLE (5 × 2 × 3) so the blueprint always shows
+        // a reference; switches to the student's tank once they enter it.
+        const isExample =
+          isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0;
+        if (isExample) {
+          l = 5;
+          w = 2;
+          h = 3;
         }
 
         const originX = 200,
@@ -2996,6 +3081,7 @@
 
         svg.innerHTML = `
           <text x="250" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">3D Aquarium Isometric Blueprint</text>
+          ${isExample ? `<rect x="372" y="14" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="28" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · 5×2×3</text>` : ""}
           <polygon points="${originX},${originY} ${originX + sw},${originY} ${originX + sw},${originY - sh} ${originX},${originY - sh}" fill="rgba(26,111,181,0.1)" stroke="#1a6fb5" stroke-width="1.5" />
           <polygon points="${originX},${originY - sh} ${originX + sw},${originY - sh} ${originX + sw + dx},${originY - sh + dy} ${originX + dx},${originY - sh + dy}" fill="rgba(26,111,181,0.05)" stroke="#1a6fb5" stroke-width="1.5" />
           <polygon points="${originX + sw},${originY} ${originX + sw},${originY - sh} ${originX + sw + dx},${originY - sh + dy} ${originX + sw + dx},${originY + dy}" fill="rgba(26,111,181,0.15)" stroke="#1a6fb5" stroke-width="1.5" />
@@ -3007,20 +3093,25 @@
       }
 
       function drawNetSVG() {
-        const l = num("t-length");
-        const w = num("t-width");
-        const h = num("t-height");
+        let l = num("t-length");
+        let w = num("t-width");
+        let h = num("t-height");
         const svg = $("phase-svg-1b");
         if (!svg) return;
 
-        if (isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0) {
-          svg.innerHTML =
-            '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter dimensions to draw net blueprint</text>';
-          return;
+        // Default to a worked EXAMPLE net so the blueprint always shows a
+        // reference; switches to the student's tank once they enter dimensions.
+        const isExample =
+          isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0;
+        if (isExample) {
+          l = 5;
+          w = 2;
+          h = 3;
         }
 
         svg.innerHTML = `
           <text x="250" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Flat Unfolded Net Blueprint</text>
+          ${isExample ? `<rect x="372" y="14" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="28" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · 5×2×3</text>` : ""}
           
           <g transform="translate(140, 50)" stroke="#0e8a7d" stroke-width="1.5" fill="rgba(14, 138, 125, 0.1)">
             <rect x="40" y="0" width="80" height="30" fill="none" stroke="#cbd5e1" stroke-dasharray="4,3" />
@@ -3045,14 +3136,17 @@
       }
 
       function drawWaterSVG() {
-        const l = num("t-length");
-        const w = num("t-width");
-        const h = num("t-height");
-        const wh = num("f-fill");
+        let l = num("t-length");
+        let w = num("t-width");
+        let h = num("t-height");
+        let wh = num("f-fill");
         const svg = $("phase-svg-1c");
         if (!svg) return;
 
-        if (
+        // Default to a worked EXAMPLE (5 × 2 × 3 tank filled to 2) so the fill
+        // blueprint always shows a reference; switches to the student's numbers
+        // once they enter dimensions and a fill height.
+        const isExample =
           isNaN(l) ||
           isNaN(w) ||
           isNaN(h) ||
@@ -3060,11 +3154,12 @@
           l <= 0 ||
           w <= 0 ||
           h <= 0 ||
-          wh <= 0
-        ) {
-          svg.innerHTML =
-            '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter water height to draw fill blueprint</text>';
-          return;
+          wh <= 0;
+        if (isExample) {
+          l = 5;
+          w = 2;
+          h = 3;
+          wh = 2;
         }
 
         const originX = 200,
@@ -3080,6 +3175,7 @@
 
         svg.innerHTML = `
           <text x="250" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Water Fill Blueprint (wh = ${wh} ft)</text>
+          ${isExample ? `<rect x="372" y="14" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="28" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example fill</text>` : ""}
           <polygon points="${originX},${originY} ${originX + sw},${originY} ${originX + sw},${originY - sh} ${originX},${originY - sh}" fill="none" stroke="#94a3b8" stroke-width="1.5" />
           <polygon points="${originX},${originY - sh} ${originX + sw},${originY - sh} ${originX + sw + dx},${originY - sh + dy} ${originX + dx},${originY - sh + dy}" fill="none" stroke="#94a3b8" stroke-width="1.5" />
           <polygon points="${originX + sw},${originY} ${originX + sw},${originY - sh} ${originX + sw + dx},${originY - sh + dy} ${originX + sw + dx},${originY + dy}" fill="none" stroke="#94a3b8" stroke-width="1.5" />

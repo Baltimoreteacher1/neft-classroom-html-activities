@@ -7,7 +7,7 @@
    Grade-6 / ESOL safe: large text, high contrast, reduced-motion aware.
    Reference as /shared/projects/projects-tplus.css (after projects-tabs.css).
    ========================================================================== */
-@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Fredoka:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,600&display=swap");
 
 body.pk {
   /* Per-page hero accent is baked into .phero inline styles; we reuse a warm,
@@ -31,7 +31,7 @@ body.pk {
   --tp-glow1: rgba(109, 40, 217, 0.08);
   --tp-glow2: rgba(14, 165, 163, 0.09);
   --tp-hero-glow: rgba(245, 166, 36, 0.4);
-  --tp-display: "Fredoka", "Segoe UI", system-ui, sans-serif;
+  --tp-display: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
   --tp-body: "Nunito", "Segoe UI", system-ui, sans-serif;
   --tp-shadow: 0 18px 40px -18px rgba(32, 36, 63, 0.45);
   --tp-shadow-sm: 0 8px 20px -12px rgba(32, 36, 63, 0.35);
@@ -725,4 +725,92 @@ body.pk {
 body.pk .wrap,
 body.pk main.page-shell {
   padding-bottom: 92px !important;
+}
+
+/* ==========================================================================
+   PUBLISHER POLISH  (2026-06 — McGraw-Hill editorial finish, all units)
+   Promoted from the Unit-1 pilot. Lifts every project page toward publisher
+   quality with ONE shared change: a confident editorial display face (Plus
+   Jakarta Sans, set above), a single disciplined per-unit accent (replacing
+   rainbow rails + off-palette number medallions), a clean hero title, calmer
+   depth, and a tighter reading measure. Each unit keeps its own --tp-accent /
+   --tp-accent2, so the palette stays per-unit; only the finish is unified.
+   Cosmetic only — no DOM, route, or behavior changes.
+   ========================================================================== */
+/* Calmer, more editorial depth + lines (all units) */
+body.pk {
+  --tp-ink: #161c2d;
+  --tp-muted: #545d75;
+  --tp-line: #e7e9f1;
+  --tp-shadow: 0 14px 32px -20px rgba(20, 28, 50, 0.34);
+  --tp-shadow-sm: 0 6px 16px -12px rgba(20, 28, 50, 0.28);
+}
+body.pk h1,
+body.pk h2,
+body.pk h3 {
+  font-weight: 700 !important;
+  letter-spacing: -0.012em !important;
+}
+
+/* Hero: keep the unit band, calm the texture, clean the title --------------- */
+body.pk .phero::before {
+  opacity: 0.22 !important;
+}
+body.pk .phero h1 {
+  background-image: none !important; /* drop the off-palette gold underline */
+  padding-bottom: 0 !important;
+  letter-spacing: -0.02em !important;
+  text-shadow: 0 1px 10px rgba(7, 12, 30, 0.28) !important;
+}
+
+/* One disciplined accent rail instead of tri/quad-color gradients ----------- */
+body.pk .phase::before,
+body.pk .phase::after {
+  background: linear-gradient(
+    90deg,
+    var(--tp-accent),
+    var(--tp-accent2)
+  ) !important;
+  background-size: 100% 100% !important;
+  height: 4px !important;
+  opacity: 1 !important;
+}
+/* Phase-number medallions follow the UNIT accent (kills the rainbow cycle) --- */
+body.pk .phase-num,
+body.pk .phase:nth-of-type(4n + 1) .phase-num,
+body.pk .phase:nth-of-type(4n + 2) .phase-num,
+body.pk .phase:nth-of-type(4n + 3) .phase-num,
+body.pk .phase:nth-of-type(4n + 4) .phase-num {
+  background: linear-gradient(
+    140deg,
+    var(--tp-accent),
+    color-mix(in srgb, var(--tp-accent) 68%, #0a1130)
+  ) !important;
+}
+
+/* Tighter reading measure + steadier rhythm -------------------------------- */
+body.pk .wrap {
+  max-width: 880px;
+}
+body.pk .phase {
+  margin: 18px 0 !important;
+}
+
+/* Mission/intro card: single accent edge instead of decorative gold -------- */
+body.pk .intro-card {
+  border-left: 5px solid var(--tp-accent) !important;
+  border-radius: 16px !important;
+  box-shadow: var(--tp-shadow-sm) !important;
+}
+
+/* Section eyebrow + arc-banner: quieter, more editorial -------------------- */
+body.pk .phase-head .skill {
+  letter-spacing: 0.12em !important;
+  font-size: 0.7rem !important;
+}
+body.pk .arc-banner {
+  background: color-mix(in srgb, var(--tp-accent) 12%, #fff) !important;
+  color: color-mix(in srgb, var(--tp-accent) 78%, #1f2440) !important;
+  box-shadow: none !important;
+  border: 1px solid color-mix(in srgb, var(--tp-accent) 22%, #fff) !important;
 }

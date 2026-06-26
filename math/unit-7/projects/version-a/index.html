@@ -738,18 +738,68 @@
         <div class="grid2" style="margin-top: 18px">
           <div class="pk-callout">
             <h3>Formula Bank</h3>
-            <p><b>Distance, shared x:</b> |y₂ − y₁| (vertical line)</p>
-            <p><b>Distance, shared y:</b> |x₂ − x₁| (horizontal line)</p>
-            <p><b>Reflect over x-axis:</b> (x, y) → (x, −y)</p>
-            <p><b>Reflect over y-axis:</b> (x, y) → (−x, y)</p>
-            <p><b>Absolute value:</b> |n| = distance from 0</p>
-            <p>
-              <b>Quadrant signs:</b> I (+,+) · II (−,+) · III (−,−) · IV (+,−)
-            </p>
-            <p class="pk-lvl2">
-              <b>Diagonal (Level 2 preview):</b> right triangle legs |Δx| and
-              |Δy|; diagonal² = |Δx|² + |Δy|² (Pythagoras)
-            </p>
+            <ul class="pk-formula">
+              <li>
+                <span class="pk-f-name">Distance on a straight line</span>
+                <span class="pk-f-mean"
+                  >If two places share an x or a y, the distance is the
+                  <b>absolute difference</b> of the other coordinate. Count the
+                  squares between them.</span
+                >
+                <span class="pk-eg"
+                  >Example: (2, 3) and (2, 9) share x = 2, so |9 − 3| = 6
+                  units.</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Reflect over the x-axis</span>
+                <span class="pk-f-mean"
+                  >Flip up and down across the side-to-side line. Keep x the
+                  same and change the sign of y.</span
+                >
+                <span class="pk-eg">Example: (3, 4) → (3, −4).</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Reflect over the y-axis</span>
+                <span class="pk-f-mean"
+                  >Flip left and right across the up-and-down line. Keep y the
+                  same and change the sign of x.</span
+                >
+                <span class="pk-eg">Example: (3, 4) → (−3, 4).</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Absolute value</span>
+                <span class="pk-f-mean"
+                  >How far a number is from 0 on the number line. It is never
+                  negative.</span
+                >
+                <span class="pk-eg">Example: |−3| = 3 and |3| = 3.</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Which quadrant?</span>
+                <span class="pk-f-mean"
+                  >The signs of x and y tell you the region: I (+,+), II (−,+),
+                  III (−,−), IV (+,−).</span
+                >
+                <span class="pk-eg"
+                  >Example: (5, −2) is in Quadrant IV because x is + and y is
+                  −.</span
+                >
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name"
+                  >Diagonal distance (Level 2 preview)</span
+                >
+                <span class="pk-f-mean"
+                  >For places that do not share a row or column, the legs are
+                  |Δx| and |Δy|; the diagonal² = |Δx|² + |Δy|²
+                  (Pythagoras).</span
+                >
+                <span class="pk-eg"
+                  >Example: legs 3 and 4 → diagonal = √(9 + 16) = √25 = 5.</span
+                >
+              </li>
+            </ul>
           </div>
           <div class="pk-callout">
             <h3>Sentence Frames</h3>
@@ -1201,6 +1251,11 @@
               Reflect a place across an axis to plan a "mirrored" section of
               your map.
             </p>
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: start with a point in Quadrant I like (3, 4) and
+              reflect across the x-axis. Only the y-sign flips, so (3, 4)
+              becomes (3, −4).
+            </p>
             <div class="grid2">
               <div>
                 <label class="fld" for="rx">Original x</label
@@ -1245,6 +1300,15 @@
                 (3, 4) → (−3, 4). Both: negate both → (−3, −4).
               </p>
             </details>
+
+            <div class="pk-lvl2">
+              <div class="task">
+                <strong>Level 2 extension:</strong> Reflect the same point over
+                <em>both</em> axes (choose "Both axes"). Then explain why that
+                lands in the same spot as one 180° turn about the origin, and
+                name the quadrant the reflected point ends up in.
+              </div>
+            </div>
 
             <div
               class="pk-no-print"
@@ -2814,16 +2878,19 @@
       });
 
       function drawReflectionSVG() {
-        const x = num("rx");
-        const y = num("ry");
+        let x = num("rx");
+        let y = num("ry");
         const axis = $("raxis") ? $("raxis").value : "x";
         const svg = $("phase-svg-1a");
         if (!svg) return;
 
-        if (isNaN(x) || isNaN(y)) {
-          svg.innerHTML =
-            '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter coordinates to draw reflection</text>';
-          return;
+        // Show a worked EXAMPLE — (3, 4) reflected — as the default reference so
+        // the card always has something to look at; switches to the student's
+        // own point as soon as they enter coordinates.
+        const isExample = isNaN(x) || isNaN(y);
+        if (isExample) {
+          x = 3;
+          y = 4;
         }
 
         const rx = axis === "y" ? -x : x;
@@ -2834,6 +2901,7 @@
 
         svg.innerHTML = `
           <text x="250" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">Reflection Across ${axis === "y" ? "Y-Axis" : "X-Axis"}</text>
+          ${isExample ? `<rect x="372" y="14" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="28" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · (3, 4)</text>` : ""}
           <line x1="170" y1="100" x2="330" y2="100" stroke="#cbd5e1" stroke-width="1.5" />
           <line x1="250" y1="20" x2="250" y2="180" stroke="#cbd5e1" stroke-width="1.5" />
 
@@ -2850,17 +2918,22 @@
       }
 
       function drawDistanceSVG() {
-        const x1 = num("d1x");
-        const y1 = num("d1y");
-        const x2 = num("d2x");
-        const y2 = num("d2y");
+        let x1 = num("d1x");
+        let y1 = num("d1y");
+        let x2 = num("d2x");
+        let y2 = num("d2y");
         const svg = $("phase-svg-1b");
         if (!svg) return;
 
-        if (isNaN(x1) || isNaN(y1) || isNaN(x2) || isNaN(y2)) {
-          svg.innerHTML =
-            '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter points A and B to draw distance path</text>';
-          return;
+        // Default to a worked EXAMPLE — (2, 3) to (2, 9), which share x = 2 and
+        // are 6 units apart — so the card always shows a reference; switches to
+        // the student's points as soon as both are entered.
+        const isExample = isNaN(x1) || isNaN(y1) || isNaN(x2) || isNaN(y2);
+        if (isExample) {
+          x1 = 2;
+          y1 = 3;
+          x2 = 2;
+          y2 = 9;
         }
 
         const toX = (val) => 250 + val * 8;
@@ -2872,6 +2945,7 @@
 
         svg.innerHTML = `
           <text x="250" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">Distance between coordinates: |p - q|</text>
+          ${isExample ? `<rect x="372" y="14" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="28" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · (2,3)-(2,9)</text>` : ""}
           <line x1="170" y1="100" x2="330" y2="100" stroke="#cbd5e1" stroke-width="1" />
           <line x1="250" y1="20" x2="250" y2="180" stroke="#cbd5e1" stroke-width="1" />
           

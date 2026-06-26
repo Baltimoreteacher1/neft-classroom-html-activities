@@ -625,20 +625,60 @@
         <div class="grid2" style="margin-top: 18px">
           <div class="pk-callout">
             <h3>Formula Bank</h3>
-            <p><b>How much more:</b> raised + x = goal → x = goal − raised</p>
-            <p><b>Items to sell:</b> price · n = target → n = target ÷ price</p>
-            <p>
-              <b>Goal condition:</b> "at least the goal" → x ≥ goal (closed
-              circle, shade right)
-            </p>
-            <p class="pk-lvl2">
-              <b>Compound inequality:</b> goal ≤ x ≤ stretch goal (between two
-              amounts)
-            </p>
-            <p class="pk-lvl2">
-              <b>Minimize items:</b> fewest n with price · n ≥ amount needed → n
-              = ⌈needed ÷ price⌉
-            </p>
+            <ul class="pk-formula">
+              <li>
+                <span class="pk-f-name">How much more to raise</span>
+                <span class="pk-f-mean"
+                  >Subtract what you have raised from your goal to find what is
+                  still needed.</span
+                >
+                <span class="pk-eg"
+                  >Example: $320 raised, $400 goal → $400 − $320 = $80
+                  more</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">How many items to sell</span>
+                <span class="pk-f-mean"
+                  >Divide the money you need by the price of one item.</span
+                >
+                <span class="pk-eg">Example: $400 ÷ $5 each = 80 items</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Reaching the goal (inequality)</span>
+                <span class="pk-f-mean"
+                  >"At least the goal" means x ≥ goal: closed (filled) circle,
+                  shade to the right.</span
+                >
+                <span class="pk-eg">Example: "at least $400" → x ≥ 400</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Check by substitution</span>
+                <span class="pk-f-mean"
+                  >Put your answer back in. Both sides must be equal, or the
+                  inequality must be true.</span
+                >
+                <span class="pk-eg">Example: $320 + $80 = $400 ✓</span>
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">In-between goal (compound)</span>
+                <span class="pk-f-mean"
+                  >Two limits at once: x must be at least the goal but no more
+                  than the stretch goal.</span
+                >
+                <span class="pk-eg">Example: 400 ≤ x ≤ 600</span>
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">Fewest items to reach a goal</span>
+                <span class="pk-f-mean"
+                  >Divide the amount needed by the price, then round up to a
+                  whole item.</span
+                >
+                <span class="pk-eg"
+                  >Example: $410 ÷ $5 = 82 → sell 82 items</span
+                >
+              </li>
+            </ul>
           </div>
           <div class="pk-callout">
             <h3>Sentence Frames</h3>
@@ -977,6 +1017,15 @@
               </p>
             </details>
 
+            <div class="pk-lvl2">
+              <div class="task">
+                <strong>Level 2 extension:</strong> Write the amount still
+                needed as an inequality the fundraiser must meet (raised + x ≥
+                goal). Then pick a real item price and find the fewest items you
+                must sell to cover x.
+              </div>
+            </div>
+
             <!-- 1b: sales plan (multiplication equation) -->
           </div>
 
@@ -1102,6 +1151,10 @@
               sales target. The target must be divisible by the price so the
               number of items is a whole number.
             </div>
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: multiplication is undone by division, so n = target ÷
+              price. Try $5 each and a $400 target so n = 80.
+            </p>
             <div class="grid2">
               <div>
                 <label class="fld" for="f2-price"
@@ -1142,6 +1195,15 @@
                 For 5n = 150 → n = 150 ÷ 5 = 30 items. Verify: 5 × 30 = 150 ✓.
               </p>
             </details>
+
+            <div class="pk-lvl2">
+              <div class="task">
+                <strong>Level 2 extension:</strong> Choose a price that does not
+                divide the target evenly, then round up to find the fewest whole
+                items needed to reach the goal. Explain why selling one fewer
+                item would fall short.
+              </div>
+            </div>
 
             <!-- 1c: goal condition (inequality) -->
           </div>
@@ -2588,15 +2650,15 @@
       });
 
       function drawPhase1SVG() {
-        const raised = num("f1-raised");
-        const goal = num("f1-goal");
+        let raised = num("f1-raised");
+        let goal = num("f1-goal");
         const svg = $("phase-svg-1a");
         if (!svg) return;
 
-        if (isNaN(raised) || isNaN(goal) || goal <= 0) {
-          svg.innerHTML =
-            '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter raised amount & goal to draw thermometer</text>';
-          return;
+        const isExample = isNaN(raised) || isNaN(goal) || goal <= 0;
+        if (isExample) {
+          raised = 320;
+          goal = 400;
         }
 
         const pct = Math.min(
@@ -2607,7 +2669,8 @@
 
         svg.innerHTML = `
           <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Fundraiser Goal Progress: ${pct}%</text>
-          
+          ${isExample ? `<rect x="372" y="16" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example</text>` : ""}
+
           <rect x="235" y="50" width="30" height="120" rx="15" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2" />
           <circle cx="250" cy="170" r="22" fill="#e11d48" stroke="#cbd5e1" stroke-width="2" />
           
@@ -2619,22 +2682,23 @@
       }
 
       function drawPhase2SVG() {
-        const price = num("f2-price");
-        const target = num("f2-target");
+        let price = num("f2-price");
+        let target = num("f2-target");
         const svg = $("phase-svg-1b");
         if (!svg) return;
 
-        if (isNaN(price) || isNaN(target) || price <= 0) {
-          svg.innerHTML =
-            '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter price & target to draw equation balance scale</text>';
-          return;
+        const isExample = isNaN(price) || isNaN(target) || price <= 0;
+        if (isExample) {
+          price = 5;
+          target = 400;
         }
 
         const n = Math.round(target / price);
 
         svg.innerHTML = `
           <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Sales equation: ${price}n = ${target} (n = ${n})</text>
-          
+          ${isExample ? `<rect x="372" y="16" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example</text>` : ""}
+
           <line x1="250" y1="170" x2="250" y2="70" stroke="#475569" stroke-width="6" />
           <polygon points="220,180 280,180 250,165" fill="#475569" />
           <line x1="140" y1="70" x2="360" y2="70" stroke="#475569" stroke-width="4" />
@@ -2659,14 +2723,13 @@
 
       function drawPhase3SVG() {
         const symbol = $("f3-symbol") ? $("f3-symbol").value : ">=";
-        const goal = num("f3-goal");
+        let goal = num("f3-goal");
         const svg = $("phase-svg-1c");
         if (!svg) return;
 
-        if (isNaN(goal)) {
-          svg.innerHTML =
-            '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter goal value to draw inequality graph</text>';
-          return;
+        const isExample = isNaN(goal);
+        if (isExample) {
+          goal = 400;
         }
 
         const isClosed =
@@ -2679,7 +2742,8 @@
 
         svg.innerHTML = `
           <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Target Inequality: x ${symbol.replace("le", "&le;").replace("ge", "&ge;").replace("<=", "&le;").replace(">=", "&ge;")} ${goal}</text>
-          
+          ${isExample ? `<rect x="372" y="16" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example</text>` : ""}
+
           <line x1="50" y1="110" x2="450" y2="110" stroke="#cbd5e1" stroke-width="2" />
           
           ${[-2, -1, 0, 1, 2]

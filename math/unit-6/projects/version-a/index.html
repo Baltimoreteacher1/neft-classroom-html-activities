@@ -665,21 +665,54 @@
         <div class="grid2" style="margin-top: 18px">
           <div class="pk-callout">
             <h3>Formula Bank</h3>
-            <p>
-              <b>Power:</b> base<sup>exponent</sup> = base × base × … (exponent
-              times)
-            </p>
-            <p><b>Coin bonus:</b> r · c + k → rate × coins + flat bonus</p>
-            <p>
-              <b>Evaluate:</b> substitute the value, then use order of
-              operations
-            </p>
-            <p class="pk-lvl2">
-              <b>Distributive (6.EE.3):</b> a(b + c) = a·b + a·c
-            </p>
-            <p class="pk-lvl2">
-              <b>Crossover:</b> where two formulas give the same score
-            </p>
+            <ul class="pk-formula">
+              <li>
+                <span class="pk-f-name">Power (exponent)</span>
+                <span class="pk-f-mean"
+                  >A short way to write the same number multiplied over and
+                  over. The small raised number tells you how many times to use
+                  the base.</span
+                >
+                <span class="pk-eg">Example: 3⁴ = 3 × 3 × 3 × 3 = 81</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Coin bonus expression</span>
+                <span class="pk-f-mean"
+                  >Your score is <b>rate × coins + flat bonus</b>. Pick how many
+                  points each coin is worth and a bonus everyone starts
+                  with.</span
+                >
+                <span class="pk-eg">Example: 3c + 50, and at c = 10 → 80</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Evaluate an expression</span>
+                <span class="pk-f-mean"
+                  >Put the number in for the letter, then do the math in order:
+                  multiply before you add.</span
+                >
+                <span class="pk-eg"
+                  >Example: 3c + 50 when c = 4 → 12 + 50 = 62</span
+                >
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">Distributive property (6.EE.3)</span>
+                <span class="pk-f-mean"
+                  >Multiply the number outside the parentheses by each part
+                  inside, then add the results.</span
+                >
+                <span class="pk-eg">Example: 4(c + 2) = 4c + 8</span>
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">Crossover point</span>
+                <span class="pk-f-mean"
+                  >The number of coins where two different scoring formulas give
+                  the exact same total.</span
+                >
+                <span class="pk-eg"
+                  >Example: 5c and 3c + 20 are equal at c = 10 (both = 50)</span
+                >
+              </li>
+            </ul>
           </div>
           <div class="pk-callout">
             <h3>Sentence Frames</h3>
@@ -1121,6 +1154,18 @@
                 3⁴ = 81.
               </p>
             </details>
+            <div class="pk-lvl2" style="margin-top: 16px">
+              <div class="task">
+                <strong>Level 2 extension:</strong> Write your power in expanded
+                form (for example, 3⁴ = 3 × 3 × 3 × 3), then explain why raising
+                the exponent by 1 grows the score faster than raising the base
+                by 1. Test it with your own numbers.
+              </div>
+              <label class="fld" for="exp2"
+                >Expanded form and your reasoning</label
+              >
+              <textarea id="exp2" data-save placeholder=""></textarea>
+            </div>
 
             <!-- 1b Coin bonus expression -->
           </div>
@@ -1437,6 +1482,11 @@
           rate and flat bonus, then pick the same number of coins to evaluate
           both formulas. Who rewards more? Where do they cross over?
         </p>
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 tip: to compare, put the same coin count into both formulas.
+          Do rate × coins first, then add the bonus. The bigger total rewards
+          players more at that coin count.
+        </p>
         <div class="pk-callout pk-no-print" style="margin-bottom: 14px">
           <h3>Interview Sentence Frames</h3>
           <p>"What is your coin rate? What is your flat bonus?"</p>
@@ -1527,6 +1577,11 @@
           These are realistic-style scoring formulas from different game genres,
           written as <strong>rc + k</strong>. Pick one and see where your value
           lands at the same number of coins.
+        </p>
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 tip: read one row from the table, then use the same test coins
+          for your own formula. Compare the two scores — is yours higher or
+          lower?
         </p>
         <div class="grid2">
           <div>
@@ -2388,15 +2443,18 @@
       }
 
       function drawExponentSVG() {
-        const base = num("exp-base");
-        const level = num("exp-level");
+        let base = num("exp-base");
+        let level = num("exp-level");
         const svg = $("phase-svg-1b");
         if (!svg) return;
 
-        if (isNaN(base) || isNaN(level) || base < 2 || level < 2) {
-          svg.innerHTML =
-            '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter base score & level to draw exponent tree</text>';
-          return;
+        // Show a worked EXAMPLE (2³ = 8) as the default so the card always has
+        // something to "look at first"; switch to the student's own numbers as
+        // soon as they enter a valid base and level.
+        const isExample = isNaN(base) || isNaN(level) || base < 2 || level < 2;
+        if (isExample) {
+          base = 2;
+          level = 3;
         }
 
         const total = Math.pow(base, level);
@@ -2416,6 +2474,7 @@
 
         svg.innerHTML = `
           <text x="250" y="30" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">Exponent Visualization: ${base}<sup>${level}</sup></text>
+          ${isExample ? `<rect x="372" y="14" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="28" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · 2³</text>` : ""}
           ${dots}
           <text x="250" y="170" text-anchor="middle" font-size="11" fill="#5e6e7e">
             ${base} repeated ${level} times: ${Array(level).fill(base).join(" &times; ")} = <strong>${total}</strong>
@@ -2424,22 +2483,27 @@
       }
 
       function drawExpressionSVG() {
-        const rate = num("coin-r");
-        const flat = num("coin-k");
-        const coins = num("coin-c");
+        let rate = num("coin-r");
+        let flat = num("coin-k");
+        let coins = num("coin-c");
         const svg = $("phase-svg-1c");
         if (!svg) return;
 
-        if (isNaN(rate) || isNaN(flat) || isNaN(coins)) {
-          svg.innerHTML =
-            '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter rate, bonus & coins to draw function machine</text>';
-          return;
+        // Show a worked EXAMPLE (2c + 10 at c = 5 → 20) as the default so the
+        // machine always has something to "look at first"; switch to the
+        // student's own numbers as soon as they fill all three in.
+        const isExample = isNaN(rate) || isNaN(flat) || isNaN(coins);
+        if (isExample) {
+          rate = 2;
+          flat = 10;
+          coins = 5;
         }
 
         const total = rate * coins + flat;
 
         svg.innerHTML = `
           <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Expression Flow Machine: ${rate}c + ${flat}</text>
+          ${isExample ? `<rect x="372" y="14" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="28" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · 2c + 10</text>` : ""}
           
           <g transform="translate(40, 70)">
             <rect x="0" y="15" width="80" height="40" rx="8" fill="#e8f2fc" stroke="#1a6fb5" stroke-width="1.5" />
