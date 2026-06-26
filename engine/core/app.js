@@ -20,6 +20,7 @@ import {
   mountTeacherPanel,
   buildWelcomeTeacherNotes,
   isTeacherMode,
+  initTeacherAccess,
 } from "./teacher-mode.js";
 import { t, stackHtml, phaseName } from "./i18n.js";
 import { PHASE_TIME_ESTIMATES } from "./content-enrichment.js";
@@ -34,6 +35,8 @@ export function createApp(config) {
   // Publisher-grade editorial design layer (engine/styles/editorial.css) — the
   // approved look now applies to EVERY lesson, not just flagship pilots.
   document.body.classList.add("editorial");
+  // Easy teacher-mode access: sticky per-device toggle + Alt+Shift+T + badge.
+  initTeacherAccess();
   // Browser tab / SEO title (the engine shell ships a generic <title>).
   if (config.title) {
     const bits = [config.title];
