@@ -1293,8 +1293,12 @@ body.obj-popup-open {
   outline-offset: 2px;
 }
 
-/* ── Responsive (Chromebook min 1024px) ── */
-@media (max-width: 1100px) {
+/* ── Responsive (Chromebook min 1024px) ──
+   Narrow the sidebar for tablet / small-laptop ONLY. This MUST be a min-width
+   range: without the 769px floor it also matches phone widths and, because it
+   is declared after the max-width:768px stack rule above, would override it —
+   pinning a 220px sidebar on phones and squeezing content to a sliver. */
+@media (min-width: 769px) and (max-width: 1100px) {
   .app {
     grid-template-columns: 220px minmax(0, 1fr);
   }

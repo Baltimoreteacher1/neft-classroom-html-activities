@@ -1,10 +1,12 @@
 /* ============================================================================
-   Flagship PRO — publisher-grade editorial layer
+   Editorial layer — publisher-grade ("McGraw-Hill standard") lesson design
    ----------------------------------------------------------------------------
-   Pilot design layer taken to McGraw-Hill "publishing standard". EVERYTHING in
-   this file is scoped under `body.flagship`, so it ONLY affects flagship
-   lessons (those booted through bootFlagship). The ~80 live student lessons,
-   which never get the .flagship body class, are completely untouched.
+   Validated as a flagship pilot, approved by the publisher, then promoted to
+   the whole engine. EVERYTHING is scoped under `body.editorial`, a class the
+   core boot (createApp, app.js) adds to EVERY lesson — so all lessons inherit
+   this look. Flagship lessons also carry `.flagship`; the `.flagship-*`
+   element rules below simply no-op on regular lessons (those elements only
+   exist in the flagship shell).
 
    Aesthetic direction: refined academic / editorial textbook. Elevates the
    existing Neft brand (navy / teal / amber / cream) with a serif masthead,
@@ -16,7 +18,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&display=swap");
 
 /* ── Flagship-scoped tokens: type scale, paper, AA-safe ink ───────────────── */
-body.flagship {
+body.editorial {
   /* Editorial serif for mastheads & section headings; keep Hanken for reading */
   --fl-serif: "Fraunces", Georgia, "Times New Roman", serif;
   --fl-body: var(--font-body);
@@ -59,7 +61,7 @@ body.flagship {
 }
 
 /* Subtle paper grain — atmosphere, not noise (very low alpha SVG) */
-body.flagship::before {
+body.editorial::before {
   content: "";
   position: fixed;
   inset: 0;
@@ -68,15 +70,15 @@ body.flagship::before {
   opacity: 0.5;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
 }
-body.flagship .app,
-body.flagship .identity-screen,
-body.flagship .flagship-scene-hud {
+body.editorial .app,
+body.editorial .identity-screen,
+body.editorial .flagship-scene-hud {
   position: relative;
   z-index: 1;
 }
 
 /* ── Editorial masthead (overrides the loud amber gradient header) ────────── */
-body.flagship .lesson-hero {
+body.editorial .lesson-hero {
   background: var(--fl-page) !important;
   color: var(--ink);
   border: 1px solid var(--fl-rule);
@@ -86,10 +88,10 @@ body.flagship .lesson-hero {
   box-shadow: 0 1px 0 rgba(25, 38, 47, 0.02);
   margin-bottom: var(--sp-7);
 }
-body.flagship .lesson-hero-top {
+body.editorial .lesson-hero-top {
   align-items: flex-end;
 }
-body.flagship .lesson-hero-title {
+body.editorial .lesson-hero-title {
   font-family: var(--fl-serif);
   font-optical-sizing: auto;
   font-weight: 600;
@@ -100,7 +102,7 @@ body.flagship .lesson-hero-title {
   margin: 0;
 }
 /* Small-caps editorial eyebrow above the title (UNIT · STANDARD · TIME) */
-body.flagship .lesson-hero-meta {
+body.editorial .lesson-hero-meta {
   order: -1;
   display: inline-block;
   font-family: var(--fl-body);
@@ -111,13 +113,13 @@ body.flagship .lesson-hero-meta {
   color: var(--teal);
   margin: 0 0 var(--sp-3);
 }
-body.flagship .lesson-hero-title + .lesson-hero-meta,
-body.flagship .lesson-hero-top > div {
+body.editorial .lesson-hero-title + .lesson-hero-meta,
+body.editorial .lesson-hero-top > div {
   display: flex;
   flex-direction: column;
 }
 /* hairline accent rule under the masthead title */
-body.flagship .lesson-hero::after {
+body.editorial .lesson-hero::after {
   content: "";
   display: block;
   height: 2px;
@@ -128,20 +130,20 @@ body.flagship .lesson-hero::after {
 }
 
 /* ── Reading column: textbook measure, generous margins ───────────────────── */
-body.flagship .phase-container,
-body.flagship .lesson-hero {
+body.editorial .phase-container,
+body.editorial .lesson-hero {
   max-width: 820px;
   margin-left: auto;
   margin-right: auto;
 }
-body.flagship .phase {
+body.editorial .phase {
   display: flex;
   flex-direction: column;
   gap: var(--sp-6);
 }
 
 /* ── Cards → flat editorial "paper sections" ──────────────────────────────── */
-body.flagship .phase .card {
+body.editorial .phase .card {
   background: var(--fl-page);
   border: 1px solid var(--fl-rule);
   border-radius: 5px;
@@ -151,56 +153,56 @@ body.flagship .phase .card {
 }
 /* Section headings — most are nested h3/h4, not direct children, so target
    them by descendant across heading levels. */
-body.flagship .phase .card :is(h2, h3, h4, .card-title) {
+body.editorial .phase .card :is(h2, h3, h4, .card-title) {
   font-family: var(--fl-serif);
   font-weight: 600;
   line-height: 1.15;
   letter-spacing: -0.01em;
   color: var(--navy);
 }
-body.flagship .phase .card :is(h2, .card-title) {
+body.editorial .phase .card :is(h2, .card-title) {
   font-size: var(--fl-h2);
 }
-body.flagship .phase .card h3 {
+body.editorial .phase .card h3 {
   font-size: var(--fl-h3);
 }
-body.flagship .phase .card h4 {
+body.editorial .phase .card h4 {
   font-size: var(--fl-h4);
 }
 /* Keep the teal / coral objective accents — just adopt the serif face */
-body.flagship .phase .card-teal :is(h3, h4) {
+body.editorial .phase .card-teal :is(h3, h4) {
   color: #0e6f6b;
 }
-body.flagship .phase .card-coral :is(h3, h4) {
+body.editorial .phase .card-coral :is(h3, h4) {
   color: #b4503a;
 }
 /* Body copy: comfortable reading measure & rhythm */
-body.flagship .phase .card p,
-body.flagship .phase .card li {
+body.editorial .phase .card p,
+body.editorial .phase .card li {
   font-size: var(--fl-base);
   line-height: 1.7;
   max-width: var(--fl-measure);
   color: var(--ink);
 }
-body.flagship .phase .card p + p {
+body.editorial .phase .card p + p {
   margin-top: var(--sp-4);
 }
 
 /* ── Objective row (Content / Language) → margin-note styling ─────────────── */
-body.flagship .phase .card [class*="objective"] {
+body.editorial .phase .card [class*="objective"] {
   border-radius: 4px;
 }
 
 /* ── Worked steps / Show-Your-Work → numbered editorial steps ─────────────── */
-body.flagship .phase [class*="show-your-work"] label,
-body.flagship .phase [class*="work-step"] {
+body.editorial .phase [class*="show-your-work"] label,
+body.editorial .phase [class*="work-step"] {
   font-family: var(--fl-body);
   font-weight: 700;
   color: var(--navy);
 }
 
 /* ── Buttons: refined, less candy ─────────────────────────────────────────── */
-body.flagship .btn {
+body.editorial .btn {
   border-radius: 6px;
   font-family: var(--fl-body);
   font-weight: 700;
@@ -210,63 +212,63 @@ body.flagship .btn {
     box-shadow 0.2s ease,
     background 0.2s ease;
 }
-body.flagship .btn-primary {
+body.editorial .btn-primary {
   background: var(--navy);
   border-color: var(--navy);
 }
-body.flagship .btn-primary:hover {
+body.editorial .btn-primary:hover {
   background: var(--navy-light);
   transform: translateY(-1px);
 }
-body.flagship .btn:focus-visible {
+body.editorial .btn:focus-visible {
   outline: 3px solid var(--teal);
   outline-offset: 2px;
 }
 
 /* ── Sidebar: tighten typography, keep navy ───────────────────────────────── */
-body.flagship .sidebar {
+body.editorial .sidebar {
   background: linear-gradient(180deg, #0e2c4c 0%, var(--navy) 100%);
   border-right: 1px solid rgba(255, 255, 255, 0.06);
 }
-body.flagship .sidebar-title,
-body.flagship .sidebar h1,
-body.flagship .sidebar h2 {
+body.editorial .sidebar-title,
+body.editorial .sidebar h1,
+body.editorial .sidebar h2 {
   font-family: var(--fl-serif);
   font-weight: 600;
   letter-spacing: -0.01em;
 }
 
 /* ── Cover / identity screen → editorial title page ───────────────────────── */
-body.flagship .identity-card {
+body.editorial .identity-card {
   max-width: 600px;
   border-radius: 6px;
   border: 1px solid var(--fl-rule);
   box-shadow: 0 24px 60px rgba(18, 53, 91, 0.14);
 }
-body.flagship .identity-hero h1,
-body.flagship .identity-card h1 {
+body.editorial .identity-hero h1,
+body.editorial .identity-card h1 {
   font-family: var(--fl-serif);
   font-weight: 600;
   letter-spacing: -0.015em;
 }
 
 /* ── Mission intro refinement (already strong, just editorial type) ───────── */
-body.flagship .flagship-mission-title,
-body.flagship .flagship-finale-title {
+body.editorial .flagship-mission-title,
+body.editorial .flagship-finale-title {
   font-family: var(--fl-serif);
   font-weight: 600;
   letter-spacing: -0.015em;
 }
-body.flagship .flagship-mission-eyebrow {
+body.editorial .flagship-mission-eyebrow {
   color: var(--teal);
 }
-body.flagship .flagship-scene-name {
+body.editorial .flagship-scene-name {
   font-family: var(--fl-serif);
   font-weight: 600;
 }
 
 /* ── Scene HUD: quieter, editorial pull-quote feel ────────────────────────── */
-body.flagship .flagship-scene-hud {
+body.editorial .flagship-scene-hud {
   background: var(--fl-page);
   border: 1px solid var(--fl-rule);
   border-left: 3px solid var(--teal);
@@ -274,33 +276,33 @@ body.flagship .flagship-scene-hud {
 }
 
 /* ── Accessibility: AA-safe muted text everywhere it's used ───────────────── */
-body.flagship .text-muted,
-body.flagship .muted,
-body.flagship small {
+body.editorial .text-muted,
+body.editorial .muted,
+body.editorial small {
   color: var(--muted);
 }
 
 /* ── Print / digital parity: masthead + content print cleanly ─────────────── */
 @media print {
-  body.flagship {
+  body.editorial {
     background: #fff;
   }
-  body.flagship::before {
+  body.editorial::before {
     display: none;
   }
-  body.flagship .sidebar,
-  body.flagship .flagship-scene-hud,
-  body.flagship .save-resume-bar {
+  body.editorial .sidebar,
+  body.editorial .flagship-scene-hud,
+  body.editorial .save-resume-bar {
     display: none !important;
   }
-  body.flagship .app {
+  body.editorial .app {
     display: block;
   }
-  body.flagship .phase-container,
-  body.flagship .lesson-hero {
+  body.editorial .phase-container,
+  body.editorial .lesson-hero {
     max-width: 100%;
   }
-  body.flagship .phase .card {
+  body.editorial .phase .card {
     break-inside: avoid;
     border: 1px solid #ccc;
   }
@@ -308,15 +310,15 @@ body.flagship small {
 
 /* ── Narrow screens: keep editorial measure, reduce padding ───────────────── */
 @media (max-width: 768px) {
-  body.flagship .lesson-hero,
-  body.flagship .phase .card {
+  body.editorial .lesson-hero,
+  body.editorial .phase .card {
     padding: var(--sp-5);
   }
 }
 
 /* ── Honor reduced-motion ─────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  body.flagship .btn-primary:hover {
+  body.editorial .btn-primary:hover {
     transform: none;
   }
 }
