@@ -2586,31 +2586,30 @@
       }
 
       function drawVisualizer() {
-        const base = num("exp-left") || 15;
-        const perGb = num("exp-coeff") || 2.5;
+        const k = getKA() || 30;
 
         let html = "";
-        if (base > 0) {
-          const maxGb = 15;
-          const maxCost = base + perGb * maxGb;
+        if (k > 0) {
+          const maxMonths = 12;
+          const maxCost = k * maxMonths;
 
           let points = "";
-          for (let g = 0; g <= maxGb; g += 3) {
-            const px = 100 + (g / maxGb) * 320;
-            const py = 180 - ((base + perGb * g) / maxCost) * 120;
+          for (let m = 0; m <= maxMonths; m += 3) {
+            const px = 100 + (m / maxMonths) * 320;
+            const py = 180 - ((k * m) / maxCost) * 120;
             points += `${px},${py} `;
           }
 
           html = `
             <polyline points="${points.trim()}" fill="none" stroke="#0e8a7d" stroke-width="3" />
             <circle cx="420" cy="60" r="5" fill="#0e8a7d" />
-            <text x="410" y="55" text-anchor="end" font-size="10" font-weight="bold" fill="#0e8a7d">${maxGb}GB: $${maxCost.toFixed(2)}</text>
-            
-            <text x="250" y="220" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Phone Plan Cost Curve (y = ${perGb}g + ${base})</text>
+            <text x="410" y="55" text-anchor="end" font-size="10" font-weight="bold" fill="#0e8a7d">Month ${maxMonths}: $${maxCost.toFixed(2)}</text>
+
+            <text x="250" y="220" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Plan A Cost Line (y = ${k}x)</text>
           `;
         } else {
           html = `
-            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Base fee & Data rate to draw graph</text>
+            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter your Plan A monthly cost to draw the line</text>
           `;
         }
 
@@ -2619,9 +2618,9 @@
             <!-- Axes -->
             <line x1="80" y1="60" x2="80" y2="180" stroke="#cbd5e1" stroke-width="2" />
             <line x1="80" y1="180" x2="450" y2="180" stroke="#cbd5e1" stroke-width="2" />
-            <text x="70" y="65" text-anchor="end" font-size="9" fill="#94a3b8">Plan Cost ($)</text>
-            <text x="440" y="195" text-anchor="end" font-size="9" fill="#94a3b8">Data (GB)</text>
-            
+            <text x="70" y="65" text-anchor="end" font-size="9" fill="#94a3b8">Total cost ($)</text>
+            <text x="440" y="195" text-anchor="end" font-size="9" fill="#94a3b8">Months (x)</text>
+
             ${html}
           </svg>
         `;

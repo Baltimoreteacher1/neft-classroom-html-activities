@@ -2258,7 +2258,7 @@
           ($("worldCat") || {}).value === "costPerGuest" ||
           ($("worldCat") || {}).value === "price"
             ? { mean: "City avg $", me: "Me $" }
-            : { mean: "City avg", me: "Me" };
+            : { mean: "Sample avg", me: "Me" };
 
         PK.worldMeter("worldMeter", sample, my, labels);
 
@@ -2268,13 +2268,13 @@
           const pct = Math.round((my / customSize) * 100);
           const diff = Math.abs(my - customSize).toFixed(2);
 
-          let myValStr = false ? "$" + my.toFixed(2) : my + " cubits";
+          let myValStr = false ? "$" + my.toFixed(2) : my + " units";
           let custValStr = false
             ? "$" + customSize.toFixed(2)
-            : customSize + " cubits";
+            : customSize + " units";
           let diffStr = false
             ? "$" + Number(diff).toFixed(2)
-            : Number(diff).toFixed(2) + " cubits";
+            : Number(diff).toFixed(2) + " units";
 
           const rel =
             my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
@@ -2332,8 +2332,8 @@
       /* ---- Use example numbers ---- */
       function useExamples() {
         const ex = {
-          worldCountry: "Giza Great Pyramid",
-          "v-length": 440,
+          worldCountry: "Medium Flat Rate Box",
+          "v-length": 8,
           objName: "my cereal box (example)",
           "v-width": 5,
           "v-height": 3,

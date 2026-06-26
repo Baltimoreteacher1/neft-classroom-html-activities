@@ -821,9 +821,9 @@
               >
             </div>
             <p class="pk-research-inline-instructions">
-              Research typical revenue per 1,000 views (RPM) for educational
-              channels (often around $4.50). Enter the researched RPM below to
-              model your earnings:
+              Research a realistic weekly growth rate for a channel like yours —
+              how many new subscribers it gains per week (a small channel often
+              gains around 25–50). Enter your researched growth rate k below:
             </p>
             <div class="grid2">
               <div>
@@ -840,7 +840,7 @@
               </div>
               <div>
                 <label class="fld" for="k-rate"
-                  >Typical Revenue per 1,000 views ($)</label
+                  >Typical weekly growth rate k (new subscribers/week)</label
                 >
                 <input
                   type="number"
@@ -2335,11 +2335,9 @@
           const pct = Math.round((my / customSize) * 100);
           const diff = Math.abs(my - customSize).toFixed(2);
 
-          let myValStr = true ? "$" + my.toFixed(2) : my + "";
-          let custValStr = true ? "$" + customSize.toFixed(2) : customSize + "";
-          let diffStr = true
-            ? "$" + Number(diff).toFixed(2)
-            : Number(diff).toFixed(2) + "";
+          let myValStr = my + "";
+          let custValStr = customSize + "";
+          let diffStr = Number(diff).toFixed(2) + "";
 
           const rel =
             my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
@@ -2372,9 +2370,9 @@
         const before = PK.mean(sample);
         const after = PK.mean(sample.concat([v]));
 
-        let beforeStr = true ? "$" + before.toFixed(2) : before.toFixed(2) + "";
-        let afterStr = true ? "$" + after.toFixed(2) : after.toFixed(2) + "";
-        let vStr = true ? "$" + v.toFixed(2) : v + "";
+        let beforeStr = before.toFixed(2) + "";
+        let afterStr = after.toFixed(2) + "";
+        let vStr = v + "";
 
         PK.whatIf(
           "whatIfBox",
@@ -2423,13 +2421,13 @@
           html = `
             <polyline points="${points.trim()}" fill="none" stroke="#1a6fb5" stroke-width="3" />
             <circle cx="420" cy="60" r="5" fill="#1a6fb5" />
-            <text x="410" y="55" text-anchor="end" font-size="10" font-weight="bold" fill="#1a6fb5">${maxViews}k views: $${maxEarnings.toFixed(2)}</text>
-            
-            <text x="250" y="220" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Earnings Linear Growth Line (y = ${rpm.toFixed(1)}x)</text>
+            <text x="410" y="55" text-anchor="end" font-size="10" font-weight="bold" fill="#1a6fb5">Week ${maxViews}: ${maxEarnings.toFixed(0)} subscribers</text>
+
+            <text x="250" y="220" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Subscriber Growth Line (y = ${rpm.toFixed(1)}x)</text>
           `;
         } else {
           html = `
-            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter RPM to draw linear growth graph</text>
+            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter your growth rate k to draw the line</text>
           `;
         }
 
@@ -2438,8 +2436,8 @@
             <!-- Axes -->
             <line x1="80" y1="60" x2="80" y2="180" stroke="#cbd5e1" stroke-width="2" />
             <line x1="80" y1="180" x2="450" y2="180" stroke="#cbd5e1" stroke-width="2" />
-            <text x="70" y="65" text-anchor="end" font-size="9" fill="#94a3b8">Earnings ($)</text>
-            <text x="440" y="195" text-anchor="end" font-size="9" fill="#94a3b8">Views (k)</text>
+            <text x="70" y="65" text-anchor="end" font-size="9" fill="#94a3b8">Subscribers (y)</text>
+            <text x="440" y="195" text-anchor="end" font-size="9" fill="#94a3b8">Weeks (x)</text>
             
             ${html}
           </svg>
