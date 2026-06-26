@@ -4831,23 +4831,36 @@ Due May 31"></textarea>
 
   // Seamless home-screen glance at the allowance: this week's running total
   // and any finished weeks waiting for a parent payout. Taps through to Payday.
+  // Always-on home card: shows the week's running total (or $0), surfaces any
+  // money ready for payday, and gives a one-tap ⚙️ into the parent settings.
+  // Tapping the card body opens the full Payday view.
   function paydayCard() {
     const r = state.rewards;
-    if (!r || !r.enabled) return "";
+    if (!r) return "";
     const wk = computeWeek(thisWeekKey());
     const ready = readyTotal();
-    if (wk.total <= 0 && ready <= 0) return "";
+    const body = !r.enabled
+      ? `<p class="sub" style="margin:0">Allowance is paused. Tap ⚙️ to turn it back on.</p>`
+      : ready > 0
+        ? `<div class="pay-home-ready">💵 <b>${money(
+            ready,
+          )}</b> ready for payday — tap to pay out</div>`
+        : `<p class="sub" style="margin:0">${
+            wk.total > 0
+              ? "Earned so far this week · paid out next Monday."
+              : "Finish your work to start earning · paid out next Monday."
+          }</p>`;
     return `<section class="card pay-home" data-card="payday" data-act="view-rewards" role="button" tabindex="0" aria-label="Open Payday">
-      <div class="head"><div><h3>💰 Allowance</h3><p class="sub">${weekLabel(
-        thisWeekKey(),
-      )}</p></div><span class="pay-home-amt">${money(wk.total)}</span></div>
-      ${
-        ready > 0
-          ? `<div class="pay-home-ready">💵 <b>${money(
-              ready,
-            )}</b> ready for payday — tap to pay out</div>`
-          : `<p class="sub" style="margin:0">Earned so far this week · paid out next Monday.</p>`
-      }
+      <div class="head">
+        <div><h3>💰 Allowance</h3><p class="sub">${weekLabel(
+          thisWeekKey(),
+        )}</p></div>
+        <div class="pay-home-right">
+          <span class="pay-home-amt">${money(r.enabled ? wk.total : 0)}</span>
+          <button class="btn sm ghost pay-home-gear" data-act="reward-settings" aria-label="Edit allowance settings" title="Allowance settings">⚙️</button>
+        </div>
+      </div>
+      ${body}
     </section>`;
   }
 
@@ -7227,7 +7240,7 @@ Due May 31"></textarea>
       if (/^\d{0,8}$/.test(pin)) r.pin = pin;
       save();
       closeModal();
-      setView("rewards");
+      render(); // reflect changes on whatever view opened settings (home or Payday)
       toast("Settings saved ✓");
     },
 
