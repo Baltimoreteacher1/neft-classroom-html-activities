@@ -179,6 +179,10 @@ export function mountTeacherPanel(root, config, state) {
           <button type="button" class="btn btn-secondary btn-sm teacher-proj-toggle" aria-pressed="false">🔍 Projector view</button>
           <button type="button" class="btn btn-secondary btn-sm teacher-answers-toggle" aria-pressed="true">🙈 Hide answers</button>
         </div>
+        <div class="teacher-proj-controls teacher-pager">
+          <button type="button" class="btn btn-secondary btn-sm teacher-prev-phase">◀ Prev</button>
+          <button type="button" class="btn btn-secondary btn-sm teacher-next-phase">Next phase ▶</button>
+        </div>
         <div class="teacher-timer">
           <span class="teacher-timer-display" role="timer" aria-live="polite">00:00</span>
           <button type="button" class="btn btn-secondary btn-sm teacher-timer-start">▶︎ Start</button>
@@ -240,6 +244,27 @@ export function mountTeacherPanel(root, config, state) {
     ansBtn.setAttribute("aria-pressed", String(!hidden));
     ansBtn.textContent = hidden ? "👁 Show answers" : "🙈 Hide answers";
   });
+
+  // Phase pager — jump between phases WITHOUT completing the work, so a teacher
+  // can walk/project the whole lesson. Bypasses every intra-phase gate (problems,
+  // Turn & Talk, writing). Bounds-checked against the phase count.
+  const goPhase = (delta) => {
+    const s = state.get();
+    const total = (s.phases && s.phases.length) || config.phases.length || 0;
+    const next = Math.min(
+      Math.max((s.currentPhase || 0) + delta, 0),
+      total - 1,
+    );
+    document.dispatchEvent(
+      new CustomEvent("rma:navigate", { detail: { phase: next } }),
+    );
+  };
+  panel
+    .querySelector(".teacher-prev-phase")
+    ?.addEventListener("click", () => goPhase(-1));
+  panel
+    .querySelector(".teacher-next-phase")
+    ?.addEventListener("click", () => goPhase(1));
 
   // Simple class timer (count-up). No Date dependency beyond runtime clock.
   const timerDisplay = panel.querySelector(".teacher-timer-display");

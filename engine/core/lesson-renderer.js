@@ -28,6 +28,7 @@ import { createProblemCard, problemTypeLabel } from "./problem-shell.js";
 import { enableWordProblemAnnotation } from "./annotate.js";
 import { renderThemeIllustration } from "./theme-illustrations.js";
 import { deriveWorkedSteps } from "./worked-steps.js";
+import { isTeacherMode } from "./teacher-mode.js";
 import { mountStuckSupport } from "./stuck-support.js";
 import {
   buildPhaseTransitionMeta,
@@ -926,6 +927,20 @@ export function renderComponent(container, problemDef, onAnswer, shellOpts) {
         continueBtn.addEventListener("click", () => wrappedOnAnswer(true));
         body.append(continueBtn);
       }
+  }
+
+  // Teacher Mode: let a teacher advance past any item WITHOUT doing the work,
+  // so they can walk/project the whole lesson freely. Students never see this.
+  // It runs the same completion path as a correct answer, so the practice
+  // sequence (and phase) advances normally.
+  if (isTeacherMode()) {
+    const skip = document.createElement("button");
+    skip.type = "button";
+    skip.className = "btn btn-secondary btn-sm teacher-skip no-print";
+    skip.textContent = "⏭ Next (teacher)";
+    skip.title = "Teacher Mode — advance without answering";
+    skip.addEventListener("click", () => wrappedOnAnswer(true));
+    body.append(skip);
   }
 }
 
