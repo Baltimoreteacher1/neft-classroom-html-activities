@@ -580,19 +580,55 @@
         <div class="grid2" style="margin-top: 18px">
           <div class="pk-callout">
             <h3>Formula Bank</h3>
-            <p><b>Ratio:</b> a : b (points : games)</p>
-            <p>
-              <b>Equivalent ratio:</b> multiply both parts by the same factor
-            </p>
-            <p><b>Unit rate:</b> total ÷ quantity (points ÷ games)</p>
-            <p>
-              <b>Compare fairly:</b> scale both to the same games, then compare
-              points
-            </p>
-            <p class="pk-lvl2">
-              <b>Rate as data (preview):</b> mean ppg = (sum of player rates) ÷
-              (how many)
-            </p>
+            <ul class="pk-formula">
+              <li>
+                <span class="pk-f-name">Ratio</span>
+                <span class="pk-f-mean"
+                  >A way to compare two amounts, like points to games. Write it
+                  as <b>points : games</b>.</span
+                >
+                <span class="pk-eg">Example: 48 points : 6 games = 48 : 6</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Equivalent ratio</span>
+                <span class="pk-f-mean"
+                  >The same scoring pace shown with bigger or smaller numbers.
+                  Multiply (or divide) <b>both</b> parts by the same
+                  number.</span
+                >
+                <span class="pk-eg"
+                  >Example: 48 : 6 = 16 : 2 (both parts ÷ 3)</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Unit rate (points per game)</span>
+                <span class="pk-f-mean"
+                  >How many points for just <b>one</b> game. Divide total points
+                  by number of games.</span
+                >
+                <span class="pk-eg"
+                  >Example: 48 points ÷ 6 games = 8 points per game</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Compare fairly</span>
+                <span class="pk-f-mean"
+                  >Find each athlete's points per game, then compare. The
+                  <b>bigger</b> rate is the stronger scorer.</span
+                >
+                <span class="pk-eg">Example: 8 per game beats 6 per game</span>
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">Average rate (preview)</span>
+                <span class="pk-f-mean"
+                  >Add up each player's points-per-game, then divide by how many
+                  players you added.</span
+                >
+                <span class="pk-eg"
+                  >Example: (8 + 6 + 10) ÷ 3 = 8 points per game</span
+                >
+              </li>
+            </ul>
           </div>
           <div class="pk-callout">
             <h3>Sentence Frames</h3>
@@ -1081,6 +1117,16 @@
               </p>
             </details>
 
+            <div class="pk-lvl2">
+              <div class="task">
+                <strong>Level 2 extension (6.RP.2):</strong> Your athlete keeps
+                the same points-per-game rate for a full
+                <strong>30-game</strong>
+                season. Predict their season total, then explain how the unit
+                rate let you scale up.
+              </div>
+            </div>
+
             <!-- 1b Ratio table / projection -->
           </div>
 
@@ -1310,6 +1356,14 @@
             <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
               Level 1 worked step: 20 ÷ 5 = 4 points per game.
             </p>
+            <div class="pk-lvl2">
+              <div class="task">
+                <strong>Level 2 extension (6.RP.3):</strong> Two players each
+                score 9 points per game. One plays 24 games, the other 31. Use a
+                ratio table to find each season total, then say how many more
+                points the busier player scores.
+              </div>
+            </div>
           </div>
 
           <div
@@ -2027,32 +2081,40 @@
       }
 
       function drawVisualizer() {
-        const pts = num("r-pts");
-        const games = num("r-games");
+        let pts = num("r-pts");
+        let games = num("r-games");
 
-        let html = "";
-        if (!isNaN(pts) && pts > 0 && !isNaN(games) && games > 0) {
-          const rate = pts / games;
-          const maxRate = Math.max(rate, 35);
-          const barW = (rate / maxRate) * 320;
+        // Show a worked EXAMPLE (48 points ÷ 6 games = 8 PPG) by default so the
+        // chart always has something to look at; switches to the student's own
+        // athlete stats as soon as they enter them.
+        const isExample = !(
+          !isNaN(pts) &&
+          pts > 0 &&
+          !isNaN(games) &&
+          games > 0
+        );
+        if (isExample) {
+          pts = 48;
+          games = 6;
+        }
 
-          html = `
+        const rate = pts / games;
+        const maxRate = Math.max(rate, 35);
+        const barW = (rate / maxRate) * 320;
+
+        const html = `
             <rect x="50" y="80" width="350" height="25" rx="5" fill="#f1f5f9" />
             <rect x="50" y="80" width="${barW}" height="25" rx="5" fill="#1a6fb5" />
             <text x="55" y="96" font-size="11" font-weight="bold" fill="white">Athlete: ${rate.toFixed(2)} PPG</text>
-            
+
             <line x1="50" y1="50" x2="400" y2="50" stroke="#cbd5e1" stroke-width="1" />
             <text x="225" y="40" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">Points per Game comparison</text>
             <text x="225" y="150" text-anchor="middle" font-size="12" font-weight="bold" fill="#2d874b">Scouting Rate: ${pts} pts / ${games} games</text>
           `;
-        } else {
-          html = `
-            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Points & Games to visualize rate</text>
-          `;
-        }
 
         const svgString = `
           <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            ${isExample ? `<rect x="362" y="12" width="126" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="425" y="26" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · 48 ÷ 6</text>` : ""}
             ${html}
           </svg>
         `;

@@ -643,17 +643,57 @@
         <div class="grid2" style="margin-top: 18px">
           <div class="pk-callout">
             <h3>Formula Bank</h3>
-            <p><b>App cost:</b> p · n + fee → price × months + setup fee</p>
-            <p>
-              <b>Evaluate:</b> substitute n, multiply first, then add the fee
-            </p>
-            <p><b>Equivalent (6.EE.4):</b> same value for every n</p>
-            <p class="pk-lvl2">
-              <b>Distributive (6.EE.3):</b> a(b + c) = a·b + a·c
-            </p>
-            <p class="pk-lvl2">
-              <b>Crossover:</b> where two plans cost the same
-            </p>
+            <ul class="pk-formula">
+              <li>
+                <span class="pk-f-name">App cost expression</span>
+                <span class="pk-f-mean"
+                  >Your total is <b>price × months + setup fee</b>. The price
+                  per month is the coefficient; the one-time fee is the
+                  constant.</span
+                >
+                <span class="pk-eg"
+                  >Example: 9.99n + 4.50, and at n = 6 → 64.44</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Evaluate an expression</span>
+                <span class="pk-f-mean"
+                  >Put the number of months in for n, then do the math in order:
+                  multiply before you add.</span
+                >
+                <span class="pk-eg"
+                  >Example: 5n + 10 when n = 3 → 15 + 10 = 25</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Equivalent expressions (6.EE.4)</span>
+                <span class="pk-f-mean"
+                  >Two expressions that always give the same total for every
+                  number of months n.</span
+                >
+                <span class="pk-eg"
+                  >Example: 3(n + 2) and 3n + 6 are equal for every n</span
+                >
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">Distributive property (6.EE.3)</span>
+                <span class="pk-f-mean"
+                  >Multiply the number outside the parentheses by each part
+                  inside, then add the results.</span
+                >
+                <span class="pk-eg">Example: 4(n + 3) = 4n + 12</span>
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">Crossover point</span>
+                <span class="pk-f-mean"
+                  >The number of months where two different plans cost the exact
+                  same total.</span
+                >
+                <span class="pk-eg"
+                  >Example: 6n and 4n + 20 are equal at n = 10 (both = 60)</span
+                >
+              </li>
+            </ul>
           </div>
           <div class="pk-callout">
             <h3>Sentence Frames</h3>
@@ -1267,6 +1307,11 @@
           price and setup fee, then pick the same number of months to evaluate
           both plans. Who charges less? Where do they cross over?
         </p>
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 tip: put the same number of months into both plans. Do price ×
+          months first, then add the setup fee. The smaller total is the cheaper
+          plan at that number of months.
+        </p>
         <div class="pk-callout pk-no-print" style="margin-bottom: 14px">
           <h3>Interview Sentence Frames</h3>
           <p>"What is your app's monthly price? What is your setup fee?"</p>
@@ -1360,6 +1405,11 @@
           These are realistic-style streaming plans, written as
           <strong>pn + fee</strong>. Pick one and see where your value lands at
           the same number of months.
+        </p>
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 tip: read one row from the table, then use the same test
+          months for your own plan. Compare the two totals — is yours higher or
+          lower?
         </p>
         <div class="grid2">
           <div>
@@ -2184,22 +2234,27 @@
       }
 
       function drawExpressionSVG() {
-        const rate = num("cost-p");
-        const flat = num("cost-fee");
-        const months = num("cost-n");
+        let rate = num("cost-p");
+        let flat = num("cost-fee");
+        let months = num("cost-n");
         const svg = $("phase-svg-1b");
         if (!svg) return;
 
-        if (isNaN(rate) || isNaN(flat) || isNaN(months)) {
-          svg.innerHTML =
-            '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter monthly price, fee & months to draw flow machine</text>';
-          return;
+        // Show a worked EXAMPLE (5n + 10 at n = 6 → 40) as the default so the
+        // machine always has something to "look at first"; switch to the
+        // student's own numbers as soon as they fill all three in.
+        const isExample = isNaN(rate) || isNaN(flat) || isNaN(months);
+        if (isExample) {
+          rate = 5;
+          flat = 10;
+          months = 6;
         }
 
         const total = rate * months + flat;
 
         svg.innerHTML = `
           <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Expression Flow Machine: ${rate}n + ${flat}</text>
+          ${isExample ? `<rect x="372" y="14" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="28" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · 5n + 10</text>` : ""}
           
           <g transform="translate(40, 70)">
             <rect x="0" y="15" width="80" height="40" rx="8" fill="#e8f2fc" stroke="#1a6fb5" stroke-width="1.5" />

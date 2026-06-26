@@ -541,15 +541,47 @@
         <div class="grid2" style="margin-top: 18px">
           <div class="pk-callout">
             <h3>Formula Bank</h3>
-            <p>
-              <b>GCF(a, b):</b> biggest shared factor → number of equal groups
-            </p>
-            <p><b>LCM(a, b):</b> first shared multiple → when cycles line up</p>
-            <p><b>Budget left:</b> budget − total spent</p>
-            <p><b>Cost per guest:</b> total cost ÷ number of guests</p>
-            <p class="pk-lvl2">
-              <b>Distributive (6.NS.4):</b> a + b = GCF × (a÷GCF + b÷GCF)
-            </p>
+            <ul class="pk-formula">
+              <li>
+                <span class="pk-f-name">GCF — Greatest Common Factor</span>
+                <span class="pk-f-mean"
+                  >The biggest number that divides <b>both</b> of your numbers
+                  with nothing left over. It tells you how many equal groups you
+                  can make.</span
+                >
+                <span class="pk-eg">Example: GCF of 24 and 36 = 12</span>
+              </li>
+              <li>
+                <span class="pk-f-name">LCM — Least Common Multiple</span>
+                <span class="pk-f-mean"
+                  >The first number that <b>both</b> of your numbers fit into. It
+                  tells you when two cycles line up.</span
+                >
+                <span class="pk-eg">Example: LCM of 6 and 8 = 24</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Money left over</span>
+                <span class="pk-f-mean"
+                  >Money you start with − money you spend.</span
+                >
+                <span class="pk-eg">Example: $200 − $175 = $25 left</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Cost per guest</span>
+                <span class="pk-f-mean"
+                  >Total cost ÷ number of guests.</span
+                >
+                <span class="pk-eg">Example: $240 ÷ 8 = $30 each</span>
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">Break-apart trick (6.NS.4)</span>
+                <span class="pk-f-mean"
+                  >Pull out the GCF, add what's left inside, then multiply
+                  back.</span
+                >
+                <span class="pk-eg">Example: 24 + 36 = 12 × (2 + 3)</span>
+              </li>
+            </ul>
           </div>
           <div class="pk-callout">
             <h3>Sentence Frames</h3>
@@ -1476,19 +1508,20 @@
       }
 
       function drawLCMSvg() {
-        const dj = num("l-dj");
-        const bub = num("l-bubble");
+        let dj = num("l-dj");
+        let bub = num("l-bubble");
         const container = $("lcm-svg-container");
         if (!container) return;
-        if (isNaN(dj) || dj <= 0 || isNaN(bub) || bub <= 0) {
-          container.innerHTML = `
-            <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px; border: 1px solid var(--line);" xmlns="http://www.w3.org/2000/svg">
-              <text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e" font-style="italic">Enter DJ & Bubble intervals to visualize LCM</text>
-            </svg>
-          `;
-          return;
+        // Show a worked EXAMPLE (6 & 8 → 24, the hint's numbers) as the default
+        // reference so the card always has something to "look at first"; switch
+        // to the student's own numbers as soon as they enter them.
+        const isExample =
+          isNaN(dj) || dj <= 0 || isNaN(bub) || bub <= 0;
+        if (isExample) {
+          dj = 6;
+          bub = 8;
         }
-        
+
         const l = lcm(dj, bub);
         const maxVal = l * 1.5;
         
@@ -1525,7 +1558,13 @@
         container.innerHTML = `
           <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px; border: 1px solid var(--line);" xmlns="http://www.w3.org/2000/svg">
             <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">LCM Interval Timeline</text>
-            
+            ${
+              isExample
+                ? `<rect x="360" y="16" width="128" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" />
+                   <text x="424" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · 6 and 8</text>`
+                : ""
+            }
+
             <line x1="${startX}" y1="95" x2="${endX}" y2="95" stroke="#1763c7" stroke-width="2" />
             <line x1="${startX}" y1="135" x2="${endX}" y2="135" stroke="#f4a924" stroke-width="2" />
             
@@ -1545,23 +1584,28 @@
       }
 
       function drawBudgetSvg() {
-        const budget = num("c-budget");
-        const food = num("c-food");
-        const decor = num("c-decor");
-        const games = num("c-games");
-        const music = num("c-music");
+        let budget = num("c-budget");
+        let food = num("c-food");
+        let decor = num("c-decor");
+        let games = num("c-games");
+        let music = num("c-music");
         const container = $("budget-svg-container");
         if (!container) return;
-        
-        if (isNaN(budget) || budget <= 0 || isNaN(food) || food < 0 || isNaN(decor) || decor < 0 || isNaN(games) || games < 0 || isNaN(music) || music < 0) {
-          container.innerHTML = `
-            <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px; border: 1px solid var(--line);" xmlns="http://www.w3.org/2000/svg">
-              <text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e" font-style="italic">Enter Budget & Expenses to visualize spending</text>
-            </svg>
-          `;
-          return;
+
+        // Default to a worked EXAMPLE so the card always shows a reference;
+        // switches to the student's real ledger as soon as they enter it.
+        const isExample =
+          isNaN(budget) || budget <= 0 || isNaN(food) || food < 0 ||
+          isNaN(decor) || decor < 0 || isNaN(games) || games < 0 ||
+          isNaN(music) || music < 0;
+        if (isExample) {
+          budget = 200;
+          food = 80;
+          decor = 40;
+          games = 30;
+          music = 25;
         }
-        
+
         const total = food + decor + games + music;
         const left = budget - total;
         
@@ -1606,7 +1650,13 @@
         container.innerHTML = `
           <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px; border: 1px solid var(--line);" xmlns="http://www.w3.org/2000/svg">
             <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Budget Ledger Breakdown</text>
-            
+            ${
+              isExample
+                ? `<rect x="372" y="16" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" />
+                   <text x="430" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example ledger</text>`
+                : ""
+            }
+
             <rect x="${startX}" y="${barY}" width="${barWidth}" height="${barHeight}" rx="4" fill="#f1f5f9" />
             
             ${rects}
@@ -1634,17 +1684,16 @@
       }
 
       function drawDivisionSvg() {
-        const t = num("d-total"),
+        let t = num("d-total"),
           g = num("d-guests");
         const container = $("division-svg-container");
         if (!container) return;
-        if (isNaN(t) || t < 0 || isNaN(g) || g <= 0) {
-          container.innerHTML = `
-            <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px; border: 1px solid var(--line);" xmlns="http://www.w3.org/2000/svg">
-              <text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e" font-style="italic">Enter Total Cost & Guests to visualize division</text>
-            </svg>
-          `;
-          return;
+        // Default to a worked EXAMPLE ($240 ÷ 8 = $30.00) so the card always
+        // shows a reference; switches to the student's numbers on input.
+        const isExample = isNaN(t) || t < 0 || isNaN(g) || g <= 0;
+        if (isExample) {
+          t = 240;
+          g = 8;
         }
         const quotient = t / g;
         const quotientStr = quotient.toFixed(2);
@@ -1683,6 +1732,12 @@
         container.innerHTML = `
           <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px; border: 1px solid var(--line);" xmlns="http://www.w3.org/2000/svg">
             <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Place-Value Division Alignment</text>
+            ${
+              isExample
+                ? `<rect x="360" y="16" width="128" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" />
+                   <text x="424" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · $240 ÷ 8</text>`
+                : ""
+            }
             ${decimalLine}
             <path d="${bracketPath}" fill="none" stroke="#0f2b3c" stroke-width="2" />
             <text x="${divisorX}" y="120" font-family="'Courier New', Courier, monospace" font-size="18" fill="#0f2b3c" text-anchor="end">${divisorStr}</text>

@@ -619,16 +619,65 @@
         <div class="grid2" style="margin-top: 18px">
           <div class="pk-callout">
             <h3>Formula Bank</h3>
-            <p><b>Parallelogram / rectangle:</b> Area = b × h</p>
-            <p><b>Triangle:</b> Area = ½ × b × h</p>
-            <p><b>Trapezoid:</b> Area = ½ × (b₁ + b₂) × h</p>
-            <p><b>Composite:</b> decompose into parts, find each, then add</p>
-            <p class="pk-lvl2">
-              <b>With a hole:</b> Area = (whole rectangle) − (cut-out shape)
-            </p>
-            <p class="pk-lvl2">
-              <b>Missing dimension:</b> b = Area ÷ h &nbsp;|&nbsp; h = Area ÷ b
-            </p>
+            <ul class="pk-formula">
+              <li>
+                <span class="pk-f-name">Parallelogram / rectangle area</span>
+                <span class="pk-f-mean"
+                  >Multiply one full side (the base) by the straight-up height.
+                  The height must make a square corner with the base — not the
+                  slanted side.</span
+                >
+                <span class="pk-eg"
+                  >Example: base 12 ft × height 10 ft = 120 sq ft</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Triangle area</span>
+                <span class="pk-f-mean"
+                  >A triangle is half a parallelogram, so multiply base ×
+                  height, then take half.</span
+                >
+                <span class="pk-eg">Example: ½ × 6 ft × 5 ft = 15 sq ft</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Trapezoid area</span>
+                <span class="pk-f-mean"
+                  >Add the two parallel sides, multiply by the height, then take
+                  half.</span
+                >
+                <span class="pk-eg"
+                  >Example: ½ × (6 + 10) ft × 4 ft = 32 sq ft</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Composite area (add the parts)</span>
+                <span class="pk-f-mean"
+                  >Break a tricky shape into simple shapes, find each area, then
+                  add them together.</span
+                >
+                <span class="pk-eg"
+                  >Example: 80 sq ft + 30 sq ft = 110 sq ft</span
+                >
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">Area with a hole (subtract)</span>
+                <span class="pk-f-mean"
+                  >Find the whole shape's area, then subtract the piece that is
+                  cut out.</span
+                >
+                <span class="pk-eg"
+                  >Example: 120 sq ft − 18 sq ft = 102 sq ft</span
+                >
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">Find a missing side</span>
+                <span class="pk-f-mean"
+                  >If you already know the area, divide it by the side you have
+                  to get the side you need.</span
+                >
+                <span class="pk-eg">Example: 84 sq ft ÷ 12 ft = 7 ft</span>
+              </li>
+            </ul>
           </div>
           <div class="pk-callout">
             <h3>Sentence Frames</h3>
@@ -1061,6 +1110,15 @@
                 Example: b = 12, h = 10 → Area = 12 × 10 = 120 sq ft.
               </p>
             </details>
+            <div class="pk-lvl2" style="margin-top: 16px">
+              <div class="task">
+                <strong>Level 2 extension:</strong> a parallelogram floor has a
+                slanted side that is longer than its height. Explain why you
+                must use the perpendicular height (straight up, a right angle)
+                in Area = b × h, not the slanted side. What would happen to your
+                area if you used the slant by mistake — too big or too small?
+              </div>
+            </div>
 
             <!-- 1b Triangle nook -->
           </div>
@@ -1271,6 +1329,10 @@
               </text>
             </svg>
             <div class="formula-box">Area = ½ × b × h</div>
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: find base × height first, then take half. Try b = 6
+              and h = 4 → 6 × 4 = 24, half of 24 = 12 sq ft.
+            </p>
             <div class="grid2">
               <div>
                 <label class="fld" for="p2-base">Nook base (b) in feet</label>
@@ -1310,6 +1372,15 @@
                 = 6, h = 5 → Area = ½ × 6 × 5 = 15 sq ft. Don't forget the ½!
               </p>
             </details>
+            <div class="pk-lvl2" style="margin-top: 16px">
+              <div class="task">
+                <strong>Level 2 extension:</strong> two different triangles can
+                have the same area. Design a second nook with a different base
+                and height that has the same area as yours (for example, double
+                the base and halve the height). Show that both areas match, and
+                explain why.
+              </div>
+            </div>
 
             <!-- 1c Composite -->
           </div>
@@ -2040,6 +2111,14 @@
         <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
           Level 1 worked step: ½ × 6 × 4 → ½ × 24 = 12.
         </p>
+        <div class="pk-lvl2" style="margin-top: 16px">
+          <div class="task">
+            <strong>Level 2 extension:</strong> compare two flooring choices for
+            your real area. How much money do you save by choosing vinyl
+            ($1.80/sq ft) instead of hardwood ($3.50/sq ft)? Find each total
+            cost, then show the subtraction to prove your savings.
+          </div>
+        </div>
       </section>
 
       <!-- ===================== DELIVERABLE ===================== -->
@@ -2635,17 +2714,33 @@
       }
 
       function drawVisualizer() {
-        const p1b = num("p1-base") || 0;
-        const p1h = num("p1-height") || 0;
-        const p2b = num("p2-base") || 0;
-        const p2h = num("p2-height") || 0;
-        const p3ab = num("p3-a-base") || 0;
-        const p3ah = num("p3-a-height") || 0;
-        const p3bb = num("p3-b-base") || 0;
-        const p3bh = num("p3-b-height") || 0;
+        let p1b = num("p1-base") || 0;
+        let p1h = num("p1-height") || 0;
+        let p2b = num("p2-base") || 0;
+        let p2h = num("p2-height") || 0;
+        let p3ab = num("p3-a-base") || 0;
+        let p3ah = num("p3-a-height") || 0;
+        let p3bb = num("p3-b-base") || 0;
+        let p3bh = num("p3-b-height") || 0;
+
+        // Show a worked EXAMPLE floor plan (12×10 main floor, 6×5 nook, two
+        // composite rectangles) as the default so the blueprint always has
+        // something to look at; switch to the student's real dimensions as soon
+        // as they enter a main floor base and height.
+        const isExample = !(p1b > 0 && p1h > 0);
+        if (isExample) {
+          p1b = 12;
+          p1h = 10;
+          p2b = 6;
+          p2h = 5;
+          p3ab = 10;
+          p3ah = 8;
+          p3bb = 6;
+          p3bh = 5;
+        }
 
         let html = "";
-        if (p1b > 0 && p1h > 0) {
+        {
           const maxDim = Math.max(
             p1b,
             p1h,
@@ -2716,14 +2811,11 @@
             ${shapes.join("")}
             <text x="250" y="215" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">Scale Blueprint Map View</text>
           `;
-        } else {
-          html = `
-            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" font-style="italic">Enter your room dimensions to draw the floor blueprint</text>
-          `;
         }
 
         const svgString = `
           <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            ${isExample ? `<rect x="400" y="16" width="80" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="440" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example</text>` : ""}
             ${html}
           </svg>
         `;
