@@ -918,6 +918,7 @@
     ["tasks", "Tasks", "✅"],
     ["homework", "Homework", "📋"],
     ["calendar", "Calendar", "📆"],
+    ["rewards", "Allowance", "💰"],
     ["routines", "Routines", "🔁"],
     ["calming", "Calming", "🧘"],
     ["ai", "AI Help", "🤖"],
@@ -8837,6 +8838,12 @@ ${name}`;
         else openCommandBar();
         return;
       }
+
+      // Let the browser/OS keep its own shortcuts (Ctrl/Cmd+F find, +P print,
+      // +R reload, +A select-all, Ctrl/Cmd+1..9 tab switch, etc.). Only our
+      // unmodified single-key shortcuts (/ ? f 1-6) below should act — without
+      // this guard, pressing Ctrl+F matched `ev.key === "f"` and swallowed Find.
+      if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
 
       if (
         ev.key === "/" &&
