@@ -193,6 +193,7 @@
 
   const CARDS = [
     ["glance", "Today at a glance"],
+    ["payday", "Allowance"],
     ["garden", "Focus Garden"],
     ["calendar", "Calendar"],
     ["todos", "To-do list"],
@@ -383,12 +384,17 @@
         enabled: true,
         currency: "$",
         balance: 0, // earned, not yet paid out
-        paidOut: 0, // lifetime cashed out by a parent
+        paidOut: 0, // lifetime paid out by a parent
         rates: { task: 0.5, reminder: 0.1, routine: 0.25, focus: 0.25 },
         dailyCap: 5, // max earnable per day (anti-gaming); 0 = no cap
-        pin: "", // parent PIN for cash-out; "" = no gate set yet
+        weeklyCap: 10, // realistic ceiling on a single week's payout; 0 = none
+        bonusPerfectWeek: 1, // bonus when there's activity every weekday Mon–Fri
+        pin: "", // parent PIN for payout; "" = no gate set yet
         // [{ id, ts(ISO), kind, label, amount, type:"earn"|"cashout" }]
         ledger: [],
+        // Weekly payouts a parent has settled:
+        // [{ id, weekKey(Mon YYYY-MM-DD), amount, paidAt(ISO), breakdown:{} }]
+        payouts: [],
       },
       updatedAt: Date.now(),
     };
@@ -517,6 +523,19 @@
           }))
           .slice(0, 1000)
       : [];
+    const payouts = Array.isArray(r.payouts)
+      ? r.payouts
+          .filter((p) => p && typeof p === "object" && p.weekKey)
+          .map((p) => ({
+            id: String(p.id || uid("pay")),
+            weekKey: String(p.weekKey),
+            amount: Math.max(0, num(p.amount, 0)),
+            paidAt: String(p.paidAt || ""),
+            breakdown:
+              p.breakdown && typeof p.breakdown === "object" ? p.breakdown : {},
+          }))
+          .slice(0, 520) // ~10 years of weeks
+      : [];
     return {
       enabled: r.enabled !== false,
       currency: typeof r.currency === "string" ? r.currency.slice(0, 3) : "$",
@@ -529,8 +548,14 @@
         focus: Math.max(0, num(rates.focus, base.rates.focus)),
       },
       dailyCap: Math.max(0, num(r.dailyCap, base.dailyCap)),
+      weeklyCap: Math.max(0, num(r.weeklyCap, base.weeklyCap)),
+      bonusPerfectWeek: Math.max(
+        0,
+        num(r.bonusPerfectWeek, base.bonusPerfectWeek),
+      ),
       pin: /^\d{0,8}$/.test(String(r.pin || "")) ? String(r.pin || "") : "",
       ledger,
+      payouts,
     };
   }
 
@@ -1688,6 +1713,102 @@
     // changes; this keeps earning atomic with the action that triggered it.
     toast(`${money(amt)} earned 💰`);
   }
+
+  // ---- Weekly payday (auto-computed allowance cycle) ----------------------
+  const round2 = (n) => Math.round((Number(n) || 0) * 100) / 100;
+  const ymd = (d) =>
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
+      d.getDate(),
+    ).padStart(2, "0")}`;
+
+  // The Monday (week start) for a given ISO date, as a YYYY-MM-DD key.
+  function mondayOf(iso) {
+    const d = parseLocal(iso) || startOfToday();
+    const dow = (d.getDay() + 6) % 7; // 0=Mon … 6=Sun
+    d.setDate(d.getDate() - dow);
+    return ymd(d);
+  }
+  const thisWeekKey = () => mondayOf(todayKey());
+
+  // A friendly "Jun 16 – 22" label for a week key.
+  function weekLabel(weekKey) {
+    const a = parseLocal(weekKey);
+    const b = parseLocal(weekKey);
+    b.setDate(b.getDate() + 6);
+    const mon = (d) => d.toLocaleDateString(undefined, { month: "short" });
+    const same = a.getMonth() === b.getMonth();
+    return same
+      ? `${mon(a)} ${a.getDate()} – ${b.getDate()}`
+      : `${mon(a)} ${a.getDate()} – ${mon(b)} ${b.getDate()}`;
+  }
+
+  // Auto-compute one week's allowance straight from the ledger: per-category
+  // totals, a perfect-week bonus, and the weekly cap. No stored state — the
+  // ledger is the single source of truth, so this can never drift.
+  function computeWeek(weekKey) {
+    const r = state.rewards;
+    const end = (() => {
+      const d = parseLocal(weekKey);
+      d.setDate(d.getDate() + 6);
+      return ymd(d);
+    })();
+    const by = { task: 0, reminder: 0, routine: 0, focus: 0 };
+    const days = new Set();
+    let raw = 0;
+    for (const e of r.ledger) {
+      if (e.type !== "earn") continue;
+      const d = String(e.ts).slice(0, 10);
+      if (d < weekKey || d > end) continue;
+      by[e.kind] = round2((by[e.kind] || 0) + e.amount);
+      raw = round2(raw + e.amount);
+      days.add(d);
+    }
+    const weekdays = [...days].filter((d) => {
+      const dow = parseLocal(d).getDay();
+      return dow >= 1 && dow <= 5;
+    }).length;
+    const bonus =
+      Number(r.bonusPerfectWeek) > 0 && weekdays >= 5
+        ? round2(r.bonusPerfectWeek)
+        : 0;
+    let total = round2(raw + bonus);
+    const cap = Number(r.weeklyCap) || 0;
+    const capped = cap > 0 && total > cap;
+    if (capped) total = round2(cap);
+    return {
+      weekKey,
+      end,
+      by,
+      raw,
+      bonus,
+      total,
+      capped,
+      daysActive: days.size,
+      weekdays,
+    };
+  }
+
+  const isWeekPaid = (weekKey) =>
+    (state.rewards.payouts || []).some((p) => p.weekKey === weekKey);
+
+  // Every distinct week that has any earnings, newest first.
+  function earnedWeekKeys() {
+    const set = new Set();
+    for (const e of state.rewards.ledger)
+      if (e.type === "earn" && e.ts) set.add(mondayOf(e.ts.slice(0, 10)));
+    return [...set].sort().reverse();
+  }
+
+  // Past weeks (before the current one) with money still owed to the kid.
+  function readyWeeks() {
+    const now = thisWeekKey();
+    return earnedWeekKeys()
+      .filter((wk) => wk < now && !isWeekPaid(wk))
+      .map(computeWeek)
+      .filter((w) => w.total > 0);
+  }
+  const readyTotal = () =>
+    round2(readyWeeks().reduce((s, w) => s + w.total, 0));
 
   const GRADIENTS = [
     ["", "Default Navy"],
@@ -3213,6 +3334,7 @@
       const routine = pickRoutineForNow();
       const map = {
         glance: glanceCard(),
+        payday: paydayCard(),
         calendar: calendarCard(),
         todos: todoCard(),
         assignments: assignmentListCard(),
@@ -4177,67 +4299,162 @@ Due May 31"></textarea>
 
     rewards() {
       const r = state.rewards;
-      const todayEarned = rewardsEarnedToday();
       const rateRow = (k, label) =>
         `<div class="rw-rate"><span>${label}</span><b>${money(r.rates[k])}</b></div>`;
-      const ledger = r.ledger.slice(0, 20);
-      const ledgerHtml = ledger.length
-        ? ledger
-            .map((e) => {
-              const when = e.ts ? niceDate(e.ts.slice(0, 10)) : "";
-              const sign = e.type === "cashout" ? "−" : "+";
-              const cls = e.type === "cashout" ? "rw-out" : "rw-in";
-              const icon = e.type === "cashout" ? "💵" : "💰";
-              return `<div class="rw-row"><span class="rw-ic" aria-hidden="true">${icon}</span><span class="rw-lbl">${esc(
-                e.label || (e.type === "cashout" ? "Cashed out" : e.kind),
-              )}<small>${esc(when)}</small></span><b class="${cls}">${sign}${money(
-                e.amount,
-              )}</b></div>`;
-            })
-            .join("")
-        : emptyState(
-            "🐷",
-            "No money earned yet — finish some work to start your balance.",
+
+      // Category breakdown rows for a computed week (a tiny "paystub").
+      const KIND_LABEL = {
+        task: "✅ Assignments & to-dos",
+        routine: "🔁 Routines",
+        focus: "▶ Focus sessions",
+        reminder: "🔔 Reminders",
+      };
+      const stub = (w) =>
+        `<div class="pay-stub">${["task", "routine", "focus", "reminder"]
+          .filter((k) => w.by[k] > 0)
+          .map(
+            (k) =>
+              `<div class="pay-line"><span>${KIND_LABEL[k]}</span><b>${money(
+                w.by[k],
+              )}</b></div>`,
+          )
+          .join("")}
+          ${
+            w.bonus > 0
+              ? `<div class="pay-line pay-bonus"><span>⭐ Perfect-week bonus</span><b>${money(
+                  w.bonus,
+                )}</b></div>`
+              : ""
+          }
+          ${
+            w.capped
+              ? `<div class="pay-line pay-cap"><span>Weekly cap</span><b>${money(
+                  state.rewards.weeklyCap,
+                )}</b></div>`
+              : ""
+          }
+          <div class="pay-line pay-total"><span>Total</span><b>${money(
+            w.total,
+          )}</b></div></div>`;
+
+      // This week so far — accruing, not payable until the week ends.
+      const wk = computeWeek(thisWeekKey());
+      const dayChips = [0, 1, 2, 3, 4, 5, 6]
+        .map((i) => {
+          const d = parseLocal(thisWeekKey());
+          d.setDate(d.getDate() + i);
+          const key = ymd(d);
+          const has = state.rewards.ledger.some(
+            (e) => e.type === "earn" && e.ts.slice(0, 10) === key,
           );
+          const today = key === todayKey();
+          return `<span class="pay-day ${has ? "on" : ""} ${
+            today ? "now" : ""
+          }">${["M", "T", "W", "T", "F", "S", "S"][i]}</span>`;
+        })
+        .join("");
+
+      const ready = readyWeeks();
+      const readyHtml = ready.length
+        ? ready
+            .map(
+              (w) => `
+          <div class="pay-week">
+            <div class="pay-week-head">
+              <div><b>Week of ${weekLabel(w.weekKey)}</b><small>${
+                w.daysActive
+              } active day${w.daysActive === 1 ? "" : "s"}</small></div>
+              <div class="pay-amt">${money(w.total)}</div>
+            </div>
+            ${stub(w)}
+            <button class="btn primary block" data-act="reward-payout" data-arg="${
+              w.weekKey
+            }" style="margin-top:10px">💵 Pay out ${money(
+              w.total,
+            )} (parent)</button>
+          </div>`,
+            )
+            .join("")
+        : `<p class="sub" style="margin:0">Nothing waiting — finished weeks show up here every Monday, ready to hand over. 👍</p>`;
+
+      const payouts = (r.payouts || [])
+        .slice()
+        .sort((a, b) => String(b.paidAt).localeCompare(String(a.paidAt)))
+        .slice(0, 12);
+      const historyHtml = payouts.length
+        ? payouts
+            .map(
+              (p) =>
+                `<div class="rw-row"><span class="rw-ic" aria-hidden="true">💵</span><span class="rw-lbl">Week of ${esc(
+                  weekLabel(p.weekKey),
+                )}<small>Paid ${esc(
+                  p.paidAt ? niceDate(p.paidAt.slice(0, 10)) : "",
+                )}</small></span><b class="rw-out">${money(p.amount)}</b></div>`,
+            )
+            .join("")
+        : emptyState("🧾", "No payouts yet.");
+
       return (
         backHeader("Allowance", "more") +
+        (r.enabled
+          ? ""
+          : `<div class="card"><p class="sub" style="margin:0">💤 Rewards are turned off. Turn them on in <b>Parent settings</b> below.</p></div>`) +
         card(
-          "rw-balance",
-          "Money bank",
-          r.enabled
-            ? "Earn money by finishing your work."
-            : "Rewards are turned off.",
-          `<div class="rw-bank">
-            <div class="rw-big">${money(r.balance)}</div>
-            <div class="rw-sub">available to cash out</div>
-          </div>
-          <div class="statgrid">
-            <div class="statbox"><b>${money(todayEarned)}</b><small>Earned today</small></div>
-            <div class="statbox"><b>${money(r.paidOut)}</b><small>Paid out</small></div>
-          </div>
-          <button class="btn primary block" data-act="reward-cashout" ${
-            r.balance <= 0 ? "disabled" : ""
-          } style="margin-top:12px">💵 Cash out (parent)</button>`,
+          "pay-ready",
+          ready.length ? "💵 Ready for payday" : "💵 Payday",
+          ready.length
+            ? `${money(readyTotal())} to hand over — a grown-up taps to pay.`
+            : "Finished weeks get added up here automatically.",
+          readyHtml,
         ) +
         card(
-          "rw-rates",
+          "pay-thisweek",
+          "📅 This week so far",
+          weekLabel(thisWeekKey()),
+          `<div class="pay-this">
+            <div class="pay-this-amt">${money(wk.total)}</div>
+            <div class="pay-days">${dayChips}</div>
+          </div>
+          ${wk.total > 0 ? stub(wk) : `<p class="sub" style="text-align:center;margin:8px 0 0">Finish some work to start earning this week.</p>`}
+          <p class="sub" style="margin:10px 0 0;text-align:center">💡 This week is paid out next Monday.</p>`,
+        ) +
+        card(
+          "pay-rates",
           "What things are worth",
-          r.dailyCap > 0
-            ? `Up to ${money(r.dailyCap)} can be earned per day.`
-            : "",
+          [
+            r.dailyCap > 0 ? `${money(r.dailyCap)}/day max` : "",
+            r.weeklyCap > 0 ? `${money(r.weeklyCap)}/week max` : "",
+          ]
+            .filter(Boolean)
+            .join(" · "),
           `<div class="rw-rates">
             ${rateRow("task", "✅ Finish an assignment / to-do")}
-            ${rateRow("reminder", "🔔 Handle a reminder")}
             ${rateRow("routine", "🔁 Complete a routine")}
             ${rateRow("focus", "▶ Finish a focus session")}
+            ${rateRow("reminder", "🔔 Handle a reminder")}
+            ${
+              r.bonusPerfectWeek > 0
+                ? `<div class="rw-rate"><span>⭐ Perfect week (every weekday)</span><b>+${money(
+                    r.bonusPerfectWeek,
+                  )}</b></div>`
+                : ""
+            }
           </div>
           <button class="btn block" data-act="reward-settings" style="margin-top:10px">⚙️ Parent settings</button>`,
         ) +
         card(
-          "rw-history",
-          "Recent activity",
+          "pay-paidtotal",
+          "Paid out",
           "",
-          `<div class="rw-list">${ledgerHtml}</div>`,
+          `<div class="rw-bank"><div class="rw-big">${money(
+            r.paidOut,
+          )}</div><div class="rw-sub">handed over all-time</div></div>`,
+        ) +
+        card(
+          "rw-history",
+          "Payout history",
+          "",
+          `<div class="rw-list">${historyHtml}</div>`,
         )
       );
     },
@@ -4610,6 +4827,28 @@ Due May 31"></textarea>
       });
     }
     return list;
+  }
+
+  // Seamless home-screen glance at the allowance: this week's running total
+  // and any finished weeks waiting for a parent payout. Taps through to Payday.
+  function paydayCard() {
+    const r = state.rewards;
+    if (!r || !r.enabled) return "";
+    const wk = computeWeek(thisWeekKey());
+    const ready = readyTotal();
+    if (wk.total <= 0 && ready <= 0) return "";
+    return `<section class="card pay-home" data-card="payday" data-act="view-rewards" role="button" tabindex="0" aria-label="Open Payday">
+      <div class="head"><div><h3>💰 Allowance</h3><p class="sub">${weekLabel(
+        thisWeekKey(),
+      )}</p></div><span class="pay-home-amt">${money(wk.total)}</span></div>
+      ${
+        ready > 0
+          ? `<div class="pay-home-ready">💵 <b>${money(
+              ready,
+            )}</b> ready for payday — tap to pay out</div>`
+          : `<p class="sub" style="margin:0">Earned so far this week · paid out next Monday.</p>`
+      }
+    </section>`;
   }
 
   function momentumCard() {
@@ -5804,16 +6043,32 @@ Due May 31"></textarea>
           0,
         );
       const r2 = Math.round((sumType("earn") - sumType("cashout")) * 100) / 100;
+      // Union weekly payouts by id too — a payout settled on either device must
+      // count once. paidOut is derived: legacy cashouts + recorded payouts.
+      const payById = new Map((lr.payouts || []).map((p) => [p.id, p]));
+      for (const p of rr.payouts || [])
+        if (!payById.has(p.id)) payById.set(p.id, p);
+      const payouts = [...payById.values()].sort((a, b) =>
+        String(b.paidAt).localeCompare(String(a.paidAt)),
+      );
+      const paidFromPayouts = payouts.reduce(
+        (s, p) => s + (Number(p.amount) || 0),
+        0,
+      );
       const cfg = (remote.updatedAt || 0) > (local.updatedAt || 0) ? rr : lr;
+      const numc = (v, d) => (Number.isFinite(Number(v)) ? Number(v) : d);
       merged.rewards = {
         enabled: cfg.enabled !== false,
         currency: cfg.currency || "$",
         rates: { ...(lr.rates || {}), ...(cfg.rates || {}) },
         dailyCap: Number(cfg.dailyCap) || 0,
+        weeklyCap: numc(cfg.weeklyCap, 10),
+        bonusPerfectWeek: numc(cfg.bonusPerfectWeek, 1),
         pin: cfg.pin || "",
         balance: Math.max(0, r2),
-        paidOut: Math.round(sumType("cashout") * 100) / 100,
+        paidOut: Math.round((sumType("cashout") + paidFromPayouts) * 100) / 100,
         ledger: ledger.slice(0, 1000),
+        payouts: payouts.slice(0, 520),
       };
     }
 
@@ -6845,27 +7100,55 @@ Due May 31"></textarea>
     "view-insights": () => setView("insights"),
     "view-rewards": () => setView("rewards"),
 
-    "reward-cashout": () => {
+    // Pay out one finished week. Opens a parent-gated paystub.
+    "reward-payout": (_, weekKey) => {
+      if (!weekKey || isWeekPaid(weekKey)) return;
+      const w = computeWeek(weekKey);
+      if (w.total <= 0) return;
       const r = state.rewards;
-      if (r.balance <= 0) return;
+      const KIND_LABEL = {
+        task: "Assignments & to-dos",
+        routine: "Routines",
+        focus: "Focus sessions",
+        reminder: "Reminders",
+      };
+      const lines = ["task", "routine", "focus", "reminder"]
+        .filter((k) => w.by[k] > 0)
+        .map(
+          (k) =>
+            `<div class="pay-line"><span>${KIND_LABEL[k]}</span><b>${money(
+              w.by[k],
+            )}</b></div>`,
+        )
+        .join("");
       openModal(
-        "Cash out",
-        `<p class="sub">Give <b>${money(r.balance)}</b> to ${esc(
+        "Payday",
+        `<p class="sub">Hand <b>${money(w.total)}</b> to ${esc(
           state.settings.studentName || "your child",
-        )} and clear the balance. A grown-up does this part.</p>
+        )} for the week of <b>${weekLabel(weekKey)}</b>. A grown-up does this part.</p>
+        <div class="pay-stub">${lines}${
+          w.bonus > 0
+            ? `<div class="pay-line pay-bonus"><span>⭐ Perfect-week bonus</span><b>${money(
+                w.bonus,
+              )}</b></div>`
+            : ""
+        }<div class="pay-line pay-total"><span>Total</span><b>${money(
+          w.total,
+        )}</b></div></div>
         ${
           r.pin
-            ? `<div class="field"><label>Parent PIN</label><input id="rwPin" type="password" inputmode="numeric" placeholder="••••" autocomplete="off"></div>`
+            ? `<div class="field" style="margin-top:10px"><label>Parent PIN</label><input id="rwPin" type="password" inputmode="numeric" placeholder="••••" autocomplete="off"></div>`
             : ""
         }
         <p id="rwErr" class="sub" style="color:#c0473a;display:none">That PIN didn't match.</p>
-        <div class="row"><button class="btn" data-act="close-modal">Cancel</button><button class="btn primary" data-act="reward-confirm-cashout">💵 Confirm ${money(
-          r.balance,
+        <div class="row"><button class="btn" data-act="close-modal">Cancel</button><button class="btn primary" data-act="reward-confirm-payout" data-arg="${weekKey}">💵 Mark paid ${money(
+          w.total,
         )}</button></div>`,
       );
     },
-    "reward-confirm-cashout": () => {
+    "reward-confirm-payout": (_, weekKey) => {
       const r = state.rewards;
+      if (!weekKey || isWeekPaid(weekKey)) return closeModal();
       if (r.pin) {
         const entered = ($("#rwPin")?.value || "").trim();
         if (entered !== r.pin) {
@@ -6874,22 +7157,20 @@ Due May 31"></textarea>
           return;
         }
       }
-      const amt = r.balance;
-      if (amt <= 0) return;
-      r.paidOut = Math.round((r.paidOut + amt) * 100) / 100;
-      r.ledger.unshift({
-        id: uid("e"),
-        ts: new Date().toISOString(),
-        kind: "cashout",
-        label: "Cashed out",
-        amount: amt,
-        type: "cashout",
+      const w = computeWeek(weekKey);
+      if (w.total <= 0) return closeModal();
+      r.payouts.unshift({
+        id: uid("pay"),
+        weekKey,
+        amount: w.total,
+        paidAt: new Date().toISOString(),
+        breakdown: { ...w.by, bonus: w.bonus },
       });
-      r.balance = 0;
+      r.paidOut = round2(r.paidOut + w.total);
       save();
       closeModal();
       render();
-      toast(`Cashed out ${money(amt)} 💵`);
+      toast(`Paid ${money(w.total)} for ${weekLabel(weekKey)} 💵`);
       triggerConfetti();
     },
     "reward-settings": () => {
@@ -6898,7 +7179,7 @@ Due May 31"></textarea>
         `<div class="field"><label>${id}</label><input id="rw_${k}" type="number" min="0" step="0.05" value="${r.rates[k]}"></div>`;
       openModal(
         "Parent settings",
-        `<p class="sub">Set what each finished thing is worth. Only a grown-up should change these.</p>
+        `<p class="sub">Set what each finished thing is worth, and the weekly limits. Only a grown-up should change these.</p>
         <label class="rw-toggle"><input type="checkbox" id="rwEnabled" ${
           r.enabled ? "checked" : ""
         }> Rewards turned on</label>
@@ -6912,11 +7193,19 @@ Due May 31"></textarea>
           <div class="field"><label>Most per day</label><input id="rwCap" type="number" min="0" step="0.25" value="${
             r.dailyCap
           }"></div>
+          <div class="field"><label>Most per week</label><input id="rwWeekCap" type="number" min="0" step="0.5" value="${
+            r.weeklyCap
+          }"></div>
+        </div>
+        <div class="g2 grid">
+          <div class="field"><label>Perfect-week bonus</label><input id="rwBonus" type="number" min="0" step="0.25" value="${
+            r.bonusPerfectWeek
+          }"></div>
           <div class="field"><label>Symbol</label><input id="rwCur" maxlength="3" value="${esc(
             r.currency,
           )}"></div>
         </div>
-        <div class="field"><label>Parent PIN for cash-out (optional, digits only)</label><input id="rwSetPin" type="text" inputmode="numeric" pattern="\\d*" placeholder="leave blank for no PIN" value="${esc(
+        <div class="field"><label>Parent PIN for payout (optional, digits only)</label><input id="rwSetPin" type="text" inputmode="numeric" pattern="\\d*" placeholder="leave blank for no PIN" value="${esc(
           r.pin,
         )}"></div>
         <button class="btn primary block" data-act="save-reward-settings" style="margin-top:8px">Save settings</button>`,
@@ -6931,6 +7220,8 @@ Due May 31"></textarea>
       r.rates.routine = num("rw_routine");
       r.rates.focus = num("rw_focus");
       r.dailyCap = num("rwCap");
+      r.weeklyCap = num("rwWeekCap");
+      r.bonusPerfectWeek = num("rwBonus");
       r.currency = ($("#rwCur")?.value || "$").slice(0, 3) || "$";
       const pin = ($("#rwSetPin")?.value || "").trim();
       if (/^\d{0,8}$/.test(pin)) r.pin = pin;
