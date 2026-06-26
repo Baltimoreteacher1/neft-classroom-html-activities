@@ -10,10 +10,83 @@ function esc(s) {
   return d.innerHTML;
 }
 
+const TEACHER_KEY = "nt-teacher-mode";
+
+function readStickyTeacher() {
+  try {
+    return localStorage.getItem(TEACHER_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+function setStickyTeacher(on) {
+  try {
+    if (on) localStorage.setItem(TEACHER_KEY, "1");
+    else localStorage.removeItem(TEACHER_KEY);
+  } catch {
+    /* storage blocked — fall back to URL param only */
+  }
+}
+
 export function isTeacherMode() {
   if (typeof window === "undefined") return false;
   const params = new URLSearchParams(window.location.search);
-  return params.get("teacher") === "1" || params.get("mode") === "teacher";
+  // Explicit student override always wins (lets a teacher hand a device back).
+  if (params.get("teacher") === "0" || params.get("student") === "1")
+    return false;
+  if (params.get("teacher") === "1" || params.get("mode") === "teacher")
+    return true;
+  return readStickyTeacher();
+}
+
+/**
+ * Easy teacher-mode access — call once at app boot (before mountTeacherPanel).
+ * - A `?teacher=1` link makes teacher mode STICK on this device (every lesson,
+ *   no param needed afterward); `?teacher=0` / `?student=1` clears it.
+ * - Alt+Shift+T toggles teacher/student instantly (ignored while typing).
+ * - When teacher mode is on, a small badge shows with a one-click Exit.
+ */
+export function initTeacherAccess() {
+  if (typeof window === "undefined") return;
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("teacher") === "1" || params.get("mode") === "teacher")
+    setStickyTeacher(true);
+  if (params.get("teacher") === "0" || params.get("student") === "1")
+    setStickyTeacher(false);
+
+  document.addEventListener("keydown", (e) => {
+    // Ignore while typing in a field so it never collides with student work.
+    const el = e.target;
+    const tag = (el && el.tagName ? el.tagName : "").toLowerCase();
+    if (tag === "input" || tag === "textarea" || (el && el.isContentEditable))
+      return;
+    // e.code is layout/Option-proof (Mac Option+Shift+T composes a glyph).
+    if (e.altKey && e.shiftKey && e.code === "KeyT") {
+      e.preventDefault();
+      setStickyTeacher(!isTeacherMode());
+      window.location.reload();
+    }
+  });
+
+  if (isTeacherMode()) mountTeacherBadge();
+}
+
+function mountTeacherBadge() {
+  if (document.querySelector(".teacher-mode-badge")) return;
+  const badge = document.createElement("div");
+  badge.className = "teacher-mode-badge";
+  badge.innerHTML = `
+    <span>👩‍🏫 Teacher Mode</span>
+    <button type="button" class="teacher-mode-exit">Exit ✕</button>`;
+  badge.querySelector(".teacher-mode-exit").addEventListener("click", () => {
+    setStickyTeacher(false);
+    // Drop any teacher params so a reload truly returns to student view.
+    const url = new URL(window.location.href);
+    url.searchParams.delete("teacher");
+    url.searchParams.delete("mode");
+    window.location.href = url.toString();
+  });
+  document.body.append(badge);
 }
 
 /** Floating teacher panel with answer keys, pacing, listen-fors, differentiation. */
