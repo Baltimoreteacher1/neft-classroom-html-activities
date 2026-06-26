@@ -16,9 +16,17 @@
 import { bootLesson } from "../../core/lesson-renderer.js";
 import "../../../assets/design-tokens.css";
 import "./flagship.css";
+import "./flagship-pro.css";
 import { stackHtml, t } from "../../core/i18n.js";
 
-const PHASE_KEYS = ["launch", "vocab", "explore", "practice", "connect", "reflect"];
+const PHASE_KEYS = [
+  "launch",
+  "vocab",
+  "explore",
+  "practice",
+  "connect",
+  "reflect",
+];
 
 export function bootFlagship(config) {
   const fl = config.flagship || {};
@@ -97,7 +105,9 @@ function showMissionIntro(fl, config, onStart) {
       onStart();
     }, 350);
   };
-  overlay.querySelector(".flagship-mission-start").addEventListener("click", start);
+  overlay
+    .querySelector(".flagship-mission-start")
+    .addEventListener("click", start);
 }
 
 // A persistent narrative banner that reflects the current scene. It listens to
