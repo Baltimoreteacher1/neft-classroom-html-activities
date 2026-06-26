@@ -2,6 +2,18 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { buildTptSlideDeckV3 } from "./lib/tpt-slide-deck-v3.mjs";
+import { EDITORIAL_FONT_IMPORT } from "./lib/editorial-print.mjs";
+
+// Editorial finish for slides: serif titles only. A deck is a presentation
+// medium with designed per-slide backgrounds, so (unlike the document
+// generators) we do NOT touch backgrounds — just bring the Fraunces serif to
+// titles so the deck matches the publisher-grade lessons.
+const SLIDES_EDITORIAL = `
+.slide-main-title,.title-heading,.g-doc-title,.section-divider-title,
+.post-it-title,.g-title-block h1,.g-title-block h2,h1,h2{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}`;
 import { getUnitPalette, paletteToCssVars } from "./lib/slide-theme-palettes.mjs";
 import { REFERENCE_CSS, tokensToCssVars } from "./lib/slide-reference-theme.mjs";
 
@@ -917,6 +929,7 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
+    ${EDITORIAL_FONT_IMPORT}
     :root {${tokensToCssVars(unitPalette, getThemeColor(data.theme))}
     }
     * { box-sizing: border-box; }
@@ -2121,7 +2134,7 @@ function generateSlidesHtml(lessonId, data, googleSlidesUrl) {
       .g-menu-bar { display: none; }
       .presenter-hud { font-size: 10px; padding: 6px 10px; }
     }
-    
+    ${SLIDES_EDITORIAL}
   </style>
 </head>
 <body class="bilingual-on">

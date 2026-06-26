@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Write Equations — Student Handout</title>
   <style>
+    @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap");
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@600;700&family=Hanken+Grotesk:wght@400;600&display=swap');
     * { box-sizing: border-box; }
     body { font-family: 'Hanken Grotesk', system-ui, sans-serif; color: #264653; margin: 0; padding: 24px; background: #fff; }
@@ -25,13 +26,27 @@
       .no-print { display: none; }
       .box { break-inside: avoid; }
     }
+    
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
   </style>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
 </head>
 <body>
   <div class="no-print" style="text-align:right; margin-bottom:12px;">
@@ -45,9 +60,10 @@
 
   <div class="bilingual">
     <div class="box">
-      <h2>Today's Goal / Meta de hoy</h2>
-      <p lang="en">I can write an equation to represent a real-world situation.</p>
+      <h2>Objectives / Objetivos</h2>
+      <p lang="en"><strong>Content Objective:</strong> I can write an equation to represent a real-world situation.</p>
       
+      <p lang="en"><strong>Language Objective:</strong> I can explain my equation using the words equation, variable, equal sign, and expression.</p>
     </div>
     <div class="box">
       <h2>Key Idea / Idea clave</h2>
@@ -80,11 +96,5 @@
   </div>
 
   <footer class="footer">Neft Teacher · 7-1 · Printable student handout</footer>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
 </body>
 </html>

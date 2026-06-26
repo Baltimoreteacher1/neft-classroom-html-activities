@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
+    @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap");
     :root {
       --ref-navy: #1C2E42;
       --ref-teal: #387F84;
@@ -1112,10 +1113,32 @@
     .cfu-card { text-align:center; }
     .cfu-poll { display:flex; gap:8px; justify-content:center; margin:12px 0; }
     .cfu-btn { flex:none; min-width:100px; }
-    .diff-paths-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+    .diff-paths-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:8px; }
     .diff-path { border:2px solid var(--path-color, var(--teal)); border-radius:8px; padding:10px; }
     .diff-path-label { font-size:11px; font-weight:800; color:var(--navy); margin-bottom:6px; }
     .diff-path-stem { font-size:10px; line-height:1.4; margin:0; }
+    /* Read-aloud (TTS) button — additive, accessible, never shown in print */
+    .read-aloud-btn { display:inline-flex; align-items:center; justify-content:center; vertical-align:middle; margin-left:6px; padding:0; width:1.7em; height:1.7em; min-width:1.7em; border:1.5px solid var(--teal); border-radius:50%; background:var(--white,#fff); color:var(--navy); font-size:0.78em; line-height:1; cursor:pointer; transition:transform .12s ease, background .12s ease; }
+    .read-aloud-btn:hover { background:var(--teal-light); transform:scale(1.08); }
+    .read-aloud-btn:active { transform:scale(0.96); }
+    .read-aloud-btn:focus-visible { outline:3px solid var(--amber); outline-offset:2px; }
+    @media print { .read-aloud-btn { display:none !important; } }
+    /* Bilingual Spanish stem line under English — gated by .bilingual-on (default on) */
+    .stem-es { display:block; margin-top:2px; font-size:0.82em; font-style:italic; color:var(--navy); opacity:0.72; }
+    body:not(.bilingual-on) .stem-es,
+    body:not(.bilingual-on) .objective-text-es,
+    body:not(.bilingual-on) .vocab-term-es,
+    body:not(.bilingual-on) .vocab-definition-es { display:none; }
+    .tt-stems-extend { margin-top:8px; padding-top:8px; border-top:1px dashed var(--gray,#ccc); }
+    .tt-stem-extend { opacity:0.92; }
+    /* Header accessibility / language controls */
+    .a11y-controls { display:flex; align-items:center; gap:8px; }
+    .a11y-btn { font-size:12px; font-weight:700; color:var(--navy); background:var(--white,#fff); border:1.5px solid var(--teal); border-radius:16px; padding:5px 12px; cursor:pointer; }
+    .a11y-btn[aria-pressed="false"] { opacity:0.55; }
+    .a11y-btn:focus-visible, .a11y-rate select:focus-visible { outline:3px solid var(--amber); outline-offset:2px; }
+    .a11y-rate { display:inline-flex; align-items:center; gap:4px; font-size:12px; color:var(--navy); }
+    .a11y-rate select { font-size:12px; border:1.5px solid var(--teal); border-radius:14px; padding:4px 8px; background:var(--white,#fff); color:var(--navy); cursor:pointer; }
+    @media print { .a11y-controls { display:none !important; } }
     .workspace-table { width:100%; border-collapse:collapse; font-size:11px; }
     .workspace-table th, .workspace-table td { border:1px solid #dadce0; padding:6px 8px; text-align:center; }
     .workspace-table th { background:var(--teal-light); font-weight:800; }
@@ -2012,15 +2035,14 @@
       .presenter-hud { font-size: 10px; padding: 6px 10px; }
     }
     
+.slide-main-title,.title-heading,.g-doc-title,.section-divider-title,
+.post-it-title,.g-title-block h1,.g-title-block h2,h1,h2{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
   </style>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
 </head>
-<body>
+<body class="bilingual-on">
 
   <!-- Google Slides Chrome Bar -->
   <header class="g-chrome">
@@ -2039,6 +2061,16 @@
       </div>
     </div>
     <div class="g-right">
+      <div class="a11y-controls" role="group" aria-label="Accessibility and language controls">
+        <button class="a11y-btn" id="bilingual-toggle" aria-pressed="true" onclick="toggleBilingual(this)" title="Show or hide Spanish support">🌐 Español</button>
+        <label class="a11y-rate" title="Read-aloud speed">🔊
+          <select id="tts-rate-select" aria-label="Read-aloud speed" onchange="setSlideTtsRate(this.value)">
+            <option value="0.7">Slow</option>
+            <option value="0.85" selected>Normal</option>
+            <option value="1">Fast</option>
+          </select>
+        </label>
+      </div>
       
       <button class="btn-present" onclick="enterFullscreen()">
         ▶ Present
@@ -2393,13 +2425,13 @@
     <div class="ref-two-col">
       <div class="ref-main-panel">
     <h2 class="card-title">🎯 Content Objective <span class="bilingual-tag">/ Objetivo de contenido</span></h2>
-    <p class="objective-text">I can find the volume of a rectangular prism with whole-number edges using length × width × height.</p>
+    <p class="objective-text">I can find the volume of a rectangular prism with whole-number edges using length × width × height.<button type="button" class="read-aloud-btn" aria-label="Read the content objective aloud" title="Read the content objective aloud" data-speak="I can find the volume of a rectangular prism with whole-number edges using length × width × height." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
   </div>
       <aside class="ref-side-panel">
         <div class="ref-side-header">Today&#039;s Objectives</div>
         <div class="ref-side-body">
     <h2 class="card-title">🗣️ Language Objective <span class="bilingual-tag">/ Objetivo de lenguaje</span></h2>
-    <p class="objective-text">I can explain my work using the words volume, rectangular prism, cubic units, and edge.</p>
+    <p class="objective-text">I can explain my work using the words volume, rectangular prism, cubic units, and edge.<button type="button" class="read-aloud-btn" aria-label="Read the language objective aloud" title="Read the language objective aloud" data-speak="I can explain my work using the words volume, rectangular prism, cubic units, and edge." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     
     <p class="ref-teacher-note ref-note-say"><span>👩‍🏫</span> Read objectives aloud. Ask: What will you be able to do by the end of class?</p>
     <p class="ref-teacher-note ref-note-ask"><span>❓</span> Which vocabulary words do you already know? Which are new?</p>
@@ -2556,7 +2588,7 @@
     <div class="ref-curious-layout">
       <div class="ref-visual-prompt">
         <span class="ref-prompt-badge">Visual Prompt</span>
-        <p class="ref-instruction">Time Capsule Project</p><p class="card-desc">Your team is building time capsule containers to store class memories. Each container is a rectangular prism, and you need to figure out how much each one can hold. That means calculating the volume using whole number dimensions!</p><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 440 240" style="background:white; border-radius:8px;"><rect x="5" y="5" width="430" height="230" fill="#F9FBFC" stroke="#1FA6A2" stroke-width="2"/><line x1="20" y1="5" x2="20" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="50" y1="5" x2="50" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="80" y1="5" x2="80" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="110" y1="5" x2="110" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="140" y1="5" x2="140" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="170" y1="5" x2="170" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="200" y1="5" x2="200" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="230" y1="5" x2="230" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="260" y1="5" x2="260" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="290" y1="5" x2="290" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="320" y1="5" x2="320" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="350" y1="5" x2="350" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="380" y1="5" x2="380" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="410" y1="5" x2="410" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="20" x2="435" y2="20" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="50" x2="435" y2="50" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="80" x2="435" y2="80" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="110" x2="435" y2="110" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="140" x2="435" y2="140" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="170" x2="435" y2="170" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="200" x2="435" y2="200" stroke="#E1EAEF" stroke-width="1"/><polygon points="80,180 220,50 360,180" fill="#DFF2EE" stroke="#17324D" stroke-width="2"/><line x1="80" y1="195" x2="360" y2="195" stroke="#17324D" stroke-width="1.5" stroke-dasharray="3,3"/><text x="200" y="212" font-family="Outfit, sans-serif" font-size="11" fill="#17324D" font-weight="bold">Base (b)</text><line x1="220" y1="50" x2="220" y2="180" stroke="#F2C15B" stroke-width="1.5" stroke-dasharray="4,4"/><text x="230" y="115" font-family="Outfit, sans-serif" font-size="11" fill="#17324D" font-weight="bold">Height (h)</text></svg>
+        <p class="ref-instruction">Time Capsule Project</p><p class="card-desc">Your team is building time capsule containers to store class memories. Each container is a rectangular prism, and you need to figure out how much each one can hold. That means calculating the volume using whole number dimensions!<button type="button" class="read-aloud-btn" aria-label="Read the prompt aloud" title="Read the prompt aloud" data-speak="Your team is building time capsule containers to store class memories. Each container is a rectangular prism, and you need to figure out how much each one can hold. That means calculating the volume using whole number dimensions!" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 440 240" style="background:white; border-radius:8px;"><rect x="5" y="5" width="430" height="230" fill="#F9FBFC" stroke="#1FA6A2" stroke-width="2"/><line x1="20" y1="5" x2="20" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="50" y1="5" x2="50" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="80" y1="5" x2="80" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="110" y1="5" x2="110" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="140" y1="5" x2="140" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="170" y1="5" x2="170" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="200" y1="5" x2="200" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="230" y1="5" x2="230" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="260" y1="5" x2="260" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="290" y1="5" x2="290" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="320" y1="5" x2="320" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="350" y1="5" x2="350" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="380" y1="5" x2="380" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="410" y1="5" x2="410" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="20" x2="435" y2="20" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="50" x2="435" y2="50" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="80" x2="435" y2="80" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="110" x2="435" y2="110" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="140" x2="435" y2="140" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="170" x2="435" y2="170" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="200" x2="435" y2="200" stroke="#E1EAEF" stroke-width="1"/><polygon points="80,180 220,50 360,180" fill="#DFF2EE" stroke="#17324D" stroke-width="2"/><line x1="80" y1="195" x2="360" y2="195" stroke="#17324D" stroke-width="1.5" stroke-dasharray="3,3"/><text x="200" y="212" font-family="Outfit, sans-serif" font-size="11" fill="#17324D" font-weight="bold">Base (b)</text><line x1="220" y1="50" x2="220" y2="180" stroke="#F2C15B" stroke-width="1.5" stroke-dasharray="4,4"/><text x="230" y="115" font-family="Outfit, sans-serif" font-size="11" fill="#17324D" font-weight="bold">Height (h)</text></svg>
       </div>
       <div class="ref-nw-stack">
         <div class="ref-nw-panel ref-nw-notice">
@@ -2872,37 +2904,37 @@
       </thead>
       <tbody>
     <tr>
-      <td class="ref-vocab-term">Volume<br/><em>Volumen</em></td>
+      <td class="ref-vocab-term">Volume<button type="button" class="read-aloud-btn" aria-label="Read Volume and its meaning aloud" title="Read Volume and its meaning aloud" data-speak="Volume. How much space is inside a solid shape." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Volumen</em><button type="button" class="read-aloud-btn" aria-label="Leer Volumen en español" title="Leer Volumen en español" data-speak="Volumen. Cuánto espacio hay dentro de una figura sólida." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>How much space is inside a solid shape.<br/><em>Cuánto espacio hay dentro de una figura sólida.</em></td>
       <td></td>
       <td class="ref-vocab-visual">A box 3 × 2 × 4 holds 24 unit cubes, so V = 24 cubic units</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Rectangular prism<br/><em>Prisma rectangular</em></td>
+      <td class="ref-vocab-term">Rectangular prism<button type="button" class="read-aloud-btn" aria-label="Read Rectangular prism and its meaning aloud" title="Read Rectangular prism and its meaning aloud" data-speak="Rectangular prism. A solid box shape with six flat rectangle sides." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Prisma rectangular</em><button type="button" class="read-aloud-btn" aria-label="Leer Prisma rectangular en español" title="Leer Prisma rectangular en español" data-speak="Prisma rectangular. Una figura sólida en forma de caja con seis lados rectangulares." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>A solid box shape with six flat rectangle sides.<br/><em>Una figura sólida en forma de caja con seis lados rectangulares.</em></td>
       <td></td>
       <td class="ref-vocab-visual">A cereal box or shoe box — it has length, width, and height</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Cubic units<br/><em>Unidades cúbicas</em></td>
+      <td class="ref-vocab-term">Cubic units<button type="button" class="read-aloud-btn" aria-label="Read Cubic units and its meaning aloud" title="Read Cubic units and its meaning aloud" data-speak="Cubic units. The units used to measure space inside, like cubic inches." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Unidades cúbicas</em><button type="button" class="read-aloud-btn" aria-label="Leer Unidades cúbicas en español" title="Leer Unidades cúbicas en español" data-speak="Unidades cúbicas. Las unidades para medir el espacio interior, como pulgadas cúbicas." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>The units used to measure space inside, like cubic inches.<br/><em>Las unidades para medir el espacio interior, como pulgadas cúbicas.</em></td>
       <td></td>
       <td class="ref-vocab-visual">A tiny cube that is 1 in × 1 in × 1 in = 1 in³ (one cubic inch)</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Length, width, height<br/><em>Largo, ancho, altura</em></td>
+      <td class="ref-vocab-term">Length, width, height<button type="button" class="read-aloud-btn" aria-label="Read Length, width, height and its meaning aloud" title="Read Length, width, height and its meaning aloud" data-speak="Length, width, height. How long, how wide, and how tall a box is." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Largo, ancho, altura</em><button type="button" class="read-aloud-btn" aria-label="Leer Largo, ancho, altura en español" title="Leer Largo, ancho, altura en español" data-speak="Largo, ancho, altura. Qué tan largo, ancho y alto es una caja." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>How long, how wide, and how tall a box is.<br/><em>Qué tan largo, ancho y alto es una caja.</em></td>
       <td></td>
       <td class="ref-vocab-visual">V = l × w × h: for a box 5 × 3 × 2, volume = 30 cubic units</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Net<br/><em>Plantilla (desarrollo plano)</em></td>
+      <td class="ref-vocab-term">Net<button type="button" class="read-aloud-btn" aria-label="Read Net and its meaning aloud" title="Read Net and its meaning aloud" data-speak="Net. A flat shape that folds up into a solid." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Plantilla (desarrollo plano)</em><button type="button" class="read-aloud-btn" aria-label="Leer Plantilla (desarrollo plano) en español" title="Leer Plantilla (desarrollo plano) en español" data-speak="Plantilla (desarrollo plano). Una figura plana que se dobla y forma un sólido." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>A flat shape that folds up into a solid.<br/><em>Una figura plana que se dobla y forma un sólido.</em></td>
       <td></td>
       <td class="ref-vocab-visual">A cross-shaped pattern of 6 rectangles folds into a rectangular box</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Edge<br/><em>Arista</em></td>
+      <td class="ref-vocab-term">Edge<button type="button" class="read-aloud-btn" aria-label="Read Edge and its meaning aloud" title="Read Edge and its meaning aloud" data-speak="Edge. The line where two flat sides of a solid meet." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Arista</em><button type="button" class="read-aloud-btn" aria-label="Leer Arista en español" title="Leer Arista en español" data-speak="Arista. La línea donde se unen dos lados planos de un sólido." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>The line where two flat sides of a solid meet.<br/><em>La línea donde se unen dos lados planos de un sólido.</em></td>
       <td></td>
       <td class="ref-vocab-visual">A cube has 12 edges — 4 along the top, 4 along the bottom, 4 vertical</td>
@@ -3038,10 +3070,11 @@
     <span class="teacher-cue-label">Time:</span>
     <span class="teacher-cue-text">90 sec</span>
   </div>
-        <p class="card-desc tt-question">Your time capsule container is a rectangular prism. To find how much it can hold, why do you need three measurements (length, width, and height) instead of just one or two?</p>
+        <p class="card-desc tt-question">Your time capsule container is a rectangular prism. To find how much it can hold, why do you need three measurements (length, width, and height) instead of just one or two?<button type="button" class="read-aloud-btn" aria-label="Read the question aloud" title="Read the question aloud" data-speak="Your time capsule container is a rectangular prism. To find how much it can hold, why do you need three measurements (length, width, and height) instead of just one or two?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
         <div class="tt-stems-box">
           <strong>Sentence starters (tap to use):</strong>
-          <div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ I need three measurements because volume fills space in ___ directions.</div><div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ Length and width alone only give the ___, not the volume.</div>
+          <div class="tt-stem" onclick="insertAtCursor('I need three measurements because volume fills space in ___ directions.')">✍️ I need three measurements because volume fills space in ___ directions.<span class="stem-es">Necesito tres medidas porque el volumen llena el espacio en ___ direcciones.</span></div><div class="tt-stem" onclick="insertAtCursor('Length and width alone only give the ___, not the volume.')">✍️ Length and width alone only give the ___, not the volume.<span class="stem-es">El largo y el ancho solos solo dan el ___, no el volumen.</span></div>
+          <div class="tt-stems-extend"><strong>Stretch further:</strong><div class="tt-stem tt-stem-extend">➕ Two capsules ___ have the same volume but different shapes because ___.</div><div class="tt-stem tt-stem-extend">➕ For example, ___ × ___ × ___ and ___ × ___ × ___ both equal ___.</div></div>
         </div>
         <div class="tt-wordbank"><strong>WORD BANK:</strong><div><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">volume</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">length</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">width</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">height</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">rectangular prism</span></div></div>
         <div class="turn-talk-timer" id="tt-timer-launch">
@@ -3235,10 +3268,11 @@
     <span class="teacher-cue-label">Time:</span>
     <span class="teacher-cue-text">90 sec</span>
   </div>
-        <p class="card-desc tt-question">Container C is 8 × 3 × 4 and Container B is 5 × 5 × 2. How did you count or multiply the unit cubes to find each volume, and which holds more?</p>
+        <p class="card-desc tt-question">Container C is 8 × 3 × 4 and Container B is 5 × 5 × 2. How did you count or multiply the unit cubes to find each volume, and which holds more?<button type="button" class="read-aloud-btn" aria-label="Read the question aloud" title="Read the question aloud" data-speak="Container C is 8 × 3 × 4 and Container B is 5 × 5 × 2. How did you count or multiply the unit cubes to find each volume, and which holds more?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
         <div class="tt-stems-box">
           <strong>Sentence starters (tap to use):</strong>
-          <div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ I found the volume by multiplying ___ × ___ × ___, which equals ___ cubic units.</div><div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ Container ___ holds more because its volume is ___.</div>
+          <div class="tt-stem" onclick="insertAtCursor('I found the volume by multiplying ___ × ___ × ___, which equals ___ cubic units.')">✍️ I found the volume by multiplying ___ × ___ × ___, which equals ___ cubic units.<span class="stem-es">Hallé el volumen multiplicando ___ × ___ × ___, que es ___ unidades cúbicas.</span></div><div class="tt-stem" onclick="insertAtCursor('Container ___ holds more because its volume is ___.')">✍️ Container ___ holds more because its volume is ___.<span class="stem-es">El contenedor ___ contiene más porque su volumen es ___.</span></div>
+          <div class="tt-stems-extend"><strong>Stretch further:</strong><div class="tt-stem tt-stem-extend">➕ D holds more even though ___ because volume depends on ___.</div><div class="tt-stem tt-stem-extend">➕ A bigger length or width does not always mean a bigger volume because ___.</div></div>
         </div>
         <div class="tt-wordbank"><strong>WORD BANK:</strong><div><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">volume</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">cubic units</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">length</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">width</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">height</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">rectangular prism</span></div></div>
         <div class="turn-talk-timer" id="tt-timer-explore">
@@ -3344,19 +3378,19 @@
     <span class="teacher-cue-label">Time:</span>
     <span class="teacher-cue-text">2 min</span>
   </div>
-        <p class="card-desc mc-stem">What is the volume of a rectangular prism with l = 7 in, w = 3 in, h = 4 in?</p>
-        <div class="mc-choices"><button class="assess-btn mc-btn mc-animate" id="btn-mc2-0" onclick="checkMCQuestionByPrefix('mc2', 0, 0)">
+        <p class="card-desc mc-stem">A rectangular prism has length 8 cm, width 5 cm, and height 4 cm. What is its volume?</p>
+        <div class="mc-choices"><button class="assess-btn mc-btn mc-animate" id="btn-mc2-0" onclick="checkMCQuestionByPrefix('mc2', 0, 1)">
         <span class="mc-letter">A</span>
-        <span class="mc-choice-text">84 in³</span>
-      </button><button class="assess-btn mc-btn mc-animate" id="btn-mc2-1" onclick="checkMCQuestionByPrefix('mc2', 1, 0)">
+        <span class="mc-choice-text">17 cm³</span>
+      </button><button class="assess-btn mc-btn mc-animate" id="btn-mc2-1" onclick="checkMCQuestionByPrefix('mc2', 1, 1)">
         <span class="mc-letter">B</span>
-        <span class="mc-choice-text">14 in³</span>
-      </button><button class="assess-btn mc-btn mc-animate" id="btn-mc2-2" onclick="checkMCQuestionByPrefix('mc2', 2, 0)">
+        <span class="mc-choice-text">160 cm³</span>
+      </button><button class="assess-btn mc-btn mc-animate" id="btn-mc2-2" onclick="checkMCQuestionByPrefix('mc2', 2, 1)">
         <span class="mc-letter">C</span>
-        <span class="mc-choice-text">84 in²</span>
-      </button><button class="assess-btn mc-btn mc-animate" id="btn-mc2-3" onclick="checkMCQuestionByPrefix('mc2', 3, 0)">
+        <span class="mc-choice-text">80 cm³</span>
+      </button><button class="assess-btn mc-btn mc-animate" id="btn-mc2-3" onclick="checkMCQuestionByPrefix('mc2', 3, 1)">
         <span class="mc-letter">D</span>
-        <span class="mc-choice-text">42 in³</span>
+        <span class="mc-choice-text">120 cm³</span>
       </button></div>
         <div id="mc2-feedback" class="mc-feedback"></div>
       </div>
@@ -3364,7 +3398,7 @@
         <h2 class="card-title">✍️ Show Your Work</h2>
         <p class="card-desc-sm">Explain why your answer is correct using today's vocabulary.</p>
         <textarea id="mc2-work" class="slide-input-placeholder" rows="6" placeholder="Type your reasoning here..."></textarea>
-        <div class="teacher-reveal-box"><strong>Teacher reveal:</strong> V = l × w × h = 7 × 3 × 4 = 84 cubic inches.</div>
+        <div class="teacher-reveal-box"><strong>Teacher reveal:</strong> V = l × w × h = 8 × 5 × 4 = 160 cm³.</div>
       </div>
     </div></div>
     </div><footer class="ref-slide-footer" data-slide-num="26">
@@ -3459,7 +3493,7 @@
     <div class="ref-two-col">
       <div class="ref-main-panel">
     <span class="ref-error-badge">⚠ Find the Volume Error</span>
-    <p class="ref-instruction">A classmate turned in the work below. One step has a mistake. Read every step, find it, name it, and fix it.</p>
+    <p class="ref-instruction">A classmate turned in the work below. One step has a mistake. Read every step, find it, name it, and fix it.<button type="button" class="read-aloud-btn" aria-label="Read the directions aloud" title="Read the directions aloud" data-speak="A classmate turned in the work below. One step has a mistake. Read every step, find it, name it, and fix it." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     <div class="ref-student-work-box">
       <div class="ref-work-label">Student&apos;s work — read every step:</div>
       <div class="ea-steps">
@@ -3766,11 +3800,11 @@
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">📦 TIME CAPSULE</span></div>
     <h3 class="slide-main-title">Differentiation Paths</h3>
     <div class="slide-card">
-      <span class="slide-badge badge-teal">🎯 THREE PATHS</span>
+      <span class="slide-badge badge-teal">🎯 CHOOSE YOUR LEVEL</span>
       <div class="teacher-cue teacher-cue-say">
     <span class="teacher-cue-icon">👩‍🏫</span>
     <span class="teacher-cue-label">Say:</span>
-    <span class="teacher-cue-text">All students work on math — choose the path that matches readiness.</span>
+    <span class="teacher-cue-text">Everyone works on the same math goal — pick the level of support that fits today.</span>
   </div>
       <div class="teacher-cue teacher-cue-time">
     <span class="teacher-cue-icon">⏱️</span>
@@ -3778,17 +3812,21 @@
     <span class="teacher-cue-text">8–10 min independent or partner</span>
   </div>
       <div class="diff-paths-grid">
+        <div class="diff-path" style="--path-color:var(--coral, #e07a5f)">
+      <div class="diff-path-label">🧩 Level 0 · Most support</div>
+      <p class="diff-path-stem">Step-by-step with a worked model and sentence frames.<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="Step-by-step with a worked model and sentence frames." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
+    </div>
         <div class="diff-path" style="--path-color:var(--amber)">
-      <div class="diff-path-label">🌱 Approaching</div>
-      <p class="diff-path-stem">What is the volume of a rectangular prism with l = 7 in, w = 3 in, h = 4 in?</p>
+      <div class="diff-path-label">🌱 Level 1 · Support</div>
+      <p class="diff-path-stem">What is the volume of a rectangular prism with l = 7 in, w = 3 in, h = 4 in?<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="What is the volume of a rectangular prism with l = 7 in, w = 3 in, h = 4 in?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     </div>
         <div class="diff-path" style="--path-color:var(--teal)">
-      <div class="diff-path-label">🎯 On-Level</div>
-      <p class="diff-path-stem">Core practice aligned to the standard.</p>
+      <div class="diff-path-label">🎯 Level 2 · Core</div>
+      <p class="diff-path-stem">Core practice aligned to the standard.<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="Core practice aligned to the standard." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     </div>
         <div class="diff-path" style="--path-color:var(--navy)">
-      <div class="diff-path-label">🚀 Challenge</div>
-      <p class="diff-path-stem">Extension with error analysis or multi-step reasoning.</p>
+      <div class="diff-path-label">🚀 Level 2+ · Enrichment</div>
+      <p class="diff-path-stem">Extension with error analysis or multi-step reasoning.<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="Extension with error analysis or multi-step reasoning." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     </div>
       </div>
     </div></div>
@@ -3948,10 +3986,11 @@
     <span class="teacher-cue-label">Time:</span>
     <span class="teacher-cue-text">90 sec</span>
   </div>
-        <p class="card-desc tt-question">A moving company&#039;s large box is 24 × 18 × 18 in and its medium box is 18 × 14 × 12 in. Talk through how you would find how many more cubic inches the large box holds.</p>
+        <p class="card-desc tt-question">A moving company&#039;s large box is 24 × 18 × 18 in and its medium box is 18 × 14 × 12 in. Talk through how you would find how many more cubic inches the large box holds.<button type="button" class="read-aloud-btn" aria-label="Read the question aloud" title="Read the question aloud" data-speak="A moving company&#039;s large box is 24 × 18 × 18 in and its medium box is 18 × 14 × 12 in. Talk through how you would find how many more cubic inches the large box holds." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
         <div class="tt-stems-box">
           <strong>Sentence starters (tap to use):</strong>
-          <div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ The large box volume is ___ in³ because 24 × 18 × 18 = ___.</div><div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ The large box holds ___ more cubic inches because ___ − ___ = ___.</div>
+          <div class="tt-stem" onclick="insertAtCursor('The large box volume is ___ in³ because 24 × 18 × 18 = ___.')">✍️ The large box volume is ___ in³ because 24 × 18 × 18 = ___.<span class="stem-es">El volumen de la caja grande es ___ in³ porque 24 × 18 × 18 = ___.</span></div><div class="tt-stem" onclick="insertAtCursor('The large box holds ___ more cubic inches because ___ − ___ = ___.')">✍️ The large box holds ___ more cubic inches because ___ − ___ = ___.<span class="stem-es">La caja grande contiene ___ pulgadas cúbicas más porque ___ − ___ = ___.</span></div>
+          <div class="tt-stems-extend"><strong>Stretch further:</strong><div class="tt-stem tt-stem-extend">➕ Comparing only length is not enough because ___.</div><div class="tt-stem tt-stem-extend">➕ Even though the medium box is shorter in one edge, ___.</div></div>
         </div>
         <div class="tt-wordbank"><strong>WORD BANK:</strong><div><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">volume</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">cubic units</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">rectangular prism</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">length</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">width</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">height</span></div></div>
         <div class="turn-talk-timer" id="tt-timer-connect">
@@ -4101,19 +4140,19 @@
     <span class="teacher-cue-label">Time:</span>
     <span class="teacher-cue-text">2 min</span>
   </div>
-        <p class="card-desc mc-stem">A time capsule box has a volume of 120 cm³. Its length is 10 cm and width is 4 cm. What is its height?</p>
+        <p class="card-desc mc-stem">A box has a volume of 72 in³. Its base is 6 in by 4 in. What is its height?</p>
         <div class="mc-choices"><button class="assess-btn mc-btn mc-animate" id="btn-exit3-0" onclick="checkMCQuestionByPrefix('exit3', 0, 0)">
         <span class="mc-letter">A</span>
-        <span class="mc-choice-text">3 cm</span>
+        <span class="mc-choice-text">3 in</span>
       </button><button class="assess-btn mc-btn mc-animate" id="btn-exit3-1" onclick="checkMCQuestionByPrefix('exit3', 1, 0)">
         <span class="mc-letter">B</span>
-        <span class="mc-choice-text">6 cm</span>
+        <span class="mc-choice-text">12 in</span>
       </button><button class="assess-btn mc-btn mc-animate" id="btn-exit3-2" onclick="checkMCQuestionByPrefix('exit3', 2, 0)">
         <span class="mc-letter">C</span>
-        <span class="mc-choice-text">4 cm</span>
+        <span class="mc-choice-text">2 in</span>
       </button><button class="assess-btn mc-btn mc-animate" id="btn-exit3-3" onclick="checkMCQuestionByPrefix('exit3', 3, 0)">
         <span class="mc-letter">D</span>
-        <span class="mc-choice-text">12 cm</span>
+        <span class="mc-choice-text">18 in</span>
       </button></div>
         <div id="exit3-feedback" class="mc-feedback"></div>
       </div>
@@ -4121,7 +4160,7 @@
         <h2 class="card-title">✍️ Show Your Work</h2>
         <p class="card-desc-sm">Explain why your answer is correct using today's vocabulary.</p>
         <textarea id="exit3-work" class="slide-input-placeholder" rows="6" placeholder="Type your reasoning here..."></textarea>
-        <div class="teacher-reveal-box"><strong>Teacher reveal:</strong> V = l × w × h → 120 = 10 × 4 × h → 120 = 40h → h = 3 cm.</div>
+        <div class="teacher-reveal-box"><strong>Teacher reveal:</strong> Height = V ÷ (l × w) = 72 ÷ (6 × 4) = 72 ÷ 24 = 3 in.</div>
       </div>
     </div></div>
     </div><footer class="ref-slide-footer" data-slide-num="43">
@@ -4271,7 +4310,7 @@
     <h3 class="slide-main-title">Answer Key (Teacher Appendix)</h3>
     <div class="slide-card">
       <p class="answer-key-note">Hide this slide during presentation or move to the end of your copy.</p>
-      <p class="answer-key-item">✓ Practice 1: Bin B by 12 in³ — Bin A: 8 × 6 × 5 = 240 in³. Bin B: 9 × 4 × 7 = 252 in³. Bin B holds 12 in³ more.</p><p class="answer-key-item">✓ Practice 2: 84 in³ — V = l × w × h = 7 × 3 × 4 = 84 cubic inches.</p><p class="answer-key-item">✓ Practice 3: 3 cm — V = l × w × h → 120 = 10 × 4 × h → 120 = 40h → h = 3 cm.</p><p class="answer-key-item">✓ Practice 4: Cubic inches (in³) — Volume measures 3D space, so it uses cubic units like in³. Square units (in²) are for area, and inches are for length.</p><p class="answer-key-item">✓ Exit ticket: 220 in³ — V = 11 × 5 × 4 = 220 cubic inches. Remember: volume uses cubic units (in³).</p>
+      <p class="answer-key-item">✓ Practice 1: Bin B by 12 in³ — Bin A: 8 × 6 × 5 = 240 in³. Bin B: 9 × 4 × 7 = 252 in³. Bin B holds 12 in³ more.</p><p class="answer-key-item">✓ Practice 2: 160 cm³ — V = l × w × h = 8 × 5 × 4 = 160 cm³.</p><p class="answer-key-item">✓ Practice 3: 3 in — Height = V ÷ (l × w) = 72 ÷ (6 × 4) = 72 ÷ 24 = 3 in.</p><p class="answer-key-item">✓ Practice 4: 84 in³ — V = l × w × h = 7 × 3 × 4 = 84 cubic inches.</p><p class="answer-key-item">✓ Exit ticket: 220 in³ — V = 11 × 5 × 4 = 220 cubic inches. Remember: volume uses cubic units (in³).</p>
     </div></div>
     </div><footer class="ref-slide-footer" data-slide-num="48">
       <span>Reveal Math Grade 6 · Unit 10 · 10-1</span>
@@ -4475,6 +4514,66 @@
         }
       }, 1000);
     }
+
+    // -----------------------------------------------------------------
+    // READ-ALOUD (Text-to-Speech) — accessibility + Level 1 language support
+    // Reads slide text via the browser Web Speech API. Rate is saved so a
+    // teacher/student preference persists across slides and lessons.
+    // -----------------------------------------------------------------
+    const SLIDE_TTS_RATE_KEY = 'neft-slide-tts-rate';
+    function getSlideTtsRate() {
+      const saved = parseFloat(localStorage.getItem(SLIDE_TTS_RATE_KEY));
+      return (saved && saved >= 0.5 && saved <= 1.5) ? saved : 0.85;
+    }
+    function setSlideTtsRate(rate) {
+      const r = parseFloat(rate);
+      if (r && r >= 0.5 && r <= 1.5) localStorage.setItem(SLIDE_TTS_RATE_KEY, String(r));
+    }
+    function speakText(text, lang) {
+      if (!('speechSynthesis' in window) || !text) return;
+      try {
+        // A second tap on a speaking button stops it (toggle behavior).
+        if (window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+          return;
+        }
+        const utter = new SpeechSynthesisUtterance(String(text).replace(/[✍️🎯🗣️👂✓✗⚠➡️•]/g, ' ').trim());
+        utter.rate = getSlideTtsRate();
+        utter.lang = lang || 'en-US';
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utter);
+      } catch (e) { /* speech not available */ }
+    }
+    // Read-aloud buttons carry their text in data-speak (and optional data-lang).
+    function speakFromButton(btn) {
+      if (!btn) return;
+      speakText(btn.getAttribute('data-speak') || '', btn.getAttribute('data-lang') || 'en-US');
+    }
+    window.speakText = speakText;
+    window.speakFromButton = speakFromButton;
+    window.setSlideTtsRate = setSlideTtsRate;
+    window.getSlideTtsRate = getSlideTtsRate;
+
+    // Bilingual (Spanish support) toggle — persists per browser.
+    const SLIDE_BILINGUAL_KEY = 'neft-slide-bilingual';
+    function applyBilingual(on) {
+      document.body.classList.toggle('bilingual-on', on);
+      const btn = document.getElementById('bilingual-toggle');
+      if (btn) btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+    function toggleBilingual(btn) {
+      const on = !document.body.classList.contains('bilingual-on');
+      localStorage.setItem(SLIDE_BILINGUAL_KEY, on ? '1' : '0');
+      applyBilingual(on);
+    }
+    window.toggleBilingual = toggleBilingual;
+    // Restore saved accessibility preferences on load.
+    (function initA11yPrefs() {
+      const savedBi = localStorage.getItem(SLIDE_BILINGUAL_KEY);
+      if (savedBi !== null) applyBilingual(savedBi === '1');
+      const rateSel = document.getElementById('tts-rate-select');
+      if (rateSel) rateSel.value = String(getSlideTtsRate());
+    })();
 
     // CFU thumb responses
     const cfuResponses = {};
@@ -5836,11 +5935,5 @@
     
   </script>
 
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
 </body>
 </html>

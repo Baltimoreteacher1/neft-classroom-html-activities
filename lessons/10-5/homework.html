@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Hanken+Grotesk:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap");
 :root {
   --navy: #12355b;
   --navy-light: #18466f;
@@ -2337,6 +2338,26 @@ body { font-size: 15px; line-height: 1.58; }
   .worked-step { break-inside: avoid; box-shadow: none; }
   .card { box-shadow: none; }
 }
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
 </style>
 </head>
 <body>
@@ -2950,49 +2971,49 @@ body { font-size: 15px; line-height: 1.58; }
       <div class="problem-body">
         <p class="problem-stem">Put the steps in order for finding the surface area of a square pyramid (base edge 6, slant height 10).</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Use the ▲ ▼ buttons to reorder steps, or drag the row handles on a computer.</span><span class="lang-es" lang="es">👪 Usen ▲ ▼ para reordenar, o arrastren las filas en la computadora.</span></p>
-        <div class="drag-order-workspace" id="dragorder_1" data-correct-order='[&quot;Find base area: 6 × 6 = 36&quot;,&quot;Find one lateral face: ½ × 6 × 10 = 30&quot;,&quot;Multiply by 4 faces: 4 × 30 = 120&quot;,&quot;Add base + lateral: 36 + 120&quot;,&quot;SA = 156 in²&quot;]' data-initial-order='[&quot;SA = 156 in²&quot;,&quot;Add base + lateral: 36 + 120&quot;,&quot;Find one lateral face: ½ × 6 × 10 = 30&quot;,&quot;Find base area: 6 × 6 = 36&quot;,&quot;Multiply by 4 faces: 4 × 30 = 120&quot;]'>
+        <div class="drag-order-workspace" id="dragorder_1" data-correct-order='[&quot;Find base area: 6 × 6 = 36&quot;,&quot;Find one lateral face: ½ × 6 × 10 = 30&quot;,&quot;Multiply by 4 faces: 4 × 30 = 120&quot;,&quot;Add base + lateral: 36 + 120&quot;,&quot;SA = 156 in²&quot;]' data-initial-order='[&quot;Add base + lateral: 36 + 120&quot;,&quot;Multiply by 4 faces: 4 × 30 = 120&quot;,&quot;Find base area: 6 × 6 = 36&quot;,&quot;Find one lateral face: ½ × 6 × 10 = 30&quot;,&quot;SA = 156 in²&quot;]'>
           <div class="drag-order-list" id="orderlist_1">
             
-              <div class="drag-order-row" draggable="true" id="order_1_0" data-step-text="SA = 156 in²" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_1_0" data-step-text="Add base + lateral: 36 + 120" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
                 <span class="drag-order-num">1</span>
-                <span class="drag-order-text">SA = 156 in²</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-              <div class="drag-order-row" draggable="true" id="order_1_1" data-step-text="Add base + lateral: 36 + 120" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">2</span>
                 <span class="drag-order-text">Add base + lateral: 36 + 120</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, 1)" aria-label="Move down">▼</button>
                 </div>
               </div>
-              <div class="drag-order-row" draggable="true" id="order_1_2" data-step-text="Find one lateral face: ½ × 6 × 10 = 30" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_1_1" data-step-text="Multiply by 4 faces: 4 × 30 = 120" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">3</span>
-                <span class="drag-order-text">Find one lateral face: ½ × 6 × 10 = 30</span>
+                <span class="drag-order-num">2</span>
+                <span class="drag-order-text">Multiply by 4 faces: 4 × 30 = 120</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, 1)" aria-label="Move down">▼</button>
                 </div>
               </div>
-              <div class="drag-order-row" draggable="true" id="order_1_3" data-step-text="Find base area: 6 × 6 = 36" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_1_2" data-step-text="Find base area: 6 × 6 = 36" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">4</span>
+                <span class="drag-order-num">3</span>
                 <span class="drag-order-text">Find base area: 6 × 6 = 36</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, 1)" aria-label="Move down">▼</button>
                 </div>
               </div>
-              <div class="drag-order-row" draggable="true" id="order_1_4" data-step-text="Multiply by 4 faces: 4 × 30 = 120" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_1_3" data-step-text="Find one lateral face: ½ × 6 × 10 = 30" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">4</span>
+                <span class="drag-order-text">Find one lateral face: ½ × 6 × 10 = 30</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, 1)" aria-label="Move down">▼</button>
+                </div>
+              </div>
+              <div class="drag-order-row" draggable="true" id="order_1_4" data-step-text="SA = 156 in²" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
                 <span class="drag-order-num">5</span>
-                <span class="drag-order-text">Multiply by 4 faces: 4 × 30 = 120</span>
+                <span class="drag-order-text">SA = 156 in²</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(1, this, 1)" aria-label="Move down">▼</button>
@@ -3571,40 +3592,40 @@ body { font-size: 15px; line-height: 1.58; }
       <div class="problem-body">
         <p class="problem-stem">Sort these pyramids from LEAST surface area to GREATEST.</p>
         <p class="family-problem-tip"><span class="lang-en">👪 Use the ▲ ▼ buttons to reorder steps, or drag the row handles on a computer.</span><span class="lang-es" lang="es">👪 Usen ▲ ▼ para reordenar, o arrastren las filas en la computadora.</span></p>
-        <div class="drag-order-workspace" id="dragorder_9" data-correct-order='[&quot;Base 4×4, slant 5: SA = 56&quot;,&quot;Base 6×6, slant 5: SA = 96&quot;,&quot;Base 6×6, slant 8: SA = 132&quot;,&quot;Base 10×10, slant 9: SA = 280&quot;]' data-initial-order='[&quot;Base 10×10, slant 9: SA = 280&quot;,&quot;Base 6×6, slant 5: SA = 96&quot;,&quot;Base 4×4, slant 5: SA = 56&quot;,&quot;Base 6×6, slant 8: SA = 132&quot;]'>
+        <div class="drag-order-workspace" id="dragorder_9" data-correct-order='[&quot;Base 4×4, slant 5: SA = 56&quot;,&quot;Base 6×6, slant 5: SA = 96&quot;,&quot;Base 6×6, slant 8: SA = 132&quot;,&quot;Base 10×10, slant 9: SA = 280&quot;]' data-initial-order='[&quot;Base 4×4, slant 5: SA = 56&quot;,&quot;Base 6×6, slant 8: SA = 132&quot;,&quot;Base 6×6, slant 5: SA = 96&quot;,&quot;Base 10×10, slant 9: SA = 280&quot;]'>
           <div class="drag-order-list" id="orderlist_9">
             
-              <div class="drag-order-row" draggable="true" id="order_9_0" data-step-text="Base 10×10, slant 9: SA = 280" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_9_0" data-step-text="Base 4×4, slant 5: SA = 56" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
                 <span class="drag-order-num">1</span>
-                <span class="drag-order-text">Base 10×10, slant 9: SA = 280</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(9, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(9, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-              <div class="drag-order-row" draggable="true" id="order_9_1" data-step-text="Base 6×6, slant 5: SA = 96" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">2</span>
-                <span class="drag-order-text">Base 6×6, slant 5: SA = 96</span>
-                <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(9, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(9, this, 1)" aria-label="Move down">▼</button>
-                </div>
-              </div>
-              <div class="drag-order-row" draggable="true" id="order_9_2" data-step-text="Base 4×4, slant 5: SA = 56" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
-                <span class="drag-order-handle" aria-hidden="true">☰</span>
-                <span class="drag-order-num">3</span>
                 <span class="drag-order-text">Base 4×4, slant 5: SA = 56</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(9, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(9, this, 1)" aria-label="Move down">▼</button>
                 </div>
               </div>
-              <div class="drag-order-row" draggable="true" id="order_9_3" data-step-text="Base 6×6, slant 8: SA = 132" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_9_1" data-step-text="Base 6×6, slant 8: SA = 132" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">2</span>
+                <span class="drag-order-text">Base 6×6, slant 8: SA = 132</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(9, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(9, this, 1)" aria-label="Move down">▼</button>
+                </div>
+              </div>
+              <div class="drag-order-row" draggable="true" id="order_9_2" data-step-text="Base 6×6, slant 5: SA = 96" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+                <span class="drag-order-handle" aria-hidden="true">☰</span>
+                <span class="drag-order-num">3</span>
+                <span class="drag-order-text">Base 6×6, slant 5: SA = 96</span>
+                <div class="drag-order-controls">
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(9, this, -1)" aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(9, this, 1)" aria-label="Move down">▼</button>
+                </div>
+              </div>
+              <div class="drag-order-row" draggable="true" id="order_9_3" data-step-text="Base 10×10, slant 9: SA = 280" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
                 <span class="drag-order-num">4</span>
-                <span class="drag-order-text">Base 6×6, slant 8: SA = 132</span>
+                <span class="drag-order-text">Base 10×10, slant 9: SA = 280</span>
                 <div class="drag-order-controls">
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(9, this, -1)" aria-label="Move up">▲</button>
                   <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(9, this, 1)" aria-label="Move down">▼</button>

@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Compare and Order Integers — Learn It</title>
 <style>
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap");
 :root{
   --navy:#12355b;--teal:#1fa6a2;--teal-light:#dff2ee;--amber:#f2c15b;
   --cream:#f7f4ec;--ink:#21313f;--muted:#5f6f80;--line:#d7e2ed;--card:#fff;
@@ -328,6 +329,8 @@ input.writeline:focus,input.gn-blank:focus{outline:none;background-color:#fff7e6
 .ak-list li{margin:8px 0;}
 .ak-twr-head{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:16px;margin:14px 0 6px;}
 .ak-why{color:var(--muted);font-style:italic;}
+.ak-distractors{margin:4px 0 0;padding-left:18px;list-style:none;}
+.ak-distractors li{margin:3px 0;font-size:13.5px;color:var(--muted);}
 footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   color:var(--muted);font-size:12px;text-align:center;}
 .level-tag{display:inline-block;font-family:Calibri,system-ui,sans-serif;font-size:11.5px;
@@ -710,6 +713,26 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
     border: 1px dashed #000 !important;
   }
 }
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
 </style>
 </style>
 <style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}
@@ -876,12 +899,6 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
     });
   })();
 </script>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
 </head>
 <body>
 <div class="topbar no-print">
@@ -912,17 +929,17 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
           <p class="li-eyebrow">👁️ Picture it</p>
           <p class="li-lead">These pictures show what the math looks like.</p>
           
-          <div class="li-graphics"><figure class="li-graphic"><img src="../../assets/vocab-images/inequality.svg" alt="Illustration of Compare: To see if a number is bigger, smaller, or equal to another." loading="lazy" onerror="this.closest('.li-graphic').style.display='none'" /><figcaption>Compare</figcaption></figure><figure class="li-graphic"><img src="../../assets/vocab-images/number-line.svg" alt="Illustration of Order: To put numbers in order, smallest to biggest or biggest to smallest." loading="lazy" onerror="this.closest('.li-graphic').style.display='none'" /><figcaption>Order</figcaption></figure><figure class="li-graphic"><img src="../../assets/vocab-images/inequality.svg" alt="Illustration of Greater than: Farther right on a number line. The &gt; sign." loading="lazy" onerror="this.closest('.li-graphic').style.display='none'" /><figcaption>Greater than</figcaption></figure></div>
+          <div class="li-graphics"><figure class="li-graphic"><img src="../../assets/vocab-images/number-line.svg" alt="Illustration of Number line: A straight line where numbers are placed in order; numbers get smaller to the left and larger to the right." loading="lazy" onerror="this.closest('.li-graphic').style.display='none'" /><figcaption>Number line</figcaption></figure><figure class="li-graphic"><img src="../../assets/vocab-images/inequality.svg" alt="Illustration of Compare: To see if a number is bigger, smaller, or equal to another." loading="lazy" onerror="this.closest('.li-graphic').style.display='none'" /><figcaption>Compare</figcaption></figure><figure class="li-graphic"><img src="../../assets/vocab-images/number-line.svg" alt="Illustration of Order: To put numbers in order, smallest to biggest or biggest to smallest." loading="lazy" onerror="this.closest('.li-graphic').style.display='none'" /><figcaption>Order</figcaption></figure></div>
         </section>
     <section class="li-block">
         <p class="li-eyebrow">Worked example</p>
         <p class="li-lead">Read each step. Tap a <span class="li-pop-demo">blue word</span> to see what it means.</p>
-        <ol class="li-steps"><li>I will <button type="button" class="li-pop" data-popover data-term="Compare" data-term-es="Comparar" data-def="To see if a number is bigger, smaller, or equal to another." data-def-es="Ver si un número es mayor, menor o igual que otro." data-img="../../assets/vocab-images/inequality.svg" aria-label="What does Compare mean?">compare<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> -7 and -5. They are both negative, so I look at the number line.</li><li>-7 is 7 steps left of zero. -5 is only 5 steps left of zero.</li><li>-7 is farther to the left, so -7 is the smaller number.</li><li>I write -7 &lt; -5. The open side of the symbol points to the bigger number, -5.</li></ol>
+        <ol class="li-steps"><li>I will <button type="button" class="li-pop" data-popover data-term="Compare" data-term-es="Comparar" data-def="To see if a number is bigger, smaller, or equal to another." data-def-es="Ver si un número es mayor, menor o igual que otro." data-img="../../assets/vocab-images/inequality.svg" aria-label="What does Compare mean?">compare<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> -7 and -5. They are both negative, so I look at the <button type="button" class="li-pop" data-popover data-term="Number line" data-term-es="Recta numérica" data-def="A straight line where numbers are placed in order; numbers get smaller to the left and larger to the right." data-def-es="Una recta donde los números se colocan en orden; los números son menores a la izquierda y mayores a la derecha." data-img="../../assets/vocab-images/number-line.svg" aria-label="What does Number line mean?">number line<span class="li-pop-i" aria-hidden="true">ⓘ</span></button>.</li><li>-7 is 7 steps left of zero. -5 is only 5 steps left of zero.</li><li>-7 is farther to the left, so -7 is the smaller number.</li><li>I write -7 &lt; -5. The open side of the symbol points to the bigger number, -5.</li></ol>
       </section>
     <section class="li-block li-block-practice">
         <p class="li-eyebrow">Try it with me</p>
         <p class="li-lead">Work through the same steps on this one. Fill in each blank as we go.</p>
-        <ol class="li-steps li-steps-fill"><li>Now let's <button type="button" class="li-pop" data-popover data-term="Compare" data-term-es="Comparar" data-def="To see if a number is bigger, smaller, or equal to another." data-def-es="Ver si un número es mayor, menor o igual que otro." data-img="../../assets/vocab-images/inequality.svg" aria-label="What does Compare mean?">compare<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> -2 and 3. Which one is to the left on the number line? The -2 is left of zero.<input class="li-input" type="text" data-nt-field placeholder="your work…" /></li><li>Which one is to the right? The 3 is right of zero.<input class="li-input" type="text" data-nt-field placeholder="your work…" /></li><li>So which is greater, and what symbol do we use? 3 is greater, so -2 &lt; 3.<input class="li-input" type="text" data-nt-field placeholder="your work…" /></li></ol>
+        <ol class="li-steps li-steps-fill"><li>Now let's <button type="button" class="li-pop" data-popover data-term="Compare" data-term-es="Comparar" data-def="To see if a number is bigger, smaller, or equal to another." data-def-es="Ver si un número es mayor, menor o igual que otro." data-img="../../assets/vocab-images/inequality.svg" aria-label="What does Compare mean?">compare<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> -2 and 3. Which one is to the left on the <button type="button" class="li-pop" data-popover data-term="Number line" data-term-es="Recta numérica" data-def="A straight line where numbers are placed in order; numbers get smaller to the left and larger to the right." data-def-es="Una recta donde los números se colocan en orden; los números son menores a la izquierda y mayores a la derecha." data-img="../../assets/vocab-images/number-line.svg" aria-label="What does Number line mean?">number line<span class="li-pop-i" aria-hidden="true">ⓘ</span></button>? The -2 is left of zero.<input class="li-input" type="text" data-nt-field placeholder="your work…" /></li><li>Which one is to the right? The 3 is right of zero.<input class="li-input" type="text" data-nt-field placeholder="your work…" /></li><li>So which is greater, and what symbol do we use? 3 is greater, so -2 &lt; 3.<input class="li-input" type="text" data-nt-field placeholder="your work…" /></li></ol>
         <div class="li-work"><span class="li-work-label">Show your work</span></div>
         <p class="li-answer"><span class="li-answer-label">Answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type the answer" /></p>
       </section>
@@ -938,11 +955,5 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   </article>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 9-3 · Standard 6.NS.7</footer>
 </main>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
 </body>
 </html>

@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
+    @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap");
     :root {
       --ref-navy: #1C2E42;
       --ref-teal: #387F84;
@@ -1112,10 +1113,32 @@
     .cfu-card { text-align:center; }
     .cfu-poll { display:flex; gap:8px; justify-content:center; margin:12px 0; }
     .cfu-btn { flex:none; min-width:100px; }
-    .diff-paths-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+    .diff-paths-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:8px; }
     .diff-path { border:2px solid var(--path-color, var(--teal)); border-radius:8px; padding:10px; }
     .diff-path-label { font-size:11px; font-weight:800; color:var(--navy); margin-bottom:6px; }
     .diff-path-stem { font-size:10px; line-height:1.4; margin:0; }
+    /* Read-aloud (TTS) button — additive, accessible, never shown in print */
+    .read-aloud-btn { display:inline-flex; align-items:center; justify-content:center; vertical-align:middle; margin-left:6px; padding:0; width:1.7em; height:1.7em; min-width:1.7em; border:1.5px solid var(--teal); border-radius:50%; background:var(--white,#fff); color:var(--navy); font-size:0.78em; line-height:1; cursor:pointer; transition:transform .12s ease, background .12s ease; }
+    .read-aloud-btn:hover { background:var(--teal-light); transform:scale(1.08); }
+    .read-aloud-btn:active { transform:scale(0.96); }
+    .read-aloud-btn:focus-visible { outline:3px solid var(--amber); outline-offset:2px; }
+    @media print { .read-aloud-btn { display:none !important; } }
+    /* Bilingual Spanish stem line under English — gated by .bilingual-on (default on) */
+    .stem-es { display:block; margin-top:2px; font-size:0.82em; font-style:italic; color:var(--navy); opacity:0.72; }
+    body:not(.bilingual-on) .stem-es,
+    body:not(.bilingual-on) .objective-text-es,
+    body:not(.bilingual-on) .vocab-term-es,
+    body:not(.bilingual-on) .vocab-definition-es { display:none; }
+    .tt-stems-extend { margin-top:8px; padding-top:8px; border-top:1px dashed var(--gray,#ccc); }
+    .tt-stem-extend { opacity:0.92; }
+    /* Header accessibility / language controls */
+    .a11y-controls { display:flex; align-items:center; gap:8px; }
+    .a11y-btn { font-size:12px; font-weight:700; color:var(--navy); background:var(--white,#fff); border:1.5px solid var(--teal); border-radius:16px; padding:5px 12px; cursor:pointer; }
+    .a11y-btn[aria-pressed="false"] { opacity:0.55; }
+    .a11y-btn:focus-visible, .a11y-rate select:focus-visible { outline:3px solid var(--amber); outline-offset:2px; }
+    .a11y-rate { display:inline-flex; align-items:center; gap:4px; font-size:12px; color:var(--navy); }
+    .a11y-rate select { font-size:12px; border:1.5px solid var(--teal); border-radius:14px; padding:4px 8px; background:var(--white,#fff); color:var(--navy); cursor:pointer; }
+    @media print { .a11y-controls { display:none !important; } }
     .workspace-table { width:100%; border-collapse:collapse; font-size:11px; }
     .workspace-table th, .workspace-table td { border:1px solid #dadce0; padding:6px 8px; text-align:center; }
     .workspace-table th { background:var(--teal-light); font-weight:800; }
@@ -2012,15 +2035,14 @@
       .presenter-hud { font-size: 10px; padding: 6px 10px; }
     }
     
+.slide-main-title,.title-heading,.g-doc-title,.section-divider-title,
+.post-it-title,.g-title-block h1,.g-title-block h2,h1,h2{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
   </style>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
 </head>
-<body>
+<body class="bilingual-on">
 
   <!-- Google Slides Chrome Bar -->
   <header class="g-chrome">
@@ -2039,6 +2061,16 @@
       </div>
     </div>
     <div class="g-right">
+      <div class="a11y-controls" role="group" aria-label="Accessibility and language controls">
+        <button class="a11y-btn" id="bilingual-toggle" aria-pressed="true" onclick="toggleBilingual(this)" title="Show or hide Spanish support">🌐 Español</button>
+        <label class="a11y-rate" title="Read-aloud speed">🔊
+          <select id="tts-rate-select" aria-label="Read-aloud speed" onchange="setSlideTtsRate(this.value)">
+            <option value="0.7">Slow</option>
+            <option value="0.85" selected>Normal</option>
+            <option value="1">Fast</option>
+          </select>
+        </label>
+      </div>
       
       <button class="btn-present" onclick="enterFullscreen()">
         ▶ Present
@@ -2393,13 +2425,13 @@
     <div class="ref-two-col">
       <div class="ref-main-panel">
     <h2 class="card-title">🎯 Content Objective <span class="bilingual-tag">/ Objetivo de contenido</span></h2>
-    <p class="objective-text">I can solve real-world problems by using unit rates to compare options.</p>
+    <p class="objective-text">I can solve real-world problems by using unit rates to compare options.<button type="button" class="read-aloud-btn" aria-label="Read the content objective aloud" title="Read the content objective aloud" data-speak="I can solve real-world problems by using unit rates to compare options." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
   </div>
       <aside class="ref-side-panel">
         <div class="ref-side-header">Today&#039;s Objectives</div>
         <div class="ref-side-body">
     <h2 class="card-title">🗣️ Language Objective <span class="bilingual-tag">/ Objetivo de lenguaje</span></h2>
-    <p class="objective-text">I can explain my comparison using the words unit rate, better buy, per unit, and rate.</p>
+    <p class="objective-text">I can explain my comparison using the words unit rate, better buy, per unit, and rate.<button type="button" class="read-aloud-btn" aria-label="Read the language objective aloud" title="Read the language objective aloud" data-speak="I can explain my comparison using the words unit rate, better buy, per unit, and rate." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     
     <p class="ref-teacher-note ref-note-say"><span>👩‍🏫</span> Read objectives aloud. Ask: What will you be able to do by the end of class?</p>
     <p class="ref-teacher-note ref-note-ask"><span>❓</span> Which vocabulary words do you already know? Which are new?</p>
@@ -2556,7 +2588,7 @@
     <div class="ref-curious-layout">
       <div class="ref-visual-prompt">
         <span class="ref-prompt-badge">Visual Prompt</span>
-        <p class="ref-instruction">Arcade Builder Challenge</p><p class="card-desc">You&#039;re the new supply manager for the arcade! You need to order tokens, prizes, and snacks from different suppliers. Each supplier offers a different package deal. Your job is to find the unit rate for each deal and figure out which supplier gives you the best value for every item you need to order.</p><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 440 240" style="background:white; border-radius:8px;"><rect x="5" y="5" width="430" height="230" fill="#F9FBFC" stroke="#1FA6A2" stroke-width="2"/><line x1="20" y1="5" x2="20" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="50" y1="5" x2="50" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="80" y1="5" x2="80" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="110" y1="5" x2="110" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="140" y1="5" x2="140" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="170" y1="5" x2="170" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="200" y1="5" x2="200" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="230" y1="5" x2="230" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="260" y1="5" x2="260" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="290" y1="5" x2="290" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="320" y1="5" x2="320" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="350" y1="5" x2="350" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="380" y1="5" x2="380" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="410" y1="5" x2="410" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="20" x2="435" y2="20" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="50" x2="435" y2="50" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="80" x2="435" y2="80" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="110" x2="435" y2="110" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="140" x2="435" y2="140" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="170" x2="435" y2="170" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="200" x2="435" y2="200" stroke="#E1EAEF" stroke-width="1"/><line x1="60" y1="190" x2="380" y2="190" stroke="#17324D" stroke-width="2"/><line x1="80" y1="30" x2="80" y2="200" stroke="#17324D" stroke-width="2"/><text x="340" y="210" font-family="Outfit, sans-serif" font-size="10" fill="#17324D" font-weight="bold">Input (x)</text><text x="25" y="45" font-family="Outfit, sans-serif" font-size="10" fill="#17324D" font-weight="bold">Output (y)</text><line x1="80" y1="190" x2="340" y2="60" stroke="#F2C15B" stroke-width="3"/><circle cx="210" cy="125" r="4.5" fill="#1FA6A2"/><circle cx="340" cy="60" r="4.5" fill="#1FA6A2"/></svg>
+        <p class="ref-instruction">Arcade Builder Challenge</p><p class="card-desc">You&#039;re the new supply manager for the arcade! You need to order tokens, prizes, and snacks from different suppliers. Each supplier offers a different package deal. Your job is to find the unit rate for each deal and figure out which supplier gives you the best value for every item you need to order.<button type="button" class="read-aloud-btn" aria-label="Read the prompt aloud" title="Read the prompt aloud" data-speak="You&#039;re the new supply manager for the arcade! You need to order tokens, prizes, and snacks from different suppliers. Each supplier offers a different package deal. Your job is to find the unit rate for each deal and figure out which supplier gives you the best value for every item you need to order." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 440 240" style="background:white; border-radius:8px;"><rect x="5" y="5" width="430" height="230" fill="#F9FBFC" stroke="#1FA6A2" stroke-width="2"/><line x1="20" y1="5" x2="20" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="50" y1="5" x2="50" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="80" y1="5" x2="80" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="110" y1="5" x2="110" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="140" y1="5" x2="140" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="170" y1="5" x2="170" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="200" y1="5" x2="200" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="230" y1="5" x2="230" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="260" y1="5" x2="260" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="290" y1="5" x2="290" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="320" y1="5" x2="320" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="350" y1="5" x2="350" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="380" y1="5" x2="380" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="410" y1="5" x2="410" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="20" x2="435" y2="20" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="50" x2="435" y2="50" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="80" x2="435" y2="80" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="110" x2="435" y2="110" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="140" x2="435" y2="140" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="170" x2="435" y2="170" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="200" x2="435" y2="200" stroke="#E1EAEF" stroke-width="1"/><line x1="60" y1="190" x2="380" y2="190" stroke="#17324D" stroke-width="2"/><line x1="80" y1="30" x2="80" y2="200" stroke="#17324D" stroke-width="2"/><text x="340" y="210" font-family="Outfit, sans-serif" font-size="10" fill="#17324D" font-weight="bold">Input (x)</text><text x="25" y="45" font-family="Outfit, sans-serif" font-size="10" fill="#17324D" font-weight="bold">Output (y)</text><line x1="80" y1="190" x2="340" y2="60" stroke="#F2C15B" stroke-width="3"/><circle cx="210" cy="125" r="4.5" fill="#1FA6A2"/><circle cx="340" cy="60" r="4.5" fill="#1FA6A2"/></svg>
       </div>
       <div class="ref-nw-stack">
         <div class="ref-nw-panel ref-nw-notice">
@@ -2858,37 +2890,37 @@
       </thead>
       <tbody>
     <tr>
-      <td class="ref-vocab-term">Unit Rate<br/><em>Tasa unitaria</em></td>
+      <td class="ref-vocab-term">Unit Rate<button type="button" class="read-aloud-btn" aria-label="Read Unit Rate and its meaning aloud" title="Read Unit Rate and its meaning aloud" data-speak="Unit Rate. A rate for just 1 of something, like cost for 1 item." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Tasa unitaria</em><button type="button" class="read-aloud-btn" aria-label="Leer Tasa unitaria en español" title="Leer Tasa unitaria en español" data-speak="Tasa unitaria. Una tasa para solo 1 de algo, como el precio de 1 artículo." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>A rate for just 1 of something, like cost for 1 item.<br/><em>Una tasa para solo 1 de algo, como el precio de 1 artículo.</em></td>
       <td></td>
       <td class="ref-vocab-visual">$2.50 per pound means $2.50 for every 1 pound</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Better Buy<br/><em>Mejor compra</em></td>
+      <td class="ref-vocab-term">Better Buy<button type="button" class="read-aloud-btn" aria-label="Read Better Buy and its meaning aloud" title="Read Better Buy and its meaning aloud" data-speak="Better Buy. The choice that costs less for each item." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Mejor compra</em><button type="button" class="read-aloud-btn" aria-label="Leer Mejor compra en español" title="Leer Mejor compra en español" data-speak="Mejor compra. La opción que cuesta menos por cada artículo." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>The choice that costs less for each item.<br/><em>La opción que cuesta menos por cada artículo.</em></td>
       <td></td>
       <td class="ref-vocab-visual">$0.10 each vs $0.15 each — the $0.10 option is the better buy</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Comparison<br/><em>Comparación</em></td>
+      <td class="ref-vocab-term">Comparison<button type="button" class="read-aloud-btn" aria-label="Read Comparison and its meaning aloud" title="Read Comparison and its meaning aloud" data-speak="Comparison. Looking at numbers to see which is bigger or smaller." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Comparación</em><button type="button" class="read-aloud-btn" aria-label="Leer Comparación en español" title="Leer Comparación en español" data-speak="Comparación. Mirar números para ver cuál es mayor o menor." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>Looking at numbers to see which is bigger or smaller.<br/><em>Mirar números para ver cuál es mayor o menor.</em></td>
       <td></td>
       <td class="ref-vocab-visual">$3 per game < $4 per game</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Per Unit<br/><em>Por unidad</em></td>
+      <td class="ref-vocab-term">Per Unit<button type="button" class="read-aloud-btn" aria-label="Read Per Unit and its meaning aloud" title="Read Per Unit and its meaning aloud" data-speak="Per Unit. For each single item." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Por unidad</em><button type="button" class="read-aloud-btn" aria-label="Leer Por unidad en español" title="Leer Por unidad en español" data-speak="Por unidad. Por cada artículo." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>For each single item.<br/><em>Por cada artículo.</em></td>
       <td></td>
       <td class="ref-vocab-visual">$0.50 per token means each token costs $0.50</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Rate<br/><em>Tasa</em></td>
+      <td class="ref-vocab-term">Rate<button type="button" class="read-aloud-btn" aria-label="Read Rate and its meaning aloud" title="Read Rate and its meaning aloud" data-speak="Rate. A ratio comparing two amounts with different units, like miles per hour." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Tasa</em><button type="button" class="read-aloud-btn" aria-label="Leer Tasa en español" title="Leer Tasa en español" data-speak="Tasa. Una razón que compara dos cantidades con unidades distintas, como millas por hora." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>A ratio comparing two amounts with different units, like miles per hour.<br/><em>Una razón que compara dos cantidades con unidades distintas, como millas por hora.</em></td>
       <td></td>
       <td class="ref-vocab-visual">120 miles in 3 hours is a rate (miles and hours are different units)</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Proportion<br/><em>Proporción</em></td>
+      <td class="ref-vocab-term">Proportion<button type="button" class="read-aloud-btn" aria-label="Read Proportion and its meaning aloud" title="Read Proportion and its meaning aloud" data-speak="Proportion. A math sentence saying two ratios are equal. It helps find a missing number." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Proporción</em><button type="button" class="read-aloud-btn" aria-label="Leer Proporción en español" title="Leer Proporción en español" data-speak="Proporción. Una oración matemática que dice que dos razones son iguales. Ayuda a hallar un número que falta." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>A math sentence saying two ratios are equal. It helps find a missing number.<br/><em>Una oración matemática que dice que dos razones son iguales. Ayuda a hallar un número que falta.</em></td>
       <td></td>
       <td class="ref-vocab-visual">5/3 = x/12 → x = 20</td>
@@ -3015,10 +3047,11 @@
     <span class="teacher-cue-label">Time:</span>
     <span class="teacher-cue-text">90 sec</span>
   </div>
-        <p class="card-desc tt-question">As supply manager you compare token deals like 500 for $60 and 350 for $38.50. You can&#039;t compare totals directly, so what does finding the cost &#039;per unit&#039; let you do?</p>
+        <p class="card-desc tt-question">As supply manager you compare token deals like 500 for $60 and 350 for $38.50. You can&#039;t compare totals directly, so what does finding the cost &#039;per unit&#039; let you do?<button type="button" class="read-aloud-btn" aria-label="Read the question aloud" title="Read the question aloud" data-speak="As supply manager you compare token deals like 500 for $60 and 350 for $38.50. You can&#039;t compare totals directly, so what does finding the cost &#039;per unit&#039; let you do?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
         <div class="tt-stems-box">
           <strong>Sentence starters (tap to use):</strong>
-          <div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ I can&#039;t compare the totals because ___.</div><div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ Finding the cost ___ lets me compare fairly.</div>
+          <div class="tt-stem" onclick="insertAtCursor('I can&#039;t compare the totals because ___.')">✍️ I can&#039;t compare the totals because ___.<span class="stem-es">No puedo comparar los totales porque ___.</span></div><div class="tt-stem" onclick="insertAtCursor('Finding the cost ___ lets me compare fairly.')">✍️ Finding the cost ___ lets me compare fairly.<span class="stem-es">Hallar el costo ___ me deja comparar de forma justa.</span></div>
+          <div class="tt-stems-extend"><strong>Stretch further:</strong><div class="tt-stem tt-stem-extend">➕ The biggest package is not always cheapest per unit because ___.</div><div class="tt-stem tt-stem-extend">➕ Package size can trick you when ___.</div></div>
         </div>
         <div class="tt-wordbank"><strong>WORD BANK:</strong><div><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">unit rate</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">per unit</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">comparison</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">rate</span></div></div>
         <div class="turn-talk-timer" id="tt-timer-launch">
@@ -3226,10 +3259,11 @@
     <span class="teacher-cue-label">Time:</span>
     <span class="teacher-cue-text">90 sec</span>
   </div>
-        <p class="card-desc tt-question">How did the unit rate help you decide the better buy between the two token suppliers in your table?</p>
+        <p class="card-desc tt-question">How did the unit rate help you decide the better buy between the two token suppliers in your table?<button type="button" class="read-aloud-btn" aria-label="Read the question aloud" title="Read the question aloud" data-speak="How did the unit rate help you decide the better buy between the two token suppliers in your table?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
         <div class="tt-stems-box">
           <strong>Sentence starters (tap to use):</strong>
-          <div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ The unit rate for ___ is $___ per token.</div><div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ The better buy is ___ because its unit rate is ___.</div>
+          <div class="tt-stem" onclick="insertAtCursor('The unit rate for ___ is $___ per token.')">✍️ The unit rate for ___ is $___ per token.<span class="stem-es">La tasa unitaria de ___ es $___ por ficha.</span></div><div class="tt-stem" onclick="insertAtCursor('The better buy is ___ because its unit rate is ___.')">✍️ The better buy is ___ because its unit rate is ___.<span class="stem-es">La mejor compra es ___ porque su tasa unitaria es ___.</span></div>
+          <div class="tt-stems-extend"><strong>Stretch further:</strong><div class="tt-stem tt-stem-extend">➕ A lower total does not mean a better buy because ___.</div><div class="tt-stem tt-stem-extend">➕ The unit rate is what matters because ___.</div></div>
         </div>
         <div class="tt-wordbank"><strong>WORD BANK:</strong><div><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">unit rate</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">better buy</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">per unit</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">comparison</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">rate</span></div></div>
         <div class="turn-talk-timer" id="tt-timer-explore">
@@ -3454,7 +3488,7 @@
     <div class="ref-two-col">
       <div class="ref-main-panel">
     <span class="ref-error-badge">⚠ Find the Unit Rate Error</span>
-    <p class="ref-instruction">A classmate turned in the work below. One step has a mistake. Read every step, find it, name it, and fix it.</p>
+    <p class="ref-instruction">A classmate turned in the work below. One step has a mistake. Read every step, find it, name it, and fix it.<button type="button" class="read-aloud-btn" aria-label="Read the directions aloud" title="Read the directions aloud" data-speak="A classmate turned in the work below. One step has a mistake. Read every step, find it, name it, and fix it." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     <div class="ref-student-work-box">
       <div class="ref-work-label">Student&apos;s work — read every step:</div>
       <div class="ea-steps">
@@ -3761,11 +3795,11 @@
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🕹️ ARCADE BUILDER</span></div>
     <h3 class="slide-main-title">Differentiation Paths</h3>
     <div class="slide-card">
-      <span class="slide-badge badge-teal">🎯 THREE PATHS</span>
+      <span class="slide-badge badge-teal">🎯 CHOOSE YOUR LEVEL</span>
       <div class="teacher-cue teacher-cue-say">
     <span class="teacher-cue-icon">👩‍🏫</span>
     <span class="teacher-cue-label">Say:</span>
-    <span class="teacher-cue-text">All students work on math — choose the path that matches readiness.</span>
+    <span class="teacher-cue-text">Everyone works on the same math goal — pick the level of support that fits today.</span>
   </div>
       <div class="teacher-cue teacher-cue-time">
     <span class="teacher-cue-icon">⏱️</span>
@@ -3773,17 +3807,21 @@
     <span class="teacher-cue-text">8–10 min independent or partner</span>
   </div>
       <div class="diff-paths-grid">
+        <div class="diff-path" style="--path-color:var(--coral, #e07a5f)">
+      <div class="diff-path-label">🧩 Level 0 · Most support</div>
+      <p class="diff-path-stem">Step-by-step with a worked model and sentence frames.<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="Step-by-step with a worked model and sentence frames." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
+    </div>
         <div class="diff-path" style="--path-color:var(--amber)">
-      <div class="diff-path-label">🌱 Approaching</div>
-      <p class="diff-path-stem">Which is the better buy: 6 bouncy balls for $4.50 or 10 bouncy balls for $8.00?</p>
+      <div class="diff-path-label">🌱 Level 1 · Support</div>
+      <p class="diff-path-stem">Which is the better buy: 6 bouncy balls for $4.50 or 10 bouncy balls for $8.00?<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="Which is the better buy: 6 bouncy balls for $4.50 or 10 bouncy balls for $8.00?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     </div>
         <div class="diff-path" style="--path-color:var(--teal)">
-      <div class="diff-path-label">🎯 On-Level</div>
-      <p class="diff-path-stem">Core practice aligned to the standard.</p>
+      <div class="diff-path-label">🎯 Level 2 · Core</div>
+      <p class="diff-path-stem">Core practice aligned to the standard.<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="Core practice aligned to the standard." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     </div>
         <div class="diff-path" style="--path-color:var(--navy)">
-      <div class="diff-path-label">🚀 Challenge</div>
-      <p class="diff-path-stem">Extension with error analysis or multi-step reasoning.</p>
+      <div class="diff-path-label">🚀 Level 2+ · Enrichment</div>
+      <p class="diff-path-stem">Extension with error analysis or multi-step reasoning.<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="Extension with error analysis or multi-step reasoning." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     </div>
       </div>
     </div></div>
@@ -3943,10 +3981,11 @@
     <span class="teacher-cue-label">Time:</span>
     <span class="teacher-cue-text">90 sec</span>
   </div>
-        <p class="card-desc tt-question">Printer A makes 150 tickets in 5 minutes and Printer B makes 200 in 8 minutes. The manager needs 600 tickets fast. How do unit rates decide the faster printer and the time needed?</p>
+        <p class="card-desc tt-question">Printer A makes 150 tickets in 5 minutes and Printer B makes 200 in 8 minutes. The manager needs 600 tickets fast. How do unit rates decide the faster printer and the time needed?<button type="button" class="read-aloud-btn" aria-label="Read the question aloud" title="Read the question aloud" data-speak="Printer A makes 150 tickets in 5 minutes and Printer B makes 200 in 8 minutes. The manager needs 600 tickets fast. How do unit rates decide the faster printer and the time needed?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
         <div class="tt-stems-box">
           <strong>Sentence starters (tap to use):</strong>
-          <div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ Printer A prints ___ tickets per minute and Printer B prints ___.</div><div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ The manager should use Printer ___; 600 tickets take ___ minutes.</div>
+          <div class="tt-stem" onclick="insertAtCursor('Printer A prints ___ tickets per minute and Printer B prints ___.')">✍️ Printer A prints ___ tickets per minute and Printer B prints ___.<span class="stem-es">La impresora A imprime ___ boletos por minuto y la B imprime ___.</span></div><div class="tt-stem" onclick="insertAtCursor('The manager should use Printer ___; 600 tickets take ___ minutes.')">✍️ The manager should use Printer ___; 600 tickets take ___ minutes.<span class="stem-es">El gerente debe usar la impresora ___; 600 boletos tardan ___ minutos.</span></div>
+          <div class="tt-stems-extend"><strong>Stretch further:</strong><div class="tt-stem tt-stem-extend">➕ A higher rate is better when ___, but a lower rate is better when ___.</div><div class="tt-stem tt-stem-extend">➕ It depends on whether the rate measures ___ or ___.</div></div>
         </div>
         <div class="tt-wordbank"><strong>WORD BANK:</strong><div><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">unit rate</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">rate</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">per unit</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">comparison</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">proportion</span></div></div>
         <div class="turn-talk-timer" id="tt-timer-connect">
@@ -4244,7 +4283,7 @@
       <div class="slide-card card-coral">
         <h2 class="card-title">🎯 Listen For · Common Errors</h2>
         <p class="notes-listen">• Students explain the packages have different quantities, so the per-unit cost (unit rate) is needed to compare deals fairly.</p><p class="notes-listen">• Students divide price by quantity for each deal (e.g., 350 for $38.50 = $0.11 each) and choose the supplier with the lower unit rate as the better buy.</p><p class="notes-listen">• Students find 30 and 25 tickets/min, choose Printer A (higher rate), and divide 600 / 30 = 20 minutes.</p><p class="notes-listen">• Listen for students naming a specific strategy tied to 6.RP.3b — not just &quot;I multiplied.&quot; They should connect steps to the key idea.</p>
-        <p class="notes-mistake"><strong>Common mistake:</strong> A common mistake in Solve Problems with Unit Rates is skipping the key idea: &quot;Divide the price by the number of items to get the cost per unit. The lower cost per unit is the better buy.&quot; — always check your work against this rule before you submit.</p>
+        <p class="notes-mistake"><strong>Common mistake:</strong> A common mistake in Solve Problems with Unit Rates is comparing the total prices instead of the cost per item — the deal with the smaller total can still cost more per unit. Always reduce each option to its unit rate before you decide, then pick the lower one.</p>
       </div>
     </div></div>
     </div><footer class="ref-slide-footer" data-slide-num="47">
@@ -4291,7 +4330,7 @@
     <div id="notes-slide-content">Loading notes...</div>
     <hr style="margin:12px 0; border:none; border-top:1px solid #e1eaef;" />
     <p style="font-size:10px; color:var(--gray);"><strong>Pacing:</strong> ~45 min</p>
-    <p style="font-size:10px;"><strong>Common mistake:</strong> A common mistake in Solve Problems with Unit Rates is skipping the key idea: &quot;Divide the price by the number of items to get the cost per unit. The lower cost per unit is the better buy.&quot; — always check your work against this rule before you submit.</p>
+    <p style="font-size:10px;"><strong>Common mistake:</strong> A common mistake in Solve Problems with Unit Rates is comparing the total prices instead of the cost per item — the deal with the smaller total can still cost more per unit. Always reduce each option to its unit rate before you decide, then pick the lower one.</p>
   </aside>
 
   <!-- Presenter Controls HUD (Visible in fullscreen Present Mode) -->
@@ -4470,6 +4509,66 @@
         }
       }, 1000);
     }
+
+    // -----------------------------------------------------------------
+    // READ-ALOUD (Text-to-Speech) — accessibility + Level 1 language support
+    // Reads slide text via the browser Web Speech API. Rate is saved so a
+    // teacher/student preference persists across slides and lessons.
+    // -----------------------------------------------------------------
+    const SLIDE_TTS_RATE_KEY = 'neft-slide-tts-rate';
+    function getSlideTtsRate() {
+      const saved = parseFloat(localStorage.getItem(SLIDE_TTS_RATE_KEY));
+      return (saved && saved >= 0.5 && saved <= 1.5) ? saved : 0.85;
+    }
+    function setSlideTtsRate(rate) {
+      const r = parseFloat(rate);
+      if (r && r >= 0.5 && r <= 1.5) localStorage.setItem(SLIDE_TTS_RATE_KEY, String(r));
+    }
+    function speakText(text, lang) {
+      if (!('speechSynthesis' in window) || !text) return;
+      try {
+        // A second tap on a speaking button stops it (toggle behavior).
+        if (window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+          return;
+        }
+        const utter = new SpeechSynthesisUtterance(String(text).replace(/[✍️🎯🗣️👂✓✗⚠➡️•]/g, ' ').trim());
+        utter.rate = getSlideTtsRate();
+        utter.lang = lang || 'en-US';
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utter);
+      } catch (e) { /* speech not available */ }
+    }
+    // Read-aloud buttons carry their text in data-speak (and optional data-lang).
+    function speakFromButton(btn) {
+      if (!btn) return;
+      speakText(btn.getAttribute('data-speak') || '', btn.getAttribute('data-lang') || 'en-US');
+    }
+    window.speakText = speakText;
+    window.speakFromButton = speakFromButton;
+    window.setSlideTtsRate = setSlideTtsRate;
+    window.getSlideTtsRate = getSlideTtsRate;
+
+    // Bilingual (Spanish support) toggle — persists per browser.
+    const SLIDE_BILINGUAL_KEY = 'neft-slide-bilingual';
+    function applyBilingual(on) {
+      document.body.classList.toggle('bilingual-on', on);
+      const btn = document.getElementById('bilingual-toggle');
+      if (btn) btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+    function toggleBilingual(btn) {
+      const on = !document.body.classList.contains('bilingual-on');
+      localStorage.setItem(SLIDE_BILINGUAL_KEY, on ? '1' : '0');
+      applyBilingual(on);
+    }
+    window.toggleBilingual = toggleBilingual;
+    // Restore saved accessibility preferences on load.
+    (function initA11yPrefs() {
+      const savedBi = localStorage.getItem(SLIDE_BILINGUAL_KEY);
+      if (savedBi !== null) applyBilingual(savedBi === '1');
+      const rateSel = document.getElementById('tts-rate-select');
+      if (rateSel) rateSel.value = String(getSlideTtsRate());
+    })();
 
     // CFU thumb responses
     const cfuResponses = {};
@@ -5831,11 +5930,5 @@
     
   </script>
 
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
 </body>
 </html>

@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
+    @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap");
     :root {
       --ref-navy: #17324D;
       --ref-teal: #1FA6A2;
@@ -1112,10 +1113,32 @@
     .cfu-card { text-align:center; }
     .cfu-poll { display:flex; gap:8px; justify-content:center; margin:12px 0; }
     .cfu-btn { flex:none; min-width:100px; }
-    .diff-paths-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+    .diff-paths-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:8px; }
     .diff-path { border:2px solid var(--path-color, var(--teal)); border-radius:8px; padding:10px; }
     .diff-path-label { font-size:11px; font-weight:800; color:var(--navy); margin-bottom:6px; }
     .diff-path-stem { font-size:10px; line-height:1.4; margin:0; }
+    /* Read-aloud (TTS) button — additive, accessible, never shown in print */
+    .read-aloud-btn { display:inline-flex; align-items:center; justify-content:center; vertical-align:middle; margin-left:6px; padding:0; width:1.7em; height:1.7em; min-width:1.7em; border:1.5px solid var(--teal); border-radius:50%; background:var(--white,#fff); color:var(--navy); font-size:0.78em; line-height:1; cursor:pointer; transition:transform .12s ease, background .12s ease; }
+    .read-aloud-btn:hover { background:var(--teal-light); transform:scale(1.08); }
+    .read-aloud-btn:active { transform:scale(0.96); }
+    .read-aloud-btn:focus-visible { outline:3px solid var(--amber); outline-offset:2px; }
+    @media print { .read-aloud-btn { display:none !important; } }
+    /* Bilingual Spanish stem line under English — gated by .bilingual-on (default on) */
+    .stem-es { display:block; margin-top:2px; font-size:0.82em; font-style:italic; color:var(--navy); opacity:0.72; }
+    body:not(.bilingual-on) .stem-es,
+    body:not(.bilingual-on) .objective-text-es,
+    body:not(.bilingual-on) .vocab-term-es,
+    body:not(.bilingual-on) .vocab-definition-es { display:none; }
+    .tt-stems-extend { margin-top:8px; padding-top:8px; border-top:1px dashed var(--gray,#ccc); }
+    .tt-stem-extend { opacity:0.92; }
+    /* Header accessibility / language controls */
+    .a11y-controls { display:flex; align-items:center; gap:8px; }
+    .a11y-btn { font-size:12px; font-weight:700; color:var(--navy); background:var(--white,#fff); border:1.5px solid var(--teal); border-radius:16px; padding:5px 12px; cursor:pointer; }
+    .a11y-btn[aria-pressed="false"] { opacity:0.55; }
+    .a11y-btn:focus-visible, .a11y-rate select:focus-visible { outline:3px solid var(--amber); outline-offset:2px; }
+    .a11y-rate { display:inline-flex; align-items:center; gap:4px; font-size:12px; color:var(--navy); }
+    .a11y-rate select { font-size:12px; border:1.5px solid var(--teal); border-radius:14px; padding:4px 8px; background:var(--white,#fff); color:var(--navy); cursor:pointer; }
+    @media print { .a11y-controls { display:none !important; } }
     .workspace-table { width:100%; border-collapse:collapse; font-size:11px; }
     .workspace-table th, .workspace-table td { border:1px solid #dadce0; padding:6px 8px; text-align:center; }
     .workspace-table th { background:var(--teal-light); font-weight:800; }
@@ -2012,15 +2035,14 @@
       .presenter-hud { font-size: 10px; padding: 6px 10px; }
     }
     
+.slide-main-title,.title-heading,.g-doc-title,.section-divider-title,
+.post-it-title,.g-title-block h1,.g-title-block h2,h1,h2{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
   </style>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
 </head>
-<body>
+<body class="bilingual-on">
 
   <!-- Google Slides Chrome Bar -->
   <header class="g-chrome">
@@ -2039,6 +2061,16 @@
       </div>
     </div>
     <div class="g-right">
+      <div class="a11y-controls" role="group" aria-label="Accessibility and language controls">
+        <button class="a11y-btn" id="bilingual-toggle" aria-pressed="true" onclick="toggleBilingual(this)" title="Show or hide Spanish support">🌐 Español</button>
+        <label class="a11y-rate" title="Read-aloud speed">🔊
+          <select id="tts-rate-select" aria-label="Read-aloud speed" onchange="setSlideTtsRate(this.value)">
+            <option value="0.7">Slow</option>
+            <option value="0.85" selected>Normal</option>
+            <option value="1">Fast</option>
+          </select>
+        </label>
+      </div>
       
       <button class="btn-present" onclick="enterFullscreen()">
         ▶ Present
@@ -2398,13 +2430,13 @@
     <div class="ref-two-col">
       <div class="ref-main-panel">
     <h2 class="card-title">🎯 Content Objective <span class="bilingual-tag">/ Objetivo de contenido</span></h2>
-    <p class="objective-text">I can compare ratios by finding unit rates or using equivalent ratios.</p>
+    <p class="objective-text">I can compare ratios by finding unit rates or using equivalent ratios.<button type="button" class="read-aloud-btn" aria-label="Read the content objective aloud" title="Read the content objective aloud" data-speak="I can compare ratios by finding unit rates or using equivalent ratios." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
   </div>
       <aside class="ref-side-panel">
         <div class="ref-side-header">Today&#039;s Objectives</div>
         <div class="ref-side-body">
     <h2 class="card-title">🗣️ Language Objective <span class="bilingual-tag">/ Objetivo de lenguaje</span></h2>
-    <p class="objective-text">I can explain my comparison using the words unit rate, equivalent ratio, compare, and common denominator.</p>
+    <p class="objective-text">I can explain my comparison using the words unit rate, equivalent ratio, compare, and common denominator.<button type="button" class="read-aloud-btn" aria-label="Read the language objective aloud" title="Read the language objective aloud" data-speak="I can explain my comparison using the words unit rate, equivalent ratio, compare, and common denominator." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     
     <p class="ref-teacher-note ref-note-say"><span>👩‍🏫</span> Read objectives aloud. Ask: What will you be able to do by the end of class?</p>
     <p class="ref-teacher-note ref-note-ask"><span>❓</span> Which vocabulary words do you already know? Which are new?</p>
@@ -2561,7 +2593,7 @@
     <div class="ref-curious-layout">
       <div class="ref-visual-prompt">
         <span class="ref-prompt-badge">Visual Prompt</span>
-        <p class="ref-instruction">Scenario Launch</p><p class="card-desc">Chef Academy is holding a Flavor Challenge! Chef Reyes&#039;s hot cocoa recipe uses 3 tablespoons of cocoa for every 5 ounces of milk. Chef Tran&#039;s recipe uses 4 tablespoons of cocoa for every 7 ounces of milk. The students need to figure out whose hot cocoa is more chocolatey. How can they compare the two recipes fairly?</p><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 440 240" style="background:white; border-radius:8px;"><rect x="5" y="5" width="430" height="230" fill="#F9FBFC" stroke="#1FA6A2" stroke-width="2"/><line x1="20" y1="5" x2="20" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="50" y1="5" x2="50" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="80" y1="5" x2="80" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="110" y1="5" x2="110" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="140" y1="5" x2="140" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="170" y1="5" x2="170" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="200" y1="5" x2="200" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="230" y1="5" x2="230" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="260" y1="5" x2="260" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="290" y1="5" x2="290" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="320" y1="5" x2="320" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="350" y1="5" x2="350" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="380" y1="5" x2="380" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="410" y1="5" x2="410" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="20" x2="435" y2="20" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="50" x2="435" y2="50" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="80" x2="435" y2="80" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="110" x2="435" y2="110" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="140" x2="435" y2="140" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="170" x2="435" y2="170" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="200" x2="435" y2="200" stroke="#E1EAEF" stroke-width="1"/><line x1="60" y1="190" x2="380" y2="190" stroke="#17324D" stroke-width="2"/><line x1="80" y1="30" x2="80" y2="200" stroke="#17324D" stroke-width="2"/><text x="340" y="210" font-family="Outfit, sans-serif" font-size="10" fill="#17324D" font-weight="bold">Input (x)</text><text x="25" y="45" font-family="Outfit, sans-serif" font-size="10" fill="#17324D" font-weight="bold">Output (y)</text><line x1="80" y1="190" x2="340" y2="60" stroke="#F2C15B" stroke-width="3"/><circle cx="210" cy="125" r="4.5" fill="#1FA6A2"/><circle cx="340" cy="60" r="4.5" fill="#1FA6A2"/></svg>
+        <p class="ref-instruction">Scenario Launch</p><p class="card-desc">Chef Academy is holding a Flavor Challenge! Chef Reyes&#039;s hot cocoa recipe uses 3 tablespoons of cocoa for every 5 ounces of milk. Chef Tran&#039;s recipe uses 4 tablespoons of cocoa for every 7 ounces of milk. The students need to figure out whose hot cocoa is more chocolatey. How can they compare the two recipes fairly?<button type="button" class="read-aloud-btn" aria-label="Read the prompt aloud" title="Read the prompt aloud" data-speak="Chef Academy is holding a Flavor Challenge! Chef Reyes&#039;s hot cocoa recipe uses 3 tablespoons of cocoa for every 5 ounces of milk. Chef Tran&#039;s recipe uses 4 tablespoons of cocoa for every 7 ounces of milk. The students need to figure out whose hot cocoa is more chocolatey. How can they compare the two recipes fairly?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 440 240" style="background:white; border-radius:8px;"><rect x="5" y="5" width="430" height="230" fill="#F9FBFC" stroke="#1FA6A2" stroke-width="2"/><line x1="20" y1="5" x2="20" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="50" y1="5" x2="50" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="80" y1="5" x2="80" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="110" y1="5" x2="110" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="140" y1="5" x2="140" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="170" y1="5" x2="170" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="200" y1="5" x2="200" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="230" y1="5" x2="230" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="260" y1="5" x2="260" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="290" y1="5" x2="290" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="320" y1="5" x2="320" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="350" y1="5" x2="350" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="380" y1="5" x2="380" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="410" y1="5" x2="410" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="20" x2="435" y2="20" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="50" x2="435" y2="50" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="80" x2="435" y2="80" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="110" x2="435" y2="110" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="140" x2="435" y2="140" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="170" x2="435" y2="170" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="200" x2="435" y2="200" stroke="#E1EAEF" stroke-width="1"/><line x1="60" y1="190" x2="380" y2="190" stroke="#17324D" stroke-width="2"/><line x1="80" y1="30" x2="80" y2="200" stroke="#17324D" stroke-width="2"/><text x="340" y="210" font-family="Outfit, sans-serif" font-size="10" fill="#17324D" font-weight="bold">Input (x)</text><text x="25" y="45" font-family="Outfit, sans-serif" font-size="10" fill="#17324D" font-weight="bold">Output (y)</text><line x1="80" y1="190" x2="340" y2="60" stroke="#F2C15B" stroke-width="3"/><circle cx="210" cy="125" r="4.5" fill="#1FA6A2"/><circle cx="340" cy="60" r="4.5" fill="#1FA6A2"/></svg>
       </div>
       <div class="ref-nw-stack">
         <div class="ref-nw-panel ref-nw-notice">
@@ -2870,31 +2902,31 @@
       </thead>
       <tbody>
     <tr>
-      <td class="ref-vocab-term">Unit rate<br/><em>Tasa unitaria</em></td>
+      <td class="ref-vocab-term">Unit rate<button type="button" class="read-aloud-btn" aria-label="Read Unit rate and its meaning aloud" title="Read Unit rate and its meaning aloud" data-speak="Unit rate. A rate for just 1 of something, like cost for 1 item." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Tasa unitaria</em><button type="button" class="read-aloud-btn" aria-label="Leer Tasa unitaria en español" title="Leer Tasa unitaria en español" data-speak="Tasa unitaria. Una tasa para solo 1 de algo, como el precio de 1 artículo." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>A rate for just 1 of something, like cost for 1 item.<br/><em>Una tasa para solo 1 de algo, como el precio de 1 artículo.</em></td>
       <td></td>
       <td class="ref-vocab-visual">$3 per 1 pound → unit rate is $3/lb</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Equivalent ratio<br/><em>Razón equivalente</em></td>
+      <td class="ref-vocab-term">Equivalent ratio<button type="button" class="read-aloud-btn" aria-label="Read Equivalent ratio and its meaning aloud" title="Read Equivalent ratio and its meaning aloud" data-speak="Equivalent ratio. Two ratios that mean the same thing." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Razón equivalente</em><button type="button" class="read-aloud-btn" aria-label="Leer Razón equivalente en español" title="Leer Razón equivalente en español" data-speak="Razón equivalente. Dos razones que significan lo mismo." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>Two ratios that mean the same thing.<br/><em>Dos razones que significan lo mismo.</em></td>
       <td></td>
       <td class="ref-vocab-visual">4:6 and 2:3 are equivalent (both simplify to 2:3)</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Compare<br/><em>Comparar</em></td>
+      <td class="ref-vocab-term">Compare<button type="button" class="read-aloud-btn" aria-label="Read Compare and its meaning aloud" title="Read Compare and its meaning aloud" data-speak="Compare. To look at ratios and see which is bigger, smaller, or equal." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Comparar</em><button type="button" class="read-aloud-btn" aria-label="Leer Comparar en español" title="Leer Comparar en español" data-speak="Comparar. Mirar razones para ver cuál es mayor, menor o igual." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>To look at ratios and see which is bigger, smaller, or equal.<br/><em>Mirar razones para ver cuál es mayor, menor o igual.</em></td>
       <td></td>
       <td class="ref-vocab-visual">3:4 vs. 2:5 — which has more of the first ingredient per unit?</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Simplify<br/><em>Simplificar</em></td>
+      <td class="ref-vocab-term">Simplify<button type="button" class="read-aloud-btn" aria-label="Read Simplify and its meaning aloud" title="Read Simplify and its meaning aloud" data-speak="Simplify. To make a ratio as small as possible while keeping the same comparison." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Simplificar</em><button type="button" class="read-aloud-btn" aria-label="Leer Simplificar en español" title="Leer Simplificar en español" data-speak="Simplificar. Hacer una razón lo más pequeña posible sin cambiar la comparación." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>To make a ratio as small as possible while keeping the same comparison.<br/><em>Hacer una razón lo más pequeña posible sin cambiar la comparación.</em></td>
       <td></td>
       <td class="ref-vocab-visual">8:12 → divide both by 4 → 2:3</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Common denominator<br/><em>Denominador común</em></td>
+      <td class="ref-vocab-term">Common denominator<button type="button" class="read-aloud-btn" aria-label="Read Common denominator and its meaning aloud" title="Read Common denominator and its meaning aloud" data-speak="Common denominator. A bottom number that two fractions can share so you can compare them." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Denominador común</em><button type="button" class="read-aloud-btn" aria-label="Leer Denominador común en español" title="Leer Denominador común en español" data-speak="Denominador común. Un número de abajo que dos fracciones pueden compartir para compararlas." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>A bottom number that two fractions can share so you can compare them.<br/><em>Un número de abajo que dos fracciones pueden compartir para compararlas.</em></td>
       <td></td>
       <td class="ref-vocab-visual">To compare 3/5 and 4/7, use LCD 35: 21/35 vs 20/35</td>
@@ -3059,10 +3091,11 @@
     <span class="teacher-cue-label">Time:</span>
     <span class="teacher-cue-text">90 sec</span>
   </div>
-        <p class="card-desc tt-question">Chef Reyes uses 3 tbsp cocoa for every 5 oz of milk, and Chef Tran uses 4 tbsp for every 7 oz. Can you tell whose cocoa is more chocolatey just by looking at the numbers? Why or why not?</p>
+        <p class="card-desc tt-question">Chef Reyes uses 3 tbsp cocoa for every 5 oz of milk, and Chef Tran uses 4 tbsp for every 7 oz. Can you tell whose cocoa is more chocolatey just by looking at the numbers? Why or why not?<button type="button" class="read-aloud-btn" aria-label="Read the question aloud" title="Read the question aloud" data-speak="Chef Reyes uses 3 tbsp cocoa for every 5 oz of milk, and Chef Tran uses 4 tbsp for every 7 oz. Can you tell whose cocoa is more chocolatey just by looking at the numbers? Why or why not?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
         <div class="tt-stems-box">
           <strong>Sentence starters (tap to use):</strong>
-          <div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ You ___ tell just by looking because the ___ amounts are different.</div><div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ To compare fairly we need the same ___ or the cocoa per ___.</div>
+          <div class="tt-stem" onclick="insertAtCursor('You ___ tell just by looking because the ___ amounts are different.')">✍️ You ___ tell just by looking because the ___ amounts are different.<span class="stem-es">___ se puede saber solo mirando porque las cantidades de ___ son diferentes.</span></div><div class="tt-stem" onclick="insertAtCursor('To compare fairly we need the same ___ or the cocoa per ___.')">✍️ To compare fairly we need the same ___ or the cocoa per ___.<span class="stem-es">Para comparar de forma justa necesitamos la misma ___ o el cacao por ___.</span></div>
+          <div class="tt-stems-extend"><strong>Stretch further:</strong><div class="tt-stem tt-stem-extend">➕ Looking only at the cocoa is not enough because ___.</div><div class="tt-stem tt-stem-extend">➕ More cocoa does not always mean more chocolatey since ___.</div></div>
         </div>
         <div class="tt-wordbank"><strong>WORD BANK:</strong><div><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">ratio</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">compare</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">unit rate</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">equivalent ratio</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">fair</span></div></div>
         <div class="turn-talk-timer" id="tt-timer-launch">
@@ -3270,10 +3303,11 @@
     <span class="teacher-cue-label">Time:</span>
     <span class="teacher-cue-text">90 sec</span>
   </div>
-        <p class="card-desc tt-question">You scaled both recipes to 35 oz of milk: Chef Reyes became 21:35 and Chef Tran became 20:35. How does scaling to a common denominator let you compare the recipes fairly?</p>
+        <p class="card-desc tt-question">You scaled both recipes to 35 oz of milk: Chef Reyes became 21:35 and Chef Tran became 20:35. How does scaling to a common denominator let you compare the recipes fairly?<button type="button" class="read-aloud-btn" aria-label="Read the question aloud" title="Read the question aloud" data-speak="You scaled both recipes to 35 oz of milk: Chef Reyes became 21:35 and Chef Tran became 20:35. How does scaling to a common denominator let you compare the recipes fairly?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
         <div class="tt-stems-box">
           <strong>Sentence starters (tap to use):</strong>
-          <div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ After scaling to 35 oz, Chef Reyes has ___ tbsp and Chef Tran has ___ tbsp.</div><div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ Now I can compare because the ___ is the same, so I just compare the ___.</div>
+          <div class="tt-stem" onclick="insertAtCursor('After scaling to 35 oz, Chef Reyes has ___ tbsp and Chef Tran has ___ tbsp.')">✍️ After scaling to 35 oz, Chef Reyes has ___ tbsp and Chef Tran has ___ tbsp.<span class="stem-es">Después de escalar a 35 oz, Chef Reyes tiene ___ cucharadas y Chef Tran tiene ___ cucharadas.</span></div><div class="tt-stem" onclick="insertAtCursor('Now I can compare because the ___ is the same, so I just compare the ___.')">✍️ Now I can compare because the ___ is the same, so I just compare the ___.<span class="stem-es">Ahora puedo comparar porque la ___ es igual, así que solo comparo el ___.</span></div>
+          <div class="tt-stems-extend"><strong>Stretch further:</strong><div class="tt-stem tt-stem-extend">➕ The unit rates are about ___ and ___ tbsp per oz, so ___ wins.</div><div class="tt-stem tt-stem-extend">➕ Both methods agree because ___.</div></div>
         </div>
         <div class="tt-wordbank"><strong>WORD BANK:</strong><div><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">equivalent ratio</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">common denominator</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">compare</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">simplify</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">milk</span></div></div>
         <div class="turn-talk-timer" id="tt-timer-explore">
@@ -3461,7 +3495,7 @@
       <div class="ref-main-panel">
     <p class="ref-instruction">Match each scenario to the correct answer: Which ratio is greater?</p>
     <div class="ref-card-bank-label">Card Bank — cut or drag these cards:</div>
-    <div class="ref-card-bank"><div class="drag-item" draggable="true" data-item-idx="0" data-correct-cat="correct" id="drag-item-35-0"><span class="drag-grip">⠿</span>5:6 vs. 7:9 → 5:6 is greater</div><div class="drag-item" draggable="true" data-item-idx="1" data-correct-cat="correct" id="drag-item-35-1"><span class="drag-grip">⠿</span>2:3 vs. 4:6 → they are equal</div><div class="drag-item" draggable="true" data-item-idx="2" data-correct-cat="correct" id="drag-item-35-2"><span class="drag-grip">⠿</span>1:4 vs. 2:5 → 2:5 is greater</div><div class="drag-item" draggable="true" data-item-idx="3" data-correct-cat="incorrect" id="drag-item-35-3"><span class="drag-grip">⠿</span>3:7 vs. 2:5 → 3:7 is greater</div><div class="drag-item" draggable="true" data-item-idx="4" data-correct-cat="incorrect" id="drag-item-35-4"><span class="drag-grip">⠿</span>4:5 vs. 3:4 → 3:4 is greater</div><div class="drag-item" draggable="true" data-item-idx="5" data-correct-cat="incorrect" id="drag-item-35-5"><span class="drag-grip">⠿</span>1:2 vs. 3:4 → they are equal</div></div>
+    <div class="ref-card-bank"><div class="drag-item" draggable="true" data-item-idx="0" data-correct-cat="correct" id="drag-item-35-0"><span class="drag-grip">⠿</span>5:6 vs. 7:9 → 5:6 is greater</div><div class="drag-item" draggable="true" data-item-idx="1" data-correct-cat="correct" id="drag-item-35-1"><span class="drag-grip">⠿</span>2:3 vs. 4:6 → they are equal</div><div class="drag-item" draggable="true" data-item-idx="2" data-correct-cat="correct" id="drag-item-35-2"><span class="drag-grip">⠿</span>1:4 vs. 2:5 → 2:5 is greater</div><div class="drag-item" draggable="true" data-item-idx="3" data-correct-cat="incorrect" id="drag-item-35-3"><span class="drag-grip">⠿</span>3:7 vs. 2:5 → 2:5 is greater</div><div class="drag-item" draggable="true" data-item-idx="4" data-correct-cat="incorrect" id="drag-item-35-4"><span class="drag-grip">⠿</span>4:5 vs. 3:4 → 3:4 is greater</div><div class="drag-item" draggable="true" data-item-idx="5" data-correct-cat="incorrect" id="drag-item-35-5"><span class="drag-grip">⠿</span>1:2 vs. 3:4 → they are equal</div></div>
     <div class="ref-sort-buckets">
     <div class="ref-sort-bucket ref-bucket-teal" data-cat-id="correct">
       <div class="ref-bucket-header">Correct Comparison</div>
@@ -3494,7 +3528,7 @@
     <div class="ref-two-col">
       <div class="ref-main-panel">
     <span class="ref-error-badge">⚠ Find Kai&#039;s Mistake</span>
-    <p class="ref-instruction">A classmate turned in the work below. One step has a mistake. Read every step, find it, name it, and fix it.</p>
+    <p class="ref-instruction">A classmate turned in the work below. One step has a mistake. Read every step, find it, name it, and fix it.<button type="button" class="read-aloud-btn" aria-label="Read the directions aloud" title="Read the directions aloud" data-speak="A classmate turned in the work below. One step has a mistake. Read every step, find it, name it, and fix it." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     <div class="ref-student-work-box">
       <div class="ref-work-label">Student&apos;s work — read every step:</div>
       <div class="ea-steps">
@@ -3801,11 +3835,11 @@
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">👨‍🍳 CULINARY ACADEMY</span></div>
     <h3 class="slide-main-title">Differentiation Paths</h3>
     <div class="slide-card">
-      <span class="slide-badge badge-teal">🎯 THREE PATHS</span>
+      <span class="slide-badge badge-teal">🎯 CHOOSE YOUR LEVEL</span>
       <div class="teacher-cue teacher-cue-say">
     <span class="teacher-cue-icon">👩‍🏫</span>
     <span class="teacher-cue-label">Say:</span>
-    <span class="teacher-cue-text">All students work on math — choose the path that matches readiness.</span>
+    <span class="teacher-cue-text">Everyone works on the same math goal — pick the level of support that fits today.</span>
   </div>
       <div class="teacher-cue teacher-cue-time">
     <span class="teacher-cue-icon">⏱️</span>
@@ -3813,17 +3847,21 @@
     <span class="teacher-cue-text">8–10 min independent or partner</span>
   </div>
       <div class="diff-paths-grid">
+        <div class="diff-path" style="--path-color:var(--coral, #e07a5f)">
+      <div class="diff-path-label">🧩 Level 0 · Most support</div>
+      <p class="diff-path-stem">Step-by-step with a worked model and sentence frames.<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="Step-by-step with a worked model and sentence frames." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
+    </div>
         <div class="diff-path" style="--path-color:var(--amber)">
-      <div class="diff-path-label">🌱 Approaching</div>
-      <p class="diff-path-stem">Chef A uses 2 cups of cheese for every 8 crackers. Chef B uses 3 cups of cheese for every 9 crackers. Who uses more cheese per cracker?</p>
+      <div class="diff-path-label">🌱 Level 1 · Support</div>
+      <p class="diff-path-stem">Chef A uses 2 cups of cheese for every 8 crackers. Chef B uses 3 cups of cheese for every 9 crackers. Who uses more cheese per cracker?<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="Chef A uses 2 cups of cheese for every 8 crackers. Chef B uses 3 cups of cheese for every 9 crackers. Who uses more cheese per cracker?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     </div>
         <div class="diff-path" style="--path-color:var(--teal)">
-      <div class="diff-path-label">🎯 On-Level</div>
-      <p class="diff-path-stem">Core practice aligned to the standard.</p>
+      <div class="diff-path-label">🎯 Level 2 · Core</div>
+      <p class="diff-path-stem">Core practice aligned to the standard.<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="Core practice aligned to the standard." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     </div>
         <div class="diff-path" style="--path-color:var(--navy)">
-      <div class="diff-path-label">🚀 Challenge</div>
-      <p class="diff-path-stem">Extension with error analysis or multi-step reasoning.</p>
+      <div class="diff-path-label">🚀 Level 2+ · Enrichment</div>
+      <p class="diff-path-stem">Extension with error analysis or multi-step reasoning.<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="Extension with error analysis or multi-step reasoning." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     </div>
       </div>
     </div></div>
@@ -3983,10 +4021,11 @@
     <span class="teacher-cue-label">Time:</span>
     <span class="teacher-cue-text">90 sec</span>
   </div>
-        <p class="card-desc tt-question">Two pizza shops have deals: Mario&#039;s sells 2 large pizzas for $18, and Sal&#039;s sells 3 for $25. How would you compare these to find the best price per pizza?</p>
+        <p class="card-desc tt-question">Two pizza shops have deals: Mario&#039;s sells 2 large pizzas for $18, and Sal&#039;s sells 3 for $25. How would you compare these to find the best price per pizza?<button type="button" class="read-aloud-btn" aria-label="Read the question aloud" title="Read the question aloud" data-speak="Two pizza shops have deals: Mario&#039;s sells 2 large pizzas for $18, and Sal&#039;s sells 3 for $25. How would you compare these to find the best price per pizza?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
         <div class="tt-stems-box">
           <strong>Sentence starters (tap to use):</strong>
-          <div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ Mario&#039;s costs ___ per pizza because 18 divided by 2 equals ___.</div><div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ The better deal is ___ because its ___ is lower.</div>
+          <div class="tt-stem" onclick="insertAtCursor('Mario&#039;s costs ___ per pizza because 18 divided by 2 equals ___.')">✍️ Mario&#039;s costs ___ per pizza because 18 divided by 2 equals ___.<span class="stem-es">Mario&#039;s cuesta ___ por pizza porque 18 entre 2 es ___.</span></div><div class="tt-stem" onclick="insertAtCursor('The better deal is ___ because its ___ is lower.')">✍️ The better deal is ___ because its ___ is lower.<span class="stem-es">La mejor oferta es ___ porque su ___ es más baja.</span></div>
+          <div class="tt-stems-extend"><strong>Stretch further:</strong><div class="tt-stem tt-stem-extend">➕ A lower unit rate is the best total deal only when ___.</div><div class="tt-stem tt-stem-extend">➕ It might not save money if ___.</div></div>
         </div>
         <div class="tt-wordbank"><strong>WORD BANK:</strong><div><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">unit rate</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">compare</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">ratio</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">better deal</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">per</span></div></div>
         <div class="turn-talk-timer" id="tt-timer-connect">
@@ -4510,6 +4549,66 @@
         }
       }, 1000);
     }
+
+    // -----------------------------------------------------------------
+    // READ-ALOUD (Text-to-Speech) — accessibility + Level 1 language support
+    // Reads slide text via the browser Web Speech API. Rate is saved so a
+    // teacher/student preference persists across slides and lessons.
+    // -----------------------------------------------------------------
+    const SLIDE_TTS_RATE_KEY = 'neft-slide-tts-rate';
+    function getSlideTtsRate() {
+      const saved = parseFloat(localStorage.getItem(SLIDE_TTS_RATE_KEY));
+      return (saved && saved >= 0.5 && saved <= 1.5) ? saved : 0.85;
+    }
+    function setSlideTtsRate(rate) {
+      const r = parseFloat(rate);
+      if (r && r >= 0.5 && r <= 1.5) localStorage.setItem(SLIDE_TTS_RATE_KEY, String(r));
+    }
+    function speakText(text, lang) {
+      if (!('speechSynthesis' in window) || !text) return;
+      try {
+        // A second tap on a speaking button stops it (toggle behavior).
+        if (window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+          return;
+        }
+        const utter = new SpeechSynthesisUtterance(String(text).replace(/[✍️🎯🗣️👂✓✗⚠➡️•]/g, ' ').trim());
+        utter.rate = getSlideTtsRate();
+        utter.lang = lang || 'en-US';
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utter);
+      } catch (e) { /* speech not available */ }
+    }
+    // Read-aloud buttons carry their text in data-speak (and optional data-lang).
+    function speakFromButton(btn) {
+      if (!btn) return;
+      speakText(btn.getAttribute('data-speak') || '', btn.getAttribute('data-lang') || 'en-US');
+    }
+    window.speakText = speakText;
+    window.speakFromButton = speakFromButton;
+    window.setSlideTtsRate = setSlideTtsRate;
+    window.getSlideTtsRate = getSlideTtsRate;
+
+    // Bilingual (Spanish support) toggle — persists per browser.
+    const SLIDE_BILINGUAL_KEY = 'neft-slide-bilingual';
+    function applyBilingual(on) {
+      document.body.classList.toggle('bilingual-on', on);
+      const btn = document.getElementById('bilingual-toggle');
+      if (btn) btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+    function toggleBilingual(btn) {
+      const on = !document.body.classList.contains('bilingual-on');
+      localStorage.setItem(SLIDE_BILINGUAL_KEY, on ? '1' : '0');
+      applyBilingual(on);
+    }
+    window.toggleBilingual = toggleBilingual;
+    // Restore saved accessibility preferences on load.
+    (function initA11yPrefs() {
+      const savedBi = localStorage.getItem(SLIDE_BILINGUAL_KEY);
+      if (savedBi !== null) applyBilingual(savedBi === '1');
+      const rateSel = document.getElementById('tts-rate-select');
+      if (rateSel) rateSel.value = String(getSlideTtsRate());
+    })();
 
     // CFU thumb responses
     const cfuResponses = {};
@@ -5871,11 +5970,5 @@
     
   </script>
 
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
 </body>
 </html>

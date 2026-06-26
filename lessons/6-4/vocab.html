@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Properties of Operations — Vocab Explorer</title>
 <style>
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap");
 :root{
   --navy:#12355b;--teal:#1fa6a2;--teal-light:#dff2ee;--amber:#f2c15b;
   --cream:#f7f4ec;--ink:#21313f;--muted:#5f6f80;--line:#d7e2ed;--card:#fff;
@@ -328,6 +329,8 @@ input.writeline:focus,input.gn-blank:focus{outline:none;background-color:#fff7e6
 .ak-list li{margin:8px 0;}
 .ak-twr-head{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:16px;margin:14px 0 6px;}
 .ak-why{color:var(--muted);font-style:italic;}
+.ak-distractors{margin:4px 0 0;padding-left:18px;list-style:none;}
+.ak-distractors li{margin:3px 0;font-size:13.5px;color:var(--muted);}
 footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   color:var(--muted);font-size:12px;text-align:center;}
 .level-tag{display:inline-block;font-family:Calibri,system-ui,sans-serif;font-size:11.5px;
@@ -710,6 +713,26 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
     border: 1px dashed #000 !important;
   }
 }
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
 </style>
 </style>
 <style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}</style>
@@ -820,12 +843,6 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
     });
   })();
 </script>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
 </head>
 <body>
 <div class="topbar no-print">
@@ -875,41 +892,28 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
         <p class="vx-def">A rule that is always true in math.</p>
         <p class="vx-def-es" lang="es">Una regla que siempre es verdadera en matemáticas.</p>
       </div><div class="vx-card">
-        <div class="vx-figure"><img src="../../assets/vocab-images/coefficient.svg" alt="Illustration of Coefficient: The number in front of a letter, like the 3 in 3x." onerror="this.style.display='none'" /></div>
-        <div class="vx-termline"><span class="vx-term">Coefficient</span>
-          <button type="button" class="vx-say" data-say="Coefficient. The number in front of a letter, like the 3 in 3x." aria-label="Hear Coefficient read aloud">🔊</button></div>
-        <p class="vx-langs"><span class="vx-lang" lang="es"><b>ES</b> Coeficiente</span><span class="vx-langsep">·</span><span class="vx-lang" lang="vi"><b>VI</b> Hệ số</span><span class="vx-langsep">·</span><span class="vx-lang" lang="ar" dir="rtl"><b>AR</b> المعامل</span></p>
-        <p class="vx-def">The number in front of a letter, like the 3 in 3x.</p>
-        <p class="vx-def-es" lang="es">El número frente a una letra, como el 3 en 3x.</p>
-      </div><div class="vx-card">
-        <div class="vx-figure"><img src="../../assets/vocab-images/like-terms.svg" alt="Illustration of Like terms: Terms with the same letter, like 2x and 5x." onerror="this.style.display='none'" /></div>
-        <div class="vx-termline"><span class="vx-term">Like terms</span>
-          <button type="button" class="vx-say" data-say="Like terms. Terms with the same letter, like 2x and 5x." aria-label="Hear Like terms read aloud">🔊</button></div>
-        <p class="vx-langs"><span class="vx-lang" lang="es"><b>ES</b> Términos semejantes</span><span class="vx-langsep">·</span><span class="vx-lang" lang="vi"><b>VI</b> Các đơn thức đồng dạng</span><span class="vx-langsep">·</span><span class="vx-lang" lang="ar" dir="rtl"><b>AR</b> الحدود المتشابهة</span></p>
-        <p class="vx-def">Terms with the same letter, like 2x and 5x.</p>
-        <p class="vx-def-es" lang="es">Términos con la misma letra, como 2x y 5x.</p>
+        <div class="vx-figure"><img src="../../assets/vocab-images/distributive-property.svg" alt="Illustration of Distributive Property: You can multiply a number by each part inside the parentheses, then add." onerror="this.style.display='none'" /></div>
+        <div class="vx-termline"><span class="vx-term">Distributive Property</span>
+          <button type="button" class="vx-say" data-say="Distributive Property. You can multiply a number by each part inside the parentheses, then add." aria-label="Hear Distributive Property read aloud">🔊</button></div>
+        <p class="vx-langs"><span class="vx-lang" lang="es"><b>ES</b> Propiedad distributiva</span><span class="vx-langsep">·</span><span class="vx-lang" lang="vi"><b>VI</b> Tính chất phân phối</span><span class="vx-langsep">·</span><span class="vx-lang" lang="ar" dir="rtl"><b>AR</b> خاصية التوزيع</span></p>
+        <p class="vx-def">You can multiply a number by each part inside the parentheses, then add.</p>
+        <p class="vx-def-es" lang="es">Puedes multiplicar un número por cada parte dentro del paréntesis y luego sumar.</p>
       </div></div>
     </section>
     <section class="vx-section"><p class="vx-eyebrow">② Match it</p><p class="vx-lead">Tap a word, then tap its meaning.</p><div class="vx-match" data-vx-match>
         <div class="vx-mcols">
-          <div class="vx-mcol"><button type="button" class="vx-mterm" data-vx="0">Commutative Property</button><button type="button" class="vx-mterm" data-vx="1">Associative Property</button><button type="button" class="vx-mterm" data-vx="2">Identity Property</button><button type="button" class="vx-mterm" data-vx="3">Property</button><button type="button" class="vx-mterm" data-vx="4">Coefficient</button><button type="button" class="vx-mterm" data-vx="5">Like terms</button></div>
-          <div class="vx-mcol"><button type="button" class="vx-mdef" data-vx="0">You can change the order and get the same answer.</button><button type="button" class="vx-mdef" data-vx="1">You can change the grouping and get the same answer.</button><button type="button" class="vx-mdef" data-vx="2">Adding 0 or multiplying by 1 keeps the same value.</button><button type="button" class="vx-mdef" data-vx="3">A rule that is always true in math.</button><button type="button" class="vx-mdef" data-vx="4">The number in front of a letter, like the 3 in 3x.</button><button type="button" class="vx-mdef" data-vx="5">Terms with the same letter, like 2x and 5x.</button></div>
+          <div class="vx-mcol"><button type="button" class="vx-mterm" data-vx="0">Commutative Property</button><button type="button" class="vx-mterm" data-vx="1">Associative Property</button><button type="button" class="vx-mterm" data-vx="2">Identity Property</button><button type="button" class="vx-mterm" data-vx="3">Property</button><button type="button" class="vx-mterm" data-vx="4">Distributive Property</button></div>
+          <div class="vx-mcol"><button type="button" class="vx-mdef" data-vx="0">You can change the order and get the same answer.</button><button type="button" class="vx-mdef" data-vx="1">You can change the grouping and get the same answer.</button><button type="button" class="vx-mdef" data-vx="2">Adding 0 or multiplying by 1 keeps the same value.</button><button type="button" class="vx-mdef" data-vx="3">A rule that is always true in math.</button><button type="button" class="vx-mdef" data-vx="4">You can multiply a number by each part inside the parentheses, then add.</button></div>
         </div>
         <p class="vx-mfeedback" role="status" aria-live="polite"></p>
       </div></section>
-    <section class="vx-section"><p class="vx-eyebrow">③ Fill in the blank</p><p class="vx-lead">Use the word bank to finish each sentence.</p><div class="vx-bank"><span class="vx-bank-label">Word bank</span><div class="vx-bankwords"><span class="vx-bankword">Commutative Property</span><span class="vx-bankword">Associative Property</span><span class="vx-bankword">Identity Property</span><span class="vx-bankword">Property</span><span class="vx-bankword">Coefficient</span><span class="vx-bankword">Like terms</span></div></div>
-      <ol class="vx-clozelist"><li class="vx-clozeline"><span class="vx-num">1</span><span class="vx-clozetext">The rule that order does not change a sum or product, like a + b = b + a, is the <input class="vx-blank" type="text" data-nt-field aria-label="fill in the blank" />.</span></li><li class="vx-clozeline"><span class="vx-num">2</span><span class="vx-clozetext">The rule that grouping does not change a sum or product, like (a + b) + c = a + (b + c), is the <input class="vx-blank" type="text" data-nt-field aria-label="fill in the blank" />.</span></li><li class="vx-clozeline"><span class="vx-num">3</span><span class="vx-clozetext">The rule that adding 0 or multiplying by 1 keeps a number the same is the <input class="vx-blank" type="text" data-nt-field aria-label="fill in the blank" />.</span></li><li class="vx-clozeline"><span class="vx-num">4</span><span class="vx-clozetext">A rule that is always true in math is a <input class="vx-blank" type="text" data-nt-field aria-label="fill in the blank" />.</span></li><li class="vx-clozeline"><span class="vx-num">5</span><span class="vx-clozetext">A number multiplied by a variable is a <input class="vx-blank" type="text" data-nt-field aria-label="fill in the blank" />.</span></li><li class="vx-clozeline"><span class="vx-num">6</span><span class="vx-clozetext">Terms with the same variable part are <input class="vx-blank" type="text" data-nt-field aria-label="fill in the blank" />.</span></li></ol></section>
+    <section class="vx-section"><p class="vx-eyebrow">③ Fill in the blank</p><p class="vx-lead">Use the word bank to finish each sentence.</p><div class="vx-bank"><span class="vx-bank-label">Word bank</span><div class="vx-bankwords"><span class="vx-bankword">Commutative Property</span><span class="vx-bankword">Associative Property</span><span class="vx-bankword">Identity Property</span><span class="vx-bankword">Property</span><span class="vx-bankword">Distributive Property</span></div></div>
+      <ol class="vx-clozelist"><li class="vx-clozeline"><span class="vx-num">1</span><span class="vx-clozetext">The rule that order does not change a sum or product, like a + b = b + a, is the <input class="vx-blank" type="text" data-nt-field aria-label="fill in the blank" />.</span></li><li class="vx-clozeline"><span class="vx-num">2</span><span class="vx-clozetext">The rule that grouping does not change a sum or product, like (a + b) + c = a + (b + c), is the <input class="vx-blank" type="text" data-nt-field aria-label="fill in the blank" />.</span></li><li class="vx-clozeline"><span class="vx-num">3</span><span class="vx-clozetext">The rule that adding 0 or multiplying by 1 keeps a number the same is the <input class="vx-blank" type="text" data-nt-field aria-label="fill in the blank" />.</span></li><li class="vx-clozeline"><span class="vx-num">4</span><span class="vx-clozetext">A rule that is always true in math is a <input class="vx-blank" type="text" data-nt-field aria-label="fill in the blank" />.</span></li><li class="vx-clozeline"><span class="vx-num">5</span><span class="vx-clozetext">The rule that lets you multiply a number across a sum, like a(b + c) = a × b + a × c, is the <input class="vx-blank" type="text" data-nt-field aria-label="fill in the blank" />.</span></li></ol></section>
     <section class="vx-section"><p class="vx-eyebrow">④ Use it in a sentence</p><p class="vx-lead">Pick one word and finish the sentence in your own words.</p>
       <p class="vx-stem">A <input class="vx-blank vx-blank-word" type="text" data-nt-field placeholder="word" /> is <input class="vx-blank vx-blank-wide" type="text" data-nt-field placeholder="what it means or an example" />.</p>
       <textarea class="vx-area" rows="2" data-nt-field placeholder="Now write your own sentence using one of the words…"></textarea></section>
   </div>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 6-4 · Standard 6.EE.3</footer>
 </main>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
 </body>
 </html>

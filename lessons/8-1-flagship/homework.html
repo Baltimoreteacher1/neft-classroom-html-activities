@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Hanken+Grotesk:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap");
 :root {
   --navy: #12355b;
   --navy-light: #18466f;
@@ -2337,6 +2338,26 @@ body { font-size: 15px; line-height: 1.58; }
   .worked-step { break-inside: avoid; box-shadow: none; }
   .card { box-shadow: none; }
 }
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
 </style>
 </head>
 <body>
@@ -3990,7 +4011,7 @@ body { font-size: 15px; line-height: 1.58; }
         <span class="lang-es" lang="es">Refuercen el tema de hoy con un juego rápido en familia. ¡Ustedes preguntan; su estudiante decide!</span>
       </p>
       
-      <div class="hw-game hw-game-sort" id="hw_game_stats" data-game-type="drag-bucket" data-items='[{"text":"Minutes spent on homework","bucket":"stat"},{"text":"What is your favorite color?","bucket":"stat"},{"text":"What is 2 + 2?","bucket":"not"},{"text":"Heights of plants in cm","bucket":"stat"},{"text":"Spell the word cat","bucket":"not"},{"text":"How many pets do students have?","bucket":"stat"}]'>
+      <div class="hw-game hw-game-sort" id="hw_game_stats" data-game-type="drag-bucket" data-items='[{"text":"How many pets do students have?","bucket":"stat"},{"text":"Heights of plants in cm","bucket":"stat"},{"text":"Spell the word cat","bucket":"not"},{"text":"What is 2 + 2?","bucket":"not"},{"text":"What is your favorite color?","bucket":"stat"},{"text":"Minutes spent on homework","bucket":"stat"}]'>
         <div class="hw-game-header">
           <h3 class="hw-game-title">Stat Sort! <span lang="es">¡Estadística!</span></h3>
           <p class="hw-game-coach bilingual-block">
@@ -4013,27 +4034,27 @@ body { font-size: 15px; line-height: 1.58; }
           
             <div class="hw-game-card" draggable="true" id="hwcard_0" data-bucket="stat"
                  ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
-              Minutes spent on homework
+              How many pets do students have?
             </div>
             <div class="hw-game-card" draggable="true" id="hwcard_1" data-bucket="stat"
                  ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
-              What is your favorite color?
+              Heights of plants in cm
             </div>
             <div class="hw-game-card" draggable="true" id="hwcard_2" data-bucket="not"
                  ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
+              Spell the word cat
+            </div>
+            <div class="hw-game-card" draggable="true" id="hwcard_3" data-bucket="not"
+                 ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
               What is 2 + 2?
             </div>
-            <div class="hw-game-card" draggable="true" id="hwcard_3" data-bucket="stat"
+            <div class="hw-game-card" draggable="true" id="hwcard_4" data-bucket="stat"
                  ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
-              Heights of plants in cm
-            </div>
-            <div class="hw-game-card" draggable="true" id="hwcard_4" data-bucket="not"
-                 ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
-              Spell the word cat
+              What is your favorite color?
             </div>
             <div class="hw-game-card" draggable="true" id="hwcard_5" data-bucket="stat"
                  ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
-              How many pets do students have?
+              Minutes spent on homework
             </div>
         </div>
         <button type="button" class="btn btn-primary" onclick="hwGameCheckSort()">Check sort / Verificar</button>
