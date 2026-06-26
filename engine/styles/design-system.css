@@ -3926,6 +3926,7 @@ textarea.syw-input {
 }
 .sp-stem {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--sp-2);
   align-items: baseline;
   font-size: 1.1rem;
@@ -3933,6 +3934,13 @@ textarea.syw-input {
   font-weight: 600;
   color: var(--navy, #264653);
   margin: 0 0 var(--sp-3);
+}
+/* The annotation toolbar (annotate.js) is injected as a child of this flex
+   row. Force it onto its own full-width line ABOVE the number + question so it
+   never wedges between them and pushes the problem text off to the side. */
+.sp-stem .annot-bar {
+  flex: 0 0 100%;
+  order: -1;
 }
 .sp-num {
   flex: 0 0 auto;
