@@ -768,7 +768,7 @@
               id="d-mon"
               data-save
               min="0"
-              placeholder="e.g. 15"
+              placeholder=""
               oninput="collectData()"
             />
           </div>
@@ -779,7 +779,7 @@
               id="d-tue"
               data-save
               min="0"
-              placeholder="e.g. 20"
+              placeholder=""
               oninput="collectData()"
             />
           </div>
@@ -790,7 +790,7 @@
               id="d-wed"
               data-save
               min="0"
-              placeholder="e.g. 20"
+              placeholder=""
               oninput="collectData()"
             />
           </div>
@@ -801,7 +801,7 @@
               id="d-thu"
               data-save
               min="0"
-              placeholder="e.g. 25"
+              placeholder=""
               oninput="collectData()"
             />
           </div>
@@ -812,7 +812,7 @@
               id="d-fri"
               data-save
               min="0"
-              placeholder="e.g. 30"
+              placeholder=""
               oninput="collectData()"
             />
           </div>
@@ -823,7 +823,7 @@
               id="d-sat"
               data-save
               min="0"
-              placeholder="e.g. 18"
+              placeholder=""
               oninput="collectData()"
             />
           </div>
@@ -834,7 +834,7 @@
               id="d-sun"
               data-save
               min="0"
-              placeholder="e.g. 22"
+              placeholder=""
               oninput="collectData()"
             />
           </div>
@@ -978,7 +978,7 @@
           id="dataset"
           data-save
           value="15, 20, 20, 25, 30, 18, 22, 20, 28"
-          placeholder="e.g. 15, 20, 20, 25, 30"
+          placeholder=""
           oninput="calcCenter()"
         />
         <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
@@ -1001,7 +1001,7 @@
           type="number"
           id="check-median-self"
           data-save
-          placeholder="Type your median"
+          placeholder=""
           style="max-width: 200px"
         />
         <button class="btn" type="button" onclick="checkOwnMedian()">
@@ -1035,7 +1035,7 @@
           <input
             type="number"
             id="whatIfVal"
-            placeholder="e.g. 45"
+            placeholder=""
             style="max-width: 200px"
           />
           <button class="btn" type="button" onclick="runWhatIf()">
@@ -1077,7 +1077,7 @@
           type="number"
           id="check-range"
           data-save
-          placeholder="Type a number"
+          placeholder=""
           style="max-width: 200px"
         />
         <button
@@ -1170,7 +1170,7 @@
           type="number"
           id="check-med"
           data-save
-          placeholder="Type a number"
+          placeholder=""
           style="max-width: 200px"
         />
         <button
@@ -1232,12 +1232,7 @@
             <label class="fld" for="partnerName"
               >Partner name or initials</label
             >
-            <input
-              type="text"
-              id="partnerName"
-              data-save
-              placeholder="e.g. A.J."
-            />
+            <input type="text" id="partnerName" data-save placeholder="" />
           </div>
           <div>
             <label class="fld" for="partnerData"
@@ -1247,7 +1242,7 @@
               type="text"
               id="partnerData"
               data-save
-              placeholder="e.g. 12, 18, 18, 24, 30"
+              placeholder=""
               oninput="comparePeer()"
             />
           </div>
@@ -1259,11 +1254,7 @@
         <label class="fld" for="peerReflect"
           >Whose data is more spread out, and how do you know?</label
         >
-        <textarea
-          id="peerReflect"
-          data-save
-          placeholder="My range/MAD is ___ while my partner's is ___, so ___ is more spread out because ___."
-        ></textarea>
+        <textarea id="peerReflect" data-save placeholder=""></textarea>
       </section>
 
       <!-- ===================== PART 3 — WORLD ===================== -->
@@ -1297,7 +1288,7 @@
               data-save
               step="0.01"
               oninput="worldGo()"
-              placeholder="type your value"
+              placeholder=""
             />
             <div id="worldMeter"></div>
           </div>
@@ -1324,20 +1315,12 @@
           >Is your number higher or lower than the world average? Why might that
           be?</label
         >
-        <textarea
-          id="worldReflect"
-          data-save
-          placeholder="My number is ___ the world average of ___ because ___."
-        ></textarea>
+        <textarea id="worldReflect" data-save placeholder=""></textarea>
         <label class="fld" for="careful"
           >Careful thinking: why might it be unfair to compare reading minutes
           between students in different countries or schools?</label
         >
-        <textarea
-          id="careful"
-          data-save
-          placeholder="It can be unfair to compare because ___ (different languages, access to books, free time, how the data was collected...)."
-        ></textarea>
+        <textarea id="careful" data-save placeholder=""></textarea>
       </section>
 
       <!-- DELIVERABLE -->
@@ -1362,22 +1345,14 @@
           data and your partner's data — compare the shape and spread of the two
           distributions.
         </p>
-        <textarea
-          id="story"
-          data-save
-          placeholder="The data set shows the number of minutes students read each day. The mean is ___, the median is ___, and the mode is ___. This tells me ___ about the center of the data. The range is ___ and the MAD is ___, which means ___. The distribution is ___ because ___. Compared with my partner, ___. Overall, ___..."
-        ></textarea>
+        <textarea id="story" data-save placeholder=""></textarea>
 
         <div class="pk-lvl2">
           <label class="fld" for="distCompare"
             >Level 2 — Compare the two distributions (yours vs your partner's
             shape &amp; spread)</label
           >
-          <textarea
-            id="distCompare"
-            data-save
-            placeholder="My distribution is ___ (shape) with a MAD of ___, while my partner's is ___ with a MAD of ___. This means ___ has more variability because ___."
-          ></textarea>
+          <textarea id="distCompare" data-save placeholder=""></textarea>
         </div>
 
         <h3 style="margin: 22px 0 6px">Project Checklist</h3>
@@ -1801,6 +1776,7 @@
             modeObj.label +
             "</div>",
         );
+        if (typeof drawVisualizer === "function") drawVisualizer();
       }
 
       // ── Phase 3: Variability ──

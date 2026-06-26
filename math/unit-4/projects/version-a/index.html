@@ -749,7 +749,7 @@
               type="text"
               id="item"
               data-save
-              placeholder="example: hand-poured candle"
+              placeholder=""
               oninput="updateProgress()"
             />
           </div>
@@ -761,7 +761,7 @@
               data-save
               step="0.01"
               min="0.01"
-              placeholder="example: 40.00"
+              placeholder=""
               oninput="calcMarkup()"
             />
           </div>
@@ -875,7 +875,7 @@
               step="1"
               min="1"
               max="500"
-              placeholder="example: 25"
+              placeholder=""
               oninput="calcMarkup()"
             />
             <button class="btn" type="button" onclick="calcMarkup()">
@@ -885,7 +885,8 @@
             <details class="hintbox">
               <summary>Need a hint?</summary>
               <p>
-                Markup amount = cost × (markup ÷ 100). Example: 40.00 × (25 ÷ 100) =10.00. Selling price = $40.00 + $10.00 = $50.00.
+                Markup amount = cost × (markup ÷ 100). Example: 40.00 × (25 ÷
+                100) =10.00. Selling price = $40.00 + $10.00 = $50.00.
               </p>
             </details>
 
@@ -902,7 +903,7 @@
               id="check-sell"
               data-save
               step="0.01"
-              placeholder="Type your answer"
+              placeholder=""
             />
             <button class="btn alt" type="button" onclick="checkSell()">
               Check my answer
@@ -1063,7 +1064,7 @@
               step="1"
               min="1"
               max="100"
-              placeholder="example: 20"
+              placeholder=""
               oninput="calcDiscount()"
             />
             <button class="btn alt" type="button" onclick="calcDiscount()">
@@ -1196,7 +1197,7 @@
                   type="text"
                   id="worldCountry"
                   data-save
-                  placeholder="e.g. Maryland"
+                  placeholder=""
                   oninput="recalcAll()"
                 />
               </div>
@@ -1211,11 +1212,12 @@
                   step="0.1"
                   min="0"
                   max="20"
-                  placeholder="example: 8"
+                  placeholder=""
                   oninput="calcTax()"
                 />
               </div>
             </div>
+            <div class="readout" id="tax-out"></div>
           </div>
 
           <div
@@ -1375,7 +1377,7 @@
                   data-save
                   step="0.01"
                   min="0.01"
-                  placeholder="example: 5"
+                  placeholder=""
                   oninput="calcConvert()"
                 />
               </div>
@@ -1449,7 +1451,7 @@
                 type="text"
                 id="breakeven"
                 data-save
-                placeholder="example: a 25% markup with 20% off lands back at cost"
+                placeholder=""
               />
             </div>
           </div>
@@ -1575,7 +1577,7 @@
               type="text"
               id="partnerName"
               data-save
-              placeholder="example: A.J."
+              placeholder=""
             />
           </div>
           <div>
@@ -1584,7 +1586,7 @@
               type="text"
               id="p-item"
               data-save
-              placeholder="example: phone case"
+              placeholder=""
             />
           </div>
           <div>
@@ -1622,7 +1624,7 @@
         <textarea
           id="peerReflect"
           data-save
-          placeholder="My final price is ___ while my partner's is ___, so the better buy for a customer is ___ because ___."
+          placeholder=""
         ></textarea>
       </section>
 
@@ -1663,7 +1665,7 @@
               data-save
               step="0.01"
               oninput="worldGo()"
-              placeholder="type your sale price"
+              placeholder=""
             />
             <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
               Tip: use your sale price from Part 1 here.
@@ -1711,7 +1713,7 @@
                 step="1"
                 min="0"
                 max="100"
-                placeholder="example: 10"
+                placeholder=""
               />
             </div>
           </div>
@@ -1730,7 +1732,7 @@
         <textarea
           id="worldReflect"
           data-save
-          placeholder="A lower price brings more customers, but ___. Cheapest is not always best because ___."
+          placeholder=""
         ></textarea>
         <div class="pk-lvl2">
           <label class="fld" for="worldHard"
@@ -1741,7 +1743,7 @@
           <textarea
             id="worldHard"
             data-save
-            placeholder="Tax is $___; percent increase = tax ÷ sale price × 100 = ___% because ___"
+            placeholder=""
           ></textarea>
         </div>
       </section>
@@ -1762,7 +1764,7 @@
         <textarea
           id="pitch"
           data-save
-          placeholder="Welcome to my pop-up shop! I sell ___, which cost me $___. I marked it up ___% to sell for $___. This weekend it is ___% off, so you pay $___, and after ___% tax your total is $___."
+          placeholder=""
         ></textarea>
 
         <h3 style="margin: 22px 0 6px">Shop Owner Checklist</h3>
@@ -1999,6 +2001,7 @@
           hide("tax-out");
           proj.tax = null;
           proj.total = null;
+          if (typeof drawVisualizer === "function") drawVisualizer();
           return;
         }
         const taxAmt = sale * (taxR / 100),
@@ -2022,6 +2025,7 @@
             total.toFixed(2) +
             "</strong> at checkout.",
         );
+        if (typeof drawVisualizer === "function") drawVisualizer();
       }
 
       function checkSell() {
@@ -2350,40 +2354,45 @@
       }
 
       function drawVisualizer() {
-        const sub = num("subtotal") || 0;
-        const tax = num("tax-rate") || 0;
-        const tip = num("tip-pct") || 0;
+        const cost = num("cost") || 0;
+        const markupPct = num("markup") || 0;
+        const discPct = num("discount") || 0;
+        const taxPct = num("tax-rate") || 0;
 
         let html = "";
-        if (sub > 0) {
-          const taxAmt = sub * (tax / 100);
-          const tipAmt = sub * (tip / 100);
-          const total = sub + taxAmt + tipAmt;
+        if (cost > 0 && markupPct > 0) {
+          const sell = cost * (1 + markupPct / 100);
+          const sale = sell * (1 - discPct / 100);
+          const taxAmt = sale * (taxPct / 100);
+          const total = sale + taxAmt;
 
           html = `
-            <g transform="translate(130, 20)">
+            <g transform="translate(130, 15)">
               <!-- Receipt Background -->
-              <rect x="0" y="0" width="240" height="200" fill="#fcfcfc" stroke="#cbd5e1" stroke-width="2" filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.05))" />
+              <rect x="0" y="0" width="240" height="210" fill="#fcfcfc" stroke="#cbd5e1" stroke-width="2" filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.05))" />
               <line x1="10" y1="35" x2="230" y2="35" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="3,3" />
-              <text x="120" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">SHOP SALE RECEIPT</text>
-              
-              <text x="20" y="60" font-size="13" fill="#5e6e7e">Subtotal:</text>
-              <text x="220" y="60" text-anchor="end" font-size="13" font-weight="bold" fill="#0f2b3c">$${sub.toFixed(2)}</text>
-              
-              <text x="20" y="90" font-size="13" fill="#5e6e7e">Sales Tax (${tax}%):</text>
-              <text x="220" y="90" text-anchor="end" font-size="13" fill="#0f2b3c">$${taxAmt.toFixed(2)}</text>
-              
-              <text x="20" y="120" font-size="13" fill="#5e6e7e">Tip (${tip}%):</text>
-              <text x="220" y="120" text-anchor="end" font-size="13" fill="#0f2b3c">$${tipAmt.toFixed(2)}</text>
-              
-              <line x1="10" y1="140" x2="230" y2="140" stroke="#cbd5e1" stroke-width="1.5" />
-              <text x="20" y="170" font-size="14" font-weight="bold" fill="#2d874b">GRAND TOTAL:</text>
-              <text x="220" y="170" text-anchor="end" font-size="14" font-weight="bold" fill="#2d874b">$${total.toFixed(2)}</text>
+              <text x="120" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">POP-UP SHOP RECEIPT</text>
+
+              <text x="20" y="58" font-size="13" fill="#5e6e7e">Selling Price (+${markupPct}%):</text>
+              <text x="220" y="58" text-anchor="end" font-size="13" font-weight="bold" fill="#0f2b3c">$${sell.toFixed(2)}</text>
+
+              <text x="20" y="85" font-size="13" fill="#5e6e7e">Discount (-${discPct}%):</text>
+              <text x="220" y="85" text-anchor="end" font-size="13" fill="#c45a3c">-$${(sell - sale).toFixed(2)}</text>
+
+              <text x="20" y="112" font-size="13" fill="#5e6e7e">Sale Price:</text>
+              <text x="220" y="112" text-anchor="end" font-size="13" fill="#0f2b3c">$${sale.toFixed(2)}</text>
+
+              <text x="20" y="139" font-size="13" fill="#5e6e7e">Sales Tax (${taxPct}%):</text>
+              <text x="220" y="139" text-anchor="end" font-size="13" fill="#0f2b3c">$${taxAmt.toFixed(2)}</text>
+
+              <line x1="10" y1="158" x2="230" y2="158" stroke="#cbd5e1" stroke-width="1.5" />
+              <text x="20" y="185" font-size="14" font-weight="bold" fill="#2d874b">GRAND TOTAL:</text>
+              <text x="220" y="185" text-anchor="end" font-size="14" font-weight="bold" fill="#2d874b">$${total.toFixed(2)}</text>
             </g>
           `;
         } else {
           html = `
-            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter your prices to print the receipt</text>
+            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter your cost and markup to print the receipt</text>
           `;
         }
 

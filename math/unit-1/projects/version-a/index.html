@@ -672,7 +672,7 @@
               id="g-stickers"
               data-save
               min="1"
-              placeholder="example: 48"
+              placeholder=""
               oninput="calcGCF()"
             />
           </div>
@@ -685,7 +685,7 @@
               id="g-bars"
               data-save
               min="1"
-              placeholder="example: 36"
+              placeholder=""
               oninput="calcGCF()"
             />
           </div>
@@ -707,7 +707,7 @@
             type="text"
             id="distrib"
             data-save
-            placeholder="example: 48 + 36 = 12 × (4 + 3)"
+            placeholder=""
           />
         </div>
         <details class="hintbox">
@@ -771,7 +771,7 @@
               id="l-dj"
               data-save
               min="1"
-              placeholder="example: 6"
+              placeholder=""
               oninput="calcLCM()"
             />
           </div>
@@ -784,7 +784,7 @@
               id="l-bubble"
               data-save
               min="1"
-              placeholder="example: 8"
+              placeholder=""
               oninput="calcLCM()"
             />
           </div>
@@ -852,7 +852,7 @@
               data-save
               step="0.01"
               min="0"
-              placeholder="example: 300.00"
+              placeholder=""
               oninput="calcBudget()"
             />
           </div>
@@ -867,7 +867,7 @@
           <div class="grid2">
             <div>
               <label class="fld" for="worldCountry">Food Plan Category Researched</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+              <input type="text" id="worldCountry" data-save placeholder="" oninput="recalcAll()">
             </div>
             <div>
               <label class="fld" for="c-food">Food &amp; drinks ($)</label>
@@ -877,7 +877,7 @@
               data-save
               step="0.01"
               min="0"
-              placeholder="example: 124.50"
+              placeholder=""
               oninput="calcBudget()"
             />
             </div>
@@ -892,7 +892,7 @@
               data-save
               step="0.01"
               min="0"
-              placeholder="example: 38.75"
+              placeholder=""
               oninput="calcBudget()"
             />
           </div>
@@ -904,7 +904,7 @@
               data-save
               step="0.01"
               min="0"
-              placeholder="example: 67.20"
+              placeholder=""
               oninput="calcBudget()"
             />
           </div>
@@ -916,7 +916,7 @@
               data-save
               step="0.01"
               min="0"
-              placeholder="example: 45.00"
+              placeholder=""
               oninput="calcBudget()"
             />
           </div>
@@ -984,7 +984,7 @@
               data-save
               step="0.01"
               min="0"
-              placeholder="example: 275.40"
+              placeholder=""
               oninput="calcPer()"
             />
           </div>
@@ -997,7 +997,7 @@
               id="d-guests"
               data-save
               min="1"
-              placeholder="example: 36"
+              placeholder=""
               oninput="calcPer()"
             />
           </div>
@@ -1016,7 +1016,7 @@
           type="number"
           id="check-cups"
           data-save
-          placeholder="Type a number"
+          placeholder=""
         />
         <button class="btn alt" type="button" onclick="checkCups()">
           Check answer
@@ -1091,7 +1091,7 @@
               type="text"
               id="partnerName"
               data-save
-              placeholder="example: A.J."
+              placeholder=""
             />
           </div>
           <div>
@@ -1138,7 +1138,7 @@
         <textarea
           id="peerReflect"
           data-save
-          placeholder="My plan has ___ while my partner's has ___, so ___."
+          placeholder=""
         ></textarea>
       </section>
 
@@ -1176,7 +1176,7 @@
               data-save
               step="0.01"
               oninput="worldGo()"
-              placeholder="type your value"
+              placeholder=""
             />
             <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
               Tip: your cost per guest from Part 1 is a great value to type
@@ -1223,7 +1223,7 @@
                 type="number"
                 id="whatIfVal"
                 step="0.01"
-                placeholder="example: 22.00"
+                placeholder=""
               />
             </div>
           </div>
@@ -1242,7 +1242,7 @@
         <textarea
           id="worldReflect"
           data-save
-          placeholder="My cost per guest is ___ the sample average because ___."
+          placeholder=""
         ></textarea>
         <div class="pk-lvl2">
           <label class="fld" for="worldHard"
@@ -1252,7 +1252,7 @@
           <textarea
             id="worldHard"
             data-save
-            placeholder="$18.50 × 40 = ___ because ___"
+            placeholder=""
           ></textarea>
         </div>
         <label class="fld" for="careful"
@@ -1262,7 +1262,7 @@
         <textarea
           id="careful"
           data-save
-          placeholder="It can be unfair to compare because ___."
+          placeholder=""
         ></textarea>
       </section>
 
@@ -1282,7 +1282,7 @@
         <textarea
           id="pitch"
           data-save
-          placeholder="In our block party plan, we will make ___ goodie bags because the GCF of our supplies is ___. The music and activity sync every ___ minutes. Our total cost is $___, which leaves $___ in the budget, and each guest's fair share is $___."
+          placeholder=""
         ></textarea>
 
         <h3 style="margin: 22px 0 6px">Planning Checklist</h3>
@@ -1726,6 +1726,7 @@
           $("gcf-out").classList.remove("show");
           proj.bags = null;
           drawGCFSvg();
+          if (typeof drawVisualizer === "function") drawVisualizer();
           return;
         }
         const g = gcd(s, b);
@@ -1745,6 +1746,7 @@
               : "✅ GCF(" + s + ", " + b + ") = " + g + "."),
         );
         drawGCFSvg();
+        if (typeof drawVisualizer === "function") drawVisualizer();
       }
 
       function calcLCM() {
@@ -1754,6 +1756,7 @@
           $("lcm-out").classList.remove("show");
           proj.lcm = null;
           drawLCMSvg();
+          if (typeof drawVisualizer === "function") drawVisualizer();
           return;
         }
         const l = lcm(d, b);
@@ -1774,6 +1777,7 @@
             ".",
         );
         drawLCMSvg();
+        if (typeof drawVisualizer === "function") drawVisualizer();
       }
 
       function calcBudget() {
