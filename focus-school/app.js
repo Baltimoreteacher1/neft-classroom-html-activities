@@ -51,17 +51,26 @@
     let r = parseInt(result[1], 16) / 255;
     let g = parseInt(result[2], 16) / 255;
     let b = parseInt(result[3], 16) / 255;
-    const max = Math.max(r, g, b), min = Math.min(r, g, b);
-    let h, s, l = (max + min) / 2;
+    const max = Math.max(r, g, b),
+      min = Math.min(r, g, b);
+    let h,
+      s,
+      l = (max + min) / 2;
     if (max === min) {
       h = s = 0;
     } else {
       const d = max - min;
       s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
       switch (max) {
-        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-        case g: h = (b - r) / d + 2; break;
-        case b: h = (r - g) / d + 4; break;
+        case r:
+          h = (g - b) / d + (g < b ? 6 : 0);
+          break;
+        case g:
+          h = (b - r) / d + 2;
+          break;
+        case b:
+          h = (r - g) / d + 4;
+          break;
       }
       h /= 6;
     }
@@ -366,6 +375,21 @@
         plantStage: 0,
         plantType: "cactus",
       },
+      // Real-money allowance ledger. Noam earns money for finishing work; a
+      // parent reviews the balance and "cashes out" (optionally gated by a PIN).
+      // The ledger is the source of truth — balance/paidOut are recomputed from
+      // it on sync merge, so two devices can never double-count an earning.
+      rewards: {
+        enabled: true,
+        currency: "$",
+        balance: 0, // earned, not yet paid out
+        paidOut: 0, // lifetime cashed out by a parent
+        rates: { task: 0.5, reminder: 0.1, routine: 0.25, focus: 0.25 },
+        dailyCap: 5, // max earnable per day (anti-gaming); 0 = no cap
+        pin: "", // parent PIN for cash-out; "" = no gate set yet
+        // [{ id, ts(ISO), kind, label, amount, type:"earn"|"cashout" }]
+        ledger: [],
+      },
       updatedAt: Date.now(),
     };
   }
@@ -374,7 +398,9 @@
     const base = seed();
     if (!x || typeof x !== "object") return base;
     const s = { ...base.settings, ...(x.settings || {}) };
-    s.welcomeDismissed = !!(x.settings?.welcomeDismissed ?? base.settings.welcomeDismissed);
+    s.welcomeDismissed = !!(
+      x.settings?.welcomeDismissed ?? base.settings.welcomeDismissed
+    );
     s.sync = { ...base.settings.sync, ...(x.settings?.sync || {}) };
     s.themeGradient = String(x.settings?.themeGradient || "");
     s.customThemeColor1 = String(x.settings?.customThemeColor1 || "#0d324d");
@@ -442,15 +468,67 @@
           ? { messages: x.gmail.messages, fetchedAt: x.gmail.fetchedAt || "" }
           : { messages: [], fetchedAt: "" },
       checkins: x.checkins && typeof x.checkins === "object" ? x.checkins : {},
-      reflections: x.reflections && typeof x.reflections === "object" ? x.reflections : {},
-      deletedIds: x.deletedIds && typeof x.deletedIds === "object" ? x.deletedIds : {},
-      garden: x.garden && typeof x.garden === "object" ? {
-        xp: Number(x.garden.xp) || 0,
-        waterReservoir: Number(x.garden.waterReservoir) || 0,
-        wateredCount: Number(x.garden.wateredCount) || 0,
-        plantStage: Number(x.garden.plantStage) || 0,
-        plantType: typeof x.garden.plantType === "string" ? x.garden.plantType : "cactus",
-      } : { xp: 0, waterReservoir: 0, wateredCount: 0, plantStage: 0, plantType: "cactus" },
+      reflections:
+        x.reflections && typeof x.reflections === "object" ? x.reflections : {},
+      deletedIds:
+        x.deletedIds && typeof x.deletedIds === "object" ? x.deletedIds : {},
+      garden:
+        x.garden && typeof x.garden === "object"
+          ? {
+              xp: Number(x.garden.xp) || 0,
+              waterReservoir: Number(x.garden.waterReservoir) || 0,
+              wateredCount: Number(x.garden.wateredCount) || 0,
+              plantStage: Number(x.garden.plantStage) || 0,
+              plantType:
+                typeof x.garden.plantType === "string"
+                  ? x.garden.plantType
+                  : "cactus",
+            }
+          : {
+              xp: 0,
+              waterReservoir: 0,
+              wateredCount: 0,
+              plantStage: 0,
+              plantType: "cactus",
+            },
+      rewards: normalizeRewards(x.rewards),
+    };
+  }
+
+  // Validate/clamp the rewards ledger from an imported or synced backup so a
+  // corrupt or hostile payload can't poison balances or inject markup later.
+  function normalizeRewards(r) {
+    const base = seed().rewards;
+    if (!r || typeof r !== "object") return base;
+    const num = (v, d) => (Number.isFinite(Number(v)) ? Number(v) : d);
+    const rates = r.rates && typeof r.rates === "object" ? r.rates : {};
+    const ledger = Array.isArray(r.ledger)
+      ? r.ledger
+          .filter((e) => e && typeof e === "object")
+          .map((e) => ({
+            id: String(e.id || uid("e")),
+            ts: String(e.ts || ""),
+            kind: String(e.kind || "task"),
+            label: String(e.label || ""),
+            amount: Math.max(0, num(e.amount, 0)),
+            type: e.type === "cashout" ? "cashout" : "earn",
+          }))
+          .slice(0, 1000)
+      : [];
+    return {
+      enabled: r.enabled !== false,
+      currency: typeof r.currency === "string" ? r.currency.slice(0, 3) : "$",
+      balance: Math.max(0, num(r.balance, 0)),
+      paidOut: Math.max(0, num(r.paidOut, 0)),
+      rates: {
+        task: Math.max(0, num(rates.task, base.rates.task)),
+        reminder: Math.max(0, num(rates.reminder, base.rates.reminder)),
+        routine: Math.max(0, num(rates.routine, base.rates.routine)),
+        focus: Math.max(0, num(rates.focus, base.rates.focus)),
+      },
+      dailyCap: Math.max(0, num(r.dailyCap, base.dailyCap)),
+      pin: /^\d{0,8}$/.test(String(r.pin || "")) ? String(r.pin || "") : "",
+      ledger,
     };
   }
 
@@ -545,7 +623,9 @@
       done: !!t.done,
       date: DATE_RE.test(t.date) ? t.date : todayKey(),
       createdAt: t.createdAt || Date.now(),
-      repeat: ["none", "daily", "weekly"].includes(t.repeat) ? t.repeat : "none",
+      repeat: ["none", "daily", "weekly"].includes(t.repeat)
+        ? t.repeat
+        : "none",
       lastDone: DATE_RE.test(t.lastDone) ? t.lastDone : "",
       time: t.time || "",
       lastShown: t.lastShown || "",
@@ -811,7 +891,15 @@
     };
     window.addEventListener("resize", resizeHandler);
 
-    const colors = ["#14b8a6", "#3b82f6", "#f59e0b", "#ef4444", "#10b981", "#8b5cf6", "#ec4899"];
+    const colors = [
+      "#14b8a6",
+      "#3b82f6",
+      "#f59e0b",
+      "#ef4444",
+      "#10b981",
+      "#8b5cf6",
+      "#ec4899",
+    ];
     const particles = [];
 
     for (let i = 0; i < 80; i++) {
@@ -826,7 +914,7 @@
         rotationSpeed: (Math.random() - 0.5) * 8,
         opacity: 1,
         gravity: 0.35,
-        friction: 0.98
+        friction: 0.98,
       });
     }
 
@@ -866,9 +954,15 @@
   // Structured logger for diagnostic capabilities
   const logger = {
     logs: [],
-    info(msg) { this.log("info", msg); },
-    warn(msg) { this.log("warn", msg); },
-    error(msg) { this.log("error", msg); },
+    info(msg) {
+      this.log("info", msg);
+    },
+    warn(msg) {
+      this.log("warn", msg);
+    },
+    error(msg) {
+      this.log("error", msg);
+    },
     log(level, msg) {
       const line = { level, msg, time: new Date().toLocaleTimeString() };
       this.logs.push(line);
@@ -879,7 +973,7 @@
         el.innerHTML += `<div class="log-line ${level}">[${line.time}] [${level.toUpperCase()}] ${esc(msg)}</div>`;
         el.scrollTop = el.scrollHeight;
       }
-    }
+    },
   };
 
   // Web Audio API Procedural Sound Engine
@@ -919,15 +1013,21 @@
     const bufferSize = ctx.sampleRate * seconds;
     const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
     const data = buffer.getChannelData(0);
-    let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+    let b0 = 0,
+      b1 = 0,
+      b2 = 0,
+      b3 = 0,
+      b4 = 0,
+      b5 = 0,
+      b6 = 0;
     for (let i = 0; i < bufferSize; i++) {
       const white = Math.random() * 2 - 1;
       b0 = 0.99886 * b0 + white * 0.0555179;
       b1 = 0.99332 * b1 + white * 0.0750759;
-      b2 = 0.96900 * b2 + white * 0.1538520;
-      b3 = 0.86650 * b3 + white * 0.3104856;
-      b4 = 0.55000 * b4 + white * 0.5329522;
-      b5 = -0.7616 * b5 - white * 0.0168980;
+      b2 = 0.969 * b2 + white * 0.153852;
+      b3 = 0.8665 * b3 + white * 0.3104856;
+      b4 = 0.55 * b4 + white * 0.5329522;
+      b5 = -0.7616 * b5 - white * 0.016898;
       data[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
       data[i] *= 0.11;
       b6 = white * 0.115926;
@@ -942,7 +1042,7 @@
     let lastOut = 0.0;
     for (let i = 0; i < bufferSize; i++) {
       const white = Math.random() * 2 - 1;
-      data[i] = (lastOut + (0.02 * white)) / 1.02;
+      data[i] = (lastOut + 0.02 * white) / 1.02;
       lastOut = data[i];
       data[i] *= 3.5;
     }
@@ -952,7 +1052,9 @@
   function stopAmbientSound() {
     logger.info("Stopping focus ambient sounds.");
     if (ambientSource) {
-      try { ambientSource.stop(); } catch {}
+      try {
+        ambientSource.stop();
+      } catch {}
       ambientSource.disconnect();
       ambientSource = null;
     }
@@ -965,27 +1067,37 @@
       focusTicksTimer = null;
     }
     if (oceanLfo) {
-      try { oceanLfo.stop(); } catch {}
+      try {
+        oceanLfo.stop();
+      } catch {}
       oceanLfo.disconnect();
       oceanLfo = null;
     }
     if (windLfo) {
-      try { windLfo.stop(); } catch {}
+      try {
+        windLfo.stop();
+      } catch {}
       windLfo.disconnect();
       windLfo = null;
     }
     if (leftOsc) {
-      try { leftOsc.stop(); } catch {}
+      try {
+        leftOsc.stop();
+      } catch {}
       leftOsc.disconnect();
       leftOsc = null;
     }
     if (rightOsc) {
-      try { rightOsc.stop(); } catch {}
+      try {
+        rightOsc.stop();
+      } catch {}
       rightOsc.disconnect();
       rightOsc = null;
     }
     if (subOsc) {
-      try { subOsc.stop(); } catch {}
+      try {
+        subOsc.stop();
+      } catch {}
       subOsc.disconnect();
       subOsc = null;
     }
@@ -995,7 +1107,9 @@
     }
     if (synthOscillators.length) {
       synthOscillators.forEach((o) => {
-        try { o.stop(); } catch {}
+        try {
+          o.stop();
+        } catch {}
         o.disconnect();
       });
       synthOscillators = [];
@@ -1193,72 +1307,77 @@
     stopAmbientSound();
     initAudio();
     activeSoundType = "synth";
-    
+
     synthOscillators = [];
     synthGains = [];
-    
+
     synthFilter = audioCtx.createBiquadFilter();
     synthFilter.type = "lowpass";
     synthFilter.frequency.value = 350; // soft low-pass filter
-    
+
     ambientGain = audioCtx.createGain();
     ambientGain.gain.value = 0.45; // master synth volume
-    
+
     synthFilter.connect(ambientGain);
     ambientGain.connect(audioAnalyser || audioCtx.destination);
-    
+
     const chords = [
-      [65.41, 98.00, 130.81, 164.81, 196.00], // C major-ish drone
-      [87.31, 130.81, 174.61, 220.00, 261.63], // F major-ish drone
-      [55.00, 82.41, 110.00, 130.81, 164.81],   // A minor-ish drone
-      [49.00, 73.42, 98.00, 123.47, 146.83]    // G major-ish drone
+      [65.41, 98.0, 130.81, 164.81, 196.0], // C major-ish drone
+      [87.31, 130.81, 174.61, 220.0, 261.63], // F major-ish drone
+      [55.0, 82.41, 110.0, 130.81, 164.81], // A minor-ish drone
+      [49.0, 73.42, 98.0, 123.47, 146.83], // G major-ish drone
     ];
-    
+
     let currentChordIdx = 0;
-    
+
     function playChord(frequencies) {
       const now = audioCtx.currentTime;
-      
+
       // Fade out current oscillators
       synthGains.forEach((g) => {
         g.gain.cancelScheduledValues(now);
         g.gain.setValueAtTime(g.gain.value, now);
         g.gain.linearRampToValueAtTime(0, now + 1.5);
       });
-      
+
       const oldOscs = [...synthOscillators];
       setTimeout(() => {
         oldOscs.forEach((o) => {
-          try { o.stop(); } catch {}
+          try {
+            o.stop();
+          } catch {}
           o.disconnect();
         });
       }, 1600);
-      
+
       synthOscillators = [];
       synthGains = [];
-      
+
       // Start new notes in chord
       frequencies.forEach((freq) => {
         const osc = audioCtx.createOscillator();
         osc.type = "triangle";
         osc.frequency.value = freq;
-        
+
         const gainNode = audioCtx.createGain();
         gainNode.gain.setValueAtTime(0, now);
-        gainNode.gain.linearRampToValueAtTime(0.08 / frequencies.length, now + 2.0);
-        
+        gainNode.gain.linearRampToValueAtTime(
+          0.08 / frequencies.length,
+          now + 2.0,
+        );
+
         osc.connect(gainNode);
         gainNode.connect(synthFilter);
-        
+
         osc.start(now);
-        
+
         synthOscillators.push(osc);
         synthGains.push(gainNode);
       });
     }
-    
+
     playChord(chords[currentChordIdx]);
-    
+
     synthTimer = setInterval(() => {
       if (activeSoundType !== "synth") {
         clearInterval(synthTimer);
@@ -1267,15 +1386,17 @@
       currentChordIdx = (currentChordIdx + 1) % chords.length;
       playChord(chords[currentChordIdx]);
     }, 7000);
-    
+
     logger.info("Cozy Synth drone started.");
   }
 
   function updateVisualizer() {
     const path = document.getElementById("fVisualizer");
     if (!path) return;
-    
-    const isFocusOpen = document.getElementById("focusOverlay")?.classList.contains("open");
+
+    const isFocusOpen = document
+      .getElementById("focusOverlay")
+      ?.classList.contains("open");
     if (!isFocusOpen) {
       if (visualizerAnimFrame) {
         cancelAnimationFrame(visualizerAnimFrame);
@@ -1283,41 +1404,43 @@
       }
       return;
     }
-    
+
     visualizerAnimFrame = requestAnimationFrame(updateVisualizer);
-    
+
     let dataArray = null;
     if (audioAnalyser && activeSoundType !== "none") {
       const bufferLength = audioAnalyser.frequencyBinCount;
       dataArray = new Uint8Array(bufferLength);
       audioAnalyser.getByteFrequencyData(dataArray);
     }
-    
+
     const numPoints = 64;
     const baseRadius = 144;
     const cx = 150;
     const cy = 150;
     let points = [];
-    
+
     for (let i = 0; i <= numPoints; i++) {
       const angle = (i / numPoints) * 2 * Math.PI;
       let offset = 0;
-      
+
       if (dataArray) {
         // Map angle to frequency index (symmetrical)
-        const dataIdx = Math.floor(Math.abs(Math.sin(angle)) * (dataArray.length - 1) * 0.6);
+        const dataIdx = Math.floor(
+          Math.abs(Math.sin(angle)) * (dataArray.length - 1) * 0.6,
+        );
         offset = (dataArray[dataIdx] / 255) * 15; // max 15px pulse
       } else {
         // Gentle breathing animation if no sound is active
         offset = Math.sin(Date.now() / 800 + angle * 2) * 1.5;
       }
-      
+
       const r = baseRadius + offset;
       const x = cx + r * Math.cos(angle);
       const y = cy + r * Math.sin(angle);
       points.push(`${i === 0 ? "M" : "L"} ${x.toFixed(1)} ${y.toFixed(1)}`);
     }
-    
+
     path.setAttribute("d", points.join(" ") + " Z");
   }
 
@@ -1332,7 +1455,10 @@
       osc.type = "sine";
       osc.frequency.value = 800;
       gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+      gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        audioCtx.currentTime + 0.05,
+      );
       osc.connect(gain);
       gain.connect(audioCtx.destination);
       osc.start();
@@ -1343,7 +1469,9 @@
   }
 
   function updateAmbientSoundUI(soundType) {
-    const buttons = document.querySelectorAll("#fAmbientControls button[data-act='focus-sound']");
+    const buttons = document.querySelectorAll(
+      "#fAmbientControls button[data-act='focus-sound']",
+    );
     buttons.forEach((btn) => {
       const isPressed = btn.dataset.arg === soundType;
       btn.setAttribute("aria-pressed", isPressed ? "true" : "false");
@@ -1382,7 +1510,7 @@
       initAudio();
       if (!audioCtx) return;
       const now = audioCtx.currentTime;
-      const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+      const notes = [523.25, 659.25, 783.99, 1046.5]; // C5, E5, G5, C6
       notes.forEach((freq, index) => {
         const osc = audioCtx.createOscillator();
         const gainNode = audioCtx.createGain();
@@ -1390,7 +1518,10 @@
         osc.frequency.setValueAtTime(freq, now + index * 0.08);
         gainNode.gain.setValueAtTime(0, now + index * 0.08);
         gainNode.gain.linearRampToValueAtTime(0.08, now + index * 0.08 + 0.02);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, now + index * 0.08 + 0.35);
+        gainNode.gain.exponentialRampToValueAtTime(
+          0.001,
+          now + index * 0.08 + 0.35,
+        );
         osc.connect(gainNode);
         gainNode.connect(audioCtx.destination);
         osc.start(now + index * 0.08);
@@ -1409,7 +1540,7 @@
         <h2 style="font-size: 2.2rem; margin: 0 0 8px; color: var(--accent); font-weight: 800;">Level ${level}</h2>
         <p style="font-size: 1.1rem; margin-bottom: 24px; color: var(--ink);">Awesome job! You are building incredible study habits. Keep focusing! 🚀</p>
         <button class="btn primary block" data-act="close-modal" style="font-size: 1.1rem; padding: 12px; margin-top: 16px;">Awesome! Let's go!</button>
-      </div>`
+      </div>`,
     );
   }
 
@@ -1425,7 +1556,9 @@
       const oldWaterEarned = Math.floor((state.garden.xp - amount) / 10);
       const newWaterEarned = Math.floor(state.garden.xp / 10);
       if (newWaterEarned > oldWaterEarned) {
-        state.garden.waterReservoir = (state.garden.waterReservoir || 0) + (newWaterEarned - oldWaterEarned);
+        state.garden.waterReservoir =
+          (state.garden.waterReservoir || 0) +
+          (newWaterEarned - oldWaterEarned);
       }
       updateGardenPlantStage();
     }
@@ -1460,6 +1593,51 @@
     }
   }
 
+  // ---- Real-money allowance ledger ---------------------------------------
+  const money = (n) =>
+    `${state.rewards?.currency || "$"}${(Number(n) || 0).toFixed(2)}`;
+
+  // Sum of money earned (not cashed out) so far today — used for the daily cap.
+  function rewardsEarnedToday() {
+    const r = state.rewards;
+    if (!r) return 0;
+    const today = todayKey();
+    return r.ledger.reduce(
+      (s, e) =>
+        e.type === "earn" && String(e.ts).slice(0, 10) === today
+          ? s + e.amount
+          : s,
+      0,
+    );
+  }
+
+  // Award money for finishing a piece of work. `kind` keys into rewards.rates;
+  // honors the per-day cap so a kid can't farm reminders for unlimited cash.
+  function earnReward(kind, label) {
+    const r = state.rewards;
+    if (!r || !r.enabled) return;
+    const rate = Number(r.rates?.[kind]) || 0;
+    if (rate <= 0) return;
+    let amt = rate;
+    const cap = Number(r.dailyCap) || 0;
+    if (cap > 0) amt = Math.min(amt, Math.max(0, cap - rewardsEarnedToday()));
+    amt = Math.round(amt * 100) / 100;
+    if (amt <= 0) return;
+    r.balance = Math.round((r.balance + amt) * 100) / 100;
+    r.ledger.unshift({
+      id: uid("e"),
+      ts: new Date().toISOString(),
+      kind,
+      label: String(label || kind).slice(0, 80),
+      amount: amt,
+      type: "earn",
+    });
+    if (r.ledger.length > 1000) r.ledger.length = 1000;
+    // Don't save() here — callers already save() right after their own state
+    // changes; this keeps earning atomic with the action that triggered it.
+    toast(`${money(amt)} earned 💰`);
+  }
+
   const GRADIENTS = [
     ["", "Default Navy"],
     ["linear-gradient(135deg, #0d324d, #7f5a83)", "Aurora Twilight"],
@@ -1481,7 +1659,14 @@
     const pts = state.points || 0;
     const lvl = Math.floor(pts / 100) + 1;
     const xpRemainder = pts % 100;
-    const title = lvl >= 10 ? "Focus Legend 👑" : lvl >= 6 ? "Focus Master 🧙‍♂️" : lvl >= 3 ? "Focus Knight 🛡️" : "Focus Padawan 🪴";
+    const title =
+      lvl >= 10
+        ? "Focus Legend 👑"
+        : lvl >= 6
+          ? "Focus Master 🧙‍♂️"
+          : lvl >= 3
+            ? "Focus Knight 🛡️"
+            : "Focus Padawan 🪴";
     const r = 36;
     const circ = 2 * Math.PI * r;
     const offset = circ * (1 - xpRemainder / 100);
@@ -1521,11 +1706,12 @@
     const chartWidth = 320;
     const barWidth = 24;
     const gap = 16;
-    const barsHTML = focusMins.map((m, idx) => {
-      const barHeight = (m / maxVal) * 80;
-      const x = gap + idx * (barWidth + gap);
-      const y = 90 - barHeight;
-      return `
+    const barsHTML = focusMins
+      .map((m, idx) => {
+        const barHeight = (m / maxVal) * 80;
+        const x = gap + idx * (barWidth + gap);
+        const y = 90 - barHeight;
+        return `
         <g>
           <rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" rx="4" fill="var(--teal)" opacity="0.85">
             <title>${m} focus minutes</title>
@@ -1534,7 +1720,8 @@
           ${m > 0 ? `<text x="${x + barWidth / 2}" y="${y - 6}" font-size="9" font-family="Plus Jakarta Sans" font-weight="800" fill="var(--ink)" text-anchor="middle">${m}m</text>` : ""}
         </g>
       `;
-    }).join("");
+      })
+      .join("");
     return `
       <div class="chart-container">
         <div class="chart-header">📊 Weekly Focus Studio (Minutes)</div>
@@ -1558,7 +1745,7 @@
           <p><b>Focus score:</b> ${existing.focus} / 5</p>
           <p><b>Mood score:</b> ${existing.mood} / 5</p>
           ${existing.text ? `<p><b>Gratitude/Notes:</b> ${esc(existing.text)}</p>` : ""}
-         </div>`
+         </div>`,
       );
     }
     const focusVal = window._pendingReflectionFocus || 0;
@@ -1577,13 +1764,13 @@
       <div class="reflection-rating-row">
         <span class="reflection-rating-label">Focus Rating (1-5):</span>
         <div class="rating-buttons">
-          ${[1,2,3,4,5].map(v => ratingBtn("focus", v, focusVal === v)).join("")}
+          ${[1, 2, 3, 4, 5].map((v) => ratingBtn("focus", v, focusVal === v)).join("")}
         </div>
       </div>
       <div class="reflection-rating-row">
         <span class="reflection-rating-label">Mood Rating (1-5):</span>
         <div class="rating-buttons">
-          ${[1,2,3,4,5].map(v => ratingBtn("mood", v, moodVal === v)).join("")}
+          ${[1, 2, 3, 4, 5].map((v) => ratingBtn("mood", v, moodVal === v)).join("")}
         </div>
       </div>
       <div class="reflection-text-row">
@@ -1595,7 +1782,7 @@
       <button class="btn primary block" data-act="save-reflection" style="margin-top:12px">
         💾 Save check-out
       </button>
-      `
+      `,
     );
   }
 
@@ -1603,7 +1790,9 @@
     const dates = [];
     const focusRatings = [];
     const moodRatings = [];
-    const sortedDates = Object.keys(state.reflections || {}).sort().slice(-10);
+    const sortedDates = Object.keys(state.reflections || {})
+      .sort()
+      .slice(-10);
     if (sortedDates.length < 2) {
       return `<div class="chart-container"><div class="chart-header">📈 Reflection Trends</div><div class="empty">🌱 Reflect for at least 2 days to see your trend graph!</div></div>`;
     }
@@ -1614,7 +1803,8 @@
     const pointsMood = [];
     sortedDates.forEach((k, idx) => {
       const ref = state.reflections[k];
-      const x = padding + (idx * (chartWidth - 2 * padding)) / (sortedDates.length - 1);
+      const x =
+        padding + (idx * (chartWidth - 2 * padding)) / (sortedDates.length - 1);
       const yFocus = 100 - (ref.focus - 1) * 20;
       const yMood = 100 - (ref.mood - 1) * 20;
       pointsFocus.push(`${x},${yFocus}`);
@@ -1622,16 +1812,20 @@
     });
     const focusPath = pointsFocus.join(" ");
     const moodPath = pointsMood.join(" ");
-    const focusDots = pointsFocus.map((p, idx) => {
-      const [x, y] = p.split(",");
-      const rating = state.reflections[sortedDates[idx]].focus;
-      return `<circle cx="${x}" cy="${y}" r="4" fill="var(--teal)"><title>Focus: ${rating}/5</title></circle>`;
-    }).join("");
-    const moodDots = pointsMood.map((p, idx) => {
-      const [x, y] = p.split(",");
-      const rating = state.reflections[sortedDates[idx]].mood;
-      return `<circle cx="${x}" cy="${y}" r="4" fill="var(--amber)"><title>Mood: ${rating}/5</title></circle>`;
-    }).join("");
+    const focusDots = pointsFocus
+      .map((p, idx) => {
+        const [x, y] = p.split(",");
+        const rating = state.reflections[sortedDates[idx]].focus;
+        return `<circle cx="${x}" cy="${y}" r="4" fill="var(--teal)"><title>Focus: ${rating}/5</title></circle>`;
+      })
+      .join("");
+    const moodDots = pointsMood
+      .map((p, idx) => {
+        const [x, y] = p.split(",");
+        const rating = state.reflections[sortedDates[idx]].mood;
+        return `<circle cx="${x}" cy="${y}" r="4" fill="var(--amber)"><title>Mood: ${rating}/5</title></circle>`;
+      })
+      .join("");
     return `
       <div class="chart-container">
         <div class="chart-header">📈 Reflection Trends (Last ${sortedDates.length} days)</div>
@@ -1653,60 +1847,67 @@
   }
 
   function getBadgesList() {
-    const totalRoutines = Object.values(state.activity || {}).reduce((acc, curr) => acc + (curr.routines || 0), 0);
-    const hasDeepWork = Object.values(state.activity || {}).some(act => (act.focusMin || 0) >= 15);
+    const totalRoutines = Object.values(state.activity || {}).reduce(
+      (acc, curr) => acc + (curr.routines || 0),
+      0,
+    );
+    const hasDeepWork = Object.values(state.activity || {}).some(
+      (act) => (act.focusMin || 0) >= 15,
+    );
     const lvl = Math.floor((state.points || 0) / 100) + 1;
-    
+
     return [
       {
         id: "first_steps",
         name: "First Steps",
         desc: "Complete 1 assignment",
         emoji: "🏃‍♂️",
-        unlocked: state.assignments.filter(a => a.status === "done").length >= 1
+        unlocked:
+          state.assignments.filter((a) => a.status === "done").length >= 1,
       },
       {
         id: "deep_work",
         name: "Deep Work",
         desc: "Finish a 15+ min focus session",
         emoji: "⚡",
-        unlocked: hasDeepWork
+        unlocked: hasDeepWork,
       },
       {
         id: "consistency_king",
         name: "Consistency King",
         desc: "Build a 3-day streak",
         emoji: "🔥",
-        unlocked: streak() >= 3
+        unlocked: streak() >= 3,
       },
       {
         id: "routine_champion",
         name: "Routine Champion",
         desc: "Complete 3 checklists",
         emoji: "🔁",
-        unlocked: totalRoutines >= 3
+        unlocked: totalRoutines >= 3,
       },
       {
         id: "mindful_mind",
         name: "Mindful Mind",
         desc: "Complete 3 check-outs",
         emoji: "🧠",
-        unlocked: Object.keys(state.reflections || {}).length >= 3
+        unlocked: Object.keys(state.reflections || {}).length >= 3,
       },
       {
         id: "grandmaster",
         name: "Grandmaster",
         desc: "Reach XP Level 5",
         emoji: "🧙‍♂️",
-        unlocked: lvl >= 5
-      }
+        unlocked: lvl >= 5,
+      },
     ];
   }
 
   function badgesGalleryHTML() {
     const badges = getBadgesList();
-    const itemsHtml = badges.map(b => {
-      return `
+    const itemsHtml = badges
+      .map((b) => {
+        return `
         <div class="badge-card ${b.unlocked ? "unlocked" : "locked"}">
           <div class="badge-status">${b.unlocked ? "✅" : "🔒"}</div>
           <div class="badge-icon">${b.emoji}</div>
@@ -1714,7 +1915,8 @@
           <div class="badge-desc">${esc(b.desc)}</div>
         </div>
       `;
-    }).join("");
+      })
+      .join("");
 
     return `
       <div class="card badges-section">
@@ -1729,7 +1931,7 @@
 
   async function selfTest() {
     logger.info("Starting System Self-Test...");
-    
+
     // 1. IndexedDB Test
     try {
       const dbName = "focus-school-diagnostics";
@@ -1740,12 +1942,12 @@
           db.createObjectStore("test");
         }
       };
-      
+
       const db = await new Promise((resolve, reject) => {
         request.onsuccess = (e) => resolve(e.target.result);
         request.onerror = (e) => reject(e.target.error);
       });
-      
+
       const writeStart = performance.now();
       const transaction = db.transaction("test", "readwrite");
       const store = transaction.objectStore("test");
@@ -1755,7 +1957,7 @@
         transaction.onerror = (e) => reject(e.target.error);
       });
       const writeTime = performance.now() - writeStart;
-      
+
       const readStart = performance.now();
       const transaction2 = db.transaction("test", "readonly");
       const store2 = transaction2.objectStore("test");
@@ -1765,12 +1967,14 @@
         readRequest.onerror = (e) => reject(e.target.error);
       });
       const readTime = performance.now() - readStart;
-      
+
       db.close();
       indexedDB.deleteDatabase(dbName);
-      
+
       if (readVal === "val") {
-        logger.info(`IndexedDB: OK (Write: ${writeTime.toFixed(1)}ms, Read: ${readTime.toFixed(1)}ms)`);
+        logger.info(
+          `IndexedDB: OK (Write: ${writeTime.toFixed(1)}ms, Read: ${readTime.toFixed(1)}ms)`,
+        );
         const el = document.getElementById("diagIdbStatus");
         if (el) {
           el.textContent = "OK";
@@ -1787,7 +1991,7 @@
         el.parentElement.className = "diag-stat fail";
       }
     }
-    
+
     // 2. LocalStorage Test
     try {
       const lsStart = performance.now();
@@ -1795,16 +1999,19 @@
       const lsVal = localStorage.getItem("__diag_test__");
       localStorage.removeItem("__diag_test__");
       const lsTime = performance.now() - lsStart;
-      
+
       let totalUsed = 0;
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
-        totalUsed += (key.length + (localStorage.getItem(key) || "").length) * 2;
+        totalUsed +=
+          (key.length + (localStorage.getItem(key) || "").length) * 2;
       }
       const totalUsedKB = (totalUsed / 1024).toFixed(1);
-      
+
       if (lsVal === "hello") {
-        logger.info(`LocalStorage: OK (Speed: ${lsTime.toFixed(1)}ms, Used: ${totalUsedKB} KB)`);
+        logger.info(
+          `LocalStorage: OK (Speed: ${lsTime.toFixed(1)}ms, Used: ${totalUsedKB} KB)`,
+        );
         const el = document.getElementById("diagLsStatus");
         if (el) {
           el.textContent = `OK (${totalUsedKB}KB)`;
@@ -1821,16 +2028,19 @@
         el.parentElement.className = "diag-stat fail";
       }
     }
-    
+
     // 3. Network Latency Test
     try {
       const netStart = performance.now();
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 4000);
-      
-      const res = await fetch("/api/state?ping=1", { method: "HEAD", signal: controller.signal }).catch(() => null);
+
+      const res = await fetch("/api/state?ping=1", {
+        method: "HEAD",
+        signal: controller.signal,
+      }).catch(() => null);
       clearTimeout(timeoutId);
-      
+
       const latency = performance.now() - netStart;
       if (res && res.ok) {
         logger.info(`Network Latency to /api/state: ${latency.toFixed(0)}ms`);
@@ -1862,13 +2072,17 @@
         el.parentElement.className = "diag-stat fail";
       }
     }
-    
+
     // 4. Service Worker Check
     try {
       if ("serviceWorker" in navigator) {
         const regs = await navigator.serviceWorker.getRegistrations();
         if (regs.length > 0) {
-          const swList = regs.map(r => r.active ? `active (${r.active.state})` : "waiting/installing").join(", ");
+          const swList = regs
+            .map((r) =>
+              r.active ? `active (${r.active.state})` : "waiting/installing",
+            )
+            .join(", ");
           logger.info(`Service Worker: Found registered SWs: ${swList}`);
           const el = document.getElementById("diagSwStatus");
           if (el) {
@@ -1899,7 +2113,7 @@
         el.parentElement.className = "diag-stat fail";
       }
     }
-    
+
     logger.info("Self-Test completed.");
   }
 
@@ -1936,47 +2150,104 @@
       { title: "🔁 Go to Routines", act: "nav", arg: "routines", badge: "nav" },
       { title: "🏆 Go to Wins & Stats", act: "nav", arg: "wins", badge: "nav" },
       { title: "⚙️ Go to Settings", act: "nav", arg: "settings", badge: "nav" },
-      { title: "☁️ Go to Backup & Sync", act: "nav", arg: "sync", badge: "nav" },
+      {
+        title: "☁️ Go to Backup & Sync",
+        act: "nav",
+        arg: "sync",
+        badge: "nav",
+      },
     ];
     const controls = [
       { title: "⏱️ Toggle Focus Session", act: "focus-toggle", badge: "cmd" },
       { title: "🎨 Cycle Theme Colors", act: "theme-cycle", badge: "cmd" },
-      { title: "🌧️ Play Gentle Rain", act: "focus-sound", arg: "rain", badge: "audio" },
-      { title: "🔥 Play Cozy Rumble", act: "focus-sound", arg: "rumble", badge: "audio" },
-      { title: "🌊 Play Ocean Waves", act: "focus-sound", arg: "ocean", badge: "audio" },
-      { title: "🌲 Play Forest Wind", act: "focus-sound", arg: "wind", badge: "audio" },
-      { title: "🌌 Play Deep Space Hum", act: "focus-sound", arg: "binaural", badge: "audio" },
-      { title: "⏱️ Play Focus Ticks", act: "focus-sound", arg: "ticks", badge: "audio" },
-      { title: "🎹 Play Cozy Synth", act: "focus-sound", arg: "synth", badge: "audio" },
-      { title: "🔇 Silence Background Sounds", act: "focus-sound", arg: "none", badge: "audio" },
+      {
+        title: "🌧️ Play Gentle Rain",
+        act: "focus-sound",
+        arg: "rain",
+        badge: "audio",
+      },
+      {
+        title: "🔥 Play Cozy Rumble",
+        act: "focus-sound",
+        arg: "rumble",
+        badge: "audio",
+      },
+      {
+        title: "🌊 Play Ocean Waves",
+        act: "focus-sound",
+        arg: "ocean",
+        badge: "audio",
+      },
+      {
+        title: "🌲 Play Forest Wind",
+        act: "focus-sound",
+        arg: "wind",
+        badge: "audio",
+      },
+      {
+        title: "🌌 Play Deep Space Hum",
+        act: "focus-sound",
+        arg: "binaural",
+        badge: "audio",
+      },
+      {
+        title: "⏱️ Play Focus Ticks",
+        act: "focus-sound",
+        arg: "ticks",
+        badge: "audio",
+      },
+      {
+        title: "🎹 Play Cozy Synth",
+        act: "focus-sound",
+        arg: "synth",
+        badge: "audio",
+      },
+      {
+        title: "🔇 Silence Background Sounds",
+        act: "focus-sound",
+        arg: "none",
+        badge: "audio",
+      },
     ];
-    navs.concat(controls).forEach(item => {
-      if (!query || item.title.toLowerCase().includes(query) || item.arg?.includes(query)) {
+    navs.concat(controls).forEach((item) => {
+      if (
+        !query ||
+        item.title.toLowerCase().includes(query) ||
+        item.arg?.includes(query)
+      ) {
         items.push(item);
       }
     });
-    state.assignments.forEach(a => {
-      if (a.status !== "done" && (!query || a.title.toLowerCase().includes(query))) {
+    state.assignments.forEach((a) => {
+      if (
+        a.status !== "done" &&
+        (!query || a.title.toLowerCase().includes(query))
+      ) {
         items.push({
           title: `Focus: ${a.title}`,
           act: "focus-start-task",
           arg: a.id,
-          badge: "task"
+          badge: "task",
         });
       }
     });
     window._cmdItems = items;
-    window._cmdSelectedIndex = Math.min(window._cmdSelectedIndex, items.length - 1);
+    window._cmdSelectedIndex = Math.min(
+      window._cmdSelectedIndex,
+      items.length - 1,
+    );
     if (window._cmdSelectedIndex < 0) window._cmdSelectedIndex = 0;
-    resultsContainer.innerHTML = items.map((item, idx) => {
-      const isSel = idx === window._cmdSelectedIndex;
-      return `
+    resultsContainer.innerHTML = items
+      .map((item, idx) => {
+        const isSel = idx === window._cmdSelectedIndex;
+        return `
         <div class="cmd-item ${isSel ? "selected" : ""}" data-idx="${idx}" data-act="cmd-trigger">
           <span class="cmd-title">${esc(item.title)}</span>
           <span class="cmd-badge">${item.badge}</span>
         </div>
       `;
-    }).join("");
+      })
+      .join("");
   }
 
   function triggerCommandItem(item) {
@@ -1993,7 +2264,8 @@
       }
     } else if (item.act === "theme-cycle") {
       const themes = ["light", "dark", "contrast"];
-      const nextIdx = (themes.indexOf(state.settings.theme) + 1) % themes.length;
+      const nextIdx =
+        (themes.indexOf(state.settings.theme) + 1) % themes.length;
       state.settings.theme = themes[nextIdx];
       save();
       applyAppearance();
@@ -2041,8 +2313,9 @@
           : s.theme === "contrast"
             ? "#000000"
             : "#1e293b";
-    $("#brandName").textContent =
-      s.studentName ? (s.studentName.split(" ")[0] + " School") : "Focus School";
+    $("#brandName").textContent = s.studentName
+      ? s.studentName.split(" ")[0] + " School"
+      : "Focus School";
   }
 
   function updateHeaderStatus() {
@@ -2051,20 +2324,34 @@
     const textEl = $("#connText");
     const online = navigator.onLine;
 
-    chip.classList.remove("online", "offline", "syncing", "synced", "offline-sync", "local");
+    chip.classList.remove(
+      "online",
+      "offline",
+      "syncing",
+      "synced",
+      "offline-sync",
+      "local",
+    );
 
     if (!online) {
       chip.classList.add("offline");
-      chip.title = "Offline — changes will save locally and sync when you're back online";
+      chip.title =
+        "Offline — changes will save locally and sync when you're back online";
       if (textEl) textEl.textContent = "Offline — saved locally";
       return;
     }
 
-    if (state && state.settings && state.settings.sync && state.settings.sync.enabled) {
+    if (
+      state &&
+      state.settings &&
+      state.settings.sync &&
+      state.settings.sync.enabled
+    ) {
       if (cloud.status === "syncing") {
         chip.classList.add("syncing");
         chip.title = "Syncing with Cloudflare KV...";
-        if (textEl) textEl.innerHTML = `Syncing... <span class="sync-spinner">🔄</span>`;
+        if (textEl)
+          textEl.innerHTML = `Syncing... <span class="sync-spinner">🔄</span>`;
       } else if (cloud.status === "synced") {
         chip.classList.add("synced");
         chip.title = "All changes synced to the cloud";
@@ -2092,7 +2379,6 @@
     renderTabbar();
     updateHeaderStatus();
   }
-
 
   function renderTabbar() {
     $("#tabbar").innerHTML = TABS.map(
@@ -2152,16 +2438,24 @@
           ${t.steps.length ? `<span class="tag">${pct}% done</span>` : ""}
         </div>
         <p class="now-cue">${cue}</p>
-        ${t.steps.length ? `
+        ${
+          t.steps.length
+            ? `
           <ul class="steps" style="margin-top:12px; margin-bottom:8px; text-align:left; color:white; list-style:none; padding-left:0;">
-            ${t.steps.map(s => `
+            ${t.steps
+              .map(
+                (s) => `
               <li style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
                 <input class="check" type="checkbox" data-check="step" data-id="${t.id}" data-sid="${s.id}" ${s.done ? "checked" : ""} aria-label="${esc(s.text)}" style="accent-color:var(--teal-bright);">
                 <span class="steptext ${s.done ? "done" : ""}" style="color:white; ${s.done ? "opacity:0.6; text-decoration:line-through;" : ""}">${esc(s.text)}</span>
               </li>
-            `).join("")}
+            `,
+              )
+              .join("")}
           </ul>
-        ` : ""}
+        `
+            : ""
+        }
       </div>
       <div class="now-actions">
         <button class="btn go big" data-act="focus-start" data-id="${t.id}">▶ Start this now</button>
@@ -2380,12 +2674,12 @@
     const openCount = list.filter((t) => !t.done).length;
     const rows = list.length
       ? `<ul class="steps">${list
-          .map(
-            (t) => {
-              const timeInput = t.done ? "" : `<input type="time" class="todo-time-picker" data-id="${t.id}" value="${t.time || ""}" aria-label="Set reminder time" style="font-size:0.75rem; border:none; background:transparent; padding:0; width:75px; color:var(--accent); cursor:pointer; margin-left:auto; margin-right:8px; align-self:center;">`;
-              return `<li><input class="check" type="checkbox" data-check="todo" data-id="${t.id}" ${t.done ? "checked" : ""} aria-label="${esc(t.text)}"><span class="steptext ${t.done ? "done" : ""}">${esc(t.text)}</span>${timeInput}<button class="btn danger sm" data-act="del-todo" data-id="${t.id}" aria-label="Delete to-do: ${esc(t.text)}">✕</button></li>`;
-            }
-          )
+          .map((t) => {
+            const timeInput = t.done
+              ? ""
+              : `<input type="time" class="todo-time-picker" data-id="${t.id}" value="${t.time || ""}" aria-label="Set reminder time" style="font-size:0.75rem; border:none; background:transparent; padding:0; width:75px; color:var(--accent); cursor:pointer; margin-left:auto; margin-right:8px; align-self:center;">`;
+            return `<li><input class="check" type="checkbox" data-check="todo" data-id="${t.id}" ${t.done ? "checked" : ""} aria-label="${esc(t.text)}"><span class="steptext ${t.done ? "done" : ""}">${esc(t.text)}</span>${timeInput}<button class="btn danger sm" data-act="del-todo" data-id="${t.id}" aria-label="Delete to-do: ${esc(t.text)}">✕</button></li>`;
+          })
           .join("")}</ul>`
       : emptyState("📝", "No to-dos yet. Add a quick one below.");
     return card(
@@ -2532,15 +2826,19 @@
 
     if (filters.query && filters.query.trim()) {
       const q = filters.query.toLowerCase().trim();
-      open = open.filter(a => a.title.toLowerCase().includes(q) || (a.notes && a.notes.toLowerCase().includes(q)));
+      open = open.filter(
+        (a) =>
+          a.title.toLowerCase().includes(q) ||
+          (a.notes && a.notes.toLowerCase().includes(q)),
+      );
     }
 
     if (filters.classId && filters.classId !== "all") {
-      open = open.filter(a => a.classId === filters.classId);
+      open = open.filter((a) => a.classId === filters.classId);
     }
 
     if (filters.priority && filters.priority !== "all") {
-      open = open.filter(a => a.priority === filters.priority);
+      open = open.filter((a) => a.priority === filters.priority);
     }
 
     if (filters.sortBy === "urgency") {
@@ -2549,31 +2847,47 @@
       open.sort((a, b) => {
         if (!a.due) return 1;
         if (!b.due) return -1;
-        return a.due.localeCompare(b.due) || (a.dueTime || "99:99").localeCompare(b.dueTime || "99:99");
+        return (
+          a.due.localeCompare(b.due) ||
+          (a.dueTime || "99:99").localeCompare(b.dueTime || "99:99")
+        );
       });
     } else if (filters.sortBy === "title") {
       open.sort((a, b) => a.title.localeCompare(b.title));
     } else if (filters.sortBy === "priority") {
       const weight = { high: 3, med: 2, low: 1 };
-      open.sort((a, b) => (weight[b.priority] || 0) - (weight[a.priority] || 0) || urgency(b) - urgency(a));
+      open.sort(
+        (a, b) =>
+          (weight[b.priority] || 0) - (weight[a.priority] || 0) ||
+          urgency(b) - urgency(a),
+      );
     }
 
     let listContent = "";
     if (open.length === 0) {
-      listContent = emptyState("🔍", "No matching tasks found. Adjust your filters!");
+      listContent = emptyState(
+        "🔍",
+        "No matching tasks found. Adjust your filters!",
+      );
     } else if (filters.sortBy === "title" || filters.sortBy === "priority") {
-      listContent = open.map(a => taskItem(a)).join("");
+      listContent = open.map((a) => taskItem(a)).join("");
     } else {
       const buckets = [
         ["🔴 Overdue", open.filter((a) => daysUntil(a.due) < 0)],
         ["🟠 Today", open.filter((a) => daysUntil(a.due) === 0)],
-        ["🟡 This week", open.filter((a) => daysUntil(a.due) > 0 && daysUntil(a.due) <= 7)],
+        [
+          "🟡 This week",
+          open.filter((a) => daysUntil(a.due) > 0 && daysUntil(a.due) <= 7),
+        ],
         ["🟢 Later", open.filter((a) => daysUntil(a.due) > 7)],
         ["🗓 No date", open.filter((a) => a.due === "")],
       ];
       listContent = buckets
         .filter(([, list]) => list.length)
-        .map(([label, list]) => `<div class="section-title">${label} (${list.length})</div>${list.map(a => taskItem(a)).join("")}`)
+        .map(
+          ([label, list]) =>
+            `<div class="section-title">${label} (${list.length})</div>${list.map((a) => taskItem(a)).join("")}`,
+        )
         .join("");
     }
 
@@ -2599,7 +2913,7 @@
       query: qInp ? qInp.value : "",
       classId: classF ? classF.value : "all",
       priority: priF ? priF.value : "all",
-      sortBy: sortS ? sortS.value : "urgency"
+      sortBy: sortS ? sortS.value : "urgency",
     };
 
     const container = document.getElementById("tasksListContainer");
@@ -2741,14 +3055,19 @@
     },
 
     tasks() {
-      const filters = window._taskFilters = window._taskFilters || {
+      const filters = (window._taskFilters = window._taskFilters || {
         query: "",
         classId: "all",
         priority: "all",
-        sortBy: "urgency"
-      };
+        sortBy: "urgency",
+      });
 
-      const classOpts = state.classes.map(c => `<option value="${c.id}" ${filters.classId === c.id ? "selected" : ""}>${c.emoji || "📚"} ${esc(c.name)}</option>`).join("");
+      const classOpts = state.classes
+        .map(
+          (c) =>
+            `<option value="${c.id}" ${filters.classId === c.id ? "selected" : ""}>${c.emoji || "📚"} ${esc(c.name)}</option>`,
+        )
+        .join("");
 
       const filterBar = `
         <div class="tasks-filter-bar" id="tasksFilterBar">
@@ -2867,6 +3186,18 @@
             ic: "🏆",
             title: "My wins",
             sub: "See how far you've come",
+          },
+          {
+            act: "view-rewards",
+            ic: "💰",
+            title: "Allowance",
+            sub: "Money you've earned",
+          },
+          {
+            act: "view-insights",
+            ic: "📊",
+            title: "Insights",
+            sub: "Your focus & on-time trends",
           },
           {
             act: "view-settings",
@@ -3033,7 +3364,7 @@ Due May 31"></textarea>
           <div class="field"><label>Color theme</label><div class="seg">${themeBtn("light", "☀️ Light")}${themeBtn("dark", "🌙 Dark")}${themeBtn("contrast", "⬛ High contrast")}</div></div>
           <div class="field"><label>Gradient Background Preset</label>
             <div class="theme-gradient-grid">
-              ${GRADIENTS.map(g => {
+              ${GRADIENTS.map((g) => {
                 const req = getGradientLevelRequired(g[0]);
                 const isLocked = lvl < req;
                 return `
@@ -3095,7 +3426,9 @@ Due May 31"></textarea>
           "📅 Google Calendar & School Mail",
           "Show your Google events and emails in the app.",
           `
-          ${gcal.clientId() ? `
+          ${
+            gcal.clientId()
+              ? `
             <div style="margin: 8px 0 16px;">
               <p class="sub" style="margin-top: 0;">Connected Calendar: ${gcal.connected ? `<span class="pill green">● Connected</span>` : `<span class="pill">Not connected</span>`}</p>
               <p class="sub" style="margin-top: 0;">Connected School Mail: ${gmail.connected ? `<span class="pill green">● Connected</span>` : `<span class="pill">Not connected</span>`}</p>
@@ -3108,9 +3441,11 @@ Due May 31"></textarea>
                 ${gmail.connected ? `<button class="btn sm" data-act="view-mail">✉️ Open School Mail</button><button class="btn sm danger" data-act="gmail-disconnect">Disconnect Mail</button>` : ""}
               </div>
             </div>
-          ` : `
+          `
+              : `
             <p class="sub" style="color: var(--red-bright); margin-top:0;">Google integration requires a Client ID from the site administrator, or you can enter your own below.</p>
-          `}
+          `
+          }
           <details style="margin-top: 15px; border-top: 1px solid var(--line); padding-top: 10px;">
             <summary style="font-size: 0.8rem; cursor: pointer; color: var(--muted); font-weight: bold; outline: none; user-select: none;">🛠️ Advanced Google Settings</summary>
             <div class="field" style="margin-top: 8px;">
@@ -3190,21 +3525,33 @@ Due May 31"></textarea>
             <button class="btn navy" data-act="sync-now">🔄 Sync now</button>
             <button class="btn danger" data-act="toggle-sync">Turn off sync</button>
           </div>
-          ${(state.syncDevices || []).length ? `
+          ${
+            (state.syncDevices || []).length
+              ? `
             <div class="sync-devices-box" style="margin-top: 15px; padding: 12px; background: rgba(255,255,255,0.03); border: 1.5px dashed var(--line); border-radius: 12px; text-align: left;">
               <span style="font-size: 0.85rem; font-weight: 800; color: var(--ink); display: block; margin-bottom: 8px;">💻 Synced Devices</span>
               <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.8rem; line-height: 1.6;">
-                ${state.syncDevices.map(d => {
-                  const isMe = d.id === (deviceId || localStorage.getItem("focus-school:device-id") || "unknown");
-                  const activeStr = isMe ? "<span class='pill green' style='font-size:0.65rem; padding: 1px 4px; font-weight: bold;'>This device</span>" : `active ${timeAgo(d.lastActive)}`;
-                  return `<li style="display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.02);">
+                ${state.syncDevices
+                  .map((d) => {
+                    const isMe =
+                      d.id ===
+                      (deviceId ||
+                        localStorage.getItem("focus-school:device-id") ||
+                        "unknown");
+                    const activeStr = isMe
+                      ? "<span class='pill green' style='font-size:0.65rem; padding: 1px 4px; font-weight: bold;'>This device</span>"
+                      : `active ${timeAgo(d.lastActive)}`;
+                    return `<li style="display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.02);">
                     <span>📱 <b>${esc(d.name)}</b></span>
                     <span class="muted" style="font-size:0.75rem;">${activeStr}</span>
                   </li>`;
-                }).join("")}
+                  })
+                  .join("")}
               </ul>
             </div>
-          ` : ""}
+          `
+              : ""
+          }
           <div class="pairing-6digit-box" style="margin-top: 15px; padding: 12px; background: rgba(255,255,255,0.03); border: 1.5px dashed var(--line); border-radius: 12px; text-align: center;">
             <span style="font-size: 0.85rem; font-weight: 800; color: var(--ink); display: block; margin-bottom: 6px;">🔗 Get 6-Digit Code (Chromebook / Other Computer)</span>
             <button class="btn sm" data-act="generate-pair-code" id="btnGenPairCode" style="margin: 4px auto;">⚡ Generate 6-Digit Code</button>
@@ -3259,13 +3606,13 @@ Due May 31"></textarea>
               <div class="diag-stat" id="diagSwCard"><b>Service Worker</b><span id="diagSwStatus">Untested</span></div>
             </div>
             <div class="diag-console" id="diagLogs">
-              ${logger.logs.map(line => `<div class="log-line ${line.level}">[${line.time}] [${line.level.toUpperCase()}] ${esc(line.msg)}</div>`).join("")}
+              ${logger.logs.map((line) => `<div class="log-line ${line.level}">[${line.time}] [${line.level.toUpperCase()}] ${esc(line.msg)}</div>`).join("")}
             </div>
             <div class="row">
               <button class="btn primary" data-act="run-self-test">🚀 Run Diagnostics</button>
             </div>
           </div>
-          `
+          `,
         ) +
         `<div class="note">Your data is stored privately on this device. It only leaves when <b>you</b> download a backup or turn on cloud sync.</div>`
       );
@@ -3293,6 +3640,167 @@ Due May 31"></textarea>
           "Your data & privacy",
           "",
           `<p class="sub">Everything stays on your device unless you download a backup or turn on cloud sync. No accounts, no tracking.</p>`,
+        )
+      );
+    },
+
+    insights() {
+      // Last 7 days of focus minutes, as a simple bar chart.
+      const days = [];
+      for (let i = -6; i <= 0; i++) {
+        const k = isoForOffset(i);
+        const a = state.activity[k] || {};
+        const d = parseLocal(k);
+        days.push({
+          k,
+          label: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"][d.getDay()],
+          focusMin: a.focusMin || 0,
+          tasks: a.tasks || 0,
+          routines: a.routines || 0,
+        });
+      }
+      const maxFocus = Math.max(1, ...days.map((d) => d.focusMin));
+      const sum = (f) => days.reduce((s, d) => s + d[f], 0);
+      const allFocus = Object.values(state.activity).reduce(
+        (s, a) => s + (a.focusMin || 0),
+        0,
+      );
+      // On-time completion rate across all finished assignments.
+      const done = state.assignments.filter((a) => a.status === "done");
+      const onTime = done.filter(
+        (a) => !a.due || (a.completedAt && a.completedAt.slice(0, 10) <= a.due),
+      ).length;
+      const onTimePct = done.length
+        ? Math.round((onTime / done.length) * 100)
+        : null;
+      // Best day of week by focus minutes (all history).
+      const byDow = [0, 0, 0, 0, 0, 0, 0];
+      for (const [k, a] of Object.entries(state.activity)) {
+        const d = parseLocal(k);
+        if (d) byDow[d.getDay()] += a.focusMin || 0;
+      }
+      const bestDow = byDow.some((m) => m > 0)
+        ? [
+            "Sunday",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+          ][byDow.indexOf(Math.max(...byDow))]
+        : "—";
+      const stat = (big, small) =>
+        `<div class="statbox"><b>${big}</b><small>${small}</small></div>`;
+      const bars = days
+        .map(
+          (d) =>
+            `<div class="ins-bar-col"><div class="ins-bar-track"><div class="ins-bar-fill" style="height:${Math.round(
+              (d.focusMin / maxFocus) * 100,
+            )}%" title="${d.focusMin} min"></div></div><span class="ins-bar-lbl">${d.label}</span></div>`,
+        )
+        .join("");
+      return (
+        backHeader("Insights", "more") +
+        card(
+          "ins-week",
+          "This week",
+          "Your last 7 days at a glance.",
+          `<div class="statgrid">
+            ${stat(`${sum("focusMin")}m`, "Focus time")}
+            ${stat(sum("tasks"), "Tasks done")}
+            ${stat(sum("routines"), "Routines")}
+            ${stat(`${streak()}🔥`, "Day streak")}
+          </div>
+          <div class="ins-chart" role="img" aria-label="Focus minutes per day for the last 7 days">${bars}</div>
+          <p class="sub" style="text-align:center;margin:6px 0 0">Focus minutes per day</p>`,
+        ) +
+        card(
+          "ins-all",
+          "All time",
+          "The long view.",
+          `<div class="statgrid">
+            ${stat(`${allFocus}m`, "Total focus")}
+            ${stat(done.length, "Finished")}
+            ${stat(onTimePct === null ? "—" : `${onTimePct}%`, "On time")}
+            ${stat(bestDow, "Best day")}
+          </div>
+          ${
+            onTimePct !== null
+              ? `<p class="sub" style="margin-top:8px">You turn in <b>${onTimePct}%</b> of your work on time. ${
+                  onTimePct >= 80
+                    ? "That's excellent — keep it up! 🌟"
+                    : "Knocking out work a little earlier bumps this up fast."
+                }</p>`
+              : `<p class="sub" style="margin-top:8px">Finish a few assignments and your on-time rate shows up here.</p>`
+          }`,
+        )
+      );
+    },
+
+    rewards() {
+      const r = state.rewards;
+      const todayEarned = rewardsEarnedToday();
+      const rateRow = (k, label) =>
+        `<div class="rw-rate"><span>${label}</span><b>${money(r.rates[k])}</b></div>`;
+      const ledger = r.ledger.slice(0, 20);
+      const ledgerHtml = ledger.length
+        ? ledger
+            .map((e) => {
+              const when = e.ts ? niceDate(e.ts.slice(0, 10)) : "";
+              const sign = e.type === "cashout" ? "−" : "+";
+              const cls = e.type === "cashout" ? "rw-out" : "rw-in";
+              const icon = e.type === "cashout" ? "💵" : "💰";
+              return `<div class="rw-row"><span class="rw-ic" aria-hidden="true">${icon}</span><span class="rw-lbl">${esc(
+                e.label || (e.type === "cashout" ? "Cashed out" : e.kind),
+              )}<small>${esc(when)}</small></span><b class="${cls}">${sign}${money(
+                e.amount,
+              )}</b></div>`;
+            })
+            .join("")
+        : emptyState(
+            "🐷",
+            "No money earned yet — finish some work to start your balance.",
+          );
+      return (
+        backHeader("Allowance", "more") +
+        card(
+          "rw-balance",
+          "Money bank",
+          r.enabled
+            ? "Earn money by finishing your work."
+            : "Rewards are turned off.",
+          `<div class="rw-bank">
+            <div class="rw-big">${money(r.balance)}</div>
+            <div class="rw-sub">available to cash out</div>
+          </div>
+          <div class="statgrid">
+            <div class="statbox"><b>${money(todayEarned)}</b><small>Earned today</small></div>
+            <div class="statbox"><b>${money(r.paidOut)}</b><small>Paid out</small></div>
+          </div>
+          <button class="btn primary block" data-act="reward-cashout" ${
+            r.balance <= 0 ? "disabled" : ""
+          } style="margin-top:12px">💵 Cash out (parent)</button>`,
+        ) +
+        card(
+          "rw-rates",
+          "What things are worth",
+          r.dailyCap > 0
+            ? `Up to ${money(r.dailyCap)} can be earned per day.`
+            : "",
+          `<div class="rw-rates">
+            ${rateRow("task", "✅ Finish an assignment / to-do")}
+            ${rateRow("reminder", "🔔 Handle a reminder")}
+            ${rateRow("routine", "🔁 Complete a routine")}
+            ${rateRow("focus", "▶ Finish a focus session")}
+          </div>
+          <button class="btn block" data-act="reward-settings" style="margin-top:10px">⚙️ Parent settings</button>`,
+        ) +
+        card(
+          "rw-history",
+          "Recent activity",
+          "",
+          `<div class="rw-list">${ledgerHtml}</div>`,
         )
       );
     },
@@ -3355,23 +3863,27 @@ Due May 31"></textarea>
   function renderPlantSvg(type, stage) {
     // 0: Sprout, 1: Seedling, 2: Leafy, 3: Blooming, 4: Golden
     let plantContent = "";
-    
+
     const isGolden = stage === 4;
-    const mainColor = isGolden ? "#F1C40F" : (type === "bonsai" ? "#8B5A2B" : "#2ECC71");
+    const mainColor = isGolden
+      ? "#F1C40F"
+      : type === "bonsai"
+        ? "#8B5A2B"
+        : "#2ECC71";
     const leafColor = isGolden ? "#F39C12" : "#27AE60";
     const accentColor = isGolden ? "#F1C40F" : "#E74C3C";
-    
+
     // Pot
     const potColor = isGolden ? "#D35400" : "#E07A5F";
     const rimColor = isGolden ? "#E67E22" : "#d4722f";
     const soilColor = isGolden ? "#935116" : "#6E473B";
-    
+
     let potSvg = `
       <path d="M 50,120 L 90,120 L 86,145 L 54,145 Z" fill="${potColor}" />
       <ellipse cx="70" cy="120" rx="18" ry="4" fill="${soilColor}" />
       <rect x="48" y="116" width="44" height="5" rx="2" fill="${rimColor}" />
     `;
-    
+
     if (stage === 0) {
       // Sprout (same for all)
       plantContent = `
@@ -3556,7 +4068,7 @@ Due May 31"></textarea>
         `;
       }
     }
-    
+
     return `
       <svg width="110" height="130" viewBox="0 0 140 160" style="background:transparent; overflow:visible;">
         <defs>
@@ -3572,36 +4084,52 @@ Due May 31"></textarea>
   }
 
   function gardenCard() {
-    const g = state.garden || { xp: 0, waterReservoir: 0, wateredCount: 0, plantStage: 0, plantType: "cactus" };
-    const STAGE_NAMES = ["Sprout 🌱", "Seedling 🌿", "Leafy 🍃", "Blooming 🌸", "Golden ✨"];
+    const g = state.garden || {
+      xp: 0,
+      waterReservoir: 0,
+      wateredCount: 0,
+      plantStage: 0,
+      plantType: "cactus",
+    };
+    const STAGE_NAMES = [
+      "Sprout 🌱",
+      "Seedling 🌿",
+      "Leafy 🍃",
+      "Blooming 🌸",
+      "Golden ✨",
+    ];
     const stageName = STAGE_NAMES[g.plantStage] || "Sprout 🌱";
-    
+
     const STAGE_REQUIREMENTS = [3, 8, 15, 25];
     const currentReq = STAGE_REQUIREMENTS[g.plantStage] || 9999;
     const prevReq = g.plantStage > 0 ? STAGE_REQUIREMENTS[g.plantStage - 1] : 0;
-    
+
     let progressPct = 100;
     let waterText = "Max growth achieved!";
     if (g.plantStage < 4) {
       const neededForNext = currentReq - prevReq;
       const progressInStage = g.wateredCount - prevReq;
-      progressPct = clamp(Math.round((progressInStage / neededForNext) * 100), 0, 100);
+      progressPct = clamp(
+        Math.round((progressInStage / neededForNext) * 100),
+        0,
+        100,
+      );
       waterText = `${g.wateredCount} / ${currentReq} waterings for next stage`;
     }
-    
+
     const svgHtml = renderPlantSvg(g.plantType, g.plantStage);
     const types = [
       ["cactus", "🌵 Cactus"],
       ["flower", "🌸 Flower"],
-      ["bonsai", "🌳 Bonsai"]
+      ["bonsai", "🌳 Bonsai"],
     ];
-    
+
     const selectHtml = `
       <select class="plant-type-select" data-act="change-plant-type" aria-label="Choose plant type" style="font-size:0.75rem; padding:2px 6px; border-radius:6px; border:1px solid var(--border); background:var(--bg-1); color:var(--ink);">
         ${types.map(([val, name]) => `<option value="${val}" ${g.plantType === val ? "selected" : ""}>${name}</option>`).join("")}
       </select>
     `;
-    
+
     return card(
       "garden",
       `<div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
@@ -3629,7 +4157,7 @@ Due May 31"></textarea>
           <p class="muted" style="margin:8px 0 0; font-size:0.7rem; line-height:1.2;">Earn water by completing tasks & focus sessions! (1 💧 per 10 XP)</p>
         </div>
       </div>
-      `
+      `,
     );
   }
 
@@ -3654,38 +4182,42 @@ Due May 31"></textarea>
       focusMin: 0,
       routines: 0,
     };
-    
+
     // Generate weekly activity SVG chart
     const activityData = last7DaysActivity();
-    const maxFocus = Math.max(...activityData.map(d => d.focusMin), 15);
-    const maxTasks = Math.max(...activityData.map(d => d.tasks), 3);
-    
+    const maxFocus = Math.max(...activityData.map((d) => d.focusMin), 15);
+    const maxTasks = Math.max(...activityData.map((d) => d.tasks), 3);
+
     let barsSvg = "";
     const step = 290 / 7;
     activityData.forEach((d, i) => {
       const cx = 15 + i * step + step / 2;
-      
+
       // Focus bar height (max 65px)
       const fHeight = (d.focusMin / maxFocus) * 65;
       const fY = 85 - fHeight;
-      const fBar = d.focusMin > 0 
-        ? `<rect x="${cx - 8}" y="${fY}" width="6" height="${fHeight}" rx="3" fill="url(#focusGrad)" />` 
-        : `<circle cx="${cx - 5}" cy="83" r="1.5" fill="var(--muted)" opacity="0.3" />`;
-        
+      const fBar =
+        d.focusMin > 0
+          ? `<rect x="${cx - 8}" y="${fY}" width="6" height="${fHeight}" rx="3" fill="url(#focusGrad)" />`
+          : `<circle cx="${cx - 5}" cy="83" r="1.5" fill="var(--muted)" opacity="0.3" />`;
+
       // Tasks bar height (max 65px)
       const tHeight = (d.tasks / maxTasks) * 65;
       const tY = 85 - tHeight;
-      const tBar = d.tasks > 0 
-        ? `<rect x="${cx + 2}" y="${tY}" width="6" height="${tHeight}" rx="3" fill="url(#tasksGrad)" />` 
-        : `<circle cx="${cx + 5}" cy="83" r="1.5" fill="var(--muted)" opacity="0.3" />`;
-        
+      const tBar =
+        d.tasks > 0
+          ? `<rect x="${cx + 2}" y="${tY}" width="6" height="${tHeight}" rx="3" fill="url(#tasksGrad)" />`
+          : `<circle cx="${cx + 5}" cy="83" r="1.5" fill="var(--muted)" opacity="0.3" />`;
+
       let dayName = "Day";
       try {
-        dayName = parseLocal(d.dateKey).toLocaleDateString(undefined, { weekday: "narrow" });
+        dayName = parseLocal(d.dateKey).toLocaleDateString(undefined, {
+          weekday: "narrow",
+        });
       } catch (e) {
         dayName = d.dateKey.slice(-2);
       }
-      
+
       barsSvg += `
         ${fBar}
         ${tBar}
@@ -3730,7 +4262,7 @@ Due May 31"></textarea>
       </div>
       ${chartSvg}
       ${lastWin ? `<p class="muted" style="margin:6px 0 0">Last win: <b>${esc(lastWin.text)}</b></p>` : ""}
-      `
+      `,
     );
   }
 
@@ -3812,7 +4344,10 @@ Due May 31"></textarea>
       <p class="sub">Write it down before you forget. You can add details later.</p>
       <div class="field"><label>What is it?</label><input id="qaTitle" placeholder="Math worksheet p. 42" autocomplete="off"></div>
       <div class="field"><label>Which class?</label><select id="qaClass">${state.classes
-        .map((c) => `<option value="${c.id}">${c.emoji || "📚"} ${esc(c.name)}</option>`)
+        .map(
+          (c) =>
+            `<option value="${c.id}">${c.emoji || "📚"} ${esc(c.name)}</option>`,
+        )
         .join("")}</select></div>
       <div class="field"><label>When is it due?</label>
         <div class="seg" id="qaDueSeg">${pick(isoForOffset(0), "Today")}${pick(isoForOffset(1), "Tomorrow")}${pick("custom", "Pick a date")}${pick("", "Not sure")}</div>
@@ -3843,6 +4378,7 @@ Due May 31"></textarea>
   function breakdownForm(a) {
     return `
       <p class="sub">Break "<b>${esc(a.title)}</b>" into small steps. Start with a template, then tweak.</p>
+      <button class="btn primary block" data-act="ai-breakdown" data-id="${a.id}" id="aiBreakBtn" style="margin-bottom:10px">✨ Break it down for me</button>
       <div class="field"><label>Quick templates</label><div class="seg">${Object.keys(
         STEP_TEMPLATES,
       )
@@ -3907,7 +4443,9 @@ Due May 31"></textarea>
   function routineForm(r) {
     r = r || { items: [] };
     return `
-      ${!r.id ? `
+      ${
+        !r.id
+          ? `
         <div style="margin-bottom: 16px;">
           <label style="font-size:.74rem;font-weight:900;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:8px;">🚀 Quick Middle School Templates</label>
           <div style="display:flex;flex-wrap:wrap;gap:6px;">
@@ -3917,7 +4455,9 @@ Due May 31"></textarea>
             <button type="button" class="btn sm" data-act="apply-routine-template" data-template="evening" style="font-size:0.8rem;padding:6px 10px;">🌙 Bedtime Prep</button>
           </div>
         </div>
-      ` : ""}
+      `
+          : ""
+      }
       <div class="g2 grid">
         <div class="field"><label>Routine name</label><input id="rName" value="${esc(r.name || "")}" placeholder="Morning Launch"></div>
         <div class="field"><label>Emoji</label><input id="rEmoji" value="${esc(r.emoji || "🔁")}" maxlength="4"></div>
@@ -3943,10 +4483,10 @@ Due May 31"></textarea>
         "Put any trash/recycling in the bin",
         "Put my lunchbox in the kitchen",
         "Plug in my school Chromebook/laptop",
-        "Open Focus School to check what is due"
-      ]
+        "Open Focus School to check what is due",
+      ],
     },
-    "morning": {
+    morning: {
       name: "Morning Launchpad",
       emoji: "🧠",
       steps: [
@@ -3954,8 +4494,8 @@ Due May 31"></textarea>
         "Double-check Chromebook is in my bag",
         "Pack binders, books, and homework folder",
         "Grab water bottle and house keys",
-        "Put on shoes and backpack"
-      ]
+        "Put on shoes and backpack",
+      ],
     },
     "study-prep": {
       name: "Study Space Prep",
@@ -3965,10 +4505,10 @@ Due May 31"></textarea>
         "Close all browser tabs (except schoolwork)",
         "Get a glass of water",
         "Put my phone in another room or on silent",
-        "Start a 25-minute study timer"
-      ]
+        "Start a 25-minute study timer",
+      ],
     },
-    "evening": {
+    evening: {
       name: "Bedtime Prep",
       emoji: "🌙",
       steps: [
@@ -3976,31 +4516,75 @@ Due May 31"></textarea>
         "Plug in Chromebook so it charges overnight",
         "Lay out my clothes for tomorrow",
         "Set my alarm clock",
-        "Put phone away from my bed"
-      ]
-    }
+        "Put phone away from my bed",
+      ],
+    },
   };
 
   const BRAIN_BREAKS = {
     stretch: [
-      { icon: "🧘", title: "Desk Stretch", desc: "Reach your arms up to the sky, hold for 10 seconds, then roll your shoulders backward 5 times." },
-      { icon: "🦒", title: "Neck Release", desc: "Gently tilt your head toward your left shoulder. Hold for 10 seconds. Switch to the right. Roll your neck in a slow circle." },
-      { icon: "🦖", title: "Spine Twister", desc: "Sit up straight, twist your torso to the right and hold your chair back for 5 seconds. Repeat on the left." }
+      {
+        icon: "🧘",
+        title: "Desk Stretch",
+        desc: "Reach your arms up to the sky, hold for 10 seconds, then roll your shoulders backward 5 times.",
+      },
+      {
+        icon: "🦒",
+        title: "Neck Release",
+        desc: "Gently tilt your head toward your left shoulder. Hold for 10 seconds. Switch to the right. Roll your neck in a slow circle.",
+      },
+      {
+        icon: "🦖",
+        title: "Spine Twister",
+        desc: "Sit up straight, twist your torso to the right and hold your chair back for 5 seconds. Repeat on the left.",
+      },
     ],
     active: [
-      { icon: "🏃", title: "Energy Recharge", desc: "Do 10 jumping jacks, or try to balance on one leg for 30 seconds. Get that blood pumping!" },
-      { icon: "🤸", title: "Squat Challenge", desc: "Stand up and do 10 slow, controlled squats. Feel the energy return to your legs!" },
-      { icon: "🕺", title: "Quick Shakeout", desc: "Stand up and shake out your arms, legs, and hands for 20 seconds. Release all the sitting tension!" }
+      {
+        icon: "🏃",
+        title: "Energy Recharge",
+        desc: "Do 10 jumping jacks, or try to balance on one leg for 30 seconds. Get that blood pumping!",
+      },
+      {
+        icon: "🤸",
+        title: "Squat Challenge",
+        desc: "Stand up and do 10 slow, controlled squats. Feel the energy return to your legs!",
+      },
+      {
+        icon: "🕺",
+        title: "Quick Shakeout",
+        desc: "Stand up and shake out your arms, legs, and hands for 20 seconds. Release all the sitting tension!",
+      },
     ],
     relax: [
-      { icon: "👀", title: "The 20-20-20 Rule", desc: "Look at something at least 20 feet away for 20 seconds. Blink slowly 5 times to let your eye muscles relax." },
-      { icon: "🌬️", title: "Box Breathing", desc: "Inhale for 4 seconds, hold your breath for 4 seconds, exhale for 4 seconds, and hold empty for 4 seconds. Repeat 3 times." },
-      { icon: "🧘‍♀️", title: "Mind Clearing", desc: "Close your eyes. Listen to the room around you. Name 3 quiet sounds you hear to anchor your attention." }
+      {
+        icon: "👀",
+        title: "The 20-20-20 Rule",
+        desc: "Look at something at least 20 feet away for 20 seconds. Blink slowly 5 times to let your eye muscles relax.",
+      },
+      {
+        icon: "🌬️",
+        title: "Box Breathing",
+        desc: "Inhale for 4 seconds, hold your breath for 4 seconds, exhale for 4 seconds, and hold empty for 4 seconds. Repeat 3 times.",
+      },
+      {
+        icon: "🧘‍♀️",
+        title: "Mind Clearing",
+        desc: "Close your eyes. Listen to the room around you. Name 3 quiet sounds you hear to anchor your attention.",
+      },
     ],
     hydration: [
-      { icon: "💧", title: "Water Run", desc: "Go walk to the kitchen or water fountain, fill up your bottle, and drink 5 big gulps of cool water." },
-      { icon: "🥤", title: "Power Sip", desc: "Locate your water bottle. Take 3 slow, deep gulps to rehydrate your brain cells." }
-    ]
+      {
+        icon: "💧",
+        title: "Water Run",
+        desc: "Go walk to the kitchen or water fountain, fill up your bottle, and drink 5 big gulps of cool water.",
+      },
+      {
+        icon: "🥤",
+        title: "Power Sip",
+        desc: "Locate your water bottle. Take 3 slow, deep gulps to rehydrate your brain cells.",
+      },
+    ],
   };
 
   let currentBrainBreak = null;
@@ -4014,7 +4598,13 @@ Due May 31"></textarea>
       list = BRAIN_BREAKS[category] || [];
     }
     const idx = Math.floor(Math.random() * list.length);
-    return list[idx] || { icon: "💧", title: "Water Run", desc: "Go get a glass of water!" };
+    return (
+      list[idx] || {
+        icon: "💧",
+        title: "Water Run",
+        desc: "Go get a glass of water!",
+      }
+    );
   }
 
   function renderBrainBreakCardHTML(brk) {
@@ -4056,8 +4646,10 @@ Due May 31"></textarea>
       this.renderSteps();
       updateVisualizer();
       const defMin = state.settings.defaultFocusMin;
-      const presetBtns = document.querySelectorAll("#fPresetsControls button[data-act='set-focus-preset']");
-      presetBtns.forEach(btn => {
+      const presetBtns = document.querySelectorAll(
+        "#fPresetsControls button[data-act='set-focus-preset']",
+      );
+      presetBtns.forEach((btn) => {
         const isPressed = Number(btn.dataset.arg) === defMin;
         btn.setAttribute("aria-pressed", isPressed ? "true" : "false");
       });
@@ -4091,6 +4683,7 @@ Due May 31"></textarea>
       this.phaseAwarded = true;
       bumpActivity("focusMin", m);
       addPoints(m);
+      earnReward("focus", "Focus session");
       return m;
     },
     tick(first) {
@@ -4233,6 +4826,7 @@ Due May 31"></textarea>
         awarded.push(r.id);
         addPoints(5);
         bumpActivity("routines");
+        earnReward("routine", r.name || "Routine");
       }
       save();
       this.idx++;
@@ -4496,7 +5090,7 @@ Due May 31"></textarea>
     const now = new Date();
     const cur =
       now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-    
+
     // Schedule reminders
     dueRemindersForToday().forEach((r) => {
       if (!r.time || r.lastShown === todayKey()) return;
@@ -4577,16 +5171,19 @@ Due May 31"></textarea>
     };
 
     // 2. Merge assignments
-    const localMap = new Map(local.assignments.map(a => [a.id, a]));
-    const remoteMap = new Map(remote.assignments.map(a => [a.id, a]));
+    const localMap = new Map(local.assignments.map((a) => [a.id, a]));
+    const remoteMap = new Map(remote.assignments.map((a) => [a.id, a]));
     const allIds = new Set([...localMap.keys(), ...remoteMap.keys()]);
     const mergedAssignments = [];
     for (const id of allIds) {
       const loc = localMap.get(id);
       const rem = remoteMap.get(id);
-      const chosen = (loc && rem)
-        ? ((loc.updatedAt || 0) >= (rem.updatedAt || 0) ? loc : rem)
-        : (loc || rem);
+      const chosen =
+        loc && rem
+          ? (loc.updatedAt || 0) >= (rem.updatedAt || 0)
+            ? loc
+            : rem
+          : loc || rem;
       if (!isDeleted(id, chosen.updatedAt)) {
         mergedAssignments.push(chosen);
       }
@@ -4594,16 +5191,24 @@ Due May 31"></textarea>
     merged.assignments = mergedAssignments;
 
     // 3. Merge classes
-    const localClassesMap = new Map(local.classes.map(c => [c.id, c]));
-    const remoteClassesMap = new Map((remote.classes || []).map(c => [c.id, c]));
-    const allClassIds = new Set([...localClassesMap.keys(), ...remoteClassesMap.keys()]);
+    const localClassesMap = new Map(local.classes.map((c) => [c.id, c]));
+    const remoteClassesMap = new Map(
+      (remote.classes || []).map((c) => [c.id, c]),
+    );
+    const allClassIds = new Set([
+      ...localClassesMap.keys(),
+      ...remoteClassesMap.keys(),
+    ]);
     const mergedClasses = [];
     for (const id of allClassIds) {
       const loc = localClassesMap.get(id);
       const rem = remoteClassesMap.get(id);
-      const chosen = (loc && rem)
-        ? ((loc.updatedAt || 0) >= (rem.updatedAt || 0) ? loc : rem)
-        : (loc || rem);
+      const chosen =
+        loc && rem
+          ? (loc.updatedAt || 0) >= (rem.updatedAt || 0)
+            ? loc
+            : rem
+          : loc || rem;
       if (!isDeleted(id, chosen.updatedAt)) {
         mergedClasses.push(chosen);
       }
@@ -4611,16 +5216,24 @@ Due May 31"></textarea>
     merged.classes = mergedClasses;
 
     // 4. Merge routines
-    const localRoutinesMap = new Map(local.routines.map(r => [r.id, r]));
-    const remoteRoutinesMap = new Map((remote.routines || []).map(r => [r.id, r]));
-    const allRoutineIds = new Set([...localRoutinesMap.keys(), ...remoteRoutinesMap.keys()]);
+    const localRoutinesMap = new Map(local.routines.map((r) => [r.id, r]));
+    const remoteRoutinesMap = new Map(
+      (remote.routines || []).map((r) => [r.id, r]),
+    );
+    const allRoutineIds = new Set([
+      ...localRoutinesMap.keys(),
+      ...remoteRoutinesMap.keys(),
+    ]);
     const mergedRoutines = [];
     for (const id of allRoutineIds) {
       const loc = localRoutinesMap.get(id);
       const rem = remoteRoutinesMap.get(id);
-      const chosen = (loc && rem)
-        ? ((loc.updatedAt || 0) >= (rem.updatedAt || 0) ? loc : rem)
-        : (loc || rem);
+      const chosen =
+        loc && rem
+          ? (loc.updatedAt || 0) >= (rem.updatedAt || 0)
+            ? loc
+            : rem
+          : loc || rem;
       if (!isDeleted(id, chosen.updatedAt)) {
         mergedRoutines.push(chosen);
       }
@@ -4628,16 +5241,26 @@ Due May 31"></textarea>
     merged.routines = mergedRoutines;
 
     // 5. Merge reminders
-    const localRemindersMap = new Map((local.reminders || []).map(r => [r.id, r]));
-    const remoteRemindersMap = new Map((remote.reminders || []).map(r => [r.id, r]));
-    const allReminderIds = new Set([...localRemindersMap.keys(), ...remoteRemindersMap.keys()]);
+    const localRemindersMap = new Map(
+      (local.reminders || []).map((r) => [r.id, r]),
+    );
+    const remoteRemindersMap = new Map(
+      (remote.reminders || []).map((r) => [r.id, r]),
+    );
+    const allReminderIds = new Set([
+      ...localRemindersMap.keys(),
+      ...remoteRemindersMap.keys(),
+    ]);
     const mergedReminders = [];
     for (const id of allReminderIds) {
       const loc = localRemindersMap.get(id);
       const rem = remoteRemindersMap.get(id);
-      const chosen = (loc && rem)
-        ? ((loc.updatedAt || 0) >= (rem.updatedAt || 0) ? loc : rem)
-        : (loc || rem);
+      const chosen =
+        loc && rem
+          ? (loc.updatedAt || 0) >= (rem.updatedAt || 0)
+            ? loc
+            : rem
+          : loc || rem;
       if (!isDeleted(id, chosen.updatedAt || chosen.createdAt)) {
         mergedReminders.push(chosen);
       }
@@ -4645,16 +5268,22 @@ Due May 31"></textarea>
     merged.reminders = mergedReminders;
 
     // 6. Merge todos
-    const localTodosMap = new Map((local.todos || []).map(t => [t.id, t]));
-    const remoteTodosMap = new Map((remote.todos || []).map(t => [t.id, t]));
-    const allTodoIds = new Set([...localTodosMap.keys(), ...remoteTodosMap.keys()]);
+    const localTodosMap = new Map((local.todos || []).map((t) => [t.id, t]));
+    const remoteTodosMap = new Map((remote.todos || []).map((t) => [t.id, t]));
+    const allTodoIds = new Set([
+      ...localTodosMap.keys(),
+      ...remoteTodosMap.keys(),
+    ]);
     const mergedTodos = [];
     for (const id of allTodoIds) {
       const loc = localTodosMap.get(id);
       const rem = remoteTodosMap.get(id);
-      const chosen = (loc && rem)
-        ? ((loc.updatedAt || 0) >= (rem.updatedAt || 0) ? loc : rem)
-        : (loc || rem);
+      const chosen =
+        loc && rem
+          ? (loc.updatedAt || 0) >= (rem.updatedAt || 0)
+            ? loc
+            : rem
+          : loc || rem;
       if (!isDeleted(id, chosen.updatedAt || chosen.createdAt)) {
         mergedTodos.push(chosen);
       }
@@ -4664,16 +5293,20 @@ Due May 31"></textarea>
     // 7. Merge activity
     merged.activity = { ...local.activity };
     for (const [date, remAct] of Object.entries(remote.activity || {})) {
-      const locAct = merged.activity[date] || { tasks: 0, focusMin: 0, routines: 0 };
+      const locAct = merged.activity[date] || {
+        tasks: 0,
+        focusMin: 0,
+        routines: 0,
+      };
       merged.activity[date] = {
         tasks: Math.max(locAct.tasks || 0, remAct.tasks || 0),
         focusMin: Math.max(locAct.focusMin || 0, remAct.focusMin || 0),
-        routines: Math.max(locAct.routines || 0, remAct.routines || 0)
+        routines: Math.max(locAct.routines || 0, remAct.routines || 0),
       };
     }
 
     // 8. Merge wins
-    const winsMap = new Map(local.wins.map(w => [w.text + w.date, w]));
+    const winsMap = new Map(local.wins.map((w) => [w.text + w.date, w]));
     for (const w of remote.wins || []) {
       winsMap.set(w.text + w.date, w);
     }
@@ -4683,7 +5316,10 @@ Due May 31"></textarea>
     merged.reflections = { ...local.reflections };
     for (const [date, remRef] of Object.entries(remote.reflections || {})) {
       const locRef = merged.reflections[date];
-      if (!locRef || new Date(remRef.timestamp || 0) > new Date(locRef.timestamp || 0)) {
+      if (
+        !locRef ||
+        new Date(remRef.timestamp || 0) > new Date(locRef.timestamp || 0)
+      ) {
         merged.reflections[date] = remRef;
       }
     }
@@ -4700,7 +5336,7 @@ Due May 31"></textarea>
     merged.settings.sync = { ...local.settings.sync };
 
     // 12. Merge synced devices registry by ID, keeping newer lastActive
-    const devMap = new Map((local.syncDevices || []).map(d => [d.id, d]));
+    const devMap = new Map((local.syncDevices || []).map((d) => [d.id, d]));
     for (const d of remote.syncDevices || []) {
       const loc = devMap.get(d.id);
       if (!loc || (d.lastActive || 0) > (loc.lastActive || 0)) {
@@ -4709,25 +5345,60 @@ Due May 31"></textarea>
     }
     merged.syncDevices = [...devMap.values()];
 
+    // 13. Merge rewards. The ledger is the source of truth: union entries by id
+    // (so an earning recorded on either device counts exactly once), then derive
+    // balance/paidOut from it. Config (rates/cap/pin/currency/enabled) follows
+    // whichever device was saved more recently, matching the settings rule.
+    {
+      const lr = local.rewards || {};
+      const rr = remote.rewards || {};
+      const byId = new Map((lr.ledger || []).map((e) => [e.id, e]));
+      for (const e of rr.ledger || []) if (!byId.has(e.id)) byId.set(e.id, e);
+      const ledger = [...byId.values()].sort((a, b) =>
+        String(b.ts).localeCompare(String(a.ts)),
+      );
+      const sumType = (t) =>
+        ledger.reduce(
+          (s, e) => (e.type === t ? s + (Number(e.amount) || 0) : s),
+          0,
+        );
+      const r2 = Math.round((sumType("earn") - sumType("cashout")) * 100) / 100;
+      const cfg = (remote.updatedAt || 0) > (local.updatedAt || 0) ? rr : lr;
+      merged.rewards = {
+        enabled: cfg.enabled !== false,
+        currency: cfg.currency || "$",
+        rates: { ...(lr.rates || {}), ...(cfg.rates || {}) },
+        dailyCap: Number(cfg.dailyCap) || 0,
+        pin: cfg.pin || "",
+        balance: Math.max(0, r2),
+        paidOut: Math.round(sumType("cashout") * 100) / 100,
+        ledger: ledger.slice(0, 1000),
+      };
+    }
+
     merged.updatedAt = Date.now();
     return merged;
   }
 
   function showConflictResolver(localState, cloudState) {
-    const addedLocally = localState.assignments.filter(a => !cloudState.assignments.some(x => x.id === a.id));
-    const addedInCloud = cloudState.assignments.filter(a => !localState.assignments.some(x => x.id === a.id));
-    
+    const addedLocally = localState.assignments.filter(
+      (a) => !cloudState.assignments.some((x) => x.id === a.id),
+    );
+    const addedInCloud = cloudState.assignments.filter(
+      (a) => !localState.assignments.some((x) => x.id === a.id),
+    );
+
     let diffHtml = "";
     if (addedLocally.length || addedInCloud.length) {
       diffHtml = `
         <div class="conflict-diffs" style="margin-top: 12px; font-size: 0.82rem; text-align: left; max-height: 120px; overflow-y: auto; border: 1px solid var(--line); border-radius: 8px; padding: 8px; background: rgba(0,0,0,0.1);">
           <b style="color: var(--muted); display: block; margin-bottom: 4px;">Difference Summary:</b>
-          ${addedLocally.map(a => `<div style="color: var(--teal); font-weight: 700; margin-bottom: 2px;">💻 Local: "${esc(a.title)}"</div>`).join("")}
-          ${addedInCloud.map(a => `<div style="color: var(--amber); font-weight: 700; margin-bottom: 2px;">☁️ Cloud: "${esc(a.title)}"</div>`).join("")}
+          ${addedLocally.map((a) => `<div style="color: var(--teal); font-weight: 700; margin-bottom: 2px;">💻 Local: "${esc(a.title)}"</div>`).join("")}
+          ${addedInCloud.map((a) => `<div style="color: var(--amber); font-weight: 700; margin-bottom: 2px;">☁️ Cloud: "${esc(a.title)}"</div>`).join("")}
         </div>
       `;
     }
-    
+
     const bodyHtml = `
       <div style="text-align: center;">
         <p class="sub" style="margin-top:0">We found newer changes on another device. How would you like to sync?</p>
@@ -4759,10 +5430,10 @@ Due May 31"></textarea>
         </div>
       </div>
     `;
-    
+
     window._pendingLocalConflictState = localState;
     window._pendingCloudConflictState = cloudState;
-    
+
     openModal("⚠️ Sync Conflict Found", bodyHtml);
   }
 
@@ -4774,7 +5445,7 @@ Due May 31"></textarea>
       moodSum: 0,
       moodCount: 0,
       focusSum: 0,
-      focusCount: 0
+      focusCount: 0,
     };
     for (let i = 0; i < 7; i++) {
       const k = isoForOffset(-i);
@@ -4782,7 +5453,7 @@ Due May 31"></textarea>
       stats.focusMin += act.focusMin || 0;
       stats.tasks += act.tasks || 0;
       stats.routines += act.routines || 0;
-      
+
       const ref = state.reflections && state.reflections[k];
       if (ref) {
         if (ref.mood) {
@@ -4795,8 +5466,12 @@ Due May 31"></textarea>
         }
       }
     }
-    stats.avgMood = stats.moodCount ? (stats.moodSum / stats.moodCount).toFixed(1) : "N/A";
-    stats.avgFocus = stats.focusCount ? (stats.focusSum / stats.focusCount).toFixed(1) : "N/A";
+    stats.avgMood = stats.moodCount
+      ? (stats.moodSum / stats.moodCount).toFixed(1)
+      : "N/A";
+    stats.avgFocus = stats.focusCount
+      ? (stats.focusSum / stats.focusCount).toFixed(1)
+      : "N/A";
     return stats;
   }
 
@@ -4850,15 +5525,26 @@ Due May 31"></textarea>
           state.syncDevices = [];
         }
         // Cleanup old devices (> 30 days)
-        state.syncDevices = state.syncDevices.filter(d => (now - (d.lastActive || 0)) < 30 * 24 * 60 * 60 * 1000);
-        
-        const myDeviceId = deviceId || localStorage.getItem("focus-school:device-id") || "unknown";
-        const existingIdx = state.syncDevices.findIndex(d => d.id === myDeviceId);
+        state.syncDevices = state.syncDevices.filter(
+          (d) => now - (d.lastActive || 0) < 30 * 24 * 60 * 60 * 1000,
+        );
+
+        const myDeviceId =
+          deviceId ||
+          localStorage.getItem("focus-school:device-id") ||
+          "unknown";
+        const existingIdx = state.syncDevices.findIndex(
+          (d) => d.id === myDeviceId,
+        );
         if (existingIdx >= 0) {
           state.syncDevices[existingIdx].lastActive = now;
           state.syncDevices[existingIdx].name = myName;
         } else {
-          state.syncDevices.push({ id: myDeviceId, name: myName, lastActive: now });
+          state.syncDevices.push({
+            id: myDeviceId,
+            name: myName,
+            lastActive: now,
+          });
         }
 
         const res = await fetch(
@@ -4902,7 +5588,9 @@ Due May 31"></textarea>
           const localUpdated = state.updatedAt || 0;
           if (remoteUpdated > localUpdated || forceMerge) {
             const merged = mergeStates(state, data.state);
-            const changed = remoteUpdated > localUpdated || JSON.stringify(merged) !== JSON.stringify(state);
+            const changed =
+              remoteUpdated > localUpdated ||
+              JSON.stringify(merged) !== JSON.stringify(state);
             if (changed) {
               const prev = suppressPush;
               suppressPush = true;
@@ -5034,7 +5722,11 @@ Due May 31"></textarea>
     connected: !!sessionStorage.getItem("focus-school:gcal-token"),
     _gisLoaded: false,
     clientId() {
-      return state.settings.googleClientId.trim() || window._defaultGoogleClientId || "";
+      return (
+        state.settings.googleClientId.trim() ||
+        window._defaultGoogleClientId ||
+        ""
+      );
     },
     // The calendar IDs to include. Defaults to ["primary"] when none chosen yet.
     selectedIds() {
@@ -5089,7 +5781,10 @@ Due May 31"></textarea>
         callback: async (resp) => {
           if (resp && resp.access_token) {
             this.token = resp.access_token;
-            sessionStorage.setItem("focus-school:gcal-token", resp.access_token);
+            sessionStorage.setItem(
+              "focus-school:gcal-token",
+              resp.access_token,
+            );
             this.connected = true;
             // Always refresh the calendar list so the picker stays current and
             // events can be labeled with calendar names/colors.
@@ -5342,7 +6037,11 @@ Due May 31"></textarea>
     tokenClient: null,
     connected: !!sessionStorage.getItem("focus-school:gmail-token"),
     clientId() {
-      return state.settings.googleClientId.trim() || window._defaultGoogleClientId || "";
+      return (
+        state.settings.googleClientId.trim() ||
+        window._defaultGoogleClientId ||
+        ""
+      );
     },
     async connect() {
       const cid = this.clientId();
@@ -5364,7 +6063,10 @@ Due May 31"></textarea>
         callback: (resp) => {
           if (resp && resp.access_token) {
             this.token = resp.access_token;
-            sessionStorage.setItem("focus-school:gmail-token", resp.access_token);
+            sessionStorage.setItem(
+              "focus-school:gmail-token",
+              resp.access_token,
+            );
             this.connected = true;
             this.fetchMessages();
           } else {
@@ -5631,6 +6333,7 @@ Due May 31"></textarea>
     a.completedAt = new Date().toISOString();
     addPoints(10);
     bumpActivity("tasks");
+    earnReward("task", "Finished: " + a.title);
     state.wins.push({
       text: "Finished: " + a.title,
       date: new Date().toLocaleString(),
@@ -5675,7 +6378,7 @@ Due May 31"></textarea>
         </ol>
         <p>Switch plant types anytime using the selector in the card header. Your growth progress is preserved!</p>
         <button class="btn primary block" data-act="close-modal" style="margin-top:16px;">Awesome!</button>
-        `
+        `,
       );
     },
     "apply-custom-gradient": () => {
@@ -5698,16 +6401,115 @@ Due May 31"></textarea>
     "view-settings": () => setView("settings"),
     "view-sync": () => setView("sync"),
     "view-about": () => setView("about"),
+    "view-insights": () => setView("insights"),
+    "view-rewards": () => setView("rewards"),
+
+    "reward-cashout": () => {
+      const r = state.rewards;
+      if (r.balance <= 0) return;
+      openModal(
+        "Cash out",
+        `<p class="sub">Give <b>${money(r.balance)}</b> to ${esc(
+          state.settings.studentName || "your child",
+        )} and clear the balance. A grown-up does this part.</p>
+        ${
+          r.pin
+            ? `<div class="field"><label>Parent PIN</label><input id="rwPin" type="password" inputmode="numeric" placeholder="••••" autocomplete="off"></div>`
+            : ""
+        }
+        <p id="rwErr" class="sub" style="color:#c0473a;display:none">That PIN didn't match.</p>
+        <div class="row"><button class="btn" data-act="close-modal">Cancel</button><button class="btn primary" data-act="reward-confirm-cashout">💵 Confirm ${money(
+          r.balance,
+        )}</button></div>`,
+      );
+    },
+    "reward-confirm-cashout": () => {
+      const r = state.rewards;
+      if (r.pin) {
+        const entered = ($("#rwPin")?.value || "").trim();
+        if (entered !== r.pin) {
+          const e = $("#rwErr");
+          if (e) e.style.display = "block";
+          return;
+        }
+      }
+      const amt = r.balance;
+      if (amt <= 0) return;
+      r.paidOut = Math.round((r.paidOut + amt) * 100) / 100;
+      r.ledger.unshift({
+        id: uid("e"),
+        ts: new Date().toISOString(),
+        kind: "cashout",
+        label: "Cashed out",
+        amount: amt,
+        type: "cashout",
+      });
+      r.balance = 0;
+      save();
+      closeModal();
+      render();
+      toast(`Cashed out ${money(amt)} 💵`);
+      triggerConfetti();
+    },
+    "reward-settings": () => {
+      const r = state.rewards;
+      const rate = (id, k) =>
+        `<div class="field"><label>${id}</label><input id="rw_${k}" type="number" min="0" step="0.05" value="${r.rates[k]}"></div>`;
+      openModal(
+        "Parent settings",
+        `<p class="sub">Set what each finished thing is worth. Only a grown-up should change these.</p>
+        <label class="rw-toggle"><input type="checkbox" id="rwEnabled" ${
+          r.enabled ? "checked" : ""
+        }> Rewards turned on</label>
+        <div class="g2 grid">
+          ${rate("Assignment / to-do", "task")}
+          ${rate("Reminder", "reminder")}
+          ${rate("Routine", "routine")}
+          ${rate("Focus session", "focus")}
+        </div>
+        <div class="g2 grid">
+          <div class="field"><label>Most per day</label><input id="rwCap" type="number" min="0" step="0.25" value="${
+            r.dailyCap
+          }"></div>
+          <div class="field"><label>Symbol</label><input id="rwCur" maxlength="3" value="${esc(
+            r.currency,
+          )}"></div>
+        </div>
+        <div class="field"><label>Parent PIN for cash-out (optional, digits only)</label><input id="rwSetPin" type="text" inputmode="numeric" pattern="\\d*" placeholder="leave blank for no PIN" value="${esc(
+          r.pin,
+        )}"></div>
+        <button class="btn primary block" data-act="save-reward-settings" style="margin-top:8px">Save settings</button>`,
+      );
+    },
+    "save-reward-settings": () => {
+      const r = state.rewards;
+      const num = (id) => Math.max(0, Number($("#" + id)?.value) || 0);
+      r.enabled = !!$("#rwEnabled")?.checked;
+      r.rates.task = num("rw_task");
+      r.rates.reminder = num("rw_reminder");
+      r.rates.routine = num("rw_routine");
+      r.rates.focus = num("rw_focus");
+      r.dailyCap = num("rwCap");
+      r.currency = ($("#rwCur")?.value || "$").slice(0, 3) || "$";
+      const pin = ($("#rwSetPin")?.value || "").trim();
+      if (/^\d{0,8}$/.test(pin)) r.pin = pin;
+      save();
+      closeModal();
+      setView("rewards");
+      toast("Settings saved ✓");
+    },
 
     "spin-break": () => {
       currentBrainBreak = getRandomBrainBreak("all");
       const container = $("#brainBreakContainer");
-      if (container) container.innerHTML = renderBrainBreakCardHTML(currentBrainBreak);
+      if (container)
+        container.innerHTML = renderBrainBreakCardHTML(currentBrainBreak);
     },
     "choose-break": (_, arg) => {
       currentBrainBreak = getRandomBrainBreak(arg);
       const container = $("#brainBreakContainer");
-      if (container) container.innerHTML = renderBrainBreakCardHTML(currentBrainBreak);
+      if (container)
+        container.innerHTML = renderBrainBreakCardHTML(currentBrainBreak);
     },
 
     "quick-add": () => {
@@ -5815,6 +6617,47 @@ Due May 31"></textarea>
       }));
       save();
       openModal("Break it into steps", breakdownForm(a));
+    },
+    "ai-breakdown": async (id) => {
+      const a = state.assignments.find((x) => x.id === id);
+      if (!a) return;
+      const btn = $("#aiBreakBtn");
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = "✨ Thinking…";
+      }
+      try {
+        const resp = await fetch("/api/ai", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            title: a.title,
+            className: cls(a.classId)?.name || "",
+          }),
+        });
+        const data = await resp.json().catch(() => ({}));
+        if (!resp.ok || !Array.isArray(data.steps) || !data.steps.length) {
+          throw new Error(data.error || "no_steps");
+        }
+        a.steps = data.steps.map((t) => ({
+          id: uid("s"),
+          text: String(t),
+          done: false,
+        }));
+        save();
+        openModal("Break it into steps", breakdownForm(a));
+        toast("Broke it into steps ✨");
+      } catch (err) {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = "✨ Break it down for me";
+        }
+        toast(
+          err.message === "ai_not_configured"
+            ? "AI help isn't set up yet — try a template below."
+            : "Couldn't reach AI — try a template below.",
+        );
+      }
     },
     "add-step": (id) => {
       const a = state.assignments.find((x) => x.id === id);
@@ -5983,6 +6826,7 @@ Due May 31"></textarea>
       if (!r) return;
       if (isRecurring(r)) r.lastDone = todayKey();
       else r.done = true;
+      earnReward("reminder", r.text);
       save();
       render();
       toast("Got it ✓");
@@ -6044,10 +6888,12 @@ Due May 31"></textarea>
       $("#rName").value = t.name;
       $("#rEmoji").value = t.emoji;
       const ul = $("#rSteps");
-      ul.innerHTML = t.steps.map((text) => {
-        const iid = uid("i");
-        return `<li data-iid="${esc(iid)}"><span class="steptext">${esc(text)}</span><button class="btn danger sm" data-act="del-ritem" data-id="" data-sid="${iid}" aria-label="Delete step: ${esc(text)}">✕</button></li>`;
-      }).join("");
+      ul.innerHTML = t.steps
+        .map((text) => {
+          const iid = uid("i");
+          return `<li data-iid="${esc(iid)}"><span class="steptext">${esc(text)}</span><button class="btn danger sm" data-act="del-ritem" data-id="" data-sid="${iid}" aria-label="Delete step: ${esc(text)}">✕</button></li>`;
+        })
+        .join("");
     },
 
     "add-routine": () => openModal("New routine", routineForm()),
@@ -6350,7 +7196,9 @@ ${name}`;
           return toast("Network error resolving pairing code ❌");
         }
       } else if (code.length < 12) {
-        return toast("That code looks too short — enter a 6-digit number or copy the full code.");
+        return toast(
+          "That code looks too short — enter a 6-digit number or copy the full code.",
+        );
       }
       state.settings.sync.code = code;
       state.settings.sync.enabled = true;
@@ -6377,7 +7225,7 @@ ${name}`;
         <div class="row">
           <button class="btn primary" data-act="save-custom-sync-code">Save &amp; Link</button>
           <button class="btn" data-act="close-modal">Cancel</button>
-        </div>`
+        </div>`,
       );
       setTimeout(() => $("#customSyncCodeInput")?.focus(), 50);
     },
@@ -6385,7 +7233,9 @@ ${name}`;
       const inputVal = ($("#customSyncCodeInput")?.value || "").trim();
       const cleaned = inputVal.toLowerCase().replace(/[^a-z0-9-]/g, "");
       if (cleaned.length < 10) {
-        return toast("Sync code must be at least 10 characters long (letters, numbers, dashes) ❌");
+        return toast(
+          "Sync code must be at least 10 characters long (letters, numbers, dashes) ❌",
+        );
       }
       state.settings.sync.code = cleaned;
       state.settings.sync.enabled = true;
@@ -6393,11 +7243,15 @@ ${name}`;
       cloud.startAuto();
       closeModal();
       toast("Saving and syncing custom code... 🔄");
-      
+
       const pulled = await cloud.pull({ forceMerge: true });
       await cloud.push();
       render();
-      toast(pulled ? "Successfully linked custom code and merged data! ☁️" : "Linked custom code! ☁️");
+      toast(
+        pulled
+          ? "Successfully linked custom code and merged data! ☁️"
+          : "Linked custom code! ☁️",
+      );
     },
     "generate-pair-code": async () => {
       try {
@@ -6406,7 +7260,10 @@ ${name}`;
           genBtn.disabled = true;
           genBtn.textContent = "Generating...";
         }
-        const res = await fetch(`/api/state?pair_generate=${encodeURIComponent(state.settings.sync.code)}`, { method: "PUT" });
+        const res = await fetch(
+          `/api/state?pair_generate=${encodeURIComponent(state.settings.sync.code)}`,
+          { method: "PUT" },
+        );
         if (!res.ok) {
           throw new Error("fail");
         }
@@ -6576,7 +7433,7 @@ ${name}`;
           <div class="row"><span class="pill">f</span><span>Start/stop focus session for today's task</span></div>
           <div class="row"><span class="pill">Esc</span><span>Close any open modal or overlay</span></div>
           <div class="row"><span class="pill">?</span><span>Show this shortcuts guide</span></div>
-         </div>`
+         </div>`,
       );
     },
     "set-reflection-rating": (_, arg) => {
@@ -6588,7 +7445,8 @@ ${name}`;
     "save-reflection": () => {
       const focusVal = window._pendingReflectionFocus || 0;
       const moodVal = window._pendingReflectionMood || 0;
-      const textVal = document.getElementById("reflectionTextInput")?.value || "";
+      const textVal =
+        document.getElementById("reflectionTextInput")?.value || "";
       if (focusVal === 0 || moodVal === 0) {
         toast("Please select a score for focus and mood!");
         return;
@@ -6597,7 +7455,7 @@ ${name}`;
         focus: focusVal,
         mood: moodVal,
         text: textVal,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
       addPoints(5);
       window._pendingReflectionFocus = 0;
@@ -6628,8 +7486,16 @@ ${name}`;
       render();
     },
     "resolve-conflict-merge": () => {
-      if (window._pendingLocalConflictState && window._pendingCloudConflictState) {
-        state = normalize(mergeStates(window._pendingLocalConflictState, window._pendingCloudConflictState));
+      if (
+        window._pendingLocalConflictState &&
+        window._pendingCloudConflictState
+      ) {
+        state = normalize(
+          mergeStates(
+            window._pendingLocalConflictState,
+            window._pendingCloudConflictState,
+          ),
+        );
         save({ touch: true, immediate: true });
         closeModal();
         render();
@@ -6668,8 +7534,10 @@ ${name}`;
         focus.remaining = focus.total;
         focus.tick(true);
       }
-      const buttons = document.querySelectorAll("#fPresetsControls button[data-act='set-focus-preset']");
-      buttons.forEach(btn => {
+      const buttons = document.querySelectorAll(
+        "#fPresetsControls button[data-act='set-focus-preset']",
+      );
+      buttons.forEach((btn) => {
         const isPressed = btn.dataset.arg === arg;
         btn.setAttribute("aria-pressed", isPressed ? "true" : "false");
       });
@@ -6743,7 +7611,10 @@ ${name}`;
         cardEl.style.transform = `translate(${dx}px, ${dy}px) scale(1.02)`;
 
         cardEl.style.pointerEvents = "none";
-        const targetEl = document.elementFromPoint(moveEv.clientX, moveEv.clientY);
+        const targetEl = document.elementFromPoint(
+          moveEv.clientX,
+          moveEv.clientY,
+        );
         cardEl.style.pointerEvents = "";
         const overCard = targetEl ? targetEl.closest(".card") : null;
 
@@ -6904,6 +7775,7 @@ ${name}`;
           awarded.push(id);
           addPoints(5);
           bumpActivity("routines");
+          earnReward("routine", r.name || "Routine");
           toast(`${r.name} complete! +5 🎉`);
           triggerConfetti();
         }
@@ -6918,6 +7790,7 @@ ${name}`;
           if (box.checked) {
             addPoints(1);
             bumpActivity("tasks");
+            earnReward("task", td.text);
             triggerConfetti();
           }
           save();
@@ -7027,8 +7900,7 @@ ${name}`;
     // connection status
     window.addEventListener("online", () => {
       updateHeaderStatus();
-      if (state.settings.sync.enabled)
-        cloud.pull().then((p) => p && render());
+      if (state.settings.sync.enabled) cloud.pull().then((p) => p && render());
     });
     window.addEventListener("offline", updateHeaderStatus);
     updateHeaderStatus();
@@ -7045,28 +7917,52 @@ ${name}`;
         return;
       }
 
-      if (ev.key === "/" && !isOpen && document.activeElement.tagName !== "INPUT" && document.activeElement.tagName !== "TEXTAREA") {
+      if (
+        ev.key === "/" &&
+        !isOpen &&
+        document.activeElement.tagName !== "INPUT" &&
+        document.activeElement.tagName !== "TEXTAREA"
+      ) {
         ev.preventDefault();
         openCommandBar();
         return;
       }
 
       if (!isOpen) {
-        if (ev.key === "?" && document.activeElement.tagName !== "INPUT" && document.activeElement.tagName !== "TEXTAREA") {
+        if (
+          ev.key === "?" &&
+          document.activeElement.tagName !== "INPUT" &&
+          document.activeElement.tagName !== "TEXTAREA"
+        ) {
           ev.preventDefault();
           ACTIONS["show-shortcuts"]();
           return;
         }
-        if (ev.key === "f" && document.activeElement.tagName !== "INPUT" && document.activeElement.tagName !== "TEXTAREA") {
+        if (
+          ev.key === "f" &&
+          document.activeElement.tagName !== "INPUT" &&
+          document.activeElement.tagName !== "TEXTAREA"
+        ) {
           ev.preventDefault();
           const next = rightNowTask();
           if (next) focus.start(next.id);
           else toast("No assignments to focus on!");
           return;
         }
-        if (["1", "2", "3", "4", "5", "6"].includes(ev.key) && document.activeElement.tagName !== "INPUT" && document.activeElement.tagName !== "TEXTAREA") {
+        if (
+          ["1", "2", "3", "4", "5", "6"].includes(ev.key) &&
+          document.activeElement.tagName !== "INPUT" &&
+          document.activeElement.tagName !== "TEXTAREA"
+        ) {
           ev.preventDefault();
-          const tabs = ["home", "today", "tasks", "calendar", "routines", "more"];
+          const tabs = [
+            "home",
+            "today",
+            "tasks",
+            "calendar",
+            "routines",
+            "more",
+          ];
           setView(tabs[Number(ev.key) - 1]);
           return;
         }
@@ -7078,11 +7974,14 @@ ${name}`;
         closeCommandBar();
       } else if (ev.key === "ArrowDown") {
         ev.preventDefault();
-        window._cmdSelectedIndex = (window._cmdSelectedIndex + 1) % window._cmdItems.length;
+        window._cmdSelectedIndex =
+          (window._cmdSelectedIndex + 1) % window._cmdItems.length;
         renderCommandBarResults(document.getElementById("cmdInput")?.value);
       } else if (ev.key === "ArrowUp") {
         ev.preventDefault();
-        window._cmdSelectedIndex = (window._cmdSelectedIndex - 1 + window._cmdItems.length) % window._cmdItems.length;
+        window._cmdSelectedIndex =
+          (window._cmdSelectedIndex - 1 + window._cmdItems.length) %
+          window._cmdItems.length;
         renderCommandBarResults(document.getElementById("cmdInput")?.value);
       } else if (ev.key === "Enter") {
         ev.preventDefault();
@@ -7096,48 +7995,77 @@ ${name}`;
     // Touch Swipe Navigation for PWA
     let touchStartX = 0;
     let touchStartY = 0;
-    document.addEventListener("touchstart", (ev) => {
-      if (document.getElementById("modalBack").classList.contains("open") ||
+    document.addEventListener(
+      "touchstart",
+      (ev) => {
+        if (
+          document.getElementById("modalBack").classList.contains("open") ||
           document.getElementById("focusOverlay").classList.contains("open") ||
           document.getElementById("guideOverlay").classList.contains("open") ||
-          document.getElementById("commandBarBack").classList.contains("open")) {
-        return;
-      }
-      if (ev.target.closest("input[type='range']") || ev.target.closest(".seg") || ev.target.closest(".accent-row") || ev.target.closest(".theme-gradient-grid")) {
-        return;
-      }
-      touchStartX = ev.changedTouches[0].screenX;
-      touchStartY = ev.changedTouches[0].screenY;
-    }, { passive: true });
+          document.getElementById("commandBarBack").classList.contains("open")
+        ) {
+          return;
+        }
+        if (
+          ev.target.closest("input[type='range']") ||
+          ev.target.closest(".seg") ||
+          ev.target.closest(".accent-row") ||
+          ev.target.closest(".theme-gradient-grid")
+        ) {
+          return;
+        }
+        touchStartX = ev.changedTouches[0].screenX;
+        touchStartY = ev.changedTouches[0].screenY;
+      },
+      { passive: true },
+    );
 
-    document.addEventListener("touchend", (ev) => {
-      if (document.getElementById("modalBack").classList.contains("open") ||
+    document.addEventListener(
+      "touchend",
+      (ev) => {
+        if (
+          document.getElementById("modalBack").classList.contains("open") ||
           document.getElementById("focusOverlay").classList.contains("open") ||
           document.getElementById("guideOverlay").classList.contains("open") ||
-          document.getElementById("commandBarBack").classList.contains("open")) {
-        return;
-      }
-      if (ev.target.closest("input[type='range']") || ev.target.closest(".seg") || ev.target.closest(".accent-row") || ev.target.closest(".theme-gradient-grid")) {
-        return;
-      }
-      const touchEndX = ev.changedTouches[0].screenX;
-      const touchEndY = ev.changedTouches[0].screenY;
-      const diffX = touchEndX - touchStartX;
-      const diffY = touchEndY - touchStartY;
-      if (Math.abs(diffX) > 80 && Math.abs(diffY) < 40) {
-        const tabsOrder = ["home", "today", "tasks", "calendar", "routines", "more"];
-        const currentIdx = tabsOrder.indexOf(view);
-        if (currentIdx !== -1) {
-          if (diffX < 0) {
-            const nextIdx = currentIdx + 1;
-            if (nextIdx < tabsOrder.length) setView(tabsOrder[nextIdx]);
-          } else {
-            const prevIdx = currentIdx - 1;
-            if (prevIdx >= 0) setView(tabsOrder[prevIdx]);
+          document.getElementById("commandBarBack").classList.contains("open")
+        ) {
+          return;
+        }
+        if (
+          ev.target.closest("input[type='range']") ||
+          ev.target.closest(".seg") ||
+          ev.target.closest(".accent-row") ||
+          ev.target.closest(".theme-gradient-grid")
+        ) {
+          return;
+        }
+        const touchEndX = ev.changedTouches[0].screenX;
+        const touchEndY = ev.changedTouches[0].screenY;
+        const diffX = touchEndX - touchStartX;
+        const diffY = touchEndY - touchStartY;
+        if (Math.abs(diffX) > 80 && Math.abs(diffY) < 40) {
+          const tabsOrder = [
+            "home",
+            "today",
+            "tasks",
+            "calendar",
+            "routines",
+            "more",
+          ];
+          const currentIdx = tabsOrder.indexOf(view);
+          if (currentIdx !== -1) {
+            if (diffX < 0) {
+              const nextIdx = currentIdx + 1;
+              if (nextIdx < tabsOrder.length) setView(tabsOrder[nextIdx]);
+            } else {
+              const prevIdx = currentIdx - 1;
+              if (prevIdx >= 0) setView(tabsOrder[prevIdx]);
+            }
           }
         }
-      }
-    }, { passive: true });
+      },
+      { passive: true },
+    );
 
     // Wire cmdInput + taskSearchInput input handlers
     document.addEventListener("input", (ev) => {
