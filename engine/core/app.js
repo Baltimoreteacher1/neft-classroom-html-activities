@@ -25,11 +25,15 @@ import { t, stackHtml, phaseName } from "./i18n.js";
 import { PHASE_TIME_ESTIMATES } from "./content-enrichment.js";
 import "@engine/styles/design-system.css";
 import "@engine/styles/themes.css";
+import "@engine/styles/editorial.css";
 
 export function createApp(config) {
   const root = document.getElementById("app");
   root.innerHTML = "";
   root.className = "app";
+  // Publisher-grade editorial design layer (engine/styles/editorial.css) — the
+  // approved look now applies to EVERY lesson, not just flagship pilots.
+  document.body.classList.add("editorial");
   // Browser tab / SEO title (the engine shell ships a generic <title>).
   if (config.title) {
     const bits = [config.title];
