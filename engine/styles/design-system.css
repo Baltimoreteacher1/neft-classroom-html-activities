@@ -3476,38 +3476,35 @@ body:has(.identity-screen) .export-toolbar {
   color: var(--teal);
 }
 
-/* ── Teacher-mode badge (always visible when teacher mode is active) ── */
-.teacher-mode-badge {
+/* ── Mode toggle pill (always visible: Student ↔ Teacher) ──
+   Mirrors the curriculum hub's #hub-mode-toggle so the switch looks and
+   behaves the same on the hub and inside every lesson. */
+.mode-toggle-pill {
   position: fixed;
   bottom: 14px;
   left: 14px;
   z-index: 9600;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   background: var(--navy);
   color: #fff;
   font-weight: 800;
   font-size: 0.82rem;
-  padding: 6px 8px 6px 12px;
-  border-radius: 999px;
-  box-shadow: 0 4px 14px rgba(18, 53, 91, 0.3);
-}
-.teacher-mode-exit {
+  padding: 8px 14px;
   border: 0;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.18);
-  color: #fff;
-  font-weight: 800;
-  font-size: 0.78rem;
-  padding: 4px 10px;
   cursor: pointer;
+  box-shadow: 0 4px 14px rgba(18, 53, 91, 0.3);
 }
-.teacher-mode-exit:hover {
-  background: rgba(255, 255, 255, 0.32);
+.mode-toggle-pill:hover {
+  filter: brightness(1.08);
+}
+.mode-toggle-pill[aria-pressed="true"] {
+  background: var(--teal, #128a87);
 }
 @media print {
-  .teacher-mode-badge {
+  .mode-toggle-pill {
     display: none;
   }
 }

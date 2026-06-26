@@ -41,10 +41,11 @@ export function isTeacherMode() {
 
 /**
  * Easy teacher-mode access — call once at app boot (before mountTeacherPanel).
- * - A `?teacher=1` link makes teacher mode STICK on this device (every lesson,
- *   no param needed afterward); `?teacher=0` / `?student=1` clears it.
- * - Alt+Shift+T toggles teacher/student instantly (ignored while typing).
- * - When teacher mode is on, a small badge shows with a one-click Exit.
+ * - One visible Student/Teacher toggle pill is ALWAYS shown, mirroring the
+ *   curriculum hub's `#hub-mode-toggle`. Same sticky key (`nt-teacher-mode`),
+ *   so flipping it on the hub carries into every lesson and vice-versa.
+ * - A `?teacher=1` link makes teacher mode STICK on this device; `?teacher=0`
+ *   / `?student=1` clears it. Alt+Shift+T still toggles (ignored while typing).
  */
 export function initTeacherAccess() {
   if (typeof window === "undefined") return;
@@ -63,30 +64,38 @@ export function initTeacherAccess() {
     // e.code is layout/Option-proof (Mac Option+Shift+T composes a glyph).
     if (e.altKey && e.shiftKey && e.code === "KeyT") {
       e.preventDefault();
-      setStickyTeacher(!isTeacherMode());
-      window.location.reload();
+      switchMode(!isTeacherMode());
     }
   });
 
-  if (isTeacherMode()) mountTeacherBadge();
+  mountModeToggle();
 }
 
-function mountTeacherBadge() {
-  if (document.querySelector(".teacher-mode-badge")) return;
-  const badge = document.createElement("div");
-  badge.className = "teacher-mode-badge";
-  badge.innerHTML = `
-    <span>👩‍🏫 Teacher Mode</span>
-    <button type="button" class="teacher-mode-exit">Exit ✕</button>`;
-  badge.querySelector(".teacher-mode-exit").addEventListener("click", () => {
-    setStickyTeacher(false);
-    // Drop any teacher params so a reload truly returns to student view.
-    const url = new URL(window.location.href);
-    url.searchParams.delete("teacher");
-    url.searchParams.delete("mode");
-    window.location.href = url.toString();
-  });
-  document.body.append(badge);
+/** Flip the device into/out of teacher mode and reload to re-render. */
+function switchMode(toTeacher) {
+  setStickyTeacher(toTeacher);
+  // Drop any one-shot params so the sticky key is the single source of truth.
+  const url = new URL(window.location.href);
+  url.searchParams.delete("teacher");
+  url.searchParams.delete("mode");
+  url.searchParams.delete("student");
+  window.location.href = url.toString();
+}
+
+/** Always-visible Student/Teacher pill. Shows the CURRENT mode; click flips. */
+function mountModeToggle() {
+  if (document.querySelector(".mode-toggle-pill")) return;
+  const teacher = isTeacherMode();
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "mode-toggle-pill";
+  btn.setAttribute("aria-pressed", teacher ? "true" : "false");
+  btn.textContent = teacher ? "👩‍🏫 Teacher Mode" : "🎒 Student Mode";
+  btn.title = teacher
+    ? "Teacher Mode is on — click for Student view"
+    : "Student Mode — click for Teacher view";
+  btn.addEventListener("click", () => switchMode(!teacher));
+  document.body.append(btn);
 }
 
 /** Floating teacher panel with answer keys, pacing, listen-fors, differentiation. */
