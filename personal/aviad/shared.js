@@ -160,10 +160,40 @@
     } catch (e) {}
   }
 
+  // Shared drop resolution — used by both native HTML5 DnD (mouse) and the
+  // touch/pointer fallback below, so the behavior stays identical everywhere.
+  function performDrop(container, item) {
+    if (!container || !item) return;
+
+    // Check limits
+    var maxItems = parseInt(container.dataset.max, 10) || Infinity;
+    var currentItems = container.querySelectorAll(".drag-item");
+
+    if (currentItems.length >= maxItems && !container.contains(item)) {
+      // Return first item to its drawer to make room
+      var drawerId = currentItems[0].dataset.drawer;
+      var drawer = document.getElementById(drawerId);
+      if (drawer) {
+        drawer.appendChild(currentItems[0]);
+      } else {
+        currentItems[0].remove();
+      }
+    }
+
+    container.appendChild(item);
+
+    // Trigger validation
+    var activity = container.closest(".activity");
+    if (activity && typeof window.validateActivityState === "function") {
+      window.validateActivityState(activity);
+    }
+  }
+
   // Drag and Drop Engine
   function initDragAndDrop() {
     var draggedItem = null;
 
+    // ---- Native HTML5 drag-and-drop (desktop mouse) ----
     document.addEventListener("dragstart", function (e) {
       if (e.target.matches(".drag-item")) {
         draggedItem = e.target;
@@ -201,32 +231,110 @@
       if (container) {
         e.preventDefault();
         container.classList.remove("dragover");
-        if (draggedItem) {
-          // Check limits
-          var maxItems = parseInt(container.dataset.max, 10) || Infinity;
-          var currentItems = container.querySelectorAll(".drag-item");
-
-          if (currentItems.length >= maxItems) {
-            // Return first item to its drawer
-            var drawerId = currentItems[0].dataset.drawer;
-            var drawer = document.getElementById(drawerId);
-            if (drawer) {
-              drawer.appendChild(currentItems[0]);
-            } else {
-              currentItems[0].remove();
-            }
-          }
-
-          container.appendChild(draggedItem);
-
-          // Trigger validation
-          var activity = container.closest(".activity");
-          if (activity && typeof window.validateActivityState === "function") {
-            window.validateActivityState(activity);
-          }
-        }
+        performDrop(container, draggedItem);
       }
     });
+
+    // ---- Touch fallback (iPad / Chromebook / phone) ----
+    // Native HTML5 drag events never fire on touchscreens, so the whole
+    // drag-and-drop UI was dead on tablets. This reimplements drag with
+    // touch events: long-press-free, follow-the-finger, drop on release.
+    var touchItem = null;
+    var ghost = null;
+    var lastContainer = null;
+    var startX = 0;
+    var startY = 0;
+    var moved = false;
+
+    function clearGhost() {
+      if (ghost && ghost.parentNode) ghost.parentNode.removeChild(ghost);
+      ghost = null;
+    }
+
+    function containerUnderPoint(x, y) {
+      if (ghost) ghost.style.display = "none";
+      var el = document.elementFromPoint(x, y);
+      if (ghost) ghost.style.display = "";
+      return el ? el.closest(".drop-container") : null;
+    }
+
+    document.addEventListener(
+      "touchstart",
+      function (e) {
+        var item = e.target.closest(".drag-item");
+        if (!item) return;
+        touchItem = item;
+        moved = false;
+        var t = e.touches[0];
+        startX = t.clientX;
+        startY = t.clientY;
+      },
+      { passive: false },
+    );
+
+    document.addEventListener(
+      "touchmove",
+      function (e) {
+        if (!touchItem) return;
+        var t = e.touches[0];
+
+        if (!moved) {
+          // Require a small threshold so taps/scrolls aren't hijacked.
+          if (
+            Math.abs(t.clientX - startX) < 6 &&
+            Math.abs(t.clientY - startY) < 6
+          ) {
+            return;
+          }
+          moved = true;
+          touchItem.classList.add("dragging");
+          var rect = touchItem.getBoundingClientRect();
+          ghost = touchItem.cloneNode(true);
+          ghost.classList.add("drag-ghost");
+          ghost.style.position = "fixed";
+          ghost.style.left = rect.left + "px";
+          ghost.style.top = rect.top + "px";
+          ghost.style.width = rect.width + "px";
+          ghost.style.pointerEvents = "none";
+          ghost.style.zIndex = "9999";
+          ghost.style.opacity = "0.9";
+          ghost._offX = t.clientX - rect.left;
+          ghost._offY = t.clientY - rect.top;
+          document.body.appendChild(ghost);
+        }
+
+        // Prevent the page from scrolling while dragging.
+        e.preventDefault();
+        ghost.style.left = t.clientX - ghost._offX + "px";
+        ghost.style.top = t.clientY - ghost._offY + "px";
+
+        var container = containerUnderPoint(t.clientX, t.clientY);
+        if (container !== lastContainer) {
+          if (lastContainer) lastContainer.classList.remove("dragover");
+          if (container) container.classList.add("dragover");
+          lastContainer = container;
+        }
+      },
+      { passive: false },
+    );
+
+    function endTouch() {
+      if (!touchItem) return;
+      if (moved) {
+        if (lastContainer) {
+          lastContainer.classList.remove("dragover");
+          performDrop(lastContainer, touchItem);
+        }
+        touchItem.classList.remove("dragging");
+      }
+      clearGhost();
+      touchItem = null;
+      lastContainer = null;
+      moved = false;
+    }
+
+    document.addEventListener("touchend", endTouch);
+    document.addEventListener("touchcancel", endTouch);
   }
 
   // Global High Score Saver
