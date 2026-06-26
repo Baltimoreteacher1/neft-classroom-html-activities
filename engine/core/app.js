@@ -21,6 +21,7 @@ import {
   buildWelcomeTeacherNotes,
   isTeacherMode,
   initTeacherAccess,
+  mountIdentityTeacherButton,
 } from "./teacher-mode.js";
 import { t, stackHtml, phaseName } from "./i18n.js";
 import { PHASE_TIME_ESTIMATES } from "./content-enrichment.js";
@@ -317,6 +318,7 @@ function showIdentityScreen(root, config) {
           <input id="id-period" type="text" placeholder="${t("periodPlaceholder")}" autocomplete="off" />
           <button id="id-start" class="identity-btn" disabled>${stackHtml(t("startActivity", "en"), t("startActivity", "es"))}</button>
         </div>
+        <div id="identity-teacher-slot"></div>
         <p id="welcome-resource-links" style="margin:var(--sp-4) 0 0; font-size:0.82rem; text-align:center;">
           <a href="${homeworkHtmlHref}" style="color:var(--teal); font-weight:700;">🏠 ${stackHtml(t("familyHomework", "en"), t("familyHomework", "es"))}</a>
           · <a href="/lessons/${encodeURIComponent(config.lessonId)}/notes.html" style="color:var(--navy); font-weight:700;">📝 ${stackHtml(t("guidedNotes", "en"), t("guidedNotes", "es"))}</a>
@@ -341,6 +343,9 @@ function showIdentityScreen(root, config) {
   if (teacherSlot && isTeacherMode()) {
     teacherSlot.append(buildWelcomeTeacherNotes(config));
   }
+
+  // Password-gated Teacher entry, right under the Start button.
+  mountIdentityTeacherButton(screen.querySelector("#identity-teacher-slot"));
 
   const coverExtras = screen.querySelector("#cover-extras");
   if (coverExtras) {

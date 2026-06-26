@@ -12,6 +12,13 @@ function esc(s) {
 
 const TEACHER_KEY = "nt-teacher-mode";
 
+// Classroom deterrent password for entering Teacher Mode. NOTE: this is a
+// client-side gate, not real security — answer-key content still ships in the
+// page, so a determined student could read it from source. It stops casual
+// clicking/peeking, which is the real classroom risk.
+// ⚠️ KEEP IN SYNC with TEACHER_PIN in assets/curriculum-enhancements.js.
+const TEACHER_PIN = "TeacherNeft";
+
 function readStickyTeacher() {
   try {
     return localStorage.getItem(TEACHER_KEY) === "1";
@@ -31,27 +38,31 @@ function setStickyTeacher(on) {
 export function isTeacherMode() {
   if (typeof window === "undefined") return false;
   const params = new URLSearchParams(window.location.search);
-  // Explicit student override always wins (lets a teacher hand a device back).
+  // Force-student always wins (lets a teacher hand a device back instantly).
   if (params.get("teacher") === "0" || params.get("student") === "1")
     return false;
-  if (params.get("teacher") === "1" || params.get("mode") === "teacher")
-    return true;
+  // No URL backdoor INTO teacher mode — entry requires the password.
   return readStickyTeacher();
 }
 
+/** Check the password and, if correct, stick teacher mode on this device. */
+export function unlockTeacher(pin) {
+  if (pin !== TEACHER_PIN) return false;
+  setStickyTeacher(true);
+  return true;
+}
+
 /**
- * Easy teacher-mode access — call once at app boot (before mountTeacherPanel).
- * - One visible Student/Teacher toggle pill is ALWAYS shown, mirroring the
- *   curriculum hub's `#hub-mode-toggle`. Same sticky key (`nt-teacher-mode`),
- *   so flipping it on the hub carries into every lesson and vice-versa.
- * - A `?teacher=1` link makes teacher mode STICK on this device; `?teacher=0`
- *   / `?student=1` clears it. Alt+Shift+T still toggles (ignored while typing).
+ * Teacher-mode access — call once at app boot (before mountTeacherPanel).
+ * - Entry is PASSWORD-GATED via the Teacher button on the lesson login screen
+ *   (mountIdentityTeacherButton). The sticky key (`nt-teacher-mode`) is shared
+ *   with the curriculum hub, so unlocking once carries across every lesson.
+ * - Exit is free: the floating "Exit" pill (teacher only), `?student=1`, or
+ *   Alt+Shift+T. There is intentionally no keyboard/URL way IN.
  */
 export function initTeacherAccess() {
   if (typeof window === "undefined") return;
   const params = new URLSearchParams(window.location.search);
-  if (params.get("teacher") === "1" || params.get("mode") === "teacher")
-    setStickyTeacher(true);
   if (params.get("teacher") === "0" || params.get("student") === "1")
     setStickyTeacher(false);
 
@@ -61,19 +72,20 @@ export function initTeacherAccess() {
     const tag = (el && el.tagName ? el.tagName : "").toLowerCase();
     if (tag === "input" || tag === "textarea" || (el && el.isContentEditable))
       return;
-    // e.code is layout/Option-proof (Mac Option+Shift+T composes a glyph).
-    if (e.altKey && e.shiftKey && e.code === "KeyT") {
+    // Alt+Shift+T only EXITS (entry needs the password). e.code is
+    // layout/Option-proof (Mac Option+Shift+T composes a glyph).
+    if (e.altKey && e.shiftKey && e.code === "KeyT" && isTeacherMode()) {
       e.preventDefault();
-      switchMode(!isTeacherMode());
+      switchToStudent();
     }
   });
 
-  mountModeToggle();
+  mountExitPill();
 }
 
-/** Flip the device into/out of teacher mode and reload to re-render. */
-function switchMode(toTeacher) {
-  setStickyTeacher(toTeacher);
+/** Drop back to Student view and reload to re-render. */
+function switchToStudent() {
+  setStickyTeacher(false);
   // Drop any one-shot params so the sticky key is the single source of truth.
   const url = new URL(window.location.href);
   url.searchParams.delete("teacher");
@@ -82,20 +94,69 @@ function switchMode(toTeacher) {
   window.location.href = url.toString();
 }
 
-/** Always-visible Student/Teacher pill. Shows the CURRENT mode; click flips. */
-function mountModeToggle() {
+/** Floating "Exit to Student" pill — only shown WHEN ALREADY in teacher mode,
+ *  so students never see a way to flip into teacher view. */
+function mountExitPill() {
+  if (!isTeacherMode()) return;
   if (document.querySelector(".mode-toggle-pill")) return;
-  const teacher = isTeacherMode();
   const btn = document.createElement("button");
   btn.type = "button";
   btn.className = "mode-toggle-pill";
-  btn.setAttribute("aria-pressed", teacher ? "true" : "false");
-  btn.textContent = teacher ? "👩‍🏫 Teacher Mode" : "🎒 Student Mode";
-  btn.title = teacher
-    ? "Teacher Mode is on — click for Student view"
-    : "Student Mode — click for Teacher view";
-  btn.addEventListener("click", () => switchMode(!teacher));
+  btn.setAttribute("aria-pressed", "true");
+  btn.textContent = "👩‍🏫 Teacher Mode · Exit";
+  btn.title = "Exit to Student view";
+  btn.addEventListener("click", switchToStudent);
   document.body.append(btn);
+}
+
+/** Password-gated Teacher button for the lesson login (identity) screen.
+ *  Student view: a "👩‍🏫 Teacher" button that reveals a password field.
+ *  Teacher view: a confirmation + one-click "Switch to Student". */
+export function mountIdentityTeacherButton(slot) {
+  if (!slot) return;
+
+  if (isTeacherMode()) {
+    slot.innerHTML = `
+      <div class="identity-teacher is-on">
+        <span class="identity-teacher-label">👩‍🏫 Teacher Mode is on</span>
+        <button type="button" class="identity-teacher-exit">Switch to Student</button>
+      </div>`;
+    slot
+      .querySelector(".identity-teacher-exit")
+      .addEventListener("click", switchToStudent);
+    return;
+  }
+
+  slot.innerHTML = `
+    <div class="identity-teacher">
+      <button type="button" class="identity-teacher-btn">👩‍🏫 Teacher</button>
+      <form class="identity-teacher-unlock" hidden>
+        <input type="password" class="identity-teacher-pin" placeholder="Teacher password" autocomplete="off" aria-label="Teacher password" />
+        <button type="submit" class="identity-teacher-go">Enter</button>
+        <p class="identity-teacher-err" role="alert" hidden>Incorrect password</p>
+      </form>
+    </div>`;
+
+  const openBtn = slot.querySelector(".identity-teacher-btn");
+  const form = slot.querySelector(".identity-teacher-unlock");
+  const pin = slot.querySelector(".identity-teacher-pin");
+  const err = slot.querySelector(".identity-teacher-err");
+
+  openBtn.addEventListener("click", () => {
+    openBtn.hidden = true;
+    form.hidden = false;
+    pin.focus();
+  });
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (unlockTeacher(pin.value.trim())) {
+      window.location.reload();
+    } else {
+      err.hidden = false;
+      pin.value = "";
+      pin.focus();
+    }
+  });
 }
 
 /** Floating teacher panel with answer keys, pacing, listen-fors, differentiation. */
