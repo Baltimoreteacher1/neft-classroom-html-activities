@@ -3,6 +3,10 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { resolveVocabImage, vocabImageAlt } from "../engine/core/vocab-images.js";
 import {
+  EDITORIAL_FONT_IMPORT,
+  EDITORIAL_OVERRIDES,
+} from "./lib/editorial-print.mjs";
+import {
   selectQuickCheckProblems,
   renderWelcomeBanner,
   renderQuickCheckIntro,
@@ -894,6 +898,7 @@ function generateHtml(lessonId, config) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Hanken+Grotesk:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
+${EDITORIAL_FONT_IMPORT}
 :root {
   --navy: #12355b;
   --navy-light: #18466f;
@@ -2419,6 +2424,7 @@ body { font-size: 15px; line-height: 1.58; }
   .worked-step { break-inside: avoid; box-shadow: none; }
   .card { box-shadow: none; }
 }
+${EDITORIAL_OVERRIDES}
 </style>
 </head>
 <body>

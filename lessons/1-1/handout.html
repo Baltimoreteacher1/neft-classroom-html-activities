@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Prime Factorization — Student Handout</title>
   <style>
+    @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap");
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@600;700&family=Hanken+Grotesk:wght@400;600&display=swap');
     * { box-sizing: border-box; }
     body { font-family: 'Hanken Grotesk', system-ui, sans-serif; color: #264653; margin: 0; padding: 24px; background: #fff; }
@@ -25,13 +26,27 @@
       .no-print { display: none; }
       .box { break-inside: avoid; }
     }
+    
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
   </style>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
 </head>
 <body>
   <div class="no-print" style="text-align:right; margin-bottom:12px;">
@@ -45,9 +60,10 @@
 
   <div class="bilingual">
     <div class="box">
-      <h2>Today's Goal / Meta de hoy</h2>
-      <p lang="en">I can write a number as a product of its prime factors using a factor tree.</p>
+      <h2>Objectives / Objetivos</h2>
+      <p lang="en"><strong>Content Objective:</strong> I can write a number as a product of its prime factors using a factor tree.</p>
       
+      <p lang="en"><strong>Language Objective:</strong> I can explain how I broke a number down using the words prime number, composite number, factor, and exponent.</p>
     </div>
     <div class="box">
       <h2>Key Idea / Idea clave</h2>
@@ -64,7 +80,7 @@
     <h2>Vocabulary / Vocabulario</h2>
     <table>
       <thead><tr><th>Term / Término</th><th>Definition / Definición</th></tr></thead>
-      <tbody><tr><td><strong>Prime number</strong><br><span lang="es">Número primo</span></td><td>A number bigger than 1 that you can only divide by 1 and itself.<br><span lang="es">Un número mayor que 1 que solo se puede dividir entre 1 y sí mismo.</span></td></tr><tr><td><strong>Composite number</strong><br><span lang="es">Número compuesto</span></td><td>A number bigger than 1 that you can divide by more than just 1 and itself.<br><span lang="es">Un número mayor que 1 que se puede dividir entre más números, no solo 1 y sí mismo.</span></td></tr><tr><td><strong>Prime factorization</strong><br><span lang="es">Factorización prima</span></td><td>Writing a number as prime numbers multiplied together.<br><span lang="es">Escribir un número como números primos multiplicados.</span></td></tr><tr><td><strong>Factor tree</strong><br><span lang="es">Árbol de factores</span></td><td>A picture that splits a number into its prime numbers, step by step.<br><span lang="es">Un dibujo que separa un número en sus números primos, paso a paso.</span></td></tr><tr><td><strong>Exponent</strong><br><span lang="es">Exponente</span></td><td>A small number that tells how many times to multiply a number by itself.<br><span lang="es">Un número pequeño que dice cuántas veces multiplicar un número por sí mismo.</span></td></tr></tbody>
+      <tbody><tr><td><strong>Prime number</strong><br><span lang="es">Número primo</span></td><td>A number bigger than 1 that you can only divide by 1 and itself.<br><span lang="es">Un número mayor que 1 que solo se puede dividir entre 1 y sí mismo.</span></td></tr><tr><td><strong>Composite number</strong><br><span lang="es">Número compuesto</span></td><td>A number bigger than 1 that you can divide by more than just 1 and itself.<br><span lang="es">Un número mayor que 1 que se puede dividir entre más números, no solo 1 y sí mismo.</span></td></tr><tr><td><strong>Prime factorization</strong><br><span lang="es">Factorización prima</span></td><td>Writing a number as prime numbers multiplied together.<br><span lang="es">Escribir un número como números primos multiplicados.</span></td></tr><tr><td><strong>Factor</strong><br><span lang="es">Factor</span></td><td>A number that divides evenly into another number, with no remainder.<br><span lang="es">Un número que divide exactamente a otro número, sin dejar residuo.</span></td></tr><tr><td><strong>Factor tree</strong><br><span lang="es">Árbol de factores</span></td><td>A picture that splits a number into its prime numbers, step by step.<br><span lang="es">Un dibujo que separa un número en sus números primos, paso a paso.</span></td></tr><tr><td><strong>Exponent</strong><br><span lang="es">Exponente</span></td><td>A small number that tells how many times to multiply a number by itself.<br><span lang="es">Un número pequeño que dice cuántas veces multiplicar un número por sí mismo.</span></td></tr></tbody>
     </table>
   </div>
 
@@ -80,11 +96,5 @@
   </div>
 
   <footer class="footer">Neft Teacher · 1-1 · Printable student handout</footer>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
 </body>
 </html>

@@ -1619,26 +1619,10 @@ function renderLaunchPhase(el, state, ctx, config) {
   // Notice & Wonder (Reveal data-context). No-op when absent.
   renderNoticeAndWonder(el, config, state);
 
-  // ── Launch ────────────────────────────────────────────────────────────────
-  // The next part down: the application scenario and the guided solve.
-  phaseHeader(
-    el,
-    "🚀",
-    "section-icon-amber",
-    "Launch",
-    "Read the problem, then show your work.",
-  );
-
-  const scenario = document.createElement("div");
-  scenario.className = "card launch-scenario-card";
-  scenario.innerHTML = `
-    <div class="badge badge-amber mb-4">${esc(cfg.badge || config.title)}</div>
-    <p class="launch-narrative" data-annotate="word-problem">${renderMathText(cfg.narrative)}</p>`;
-  if (cfg.contextImage || config.theme) {
-    renderThemeIllustration(scenario, config.theme, cfg.contextImage || null);
-  }
-  el.append(scenario);
-
+  // The observation visual + generic Notice/Wonder belong with the "Be Curious"
+  // image — the thing students observe — NOT the Launch word problem. They are
+  // rendered here, before Launch, so "I notice / I wonder" matches the Be Curious
+  // visual rather than the scenario.
   // Opt-in concrete data visual so "I notice / I wonder" has something to see.
   renderLaunchVisual(el, cfg.visual);
 
@@ -1682,6 +1666,27 @@ function renderLaunchPhase(el, state, ctx, config) {
     grid.append(noticeCard, wonderCard);
     el.append(grid);
   }
+
+  // ── Launch ────────────────────────────────────────────────────────────────
+  // Now the application scenario and the guided solve — the word problem lives
+  // here, after Be Curious / Notice & Wonder.
+  phaseHeader(
+    el,
+    "🚀",
+    "section-icon-amber",
+    "Launch",
+    "Read the problem, then show your work.",
+  );
+
+  const scenario = document.createElement("div");
+  scenario.className = "card launch-scenario-card";
+  scenario.innerHTML = `
+    <div class="badge badge-amber mb-4">${esc(cfg.badge || config.title)}</div>
+    <p class="launch-narrative" data-annotate="word-problem">${renderMathText(cfg.narrative)}</p>`;
+  if (cfg.contextImage || config.theme) {
+    renderThemeIllustration(scenario, config.theme, cfg.contextImage || null);
+  }
+  el.append(scenario);
 
   // Hand off to the full step-by-step Learn It page — the single place the
   // concept is taught. (Concept teaching no longer renders inside Launch; it

@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
+    @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap");
     :root {
       --ref-navy: #1C2E42;
       --ref-teal: #387F84;
@@ -1112,10 +1113,32 @@
     .cfu-card { text-align:center; }
     .cfu-poll { display:flex; gap:8px; justify-content:center; margin:12px 0; }
     .cfu-btn { flex:none; min-width:100px; }
-    .diff-paths-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+    .diff-paths-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:8px; }
     .diff-path { border:2px solid var(--path-color, var(--teal)); border-radius:8px; padding:10px; }
     .diff-path-label { font-size:11px; font-weight:800; color:var(--navy); margin-bottom:6px; }
     .diff-path-stem { font-size:10px; line-height:1.4; margin:0; }
+    /* Read-aloud (TTS) button — additive, accessible, never shown in print */
+    .read-aloud-btn { display:inline-flex; align-items:center; justify-content:center; vertical-align:middle; margin-left:6px; padding:0; width:1.7em; height:1.7em; min-width:1.7em; border:1.5px solid var(--teal); border-radius:50%; background:var(--white,#fff); color:var(--navy); font-size:0.78em; line-height:1; cursor:pointer; transition:transform .12s ease, background .12s ease; }
+    .read-aloud-btn:hover { background:var(--teal-light); transform:scale(1.08); }
+    .read-aloud-btn:active { transform:scale(0.96); }
+    .read-aloud-btn:focus-visible { outline:3px solid var(--amber); outline-offset:2px; }
+    @media print { .read-aloud-btn { display:none !important; } }
+    /* Bilingual Spanish stem line under English — gated by .bilingual-on (default on) */
+    .stem-es { display:block; margin-top:2px; font-size:0.82em; font-style:italic; color:var(--navy); opacity:0.72; }
+    body:not(.bilingual-on) .stem-es,
+    body:not(.bilingual-on) .objective-text-es,
+    body:not(.bilingual-on) .vocab-term-es,
+    body:not(.bilingual-on) .vocab-definition-es { display:none; }
+    .tt-stems-extend { margin-top:8px; padding-top:8px; border-top:1px dashed var(--gray,#ccc); }
+    .tt-stem-extend { opacity:0.92; }
+    /* Header accessibility / language controls */
+    .a11y-controls { display:flex; align-items:center; gap:8px; }
+    .a11y-btn { font-size:12px; font-weight:700; color:var(--navy); background:var(--white,#fff); border:1.5px solid var(--teal); border-radius:16px; padding:5px 12px; cursor:pointer; }
+    .a11y-btn[aria-pressed="false"] { opacity:0.55; }
+    .a11y-btn:focus-visible, .a11y-rate select:focus-visible { outline:3px solid var(--amber); outline-offset:2px; }
+    .a11y-rate { display:inline-flex; align-items:center; gap:4px; font-size:12px; color:var(--navy); }
+    .a11y-rate select { font-size:12px; border:1.5px solid var(--teal); border-radius:14px; padding:4px 8px; background:var(--white,#fff); color:var(--navy); cursor:pointer; }
+    @media print { .a11y-controls { display:none !important; } }
     .workspace-table { width:100%; border-collapse:collapse; font-size:11px; }
     .workspace-table th, .workspace-table td { border:1px solid #dadce0; padding:6px 8px; text-align:center; }
     .workspace-table th { background:var(--teal-light); font-weight:800; }
@@ -2012,15 +2035,14 @@
       .presenter-hud { font-size: 10px; padding: 6px 10px; }
     }
     
+.slide-main-title,.title-heading,.g-doc-title,.section-divider-title,
+.post-it-title,.g-title-block h1,.g-title-block h2,h1,h2{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
   </style>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
 </head>
-<body>
+<body class="bilingual-on">
 
   <!-- Google Slides Chrome Bar -->
   <header class="g-chrome">
@@ -2039,6 +2061,16 @@
       </div>
     </div>
     <div class="g-right">
+      <div class="a11y-controls" role="group" aria-label="Accessibility and language controls">
+        <button class="a11y-btn" id="bilingual-toggle" aria-pressed="true" onclick="toggleBilingual(this)" title="Show or hide Spanish support">🌐 Español</button>
+        <label class="a11y-rate" title="Read-aloud speed">🔊
+          <select id="tts-rate-select" aria-label="Read-aloud speed" onchange="setSlideTtsRate(this.value)">
+            <option value="0.7">Slow</option>
+            <option value="0.85" selected>Normal</option>
+            <option value="1">Fast</option>
+          </select>
+        </label>
+      </div>
       
       <button class="btn-present" onclick="enterFullscreen()">
         ▶ Present
@@ -2398,13 +2430,13 @@
     <div class="ref-two-col">
       <div class="ref-main-panel">
     <h2 class="card-title">🎯 Content Objective <span class="bilingual-tag">/ Objetivo de contenido</span></h2>
-    <p class="objective-text">I can write a number as a product of its prime factors using a factor tree.</p>
+    <p class="objective-text">I can write a number as a product of its prime factors using a factor tree.<button type="button" class="read-aloud-btn" aria-label="Read the content objective aloud" title="Read the content objective aloud" data-speak="I can write a number as a product of its prime factors using a factor tree." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
   </div>
       <aside class="ref-side-panel">
         <div class="ref-side-header">Today&#039;s Objectives</div>
         <div class="ref-side-body">
     <h2 class="card-title">🗣️ Language Objective <span class="bilingual-tag">/ Objetivo de lenguaje</span></h2>
-    <p class="objective-text">I can explain how I broke a number down using the words prime number, composite number, factor, and exponent.</p>
+    <p class="objective-text">I can explain how I broke a number down using the words prime number, composite number, factor, and exponent.<button type="button" class="read-aloud-btn" aria-label="Read the language objective aloud" title="Read the language objective aloud" data-speak="I can explain how I broke a number down using the words prime number, composite number, factor, and exponent." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     
     <p class="ref-teacher-note ref-note-say"><span>👩‍🏫</span> Read objectives aloud. Ask: What will you be able to do by the end of class?</p>
     <p class="ref-teacher-note ref-note-ask"><span>❓</span> Which vocabulary words do you already know? Which are new?</p>
@@ -2561,7 +2593,7 @@
     <div class="ref-curious-layout">
       <div class="ref-visual-prompt">
         <span class="ref-prompt-badge">Visual Prompt</span>
-        <p class="ref-instruction">Space Station Cargo Breakdown</p><p class="card-desc">The space station received 60 supply crates. Mission Control needs to break this quantity into its prime components so the sorting robots can distribute them into equally sized pods. Help the crew find the prime factorization of 60!</p><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 440 240" style="background:white; border-radius:8px;"><rect x="5" y="5" width="430" height="230" fill="#F9FBFC" stroke="#1FA6A2" stroke-width="2"/><line x1="20" y1="5" x2="20" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="50" y1="5" x2="50" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="80" y1="5" x2="80" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="110" y1="5" x2="110" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="140" y1="5" x2="140" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="170" y1="5" x2="170" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="200" y1="5" x2="200" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="230" y1="5" x2="230" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="260" y1="5" x2="260" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="290" y1="5" x2="290" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="320" y1="5" x2="320" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="350" y1="5" x2="350" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="380" y1="5" x2="380" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="410" y1="5" x2="410" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="20" x2="435" y2="20" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="50" x2="435" y2="50" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="80" x2="435" y2="80" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="110" x2="435" y2="110" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="140" x2="435" y2="140" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="170" x2="435" y2="170" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="200" x2="435" y2="200" stroke="#E1EAEF" stroke-width="1"/><text x="20" y="32" font-family="Outfit, sans-serif" font-size="12" fill="#17324D" font-weight="bold">Prime factors of 60</text><circle cx="40" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="40" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">2</text><circle cx="120" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="120" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">2</text><circle cx="200" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="200" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">3</text><circle cx="280" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="280" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">5</text><text x="20" y="195" font-family="Hanken Grotesk, sans-serif" font-size="11" fill="#17324D" font-weight="bold">60 = 2 × 2 × 3 × 5 = 2² × 3 × 5</text></svg>
+        <p class="ref-instruction">Space Station Cargo Breakdown</p><p class="card-desc">The space station received 60 supply crates. Mission Control needs to break this quantity into its prime components so the sorting robots can distribute them into equally sized pods. Help the crew find the prime factorization of 60!<button type="button" class="read-aloud-btn" aria-label="Read the prompt aloud" title="Read the prompt aloud" data-speak="The space station received 60 supply crates. Mission Control needs to break this quantity into its prime components so the sorting robots can distribute them into equally sized pods. Help the crew find the prime factorization of 60!" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 440 240" style="background:white; border-radius:8px;"><rect x="5" y="5" width="430" height="230" fill="#F9FBFC" stroke="#1FA6A2" stroke-width="2"/><line x1="20" y1="5" x2="20" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="50" y1="5" x2="50" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="80" y1="5" x2="80" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="110" y1="5" x2="110" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="140" y1="5" x2="140" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="170" y1="5" x2="170" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="200" y1="5" x2="200" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="230" y1="5" x2="230" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="260" y1="5" x2="260" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="290" y1="5" x2="290" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="320" y1="5" x2="320" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="350" y1="5" x2="350" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="380" y1="5" x2="380" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="410" y1="5" x2="410" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="20" x2="435" y2="20" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="50" x2="435" y2="50" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="80" x2="435" y2="80" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="110" x2="435" y2="110" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="140" x2="435" y2="140" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="170" x2="435" y2="170" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="200" x2="435" y2="200" stroke="#E1EAEF" stroke-width="1"/><text x="20" y="32" font-family="Outfit, sans-serif" font-size="12" fill="#17324D" font-weight="bold">Prime factors of 60</text><circle cx="40" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="40" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">2</text><circle cx="120" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="120" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">2</text><circle cx="200" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="200" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">3</text><circle cx="280" cy="110" r="20" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="2" /><text x="280" y="115" font-family="Outfit, sans-serif" font-size="13" fill="#17324D" font-weight="bold" text-anchor="middle">5</text><text x="20" y="195" font-family="Hanken Grotesk, sans-serif" font-size="11" fill="#17324D" font-weight="bold">60 = 2 × 2 × 3 × 5 = 2² × 3 × 5</text></svg>
       </div>
       <div class="ref-nw-stack">
         <div class="ref-nw-panel ref-nw-notice">
@@ -2870,31 +2902,31 @@
       </thead>
       <tbody>
     <tr>
-      <td class="ref-vocab-term">Prime number<br/><em>Número primo</em></td>
+      <td class="ref-vocab-term">Prime number<button type="button" class="read-aloud-btn" aria-label="Read Prime number and its meaning aloud" title="Read Prime number and its meaning aloud" data-speak="Prime number. A number bigger than 1 that you can only divide by 1 and itself." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Número primo</em><button type="button" class="read-aloud-btn" aria-label="Leer Número primo en español" title="Leer Número primo en español" data-speak="Número primo. Un número mayor que 1 que solo se puede dividir entre 1 y sí mismo." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>A number bigger than 1 that you can only divide by 1 and itself.<br/><em>Un número mayor que 1 que solo se puede dividir entre 1 y sí mismo.</em></td>
       <td></td>
       <td class="ref-vocab-visual">7 has only two factors: 1 × 7. So 7 is prime.</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Composite number<br/><em>Número compuesto</em></td>
+      <td class="ref-vocab-term">Composite number<button type="button" class="read-aloud-btn" aria-label="Read Composite number and its meaning aloud" title="Read Composite number and its meaning aloud" data-speak="Composite number. A number bigger than 1 that you can divide by more than just 1 and itself." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Número compuesto</em><button type="button" class="read-aloud-btn" aria-label="Leer Número compuesto en español" title="Leer Número compuesto en español" data-speak="Número compuesto. Un número mayor que 1 que se puede dividir entre más números, no solo 1 y sí mismo." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>A number bigger than 1 that you can divide by more than just 1 and itself.<br/><em>Un número mayor que 1 que se puede dividir entre más números, no solo 1 y sí mismo.</em></td>
       <td></td>
       <td class="ref-vocab-visual">12 = 1 × 12, 2 × 6, 3 × 4 — six factors, so 12 is composite</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Prime factorization<br/><em>Factorización prima</em></td>
+      <td class="ref-vocab-term">Prime factorization<button type="button" class="read-aloud-btn" aria-label="Read Prime factorization and its meaning aloud" title="Read Prime factorization and its meaning aloud" data-speak="Prime factorization. Writing a number as prime numbers multiplied together." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Factorización prima</em><button type="button" class="read-aloud-btn" aria-label="Leer Factorización prima en español" title="Leer Factorización prima en español" data-speak="Factorización prima. Escribir un número como números primos multiplicados." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>Writing a number as prime numbers multiplied together.<br/><em>Escribir un número como números primos multiplicados.</em></td>
       <td></td>
       <td class="ref-vocab-visual">36 = 2 × 2 × 3 × 3 = 2² × 3²</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Factor tree<br/><em>Árbol de factores</em></td>
+      <td class="ref-vocab-term">Factor tree<button type="button" class="read-aloud-btn" aria-label="Read Factor tree and its meaning aloud" title="Read Factor tree and its meaning aloud" data-speak="Factor tree. A picture that splits a number into its prime numbers, step by step." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Árbol de factores</em><button type="button" class="read-aloud-btn" aria-label="Leer Árbol de factores en español" title="Leer Árbol de factores en español" data-speak="Árbol de factores. Un dibujo que separa un número en sus números primos, paso a paso." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>A picture that splits a number into its prime numbers, step by step.<br/><em>Un dibujo que separa un número en sus números primos, paso a paso.</em></td>
       <td></td>
       <td class="ref-vocab-visual">24 → 4 × 6 → (2 × 2) × (2 × 3) → 2 × 2 × 2 × 3</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Exponent<br/><em>Exponente</em></td>
+      <td class="ref-vocab-term">Exponent<button type="button" class="read-aloud-btn" aria-label="Read Exponent and its meaning aloud" title="Read Exponent and its meaning aloud" data-speak="Exponent. A small number that tells how many times to multiply a number by itself." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Exponente</em><button type="button" class="read-aloud-btn" aria-label="Leer Exponente en español" title="Leer Exponente en español" data-speak="Exponente. Un número pequeño que dice cuántas veces multiplicar un número por sí mismo." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>A small number that tells how many times to multiply a number by itself.<br/><em>Un número pequeño que dice cuántas veces multiplicar un número por sí mismo.</em></td>
       <td></td>
       <td class="ref-vocab-visual">2³ means 2 × 2 × 2 = 8</td>
@@ -3074,10 +3106,11 @@
     <span class="teacher-cue-label">Time:</span>
     <span class="teacher-cue-text">90 sec</span>
   </div>
-        <p class="card-desc tt-question">The freighter docks with 48 cargo containers, and each storage pod only holds groups built from prime-numbered units. Is 48 prime or composite, and how can you tell before building a factor tree?</p>
+        <p class="card-desc tt-question">The freighter docks with 48 cargo containers, and each storage pod only holds groups built from prime-numbered units. Is 48 prime or composite, and how can you tell before building a factor tree?<button type="button" class="read-aloud-btn" aria-label="Read the question aloud" title="Read the question aloud" data-speak="The freighter docks with 48 cargo containers, and each storage pod only holds groups built from prime-numbered units. Is 48 prime or composite, and how can you tell before building a factor tree?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
         <div class="tt-stems-box">
           <strong>Sentence starters (tap to use):</strong>
-          <div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ 48 is a ___ number because it has ___.</div><div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ I can tell before factoring because ___.</div>
+          <div class="tt-stem" onclick="insertAtCursor('48 is a ___ number because it has ___.')">✍️ 48 is a ___ number because it has ___.<span class="stem-es">48 es un número ___ porque tiene ___.</span></div><div class="tt-stem" onclick="insertAtCursor('I can tell before factoring because ___.')">✍️ I can tell before factoring because ___.<span class="stem-es">Puedo saberlo antes de factorizar porque ___.</span></div>
+          <div class="tt-stems-extend"><strong>Stretch further:</strong><div class="tt-stem tt-stem-extend">➕ 47 cannot be split because its only factors are ___.</div><div class="tt-stem tt-stem-extend">➕ A prime number&#039;s factor tree would ___ because ___.</div></div>
         </div>
         <div class="tt-wordbank"><strong>WORD BANK:</strong><div><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">prime number</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">composite number</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">factor</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">divisible</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">factor tree</span></div></div>
         <div class="turn-talk-timer" id="tt-timer-launch">
@@ -3271,10 +3304,11 @@
     <span class="teacher-cue-label">Time:</span>
     <span class="teacher-cue-text">90 sec</span>
   </div>
-        <p class="card-desc tt-question">Look at your factor tree for 48. How did you decide which numbers to break apart first, and how did you know when to stop?</p>
+        <p class="card-desc tt-question">Look at your factor tree for 48. How did you decide which numbers to break apart first, and how did you know when to stop?<button type="button" class="read-aloud-btn" aria-label="Read the question aloud" title="Read the question aloud" data-speak="Look at your factor tree for 48. How did you decide which numbers to break apart first, and how did you know when to stop?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
         <div class="tt-stems-box">
           <strong>Sentence starters (tap to use):</strong>
-          <div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ I broke 48 into ___ first because ___.</div><div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ I knew I was finished when every factor was ___.</div>
+          <div class="tt-stem" onclick="insertAtCursor('I broke 48 into ___ first because ___.')">✍️ I broke 48 into ___ first because ___.<span class="stem-es">Separé 48 en ___ primero porque ___.</span></div><div class="tt-stem" onclick="insertAtCursor('I knew I was finished when every factor was ___.')">✍️ I knew I was finished when every factor was ___.<span class="stem-es">Supe que terminé cuando cada factor era ___.</span></div>
+          <div class="tt-stems-extend"><strong>Stretch further:</strong><div class="tt-stem tt-stem-extend">➕ The prime factorization of 48 with exponents is ___.</div><div class="tt-stem tt-stem-extend">➕ The exponent in 2⁴ means ___ because ___.</div></div>
         </div>
         <div class="tt-wordbank"><strong>WORD BANK:</strong><div><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">prime number</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">composite number</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">factor</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">factor tree</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">prime factorization</span></div></div>
         <div class="turn-talk-timer" id="tt-timer-explore">
@@ -3508,7 +3542,7 @@
     <div class="ref-two-col">
       <div class="ref-main-panel">
     <span class="ref-error-badge">⚠ Find Marcus&#039;s Mistake</span>
-    <p class="ref-instruction">A classmate turned in the work below. One step has a mistake. Read every step, find it, name it, and fix it.</p>
+    <p class="ref-instruction">A classmate turned in the work below. One step has a mistake. Read every step, find it, name it, and fix it.<button type="button" class="read-aloud-btn" aria-label="Read the directions aloud" title="Read the directions aloud" data-speak="A classmate turned in the work below. One step has a mistake. Read every step, find it, name it, and fix it." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     <div class="ref-student-work-box">
       <div class="ref-work-label">Student&apos;s work — read every step:</div>
       <div class="ea-steps">
@@ -3820,11 +3854,11 @@
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🚀 SPACE STATION</span></div>
     <h3 class="slide-main-title">Differentiation Paths</h3>
     <div class="slide-card">
-      <span class="slide-badge badge-teal">🎯 THREE PATHS</span>
+      <span class="slide-badge badge-teal">🎯 CHOOSE YOUR LEVEL</span>
       <div class="teacher-cue teacher-cue-say">
     <span class="teacher-cue-icon">👩‍🏫</span>
     <span class="teacher-cue-label">Say:</span>
-    <span class="teacher-cue-text">All students work on math — choose the path that matches readiness.</span>
+    <span class="teacher-cue-text">Everyone works on the same math goal — pick the level of support that fits today.</span>
   </div>
       <div class="teacher-cue teacher-cue-time">
     <span class="teacher-cue-icon">⏱️</span>
@@ -3832,17 +3866,21 @@
     <span class="teacher-cue-text">8–10 min independent or partner</span>
   </div>
       <div class="diff-paths-grid">
+        <div class="diff-path" style="--path-color:var(--coral, #e07a5f)">
+      <div class="diff-path-label">🧩 Level 0 · Most support</div>
+      <p class="diff-path-stem">Step-by-step with a worked model and sentence frames.<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="Step-by-step with a worked model and sentence frames." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
+    </div>
         <div class="diff-path" style="--path-color:var(--amber)">
-      <div class="diff-path-label">🌱 Approaching</div>
-      <p class="diff-path-stem">Which of the following is a prime number?</p>
+      <div class="diff-path-label">🌱 Level 1 · Support</div>
+      <p class="diff-path-stem">Which of the following is a prime number?<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="Which of the following is a prime number?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     </div>
         <div class="diff-path" style="--path-color:var(--teal)">
-      <div class="diff-path-label">🎯 On-Level</div>
-      <p class="diff-path-stem">Core practice aligned to the standard.</p>
+      <div class="diff-path-label">🎯 Level 2 · Core</div>
+      <p class="diff-path-stem">Core practice aligned to the standard.<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="Core practice aligned to the standard." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     </div>
         <div class="diff-path" style="--path-color:var(--navy)">
-      <div class="diff-path-label">🚀 Challenge</div>
-      <p class="diff-path-stem">Extension with error analysis or multi-step reasoning.</p>
+      <div class="diff-path-label">🚀 Level 2+ · Enrichment</div>
+      <p class="diff-path-stem">Extension with error analysis or multi-step reasoning.<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="Extension with error analysis or multi-step reasoning." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     </div>
       </div>
     </div></div>
@@ -3953,12 +3991,12 @@
     <span class="teacher-cue-label">Say:</span>
     <span class="teacher-cue-text">Read the scenario. Ask: where else have you seen this kind of math?</span>
   </div>
-        <p class="card-desc">A party planner has 72 balloons and wants to know every possible way to arrange them in equal rows. She uses prime factorization to find all the factors of 72.</p>
+        <p class="card-desc">Aboard Station Helios, the crew has 72 supply units and wants to know every possible way to arrange them into equal pods. They use prime factorization to find all the factors of 72.</p>
         <div class="connect-vocab"><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">prime</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">factorization</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">factors</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">72</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">2</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">3</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">multiply</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">combinations</span></div>
       </div>
       <div class="slide-card card-teal-light">
         <h2 class="card-title">✍️ Connection Reasoning</h2>
-        <p class="card-desc-sm">How does prime factorization help the planner find all the ways to arrange the balloons?</p>
+        <p class="card-desc-sm">How does prime factorization help the crew find all the ways to arrange the supply units into equal pods?</p>
         <p class="connect-frame">The prime factorization of 72 is ___, which helps me find all factors by ___.</p>
         <textarea id="rw-connect-work" class="slide-input-placeholder" rows="4" placeholder="Write your connection..."></textarea>
       </div>
@@ -4002,10 +4040,11 @@
     <span class="teacher-cue-label">Time:</span>
     <span class="teacher-cue-text">90 sec</span>
   </div>
-        <p class="card-desc tt-question">The cafeteria has 84 apples to arrange into equal rows. How does the prime factorization of 84 help the manager find every possible equal-row display?</p>
+        <p class="card-desc tt-question">The station has 72 supply units to arrange into equal pods. How does the prime factorization of 72 help the crew find every possible equal-pod arrangement?<button type="button" class="read-aloud-btn" aria-label="Read the question aloud" title="Read the question aloud" data-speak="The station has 72 supply units to arrange into equal pods. How does the prime factorization of 72 help the crew find every possible equal-pod arrangement?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
         <div class="tt-stems-box">
           <strong>Sentence starters (tap to use):</strong>
-          <div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ The prime factorization of 84 is ___.</div><div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ The manager finds all the row sizes by ___ the prime factors.</div>
+          <div class="tt-stem" onclick="insertAtCursor('The prime factorization of 72 is ___.')">✍️ The prime factorization of 72 is ___.<span class="stem-es">La factorización prima de 72 es ___.</span></div><div class="tt-stem" onclick="insertAtCursor('The crew finds all the pod sizes by ___ the prime factors.')">✍️ The crew finds all the pod sizes by ___ the prime factors.<span class="stem-es">La tripulación halla todos los tamaños de cápsula al ___ los factores primos.</span></div>
+          <div class="tt-stems-extend"><strong>Stretch further:</strong><div class="tt-stem tt-stem-extend">➕ Prime factorization is faster because ___.</div><div class="tt-stem tt-stem-extend">➕ I can build factors by ___ instead of testing every number since ___.</div></div>
         </div>
         <div class="tt-wordbank"><strong>WORD BANK:</strong><div><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">prime factorization</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">factor</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">exponent</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">composite number</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">product</span></div></div>
         <div class="turn-talk-timer" id="tt-timer-connect">
@@ -4015,9 +4054,9 @@
       </div>
       <div class="slide-card card-coral">
         <h2 class="card-title">👂 Listen For</h2>
-        <p class="card-desc-sm">Students give 84 = 2 × 2 × 3 × 7 = 2² × 3 × 7 and reason that multiplying combinations of those primes produces all factors of 84, which are the possible equal-row sizes.</p>
+        <p class="card-desc-sm">Students give 72 = 2 × 2 × 2 × 3 × 3 = 2³ × 3² and reason that multiplying combinations of those primes produces all factors of 72, which are the possible equal-pod sizes.</p>
         <textarea class="slide-input-placeholder" rows="5" placeholder="Record one strong idea you heard from your partner..."></textarea>
-        <p class="tt-extend"><strong>Extend:</strong> Why does knowing the prime factorization of 84 make it faster to list all factors than checking every number from 1 to 84?</p>
+        <p class="tt-extend"><strong>Extend:</strong> Why does knowing the prime factorization of 72 make it faster to list all factors than checking every number from 1 to 72?</p>
       </div>
     </div></div>
     </div><footer class="ref-slide-footer" data-slide-num="40">
@@ -4302,7 +4341,7 @@
       </div>
       <div class="slide-card card-coral">
         <h2 class="card-title">🎯 Listen For · Common Errors</h2>
-        <p class="notes-listen">• Students say 48 is composite because it has more than two factors (divisible by 2, 3, 4, 6, ...), so it can be broken into smaller groups.</p><p class="notes-listen">• Students explain they keep splitting composite branches and stop when every leaf is prime, ending with 48 = 2 × 2 × 2 × 2 × 3.</p><p class="notes-listen">• Students give 84 = 2 × 2 × 3 × 7 = 2² × 3 × 7 and reason that multiplying combinations of those primes produces all factors of 84, which are the possible equal-row sizes.</p><p class="notes-listen">• Students explain that breaking down different starting splits still reduces to the same prime factors, so the prime factorization is unique (the Fundamental Theorem of Arithmetic in plain words).</p>
+        <p class="notes-listen">• Students say 48 is composite because it has more than two factors (divisible by 2, 3, 4, 6, ...), so it can be broken into smaller groups.</p><p class="notes-listen">• Students explain they keep splitting composite branches and stop when every leaf is prime, ending with 48 = 2 × 2 × 2 × 2 × 3.</p><p class="notes-listen">• Students give 72 = 2 × 2 × 2 × 3 × 3 = 2³ × 3² and reason that multiplying combinations of those primes produces all factors of 72, which are the possible equal-pod sizes.</p><p class="notes-listen">• Students explain that breaking down different starting splits still reduces to the same prime factors, so the prime factorization is unique (the Fundamental Theorem of Arithmetic in plain words).</p>
         <p class="notes-mistake"><strong>Common mistake:</strong> A common mistake in Prime Factorization is skipping the key idea: &quot;Keep breaking a number apart until every factor is a prime number you cannot split anymore.&quot; — always check your work against this rule before you submit.</p>
       </div>
     </div></div>
@@ -4529,6 +4568,66 @@
         }
       }, 1000);
     }
+
+    // -----------------------------------------------------------------
+    // READ-ALOUD (Text-to-Speech) — accessibility + Level 1 language support
+    // Reads slide text via the browser Web Speech API. Rate is saved so a
+    // teacher/student preference persists across slides and lessons.
+    // -----------------------------------------------------------------
+    const SLIDE_TTS_RATE_KEY = 'neft-slide-tts-rate';
+    function getSlideTtsRate() {
+      const saved = parseFloat(localStorage.getItem(SLIDE_TTS_RATE_KEY));
+      return (saved && saved >= 0.5 && saved <= 1.5) ? saved : 0.85;
+    }
+    function setSlideTtsRate(rate) {
+      const r = parseFloat(rate);
+      if (r && r >= 0.5 && r <= 1.5) localStorage.setItem(SLIDE_TTS_RATE_KEY, String(r));
+    }
+    function speakText(text, lang) {
+      if (!('speechSynthesis' in window) || !text) return;
+      try {
+        // A second tap on a speaking button stops it (toggle behavior).
+        if (window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+          return;
+        }
+        const utter = new SpeechSynthesisUtterance(String(text).replace(/[✍️🎯🗣️👂✓✗⚠➡️•]/g, ' ').trim());
+        utter.rate = getSlideTtsRate();
+        utter.lang = lang || 'en-US';
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utter);
+      } catch (e) { /* speech not available */ }
+    }
+    // Read-aloud buttons carry their text in data-speak (and optional data-lang).
+    function speakFromButton(btn) {
+      if (!btn) return;
+      speakText(btn.getAttribute('data-speak') || '', btn.getAttribute('data-lang') || 'en-US');
+    }
+    window.speakText = speakText;
+    window.speakFromButton = speakFromButton;
+    window.setSlideTtsRate = setSlideTtsRate;
+    window.getSlideTtsRate = getSlideTtsRate;
+
+    // Bilingual (Spanish support) toggle — persists per browser.
+    const SLIDE_BILINGUAL_KEY = 'neft-slide-bilingual';
+    function applyBilingual(on) {
+      document.body.classList.toggle('bilingual-on', on);
+      const btn = document.getElementById('bilingual-toggle');
+      if (btn) btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+    function toggleBilingual(btn) {
+      const on = !document.body.classList.contains('bilingual-on');
+      localStorage.setItem(SLIDE_BILINGUAL_KEY, on ? '1' : '0');
+      applyBilingual(on);
+    }
+    window.toggleBilingual = toggleBilingual;
+    // Restore saved accessibility preferences on load.
+    (function initA11yPrefs() {
+      const savedBi = localStorage.getItem(SLIDE_BILINGUAL_KEY);
+      if (savedBi !== null) applyBilingual(savedBi === '1');
+      const rateSel = document.getElementById('tts-rate-select');
+      if (rateSel) rateSel.value = String(getSlideTtsRate());
+    })();
 
     // CFU thumb responses
     const cfuResponses = {};
@@ -5890,11 +5989,5 @@
     
   </script>
 
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
 </body>
 </html>

@@ -3,6 +3,10 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { resolveVocabImage, vocabImageAlt } from "../engine/core/vocab-images.js";
 import { deriveWorkedSteps } from "../engine/core/worked-steps.js";
+import {
+  EDITORIAL_FONT_IMPORT,
+  EDITORIAL_OVERRIDES,
+} from "./lib/editorial-print.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -891,21 +895,27 @@ function notesSection(cfg = {}, worked = null, fillHtml = "") {
   const launch = cfg.launch || {};
   const explore = cfg.explore || {};
 
-  // Plain-language "what we're learning today" — prefer the content objective,
-  // fall back to the language objective, then the lesson theme/title.
-  const learningRaw =
-    cfg.contentObjective ||
-    cfg.languageObjective ||
-    (cfg.title ? `We are learning about ${cfg.title}.` : "");
-  const learningHtml = learningRaw
+  // Today's objectives — each shown WITH its label (Content / Language) so the
+  // objective type is always clear, not merged into one anonymous line.
+  const hasObjectives = cfg.contentObjective || cfg.languageObjective;
+  const learningHtml = hasObjectives
     ? `<div class="notes-learning">
       <span class="notes-learning-icon" aria-hidden="true">🎯</span>
       <div>
-        <p class="notes-learning-label">What we're learning today</p>
-        <p class="notes-learning-text">${esc(learningRaw)}</p>
+        <p class="notes-learning-label">Today's objectives</p>
+        ${cfg.contentObjective ? `<p class="notes-learning-text"><strong>Content Objective:</strong> ${esc(cfg.contentObjective)}</p>` : ""}
+        ${cfg.languageObjective ? `<p class="notes-learning-text"><strong>Language Objective:</strong> ${esc(cfg.languageObjective)}</p>` : ""}
       </div>
     </div>`
-    : "";
+    : cfg.title
+      ? `<div class="notes-learning">
+      <span class="notes-learning-icon" aria-hidden="true">🎯</span>
+      <div>
+        <p class="notes-learning-label">What we're learning today</p>
+        <p class="notes-learning-text">We are learning about ${esc(cfg.title)}.</p>
+      </div>
+    </div>`
+      : "";
 
   // This packet is JUST note-taking now. The explanation + worked examples live
   // in Learn It; vocabulary lives in the Vocab tab; problems live in Practice.
@@ -1128,6 +1138,7 @@ function answerKeySection(
 function styles(printTitle = "") {
   const safeTitle = String(printTitle).replace(/["\\]/g, "");
   return `<style>
+${EDITORIAL_FONT_IMPORT}
 :root{
   --navy:#12355b;--teal:#1fa6a2;--teal-light:#dff2ee;--amber:#f2c15b;
   --cream:#f7f4ec;--ink:#21313f;--muted:#5f6f80;--line:#d7e2ed;--card:#fff;
@@ -1835,6 +1846,7 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
     border: 1px dashed #000 !important;
   }
 }
+${EDITORIAL_OVERRIDES}
 </style>
 </style>`;
 }
@@ -2245,12 +2257,19 @@ function buildLearnPage(id, cfg, isFlagship) {
   const flagBadge = isFlagship ? `<span class="flagship-badge">Flagship</span>` : "";
 
   const learnBlock = conceptLearnBlock(cfg, { expanded: true });
-  const objective = cfg.contentObjective || cfg.languageObjective || "";
+  const objectivesIntro = [
+    cfg.contentObjective
+      ? `<p class="learnit-intro"><strong>Content Objective:</strong> ${esc(cfg.contentObjective)}</p>`
+      : "",
+    cfg.languageObjective
+      ? `<p class="learnit-intro"><strong>Language Objective:</strong> ${esc(cfg.languageObjective)}</p>`
+      : "",
+  ].join("");
   const body =
     learnBlock ||
     `<div class="learnit"><p class="learnit-eyebrow">📖 Learn It</p>
       <h3 class="learnit-head">${esc(cfg.title || "Today's math")}</h3>
-      ${objective ? `<p class="learnit-intro">${esc(objective)}</p>` : ""}
+      ${objectivesIntro}
       <p class="learnit-bridge">Your teacher will walk through how to solve this together.</p>
     </div>`;
 

@@ -45,6 +45,8 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
 .ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
 .ws-correct{font-weight:700;color:var(--teal);}
 .ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-watch{margin:4px 0 0;color:#9a4a12;font-size:12px;background:#fff3e6;border-left:3px solid #e08a3c;padding:5px 10px;border-radius:0 8px 8px 0;}
+.ws-scaffold-note{margin:0 0 14px;background:var(--soft);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:600;color:var(--navy);font-size:12.5px;}
 .ws-match{display:flex;gap:24px;flex-wrap:wrap;}
 .ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
 .ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
@@ -75,15 +77,49 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
   @page{margin:1.5cm;}
   a{color:#000;}
 }
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
 </style>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
 </head>
 <body>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.EE.7</span>
+      <span class="ws-ver">Level 0</span>
+    </div>
+    <h1 class="ws-title">Solve Multiplication and Division Equations</h1>
+    <p class="ws-sub">Practice — Level 0</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h3 class="ws-bank-h">📕 Word Bank</h3>
+    <div class="ws-bankwords"><span class="ws-bankword">Inverse operation</span><span class="ws-bankword">Multiply</span><span class="ws-bankword">Divide</span><span class="ws-bankword">Isolate</span><span class="ws-bankword">Coefficient</span><span class="ws-bankword">Solution</span></div>
+  </section><section class="ws-example">
+    <h3 class="ws-example-h">✏️ Worked Example</h3>
+    <ol class="ws-example-steps"><li><b>Equation:</b> x / 5 = 12</li><li><b>Identify inverse:</b> Inverse of division is division</li><li><b>Apply to both sides:</b> x / 5 / 5 = 12 / 5</li><li><b>Simplify:</b> x = 2.4</li></ol>
+  </section>
+    <p class="ws-scaffold-note">🧩 Extra support: use the word bank and the worked example. A sentence starter is given under each problem.</p>
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Solve: 6x = 42</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>x = 7</li><li class="ws-opt"><span class="ws-bub">B</span>x = 48</li><li class="ws-opt"><span class="ws-bub">C</span>x = 36</li><li class="ws-opt"><span class="ws-bub">D</span>x = 252</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Solve: n / 3 = 8</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>n = 24</li><li class="ws-opt"><span class="ws-bub">B</span>n = 11</li><li class="ws-opt"><span class="ws-bub">C</span>n = 5</li><li class="ws-opt"><span class="ws-bub">D</span>n = 3</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Solve: 9m = 63</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>m = 7</li><li class="ws-opt"><span class="ws-bub">B</span>m = 54</li><li class="ws-opt"><span class="ws-bub">C</span>m = 72</li><li class="ws-opt"><span class="ws-bub">D</span>m = 567</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Solve: y / 7 = 5</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>y = 35</li><li class="ws-opt"><span class="ws-bub">B</span>y = 12</li><li class="ws-opt"><span class="ws-bub">C</span>y = 2</li><li class="ws-opt"><span class="ws-bub">D</span>y = 7</li></ol></div></li></ol>
+  </section>
 <section class="ws-page">
     <header class="ws-head">
     <div class="ws-head-top">
@@ -101,10 +137,11 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <h3 class="ws-example-h">✏️ Worked Example</h3>
     <ol class="ws-example-steps"><li><b>Equation:</b> x / 5 = 12</li><li><b>Identify inverse:</b> Inverse of division is division</li><li><b>Apply to both sides:</b> x / 5 / 5 = 12 / 5</li><li><b>Simplify:</b> x = 2.4</li></ol>
   </section>
+    
     <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Solve: 6x = 42</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>x = 7</li><li class="ws-opt"><span class="ws-bub">B</span>x = 48</li><li class="ws-opt"><span class="ws-bub">C</span>x = 36</li><li class="ws-opt"><span class="ws-bub">D</span>x = 252</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Solve: n / 3 = 8</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>n = 24</li><li class="ws-opt"><span class="ws-bub">B</span>n = 11</li><li class="ws-opt"><span class="ws-bub">C</span>n = 5</li><li class="ws-opt"><span class="ws-bub">D</span>n = 3</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Solve: 9m = 63</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>m = 7</li><li class="ws-opt"><span class="ws-bub">B</span>m = 54</li><li class="ws-opt"><span class="ws-bub">C</span>m = 72</li><li class="ws-opt"><span class="ws-bub">D</span>m = 567</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Solve: y / 7 = 5</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>y = 35</li><li class="ws-opt"><span class="ws-bub">B</span>y = 12</li><li class="ws-opt"><span class="ws-bub">C</span>y = 2</li><li class="ws-opt"><span class="ws-bub">D</span>y = 7</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Sort each equation by the inverse operation you would use to solve it.</p>
   <p class="ws-prompt">Categories: <b></b></p>
   <ul class="ws-sort"></ul></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Solve Multiplication and Division Equations.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Divide to undo multiplying, and multiply to undo dividing — always on both sides.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Equation</span><span class="ws-step-w">6x = 42</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Choose operation</span><span class="ws-step-w">To undo it, I will multiply both sides by 6.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Apply to both sides</span><span class="ws-step-w">6x × 6 = 42 × 6</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Simplify</span><span class="ws-step-w">x = 252</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
   <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
   </section>
@@ -119,11 +156,44 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     
+    
     <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Solve each equation, show your work, and check.</p>
   <table class="ws-table"><thead><tr><th>Equation</th><th>Work</th><th>Solution</th><th>Check</th></tr></thead><tbody><tr><td>8m = 56</td><td></td><td></td><td></td></tr><tr><td>y / 6 = 11</td><td></td><td></td><td></td></tr><tr><td>12k = 96</td><td></td><td></td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A detective splits 54 clues equally among 9 case files. The equation 9c = 54 represents this. What is c?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>c = 6</li><li class="ws-opt"><span class="ws-bub">B</span>c = 63</li><li class="ws-opt"><span class="ws-bub">C</span>c = 45</li><li class="ws-opt"><span class="ws-bub">D</span>c = 9</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Solve 5x = 40 using the balance scale.</p><div class="ws-work"><span class="ws-work-label">Show your work</span></div></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A detective found 72 pieces of evidence and divided them equally into 6 bags. Use the bar model to show how many are in each bag.</p><div class="ws-work"><span class="ws-work-label">Show your work</span></div></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Solve Multiplication and Division Equations.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Divide to undo multiplying, and multiply to undo dividing — always on both sides.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Equation</span><span class="ws-step-w">n / 4 = 12</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Choose operation</span><span class="ws-step-w">n is in a fraction, so I will divide both sides by 4.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Apply to both sides</span><span class="ws-step-w">n / 4 ÷ 4 = 12 ÷ 4</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Simplify</span><span class="ws-step-w">n = 3</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
   <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.EE.7</span>
+      <span class="ws-ver">Challenge</span>
+    </div>
+    <h1 class="ws-title">Solve Multiplication and Division Equations</h1>
+    <p class="ws-sub">Practice — Challenge</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Find the Equation Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Equation</span><span class="ws-step-w">x / 5 = 12</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Identify inverse</span><span class="ws-step-w">Inverse of division is division</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Apply to both sides</span><span class="ws-step-w">x / 5 / 5 = 12 / 5</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Simplify</span><span class="ws-step-w">x = 2.4</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A bakery packed muffins into boxes of 8. They made 96 muffins total. Write an equation, solve it, and explain why your answer is reasonable. Then write a different situation that uses division and has the same answer.</p><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Solve each equation, then write and solve a related equation that uses the inverse operation.</p>
+  <table class="ws-table"><thead><tr><th>Equation</th><th>Solution</th><th>Related Equation</th><th>Related Solution</th></tr></thead><tbody><tr><td>4x = 36</td><td></td><td></td><td></td></tr><tr><td>x / 7 = 8</td><td></td><td></td><td></td></tr></tbody></table></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.EE.7</span>
+      <span class="ws-ver">Level 0 — Answer Key</span>
+    </div>
+    <h1 class="ws-title">Solve Multiplication and Division Equations</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Solve: 6x = 42</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>x = 7</li><li class="ws-opt"><span class="ws-bub">B</span>x = 48</li><li class="ws-opt"><span class="ws-bub">C</span>x = 36</li><li class="ws-opt"><span class="ws-bub">D</span>x = 252</li></ol><p class="ws-keynote">Divide both sides by 6: x = 42 ÷ 6 = 7. Check: 6 × 7 = 42 ✓</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Solve Multiplication and Division Equations is skipping the key idea: &quot;Divide to undo multiplying, and multiply to undo dividing — always on both sides.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Solve: n / 3 = 8</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>n = 24</li><li class="ws-opt"><span class="ws-bub">B</span>n = 11</li><li class="ws-opt"><span class="ws-bub">C</span>n = 5</li><li class="ws-opt"><span class="ws-bub">D</span>n = 3</li></ol><p class="ws-keynote">Multiply both sides by 3: n = 8 × 3 = 24. Check: 24 / 3 = 8 ✓</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Solve Multiplication and Division Equations is skipping the key idea: &quot;Divide to undo multiplying, and multiply to undo dividing — always on both sides.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Solve: 9m = 63</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>m = 7</li><li class="ws-opt"><span class="ws-bub">B</span>m = 54</li><li class="ws-opt"><span class="ws-bub">C</span>m = 72</li><li class="ws-opt"><span class="ws-bub">D</span>m = 567</li></ol><p class="ws-keynote">Divide both sides by 9: m = 63 ÷ 9 = 7. Check: 9 × 7 = 63 ✓</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Solve Multiplication and Division Equations is skipping the key idea: &quot;Divide to undo multiplying, and multiply to undo dividing — always on both sides.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Solve: y / 7 = 5</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>y = 35</li><li class="ws-opt"><span class="ws-bub">B</span>y = 12</li><li class="ws-opt"><span class="ws-bub">C</span>y = 2</li><li class="ws-opt"><span class="ws-bub">D</span>y = 7</li></ol><p class="ws-keynote">Multiply both sides by 7: y = 5 × 7 = 35. Check: 35 / 7 = 5 ✓</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Solve Multiplication and Division Equations is skipping the key idea: &quot;Divide to undo multiplying, and multiply to undo dividing — always on both sides.&quot; — always check your work against this rule before you submit.</p></div></li></ol>
   </section>
 <section class="ws-page">
     <header class="ws-head">
@@ -136,12 +206,13 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     
-    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Solve: 6x = 42</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>x = 7</li><li class="ws-opt"><span class="ws-bub">B</span>x = 48</li><li class="ws-opt"><span class="ws-bub">C</span>x = 36</li><li class="ws-opt"><span class="ws-bub">D</span>x = 252</li></ol><p class="ws-keynote">Divide both sides by 6: x = 42 ÷ 6 = 7. Check: 6 × 7 = 42 ✓</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Solve: n / 3 = 8</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>n = 24</li><li class="ws-opt"><span class="ws-bub">B</span>n = 11</li><li class="ws-opt"><span class="ws-bub">C</span>n = 5</li><li class="ws-opt"><span class="ws-bub">D</span>n = 3</li></ol><p class="ws-keynote">Multiply both sides by 3: n = 8 × 3 = 24. Check: 24 / 3 = 8 ✓</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Solve: 9m = 63</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>m = 7</li><li class="ws-opt"><span class="ws-bub">B</span>m = 54</li><li class="ws-opt"><span class="ws-bub">C</span>m = 72</li><li class="ws-opt"><span class="ws-bub">D</span>m = 567</li></ol><p class="ws-keynote">Divide both sides by 9: m = 63 ÷ 9 = 7. Check: 9 × 7 = 63 ✓</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Solve: y / 7 = 5</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>y = 35</li><li class="ws-opt"><span class="ws-bub">B</span>y = 12</li><li class="ws-opt"><span class="ws-bub">C</span>y = 2</li><li class="ws-opt"><span class="ws-bub">D</span>y = 7</li></ol><p class="ws-keynote">Multiply both sides by 7: y = 5 × 7 = 35. Check: 35 / 7 = 5 ✓</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Sort each equation by the inverse operation you would use to solve it.</p>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Solve: 6x = 42</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>x = 7</li><li class="ws-opt"><span class="ws-bub">B</span>x = 48</li><li class="ws-opt"><span class="ws-bub">C</span>x = 36</li><li class="ws-opt"><span class="ws-bub">D</span>x = 252</li></ol><p class="ws-keynote">Divide both sides by 6: x = 42 ÷ 6 = 7. Check: 6 × 7 = 42 ✓</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Solve Multiplication and Division Equations is skipping the key idea: &quot;Divide to undo multiplying, and multiply to undo dividing — always on both sides.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Solve: n / 3 = 8</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>n = 24</li><li class="ws-opt"><span class="ws-bub">B</span>n = 11</li><li class="ws-opt"><span class="ws-bub">C</span>n = 5</li><li class="ws-opt"><span class="ws-bub">D</span>n = 3</li></ol><p class="ws-keynote">Multiply both sides by 3: n = 8 × 3 = 24. Check: 24 / 3 = 8 ✓</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Solve Multiplication and Division Equations is skipping the key idea: &quot;Divide to undo multiplying, and multiply to undo dividing — always on both sides.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Solve: 9m = 63</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>m = 7</li><li class="ws-opt"><span class="ws-bub">B</span>m = 54</li><li class="ws-opt"><span class="ws-bub">C</span>m = 72</li><li class="ws-opt"><span class="ws-bub">D</span>m = 567</li></ol><p class="ws-keynote">Divide both sides by 9: m = 63 ÷ 9 = 7. Check: 9 × 7 = 63 ✓</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Solve Multiplication and Division Equations is skipping the key idea: &quot;Divide to undo multiplying, and multiply to undo dividing — always on both sides.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Solve: y / 7 = 5</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>y = 35</li><li class="ws-opt"><span class="ws-bub">B</span>y = 12</li><li class="ws-opt"><span class="ws-bub">C</span>y = 2</li><li class="ws-opt"><span class="ws-bub">D</span>y = 7</li></ol><p class="ws-keynote">Multiply both sides by 7: y = 5 × 7 = 35. Check: 35 / 7 = 5 ✓</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Solve Multiplication and Division Equations is skipping the key idea: &quot;Divide to undo multiplying, and multiply to undo dividing — always on both sides.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Sort each equation by the inverse operation you would use to solve it.</p>
   <p class="ws-prompt">Categories: <b></b></p>
   <ul class="ws-sort"></ul></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Solve Multiplication and Division Equations.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Divide to undo multiplying, and multiply to undo dividing — always on both sides.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Equation</span><span class="ws-step-w">6x = 42</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Choose operation</span><span class="ws-step-w">To undo it, I will multiply both sides by 6.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Apply to both sides</span><span class="ws-step-w">6x × 6 = 42 × 6</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Simplify</span><span class="ws-step-w">x = 252</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
-  <p class="ws-keynote">See worked solution.</p></div></li></ol>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: x is multiplied by 6, so the inverse is DIVISION. Divide both sides by 6: x = 42 ÷ 6 = 7. Check: 6 × 7 = 42 ✓</p></div></li></ol>
   </section>
 <section class="ws-page">
     <header class="ws-head">
@@ -154,17 +225,30 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     
+    
     <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Solve each equation, show your work, and check.</p>
-  <table class="ws-table"><thead><tr><th>Equation</th><th>Work</th><th>Solution</th><th>Check</th></tr></thead><tbody><tr><td>8m = 56</td><td>56 ÷ 8</td><td>m = 7</td><td>8 × 7 = 56 ✓</td></tr><tr><td>y / 6 = 11</td><td>11 × 6</td><td>y = 66</td><td>66 / 6 = 11 ✓</td></tr><tr><td>12k = 96</td><td>96 ÷ 12</td><td>k = 8</td><td>12 × 8 = 96 ✓</td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A detective splits 54 clues equally among 9 case files. The equation 9c = 54 represents this. What is c?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>c = 6</li><li class="ws-opt"><span class="ws-bub">B</span>c = 63</li><li class="ws-opt"><span class="ws-bub">C</span>c = 45</li><li class="ws-opt"><span class="ws-bub">D</span>c = 9</li></ol><p class="ws-keynote">Divide both sides by 9: c = 54 ÷ 9 = 6 clues per file.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Solve 5x = 40 using the balance scale.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A detective found 72 pieces of evidence and divided them equally into 6 bags. Use the bar model to show how many are in each bag.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Solve Multiplication and Division Equations.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Divide to undo multiplying, and multiply to undo dividing — always on both sides.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <table class="ws-table"><thead><tr><th>Equation</th><th>Work</th><th>Solution</th><th>Check</th></tr></thead><tbody><tr><td>8m = 56</td><td>56 ÷ 8</td><td>m = 7</td><td>8 × 7 = 56 ✓</td></tr><tr><td>y / 6 = 11</td><td>11 × 6</td><td>y = 66</td><td>66 / 6 = 11 ✓</td></tr><tr><td>12k = 96</td><td>96 ÷ 12</td><td>k = 8</td><td>12 × 8 = 96 ✓</td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A detective splits 54 clues equally among 9 case files. The equation 9c = 54 represents this. What is c?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>c = 6</li><li class="ws-opt"><span class="ws-bub">B</span>c = 63</li><li class="ws-opt"><span class="ws-bub">C</span>c = 45</li><li class="ws-opt"><span class="ws-bub">D</span>c = 9</li></ol><p class="ws-keynote">Divide both sides by 9: c = 54 ÷ 9 = 6 clues per file.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Solve Multiplication and Division Equations is skipping the key idea: &quot;Divide to undo multiplying, and multiply to undo dividing — always on both sides.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Solve 5x = 40 using the balance scale.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">A detective found 72 pieces of evidence and divided them equally into 6 bags. Use the bar model to show how many are in each bag.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Equation</span><span class="ws-step-w">n / 4 = 12</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Choose operation</span><span class="ws-step-w">n is in a fraction, so I will divide both sides by 4.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Apply to both sides</span><span class="ws-step-w">n / 4 ÷ 4 = 12 ÷ 4</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Simplify</span><span class="ws-step-w">n = 3</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
-  <p class="ws-keynote">See worked solution.</p></div></li></ol>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: n is divided by 4, so the inverse is MULTIPLICATION. Multiply both sides by 4: n = 12 × 4 = 48. Check: 48 ÷ 4 = 12 ✓</p></div></li></ol>
   </section>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.EE.7</span>
+      <span class="ws-ver">Challenge — Answer Key</span>
+    </div>
+    <h1 class="ws-title">Solve Multiplication and Division Equations</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Find the Equation Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Equation</span><span class="ws-step-w">x / 5 = 12</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Identify inverse</span><span class="ws-step-w">Inverse of division is division</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Apply to both sides</span><span class="ws-step-w">x / 5 / 5 = 12 / 5</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Simplify</span><span class="ws-step-w">x = 2.4</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: Inverse of division is MULTIPLICATION. Multiply both sides by 5: x = 12 × 5 = 60. Check: 60 / 5 = 12 ✓</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A bakery packed muffins into boxes of 8. They made 96 muffins total. Write an equation, solve it, and explain why your answer is reasonable. Then write a different situation that uses division and has the same answer.</p><p class="ws-keynote">Look for: 8x = 96, divide, 12, reasonable, inverse, boxes.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Solve each equation, then write and solve a related equation that uses the inverse operation.</p>
+  <table class="ws-table"><thead><tr><th>Equation</th><th>Solution</th><th>Related Equation</th><th>Related Solution</th></tr></thead><tbody><tr><td>4x = 36</td><td>x = 9</td><td>36 / x = 4</td><td>x = 9</td></tr><tr><td>x / 7 = 8</td><td>x = 56</td><td>56 / 7 = x</td><td>x = 8</td></tr></tbody></table></div></li></ol>
+  </section>
 </body>
 </html>

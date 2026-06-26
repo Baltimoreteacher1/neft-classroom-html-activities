@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
+    @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap");
     :root {
       --ref-navy: #17324D;
       --ref-teal: #1FA6A2;
@@ -1112,10 +1113,32 @@
     .cfu-card { text-align:center; }
     .cfu-poll { display:flex; gap:8px; justify-content:center; margin:12px 0; }
     .cfu-btn { flex:none; min-width:100px; }
-    .diff-paths-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+    .diff-paths-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:8px; }
     .diff-path { border:2px solid var(--path-color, var(--teal)); border-radius:8px; padding:10px; }
     .diff-path-label { font-size:11px; font-weight:800; color:var(--navy); margin-bottom:6px; }
     .diff-path-stem { font-size:10px; line-height:1.4; margin:0; }
+    /* Read-aloud (TTS) button — additive, accessible, never shown in print */
+    .read-aloud-btn { display:inline-flex; align-items:center; justify-content:center; vertical-align:middle; margin-left:6px; padding:0; width:1.7em; height:1.7em; min-width:1.7em; border:1.5px solid var(--teal); border-radius:50%; background:var(--white,#fff); color:var(--navy); font-size:0.78em; line-height:1; cursor:pointer; transition:transform .12s ease, background .12s ease; }
+    .read-aloud-btn:hover { background:var(--teal-light); transform:scale(1.08); }
+    .read-aloud-btn:active { transform:scale(0.96); }
+    .read-aloud-btn:focus-visible { outline:3px solid var(--amber); outline-offset:2px; }
+    @media print { .read-aloud-btn { display:none !important; } }
+    /* Bilingual Spanish stem line under English — gated by .bilingual-on (default on) */
+    .stem-es { display:block; margin-top:2px; font-size:0.82em; font-style:italic; color:var(--navy); opacity:0.72; }
+    body:not(.bilingual-on) .stem-es,
+    body:not(.bilingual-on) .objective-text-es,
+    body:not(.bilingual-on) .vocab-term-es,
+    body:not(.bilingual-on) .vocab-definition-es { display:none; }
+    .tt-stems-extend { margin-top:8px; padding-top:8px; border-top:1px dashed var(--gray,#ccc); }
+    .tt-stem-extend { opacity:0.92; }
+    /* Header accessibility / language controls */
+    .a11y-controls { display:flex; align-items:center; gap:8px; }
+    .a11y-btn { font-size:12px; font-weight:700; color:var(--navy); background:var(--white,#fff); border:1.5px solid var(--teal); border-radius:16px; padding:5px 12px; cursor:pointer; }
+    .a11y-btn[aria-pressed="false"] { opacity:0.55; }
+    .a11y-btn:focus-visible, .a11y-rate select:focus-visible { outline:3px solid var(--amber); outline-offset:2px; }
+    .a11y-rate { display:inline-flex; align-items:center; gap:4px; font-size:12px; color:var(--navy); }
+    .a11y-rate select { font-size:12px; border:1.5px solid var(--teal); border-radius:14px; padding:4px 8px; background:var(--white,#fff); color:var(--navy); cursor:pointer; }
+    @media print { .a11y-controls { display:none !important; } }
     .workspace-table { width:100%; border-collapse:collapse; font-size:11px; }
     .workspace-table th, .workspace-table td { border:1px solid #dadce0; padding:6px 8px; text-align:center; }
     .workspace-table th { background:var(--teal-light); font-weight:800; }
@@ -2012,15 +2035,14 @@
       .presenter-hud { font-size: 10px; padding: 6px 10px; }
     }
     
+.slide-main-title,.title-heading,.g-doc-title,.section-divider-title,
+.post-it-title,.g-title-block h1,.g-title-block h2,h1,h2{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
   </style>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
 </head>
-<body>
+<body class="bilingual-on">
 
   <!-- Google Slides Chrome Bar -->
   <header class="g-chrome">
@@ -2039,6 +2061,16 @@
       </div>
     </div>
     <div class="g-right">
+      <div class="a11y-controls" role="group" aria-label="Accessibility and language controls">
+        <button class="a11y-btn" id="bilingual-toggle" aria-pressed="true" onclick="toggleBilingual(this)" title="Show or hide Spanish support">🌐 Español</button>
+        <label class="a11y-rate" title="Read-aloud speed">🔊
+          <select id="tts-rate-select" aria-label="Read-aloud speed" onchange="setSlideTtsRate(this.value)">
+            <option value="0.7">Slow</option>
+            <option value="0.85" selected>Normal</option>
+            <option value="1">Fast</option>
+          </select>
+        </label>
+      </div>
       
       <button class="btn-present" onclick="enterFullscreen()">
         ▶ Present
@@ -2393,13 +2425,13 @@
     <div class="ref-two-col">
       <div class="ref-main-panel">
     <h2 class="card-title">🎯 Content Objective <span class="bilingual-tag">/ Objetivo de contenido</span></h2>
-    <p class="objective-text">I can describe the shape of a data distribution as symmetric, skewed, or having clusters and gaps.</p>
+    <p class="objective-text">I can describe the shape of a data distribution as symmetric, skewed, or having clusters and gaps.<button type="button" class="read-aloud-btn" aria-label="Read the content objective aloud" title="Read the content objective aloud" data-speak="I can describe the shape of a data distribution as symmetric, skewed, or having clusters and gaps." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
   </div>
       <aside class="ref-side-panel">
         <div class="ref-side-header">Today&#039;s Objectives</div>
         <div class="ref-side-body">
     <h2 class="card-title">🗣️ Language Objective <span class="bilingual-tag">/ Objetivo de lenguaje</span></h2>
-    <p class="objective-text">I can explain my description using the words symmetric, skewed, cluster, and gap.</p>
+    <p class="objective-text">I can explain my description using the words symmetric, skewed, cluster, and gap.<button type="button" class="read-aloud-btn" aria-label="Read the language objective aloud" title="Read the language objective aloud" data-speak="I can explain my description using the words symmetric, skewed, cluster, and gap." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     
     <p class="ref-teacher-note ref-note-say"><span>👩‍🏫</span> Read objectives aloud. Ask: What will you be able to do by the end of class?</p>
     <p class="ref-teacher-note ref-note-ask"><span>❓</span> Which vocabulary words do you already know? Which are new?</p>
@@ -2556,7 +2588,7 @@
     <div class="ref-curious-layout">
       <div class="ref-visual-prompt">
         <span class="ref-prompt-badge">Visual Prompt</span>
-        <p class="ref-instruction">Distribution Detective</p><p class="card-desc">The league analyst is studying three different data sets from the season: (1) Player heights across all teams, (2) Number of 3-pointers per game by each player, and (3) Years of experience for all coaches. Each data set has a different shape when graphed. Your job is to describe each shape and explain what it tells us about the data.</p><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 440 240" style="background:white; border-radius:8px;"><rect x="5" y="5" width="430" height="230" fill="#F9FBFC" stroke="#1FA6A2" stroke-width="2"/><line x1="20" y1="5" x2="20" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="50" y1="5" x2="50" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="80" y1="5" x2="80" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="110" y1="5" x2="110" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="140" y1="5" x2="140" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="170" y1="5" x2="170" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="200" y1="5" x2="200" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="230" y1="5" x2="230" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="260" y1="5" x2="260" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="290" y1="5" x2="290" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="320" y1="5" x2="320" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="350" y1="5" x2="350" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="380" y1="5" x2="380" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="410" y1="5" x2="410" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="20" x2="435" y2="20" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="50" x2="435" y2="50" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="80" x2="435" y2="80" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="110" x2="435" y2="110" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="140" x2="435" y2="140" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="170" x2="435" y2="170" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="200" x2="435" y2="200" stroke="#E1EAEF" stroke-width="1"/><text x="20" y="32" font-family="Outfit, sans-serif" font-size="12" fill="#17324D" font-weight="bold">Example: 3-pointers per game (skewed right)</text><rect x="60" y="55" width="83" height="110" fill="#F2C15B" stroke="#17324D" stroke-width="1.5"/><text x="102.5" y="177" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">0–1</text><text x="102.5" y="51" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" text-anchor="middle">9</text><rect x="145" y="91.66666666666667" width="83" height="73.33333333333333" fill="#DFF2EE" stroke="#17324D" stroke-width="1.5"/><text x="187.5" y="177" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">2–3</text><text x="187.5" y="87.66666666666667" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" text-anchor="middle">6</text><rect x="230" y="128.33333333333334" width="83" height="36.666666666666664" fill="#DFF2EE" stroke="#17324D" stroke-width="1.5"/><text x="272.5" y="177" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">4–5</text><text x="272.5" y="124.33333333333334" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" text-anchor="middle">3</text><rect x="315" y="152.77777777777777" width="83" height="12.222222222222221" fill="#DFF2EE" stroke="#17324D" stroke-width="1.5"/><text x="357.5" y="177" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">6–7</text><text x="357.5" y="148.77777777777777" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" text-anchor="middle">1</text><line x1="55" y1="165" x2="400" y2="165" stroke="#17324D" stroke-width="1.5"/><line x1="55" y1="50" x2="55" y2="165" stroke="#17324D" stroke-width="1.5"/><text x="230" y="191" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">3-pointers per game</text><text x="25" y="110" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle" transform="rotate(-90 25 110)">Number of players</text><text x="20" y="212" font-family="Hanken Grotesk, sans-serif" font-size="9" fill="#24323F" font-style="italic">Most players make few 3-pointers; a few make many — the tail stretches RIGHT (skewed right).</text></svg>
+        <p class="ref-instruction">Distribution Detective</p><p class="card-desc">The league analyst is studying three different data sets from the season: (1) Player heights across all teams, (2) Number of 3-pointers per game by each player, and (3) Years of experience for all coaches. Each data set has a different shape when graphed. Your job is to describe each shape and explain what it tells us about the data.<button type="button" class="read-aloud-btn" aria-label="Read the prompt aloud" title="Read the prompt aloud" data-speak="The league analyst is studying three different data sets from the season: (1) Player heights across all teams, (2) Number of 3-pointers per game by each player, and (3) Years of experience for all coaches. Each data set has a different shape when graphed. Your job is to describe each shape and explain what it tells us about the data." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 440 240" style="background:white; border-radius:8px;"><rect x="5" y="5" width="430" height="230" fill="#F9FBFC" stroke="#1FA6A2" stroke-width="2"/><line x1="20" y1="5" x2="20" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="50" y1="5" x2="50" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="80" y1="5" x2="80" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="110" y1="5" x2="110" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="140" y1="5" x2="140" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="170" y1="5" x2="170" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="200" y1="5" x2="200" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="230" y1="5" x2="230" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="260" y1="5" x2="260" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="290" y1="5" x2="290" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="320" y1="5" x2="320" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="350" y1="5" x2="350" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="380" y1="5" x2="380" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="410" y1="5" x2="410" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="20" x2="435" y2="20" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="50" x2="435" y2="50" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="80" x2="435" y2="80" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="110" x2="435" y2="110" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="140" x2="435" y2="140" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="170" x2="435" y2="170" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="200" x2="435" y2="200" stroke="#E1EAEF" stroke-width="1"/><text x="20" y="32" font-family="Outfit, sans-serif" font-size="12" fill="#17324D" font-weight="bold">Example: 3-pointers per game (skewed right)</text><rect x="60" y="55" width="83" height="110" fill="#F2C15B" stroke="#17324D" stroke-width="1.5"/><text x="102.5" y="177" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">0–1</text><text x="102.5" y="51" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" text-anchor="middle">9</text><rect x="145" y="91.66666666666667" width="83" height="73.33333333333333" fill="#DFF2EE" stroke="#17324D" stroke-width="1.5"/><text x="187.5" y="177" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">2–3</text><text x="187.5" y="87.66666666666667" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" text-anchor="middle">6</text><rect x="230" y="128.33333333333334" width="83" height="36.666666666666664" fill="#DFF2EE" stroke="#17324D" stroke-width="1.5"/><text x="272.5" y="177" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">4–5</text><text x="272.5" y="124.33333333333334" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" text-anchor="middle">3</text><rect x="315" y="152.77777777777777" width="83" height="12.222222222222221" fill="#DFF2EE" stroke="#17324D" stroke-width="1.5"/><text x="357.5" y="177" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">6–7</text><text x="357.5" y="148.77777777777777" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" text-anchor="middle">1</text><line x1="55" y1="165" x2="400" y2="165" stroke="#17324D" stroke-width="1.5"/><line x1="55" y1="50" x2="55" y2="165" stroke="#17324D" stroke-width="1.5"/><text x="230" y="191" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">3-pointers per game</text><text x="25" y="110" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle" transform="rotate(-90 25 110)">Number of players</text><text x="20" y="212" font-family="Hanken Grotesk, sans-serif" font-size="9" fill="#24323F" font-style="italic">Most players make few 3-pointers; a few make many — the tail stretches RIGHT (skewed right).</text></svg>
       </div>
       <div class="ref-nw-stack">
         <div class="ref-nw-panel ref-nw-notice">
@@ -2858,37 +2890,37 @@
       </thead>
       <tbody>
     <tr>
-      <td class="ref-vocab-term">Symmetric<br/><em>Simétrico</em></td>
+      <td class="ref-vocab-term">Symmetric<button type="button" class="read-aloud-btn" aria-label="Read Symmetric and its meaning aloud" title="Read Symmetric and its meaning aloud" data-speak="Symmetric. Data that looks about the same on the left and right." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Simétrico</em><button type="button" class="read-aloud-btn" aria-label="Leer Simétrico en español" title="Leer Simétrico en español" data-speak="Simétrico. Datos que se ven casi iguales a la izquierda y a la derecha." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>Data that looks about the same on the left and right.<br/><em>Datos que se ven casi iguales a la izquierda y a la derecha.</em></td>
       <td></td>
       <td class="ref-vocab-visual">Heights: 60, 62, 64, 66, 68, 66, 64, 62, 60 — rises and falls evenly like a hill</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Skewed<br/><em>Sesgado</em></td>
+      <td class="ref-vocab-term">Skewed<button type="button" class="read-aloud-btn" aria-label="Read Skewed and its meaning aloud" title="Read Skewed and its meaning aloud" data-speak="Skewed. Data bunched on one side with a tail on the other." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Sesgado</em><button type="button" class="read-aloud-btn" aria-label="Leer Sesgado en español" title="Leer Sesgado en español" data-speak="Sesgado. Datos amontonados de un lado con una cola del otro." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>Data bunched on one side with a tail on the other.<br/><em>Datos amontonados de un lado con una cola del otro.</em></td>
       <td></td>
       <td class="ref-vocab-visual">Skewed right: most data low (1,2,2,3,3,3,15) — tail stretches toward the high value</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Cluster<br/><em>Agrupamiento</em></td>
+      <td class="ref-vocab-term">Cluster<button type="button" class="read-aloud-btn" aria-label="Read Cluster and its meaning aloud" title="Read Cluster and its meaning aloud" data-speak="Cluster. A group of numbers that are close together." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Agrupamiento</em><button type="button" class="read-aloud-btn" aria-label="Leer Agrupamiento en español" title="Leer Agrupamiento en español" data-speak="Agrupamiento. Un grupo de números que están cerca unos de otros." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>A group of numbers that are close together.<br/><em>Un grupo de números que están cerca unos de otros.</em></td>
       <td></td>
       <td class="ref-vocab-visual">Scores 18, 19, 20, 21, 22 form a cluster around 20 — they are tightly grouped</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Gap<br/><em>Hueco (espacio)</em></td>
+      <td class="ref-vocab-term">Gap<button type="button" class="read-aloud-btn" aria-label="Read Gap and its meaning aloud" title="Read Gap and its meaning aloud" data-speak="Gap. A big empty space where there is no data." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Hueco (espacio)</em><button type="button" class="read-aloud-btn" aria-label="Leer Hueco (espacio) en español" title="Leer Hueco (espacio) en español" data-speak="Hueco (espacio). Un espacio grande y vacío donde no hay datos." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>A big empty space where there is no data.<br/><em>Un espacio grande y vacío donde no hay datos.</em></td>
       <td></td>
       <td class="ref-vocab-visual">Data: 5, 6, 7, 8, ___, ___, ___, 20 — the empty space from 9 to 19 is a gap</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Data distribution<br/><em>Distribución de datos</em></td>
+      <td class="ref-vocab-term">Data distribution<button type="button" class="read-aloud-btn" aria-label="Read Data distribution and its meaning aloud" title="Read Data distribution and its meaning aloud" data-speak="Data distribution. How the data looks: where it sits and how spread out it is." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Distribución de datos</em><button type="button" class="read-aloud-btn" aria-label="Leer Distribución de datos en español" title="Leer Distribución de datos en español" data-speak="Distribución de datos. Cómo se ven los datos: dónde están y qué tan separados están." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>How the data looks: where it sits and how spread out it is.<br/><em>Cómo se ven los datos: dónde están y qué tan separados están.</em></td>
       <td></td>
       <td class="ref-vocab-visual">Looking at a dot plot or histogram, you can see if data is symmetric, skewed, clustered, or has gaps</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Variability<br/><em>Variabilidad</em></td>
+      <td class="ref-vocab-term">Variability<button type="button" class="read-aloud-btn" aria-label="Read Variability and its meaning aloud" title="Read Variability and its meaning aloud" data-speak="Variability. How spread out the numbers are." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Variabilidad</em><button type="button" class="read-aloud-btn" aria-label="Leer Variabilidad en español" title="Leer Variabilidad en español" data-speak="Variabilidad. Qué tan separados están los números." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>How spread out the numbers are.<br/><em>Qué tan separados están los números.</em></td>
       <td></td>
       <td class="ref-vocab-visual">Symmetric data with low variability: tightly packed around the center. Skewed data: spread unevenly</td>
@@ -3024,10 +3056,11 @@
     <span class="teacher-cue-label">Time:</span>
     <span class="teacher-cue-text">90 sec</span>
   </div>
-        <p class="card-desc tt-question">The analyst graphs player heights, 3-pointers per game, and coaches&#039; years of experience. Why might each data set have a DIFFERENT shape when graphed?</p>
+        <p class="card-desc tt-question">The analyst graphs player heights, 3-pointers per game, and coaches&#039; years of experience. Why might each data set have a DIFFERENT shape when graphed?<button type="button" class="read-aloud-btn" aria-label="Read the question aloud" title="Read the question aloud" data-speak="The analyst graphs player heights, 3-pointers per game, and coaches&#039; years of experience. Why might each data set have a DIFFERENT shape when graphed?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
         <div class="tt-stems-box">
           <strong>Sentence starters (tap to use):</strong>
-          <div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ The shapes are different because the data ___.</div><div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ A symmetric shape looks ___, while a skewed shape looks ___.</div>
+          <div class="tt-stem" onclick="insertAtCursor('The shapes are different because the data ___.')">✍️ The shapes are different because the data ___.<span class="stem-es">Las formas son diferentes porque los datos ___.</span></div><div class="tt-stem" onclick="insertAtCursor('A symmetric shape looks ___, while a skewed shape looks ___.')">✍️ A symmetric shape looks ___, while a skewed shape looks ___.<span class="stem-es">Una forma simétrica se ve ___, mientras que una sesgada se ve ___.</span></div>
+          <div class="tt-stems-extend"><strong>Stretch further:</strong><div class="tt-stem tt-stem-extend">➕ I predict ___ is most likely skewed because ___.</div><div class="tt-stem tt-stem-extend">➕ The values would pile up on one side since ___.</div></div>
         </div>
         <div class="tt-wordbank"><strong>WORD BANK:</strong><div><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">symmetric</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">skewed</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">cluster</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">gap</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">distribution</span></div></div>
         <div class="turn-talk-timer" id="tt-timer-launch">
@@ -3221,10 +3254,11 @@
     <span class="teacher-cue-label">Time:</span>
     <span class="teacher-cue-text">90 sec</span>
   </div>
-        <p class="card-desc tt-question">As you match each data description to its shape, how can you tell a symmetric distribution from a skewed one just by looking?</p>
+        <p class="card-desc tt-question">As you match each data description to its shape, how can you tell a symmetric distribution from a skewed one just by looking?<button type="button" class="read-aloud-btn" aria-label="Read the question aloud" title="Read the question aloud" data-speak="As you match each data description to its shape, how can you tell a symmetric distribution from a skewed one just by looking?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
         <div class="tt-stems-box">
           <strong>Sentence starters (tap to use):</strong>
-          <div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ A symmetric distribution has data that is ___ on both sides.</div><div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ A skewed distribution has a longer ___ on one side.</div>
+          <div class="tt-stem" onclick="insertAtCursor('A symmetric distribution has data that is ___ on both sides.')">✍️ A symmetric distribution has data that is ___ on both sides.<span class="stem-es">Una distribución simétrica tiene datos ___ en ambos lados.</span></div><div class="tt-stem" onclick="insertAtCursor('A skewed distribution has a longer ___ on one side.')">✍️ A skewed distribution has a longer ___ on one side.<span class="stem-es">Una distribución sesgada tiene una ___ más larga en un lado.</span></div>
+          <div class="tt-stems-extend"><strong>Stretch further:</strong><div class="tt-stem tt-stem-extend">➕ A cluster tells me ___, while a gap tells me ___.</div><div class="tt-stem tt-stem-extend">➕ These features matter because ___.</div></div>
         </div>
         <div class="tt-wordbank"><strong>WORD BANK:</strong><div><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">symmetric</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">skewed</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">cluster</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">gap</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">tail</span></div></div>
         <div class="turn-talk-timer" id="tt-timer-explore">
@@ -3465,7 +3499,7 @@
     <div class="ref-two-col">
       <div class="ref-main-panel">
     <span class="ref-error-badge">⚠ Find the Shape Error</span>
-    <p class="ref-instruction">A classmate turned in the work below. One step has a mistake. Read every step, find it, name it, and fix it.</p>
+    <p class="ref-instruction">A classmate turned in the work below. One step has a mistake. Read every step, find it, name it, and fix it.<button type="button" class="read-aloud-btn" aria-label="Read the directions aloud" title="Read the directions aloud" data-speak="A classmate turned in the work below. One step has a mistake. Read every step, find it, name it, and fix it." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     <div class="ref-student-work-box">
       <div class="ref-work-label">Student&apos;s work — read every step:</div>
       <div class="ea-steps">
@@ -3772,11 +3806,11 @@
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🏀 SPORTS ANALYTICS</span></div>
     <h3 class="slide-main-title">Differentiation Paths</h3>
     <div class="slide-card">
-      <span class="slide-badge badge-teal">🎯 THREE PATHS</span>
+      <span class="slide-badge badge-teal">🎯 CHOOSE YOUR LEVEL</span>
       <div class="teacher-cue teacher-cue-say">
     <span class="teacher-cue-icon">👩‍🏫</span>
     <span class="teacher-cue-label">Say:</span>
-    <span class="teacher-cue-text">All students work on math — choose the path that matches readiness.</span>
+    <span class="teacher-cue-text">Everyone works on the same math goal — pick the level of support that fits today.</span>
   </div>
       <div class="teacher-cue teacher-cue-time">
     <span class="teacher-cue-icon">⏱️</span>
@@ -3784,17 +3818,21 @@
     <span class="teacher-cue-text">8–10 min independent or partner</span>
   </div>
       <div class="diff-paths-grid">
+        <div class="diff-path" style="--path-color:var(--coral, #e07a5f)">
+      <div class="diff-path-label">🧩 Level 0 · Most support</div>
+      <p class="diff-path-stem">Step-by-step with a worked model and sentence frames.<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="Step-by-step with a worked model and sentence frames." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
+    </div>
         <div class="diff-path" style="--path-color:var(--amber)">
-      <div class="diff-path-label">🌱 Approaching</div>
-      <p class="diff-path-stem">A histogram of basketball players&#039; ages shows: most players are 22–28, with a long tail of older players up to age 40. What is the shape of this distribution?</p>
+      <div class="diff-path-label">🌱 Level 1 · Support</div>
+      <p class="diff-path-stem">A histogram of basketball players&#039; ages shows: most players are 22–28, with a long tail of older players up to age 40. What is the shape of this distribution?<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="A histogram of basketball players&#039; ages shows: most players are 22–28, with a long tail of older players up to age 40. What is the shape of this distribution?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     </div>
         <div class="diff-path" style="--path-color:var(--teal)">
-      <div class="diff-path-label">🎯 On-Level</div>
-      <p class="diff-path-stem">A dot plot of goals scored per game shows: 0(5 dots), 1(7 dots), 2(4 dots), 3(2 dots), 4(1 dot). What is the shape?</p>
+      <div class="diff-path-label">🎯 Level 2 · Core</div>
+      <p class="diff-path-stem">A dot plot of goals scored per game shows: 0(5 dots), 1(7 dots), 2(4 dots), 3(2 dots), 4(1 dot). What is the shape?<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="A dot plot of goals scored per game shows: 0(5 dots), 1(7 dots), 2(4 dots), 3(2 dots), 4(1 dot). What is the shape?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     </div>
         <div class="diff-path" style="--path-color:var(--navy)">
-      <div class="diff-path-label">🚀 Challenge</div>
-      <p class="diff-path-stem">Extension with error analysis or multi-step reasoning.</p>
+      <div class="diff-path-label">🚀 Level 2+ · Enrichment</div>
+      <p class="diff-path-stem">Extension with error analysis or multi-step reasoning.<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="Extension with error analysis or multi-step reasoning." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     </div>
       </div>
     </div></div>
@@ -3905,7 +3943,7 @@
     <span class="teacher-cue-label">Say:</span>
     <span class="teacher-cue-text">Read the scenario. Ask: where else have you seen this kind of math?</span>
   </div>
-        <p class="card-desc">A sports reporter is writing about marathon finish times. The data shows: most runners finish between 3.5–4.5 hours, with a small group of elite runners finishing in 2.0–2.5 hours, and a long tail of slower runners finishing in 5–7 hours.</p>
+        <p class="card-desc">A sports reporter is writing about marathon finish times. The histogram below shows the data: most runners finish between 3.5–4.5 hours, and a long tail of slower runners stretches out to 5–7 hours.</p>
         <div class="connect-vocab"><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">right</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">slower</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">longer</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">3.5–4.5 hours</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">median</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">mean</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">tail</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">skewed</span></div>
       </div>
       <div class="slide-card card-teal-light">
@@ -3954,10 +3992,11 @@
     <span class="teacher-cue-label">Time:</span>
     <span class="teacher-cue-text">90 sec</span>
   </div>
-        <p class="card-desc tt-question">Marathon times cluster at 3.5-4.5 hours, with elites at 2.0-2.5 and a long tail of slower runners at 5-7 hours. What is the shape, and should the reporter use the mean or median for a &#039;typical&#039; time?</p>
+        <p class="card-desc tt-question">Marathon times cluster at 3.5-4.5 hours, with a long tail of slower runners stretching out to 5-7 hours. What is the shape, and should the reporter use the mean or median for a &#039;typical&#039; time?<button type="button" class="read-aloud-btn" aria-label="Read the question aloud" title="Read the question aloud" data-speak="Marathon times cluster at 3.5-4.5 hours, with a long tail of slower runners stretching out to 5-7 hours. What is the shape, and should the reporter use the mean or median for a &#039;typical&#039; time?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
         <div class="tt-stems-box">
           <strong>Sentence starters (tap to use):</strong>
-          <div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ This distribution is skewed to the ___ because of the long tail of ___.</div><div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ The reporter should use the ___ because ___.</div>
+          <div class="tt-stem" onclick="insertAtCursor('This distribution is skewed to the ___ because of the long tail of ___.')">✍️ This distribution is skewed to the ___ because of the long tail of ___.<span class="stem-es">Esta distribución está sesgada hacia la ___ por la cola larga de ___.</span></div><div class="tt-stem" onclick="insertAtCursor('The reporter should use the ___ because ___.')">✍️ The reporter should use the ___ because ___.<span class="stem-es">El reportero debería usar la ___ porque ___.</span></div>
+          <div class="tt-stems-extend"><strong>Stretch further:</strong><div class="tt-stem tt-stem-extend">➕ To sound fast, the reporter might pick the ___ because ___.</div><div class="tt-stem tt-stem-extend">➕ That would be honest/misleading because the shape is ___.</div></div>
         </div>
         <div class="tt-wordbank"><strong>WORD BANK:</strong><div><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">symmetric</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">skewed</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">cluster</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">gap</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">distribution</span></div></div>
         <div class="turn-talk-timer" id="tt-timer-connect">
@@ -4481,6 +4520,66 @@
         }
       }, 1000);
     }
+
+    // -----------------------------------------------------------------
+    // READ-ALOUD (Text-to-Speech) — accessibility + Level 1 language support
+    // Reads slide text via the browser Web Speech API. Rate is saved so a
+    // teacher/student preference persists across slides and lessons.
+    // -----------------------------------------------------------------
+    const SLIDE_TTS_RATE_KEY = 'neft-slide-tts-rate';
+    function getSlideTtsRate() {
+      const saved = parseFloat(localStorage.getItem(SLIDE_TTS_RATE_KEY));
+      return (saved && saved >= 0.5 && saved <= 1.5) ? saved : 0.85;
+    }
+    function setSlideTtsRate(rate) {
+      const r = parseFloat(rate);
+      if (r && r >= 0.5 && r <= 1.5) localStorage.setItem(SLIDE_TTS_RATE_KEY, String(r));
+    }
+    function speakText(text, lang) {
+      if (!('speechSynthesis' in window) || !text) return;
+      try {
+        // A second tap on a speaking button stops it (toggle behavior).
+        if (window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+          return;
+        }
+        const utter = new SpeechSynthesisUtterance(String(text).replace(/[✍️🎯🗣️👂✓✗⚠➡️•]/g, ' ').trim());
+        utter.rate = getSlideTtsRate();
+        utter.lang = lang || 'en-US';
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utter);
+      } catch (e) { /* speech not available */ }
+    }
+    // Read-aloud buttons carry their text in data-speak (and optional data-lang).
+    function speakFromButton(btn) {
+      if (!btn) return;
+      speakText(btn.getAttribute('data-speak') || '', btn.getAttribute('data-lang') || 'en-US');
+    }
+    window.speakText = speakText;
+    window.speakFromButton = speakFromButton;
+    window.setSlideTtsRate = setSlideTtsRate;
+    window.getSlideTtsRate = getSlideTtsRate;
+
+    // Bilingual (Spanish support) toggle — persists per browser.
+    const SLIDE_BILINGUAL_KEY = 'neft-slide-bilingual';
+    function applyBilingual(on) {
+      document.body.classList.toggle('bilingual-on', on);
+      const btn = document.getElementById('bilingual-toggle');
+      if (btn) btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+    function toggleBilingual(btn) {
+      const on = !document.body.classList.contains('bilingual-on');
+      localStorage.setItem(SLIDE_BILINGUAL_KEY, on ? '1' : '0');
+      applyBilingual(on);
+    }
+    window.toggleBilingual = toggleBilingual;
+    // Restore saved accessibility preferences on load.
+    (function initA11yPrefs() {
+      const savedBi = localStorage.getItem(SLIDE_BILINGUAL_KEY);
+      if (savedBi !== null) applyBilingual(savedBi === '1');
+      const rateSel = document.getElementById('tts-rate-select');
+      if (rateSel) rateSel.value = String(getSlideTtsRate());
+    })();
 
     // CFU thumb responses
     const cfuResponses = {};
@@ -5842,11 +5941,5 @@
     
   </script>
 
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
 </body>
 </html>

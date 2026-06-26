@@ -45,6 +45,8 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
 .ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
 .ws-correct{font-weight:700;color:var(--teal);}
 .ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-watch{margin:4px 0 0;color:#9a4a12;font-size:12px;background:#fff3e6;border-left:3px solid #e08a3c;padding:5px 10px;border-radius:0 8px 8px 0;}
+.ws-scaffold-note{margin:0 0 14px;background:var(--soft);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:600;color:var(--navy);font-size:12.5px;}
 .ws-match{display:flex;gap:24px;flex-wrap:wrap;}
 .ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
 .ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
@@ -75,15 +77,49 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
   @page{margin:1.5cm;}
   a{color:#000;}
 }
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
 </style>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
 </head>
 <body>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NS.1</span>
+      <span class="ws-ver">Level 0</span>
+    </div>
+    <h1 class="ws-title">Divide Whole Numbers by Fractions</h1>
+    <p class="ws-sub">Practice — Level 0</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h3 class="ws-bank-h">📕 Word Bank</h3>
+    <div class="ws-bankwords"><span class="ws-bankword">Whole Number</span><span class="ws-bankword">Fraction</span><span class="ws-bankword">Reciprocal</span><span class="ws-bankword">Keep, Change, Flip</span><span class="ws-bankword">Quotient</span></div>
+  </section><section class="ws-example">
+    <h3 class="ws-example-h">✏️ Worked Example</h3>
+    <ol class="ws-example-steps"><li><b>Problem:</b> 6 ÷ 2/3</li><li><b>Keep, Change, Flip:</b> 6 × 2/3</li><li><b>Multiply:</b> 12/3</li><li><b>Simplify:</b> 4</li></ol>
+  </section>
+    <p class="ws-scaffold-note">🧩 Extra support: use the word bank and the worked example. A sentence starter is given under each problem.</p>
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">What is 6 ÷ 1/3?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>18</li><li class="ws-opt"><span class="ws-bub">B</span>2</li><li class="ws-opt"><span class="ws-bub">C</span>6/3</li><li class="ws-opt"><span class="ws-bub">D</span>3</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">What is 3 ÷ 1/5?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>15</li><li class="ws-opt"><span class="ws-bub">B</span>3/5</li><li class="ws-opt"><span class="ws-bub">C</span>5/3</li><li class="ws-opt"><span class="ws-bub">D</span>8</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is 10 ÷ 1/4?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>40</li><li class="ws-opt"><span class="ws-bub">B</span>2.5</li><li class="ws-opt"><span class="ws-bub">C</span>14</li><li class="ws-opt"><span class="ws-bub">D</span>10/4</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Model 2 ÷ 1/4 on the number line</p><div class="ws-work"><span class="ws-work-label">Show your work</span></div></div></li></ol>
+  </section>
 <section class="ws-page">
     <header class="ws-head">
     <div class="ws-head-top">
@@ -101,8 +137,9 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <h3 class="ws-example-h">✏️ Worked Example</h3>
     <ol class="ws-example-steps"><li><b>Problem:</b> 6 ÷ 2/3</li><li><b>Keep, Change, Flip:</b> 6 × 2/3</li><li><b>Multiply:</b> 12/3</li><li><b>Simplify:</b> 4</li></ol>
   </section>
-    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">What is 6 ÷ 1/3?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>18</li><li class="ws-opt"><span class="ws-bub">B</span>2</li><li class="ws-opt"><span class="ws-bub">C</span>6/3</li><li class="ws-opt"><span class="ws-bub">D</span>3</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">What is 3 ÷ 1/5?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>15</li><li class="ws-opt"><span class="ws-bub">B</span>3/5</li><li class="ws-opt"><span class="ws-bub">C</span>5/3</li><li class="ws-opt"><span class="ws-bub">D</span>8</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is 10 ÷ 1/4?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>40</li><li class="ws-opt"><span class="ws-bub">B</span>2.5</li><li class="ws-opt"><span class="ws-bub">C</span>14</li><li class="ws-opt"><span class="ws-bub">D</span>10/4</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Model 2 ÷ 1/3 on the number line</p><div class="ws-work"><span class="ws-work-label">Show your work</span></div></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">What is 5 ÷ 1/2?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>10</li><li class="ws-opt"><span class="ws-bub">B</span>5/2</li><li class="ws-opt"><span class="ws-bub">C</span>2.5</li><li class="ws-opt"><span class="ws-bub">D</span>7</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Divide Whole Numbers by Fractions.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Dividing by a fraction is the same as multiplying by its reciprocal (the fraction flipped over).</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">What is 6 ÷ 1/3?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>18</li><li class="ws-opt"><span class="ws-bub">B</span>2</li><li class="ws-opt"><span class="ws-bub">C</span>6/3</li><li class="ws-opt"><span class="ws-bub">D</span>3</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">What is 3 ÷ 1/5?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>15</li><li class="ws-opt"><span class="ws-bub">B</span>3/5</li><li class="ws-opt"><span class="ws-bub">C</span>5/3</li><li class="ws-opt"><span class="ws-bub">D</span>8</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is 10 ÷ 1/4?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>40</li><li class="ws-opt"><span class="ws-bub">B</span>2.5</li><li class="ws-opt"><span class="ws-bub">C</span>14</li><li class="ws-opt"><span class="ws-bub">D</span>10/4</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Model 2 ÷ 1/4 on the number line</p><div class="ws-work"><span class="ws-work-label">Show your work</span></div></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">What is 5 ÷ 1/2?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>10</li><li class="ws-opt"><span class="ws-bub">B</span>5/2</li><li class="ws-opt"><span class="ws-bub">C</span>2.5</li><li class="ws-opt"><span class="ws-bub">D</span>7</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">4 ÷ 1/5</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Keep, Change, Flip</span><span class="ws-step-w">Kept the 4 and changed ÷ to ×, but forgot to flip: 4 × 1/5</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Multiply</span><span class="ws-step-w">4 × 1/5 = 4/5</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
   <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
   </section>
@@ -117,12 +154,45 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     
+    
     <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Complete the table: Whole Number ÷ Fraction. Use Keep, Change, Flip.</p>
   <table class="ws-table"><thead><tr><th>Expression</th><th>Rewrite as Multiplication</th><th>Quotient</th></tr></thead><tbody><tr><td>5 ÷ 1/4</td><td></td><td></td></tr><tr><td>8 ÷ 1/2</td><td></td><td></td></tr><tr><td>3 ÷ 1/6</td><td></td><td></td></tr><tr><td>7 ÷ 1/3</td><td></td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Write the letter of the matching answer next to each.</p>
   <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>4 ÷ 1/3</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>7 ÷ 1/2</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>5 ÷ 1/6</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>2 ÷ 1/8</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>9 ÷ 1/4</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>6 ÷ 1/5</li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span>36</li><li><span class="ws-bub ws-bub-sm">B</span>16</li><li><span class="ws-bub ws-bub-sm">C</span>30</li><li><span class="ws-bub ws-bub-sm">D</span>12</li><li><span class="ws-bub ws-bub-sm">E</span>14</li><li><span class="ws-bub ws-bub-sm">F</span>30</li></ul></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Model 3 ÷ 2/3</p><div class="ws-work"><span class="ws-work-label">Show your work</span></div></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">What is 6 ÷ 2/3?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>9</li><li class="ws-opt"><span class="ws-bub">B</span>4</li><li class="ws-opt"><span class="ws-bub">C</span>12</li><li class="ws-opt"><span class="ws-bub">D</span>2/18</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Divide Whole Numbers by Fractions.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Dividing by a fraction is the same as multiplying by its reciprocal (the fraction flipped over).</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">8 ÷ 3/4</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Keep, Change, Flip</span><span class="ws-step-w">Flipped the wrong number — wrote 1/8 × 3/4 instead of 8 × 4/3</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Multiply</span><span class="ws-step-w">1/8 × 3/4 = 3/32</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
   <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NS.1</span>
+      <span class="ws-ver">Challenge</span>
+    </div>
+    <h1 class="ws-title">Divide Whole Numbers by Fractions</h1>
+    <p class="ws-sub">Practice — Challenge</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Find the Division Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">6 ÷ 2/3</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Keep, Change, Flip</span><span class="ws-step-w">6 × 2/3</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Multiply</span><span class="ws-step-w">12/3</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Simplify</span><span class="ws-step-w">4</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A pizza shop has 8 whole pizzas. Each serving is 2/3 of a pizza. How many servings can they make? Write and solve an equation, then explain why the answer is greater than 8.</p><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Compare: what happens when you divide the same whole number by different fractions?</p>
+  <table class="ws-table"><thead><tr><th>Expression</th><th>Quotient</th><th>Observation</th></tr></thead><tbody><tr><td>12 ÷ 1/2</td><td></td><td></td></tr><tr><td>12 ÷ 1/3</td><td></td><td></td></tr><tr><td>12 ÷ 1/4</td><td></td><td></td></tr><tr><td>12 ÷ 2/3</td><td></td><td></td></tr><tr><td>12 ÷ 3/4</td><td></td><td></td></tr></tbody></table></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NS.1</span>
+      <span class="ws-ver">Level 0 — Answer Key</span>
+    </div>
+    <h1 class="ws-title">Divide Whole Numbers by Fractions</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">What is 6 ÷ 1/3?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>18</li><li class="ws-opt"><span class="ws-bub">B</span>2</li><li class="ws-opt"><span class="ws-bub">C</span>6/3</li><li class="ws-opt"><span class="ws-bub">D</span>3</li></ol><p class="ws-keynote">6 ÷ 1/3 = 6 × 3/1 = 18. There are 18 thirds in 6 wholes.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Whole Numbers by Fractions is skipping the key idea: &quot;Dividing by a fraction is the same as multiplying by its reciprocal (the fraction flipped over).&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">What is 3 ÷ 1/5?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>15</li><li class="ws-opt"><span class="ws-bub">B</span>3/5</li><li class="ws-opt"><span class="ws-bub">C</span>5/3</li><li class="ws-opt"><span class="ws-bub">D</span>8</li></ol><p class="ws-keynote">3 ÷ 1/5 = 3 × 5/1 = 15. There are 15 fifths in 3 wholes.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Whole Numbers by Fractions is skipping the key idea: &quot;Dividing by a fraction is the same as multiplying by its reciprocal (the fraction flipped over).&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is 10 ÷ 1/4?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>40</li><li class="ws-opt"><span class="ws-bub">B</span>2.5</li><li class="ws-opt"><span class="ws-bub">C</span>14</li><li class="ws-opt"><span class="ws-bub">D</span>10/4</li></ol><p class="ws-keynote">10 ÷ 1/4 = 10 × 4/1 = 40. There are 40 quarter-size pieces in 10 wholes.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Whole Numbers by Fractions is skipping the key idea: &quot;Dividing by a fraction is the same as multiplying by its reciprocal (the fraction flipped over).&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Model 2 ÷ 1/4 on the number line</p></div></li></ol>
   </section>
 <section class="ws-page">
     <header class="ws-head">
@@ -135,10 +205,11 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     
-    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">What is 6 ÷ 1/3?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>18</li><li class="ws-opt"><span class="ws-bub">B</span>2</li><li class="ws-opt"><span class="ws-bub">C</span>6/3</li><li class="ws-opt"><span class="ws-bub">D</span>3</li></ol><p class="ws-keynote">6 ÷ 1/3 = 6 × 3/1 = 18. There are 18 thirds in 6 wholes.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">What is 3 ÷ 1/5?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>15</li><li class="ws-opt"><span class="ws-bub">B</span>3/5</li><li class="ws-opt"><span class="ws-bub">C</span>5/3</li><li class="ws-opt"><span class="ws-bub">D</span>8</li></ol><p class="ws-keynote">3 ÷ 1/5 = 3 × 5/1 = 15. There are 15 fifths in 3 wholes.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is 10 ÷ 1/4?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>40</li><li class="ws-opt"><span class="ws-bub">B</span>2.5</li><li class="ws-opt"><span class="ws-bub">C</span>14</li><li class="ws-opt"><span class="ws-bub">D</span>10/4</li></ol><p class="ws-keynote">10 ÷ 1/4 = 10 × 4/1 = 40. There are 40 quarter-size pieces in 10 wholes.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Model 2 ÷ 1/3 on the number line</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">What is 5 ÷ 1/2?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>10</li><li class="ws-opt"><span class="ws-bub">B</span>5/2</li><li class="ws-opt"><span class="ws-bub">C</span>2.5</li><li class="ws-opt"><span class="ws-bub">D</span>7</li></ol><p class="ws-keynote">5 ÷ 1/2 = 5 × 2/1 = 10. There are 10 halves in 5 wholes.</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Divide Whole Numbers by Fractions.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Dividing by a fraction is the same as multiplying by its reciprocal (the fraction flipped over).</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">What is 6 ÷ 1/3?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>18</li><li class="ws-opt"><span class="ws-bub">B</span>2</li><li class="ws-opt"><span class="ws-bub">C</span>6/3</li><li class="ws-opt"><span class="ws-bub">D</span>3</li></ol><p class="ws-keynote">6 ÷ 1/3 = 6 × 3/1 = 18. There are 18 thirds in 6 wholes.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Whole Numbers by Fractions is skipping the key idea: &quot;Dividing by a fraction is the same as multiplying by its reciprocal (the fraction flipped over).&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">What is 3 ÷ 1/5?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>15</li><li class="ws-opt"><span class="ws-bub">B</span>3/5</li><li class="ws-opt"><span class="ws-bub">C</span>5/3</li><li class="ws-opt"><span class="ws-bub">D</span>8</li></ol><p class="ws-keynote">3 ÷ 1/5 = 3 × 5/1 = 15. There are 15 fifths in 3 wholes.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Whole Numbers by Fractions is skipping the key idea: &quot;Dividing by a fraction is the same as multiplying by its reciprocal (the fraction flipped over).&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is 10 ÷ 1/4?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>40</li><li class="ws-opt"><span class="ws-bub">B</span>2.5</li><li class="ws-opt"><span class="ws-bub">C</span>14</li><li class="ws-opt"><span class="ws-bub">D</span>10/4</li></ol><p class="ws-keynote">10 ÷ 1/4 = 10 × 4/1 = 40. There are 40 quarter-size pieces in 10 wholes.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Whole Numbers by Fractions is skipping the key idea: &quot;Dividing by a fraction is the same as multiplying by its reciprocal (the fraction flipped over).&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Model 2 ÷ 1/4 on the number line</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">What is 5 ÷ 1/2?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>10</li><li class="ws-opt"><span class="ws-bub">B</span>5/2</li><li class="ws-opt"><span class="ws-bub">C</span>2.5</li><li class="ws-opt"><span class="ws-bub">D</span>7</li></ol><p class="ws-keynote">5 ÷ 1/2 = 5 × 2/1 = 10. There are 10 halves in 5 wholes.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Whole Numbers by Fractions is skipping the key idea: &quot;Dividing by a fraction is the same as multiplying by its reciprocal (the fraction flipped over).&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">4 ÷ 1/5</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Keep, Change, Flip</span><span class="ws-step-w">Kept the 4 and changed ÷ to ×, but forgot to flip: 4 × 1/5</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Multiply</span><span class="ws-step-w">4 × 1/5 = 4/5</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
-  <p class="ws-keynote">See worked solution.</p></div></li></ol>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: Flip the divisor 1/5 to its reciprocal 5/1 before multiplying: 4 × 5/1 = 20. The mistake was multiplying by 1/5 instead of flipping it to 5. (The answer should be larger than 4, not smaller.)</p></div></li></ol>
   </section>
 <section class="ws-page">
     <header class="ws-head">
@@ -151,18 +222,31 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     
+    
     <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Complete the table: Whole Number ÷ Fraction. Use Keep, Change, Flip.</p>
   <table class="ws-table"><thead><tr><th>Expression</th><th>Rewrite as Multiplication</th><th>Quotient</th></tr></thead><tbody><tr><td>5 ÷ 1/4</td><td>5 × 4/1</td><td>20</td></tr><tr><td>8 ÷ 1/2</td><td>8 × 2/1</td><td>16</td></tr><tr><td>3 ÷ 1/6</td><td>3 × 6/1</td><td>18</td></tr><tr><td>7 ÷ 1/3</td><td>7 × 3/1</td><td>21</td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Write the letter of the matching answer next to each.</p>
-  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">D</span>4 ÷ 1/3</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">E</span>7 ÷ 1/2</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span>5 ÷ 1/6</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span>2 ÷ 1/8</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span>9 ÷ 1/4</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span>6 ÷ 1/5</li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span>36</li><li><span class="ws-bub ws-bub-sm">B</span>16</li><li><span class="ws-bub ws-bub-sm">C</span>30</li><li><span class="ws-bub ws-bub-sm">D</span>12</li><li><span class="ws-bub ws-bub-sm">E</span>14</li><li><span class="ws-bub ws-bub-sm">F</span>30</li></ul></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Model 3 ÷ 2/3</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">What is 6 ÷ 2/3?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>9</li><li class="ws-opt"><span class="ws-bub">B</span>4</li><li class="ws-opt"><span class="ws-bub">C</span>12</li><li class="ws-opt"><span class="ws-bub">D</span>2/18</li></ol><p class="ws-keynote">6 ÷ 2/3 = 6 × 3/2 = 18/2 = 9. Keep 6, change ÷ to ×, flip 2/3 to 3/2.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Divide Whole Numbers by Fractions.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Dividing by a fraction is the same as multiplying by its reciprocal (the fraction flipped over).</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">D</span>4 ÷ 1/3</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">E</span>7 ÷ 1/2</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span>5 ÷ 1/6</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span>2 ÷ 1/8</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span>9 ÷ 1/4</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span>6 ÷ 1/5</li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span>36</li><li><span class="ws-bub ws-bub-sm">B</span>16</li><li><span class="ws-bub ws-bub-sm">C</span>30</li><li><span class="ws-bub ws-bub-sm">D</span>12</li><li><span class="ws-bub ws-bub-sm">E</span>14</li><li><span class="ws-bub ws-bub-sm">F</span>30</li></ul></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Model 3 ÷ 2/3</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">What is 6 ÷ 2/3?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>9</li><li class="ws-opt"><span class="ws-bub">B</span>4</li><li class="ws-opt"><span class="ws-bub">C</span>12</li><li class="ws-opt"><span class="ws-bub">D</span>2/18</li></ol><p class="ws-keynote">6 ÷ 2/3 = 6 × 3/2 = 18/2 = 9. Keep 6, change ÷ to ×, flip 2/3 to 3/2.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Divide Whole Numbers by Fractions is skipping the key idea: &quot;Dividing by a fraction is the same as multiplying by its reciprocal (the fraction flipped over).&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">8 ÷ 3/4</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Keep, Change, Flip</span><span class="ws-step-w">Flipped the wrong number — wrote 1/8 × 3/4 instead of 8 × 4/3</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Multiply</span><span class="ws-step-w">1/8 × 3/4 = 3/32</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
-  <p class="ws-keynote">See worked solution.</p></div></li></ol>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: Keep the dividend 8 the same and flip only the divisor: 8 × 4/3 = 32/3 = 10 2/3. The mistake was flipping the whole number 8 into 1/8 instead of flipping the divisor 3/4 into 4/3.</p></div></li></ol>
   </section>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.NS.1</span>
+      <span class="ws-ver">Challenge — Answer Key</span>
+    </div>
+    <h1 class="ws-title">Divide Whole Numbers by Fractions</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Find the Division Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Problem</span><span class="ws-step-w">6 ÷ 2/3</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Keep, Change, Flip</span><span class="ws-step-w">6 × 2/3</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Multiply</span><span class="ws-step-w">12/3</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Simplify</span><span class="ws-step-w">4</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: 6 × 3/2 (flip the divisor 2/3 to get 3/2, not keep it as 2/3). Then 6 × 3/2 = 18/2 = 9.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A pizza shop has 8 whole pizzas. Each serving is 2/3 of a pizza. How many servings can they make? Write and solve an equation, then explain why the answer is greater than 8.</p><p class="ws-keynote">Look for: 12, 8 × 3/2, greater, less than 1, servings, reciprocal.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Compare: what happens when you divide the same whole number by different fractions?</p>
+  <table class="ws-table"><thead><tr><th>Expression</th><th>Quotient</th><th>Observation</th></tr></thead><tbody><tr><td>12 ÷ 1/2</td><td>24</td><td></td></tr><tr><td>12 ÷ 1/3</td><td>36</td><td>Smaller divisor → larger quotient</td></tr><tr><td>12 ÷ 1/4</td><td>48</td><td>Smaller divisor → larger quotient</td></tr><tr><td>12 ÷ 2/3</td><td>18</td><td>2/3 &gt; 1/3, so fewer fit</td></tr><tr><td>12 ÷ 3/4</td><td>16</td><td>3/4 &gt; 1/2, so fewer fit</td></tr></tbody></table></div></li></ol>
+  </section>
 </body>
 </html>
