@@ -1,0 +1,69 @@
+{
+  "$schema": "./route-manifest.note",
+  "name": "Neft Classroom — Live Route Smoke Manifest",
+  "updated": "2026-06-25",
+  "note": "Source of truth for the synthetic live-route monitor (scripts/route-monitor.mjs and night-shift module 05). Each route asserts the LIVE site serves the RIGHT app: correct HTTP status AND distinctive content markers present. This is what catches the whole-site-overwrite / curriculum-clobber incident class — a deploy can return 200 while serving foreign or stripped content. Markers are real substrings present in each page's source; add routes as new public surfaces ship.",
+  "base": "https://eduwonderlab.com",
+  "timeoutMs": 15000,
+  "forbidMarkers": [
+    "You need to enable JavaScript to run this app",
+    "Vite + React",
+    "Welcome to Cloudflare Pages",
+    "Nothing is here yet"
+  ],
+  "routes": [
+    {
+      "path": "/",
+      "label": "Neft · Home portal (apex root)",
+      "expect": "public",
+      "requireMarkers": ["Neft", "Professional", "Personal"],
+      "note": "The apex root is NOT this repo's index.html — it is served by the eduwonderlab-home worker (a hand-built Professional/Personal portal). This repo's top-level index.html is served at /classroom instead. Markers match the portal, not the classroom hub."
+    },
+    {
+      "path": "/classroom",
+      "label": "Classroom (legacy link → curriculum hub)",
+      "expect": "public",
+      "requireMarkers": ["Curriculum Hub", "interactive-hub"],
+      "note": "Legacy /classroom 301-redirects to /curriculum/ (data/routes.json, deployed 2026-06-25) so the portal's 'Open the original classroom' footer link resolves. Monitor follows the redirect and verifies it lands on the curriculum hub."
+    },
+    {
+      "path": "/personal/aviad/",
+      "label": "Aviad practice (personal)",
+      "expect": "public",
+      "requireMarkers": ["Aviad"],
+      "note": "Friend's son's summer-readiness practice page. Lives under /personal as intended; monitored so it does not silently break."
+    },
+    {
+      "path": "/curriculum/",
+      "label": "Curriculum Hub",
+      "expect": "public",
+      "requireMarkers": ["Curriculum Hub", "interactive-hub"],
+      "note": "Recurring clobber target — see project_curriculum_clobber_hazard. Both markers must survive."
+    },
+    {
+      "path": "/math/",
+      "label": "Grade 6 Math section",
+      "expect": "public",
+      "requireMarkers": ["Grade 6 Math"]
+    },
+    {
+      "path": "/esol/",
+      "label": "Reading & Language section",
+      "expect": "public",
+      "requireMarkers": ["Language"]
+    },
+    {
+      "path": "/blood-on-the-river/",
+      "label": "Blood on the River reading hub",
+      "expect": "public",
+      "requireMarkers": ["Blood on the River"]
+    },
+    {
+      "path": "/teacher-tools/",
+      "label": "Teacher Tools hub (password-gated)",
+      "expect": "gated",
+      "requireMarkers": ["Teacher Tools"],
+      "note": "Gated by SITE_PASSWORD in functions/_middleware.js. 401 = gate enforced (OK). 200 with right markers = gate disabled (WARN). 200 wrong content / other status = FAIL."
+    }
+  ]
+}
