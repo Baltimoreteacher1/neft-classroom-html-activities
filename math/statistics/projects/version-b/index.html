@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>
       Real-World Data Investigation — Statistics Culminating Project B
     </title>
@@ -560,9 +560,9 @@
     <link rel="stylesheet" href="/shared/projects/projects-tabs.css" />
     <link rel="stylesheet" href="/shared/projects/projects-tplus.css" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
   <body class="pk" data-pk-theme="stats">
     <header class="phero">
       <div class="deco">🌦️</div>
@@ -587,7 +587,15 @@
           <button data-level-btn="level-1" type="button">🟢 Level 1</button>
           <button data-level-btn="level-2" type="button">🔵 Level 2</button>
         </span>
-        <button class="pk-tts-toggle" data-tts-toggle type="button" aria-pressed="false" title="Read text aloud">🔊 Read aloud</button>
+        <button
+          class="pk-tts-toggle"
+          data-tts-toggle
+          type="button"
+          aria-pressed="false"
+          title="Read text aloud"
+        >
+          🔊 Read aloud
+        </button>
         <button type="button" onclick="PK.save('statProjectB')">💾 Save</button>
         <button
           type="button"
@@ -751,7 +759,7 @@
           id="sq-answer"
           data-save
           rows="3"
-          placeholder="Example: How many points per game did each player on the team score this season?"
+          placeholder=""
         ></textarea>
 
         <label class="fld" for="units-answer"
@@ -761,7 +769,7 @@
           type="text"
           id="units-answer"
           data-save
-          placeholder="e.g. points per game, inches, hours"
+          placeholder=""
         />
 
         <button class="btn" onclick="checkSQ()">Submit My Question</button>
@@ -906,7 +914,7 @@
               id="dataset2"
               data-save
               oninput="calcCenter2()"
-              placeholder="Click 'Use Dataset' after choosing a topic"
+              placeholder=""
               style="margin-bottom: 12px"
             />
 
@@ -933,41 +941,47 @@
                   href="https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/national/rankings"
                   target="_blank"
                   class="pk-research-inline-link"
-                  >🔗 NOAA: Climate Maps & Temperature Tables ↗</a
+                  >🔗 NOAA &amp; public data tables ↗</a
                 >
               </div>
               <p class="pk-research-inline-instructions">
-                Open the NOAA database or local temperature charts. Find the
-                record highest temperature ever recorded in your home state
-                (often around 105°F). Enter the state/city name and temperature
-                below:
+                Research a published real-world average for your chosen topic
+                (for example a league average, a city's typical monthly
+                rainfall, or a national survey result). Enter your source and
+                the researched average below to compare it with your sample —
+                this comparison does <strong>not</strong> change your data set.
               </p>
               <div class="grid2">
                 <div>
                   <label class="fld" for="worldCountry"
-                    >State/City Researched</label
+                    >Source you researched</label
                   >
                   <input
                     type="text"
                     id="worldCountry"
                     data-save
-                    placeholder="e.g. Arizona"
+                    placeholder=""
                     oninput="recalcAll()"
                   />
                 </div>
                 <div>
                   <label class="fld" for="worldSize"
-                    >Record High Temp (°F)</label
+                    >Researched real-world average</label
                   >
                   <input
                     type="number"
                     id="worldSize"
                     data-save
-                    placeholder="e.g. 115"
+                    placeholder=""
                     oninput="recalcAll()"
                   />
                 </div>
               </div>
+              <div
+                id="research-compare-out"
+                class="pk-research-compare-out"
+                style="margin-top: 12px"
+              ></div>
             </div>
           </div>
         </div>
@@ -980,7 +994,7 @@
           id="center-compare"
           data-save
           rows="3"
-          placeholder="The mean is ___ and the median is ___. They are (close / far apart) because ___. This suggests the data is ___..."
+          placeholder=""
         ></textarea>
 
         <details class="hintbox">
@@ -1026,7 +1040,7 @@
           id="spread-interpret"
           data-save
           rows="3"
-          placeholder="The range is ___, which means ___. The MAD is ___, which tells me that on average, each data value is about ___ away from the mean. This means the data is (consistent / varied / spread out) because ___..."
+          placeholder=""
         ></textarea>
 
         <div class="task" style="margin-top: 18px">
@@ -1038,7 +1052,7 @@
           type="number"
           id="check-mean"
           data-save
-          placeholder="Type a number"
+          placeholder=""
           style="max-width: 200px"
         />
         <button class="btn blue" onclick="checkMean()" style="margin-left: 8px">
@@ -1139,7 +1153,7 @@
           id="display-justify"
           data-save
           rows="4"
-          placeholder="I chose a ___ because ___. The best measure of center for this data is the ___ because ___. The shape of the distribution is ___ because ___..."
+          placeholder=""
         ></textarea>
 
         <p
@@ -1165,7 +1179,7 @@
             id="dataset2b"
             data-save
             oninput="drawDotPlot2()"
-            placeholder="e.g. 3, 5, 2, 7, 4, 6"
+            placeholder=""
           />
           <button class="btn gold" onclick="drawDotPlot2()">
             Draw Second Dot Plot
@@ -1180,7 +1194,7 @@
             id="compare2-write"
             data-save
             rows="3"
-            placeholder="Data set 1 has a MAD of ___ and data set 2 has a MAD of ___, so set ___ is more spread out. The shape of set 1 is ___ while set 2 is ___ because ___."
+            placeholder=""
           ></textarea>
         </div>
 
@@ -1194,7 +1208,7 @@
           id="check-best"
           data-save
           rows="2"
-          placeholder="I would use the ___ because ___..."
+          placeholder=""
         ></textarea>
         <button class="btn purple" onclick="checkBest()">
           Check My Reasoning
@@ -1253,7 +1267,7 @@
         <textarea
           id="report"
           data-save
-          placeholder="My statistical question was: ___. I investigated data about ___. The mean is ___ and the median is ___. These values are (close / far apart), which tells me ___. The range is ___ and the MAD is ___, meaning the data is ___. I chose a ___ to display this data because ___. The best measure of center for this dataset is the ___ because ___. Overall, my investigation shows that ___..."
+          placeholder=""
         ></textarea>
 
         <h3 style="margin: 22px 0 6px">Project Checklist</h3>
@@ -2147,24 +2161,41 @@
         PK.downloadCsv("data-investigation.csv", rows);
       }
 
+      // Compare a researched real-world average against the student's sample.
+      // IMPORTANT: this is a read-only comparison — it must never mutate
+      // dataset2, or it would corrupt the student's mean/median/MAD/dot plot.
       function syncResearch() {
-        const ws = $("worldSize");
-        if (!ws) return;
-        const val = num("worldSize");
-        if (isNaN(val) || val <= 0) return;
-        if ($("dataset2")) {
-          const raw = $("dataset2").value.trim();
-          const clean = raw
-            .split(",")
-            .map((x) => x.trim())
-            .filter(Boolean);
-          if (!clean.includes(String(val))) {
-            clean.push(val);
-            $("dataset2").value = clean.join(", ");
-            calcCenter2();
-          }
+        const out = $("research-compare-out");
+        if (!out) return;
+        const benchmark = num("worldSize");
+        const source = $("worldCountry") ? $("worldCountry").value.trim() : "";
+        const nums = $("dataset2") ? parseInput($("dataset2").value) : null;
+        if (isNaN(benchmark) || benchmark <= 0 || !nums || !nums.length) {
+          out.innerHTML = "";
+          return;
         }
-        if (typeof worldGo === "function") worldGo();
+        const mean = calcMean(nums);
+        const rel =
+          mean > benchmark
+            ? "higher than"
+            : mean < benchmark
+              ? "lower than"
+              : "equal to";
+        const diff = Math.abs(mean - benchmark).toFixed(2);
+        out.innerHTML =
+          '<div style="padding:12px; background:var(--teal-light, #e0f2f1); border-radius:10px; font-weight:bold; color:var(--teal, #0e8a7d); font-size:14px; border:1px solid #b2dfdb;">' +
+          "📊 Research Comparison: your sample mean (<strong>" +
+          mean.toFixed(2) +
+          "</strong>) is <strong>" +
+          rel +
+          "</strong> the researched " +
+          (source ? "<strong>" + source + "</strong> " : "") +
+          "benchmark (<strong>" +
+          benchmark +
+          "</strong>) by <strong>" +
+          diff +
+          "</strong>." +
+          "</div>";
       }
 
       function drawVisualizer() {
@@ -2300,7 +2331,7 @@
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
-        <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
+    <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
     <script type="application/json" id="pk-research">
       {
         "icon": "🔎",
@@ -2406,8 +2437,8 @@
       }
     </script>
     <script src="/shared/projects/projects-tabs.js" defer></script>
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+  </body>
 </html>

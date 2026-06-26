@@ -750,7 +750,7 @@
           type="text"
           id="product"
           data-save
-          placeholder="example: granola bars"
+          placeholder=""
           oninput="updateProgress()"
         />
 
@@ -809,7 +809,7 @@
                     type="text"
                     id="worldCountry"
                     data-save
-                    placeholder="e.g. Milk (1 gallon)"
+                    placeholder=""
                     oninput="recalcAll()"
                   />
                 </div>
@@ -821,7 +821,7 @@
                     data-save
                     step="0.01"
                     min="0.01"
-                    placeholder="example: 3.60"
+                    placeholder=""
                     oninput="calcUnitPrice()"
                   />
                 </div>
@@ -838,7 +838,7 @@
                 data-save
                 step="0.01"
                 min="0.01"
-                placeholder="example: 12"
+                placeholder=""
                 oninput="calcUnitPrice()"
               />
             </div>
@@ -855,7 +855,7 @@
                 data-save
                 step="0.01"
                 min="0.01"
-                placeholder="example: 5.25"
+                placeholder=""
                 oninput="calcUnitPrice()"
               />
             </div>
@@ -867,7 +867,7 @@
                 data-save
                 step="0.01"
                 min="0.01"
-                placeholder="example: 20"
+                placeholder=""
                 oninput="calcUnitPrice()"
               />
             </div>
@@ -880,8 +880,9 @@
         <details class="hintbox">
           <summary>Need a hint?</summary>
           <p>
-            Unit price = total price ÷ number of units. Example: 3.60 ÷ 12 =0.30 per unit; 5.25 ÷ 20 =0.2625 per unit. The smaller unit
-            price is the better buy.
+            Unit price = total price ÷ number of units. Example: 3.60 ÷ 12 =0.30
+            per unit; 5.25 ÷ 20 =0.2625 per unit. The smaller unit price is the
+            better buy.
           </p>
         </details>
 
@@ -898,7 +899,7 @@
           id="check-unitA"
           data-save
           step="0.0001"
-          placeholder="Type your answer"
+          placeholder=""
         />
         <button class="btn alt" type="button" onclick="checkUnitA()">
           Check my answer
@@ -984,7 +985,7 @@
                   data-save
                   step="0.01"
                   min="0.01"
-                  placeholder="example: 5"
+                  placeholder=""
                   oninput="calcConvert()"
                 />
               </div>
@@ -1057,7 +1058,7 @@
                     step="1"
                     min="0"
                     max="100"
-                    placeholder="example: 15"
+                    placeholder=""
                     oninput="calcStacked()"
                   />
                 </div>
@@ -1190,7 +1191,7 @@
               type="text"
               id="partnerName"
               data-save
-              placeholder="example: A.J."
+              placeholder=""
             />
           </div>
           <div>
@@ -1199,7 +1200,7 @@
               type="text"
               id="p-product"
               data-save
-              placeholder="example: juice boxes"
+              placeholder=""
             />
           </div>
           <div>
@@ -1235,7 +1236,7 @@
         <textarea
           id="peerReflect"
           data-save
-          placeholder="My unit price is $___ and my partner's is $___, so the better buy is ___ because ___."
+          placeholder=""
         ></textarea>
       </section>
 
@@ -1271,7 +1272,7 @@
               data-save
               step="0.0001"
               oninput="worldGo()"
-              placeholder="type your unit price"
+              placeholder=""
             />
             <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
               Tip: use your better-buy unit price from Part 1.
@@ -1319,7 +1320,7 @@
                 id="c-price"
                 step="0.01"
                 min="0.01"
-                placeholder="example: 7.00"
+                placeholder=""
               />
             </div>
             <div>
@@ -1329,7 +1330,7 @@
                 id="c-units"
                 step="0.01"
                 min="0.01"
-                placeholder="example: 30"
+                placeholder=""
               />
             </div>
           </div>
@@ -1348,7 +1349,7 @@
         <textarea
           id="worldReflect"
           data-save
-          placeholder="Cheapest per unit saves money, but ___. The cheapest is not always best because ___ (quality, waste, need)."
+          placeholder=""
         ></textarea>
         <div class="pk-lvl2">
           <label class="fld" for="worldHard"
@@ -1358,7 +1359,7 @@
           <textarea
             id="worldHard"
             data-save
-            placeholder="Tip = $___; total = $___; tip ÷ total × 100 = ___% because ___"
+            placeholder=""
           ></textarea>
         </div>
       </section>
@@ -1379,7 +1380,7 @@
         <textarea
           id="pitch"
           data-save
-          placeholder="For ___, Package ___ is the better buy at $___ per unit vs $___ per unit. I converted ___ ___ to ___ ___ using a rate. Compared to the national average of $___ per unit, my buy is ___. The cheapest choice is/isn't always best because ___."
+          placeholder=""
         ></textarea>
 
         <h3 style="margin: 22px 0 6px">Smart Shopper Checklist</h3>
@@ -1538,6 +1539,7 @@
           proj.upB = null;
           proj.better = null;
           proj.betterUp = null;
+          if (typeof drawVisualizer === "function") drawVisualizer();
           return;
         }
         const upA = ap / au,
@@ -1579,6 +1581,7 @@
             " per unit</strong><br>" +
             verdict,
         );
+        if (typeof drawVisualizer === "function") drawVisualizer();
       }
 
       function checkUnitA() {
@@ -1897,52 +1900,6 @@
         $("conv-from").value = "feet";
         $("conv-to").value = "inches";
         recalcAll();
-      }
-
-      function drawVisualizer() {
-        const sub = num("subtotal") || 0;
-        const tax = num("tax-rate") || 0;
-        const tip = num("tip-pct") || 0;
-
-        let html = "";
-        if (sub > 0) {
-          const taxAmt = sub * (tax / 100);
-          const tipAmt = sub * (tip / 100);
-          const total = sub + taxAmt + tipAmt;
-
-          html = `
-            <g transform="translate(130, 20)">
-              <!-- Receipt Background -->
-              <rect x="0" y="0" width="240" height="200" fill="#fcfcfc" stroke="#cbd5e1" stroke-width="2" filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.05))" />
-              <line x1="10" y1="35" x2="230" y2="35" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="3,3" />
-              <text x="120" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">RESTAURANT BILL</text>
-              
-              <text x="20" y="60" font-size="13" fill="#5e6e7e">Menu Subtotal:</text>
-              <text x="220" y="60" text-anchor="end" font-size="13" font-weight="bold" fill="#0f2b3c">$${sub.toFixed(2)}</text>
-              
-              <text x="20" y="90" font-size="13" fill="#5e6e7e">Sales Tax (${tax}%):</text>
-              <text x="220" y="90" text-anchor="end" font-size="13" fill="#0f2b3c">$${taxAmt.toFixed(2)}</text>
-              
-              <text x="20" y="120" font-size="13" fill="#5e6e7e">Staff Tip (${tip}%):</text>
-              <text x="220" y="120" text-anchor="end" font-size="13" fill="#0f2b3c">$${tipAmt.toFixed(2)}</text>
-              
-              <line x1="10" y1="140" x2="230" y2="140" stroke="#cbd5e1" stroke-width="1.5" />
-              <text x="20" y="170" font-size="14" font-weight="bold" fill="#2d874b">GRAND TOTAL:</text>
-              <text x="220" y="170" text-anchor="end" font-size="14" font-weight="bold" fill="#2d874b">$${total.toFixed(2)}</text>
-            </g>
-          `;
-        } else {
-          html = `
-            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter the bill values to print the receipt</text>
-          `;
-        }
-
-        const svgString = `
-          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
-            ${html}
-          </svg>
-        `;
-        $("projectVisualizer").innerHTML = svgString;
       }
 
       function recalcAll() {
