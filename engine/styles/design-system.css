@@ -3476,9 +3476,9 @@ body:has(.identity-screen) .export-toolbar {
   color: var(--teal);
 }
 
-/* ── Mode toggle pill (always visible: Student ↔ Teacher) ──
-   Mirrors the curriculum hub's #hub-mode-toggle so the switch looks and
-   behaves the same on the hub and inside every lesson. */
+/* ── Exit-to-Student pill (shown ONLY while in Teacher Mode) ──
+   Students never see this; entry to Teacher Mode is the password-gated
+   button on the lesson login screen (.identity-teacher). */
 .mode-toggle-pill {
   position: fixed;
   bottom: 14px;
@@ -3487,7 +3487,7 @@ body:has(.identity-screen) .export-toolbar {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: var(--navy);
+  background: var(--teal, #128a87);
   color: #fff;
   font-weight: 800;
   font-size: 0.82rem;
@@ -3500,13 +3500,88 @@ body:has(.identity-screen) .export-toolbar {
 .mode-toggle-pill:hover {
   filter: brightness(1.08);
 }
-.mode-toggle-pill[aria-pressed="true"] {
-  background: var(--teal, #128a87);
-}
 @media print {
   .mode-toggle-pill {
     display: none;
   }
+}
+
+/* ── Password-gated Teacher entry on the lesson login screen ── */
+.identity-teacher {
+  margin-top: var(--sp-3, 12px);
+  text-align: center;
+}
+.identity-teacher-btn {
+  background: none;
+  border: 1px solid var(--navy, #12355b);
+  color: var(--navy, #12355b);
+  font-weight: 700;
+  font-size: 0.82rem;
+  padding: 7px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.identity-teacher-btn:hover {
+  background: rgba(18, 53, 91, 0.06);
+}
+.identity-teacher-unlock {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.identity-teacher-pin {
+  flex: 1 1 160px;
+  max-width: 220px;
+  padding: 8px 12px;
+  border: 1px solid var(--gray-300, #cbd5e1);
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+.identity-teacher-go {
+  background: var(--navy, #12355b);
+  color: #fff;
+  border: 0;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.identity-teacher-go:hover {
+  filter: brightness(1.08);
+}
+.identity-teacher-err {
+  flex-basis: 100%;
+  margin: 2px 0 0;
+  color: var(--amber, #c85a3a);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.identity-teacher.is-on {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.identity-teacher-label {
+  font-weight: 800;
+  font-size: 0.82rem;
+  color: var(--teal, #128a87);
+}
+.identity-teacher-exit {
+  background: none;
+  border: 1px solid var(--gray-300, #cbd5e1);
+  color: var(--navy, #12355b);
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 6px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.identity-teacher-exit:hover {
+  background: rgba(18, 53, 91, 0.06);
 }
 
 /* ── Teacher projection tools ── */

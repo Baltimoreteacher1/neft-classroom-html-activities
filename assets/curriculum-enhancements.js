@@ -10,6 +10,10 @@
   // teacher-mode.js) so one toggle flips both the hub and every lesson.
   var STORAGE_MODE = "nt-teacher-mode";
   var STORAGE_MODE_LEGACY = "curriculumTeacherMode";
+  // Classroom deterrent password for entering Teacher Mode (not real security —
+  // a client-side gate that stops casual student access).
+  // ⚠️ KEEP IN SYNC with TEACHER_PIN in engine/core/teacher-mode.js.
+  var TEACHER_PIN = "TeacherNeft";
   var STORAGE_PROGRESS = "curriculumProgress";
   var FILTER_ALL = "all";
 
@@ -119,8 +123,8 @@
   function loadTeacherMode() {
     try {
       var params = new URLSearchParams(location.search);
+      // Force-student wins; there is no URL backdoor INTO teacher (needs PIN).
       if (params.get("student") === "1") return false;
-      if (params.get("teacher") === "1") return true;
       var saved = localStorage.getItem(STORAGE_MODE);
       // One-time migration from the old hub-only key onto the shared key.
       if (saved === null) {
@@ -144,6 +148,15 @@
     try {
       localStorage.setItem(STORAGE_MODE, on ? "1" : "0");
     } catch (e) {}
+  }
+
+  // Password gate for switching INTO Teacher Mode. Returns true on success.
+  function requestTeacher() {
+    var entered = window.prompt("Teacher password:");
+    if (entered === null) return false; // cancelled
+    if (entered.trim() === TEACHER_PIN) return true;
+    window.alert("Incorrect password.");
+    return false;
   }
 
   function isTeacherResource(act) {
@@ -417,7 +430,13 @@
     modeBtn.setAttribute("aria-pressed", "false");
     modeBtn.textContent = "🎒 Student Mode";
     modeBtn.addEventListener("click", function () {
-      teacherMode = !teacherMode;
+      // Switching INTO teacher requires the password; back to student is free.
+      if (!teacherMode) {
+        if (!requestTeacher()) return;
+        teacherMode = true;
+      } else {
+        teacherMode = false;
+      }
       saveTeacherMode(teacherMode);
       applyTeacherMode();
       updateProgressSummary();
@@ -444,6 +463,7 @@
     hint
       .querySelector("#hub-hint-teacher")
       .addEventListener("click", function () {
+        if (!requestTeacher()) return;
         teacherMode = true;
         saveTeacherMode(true);
         applyTeacherMode();
