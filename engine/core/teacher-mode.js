@@ -30,6 +30,19 @@ export function mountTeacherPanel(root, config, state) {
       👩‍🏫 ${stackHtml(t("teacherView", "en"), t("teacherView", "es"))}
     </button>
     <div id="teacher-panel-body" class="teacher-panel-body">
+      <div class="teacher-panel-section teacher-projection">
+        <h4>🎥 Project &amp; Pace</h4>
+        <div class="teacher-proj-controls">
+          <button type="button" class="btn btn-secondary btn-sm teacher-proj-toggle" aria-pressed="false">🔍 Projector view</button>
+          <button type="button" class="btn btn-secondary btn-sm teacher-answers-toggle" aria-pressed="true">🙈 Hide answers</button>
+        </div>
+        <div class="teacher-timer">
+          <span class="teacher-timer-display" role="timer" aria-live="polite">00:00</span>
+          <button type="button" class="btn btn-secondary btn-sm teacher-timer-start">▶︎ Start</button>
+          <button type="button" class="btn btn-secondary btn-sm teacher-timer-reset">↺ Reset</button>
+        </div>
+      </div>
+      <div class="teacher-panel-section" data-bind="discuss"></div>
       <div class="teacher-panel-section">
         <h4>${stackHtml(t("pacingGuide", "en"), t("pacingGuide", "es"))}</h4>
         <ul class="teacher-pacing-list">
@@ -67,6 +80,78 @@ export function mountTeacherPanel(root, config, state) {
     toggle.setAttribute("aria-expanded", String(!open));
     panel.classList.toggle("is-collapsed", open);
   });
+
+  // ── Projection tools ──────────────────────────────────────────────────────
+  // Projector view: enlarge the whole lesson for whole-class display.
+  const projBtn = panel.querySelector(".teacher-proj-toggle");
+  projBtn?.addEventListener("click", () => {
+    const on = document.documentElement.classList.toggle("projector");
+    projBtn.setAttribute("aria-pressed", String(on));
+    projBtn.textContent = on ? "🔍 Exit projector" : "🔍 Projector view";
+  });
+
+  // Hide/show the teacher answer key on screen (for projecting without spoilers).
+  const ansBtn = panel.querySelector(".teacher-answers-toggle");
+  ansBtn?.addEventListener("click", () => {
+    const hidden = panel.classList.toggle("answers-hidden");
+    ansBtn.setAttribute("aria-pressed", String(!hidden));
+    ansBtn.textContent = hidden ? "👁 Show answers" : "🙈 Hide answers";
+  });
+
+  // Simple class timer (count-up). No Date dependency beyond runtime clock.
+  const timerDisplay = panel.querySelector(".teacher-timer-display");
+  const startBtn = panel.querySelector(".teacher-timer-start");
+  const resetBtn = panel.querySelector(".teacher-timer-reset");
+  let elapsed = 0;
+  let ticking = null;
+  const renderTimer = () => {
+    const m = String(Math.floor(elapsed / 60)).padStart(2, "0");
+    const s = String(elapsed % 60).padStart(2, "0");
+    if (timerDisplay) timerDisplay.textContent = `${m}:${s}`;
+  };
+  startBtn?.addEventListener("click", () => {
+    if (ticking) {
+      clearInterval(ticking);
+      ticking = null;
+      startBtn.textContent = "▶︎ Start";
+    } else {
+      ticking = setInterval(() => {
+        elapsed += 1;
+        renderTimer();
+      }, 1000);
+      startBtn.textContent = "⏸ Pause";
+    }
+  });
+  resetBtn?.addEventListener("click", () => {
+    elapsed = 0;
+    renderTimer();
+  });
+
+  // Launch question + Exit reflection — quick discussion prompts for the teacher.
+  const discussSlot = panel.querySelector('[data-bind="discuss"]');
+  const launchQ =
+    config.launch?.question ||
+    config.launch?.prompt ||
+    config.launch?.narrative ||
+    "";
+  const exitR =
+    config.reflect?.exitTicket ||
+    config.reflect?.prompt ||
+    (Array.isArray(config.reflect?.prompts) ? config.reflect.prompts[0] : "");
+  const discussBits = [];
+  if (launchQ)
+    discussBits.push(
+      `<p><strong>🚀 Launch question:</strong> ${esc(launchQ)}</p>`,
+    );
+  if (exitR)
+    discussBits.push(
+      `<p><strong>🎟 Exit reflection:</strong> ${esc(exitR)}</p>`,
+    );
+  if (discussBits.length && discussSlot) {
+    discussSlot.innerHTML = `<h4>💬 Discuss</h4>${discussBits.join("")}`;
+  } else if (discussSlot) {
+    discussSlot.remove();
+  }
 
   // Listen-fors from turnAndTalk
   const listenSlot = panel.querySelector('[data-bind="listen-fors"]');

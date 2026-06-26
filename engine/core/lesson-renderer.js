@@ -28,6 +28,7 @@ import { createProblemCard, problemTypeLabel } from "./problem-shell.js";
 import { enableWordProblemAnnotation } from "./annotate.js";
 import { renderThemeIllustration } from "./theme-illustrations.js";
 import { deriveWorkedSteps } from "./worked-steps.js";
+import { mountStuckSupport } from "./stuck-support.js";
 import {
   buildPhaseTransitionMeta,
   buildPrintableSummary,
@@ -1278,8 +1279,26 @@ function renderShowYourWork(host, config, state) {
     input.value = get(key);
     input.addEventListener("input", () => set(key, input.value));
     wrap.append(input);
+    // Optional minimum-word goal with a live counter (writing scaffold #4).
+    if (opts.minWords) {
+      const counter = document.createElement("div");
+      counter.className = "syw-wordcount";
+      const countWords = (v) => (v.trim() ? v.trim().split(/\s+/).length : 0);
+      const update = () => {
+        const n = countWords(input.value);
+        counter.textContent = `${n} / ${opts.minWords} words`;
+        counter.classList.toggle("is-ready", n >= opts.minWords);
+      };
+      input.addEventListener("input", update);
+      update();
+      wrap.append(counter);
+    }
     return wrap;
   };
+
+  // Shared "I'm stuck" support bar — hint / first step / example / vocab /
+  // sentence starter / simpler words, available on every lesson's solve.
+  mountStuckSupport(card, { config, state });
 
   const steps = document.createElement("div");
   steps.className = "syw-steps";
@@ -1292,6 +1311,7 @@ function renderShowYourWork(host, config, state) {
     }),
     field("work", "3 · My work", "show each step", {
       rows: 5,
+      minWords: 15,
       placeholder: "Step 1…\nStep 2…",
     }),
     field("answer", "4 · My answer", "label your units", {

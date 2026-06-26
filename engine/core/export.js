@@ -3,7 +3,8 @@
  * No external libraries required; uses browser Blob API.
  */
 
-const DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+const DOCX_MIME =
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
 
 function escHtml(str) {
   const d = document.createElement("div");
@@ -31,7 +32,10 @@ function buildExportHtml(state, config) {
   const studentName = s.studentName || "Student";
   const studentPeriod = s.studentPeriod ? `Period ${s.studentPeriod}` : "";
   const totalStars = s.phases.reduce((sum, p) => sum + (p.stars || 0), 0);
-  const accuracy = s.totalAttempts > 0 ? Math.round((s.totalCorrect / s.totalAttempts) * 100) : 100;
+  const accuracy =
+    s.totalAttempts > 0
+      ? Math.round((s.totalCorrect / s.totalAttempts) * 100)
+      : 100;
 
   // Collect responses by phase
   const phaseNames = ["Launch", "Explore", "Practice", "Connect", "Reflect"];
@@ -136,7 +140,9 @@ function buildExportHtml(state, config) {
     "4_reflect_1",
     "4_self-assess",
   ]);
-  const extraResponses = Object.entries(s.responses).filter(([k]) => !coveredKeys.has(k));
+  const extraResponses = Object.entries(s.responses).filter(
+    ([k]) => !coveredKeys.has(k),
+  );
   if (extraResponses.length) {
     responseSections += `
       <h2 style="color:#12355B; border-bottom:2px solid #12355B; padding-bottom:4px;">
@@ -249,7 +255,10 @@ function buildPlainText(state, config) {
   const dateStr = now.toLocaleDateString();
   const studentName = s.studentName || "Student";
   const totalStars = s.phases.reduce((sum, p) => sum + (p.stars || 0), 0);
-  const accuracy = s.totalAttempts > 0 ? Math.round((s.totalCorrect / s.totalAttempts) * 100) : 100;
+  const accuracy =
+    s.totalAttempts > 0
+      ? Math.round((s.totalCorrect / s.totalAttempts) * 100)
+      : 100;
 
   let text = `${config.title}\n`;
   text += `${config.standard} · Unit ${config.unit || ""}\n`;
@@ -365,6 +374,42 @@ const ICON_PDF = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" st
  * Create the floating export toolbar and attach to the DOM.
  * Call this once after the main app layout is built.
  */
+const PHASE_LABELS = ["Launch", "Explore", "Practice", "Connect", "Reflect"];
+
+// Completion readiness across the lesson's phases — drives the "ready to
+// export" state + a required-section warning before a student exports.
+function computeReadiness(state) {
+  const s =
+    state && typeof state.get === "function" ? state.get() : state || {};
+  const phases = (s && Array.isArray(s.phases) && s.phases) || [];
+  const total = phases.length;
+  const incomplete = [];
+  phases.forEach((p, i) => {
+    if (!p || p.status !== "completed")
+      incomplete.push(PHASE_LABELS[i] || `Section ${i + 1}`);
+  });
+  return {
+    total,
+    done: total - incomplete.length,
+    ready: total > 0 && incomplete.length === 0,
+    incomplete,
+  };
+}
+
+function buildReadinessChip(state) {
+  const r = computeReadiness(state);
+  const chip = document.createElement("div");
+  chip.className = `export-readiness ${r.ready ? "is-ready" : "is-incomplete"}`;
+  if (r.total === 0) {
+    chip.textContent = "";
+    return chip;
+  }
+  chip.textContent = r.ready
+    ? "✅ You're ready to export"
+    : `⚠️ ${r.done} of ${r.total} sections done — still to finish: ${r.incomplete.join(", ")}`;
+  return chip;
+}
+
 export function mountExportToolbar(state, config) {
   const bar = document.createElement("div");
   bar.className = "export-toolbar";
@@ -430,7 +475,7 @@ export function mountExportToolbar(state, config) {
     }, 300);
   });
 
-  bar.append(dlBtn, pdfBtn, copyBtn);
+  bar.append(buildReadinessChip(state), dlBtn, pdfBtn, copyBtn);
   document.body.prepend(bar);
 
   return bar;

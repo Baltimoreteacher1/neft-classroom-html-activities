@@ -709,7 +709,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
           accent: "card-teal",
           color: "--teal",
           icon: "📘",
-          label: "What I will learn",
+          label: "Content Objective — What I will learn",
           text: content,
           key: "content",
           prompt:
@@ -720,7 +720,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
           accent: "card-coral",
           color: "--coral",
           icon: "🗣️",
-          label: "Words I will use",
+          label: "Language Objective — Words I will use",
           text: language,
           key: "language",
           prompt:
