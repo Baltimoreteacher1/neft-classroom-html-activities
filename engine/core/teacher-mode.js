@@ -1,4 +1,7 @@
-import { PHASE_TIME_ESTIMATES, countPracticeProblems } from "./content-enrichment.js";
+import {
+  PHASE_TIME_ESTIMATES,
+  countPracticeProblems,
+} from "./content-enrichment.js";
 import { t, stackHtml, phaseName } from "./i18n.js";
 
 function esc(s) {
@@ -69,7 +72,10 @@ export function mountTeacherPanel(root, config, state) {
   const listenSlot = panel.querySelector('[data-bind="listen-fors"]');
   const listenFors = (config.turnAndTalk || [])
     .filter((t) => t.listenFor)
-    .map((t) => `<li><strong>${esc(t.phase || "Phase")}:</strong> ${esc(t.listenFor)}</li>`);
+    .map(
+      (t) =>
+        `<li><strong>${esc(t.phase || "Phase")}:</strong> ${esc(t.listenFor)}</li>`,
+    );
   if (listenFors.length) {
     listenSlot.innerHTML = `<h4>${stackHtml(t("listenFor", "en"), t("listenFor", "es"))}</h4><ul class="teacher-listen">${listenFors.join("")}</ul>`;
   } else {
@@ -87,9 +93,11 @@ export function mountTeacherPanel(root, config, state) {
     keySlot.remove();
   }
 
-  panel.querySelector(".teacher-print-packet")?.addEventListener("click", () => {
-    window.print();
-  });
+  panel
+    .querySelector(".teacher-print-packet")
+    ?.addEventListener("click", () => {
+      window.print();
+    });
 
   root.append(panel);
   return panel;
@@ -101,7 +109,10 @@ function collectAnswerKey(config) {
   for (const b of buckets) {
     const items = config.practice?.[b] || [];
     items.forEach((item, i) => {
-      if (item.type === "multiple-choice" && item.choices?.[item.correctIndex]) {
+      if (
+        item.type === "multiple-choice" &&
+        item.choices?.[item.correctIndex]
+      ) {
         answers.push(
           `${b} #${i + 1}: ${item.choices[item.correctIndex]}${item.explanation ? ` — ${item.explanation}` : ""}`,
         );
@@ -120,7 +131,8 @@ function collectAnswerKey(config) {
  * them via the ?teacher=1 answer key. Keep this panel to pacing only. */
 export function buildWelcomeTeacherNotes(config) {
   const pacing = PHASE_TIME_ESTIMATES.map(
-    (p, i) => `<li><span>${p.icon} ${phaseName(i)}</span><span>~${p.minutes} min</span></li>`,
+    (p, i) =>
+      `<li><span>${p.icon} ${phaseName(i)}</span><span>~${p.minutes} min</span></li>`,
   ).join("");
 
   const wrap = document.createElement("div");
@@ -136,7 +148,6 @@ export function buildWelcomeTeacherNotes(config) {
         <h5>${stackHtml(t("pacingGuide", "en"), t("pacingGuide", "es"))}</h5>
         <ul class="teacher-pacing-list">${pacing}</ul>
       </div>
-      <p style="font-size:0.82rem; color:var(--muted); margin-top:8px;">${stackHtml("Look-fors & full answer keys:", "Qué observar y claves completas:")} <code>?teacher=1</code></p>
     </div>`;
 
   const toggle = wrap.querySelector(".welcome-teacher-toggle");

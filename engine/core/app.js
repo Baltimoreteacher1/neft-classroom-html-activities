@@ -328,8 +328,10 @@ function showIdentityScreen(root, config) {
     screen.querySelector("#welcome-google-slides-slot"),
   );
 
+  // Teacher pacing notes are teacher-only: shown on the cover when ?teacher=1,
+  // never to students. (Students previously saw this panel — removed.)
   const teacherSlot = screen.querySelector("#welcome-teacher-slot");
-  if (teacherSlot && !isTeacherMode()) {
+  if (teacherSlot && isTeacherMode()) {
     teacherSlot.append(buildWelcomeTeacherNotes(config));
   }
 
@@ -352,8 +354,7 @@ function showIdentityScreen(root, config) {
           panel.className = "standards-explainer-panel";
           panel.innerHTML = `
             <p><strong>${escHtml(config.standard)}</strong> — This lesson aligns to Grade 6 Reveal Math standards.</p>
-            <p>${escHtml(resolveContentObjective(config))}</p>
-            <p style="color:var(--muted); font-size:0.88rem;">Use <code>?teacher=1</code> in the URL for pacing guide, answer keys, and listen-fors.</p>`;
+            <p>${escHtml(resolveContentObjective(config))}</p>`;
           stdBtn.after(panel);
         } else if (panel) {
           panel.hidden = open;
