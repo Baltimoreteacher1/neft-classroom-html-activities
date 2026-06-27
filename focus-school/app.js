@@ -929,7 +929,7 @@
     ["rewards", "Allowance", "💰"],
     ["routines", "Routines", "🔁"],
     ["calming", "Calming", "🧘"],
-    ["ai", "AI Help", "🤖"],
+    ["ai", "Academic Help", "🤖"],
     ["more", "More", "⋯"],
   ];
   let view = "home";
@@ -3831,18 +3831,14 @@
           "</div>",
       ).join("");
       return (
-        '<div class="view-head"><h2 class="view-title">🤖 AI Support</h2>' +
+        '<div class="view-head"><h2 class="view-title">🤖 Academic Help</h2>' +
         (AI_CHAT.length
           ? '<button class="btn sm" data-act="ai-clear">Clear</button>'
           : "") +
         "</div>" +
         '<p class="view-intro">A friendly helper for homework. Tap a button, type a question, or add a picture of your work — it gives hints, not just answers.</p>' +
-        '<div class="ai-scroll" id="aiScroll">' +
-        msgs +
-        (aiBusy
-          ? '<div class="ai-msg bot"><span class="ai-ic">🤖</span><span class="ai-bubble typing">Thinking…</span></div>'
-          : "") +
-        "</div>" +
+        '<a class="btn navy block" href="https://eduwonderlab.com/curriculum/math-workbench/" target="_blank" rel="noopener">📐 Open Math Workbench</a>' +
+        // Ask first (chips + input), then the conversation grows below it.
         '<div class="ai-chips">' +
         chipGroups +
         "</div>" +
@@ -3851,11 +3847,17 @@
             aiImage.dataUrl +
             '" alt="picture to send"><button class="btn sm" data-act="ai-remove-image">✕ Remove picture</button></div>'
           : "") +
-        '<div class="ai-inputbar"><button class="btn ai-attach-btn" data-act="ai-attach" aria-label="Add a picture" title="Add a picture">📷</button><input id="aiInput" placeholder="Ask for help…" aria-label="Ask the AI for help" ' +
+        '<div class="ai-inputbar"><button class="btn ai-attach-btn" data-act="ai-attach" aria-label="Add a picture" title="Add a picture">📷</button><input id="aiInput" placeholder="Ask for help…" aria-label="Ask for help" ' +
         (aiBusy ? "disabled" : "") +
         '><button class="btn primary" data-act="ai-send" ' +
         (aiBusy ? "disabled" : "") +
         ">Send</button></div>" +
+        '<div class="ai-scroll" id="aiScroll">' +
+        msgs +
+        (aiBusy
+          ? '<div class="ai-msg bot"><span class="ai-ic">🤖</span><span class="ai-bubble typing">Thinking…</span></div>'
+          : "") +
+        "</div>" +
         '<input type="file" id="aiImageInput" accept="image/*" hidden>'
       );
     },
@@ -6341,7 +6343,7 @@ Due May 31"></textarea>
         this._setStatus("offline");
         return;
       }
-      const changed = await this.pull();
+      const changed = await this.pull({ forceMerge: true });
       if (changed) render();
     },
     // Start/refresh the periodic pull loop while the tab is open.
@@ -8213,7 +8215,7 @@ ${name}`;
     },
     "sync-now": async () => {
       toast("Syncing...");
-      const pulled = await cloud.pull();
+      const pulled = await cloud.pull({ forceMerge: true });
       await cloud.push();
       render();
       toast(pulled ? "Pulled newer data ⬇️" : "Synced 🔄");
@@ -9139,7 +9141,9 @@ ${name}`;
 
     // pull cloud data if enabled, THEN re-enable pushing
     if (state.settings.sync.enabled && cloud.available()) {
-      const pulled = await cloud.pull();
+      // forceMerge so the conflict-safe item-level merge always runs — a newer
+      // local updatedAt must not shadow routine/reminder edits made elsewhere.
+      const pulled = await cloud.pull({ forceMerge: true });
       if (pulled) render();
     }
     suppressPush = false;
