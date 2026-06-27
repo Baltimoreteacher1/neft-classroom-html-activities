@@ -3,2645 +3,1452 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Game Studio Scoring Engine — Unit 6 Culminating Project</title>
-    <meta
-      name="description"
-      content="Unit 6 Expressions culminating project. Design YOUR own game scoring engine using exponents and algebraic expressions, trade formulas with a partner, then compare to real-world game scoring."
-    />
-    <link rel="stylesheet" href="/assets/shared.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-kit.css" />
-    <script src="/shared/projects/projects-kit.js" defer></script>
+    <meta name="description" content="Unit 6 Expressions culminating project. Design your own game scoring engine using exponents and variables to represent points, bonuses, and multipliers." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <style>
       :root {
-        --navy: #0f2b3c;
-        --blue: #1a6fb5;
-        --blue-light: #e8f2fc;
-        --teal: #0e8a7d;
-        --teal-light: #e4f5f3;
-        --gold: #d4952a;
-        --gold-light: #fdf3e0;
+        --navy: #1e1b4b; /* gaming dark background */
+        --blue: #6d28d9; /* gaming purple */
+        --blue-lt: #f3e8ff; /* light purple */
+        --teal: #2563eb; /* gaming blue */
+        --teal-lt: #dbeafe; /* light gaming blue */
+        --gold: #c9820f;
+        --gold-lt: #fdf3e0;
+        --green: #1e7d40;
+        --green-lt: #e6f4eb;
         --coral: #c45a3c;
-        --coral-light: #fdeee9;
-        --green: #2d874b;
-        --green-light: #e6f4eb;
-        --purple: #6b3fa0;
-        --purple-light: #f0eaf8;
-        --ink: #1a2633;
-        --muted: #5e6e7e;
-        --line: #e2e7ec;
-        --bg: #f7f9fb;
+        --ink: #0f172a;
+        --muted: #64748b;
+        --line: #cbd5e1;
+        --bg: #f8fafc;
         --card: #ffffff;
         --radius: 16px;
-        --shadow: 0 4px 18px rgba(15, 43, 60, 0.1);
-        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+        --shadow: 0 4px 18px rgba(109, 40, 217, 0.08);
       }
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        margin: 0;
-        font-family: var(--font);
-        color: var(--ink);
-        background: var(--bg);
-        line-height: 1.55;
-      }
-      .wrap {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 0 20px 60px;
-      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: 'Inter', system-ui, sans-serif; color: var(--ink); background: var(--bg); line-height: 1.6; }
 
-      .phero {
-        background: linear-gradient(
-          135deg,
-          #1a0533 0%,
-          #6b3fa0 60%,
-          #1a6fb5 100%
-        );
+      /* ---- Hero ---- */
+      .hero {
+        background: linear-gradient(135deg, #1e1b4b 0%, #4c1d95 60%, #2563eb 100%);
         color: #fff;
-        padding: 40px 24px 34px;
+        padding: 36px 24px 28px;
         text-align: center;
-        position: relative;
-        overflow: hidden;
       }
-      .phero .deco {
-        font-size: 56px;
-        line-height: 1;
-      }
-      .phero h1 {
-        font-size: clamp(26px, 5vw, 40px);
-        margin: 10px 0 8px;
-        letter-spacing: -0.02em;
-      }
-      .phero p {
-        max-width: 640px;
-        margin: 0 auto;
-        color: rgba(255, 255, 255, 0.85);
-        font-size: 17px;
-      }
-      .tags {
-        margin-top: 16px;
-        display: flex;
-        gap: 8px;
-        justify-content: center;
-        flex-wrap: wrap;
-      }
-      .tag {
-        background: rgba(255, 255, 255, 0.14);
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        border-radius: 50px;
-        padding: 5px 14px;
-        font-size: 13px;
-        font-weight: 700;
-      }
-      .tag.gold {
-        background: var(--gold);
-        border-color: var(--gold);
-        color: #2a1c00;
-      }
+      .hero-emoji { font-size: 52px; line-height: 1; margin-bottom: 10px; }
+      .hero h1 { font-size: clamp(24px,5vw,38px); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; }
+      .hero-sub { color: rgba(255,255,255,.85); font-size: 16px; max-width: 580px; margin: 0 auto 16px; }
+      .hero-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; }
+      .tag { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.28); border-radius: 50px; padding: 4px 13px; font-size: 12px; font-weight: 700; letter-spacing: .04em; }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #fff; }
 
-      .toolbar {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        justify-content: center;
-        margin-top: 16px;
+      /* ---- Level selector ---- */
+      .level-bar {
+        display: flex; gap: 10px; justify-content: center;
+        background: rgba(255,255,255,.10); border-radius: 50px;
+        padding: 6px 10px; max-width: 400px; margin: 0 auto;
       }
-      .toolbar button {
-        background: rgba(255, 255, 255, 0.12);
-        color: #fff;
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        border-radius: 50px;
-        padding: 8px 16px;
-        font-weight: 700;
-        font-size: 13px;
-        cursor: pointer;
-        font-family: inherit;
+      .level-btn {
+        flex: 1; background: transparent; color: rgba(255,255,255,.75);
+        border: 2px solid rgba(255,255,255,.30); border-radius: 50px;
+        padding: 7px 16px; font-size: 13px; font-weight: 700;
+        cursor: pointer; font-family: inherit; transition: all .2s;
       }
-      .toolbar button:hover {
-        background: rgba(255, 255, 255, 0.22);
-      }
+      .level-btn.active { background: #fff; color: var(--navy); border-color: #fff; }
 
-      .intro-card {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-left: 6px solid var(--gold);
-        border-radius: var(--radius);
-        padding: 22px 24px;
-        margin: 26px 0;
-        box-shadow: var(--shadow);
-      }
-      .intro-card h2 {
-        margin: 0 0 8px;
-        font-size: 20px;
-      }
+      /* ---- Tab wizard ---- */
+      .wizard { max-width: 860px; margin: 0 auto; padding: 0 16px 60px; }
 
-      .phase {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-radius: var(--radius);
-        padding: 24px;
-        margin: 22px 0;
-        box-shadow: var(--shadow);
+      .step-trail {
+        display: flex; align-items: center; gap: 0;
+        padding: 22px 0 0; overflow-x: auto;
       }
-      .phase-head {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        margin-bottom: 6px;
+      .step-trail-item {
+        display: flex; align-items: center; gap: 6px;
+        cursor: pointer; white-space: nowrap; padding: 8px 12px;
+        border-radius: 10px; transition: background .15s;
       }
-      .phase-num {
-        flex: 0 0 auto;
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
-        background: var(--purple);
-        color: #fff;
-        font-weight: 800;
-        font-size: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+      .step-trail-item:hover { background: var(--blue-lt); }
+      .step-trail-item.active .s-num {
+        background: var(--blue); color: #fff;
       }
-      .phase h2 {
-        margin: 0;
-        font-size: 21px;
+      .step-trail-item.done .s-num {
+        background: var(--green); color: #fff;
       }
-      .phase .skill {
-        font-size: 12px;
-        font-weight: 700;
-        color: var(--muted);
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
+      .s-num {
+        width: 30px; height: 30px; border-radius: 50%;
+        background: var(--line); color: var(--muted);
+        font-weight: 800; font-size: 13px;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0; transition: all .2s;
       }
-      .phase > p {
-        color: var(--muted);
-      }
-      .arc-banner {
-        display: inline-block;
-        font-size: 12px;
-        font-weight: 800;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        color: var(--purple);
-        background: var(--purple-light);
-        border-radius: 50px;
-        padding: 4px 12px;
-        margin-bottom: 10px;
-      }
+      .s-label { font-size: 13px; font-weight: 600; color: var(--muted); }
+      .step-trail-item.active .s-label { color: var(--blue); }
+      .step-trail-item.done .s-label { color: var(--green); }
+      .step-arrow { color: var(--line); font-size: 16px; padding: 0 2px; }
 
-      .task {
-        background: var(--purple-light);
-        border-radius: 12px;
-        padding: 16px 18px;
-        margin: 16px 0;
-      }
-      .task strong {
-        color: var(--navy);
-      }
+      /* ---- Progress bar ---- */
+      .prog-wrap { margin: 14px 0 4px; }
+      .prog-bar { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; }
+      .prog-fill { height: 100%; background: linear-gradient(90deg,var(--blue),var(--teal)); border-radius: 99px; transition: width .4s ease; }
+      .prog-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
 
-      label.fld {
-        display: block;
-        font-weight: 700;
-        font-size: 14px;
-        margin: 14px 0 6px;
-      }
-      input[type="number"],
-      input[type="text"],
-      select,
-      textarea {
-        width: 100%;
-        padding: 11px 13px;
-        border: 2px solid var(--line);
-        border-radius: 10px;
-        font-family: inherit;
-        font-size: 15px;
-        background: #fff;
-      }
-      input:focus,
-      select:focus,
-      textarea:focus {
-        outline: none;
-        border-color: var(--purple);
-      }
-      textarea {
-        resize: vertical;
-        min-height: 80px;
-      }
-      .grid2 {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 14px;
-      }
-      @media (max-width: 560px) {
-        .grid2 {
-          grid-template-columns: 1fr;
-        }
-      }
+      /* ---- Step panel ---- */
+      .step-panel { display: none; animation: fadein .25s ease; }
+      .step-panel.active { display: block; }
+      @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
-      .btn {
-        background: var(--purple);
-        color: #fff;
-        border: none;
-        border-radius: 10px;
-        padding: 11px 20px;
-        font-weight: 800;
-        font-size: 15px;
-        cursor: pointer;
-        font-family: inherit;
-        margin-top: 14px;
+      /* ---- Card ---- */
+      .card {
+        background: var(--card); border: 1px solid var(--line);
+        border-radius: var(--radius); padding: 28px 26px;
+        box-shadow: var(--shadow); margin-top: 16px;
       }
-      .btn:hover {
-        filter: brightness(1.12);
+      .card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+      .card-icon {
+        width: 50px; height: 50px; border-radius: 14px;
+        background: var(--blue-lt); display: flex;
+        align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0;
       }
-      .btn.alt {
-        background: var(--blue);
-      }
-      .btn.ghost {
-        background: #fff;
-        color: var(--purple);
-        border: 2px solid var(--line);
-      }
+      .card-icon.gold { background: var(--gold-lt); }
+      .card-icon.teal { background: var(--teal-lt); }
+      .card-icon.green { background: var(--green-lt); }
+      .card-title { font-size: 20px; font-weight: 800; color: var(--navy); margin-bottom: 3px; }
+      .card-sub { font-size: 13px; color: var(--muted); font-weight: 500; }
 
+      /* ---- Instruction box ---- */
+      .instruct {
+        background: var(--blue-lt); border-left: 4px solid var(--blue);
+        border-radius: 10px; padding: 14px 16px; margin-bottom: 20px;
+        font-size: 15px; line-height: 1.6;
+      }
+      .instruct.gold { background: var(--gold-lt); border-color: var(--gold); }
+      .instruct.teal { background: var(--teal-lt); border-color: var(--teal); }
+      .instruct.green { background: var(--green-lt); border-color: var(--green); }
+
+      /* ---- SVG visual ---- */
+      .visual-svg { display: block; width: 100%; max-width: 520px; margin: 0 auto 20px; border-radius: 12px; }
+
+      /* ---- Form inputs ---- */
+      label.lbl { display: block; font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 5px; margin-top: 14px; }
+      input[type="number"], input[type="text"], textarea, select {
+        width: 100%; padding: 10px 14px; border: 1.5px solid var(--line);
+        border-radius: 10px; font-size: 15px; font-family: inherit;
+        background: var(--bg); color: var(--ink); transition: border-color .2s;
+      }
+      input:focus, textarea:focus, select:focus { outline: none; border-color: var(--blue); }
+      textarea { min-height: 90px; resize: vertical; }
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
+
+      /* ---- Calc button & readout ---- */
+      .calc-btn {
+        background: var(--blue); color: #fff; border: none;
+        border-radius: 10px; padding: 11px 20px; font-size: 14px;
+        font-weight: 700; cursor: pointer; font-family: inherit;
+        margin-top: 12px; transition: background .2s;
+      }
+      .calc-btn:hover { background: #551fa0; }
+      .calc-btn.gold { background: var(--gold); }
+      .calc-btn.gold:hover { background: #a36a0c; }
+      .calc-btn.teal { background: var(--teal); }
+      .calc-btn.teal:hover { background: #1b4fb5; }
+      .calc-btn.green { background: var(--green); }
+      .calc-btn.green:hover { background: #185f31; }
       .readout {
-        margin-top: 16px;
-        border-radius: 12px;
-        padding: 16px 18px;
-        font-size: 15px;
-        background: var(--purple-light);
-        border: 1px solid #d0b8f0;
-        display: none;
+        background: var(--navy); color: #e8f4ff;
+        border-radius: 10px; padding: 14px 18px; margin-top: 12px;
+        font-size: 15px; line-height: 1.6; display: none;
       }
-      .readout.show {
-        display: block;
+      .readout.show { display: block; }
+      .readout strong { color: #818cf8; }
+
+      /* ---- Feedback ---- */
+      .feedback { font-size: 13px; font-weight: 700; display: block; margin-top: 4px; min-height: 18px; }
+      .feedback.correct { color: var(--green); }
+      .feedback.correct::before { content: "✅ "; }
+      .feedback.incorrect { color: var(--coral); }
+      .feedback.incorrect::before { content: "❌ "; }
+
+      /* ---- Hint ---- */
+      details.hint { margin-top: 14px; }
+      details.hint summary {
+        cursor: pointer; font-size: 13px; font-weight: 600;
+        color: var(--blue); list-style: none; display: inline-flex;
+        align-items: center; gap: 5px;
       }
-      .readout .big {
-        font-size: 28px;
-        font-weight: 800;
-        color: var(--purple);
+      details.hint summary::before { content: "💡"; }
+      details.hint p { font-size: 14px; color: var(--muted); margin-top: 8px; padding: 10px 12px; background: var(--blue-lt); border-radius: 8px; }
+
+      /* ---- Level 2 extension ---- */
+      .lvl2-block {
+        border: 2px dashed var(--blue); border-radius: 12px;
+        padding: 14px 16px; margin-top: 18px;
       }
-      .feedback {
-        margin-top: 10px;
-        font-weight: 700;
-        min-height: 22px;
-      }
-      .feedback.ok {
-        color: var(--green);
-      }
-      .feedback.no {
-        color: var(--coral);
+      .lvl2-label {
+        display: inline-block; background: var(--blue); color: #fff;
+        font-size: 11px; font-weight: 800; letter-spacing: .05em;
+        border-radius: 50px; padding: 3px 10px; margin-bottom: 8px;
       }
 
-      .hintbox {
-        margin-top: 12px;
-      }
-      .hintbox summary {
-        cursor: pointer;
-        font-weight: 700;
-        color: var(--blue);
-        font-size: 14px;
-      }
-      .hintbox p,
-      .hintbox div {
-        background: var(--gold-light);
-        border-radius: 10px;
-        padding: 12px 14px;
-        margin: 8px 0 0;
-        font-size: 14px;
-      }
+      /* ---- Real-world data table ---- */
+      .data-table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14px; }
+      .data-table th { background: var(--navy); color: #fff; padding: 8px 12px; text-align: left; }
+      .data-table td { padding: 8px 12px; border-bottom: 1px solid var(--line); }
+      .data-table tr:last-child td { border-bottom: none; }
+      .data-table tr:nth-child(even) td { background: var(--bg); }
 
-      .prove-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 12px;
-        font-size: 14px;
+      /* ---- Comparison stats ---- */
+      .stat-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
+      .stat-box {
+        flex: 1; min-width: 120px; background: var(--bg);
+        border: 1px solid var(--line); border-radius: 12px;
+        padding: 14px; text-align: center;
       }
-      .prove-table th,
-      .prove-table td {
-        border: 1px solid var(--line);
-        padding: 8px 10px;
-        text-align: center;
-      }
-      .prove-table th {
-        background: var(--purple-light);
-        color: var(--navy);
-      }
-      .prove-table .match {
-        color: var(--green);
-        font-weight: 800;
-      }
-      .prove-table .nomatch {
-        color: var(--coral);
-        font-weight: 800;
-      }
+      .stat-num { font-size: 24px; font-weight: 800; color: var(--blue); }
+      .stat-lbl { font-size: 12px; color: var(--muted); margin-top: 3px; }
 
-      .rubric {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 12px;
-        font-size: 14px;
-      }
-      .rubric th,
-      .rubric td {
-        border: 1px solid var(--line);
-        padding: 10px 12px;
-        text-align: left;
-        vertical-align: top;
-      }
-      .rubric th {
-        background: var(--navy);
-        color: #fff;
-        font-size: 13px;
-      }
-      .rubric td:first-child {
-        font-weight: 700;
-        width: 30%;
-      }
+      /* ---- Checklist ---- */
+      .checklist { list-style: none; margin-top: 12px; }
+      .checklist li { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+      .checklist li:last-child { border-bottom: none; }
+      .checklist input[type="checkbox"] { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--green); flex-shrink: 0; }
 
-      .checklist {
-        list-style: none;
-        padding: 0;
-        margin: 12px 0 0;
-      }
-      .checklist li {
-        display: flex;
-        gap: 10px;
-        align-items: flex-start;
-        padding: 8px 0;
-        border-bottom: 1px solid var(--line);
-      }
-      .checklist input {
-        width: 20px;
-        height: 20px;
-        margin-top: 2px;
-        flex: 0 0 auto;
-      }
+      /* ---- Rubric ---- */
+      .rubric { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 14px; }
+      .rubric th { background: var(--navy); color: #fff; padding: 10px 12px; text-align: left; }
+      .rubric td { padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+      .rubric tr:last-child td { border-bottom: none; }
+      .score-4 { color: var(--green); font-weight: 700; }
+      .score-3 { color: var(--blue); font-weight: 700; }
+      .score-2 { color: var(--gold); font-weight: 700; }
 
-      .progress-wrap {
-        position: sticky;
-        top: 0;
-        z-index: 5;
-        background: var(--bg);
-        padding: 12px 0;
+      /* ---- Nav buttons ---- */
+      .nav-row { display: flex; gap: 10px; margin-top: 24px; justify-content: space-between; }
+      .nav-btn {
+        background: var(--blue); color: #fff; border: none;
+        border-radius: 10px; padding: 12px 24px; font-size: 15px;
+        font-weight: 700; cursor: pointer; font-family: inherit;
+        display: flex; align-items: center; gap: 8px; transition: background .2s;
       }
-      .progress-track {
-        height: 12px;
-        background: var(--line);
-        border-radius: 50px;
-        overflow: hidden;
-      }
-      .progress-fill {
-        height: 100%;
-        width: 0;
-        background: linear-gradient(90deg, var(--purple), var(--blue));
-        transition: width 0.4s;
-      }
-      .progress-label {
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--muted);
-        margin-bottom: 6px;
-      }
+      .nav-btn:hover { background: #551fa0; }
+      .nav-btn.ghost { background: transparent; color: var(--blue); border: 2px solid var(--blue); }
+      .nav-btn.ghost:hover { background: var(--blue-lt); }
+      .nav-btn:disabled { opacity: .45; cursor: not-allowed; }
 
-      .footer {
-        text-align: center;
-        color: var(--muted);
-        font-size: 14px;
-        margin-top: 40px;
+      /* ---- Report / pitch textarea ---- */
+      #pitch { min-height: 130px; }
+      .report-box {
+        background: var(--navy); color: #e8f4ff; border-radius: 12px;
+        padding: 20px; margin-top: 14px; font-size: 14px; line-height: 1.7;
+        white-space: pre-wrap; display: none;
       }
-      .printbtn {
-        background: var(--navy);
+      .report-box.show { display: block; }
+      .export-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+      .export-btn {
+        background: transparent; border: 1.5px solid var(--line);
+        border-radius: 8px; padding: 7px 14px; font-size: 13px;
+        font-weight: 600; cursor: pointer; font-family: inherit;
+        color: var(--muted); transition: all .15s;
       }
-      h3 {
-        font-size: 17px;
-      }
+      .export-btn:hover { border-color: var(--blue); color: var(--blue); }
 
-      /* exponent box visual */
-      .exp-boxes {
-        display: inline-flex;
-        gap: 6px;
-        flex-wrap: wrap;
-        margin-top: 6px;
-      }
-      .exp-boxes span {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 34px;
-        height: 34px;
-        padding: 0 6px;
-        border-radius: 8px;
-        background: var(--purple);
-        color: #fff;
-        font-weight: 800;
-        font-size: 14px;
-      }
+      /* ---- Level-gated content ---- */
+      .lvl1-only { display: none; }
+      .lvl2-only { display: none; }
+      body.level-1 .lvl1-only { display: block; }
+      body.level-2 .lvl2-only { display: block; }
+      body.level-2 .lvl2-block { border-color: var(--blue); }
 
+      /* ---- Vocab cards ---- */
+      .vocab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 14px; }
+      .vocab-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+      .vocab-icon { font-size: 26px; margin-bottom: 6px; }
+      .vocab-term { font-size: 13px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
+      .vocab-def { font-size: 13px; color: var(--muted); line-height: 1.5; }
+      .vocab-ex { font-size: 12px; color: var(--blue); font-weight: 600; margin-top: 5px; }
+
+      /* ---- Equivalence Challenge Card ---- */
+      .equiv-card {
+        border: 1px solid var(--line); border-radius: 12px;
+        padding: 16px; margin-top: 12px; background: var(--card);
+      }
+      .equiv-expr { font-size: 16px; font-weight: 700; color: var(--blue); text-align: center; margin: 8px 0; }
+
+      /* ---- Print ---- */
       @media print {
-        .phero .deco,
-        .progress-wrap,
-        .btn,
-        .breadcrumb,
-        .hintbox,
-        .toolbar,
-        .pk-no-print {
-          display: none !important;
-        }
-        .phase,
-        .intro-card {
-          box-shadow: none;
-          break-inside: avoid;
-        }
-        body {
-          background: #fff;
-        }
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        html {
-          scroll-behavior: auto;
-        }
-        *,
-        *::before,
-        *::after {
-          animation-duration: 0.001ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.001ms !important;
-        }
+        .no-print { display: none !important; }
+        .hero { background: var(--navy) !important; }
+        body { background: #fff; }
+        .card { box-shadow: none; border-color: #ccc; }
       }
     </style>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <!-- nsr-injected:end -->
-    <link rel="stylesheet" href="/shared/projects/projects-premium.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-tabs.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-tplus.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-interactive.css" />
-    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-    <link rel="stylesheet" href="/assets/mobile-access.css" />
-    <!-- mobile-access-injected:end -->
   </head>
-  <body class="pk" data-pk-theme="u6">
-    <header class="phero">
-      <div class="deco">🎮</div>
+  <body class="level-1" id="body">
+
+    <!-- ====== HERO ====== -->
+    <header class="hero no-print">
+      <div class="hero-emoji">🎮</div>
       <h1>Game Studio Scoring Engine</h1>
-      <p>
-        You are the lead designer of <strong>your own</strong> game. Build a
-        scoring engine with <em>your real numbers</em> using exponents and
-        algebraic expressions, trade formulas with a partner, then see how your
-        scoring compares to real-world games.
-      </p>
-      <div class="tags">
+      <p class="hero-sub">Design your own video game scoring system using exponents and variables — step by step.</p>
+      <div class="hero-tags">
         <span class="tag gold">Unit 6 · Expressions</span>
         <span class="tag">6.EE.1</span>
         <span class="tag">6.EE.2</span>
         <span class="tag">6.EE.3</span>
         <span class="tag">6.EE.4</span>
-        <span class="tag">Version A · Design &amp; Build</span>
+        <span class="tag">Version A</span>
       </div>
-      <div class="toolbar pk-no-print">
-        <button onclick="PK.toggleEs()">🌐 EN / ES help</button>
-        <span class="pk-level-toggle">
-          <button data-level-btn="level-1" type="button">
-            🟢 Level 1 (support)
-          </button>
-          <button data-level-btn="level-2" type="button">
-            🔵 Level 2 (challenge)
-          </button>
-        </span>
-        <button
-          class="pk-tts-toggle"
-          data-tts-toggle
-          type="button"
-          aria-pressed="false"
-          title="Read text aloud"
-        >
-          🔊 Read aloud
-        </button>
-        <button onclick="PK.save('u6ProjectA')">💾 Save</button>
-        <button
-          onclick="PK.load('u6ProjectA', { show: true, after: recalcAll })"
-        >
-          📂 Load
-        </button>
+      <div class="level-bar">
+        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">🟢 Level 1 — With Support</button>
+        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">🔵 Level 2 — Challenge</button>
       </div>
     </header>
 
-    <div class="wrap">
-      <div class="progress-wrap">
-        <div class="progress-label">
-          Project progress: <span id="pct">0</span>% complete
-        </div>
-        <div class="progress-track">
-          <div class="progress-fill" id="pfill"></div>
-        </div>
+    <!-- ====== WIZARD ====== -->
+    <div class="wizard">
+
+      <!-- Step trail -->
+      <nav class="step-trail no-print" id="stepTrail" aria-label="Project steps"></nav>
+
+      <!-- Progress bar -->
+      <div class="prog-wrap no-print">
+        <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+        <div class="prog-label" id="progLabel">Step 0 of 5</div>
       </div>
 
-      <div class="intro-card">
-        <h2>🕹️ Your Mission</h2>
-        <p>
-          Build a scoring engine in three steps.
-          <strong>Part 1 (Self):</strong> design <em>your own</em> game and run
-          its exponent and coin-bonus expressions with your real numbers.
-          <strong>Part 2 (Peer):</strong> trade formulas with a partner,
-          evaluate both at the same input, and find the crossover.
-          <strong>Part 3 (World):</strong> compare your scoring to real-world
-          games, prove equivalent expressions, and run a What-If test. Finish
-          the design doc, checklist, and report.
-        </p>
-      </div>
-
-      <!-- ===================== VISUAL MATH NOTES ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div
-            class="phase-num"
-            style="background: var(--gold); color: #2a1c00"
-          >
-            📒
-          </div>
-          <div>
-            <div class="skill">Before you start · Vocabulary</div>
-            <h2>Visual Math Notes</h2>
-          </div>
-        </div>
-        <p>
-          Learn these words first. Tap <strong>EN / ES help</strong> at the top
-          for Spanish.
-        </p>
-        <div class="pk-vocab">
-          <div class="pk-term">
-            <span class="pk-icon">🔢</span><b>Base</b>
-            <p>The number being multiplied in a power. In 3⁴ the base is 3.</p>
-            <p class="pk-es">
-              Base: el número que se multiplica en una potencia. En 3⁴ la base
-              es 3.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">⬆️</span><b>Exponent</b>
-            <p>
-              How many times to use the base as a factor. 3⁴ uses 3 four times.
-            </p>
-            <div class="exp-boxes" aria-hidden="true">
-              <span>3</span><span>3</span><span>3</span><span>3</span>
-            </div>
-            <p class="pk-es">
-              Exponente: cuántas veces se usa la base como factor. 3⁴ usa el 3
-              cuatro veces.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">🧩</span><b>Expanded Form</b>
-            <p>
-              Writing a power as repeated multiplication: 3⁴ = 3 × 3 × 3 × 3.
-            </p>
-            <p class="pk-es">
-              Forma desarrollada: escribir una potencia como multiplicación
-              repetida: 3⁴ = 3 × 3 × 3 × 3.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">✖️</span><b>Coefficient</b>
-            <p>
-              The number multiplied by a variable. In 3c the coefficient is 3.
-            </p>
-            <p class="pk-es">
-              Coeficiente: el número que multiplica a una variable. En 3c el
-              coeficiente es 3.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">🔤</span><b>Variable</b>
-            <p>A letter that stands for a number, like c for coins.</p>
-            <p class="pk-es">
-              Variable: una letra que representa un número, como c para monedas.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">📌</span><b>Constant</b>
-            <p>
-              A fixed number that does not change. In 3c + 50, 50 is a constant.
-            </p>
-            <p class="pk-es">
-              Constante: un número fijo que no cambia. En 3c + 50, el 50 es
-              constante.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">🧱</span><b>Term</b>
-            <p>
-              A part of an expression separated by + or −. 3c + 50 has two
-              terms.
-            </p>
-            <p class="pk-es">
-              Término: una parte de una expresión separada por + o −. 3c + 50
-              tiene dos términos.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">🟰</span><b>Equivalent</b>
-            <p>
-              Two expressions that always give the same value for every input.
-            </p>
-            <p class="pk-es">
-              Equivalente: dos expresiones que siempre dan el mismo valor para
-              cada entrada.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">📤</span><b>Distributive Property</b>
-            <p>
-              Multiply outside the parentheses by each term inside: a(b + c) =
-              ab + ac.
-            </p>
-            <p class="pk-es">
-              Propiedad distributiva: multiplica el factor de afuera por cada
-              término de adentro: a(b + c) = ab + ac.
-            </p>
-          </div>
-        </div>
-        <div class="grid2" style="margin-top: 18px">
-          <div class="pk-callout">
-            <h3>Formula Bank</h3>
-            <ul class="pk-formula">
-              <li>
-                <span class="pk-f-name">Power (exponent)</span>
-                <span class="pk-f-mean"
-                  >A short way to write the same number multiplied over and
-                  over. The small raised number tells you how many times to use
-                  the base.</span
-                >
-                <span class="pk-eg">Example: 3⁴ = 3 × 3 × 3 × 3 = 81</span>
-              </li>
-              <li>
-                <span class="pk-f-name">Coin bonus expression</span>
-                <span class="pk-f-mean"
-                  >Your score is <b>rate × coins + flat bonus</b>. Pick how many
-                  points each coin is worth and a bonus everyone starts
-                  with.</span
-                >
-                <span class="pk-eg">Example: 3c + 50, and at c = 10 → 80</span>
-              </li>
-              <li>
-                <span class="pk-f-name">Evaluate an expression</span>
-                <span class="pk-f-mean"
-                  >Put the number in for the letter, then do the math in order:
-                  multiply before you add.</span
-                >
-                <span class="pk-eg"
-                  >Example: 3c + 50 when c = 4 → 12 + 50 = 62</span
-                >
-              </li>
-              <li class="pk-lvl2">
-                <span class="pk-f-name">Distributive property (6.EE.3)</span>
-                <span class="pk-f-mean"
-                  >Multiply the number outside the parentheses by each part
-                  inside, then add the results.</span
-                >
-                <span class="pk-eg">Example: 4(c + 2) = 4c + 8</span>
-              </li>
-              <li class="pk-lvl2">
-                <span class="pk-f-name">Crossover point</span>
-                <span class="pk-f-mean"
-                  >The number of coins where two different scoring formulas give
-                  the exact same total.</span
-                >
-                <span class="pk-eg"
-                  >Example: 5c and 3c + 20 are equal at c = 10 (both = 50)</span
-                >
-              </li>
-            </ul>
-          </div>
-          <div class="pk-callout">
-            <h3>Sentence Frames</h3>
-            <p>"My power is ___ raised to ___, which expands to ___."</p>
-            <p>
-              "My coin bonus expression is ___c + ___, so ___ coins gives ___."
-            </p>
-            <p>
-              "My formula rewards more / less than my partner's because ___."
-            </p>
-            <p class="pk-es">
-              "Mi potencia es ___ elevado a ___, que se desarrolla como ___."
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== PART 1 — SELF ===================== -->
-
-      <!-- ===================== PROJECT SETUP ===================== -->
-      <section class="phase" id="phase-setup" data-phase>
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--blue)">S</div>
-          <div>
-            <span class="arc-banner">Project Setup</span>
-            <h2>Design YOUR Scoring Engine</h2>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <div>
-            <p
-              style="
-                font-size: 15px;
-                color: var(--muted);
-                line-height: 1.6;
-                margin-bottom: 20px;
-              "
-            >
-              Welcome! Read the scenario below and select your level to begin
-              your design plan.
-            </p>
-            <div style="margin-top: 16px">
-              <svg
-                width="100%"
-                height="220"
-                viewBox="0 0 500 220"
-                style="
-                  background: white;
-                  border-radius: 12px;
-                  border: 1px solid #e2e8f0;
-                  max-width: 480px;
-                  margin: 0 auto;
-                  display: block;
-                "
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <defs>
-                  <linearGradient
-                    id="setup-grad"
-                    x1="0%"
-                    y1="0%"
-                    x2="100%"
-                    y2="100%"
-                  >
-                    <stop offset="0%" stop-color="#ffffff" />
-                    <stop offset="100%" stop-color="#f8fafc" />
-                  </linearGradient>
-                </defs>
-
-                <rect
-                  x="20"
-                  y="20"
-                  width="460"
-                  height="200"
-                  rx="15"
-                  fill="url(#setup-grad)"
-                  stroke="#6d3fa0"
-                  stroke-width="2"
-                />
-                <text
-                  x="250"
-                  y="60"
-                  text-anchor="middle"
-                  font-size="20"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  EQUATION BALANCE SCALE
-                </text>
-                <line
-                  x1="250"
-                  y1="170"
-                  x2="250"
-                  y2="100"
-                  stroke="#1a2633"
-                  stroke-width="4"
-                />
-                <line
-                  x1="150"
-                  y1="100"
-                  x2="350"
-                  y2="100"
-                  stroke="#1a2633"
-                  stroke-width="4"
-                />
-                <path
-                  d="M150,100 V140 C150,150 190,150 190,140 V100"
-                  fill="none"
-                  stroke="#6d3fa0"
-                  stroke-width="2"
-                />
-                <path
-                  d="M310,100 V140 C310,150 350,150 350,140 V100"
-                  fill="none"
-                  stroke="#6d3fa0"
-                  stroke-width="2"
-                />
-              </svg>
+      <!-- ======================================
+           STEP 1 — KEY WORDS (Step 0)
+      ====================================== -->
+      <div class="step-panel active" id="step-1">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon gold">📖</div>
+            <div>
+              <div class="card-title">Key Words</div>
+              <div class="card-sub">Learn these 6 algebraic vocabulary words before you begin</div>
             </div>
           </div>
 
-          <div
-            style="
-              background: var(--bg);
-              border: 1px solid var(--line);
-              border-radius: 12px;
-              padding: 20px;
-              box-shadow: var(--shadow);
-            "
-          >
-            <h3
-              style="
-                margin-top: 0;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-              "
-            >
-              <span>📋</span> Scenario &amp; Level Options
-            </h3>
-            <p style="font-size: 14px; line-height: 1.6; margin: 0 0 10px">
-              You are a <strong>game studio designer</strong>. Your job is to
-              build a scoring engine that uses exponent and coin-bonus
-              expressions to turn a player's actions into a final score.
-            </p>
-            <ul
-              style="
-                font-size: 14px;
-                line-height: 1.6;
-                margin: 0;
-                padding-left: 18px;
-              "
-            >
-              <li>
-                <strong>Level 1 (support):</strong> evaluate a one-step scoring
-                expression like 5 &times; 2&sup3; with the example numbers
-                provided.
-              </li>
-              <li>
-                <strong>Level 2 (challenge):</strong> design two different
-                scoring formulas, evaluate them at the same input, and find the
-                score where they cross over.
-              </li>
-            </ul>
-          </div>
-        </div>
-        <p>
-          Design <strong>your own</strong> game below with real numbers you
-          choose. Not sure yet? Click <em>Use example numbers</em> to model the
-          math, then change them to fit your game.
-        </p>
-
-        <div
-          style="
-            margin-top: 20px;
-            padding-top: 16px;
-            border-top: 1px solid var(--line);
-          "
-        >
-          <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px">
-            You can type your own numbers as you go, or click below to start
-            with our example numbers:
-          </p>
-          <button
-            class="btn ghost"
-            type="button"
-            onclick="useExamples()"
-            style="
-              width: 100%;
-              font-weight: bold;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              gap: 8px;
-            "
-          >
-            ✨ Use Example Numbers
-          </button>
-        </div>
-      </section>
-
-      <!-- ===================== PART 1A — SELF ===================== -->
-      <section class="phase" id="phase-1a" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">1a</div>
-          <div>
-            <span class="arc-banner">Part 1a · Self — your real plan</span>
-            <h2>🎮 Name your game</h2>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <div>
-            <div
-              class="pk-math-scaffold-card no-print"
-              style="
-                margin: 20px 0;
-                padding: 12px;
-                background: #fff;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-                max-width: 480px;
-                margin-left: auto;
-                margin-right: auto;
-              "
-            >
-              <svg
-                id="phase-svg-1a"
-                width="100%"
-                height="200"
-                viewBox="0 0 500 200"
-                style="background: #fff; border-radius: 8px"
-                xmlns="http://www.w3.org/2000/svg"
-              ></svg>
-            </div>
-
-            <label class="fld" for="gameName">Your game's name</label>
-            <input
-              type="text"
-              id="gameName"
-              data-save
-              placeholder=""
-              oninput="updateProgress()"
-            />
-
-            <!-- 1a Exponent power-up -->
-          </div>
-
-          <div
-            style="
-              background: var(--bg);
-              border: 2.5px solid var(--line);
-              border-radius: 18px;
-              padding: 20px;
-              box-shadow: var(--shadow);
-              height: fit-content;
-            "
-            class="pk-no-print"
-          >
-            <h3
-              style="
-                margin-top: 0;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                color: var(--navy);
-                font-size: 16px;
-              "
-            >
-              <span>💡</span> Guided Steps &amp; Help
-            </h3>
-
-            <p
-              style="
-                font-size: 13.5px;
-                line-height: 1.5;
-                color: var(--muted);
-                margin-bottom: 12px;
-              "
-            >
-              <strong>Writing and Evaluating Algebraic Expressions:</strong>
-            </p>
-            <ol
-              style="
-                margin-left: 18px;
-                font-size: 13px;
-                line-height: 1.5;
-                display: grid;
-                gap: 8px;
-                color: var(--ink);
-              "
-            >
-              <li>
-                Identify the constant (one-time fee) and the rate (cost per
-                item).
-              </li>
-              <li>
-                Write the variable expression: Rate × x + Constant (e.g. 15x +
-                50, where x is the variable).
-              </li>
-              <li>
-                <b>Evaluate the expression</b>: Replace the variable x with the
-                specified number of items.
-              </li>
-              <li>
-                Follow the <b>Order of Operations (PEMDAS)</b>: Multiply first,
-                then add the constant.
-              </li>
-            </ol>
-            <div
-              style="
-                margin-top: 14px;
-                padding: 10px;
-                background: var(--sky);
-                border-radius: 8px;
-                font-size: 12px;
-              "
-            >
-              💡 <b>Example:</b> Gym cost is $15 per month plus a $30 signup
-              fee. Expression = 15m + 30. For 6 months: (15 × 6) + 30 = 90 + 30
-              = 120.
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== PART 1B — SELF ===================== -->
-      <section class="phase" id="phase-1b" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">1b</div>
-          <div>
-            <span class="arc-banner">Part 1b · Self — your real plan</span>
-            <h2>⬆️ Level-up score (exponents · 6.EE.1)</h2>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <div>
-            <div
-              class="pk-math-scaffold-card no-print"
-              style="
-                margin: 20px 0;
-                padding: 12px;
-                background: #fff;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-                max-width: 480px;
-                margin-left: auto;
-                margin-right: auto;
-              "
-            >
-              <svg
-                id="phase-svg-1b"
-                width="100%"
-                height="200"
-                viewBox="0 0 500 200"
-                style="background: #fff; border-radius: 8px"
-                xmlns="http://www/w3.org/2000/svg"
-              ></svg>
-            </div>
-
-            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-              Level 1 tip: start with a small base like 2 or 3 and an exponent
-              of 2 or 3.
-            </p>
-            <div class="grid2">
-              <!-- ===================== INLINE RESEARCH LAB ===================== -->
-              <div class="pk-research-inline-card">
-                <div class="pk-research-inline-header">
-                  <span class="pk-research-badge">🔍 Research Required</span>
-                  <a
-                    href="https://www.theesa.com/resources/essential-facts-about-the-us-video-game-industry/"
-                    target="_blank"
-                    class="pk-research-inline-link"
-                    >🔗 ESA: Gaming Industry Economic Data ↗</a
-                  >
-                </div>
-                <p class="pk-research-inline-instructions">
-                  Open the ESA report page. Find the standard retail release
-                  price of a standard console video game (typically $60 or $70).
-                  Enter the game price below:
-                </p>
-                <div class="grid2">
-                  <div>
-                    <label class="fld" for="worldCountry"
-                      >Game Title Researched</label
-                    >
-                    <input
-                      type="text"
-                      id="worldCountry"
-                      data-save
-                      placeholder=""
-                      oninput="recalcAll()"
-                    />
-                  </div>
-                  <div>
-                    <label class="fld" for="exp-base"
-                      >Your base score (2–10)</label
-                    >
-                    <input
-                      type="number"
-                      id="exp-base"
-                      data-save
-                      min="2"
-                      max="10"
-                      placeholder=""
-                      oninput="calcExponent()"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <label class="fld" for="exp-level"
-                  >Your level (exponent, 2–5)</label
-                >
-                <input
-                  type="number"
-                  id="exp-level"
-                  data-save
-                  min="2"
-                  max="5"
-                  placeholder=""
-                  oninput="calcExponent()"
-                />
-              </div>
-            </div>
-            <button class="btn" type="button" onclick="calcExponent()">
-              Calculate level-up score
-            </button>
-            <div class="readout" id="exp-out"></div>
-            <details class="hintbox">
-              <summary>Need a hint?</summary>
-              <p>
-                An exponent means repeated multiplication. 3⁴ = 3 × 3 × 3 × 3.
-                Multiply the base by itself as many times as the exponent says —
-                and count the factors. A common mistake is 3 × 4 = 12 instead of
-                3⁴ = 81.
-              </p>
-            </details>
-            <div class="pk-lvl2" style="margin-top: 16px">
-              <div class="task">
-                <strong>Level 2 extension:</strong> Write your power in expanded
-                form (for example, 3⁴ = 3 × 3 × 3 × 3), then explain why raising
-                the exponent by 1 grows the score faster than raising the base
-                by 1. Test it with your own numbers.
-              </div>
-              <label class="fld" for="exp2"
-                >Expanded form and your reasoning</label
-              >
-              <textarea id="exp2" data-save placeholder=""></textarea>
-            </div>
-
-            <!-- 1b Coin bonus expression -->
-          </div>
-
-          <div
-            style="
-              background: var(--bg);
-              border: 2.5px solid var(--line);
-              border-radius: 18px;
-              padding: 20px;
-              box-shadow: var(--shadow);
-              height: fit-content;
-            "
-            class="pk-no-print"
-          >
-            <h3
-              style="
-                margin-top: 0;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                color: var(--navy);
-                font-size: 16px;
-              "
-            >
-              <span>💡</span> Guided Steps &amp; Help
-            </h3>
-
-            <p
-              style="
-                font-size: 13.5px;
-                line-height: 1.5;
-                color: var(--muted);
-                margin-bottom: 12px;
-              "
-            >
-              <strong>Writing and Evaluating Algebraic Expressions:</strong>
-            </p>
-            <ol
-              style="
-                margin-left: 18px;
-                font-size: 13px;
-                line-height: 1.5;
-                display: grid;
-                gap: 8px;
-                color: var(--ink);
-              "
-            >
-              <li>
-                Identify the constant (one-time fee) and the rate (cost per
-                item).
-              </li>
-              <li>
-                Write the variable expression: Rate × x + Constant (e.g. 15x +
-                50, where x is the variable).
-              </li>
-              <li>
-                <b>Evaluate the expression</b>: Replace the variable x with the
-                specified number of items.
-              </li>
-              <li>
-                Follow the <b>Order of Operations (PEMDAS)</b>: Multiply first,
-                then add the constant.
-              </li>
-            </ol>
-            <div
-              style="
-                margin-top: 14px;
-                padding: 10px;
-                background: var(--sky);
-                border-radius: 8px;
-                font-size: 12px;
-              "
-            >
-              💡 <b>Example:</b> Gym cost is $15 per month plus a $30 signup
-              fee. Expression = 15m + 30. For 6 months: (15 × 6) + 30 = 90 + 30
-              = 120.
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== PART 1C — SELF ===================== -->
-      <section class="phase" id="phase-1c" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">1c</div>
-          <div>
-            <span class="arc-banner">Part 1c · Self — your real plan</span>
-            <h2>✖️ Coin bonus expression (write &amp; evaluate · 6.EE.2)</h2>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <div>
-            <div
-              class="pk-math-scaffold-card no-print"
-              style="
-                margin: 20px 0;
-                padding: 12px;
-                background: #fff;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-                max-width: 480px;
-                margin-left: auto;
-                margin-right: auto;
-              "
-            >
-              <svg
-                id="phase-svg-1c"
-                width="100%"
-                height="200"
-                viewBox="0 0 500 200"
-                style="background: #fff; border-radius: 8px"
-                xmlns="http://www/w3.org/2000/svg"
-              ></svg>
-            </div>
-
-            <p>
-              Set your own <strong>coin rate r</strong> (points per coin) and
-              <strong>flat bonus k</strong>. Your expression is
-              <strong><span id="exprLabel">r·c + k</span></strong
-              >. Then pick how many coins <em>c</em> a player collects.
-            </p>
-            <div class="grid2">
-              <div>
-                <label class="fld" for="coin-r"
-                  >Coin rate r (points per coin)</label
-                >
-                <input
-                  type="number"
-                  id="coin-r"
-                  data-save
-                  min="1"
-                  placeholder=""
-                  oninput="calcCoinExpr()"
-                />
-              </div>
-              <div>
-                <label class="fld" for="coin-k">Flat bonus k (points)</label>
-                <input
-                  type="number"
-                  id="coin-k"
-                  data-save
-                  min="0"
-                  placeholder=""
-                  oninput="calcCoinExpr()"
-                />
-              </div>
-            </div>
-            <label class="fld" for="coin-c">Coins collected c</label>
-            <input
-              type="number"
-              id="coin-c"
-              data-save
-              min="0"
-              placeholder=""
-              oninput="calcCoinExpr()"
-            />
-            <button class="btn alt" type="button" onclick="calcCoinExpr()">
-              Evaluate my coin bonus rc + k
-            </button>
-            <div class="readout" id="coin-out"></div>
-            <div
-              class="pki-manip"
-              data-manip="expr-machine"
-              data-coef-name="coins per level"
-              data-var-name="levels"
-              data-const-name="bonus"
-              data-result-name="score"
-              data-default-a="3"
-              data-default-x="4"
-              data-default-b="2"
-            ></div>
-
-            <div class="pk-lvl1" style="margin-top: 16px">
-              <div class="task">
-                <strong>Level 1 — pick the right expression:</strong> "3 points
-                for each coin, plus a 50-point bonus" is written as…
-              </div>
-              <label class="fld" for="mc-expr"
-                >Choose the matching expression</label
-              >
-              <select id="mc-expr" data-save onchange="checkMcExpr()">
-                <option value="">— choose —</option>
-                <option value="a">3 + c + 50</option>
-                <option value="b">3c + 50</option>
-                <option value="c">3c × 50</option>
-                <option value="d">50c + 3</option>
-              </select>
-              <div class="feedback" id="mc-exprFb"></div>
-            </div>
-            <div class="pk-lvl2" style="margin-top: 16px">
-              <div class="task">
-                <strong>Level 2 — name the parts:</strong> In your expression
-                <em>rc + k</em>, write a sentence that names the coefficient,
-                the variable, and the constant using your own numbers.
-              </div>
-              <label class="fld" for="parts2"
-                >Identify coefficient, variable, and constant</label
-              >
-              <input type="text" id="parts2" data-save placeholder="" />
-            </div>
-            <details class="hintbox">
-              <summary>Need a hint?</summary>
-              <p>
-                "r points for each coin" means r times c, written rc. "Plus a
-                flat bonus k" means + k. Put them together: rc + k. The
-                coefficient is the rate r; the constant is the flat bonus k; the
-                variable is c.
-              </p>
-            </details>
-          </div>
-
-          <div
-            style="
-              background: var(--bg);
-              border: 2.5px solid var(--line);
-              border-radius: 18px;
-              padding: 20px;
-              box-shadow: var(--shadow);
-              height: fit-content;
-            "
-            class="pk-no-print"
-          >
-            <h3
-              style="
-                margin-top: 0;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                color: var(--navy);
-                font-size: 16px;
-              "
-            >
-              <span>💡</span> Guided Steps &amp; Help
-            </h3>
-
-            <p
-              style="
-                font-size: 13.5px;
-                line-height: 1.5;
-                color: var(--muted);
-                margin-bottom: 12px;
-              "
-            >
-              <strong>Writing and Evaluating Algebraic Expressions:</strong>
-            </p>
-            <ol
-              style="
-                margin-left: 18px;
-                font-size: 13px;
-                line-height: 1.5;
-                display: grid;
-                gap: 8px;
-                color: var(--ink);
-              "
-            >
-              <li>
-                Identify the constant (one-time fee) and the rate (cost per
-                item).
-              </li>
-              <li>
-                Write the variable expression: Rate × x + Constant (e.g. 15x +
-                50, where x is the variable).
-              </li>
-              <li>
-                <b>Evaluate the expression</b>: Replace the variable x with the
-                specified number of items.
-              </li>
-              <li>
-                Follow the <b>Order of Operations (PEMDAS)</b>: Multiply first,
-                then add the constant.
-              </li>
-            </ol>
-            <div
-              style="
-                margin-top: 14px;
-                padding: 10px;
-                background: var(--sky);
-                border-radius: 8px;
-                font-size: 12px;
-              "
-            >
-              💡 <b>Example:</b> Gym cost is $15 per month plus a $30 signup
-              fee. Expression = 15m + 30. For 6 months: (15 × 6) + 30 = 90 + 30
-              = 120.
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
-      <section class="pk-visualizer-card no-print">
-        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
-        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px">
-          This visual interactive canvas updates in real-time as you complete
-          your math calculations.
-        </p>
-        <div id="projectVisualizer"></div>
-      </section>
-
-      <!-- ===================== PART 2 — PEER ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--blue)">2</div>
-          <div>
-            <span class="arc-banner">Part 2 · Peer — trade formulas</span>
-            <div class="skill">Compare &amp; reason · 6.EE.2c</div>
-            <h2>Trade Formulas &amp; Compare</h2>
-          </div>
-        </div>
-        <p>
-          Swap scoring formulas with a partner. Type <strong>their</strong> coin
-          rate and flat bonus, then pick the same number of coins to evaluate
-          both formulas. Who rewards more? Where do they cross over?
-        </p>
-        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-          Level 1 tip: to compare, put the same coin count into both formulas.
-          Do rate × coins first, then add the bonus. The bigger total rewards
-          players more at that coin count.
-        </p>
-        <div class="pk-callout pk-no-print" style="margin-bottom: 14px">
-          <h3>Interview Sentence Frames</h3>
-          <p>"What is your coin rate? What is your flat bonus?"</p>
-          <p>"At ___ coins, whose formula gives more points?"</p>
-          <p>"Do our formulas ever give the same score? At how many coins?"</p>
-          <p class="pk-es">
-            "¿Cuál es tu tasa por moneda? ¿Cuál es tu bono fijo?"
-          </p>
-        </div>
-        <div class="grid2">
-          <div>
-            <label class="fld" for="partnerName"
-              >Partner name or initials</label
-            >
-            <input type="text" id="partnerName" data-save placeholder="" />
-          </div>
-          <div>
-            <label class="fld" for="p-r">Partner: coin rate r</label>
-            <input
-              type="number"
-              id="p-r"
-              data-save
-              min="0"
-              placeholder=""
-              oninput="comparePeer()"
-            />
-          </div>
-          <div>
-            <label class="fld" for="p-k">Partner: flat bonus k</label>
-            <input
-              type="number"
-              id="p-k"
-              data-save
-              min="0"
-              placeholder=""
-              oninput="comparePeer()"
-            />
-          </div>
-          <div>
-            <label class="fld" for="cmp-c">Coins c (same for both)</label>
-            <input
-              type="number"
-              id="cmp-c"
-              data-save
-              min="0"
-              placeholder=""
-              oninput="comparePeer()"
-            />
-          </div>
-        </div>
-        <button class="btn alt" type="button" onclick="comparePeer()">
-          Compare both formulas
-        </button>
-        <div class="readout" id="peer-out"></div>
-        <div id="peerBox" class="pk-stats" style="margin-top: 16px"></div>
-        <label class="fld" for="peerReflect"
-          >Whose formula rewards players more, and at what point does it
-          change?</label
-        >
-        <textarea id="peerReflect" data-save placeholder=""></textarea>
-        <div class="pk-lvl2">
-          <label class="fld" for="crossover2"
-            >Level 2: Set the two formulas equal (rc + k = r₂c + k₂) and solve
-            for the crossover coin count c. Show your steps.</label
-          >
-          <textarea id="crossover2" data-save placeholder=""></textarea>
-        </div>
-      </section>
-
-      <!-- ===================== PART 3 — WORLD ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div
-            class="phase-num"
-            style="background: var(--gold); color: #2a1c00"
-          >
-            3
-          </div>
-          <div>
-            <span class="arc-banner">Part 3 · World — real game scoring</span>
-            <div class="skill">
-              Compare · Prove equivalence · 6.EE.2c · 6.EE.4
-            </div>
-            <h2>How Does Your Scoring Compare?</h2>
-          </div>
-        </div>
-        <p>
-          These are realistic-style scoring formulas from different game genres,
-          written as <strong>rc + k</strong>. Pick one and see where your value
-          lands at the same number of coins.
-        </p>
-        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-          Level 1 tip: read one row from the table, then use the same test coins
-          for your own formula. Compare the two scores — is yours higher or
-          lower?
-        </p>
-        <div class="grid2">
-          <div>
-            <label class="fld" for="worldCat">Compare against</label>
-            <select id="worldCat" data-save onchange="worldGo()">
-              <option value="score">Total score at the test coins</option>
-              <option value="rate">Coin rate r</option>
-              <option value="bonus">Flat bonus k</option>
-            </select>
-            <label class="fld" for="worldC">Test coins c</label>
-            <input
-              type="number"
-              id="worldC"
-              data-save
-              min="0"
-              value="12"
-              oninput="worldGo()"
-              placeholder=""
-            />
-            <label class="fld" for="myWorld">My number</label>
-            <input
-              type="number"
-              id="myWorld"
-              data-save
-              oninput="worldGo()"
-              placeholder=""
-            />
-            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
-              Tip: your total score from Part 1 (rc + k) is a great value to
-              type here.
-            </p>
-            <div id="worldMeter"></div>
-          </div>
-          <div>
-            <h3>Game Scoring Sample 🎮</h3>
-            <div
-              style="
-                overflow: auto;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-              "
-            >
-              <table class="rubric" style="margin-top: 0">
-                <tr>
-                  <th>Game / genre</th>
-                  <th>Rate r</th>
-                  <th>Bonus k</th>
-                  <th>Score</th>
-                </tr>
-                <tbody id="worldRows"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <!-- Equivalent-expression prover -->
-        <div
-          class="phase"
-          style="margin: 18px 0 0; box-shadow: none; border-style: dashed"
-        >
-          <h3>🟰 Equivalent Expression Prover (6.EE.4)</h3>
-          <p style="color: var(--muted); font-size: 14px">
-            Are <strong>2(c + 3)</strong> and
-            <strong>2c + 6</strong> equivalent? Test three values of c — if they
-            match every time, they are equivalent. The distributive property is
-            the reason: 2(c + 3) = 2c + 6.
-          </p>
-          <button class="btn" type="button" onclick="proveEquiv()">
-            Test 3 values of c
-          </button>
-          <div id="proveBox" style="margin-top: 12px"></div>
-        </div>
-
-        <!-- What-If lab -->
-        <div
-          class="phase"
-          style="margin: 18px 0 0; box-shadow: none; border-style: dashed"
-        >
-          <h3>🔬 What-If Lab</h3>
-          <p style="color: var(--muted); font-size: 14px">
-            Add one more coin and watch your score change. Uses your own rate r
-            and bonus k from Part 1.
-          </p>
-          <button class="btn" type="button" onclick="runWhatIf()">
-            Add one more coin
-          </button>
-          <div class="pk-whatif" id="whatIfBox" style="margin-top: 12px">
-            Finish Part 1, then run this test.
-          </div>
-        </div>
-
-        <label class="fld" for="worldReflect"
-          >Is your scoring more or less generous than the sample games? Why
-          might that be?</label
-        >
-        <textarea id="worldReflect" data-save placeholder=""></textarea>
-        <div class="pk-lvl2">
-          <label class="fld" for="worldHard"
-            >Level 2: Justify in writing why 2(c + 3) equals 2c + 6 using the
-            distributive property, then design a third, fairer scoring formula
-            and explain it.</label
-          >
-          <textarea id="worldHard" data-save placeholder=""></textarea>
-        </div>
-        <label class="fld" for="careful"
-          >Careful thinking: why is it tricky to say one scoring formula is
-          "best" for every player?</label
-        >
-        <textarea id="careful" data-save placeholder=""></textarea>
-      </section>
-
-      <!-- ===================== DELIVERABLE ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--green)">★</div>
-          <div>
-            <div class="skill">Final Deliverable</div>
-            <h2>Write Your Design Document</h2>
-          </div>
-        </div>
-        <p>
-          Write a short design document (3–5 sentences) that uses your real
-          numbers and expressions from above.
-        </p>
-        <textarea id="pitch" data-save placeholder=""></textarea>
-
-        <h3 style="margin: 22px 0 6px">Design Checklist</h3>
-        <ul class="checklist" id="checklist">
-          <li>
-            <input type="checkbox" data-save id="ck1" /> I used exponents to
-            calculate my level-up score and showed the expanded form.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck2" /> I wrote and evaluated
-            my own coin bonus expression rc + k.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck3" /> I traded formulas with
-            a partner and found who rewards more.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck4" /> I compared my scoring
-            to the real-game sample.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck5" /> I proved an equivalent
-            expression by testing three values of c.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck6" /> My design document uses
-            my real computed numbers.
-          </li>
-        </ul>
-
-        <div class="grid2" style="margin-top: 18px">
-          <div>
-            <button class="btn" type="button" onclick="buildReport()">
-              📝 Generate report
-            </button>
-          </div>
-          <div class="pk-no-print">
-            <button
-              class="btn ghost"
-              type="button"
-              onclick="PK.copyReport('reportBox')"
-            >
-              Copy report
-            </button>
-            <button
-              class="btn ghost"
-              type="button"
-              onclick="PK.downloadText('game-scoring-engine.txt', 'reportBox')"
-            >
-              Download .txt
-            </button>
-            <button class="btn ghost" type="button" onclick="downloadCsv()">
-              Download .csv
-            </button>
-            <button class="btn printbtn" type="button" onclick="window.print()">
-              🖨️ Print
-            </button>
-          </div>
-        </div>
-        <div class="pk-report" id="reportBox" style="margin-top: 16px">
-          Click "Generate report" to build your design summary.
-        </div>
-      </section>
-
-      <!-- RUBRIC -->
-      <section class="phase">
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--navy)">✓</div>
-          <div>
-            <div class="skill">How You Are Scored</div>
-            <h2>Project Rubric</h2>
-          </div>
-        </div>
-        <table class="rubric">
-          <tr>
-            <th>Category</th>
-            <th>4 — Expert</th>
-            <th>3 — Proficient</th>
-            <th>2 — Developing</th>
-          </tr>
-          <tr>
-            <td>Exponents (6.EE.1)</td>
-            <td>Expanded form and value both correct; reasoning explained</td>
-            <td>Value is correct</td>
-            <td>Attempted with an exponent error</td>
-          </tr>
-          <tr>
-            <td>Writing &amp; Evaluating Expressions (6.EE.2)</td>
-            <td>
-              Own expression written correctly and evaluated with parts named
-            </td>
-            <td>Expression written and evaluated correctly</td>
-            <td>Minor error (wrong coefficient or missing constant)</td>
-          </tr>
-          <tr>
-            <td>Comparison (Peer &amp; World)</td>
-            <td>Compares formulas and world data with crossover reasoning</td>
-            <td>Comparisons present and mostly correct</td>
-            <td>Comparison attempted</td>
-          </tr>
-          <tr>
-            <td>Equivalence (6.EE.3 / 6.EE.4)</td>
-            <td>
-              Proves equivalence and justifies with the distributive property
-            </td>
-            <td>Tests equivalence at multiple values</td>
-            <td>Equivalence attempted</td>
-          </tr>
-          <tr>
-            <td>Communication</td>
-            <td>
-              Design doc clearly justifies every number and formula choice
-            </td>
-            <td>Design doc uses most numbers</td>
-            <td>Design doc is unclear or missing numbers</td>
-          </tr>
-        </table>
-      </section>
-
-      <p class="footer">
-        Neft Teacher · Unit 6 Culminating Project · Version A ·
-        <span id="yr"></span>
-      </p>
-    </div>
-
-    <script>
-      const yrEl = document.getElementById("yr");
-      if (yrEl) yrEl.textContent = new Date().getFullYear();
-      const $ = (id) => document.getElementById(id);
-      const num = (id) => {
-        const e = $(id);
-        return e ? parseFloat(e.value) : NaN;
-      };
-
-      function show(id, html) {
-        const el = $(id);
-        if (!el) return;
-        el.innerHTML = html;
-        el.classList.add("show");
-        updateProgress();
-      }
-      function expandedForm(base, exp) {
-        const parts = [];
-        for (let i = 0; i < exp; i++) parts.push(base);
-        return parts.join(" × ");
-      }
-
-      // running state used by report + world meter + what-if
-      const proj = {
-        power: null,
-        base: null,
-        exp: null,
-        score: null, // coin bonus rc + k
-        r: null,
-        k: null,
-        c: null,
-      };
-
-      /* ---- 1a Exponent ---- */
-      function calcExponent() {
-        const base = num("exp-base"),
-          exp = num("exp-level");
-        if (isNaN(base) || isNaN(exp) || base < 2 || exp < 2) {
-          $("exp-out").classList.remove("show");
-          proj.power = null;
-          proj.base = null;
-          proj.exp = null;
-          updateProgress();
-          return;
-        }
-        const result = Math.pow(base, exp);
-        proj.power = result;
-        proj.base = base;
-        proj.exp = exp;
-        show(
-          "exp-out",
-          '<div class="big">' +
-            result +
-            " points</div>" +
-            "<strong>" +
-            base +
-            "<sup>" +
-            exp +
-            "</sup></strong> = " +
-            expandedForm(base, exp) +
-            " = <strong>" +
-            result +
-            "</strong><br>" +
-            "✅ That is your level-up score at level " +
-            exp +
-            " with a base of " +
-            base +
-            ". The exponent counts " +
-            exp +
-            " factors of " +
-            base +
-            ".",
-        );
-      }
-
-      /* ---- 1b Coin bonus expression rc + k ---- */
-      function coinLabel() {
-        const r = num("coin-r"),
-          k = num("coin-k");
-        const rl = isNaN(r) ? "r" : r;
-        const kl = isNaN(k) ? "k" : k;
-        $("exprLabel").textContent = rl + "c + " + kl;
-      }
-      function calcCoinExpr() {
-        coinLabel();
-        const r = num("coin-r"),
-          k = num("coin-k"),
-          c = num("coin-c");
-        if (isNaN(r) || r < 0 || isNaN(k) || k < 0 || isNaN(c) || c < 0) {
-          $("coin-out").classList.remove("show");
-          proj.score = null;
-          proj.r = null;
-          proj.k = null;
-          proj.c = null;
-          updateProgress();
-          return;
-        }
-        const result = r * c + k;
-        proj.score = result;
-        proj.r = r;
-        proj.k = k;
-        proj.c = c;
-        show(
-          "coin-out",
-          '<div class="big">' +
-            result +
-            " points</div>" +
-            "Expression: <strong>" +
-            r +
-            "c + " +
-            k +
-            "</strong><br>" +
-            "Substituting c = " +
-            c +
-            ": " +
-            r +
-            " × " +
-            c +
-            " + " +
-            k +
-            " = " +
-            r * c +
-            " + " +
-            k +
-            " = <strong>" +
-            result +
-            "</strong><br>" +
-            "✅ Coin bonus for " +
-            c +
-            " coins. Coefficient " +
-            r +
-            ", variable c, constant " +
-            k +
-            ".",
-        );
-      }
-
-      function checkMcExpr() {
-        const fb = $("mc-exprFb");
-        const v = $("mc-expr").value;
-        if (!v) {
-          fb.textContent = "";
-          fb.className = "feedback";
-          updateProgress();
-          return;
-        }
-        if (v === "b") {
-          fb.textContent =
-            "✅ Correct! 3c + 50 — coefficient 3 (rate), variable c (coins), constant 50 (bonus).";
-          fb.className = "feedback ok";
-        } else {
-          fb.textContent =
-            "❌ Not quite. 3 points per coin is 3c, plus a 50 bonus is + 50 → 3c + 50.";
-          fb.className = "feedback no";
-        }
-        updateProgress();
-      }
-
-      /* ---- Part 2: peer compare (uses kit) ---- */
-      function comparePeer() {
-        const r = proj.r,
-          k = proj.k;
-        const pr = num("p-r"),
-          pk = num("p-k"),
-          c = num("cmp-c");
-        if (r == null || isNaN(pr) || isNaN(pk) || isNaN(c) || c < 0) {
-          $("peer-out").classList.remove("show");
-          $("peerBox").innerHTML =
-            '<p class="pk-fb">Finish Part 1 and enter your partner\'s rate, bonus, and the coins.</p>';
-          updateProgress();
-          return;
-        }
-        const mine = r * c + k;
-        const theirs = pr * c + pk;
-        const winner =
-          mine > theirs ? "Yours" : theirs > mine ? "Partner's" : "Tie";
-        // crossover: rc + k = pr·c + pk → c = (pk - k) / (r - pr)
-        let crossMsg = "";
-        if (r !== pr) {
-          const cross = (pk - k) / (r - pr);
-          crossMsg =
-            cross > 0 && Number.isFinite(cross)
-              ? "The two formulas cross over at about <strong>c = " +
-                Math.round(cross * 100) / 100 +
-                " coins</strong>."
-              : "These formulas never tie for a positive coin count.";
-        } else {
-          crossMsg =
-            k === pk
-              ? "Same rate and bonus — the formulas are identical."
-              : "Same rate but different bonus — they stay a fixed amount apart.";
-        }
-        show(
-          "peer-out",
-          '<div class="big">' +
-            winner +
-            "</div>" +
-            "<strong>You</strong> (" +
-            r +
-            "c + " +
-            k +
-            ") at c = " +
-            c +
-            ": <strong>" +
-            mine +
-            "</strong><br>" +
-            "<strong>" +
-            ($("partnerName").value || "Partner") +
-            "</strong> (" +
-            pr +
-            "c + " +
-            pk +
-            ") at c = " +
-            c +
-            ": <strong>" +
-            theirs +
-            "</strong><br>" +
-            crossMsg,
-        );
-        PK.peerCompare("peerBox", [
-          {
-            label: "Score @ c=" + c,
-            me: mine,
-            partner: theirs,
-          },
-          { label: "Coin rate r", me: r, partner: pr },
-          { label: "Flat bonus k", me: k, partner: pk },
-        ]);
-        updateProgress();
-      }
-
-      /* ---- Part 3: world dataset + meter ---- */
-      // [game/genre, rate r, bonus k] — realistic-style scoring formulas rc + k
-      const world = [
-        ["Coin Runner (arcade)", 5, 0],
-        ["Gem Quest (RPG)", 3, 50],
-        ["Pixel Racer (racing)", 10, 25],
-        ["Block Builder (sandbox)", 2, 100],
-        ["Star Striker (sports)", 8, 10],
-        ["Maze Master (puzzle)", 4, 40],
-        ["Battle Royale (shooter)", 6, 30],
-        ["Farm Frenzy (sim)", 1, 75],
-      ];
-      const wIdx = { rate: 1, bonus: 2 };
-
-      function worldScore(r) {
-        const c = num("worldC");
-        const cc = isNaN(c) ? 12 : c;
-        return r[1] * cc + r[2];
-      }
-      function renderWorld() {
-        $("worldRows").innerHTML = world
-          .map(
-            (r) =>
-              `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${worldScore(r)}</td></tr>`,
-          )
-          .join("");
-      }
-      function worldSample() {
-        const cat = ($("worldCat") || {}).value;
-        if (cat === "score") return world.map((r) => worldScore(r));
-        return world.map((r) => r[wIdx[cat]]);
-      }
-
-      function worldGo() {
-        const my = num("myWorld");
-        const customName = $("worldCountry")
-          ? $("worldCountry").value.trim()
-          : "";
-        const customSize = $("exp-base") ? num("exp-base") : NaN;
-
-        let sample = worldSample();
-        if (!isNaN(customSize) && customSize > 0) {
-          sample = [...sample, customSize];
-        }
-
-        const labels =
-          ($("worldCat") || {}).value === "costPerGuest" ||
-          ($("worldCat") || {}).value === "price"
-            ? { mean: "Sample avg $", me: "Me $" }
-            : { mean: "Sample avg", me: "Me" };
-
-        PK.worldMeter("worldMeter", sample, my, labels);
-
-        const fb = $("worldMeter");
-        if (!isNaN(customSize) && customSize > 0 && customName) {
-          const ratio = (my / customSize).toFixed(2);
-          const pct = Math.round((my / customSize) * 100);
-          const diff = Math.abs(my - customSize).toFixed(2);
-
-          let myValStr = true ? "$" + my.toFixed(2) : my + "";
-          let custValStr = true ? "$" + customSize.toFixed(2) : customSize + "";
-          let diffStr = true
-            ? "$" + Number(diff).toFixed(2)
-            : Number(diff).toFixed(2) + "";
-
-          const rel =
-            my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
-          const desc =
-            `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
-            `📊 Research Comparison: Your value (${myValStr}) is <strong>${rel}</strong> than <strong>${customName}</strong> (${custValStr}) ` +
-            `by <strong>${diffStr}</strong>. Your value is <strong>${pct}%</strong> (${ratio}x) of the size of the researched benchmark.` +
-            `</div>`;
-          fb.innerHTML += desc;
-        }
-
-        if (typeof drawVisualizer === "function") {
-          drawVisualizer();
-        }
-
-        updateProgress();
-      }
-
-      /* ---- Equivalent-expression prover: 2(c+3) vs 2c+6 ---- */
-      function proveEquiv() {
-        const tests = [4, 7, 10];
-        let rows =
-          "<table class='prove-table'><tr><th>c</th><th>2(c + 3)</th><th>2c + 6</th><th>Match?</th></tr>";
-        let allMatch = true;
-        tests.forEach((c) => {
-          const a = 2 * (c + 3);
-          const b = 2 * c + 6;
-          const m = a === b;
-          if (!m) allMatch = false;
-          rows +=
-            "<tr><td>" +
-            c +
-            "</td><td>2 × " +
-            (c + 3) +
-            " = " +
-            a +
-            "</td><td>" +
-            2 * c +
-            " + 6 = " +
-            b +
-            "</td><td class='" +
-            (m ? "match" : "nomatch") +
-            "'>" +
-            (m ? "✅" : "❌") +
-            "</td></tr>";
-        });
-        rows += "</table>";
-        rows +=
-          "<p style='margin-top:10px;font-weight:700;'>" +
-          (allMatch
-            ? "✅ Matched all 3 times — <strong>2(c + 3) and 2c + 6 are equivalent</strong>. The distributive property explains it: 2(c + 3) = 2·c + 2·3 = 2c + 6."
-            : "Check the math — they should match.") +
-          "</p>";
-        $("proveBox").innerHTML = rows;
-        proj.proved = allMatch;
-        updateProgress();
-      }
-
-      /* ---- What-If: add one more coin ---- */
-
-      function runWhatIf() {
-        const rate = num("coin-r");
-        const k = num("coin-k");
-        const c = num("coin-c");
-        if (isNaN(rate) || isNaN(k) || isNaN(c)) {
-          $("whatIfBox").textContent =
-            "First enter your rate r, bonus k, and coins c in Part 1.";
-          return;
-        }
-        const r = (x) => Math.round(x * 100) / 100;
-        PK.whatIf(
-          "whatIfBox",
-          { coins: c, score: r(rate * c + k) },
-          { coins: c + 1, score: r(rate * (c + 1) + k) },
-          "Add one more coin (score = " + rate + "·c + " + k + "):",
-        );
-      }
-
-      /* ---- Use example numbers ---- */
-      function useExamples() {
-        const ex = {
-          worldCountry: "Platformer Game",
-          "exp-base": 3,
-          gameName: "Quest Blaster",
-          "exp-level": 4,
-          "coin-r": 3,
-          "coin-k": 50,
-          "coin-c": 12,
-          "p-r": 5,
-          "p-k": 20,
-          "cmp-c": 12,
-          worldC: 12,
-          myWorld: "",
-        };
-        Object.entries(ex).forEach(([k, v]) => {
-          if ($(k)) $(k).value = v;
-        });
-        recalcAll();
-      }
-
-      function drawVisualizer() {
-        const rate = num("coin-r");
-        const bonus = num("coin-k");
-        const coins = num("coin-c");
-
-        let html = "";
-        if (!isNaN(rate) && rate > 0) {
-          const flat = isNaN(bonus) ? 0 : bonus;
-          let tilesHtml = "";
-          // Draw "c" tiles — one per point of rate r (the coefficient on c)
-          for (let i = 0; i < Math.min(rate, 12); i++) {
-            const px = 100 + (i % 6) * 32;
-            const y = 60 + Math.floor(i / 6) * 35;
-            tilesHtml += `
-              <rect x="${px}" y="${y}" width="28" height="20" rx="3" fill="rgba(26, 111, 181, 0.2)" stroke="#1a6fb5" />
-              <text x="${px + 14}" y="${y + 13}" text-anchor="middle" font-size="10" font-weight="bold" fill="#1a6fb5">c</text>
-            `;
-          }
-          // Draw constant tiles — one per point of flat bonus k
-          for (let kk = 0; kk < Math.min(flat, 12); kk++) {
-            const px = 100 + (kk % 6) * 22;
-            const y = 135 + Math.floor(kk / 6) * 24;
-            tilesHtml += `
-              <rect x="${px}" y="${y}" width="18" height="20" rx="3" fill="rgba(212, 149, 42, 0.2)" stroke="#d4952a" />
-              <text x="${px + 9}" y="${y + 13}" text-anchor="middle" font-size="9" font-weight="bold" fill="#d4952a">1</text>
-            `;
-          }
-          const scoreLine = !isNaN(coins)
-            ? `At c = ${coins}: ${rate} × ${coins} + ${flat} = ${rate * coins + flat} points`
-            : "Enter coins c in Part 1 to evaluate your score";
-          html = `
-            ${tilesHtml}
-            <text x="250" y="205" text-anchor="middle" font-size="13" font-weight="bold" fill="#2d874b">
-              My scoring engine: ${rate}c + ${flat}
-            </text>
-            <text x="250" y="225" text-anchor="middle" font-size="11" fill="#5e6e7e">${scoreLine}</text>
-          `;
-        } else {
-          html = `
-            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter your rate r and bonus k in Part 1 to draw your scoring engine</text>
-          `;
-        }
-
-        const svgString = `
-          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
-            ${html}
+          <!-- SVG Visual: labeled algebraic expression -->
+          <svg class="visual-svg" viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">
+            <!-- Title -->
+            <text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">Anatomy of an Algebraic Expression</text>
+            
+            <!-- Expression: 2^n * (10p + 5) -->
+            <text x="50" y="100" font-size="38" font-weight="800" fill="#0f2b3c">2</text>
+            <text x="73" y="75" font-size="22" font-weight="800" fill="#6d28d9">n</text>
+            
+            <text x="95" y="100" font-size="28" fill="#64748b">×</text>
+            <text x="120" y="100" font-size="38" fill="#0f2b3c">(</text>
+            
+            <text x="138" y="100" font-size="38" font-weight="800" fill="#2563eb">10</text>
+            <text x="183" y="100" font-size="38" font-weight="800" fill="#1e7d40">p</text>
+            
+            <text x="215" y="100" font-size="30" fill="#64748b">+</text>
+            
+            <text x="248" y="100" font-size="38" font-weight="800" fill="#c9820f">5</text>
+            <text x="273" y="100" font-size="38" fill="#0f2b3c">)</text>
+            
+            <!-- Connecting lines and labels -->
+            <!-- Exponent: n -->
+            <path d="M 80 55 L 115 35" stroke="#6d28d9" stroke-width="1.5" fill="none" />
+            <text x="122" y="38" font-size="11" font-weight="bold" fill="#6d28d9">Exponent</text>
+            
+            <!-- Base: 2 -->
+            <path d="M 58 112 L 38 145" stroke="#0f2b3c" stroke-width="1.5" fill="none" />
+            <text x="38" y="160" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Base</text>
+            
+            <!-- Coefficient: 10 -->
+            <path d="M 158 112 L 133 145" stroke="#2563eb" stroke-width="1.5" fill="none" />
+            <text x="133" y="160" text-anchor="middle" font-size="11" font-weight="bold" fill="#2563eb">Coefficient</text>
+            
+            <!-- Variable: p -->
+            <path d="M 193 112 L 208 145" stroke="#1e7d40" stroke-width="1.5" fill="none" />
+            <text x="208" y="160" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e7d40">Variable</text>
+            
+            <!-- Constant: 5 -->
+            <path d="M 258 112 L 283 145" stroke="#c9820f" stroke-width="1.5" fill="none" />
+            <text x="283" y="160" text-anchor="middle" font-size="11" font-weight="bold" fill="#c9820f">Constant</text>
+            
+            <!-- Expression bracket for (10p + 5) -->
+            <path d="M 133 112 L 133 120 L 273 120 L 273 112" stroke="#64748b" stroke-width="1.5" fill="none" />
+            <path d="M 203 120 L 203 135" stroke="#64748b" stroke-width="1.5" fill="none" />
+            <rect x="160" y="135" width="85" height="18" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1" />
+            <text x="202" y="148" text-anchor="middle" font-size="10" font-weight="bold" fill="#475569">Expression</text>
+            
+            <!-- Context Box -->
+            <rect x="330" y="45" width="175" height="120" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+            <text x="417" y="65" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Game Scoring Engine</text>
+            <text x="345" y="90" font-size="10" fill="#475569">🎮 p = points earned (var)</text>
+            <text x="345" y="110" font-size="10" fill="#475569">⚡ n = level reached (exp)</text>
+            <text x="345" y="130" font-size="10" fill="#475569">🎁 b = bonuses found (var)</text>
+            <text x="345" y="150" font-size="10" fill="#6d28d9" font-weight="bold">Base Score × Multiplier</text>
           </svg>
-        `;
-        $("projectVisualizer").innerHTML = svgString;
-      }
 
-      function recalcAll() {
-        coinLabel();
-        calcExponent();
-        calcCoinExpr();
-        comparePeer();
-        renderWorld();
-        worldGo();
-        updateProgress();
+          <!-- Vocabulary Grid -->
+          <div class="vocab-grid">
+            <div class="vocab-card">
+              <div class="vocab-icon">🔤</div>
+              <div class="vocab-term">Variable</div>
+              <div class="vocab-def">A letter or symbol that stands for a number that can change.</div>
+              <div class="vocab-ex">e.g. <em>p</em> for points, <em>b</em> for bonuses.</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">⬆️</div>
+              <div class="vocab-term">Exponent</div>
+              <div class="vocab-def">A number showing how many times a base is multiplied by itself.</div>
+              <div class="vocab-ex">e.g. In 2<sup>3</sup>, the exponent is 3 (2×2×2).</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">🧱</div>
+              <div class="vocab-term">Expression</div>
+              <div class="vocab-def">A mathematical phrase with numbers, variables, and operators.</div>
+              <div class="vocab-ex">e.g. 10p + 5b has no equals sign.</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">🟰</div>
+              <div class="vocab-term">Equivalent Expression</div>
+              <div class="vocab-def">Two expressions that always equal the same value when evaluated.</div>
+              <div class="vocab-ex">e.g. 2(5p + 3b) = 10p + 6b.</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">📌</div>
+              <div class="vocab-term">Constant</div>
+              <div class="vocab-def">A fixed number that never changes value in an expression.</div>
+              <div class="vocab-ex">e.g. In 10p + 50, the constant is 50.</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">✖️</div>
+              <div class="vocab-term">Coefficient</div>
+              <div class="vocab-def">The number in front of and multiplying a variable term.</div>
+              <div class="vocab-ex">e.g. In 10p, the coefficient is 10.</div>
+            </div>
+          </div>
 
-        if (typeof drawNamingSVG === "function") {
-          drawNamingSVG();
-          drawExponentSVG();
-          drawExpressionSVG();
+          <div class="instruct" style="margin-top:20px">
+            ✅ Read each math vocabulary card and study the algebraic expression diagram. Click <strong>Next Step</strong> to build your scoring formula.
+          </div>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" disabled>← Back</button>
+          <button class="nav-btn" onclick="goStep(2)">Next Step →</button>
+        </div>
+      </div>
+
+      <!-- ======================================
+           STEP 2 — BASE SCORE FORMULA (Step 1)
+      ====================================== -->
+      <div class="step-panel" id="step-2">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">🎮</div>
+            <div>
+              <div class="card-title">Step 1 — Base Score Formula</div>
+              <div class="card-sub">Design your base scoring system using coefficients and variables</div>
+            </div>
+          </div>
+
+          <div class="instruct">
+            <strong>Your Scenario:</strong> As a game designer, you decide how many points each basic action is worth. Let's make a formula for the <strong>Base Score</strong> where <em>p</em> represents the number of points and <em>b</em> represents the number of bonuses a player gets.
+          </div>
+
+          <div class="grid2">
+            <div>
+              <label class="lbl" for="g-title">🕹️ Video Game Title</label>
+              <input type="text" id="g-title" placeholder="e.g. Pixel Quest" value="Pixel Quest" oninput="calcBaseScore()" />
+            </div>
+            <div>
+              <label class="lbl" for="g-pt-rate">➕ Points Coefficient (value per point action)</label>
+              <input type="number" id="g-pt-rate" min="1" placeholder="e.g. 10" value="10" oninput="calcBaseScore()" />
+            </div>
+            <div>
+              <label class="lbl" for="g-bn-rate">🎁 Bonus Coefficient (value per bonus item)</label>
+              <input type="number" id="g-bn-rate" min="1" placeholder="e.g. 5" value="5" oninput="calcBaseScore()" />
+            </div>
+            <div class="lvl2-only">
+              <label class="lbl" for="g-constant">📌 Starting Constant (flat initial score bonus)</label>
+              <input type="number" id="g-constant" min="0" placeholder="e.g. 50" value="0" oninput="calcBaseScore()" />
+            </div>
+          </div>
+
+          <!-- Formula Box Readout -->
+          <div style="background:var(--blue-lt); border-radius:12px; padding:16px; margin-top:18px; text-align:center; border: 1.5px solid var(--blue);">
+            <span style="font-size:12px; font-weight:800; letter-spacing:.05em; color:var(--blue); text-transform:uppercase;">Your Base Score Formula</span>
+            <div id="base-formula-display" style="font-size:24px; font-weight:800; color:var(--navy); margin-top:4px;">10p + 5b</div>
+            <span style="font-size:13px; color:var(--muted);">(where <em>p</em> = points earned, <em>b</em> = bonuses collected)</span>
+          </div>
+
+          <!-- Level 1 Instruction -->
+          <div class="instruct lvl1-only" style="margin-top:18px;">
+            🟢 <strong>Level 1 Tip:</strong> Try setting Points Coefficient to <strong>10</strong> and Bonus Coefficient to <strong>5</strong>. Your base score formula will be: <code style="font-weight:700;">10p + 5b</code>.
+          </div>
+          <!-- Level 2 Extension -->
+          <div class="instruct lvl2-block lvl2-only">
+            <span class="lvl2-label">LEVEL 2 CHALLENGE</span><br>
+            You can customize both coefficients and add a flat starting score <strong>Constant</strong> (e.g. 50 points). Your formula will be: <code style="font-weight:700;">(Rate)p + (Rate)b + Constant</code>.
+          </div>
+
+          <!-- Evaluation Tasks -->
+          <h3 style="font-size:16px; font-weight:800; color:var(--navy); margin-top:22px;">🧮 Evaluate Your Base Score</h3>
+          <p style="font-size:14px; color:var(--muted); margin-bottom:12px;">Evaluate your base score formula for the specific values below. Plug the numbers in and calculate the score.</p>
+
+          <div class="grid2">
+            <div>
+              <label class="lbl" for="eval-a">Setup A: Evaluate for <span style="color:var(--blue); font-weight:bold;">p = 50</span> and <span style="color:var(--teal); font-weight:bold;">b = 10</span></label>
+              <input type="number" id="eval-a" placeholder="Enter your calculated score" oninput="calcBaseScore()" />
+              <span id="eval-a-feedback" class="feedback"></span>
+            </div>
+            <div>
+              <label class="lbl" for="eval-b">Setup B: Evaluate for <span style="color:var(--blue); font-weight:bold;">p = 100</span> and <span style="color:var(--teal); font-weight:bold;">b = 20</span></label>
+              <input type="number" id="eval-b" placeholder="Enter your calculated score" oninput="calcBaseScore()" />
+              <span id="eval-b-feedback" class="feedback"></span>
+            </div>
+          </div>
+
+          <!-- Interactive Testing Engine -->
+          <div style="margin-top:22px; border-top: 1px solid var(--line); padding-top:20px;">
+            <h3 style="font-size:15px; font-weight:800; color:var(--navy); margin-bottom:6px;">🎮 Live Scoring Engine Simulator</h3>
+            <p style="font-size:14px; color:var(--muted); margin-bottom:10px;">Enter any values for points and bonuses to see your scoring engine output in real time.</p>
+            <div class="grid2">
+              <div>
+                <label class="lbl" for="calc-p">Points (p)</label>
+                <input type="number" id="calc-p" value="10" min="0" oninput="runTestEngine()" />
+              </div>
+              <div>
+                <label class="lbl" for="calc-b">Bonuses (b)</label>
+                <input type="number" id="calc-b" value="3" min="0" oninput="runTestEngine()" />
+              </div>
+            </div>
+            <button class="calc-btn" onclick="runTestEngine()">🧮 Run Scoring Engine</button>
+            <div class="readout" id="calc-base-out"></div>
+          </div>
+
+          <details class="hint">
+            <summary>Need a hint for evaluating expressions?</summary>
+            <p>Substitute the variables with numbers and follow the Order of Operations (PEMDAS).<br><strong>Example:</strong> For formula 10p + 5b when p = 50 and b = 10:<br>10 × 50 + 5 × 10 = 500 + 50 = <strong>550</strong>.</p>
+          </details>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(1)">← Back</button>
+          <button class="nav-btn" onclick="goStep(3)">Next Step →</button>
+        </div>
+      </div>
+
+      <!-- ======================================
+           STEP 3 — MULTIPLIERS (Step 2)
+      ====================================== -->
+      <div class="step-panel" id="step-3">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon teal">⚡</div>
+            <div>
+              <div class="card-title">Step 2 — Level Exponent Multipliers</div>
+              <div class="card-sub">Multiply game scores using exponential level scaling (6.EE.1)</div>
+            </div>
+          </div>
+
+          <div class="instruct teal">
+            <strong>The Concept:</strong> As players level up, they deserve bigger scores! We model this with a <strong>Level Multiplier</strong> equal to: <code style="font-weight:700;">Base<sup>Level</sup></code> (or <code style="font-weight:700;">B<sup>n</sup></code>, where <em>B</em> is the multiplier base and <em>n</em> is the level).
+          </div>
+
+          <!-- Multiplier base choice (Level 2 only) -->
+          <div class="lvl2-only" style="margin-bottom:18px;">
+            <label class="lbl" for="g-exp-base">⚙️ Choose your game's exponent multiplier base (B)</label>
+            <select id="g-exp-base" onchange="calcMultipliers()">
+              <option value="2" selected>2 (Doubles each level: 2^n)</option>
+              <option value="3">3 (Triples each level: 3^n)</option>
+              <option value="4">4 (Quadruples each level: 4^n)</option>
+            </select>
+          </div>
+
+          <div class="instruct lvl1-only">
+            🟢 <strong>Level 1 Multiplier:</strong> Your multiplier base is fixed at <strong>2</strong>. Your multiplier is <strong>2<sup>n</sup></strong> where <em>n</em> represents the level.
+          </div>
+          <div class="instruct lvl2-block lvl2-only">
+            <span class="lvl2-label">LEVEL 2 CHALLENGE</span><br>
+            Select a base of <strong>3</strong> or <strong>4</strong> to make levels scale up even faster!
+          </div>
+
+          <h3 style="font-size:16px; font-weight:800; color:var(--navy); margin-top:20px; margin-bottom:6px;">📈 Exponent Table</h3>
+          <p style="font-size:14px; color:var(--muted); margin-bottom:12px;">Evaluate the multiplier value for levels 2, 3, 4, and 5 by calculating the power.</p>
+
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Level (n)</th>
+                <th>Exponential Form</th>
+                <th>Expanded Form</th>
+                <th>Multiplier Value (Evaluate)</th>
+                <th>Feedback</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Level 2</td>
+                <td><span class="formula-m-base">2</span><sup>2</sup></td>
+                <td><span class="formula-m-exp2">2 × 2</span></td>
+                <td><input type="number" id="eval-m-l2" style="width:120px; padding:6px 10px;" placeholder="e.g. 4" oninput="calcMultipliers()" /></td>
+                <td><span id="eval-m-l2-feedback" class="feedback"></span></td>
+              </tr>
+              <tr>
+                <td>Level 3</td>
+                <td><span class="formula-m-base">2</span><sup>3</sup></td>
+                <td><span class="formula-m-exp3">2 × 2 × 2</span></td>
+                <td><input type="number" id="eval-m-l3" style="width:120px; padding:6px 10px;" placeholder="e.g. 8" oninput="calcMultipliers()" /></td>
+                <td><span id="eval-m-l3-feedback" class="feedback"></span></td>
+              </tr>
+              <tr>
+                <td>Level 4</td>
+                <td><span class="formula-m-base">2</span><sup>4</sup></td>
+                <td><span class="formula-m-exp4">2 × 2 × 2 × 2</span></td>
+                <td><input type="number" id="eval-m-l4" style="width:120px; padding:6px 10px;" placeholder="e.g. 16" oninput="calcMultipliers()" /></td>
+                <td><span id="eval-m-l4-feedback" class="feedback"></span></td>
+              </tr>
+              <tr>
+                <td>Level 5</td>
+                <td><span class="formula-m-base">2</span><sup>5</sup></td>
+                <td><span class="formula-m-exp5">2 × 2 × 2 × 2 × 2</span></td>
+                <td><input type="number" id="eval-m-l5" style="width:120px; padding:6px 10px;" placeholder="e.g. 32" oninput="calcMultipliers()" /></td>
+                <td><span id="eval-m-l5-feedback" class="feedback"></span></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Total Score Calculator -->
+          <div style="margin-top:24px; border-top:1px solid var(--line); padding-top:20px;">
+            <h3 style="font-size:15px; font-weight:800; color:var(--navy); margin-bottom:6px;">⚡ Total Score Calculator</h3>
+            <p style="font-size:14px; color:var(--muted); margin-bottom:10px;">Total Score is calculated by multiplying: <strong style="color:var(--blue);">Total Score = Base Score × Level Multiplier</strong>.</p>
+            <div class="grid2">
+              <div>
+                <label class="lbl" for="calc-base-val">Base Score</label>
+                <input type="number" id="calc-base-val" value="500" min="1" oninput="runTotalScoreEngine()" />
+              </div>
+              <div>
+                <label class="lbl" for="calc-lvl-val">Level reached (n)</label>
+                <select id="calc-lvl-val" onchange="runTotalScoreEngine()">
+                  <option value="2">Level 2</option>
+                  <option value="3" selected>Level 3</option>
+                  <option value="4">Level 4</option>
+                  <option value="5">Level 5</option>
+                </select>
+              </div>
+            </div>
+            <button class="calc-btn teal" onclick="runTotalScoreEngine()">⚡ Calculate Total Score</button>
+            <div class="readout" id="calc-total-out"></div>
+          </div>
+
+          <details class="hint">
+            <summary>Need a hint on exponents?</summary>
+            <p>An exponent tells you how many times to multiply the base by itself.<br><strong>Example (base 2):</strong> 2<sup>3</sup> = 2 × 2 × 2 = 8 (NOT 2 × 3 = 6).<br><strong>Example (base 3):</strong> 3<sup>3</sup> = 3 × 3 × 3 = 27.</p>
+          </details>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(2)">← Back</button>
+          <button class="nav-btn" onclick="goStep(4)">Next Step →</button>
+        </div>
+      </div>
+
+      <!-- ======================================
+           STEP 4 — EQUIVALENT EXPRESSIONS (Step 3)
+      ====================================== -->
+      <div class="step-panel" id="step-4">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon gold">🟰</div>
+            <div>
+              <div class="card-title">Step 3 — Equivalent Expressions</div>
+              <div class="card-sub">Simplify code using the distributive property and check equivalence (6.EE.3/4)</div>
+            </div>
+          </div>
+
+          <div class="instruct gold">
+            <strong>The Concept:</strong> Video game engines need to run fast. Sometimes, rewriting expressions in a factored form using the <strong>Distributive Property</strong> helps clean up calculations. Two expressions are <strong>equivalent</strong> if they give the same answer for any values of the variables.
+          </div>
+
+          <!-- Section 1: Equivalence Challenges -->
+          <h3 style="font-size:16px; font-weight:800; color:var(--navy); margin-bottom:6px;">🧩 Equivalence Challenges</h3>
+          <p style="font-size:14px; color:var(--muted); margin-bottom:12px;">Test if these expressions are equivalent by plugging in the values <strong style="color:var(--blue);">p = 3</strong> and <strong style="color:var(--teal);">b = 2</strong>. Evaluate both sides, then choose if they are equivalent.</p>
+
+          <!-- Challenge 1 -->
+          <div class="equiv-card">
+            <div style="font-weight:700; font-size:14px; color:var(--navy);">Challenge 1: Factor out a constant</div>
+            <div class="equiv-expr">3(2p + 4b) &nbsp; vs &nbsp; 6p + 12b</div>
+            <div class="grid2">
+              <div>
+                <label class="lbl" for="eq1-left">Evaluate Left: 3(2(3) + 4(2))</label>
+                <input type="number" id="eq1-left" placeholder="e.g. 42" oninput="validateEquiv()" />
+                <span id="eq1-left-feedback" class="feedback"></span>
+              </div>
+              <div>
+                <label class="lbl" for="eq1-right">Evaluate Right: 6(3) + 12(2)</label>
+                <input type="number" id="eq1-right" placeholder="e.g. 42" oninput="validateEquiv()" />
+                <span id="eq1-right-feedback" class="feedback"></span>
+              </div>
+            </div>
+            <label class="lbl" for="eq1-ans">Are they equivalent expressions?</label>
+            <select id="eq1-ans" onchange="validateEquiv()">
+              <option value="">-- Choose one --</option>
+              <option value="Yes">Yes, they are equivalent</option>
+              <option value="No">No, they are not equivalent</option>
+            </select>
+            <span id="eq1-ans-feedback" class="feedback"></span>
+          </div>
+
+          <!-- Challenge 2 -->
+          <div class="equiv-card">
+            <div style="font-weight:700; font-size:14px; color:var(--navy);">Challenge 2: Forgetting to distribute</div>
+            <div class="equiv-expr">4(p + 3b) &nbsp; vs &nbsp; 4p + 3b</div>
+            <div class="grid2">
+              <div>
+                <label class="lbl" for="eq2-left">Evaluate Left: 4(3 + 3(2))</label>
+                <input type="number" id="eq2-left" placeholder="e.g. 36" oninput="validateEquiv()" />
+                <span id="eq2-left-feedback" class="feedback"></span>
+              </div>
+              <div>
+                <label class="lbl" for="eq2-right">Evaluate Right: 4(3) + 3(2)</label>
+                <input type="number" id="eq2-right" placeholder="e.g. 18" oninput="validateEquiv()" />
+                <span id="eq2-right-feedback" class="feedback"></span>
+              </div>
+            </div>
+            <label class="lbl" for="eq2-ans">Are they equivalent expressions?</label>
+            <select id="eq2-ans" onchange="validateEquiv()">
+              <option value="">-- Choose one --</option>
+              <option value="Yes">Yes, they are equivalent</option>
+              <option value="No">No, they are not equivalent</option>
+            </select>
+            <span id="eq2-ans-feedback" class="feedback"></span>
+          </div>
+
+          <!-- Challenge 3 -->
+          <div class="equiv-card">
+            <div style="font-weight:700; font-size:14px; color:var(--navy);">Challenge 3: Distributing with constants</div>
+            <div class="equiv-expr">5(2p + b + 8) &nbsp; vs &nbsp; 10p + 5b + 40</div>
+            <div class="grid2">
+              <div>
+                <label class="lbl" for="eq3-left">Evaluate Left: 5(2(3) + 2 + 8)</label>
+                <input type="number" id="eq3-left" placeholder="e.g. 80" oninput="validateEquiv()" />
+                <span id="eq3-left-feedback" class="feedback"></span>
+              </div>
+              <div>
+                <label class="lbl" for="eq3-right">Evaluate Right: 10(3) + 5(2) + 40</label>
+                <input type="number" id="eq3-right" placeholder="e.g. 80" oninput="validateEquiv()" />
+                <span id="eq3-right-feedback" class="feedback"></span>
+              </div>
+            </div>
+            <label class="lbl" for="eq3-ans">Are they equivalent expressions?</label>
+            <select id="eq3-ans" onchange="validateEquiv()">
+              <option value="">-- Choose one --</option>
+              <option value="Yes">Yes, they are equivalent</option>
+              <option value="No">No, they are not equivalent</option>
+            </select>
+            <span id="eq3-ans-feedback" class="feedback"></span>
+          </div>
+
+          <!-- Differentiated Section -->
+          <div class="lvl1-only" style="margin-top:22px;">
+            <h3 style="font-size:15px; font-weight:800; color:var(--navy); margin-bottom:6px;">✍️ Property Explanation</h3>
+            <label class="lbl" for="dist-explain">Look at the formula 2(5p + 3b) = 10p + 6b. Explain how the distributive property was used to rewrite it.</label>
+            <textarea id="dist-explain" placeholder="Explain in your own words how the outside factor multiplies the inside terms..."></textarea>
+          </div>
+
+          <div class="lvl2-block lvl2-only" style="margin-top:22px;">
+            <span class="lvl2-label">LEVEL 2 CHALLENGE — Factor Your Scoring Engine</span>
+            <p style="font-size:14px; margin-bottom:10px;">Factor the point and bonus terms of your formula. Find the GCF of your Point Rate and Bonus Rate, then write the equivalent factored expression.</p>
+            <div style="background:var(--blue-lt); padding:10px; border-radius:8px; font-weight:700; margin-bottom:12px; font-size:14px;">
+              Your current formula: <span id="dist-my-formula" style="color:var(--blue)">10p + 5b</span>
+            </div>
+            <label class="lbl">Factored Form: GCF × ( ___ p + ___ b )</label>
+            <div style="display:flex; align-items:center; gap:8px; max-width:400px; margin-top:6px;">
+              <input type="number" id="dist-out" placeholder="GCF" style="width:70px; text-align:center;" oninput="validateFactoring()" />
+              <span style="font-size:20px; font-weight:bold;">(</span>
+              <input type="number" id="dist-in1" placeholder="coeff" style="width:70px; text-align:center;" oninput="validateFactoring()" />
+              <span style="font-size:16px; font-weight:bold;">p</span>
+              <span style="font-size:20px; font-weight:bold;">+</span>
+              <input type="number" id="dist-in2" placeholder="coeff" style="width:70px; text-align:center;" oninput="validateFactoring()" />
+              <span style="font-size:16px; font-weight:bold;">b )</span>
+            </div>
+            <span id="factoring-feedback" class="feedback"></span>
+          </div>
+
+          <details class="hint">
+            <summary>Need a hint on equivalent expressions?</summary>
+            <p>To check if expressions are equivalent, expand or simplify them using properties:<br><strong>3(2p + 4b)</strong> = 3 × 2p + 3 × 4b = <strong>6p + 12b</strong>. Since they simplify to the same form, they are equivalent.<br>To evaluate for p=3 and b=2: 6(3) + 12(2) = 18 + 24 = 42.</p>
+          </details>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(3)">← Back</button>
+          <button class="nav-btn" onclick="goStep(5)">Next Step →</button>
+        </div>
+      </div>
+
+      <!-- ======================================
+           STEP 5 — PARTNER HIGH SCORE (Step 4)
+      ====================================== -->
+      <div class="step-panel" id="step-5">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon teal">👥</div>
+            <div>
+              <div class="card-title">Step 4 — Partner High Score Duel</div>
+              <div class="card-sub">Trade formulas with a classmate and evaluate a high score match</div>
+            </div>
+          </div>
+
+          <div class="instruct teal">
+            <strong>Your Task:</strong> Connect with a partner. Exchange your game coefficients (rates) and calculate who gets the higher score during a legendary match: <strong style="color:var(--blue);">p = 80</strong> points, <strong style="color:var(--teal);">b = 15</strong> bonuses, played on <strong style="color:var(--navy);">Level 3</strong>.
+          </div>
+
+          <div class="grid2">
+            <div>
+              <label class="lbl" for="p-name">👤 Partner's Name</label>
+              <input type="text" id="p-name" placeholder="e.g. Alex" oninput="comparePartner()" />
+            </div>
+            <div>
+              <label class="lbl" for="p-pt-rate">➕ Partner's Points Rate</label>
+              <input type="number" id="p-pt-rate" min="1" placeholder="e.g. 8" value="8" oninput="comparePartner()" />
+            </div>
+            <div>
+              <label class="lbl" for="p-bn-rate">🎁 Partner's Bonus Rate</label>
+              <input type="number" id="p-bn-rate" min="1" placeholder="e.g. 6" value="6" oninput="comparePartner()" />
+            </div>
+            <div class="lvl2-only">
+              <label class="lbl" for="p-exp-base">⚙️ Partner's Multiplier Base (Level 2 only)</label>
+              <input type="number" id="p-exp-base" min="2" max="4" value="2" oninput="comparePartner()" />
+            </div>
+          </div>
+
+          <button class="calc-btn teal" onclick="comparePartner()">📊 Run Score Duel</button>
+          <div class="readout" id="peer-out"></div>
+
+          <label class="lbl" for="peer-reflect" style="margin-top:18px;">✍️ Reflection: Compare the two scoring models</label>
+          <textarea id="peer-reflect" placeholder="My engine scored ___ points and my partner's engine scored ___ points. My engine is faster/slower at scaling because..."></textarea>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(4)">← Back</button>
+          <button class="nav-btn green" onclick="goStep(6)">Next Step →</button>
+        </div>
+      </div>
+
+      <!-- ======================================
+           STEP 6 — FINISH & REPORT (Step 5)
+      ====================================== -->
+      <div class="step-panel" id="step-6">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon green">🏆</div>
+            <div>
+              <div class="card-title">Step 5 — Submit Design &amp; Generate Report</div>
+              <div class="card-sub">Pitch your video game scoring engine and review requirements</div>
+            </div>
+          </div>
+
+          <div class="instruct green">
+            <strong>Your Pitch:</strong> Explain your game concept and justify your math choices. Write 3–5 sentences describing how variables, coefficients, and exponents make your scoring engine fun and balanced.
+          </div>
+
+          <!-- Pitch -->
+          <label class="lbl" for="pitch">✍️ Game Design Pitch (Include your game coefficients and Level 5 multiplier!)</label>
+          <textarea id="pitch" placeholder="Welcome to my video game! In my game, players get points and collect bonuses. The base scoring formula is... By Level 5, the score multiplier reaches... The game is balanced because..."></textarea>
+
+          <!-- Checklist -->
+          <h3 style="font-size:16px; font-weight:800; color:var(--navy); margin-top:22px; margin-bottom:6px;">✅ Scoring Engine Checklist</h3>
+          <ul class="checklist" id="checklist">
+            <li><input type="checkbox" id="ck1" /> I defined variables and chose points and bonus rates for my game.</li>
+            <li><input type="checkbox" id="ck2" /> I evaluated my base score formula for specific player achievements.</li>
+            <li><input type="checkbox" id="ck3" /> I calculated level multiplier powers using exponents.</li>
+            <li><input type="checkbox" id="ck4" /> I verified expression equivalence using properties and substitution.</li>
+            <li><input type="checkbox" id="ck5" /> I simulated a partner duel and compared scoring metrics.</li>
+            <li><input type="checkbox" id="ck6" /> I wrote a design pitch incorporating my exact math values.</li>
+          </ul>
+
+          <!-- Rubric -->
+          <h3 style="font-size:16px; font-weight:800; color:var(--navy); margin-top:22px; margin-bottom:6px;">📊 Scoring Rubric</h3>
+          <table class="rubric">
+            <thead>
+              <tr>
+                <th>Target Standard</th>
+                <th class="score-4">4 — Expert</th>
+                <th class="score-3">3 — Proficient</th>
+                <th class="score-2">2 — Developing</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Exponents (6.EE.1)</strong></td>
+                <td>Exponents correctly evaluated for all levels; explains growth.</td>
+                <td>Powers correctly evaluated (e.g. 2^n).</td>
+                <td>Minor calculation errors in exponents.</td>
+              </tr>
+              <tr>
+                <td><strong>Expressions (6.EE.2)</strong></td>
+                <td>Accurately writes formula, substitutes values, and evaluates correctly.</td>
+                <td>Formula is correct; substitution has 1 error.</td>
+                <td>Formula is incomplete or values not evaluated.</td>
+              </tr>
+              <tr>
+                <td><strong>Equivalent (6.EE.3/4)</strong></td>
+                <td>Verifies equivalence for all challenges and factors own correctly.</td>
+                <td>Correctly identifies equivalence via substitution.</td>
+                <td>Equivalent concepts are incomplete.</td>
+              </tr>
+              <tr>
+                <td><strong>Comparison (Model)</strong></td>
+                <td>Compares engines, calculates duel score, and reflects thoughtfully.</td>
+                <td>Calculates duel scores correctly.</td>
+                <td>Scores missing or reflection incomplete.</td>
+              </tr>
+              <tr>
+                <td><strong>Game Pitch</strong></td>
+                <td>Engaging description incorporating exact scoring math parameters.</td>
+                <td>Describes game scoring with some math support.</td>
+                <td>Incomplete description or missing numbers.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Report Generator -->
+          <div class="nav-row no-print" style="margin-top:22px; flex-wrap:wrap; justify-content:flex-start; gap:8px;">
+            <button class="calc-btn" onclick="buildReport()">📝 Generate Summary</button>
+            <button class="export-btn" onclick="copyReport()">📋 Copy Report</button>
+            <button class="export-btn" onclick="downloadTxt()">⬇️ Download .txt</button>
+            <button class="export-btn" onclick="window.print()">🖨️ Print Project</button>
+          </div>
+          <pre class="report-box" id="reportBox"></pre>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(5)">← Back</button>
+          <button class="nav-btn green" onclick="alert('Congratulations! 🎉 Show this page and your generated report to your teacher.')">🎉 Project Finished!</button>
+        </div>
+      </div>
+
+    </div><!-- end wizard -->
+
+    <!-- ====== SCRIPTS ====== -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <script src="/assets/app.js" defer></script>
+    <script>
+      // ---- State ----
+      const STEPS = [
+        { id: 1, label: 'Key Words', icon: '📖' },
+        { id: 2, label: 'Base Score', icon: '🎮' },
+        { id: 3, label: 'Multipliers', icon: '⚡' },
+        { id: 4, label: 'Equivalent', icon: '🟰' },
+        { id: 5, label: 'Partner Score', icon: '👥' },
+        { id: 6, label: 'Finish', icon: '🏆' },
+      ];
+      let currentStep = 1;
+      let level = 1;
+      const visited = new Set([1]);
+
+      // ---- Level toggle ----
+      function setLevel(n) {
+        level = n;
+        document.getElementById('body').className = 'level-' + n;
+        document.getElementById('btn-lv1').classList.toggle('active', n === 1);
+        document.getElementById('btn-lv2').classList.toggle('active', n === 2);
+        
+        // Reset or adapt values based on level
+        if (n === 1) {
+          document.getElementById('g-pt-rate').value = 10;
+          document.getElementById('g-bn-rate').value = 5;
+          document.getElementById('g-constant').value = 0;
+          document.getElementById('g-exp-base').value = 2;
+          document.getElementById('p-exp-base').value = 2;
         }
-      }
-
-      /* ---- Report ---- */
-      function reportText() {
-        const f = (x) => (x == null ? "(not finished)" : x);
-        return (
-          "GAME STUDIO SCORING ENGINE — MY REPORT\n" +
-          "======================================\n\n" +
-          "GAME: " +
-          ($("gameName").value || "(unnamed)") +
-          "\n\n" +
-          "PART 1: MY SCORING ENGINE (SELF)\n" +
-          "Level-up power: " +
-          (proj.base == null
-            ? "(not finished)"
-            : proj.base + "^" + proj.exp + " = " + proj.power) +
-          "\n" +
-          "Coin bonus expression: " +
-          (proj.r == null ? "(not finished)" : proj.r + "c + " + proj.k) +
-          "\n" +
-          "Score at c = " +
-          f(proj.c) +
-          ": " +
-          f(proj.score) +
-          " points\n\n" +
-          "PART 2: PEER COMPARISON\n" +
-          "Partner: " +
-          ($("partnerName").value || "(none)") +
-          "\n" +
-          "Partner formula: " +
-          ($("p-r").value || "-") +
-          "c + " +
-          ($("p-k").value || "-") +
-          "\n" +
-          "Reflection: " +
-          ($("peerReflect").value || "(not written)") +
-          "\n\n" +
-          "PART 3: WORLD COMPARISON\n" +
-          "Equivalence proved (2(c+3) = 2c+6): " +
-          (proj.proved ? "yes" : "not yet") +
-          "\n" +
-          "My value vs games: " +
-          ($("worldReflect").value || "(not written)") +
-          "\n" +
-          "Careful thinking: " +
-          ($("careful").value || "(not written)") +
-          "\n\n" +
-          "DESIGN DOCUMENT:\n" +
-          ($("pitch").value || "(not written)")
-        );
-      }
-      function buildReport() {
         recalcAll();
-        PK.generateReport("reportBox", reportText());
-      }
-      function downloadCsv() {
-        const rows = [
-          ["field", "value"],
-          ["game", $("gameName").value],
-          ["base", proj.base],
-          ["exponent", proj.exp],
-          ["power", proj.power],
-          ["coin_rate_r", proj.r],
-          ["flat_bonus_k", proj.k],
-          ["coins_c", proj.c],
-          ["score_rc_plus_k", proj.score],
-          ["partner", $("partnerName").value],
-          ["partner_rate", $("p-r").value],
-          ["partner_bonus", $("p-k").value],
-        ];
-        PK.downloadCsv("game-scoring-data.csv", rows);
       }
 
-      /* ---- Progress ---- */
-      function updateProgress() {
-        const readouts = document.querySelectorAll(".readout.show").length; // max 3 (exp, coin, peer)
-        const named = $("gameName").value.trim() ? 1 : 0;
-        const lvl1 = $("mc-exprFb").classList.contains("ok") ? 1 : 0;
-        const proved = proj.proved ? 1 : 0;
-        const wrld = $("myWorld").value ? 1 : 0;
-        const checks = document.querySelectorAll(
-          "#checklist input:checked",
-        ).length; // max 6
-        const pitch = $("pitch").value.trim().length > 20 ? 1 : 0;
-        // max: 3 + 1 + 1 + 1 + 1 + 6 + 1 = 14
-        const total = readouts + named + lvl1 + proved + wrld + checks + pitch;
-        const pct = Math.min(100, Math.round((total / 14) * 100));
-        $("pfill").style.width = pct + "%";
-        $("pct").textContent = pct;
+      // ---- Build step trail ----
+      function buildTrail() {
+        const trail = document.getElementById('stepTrail');
+        trail.innerHTML = STEPS.map((s, i) => {
+          const isLast = i === STEPS.length - 1;
+          const displayLabel = i === 0 ? 'Step 0: ' + s.label : `Step ${i}: ` + s.label;
+          return `<span class="step-trail-item${s.id === currentStep ? ' active' : ''}${visited.has(s.id) && s.id !== currentStep ? ' done' : ''}" onclick="goStep(${s.id})">
+            <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? '✓' : i}</span>
+            <span class="s-label">${s.label}</span>
+          </span>${!isLast ? '<span class="step-arrow">›</span>' : ''}`;
+        }).join('');
       }
-      document
-        .getElementById("checklist")
-        .addEventListener("change", updateProgress);
-      document
-        .getElementById("pitch")
-        .addEventListener("input", updateProgress);
 
-      /* ---- Level hook: Level 1 pre-fills friendly numbers if empty ---- */
-      window.onLevelChange = function (level) {
-        if (level === "level-1") {
-          if (!$("exp-base").value && !$("exp-level").value) {
-            $("exp-base").value = 2;
-            $("exp-level").value = 3;
-            calcExponent();
-          }
-          if (!$("coin-r").value && !$("coin-k").value) {
-            $("coin-r").value = 2;
-            $("coin-k").value = 10;
-            if (!$("coin-c").value) $("coin-c").value = 5;
-            calcCoinExpr();
-          }
-        }
-      };
-
-      /* ---- init (runs after deferred kit script is ready) ---- */
-      document.addEventListener("DOMContentLoaded", function () {
-        coinLabel();
-        renderWorld();
-        PK.initLevel({ storageKey: "u6ProjectA", default: "level-1" });
-        PK.initTts({ storageKey: "u6ProjectA" });
-        PK.load("u6ProjectA", { after: recalcAll });
+      // ---- Navigation ----
+      function goStep(n) {
+        if (n < 1 || n > STEPS.length) return;
+        document.getElementById('step-' + currentStep).classList.remove('active');
+        currentStep = n;
+        visited.add(n);
+        document.getElementById('step-' + n).classList.add('active');
+        buildTrail();
         updateProgress();
-      });
-
-      function drawNamingSVG() {
-        const name = $("gameName") ? $("gameName").value.trim() : "";
-        const svg = $("phase-svg-1a");
-        if (!svg) return;
-
-        svg.innerHTML = `
-          <defs>
-            <linearGradient id="game-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#0f2b3c" />
-              <stop offset="100%" stop-color="#1e88e5" />
-            </linearGradient>
-          </defs>
-          <rect x="10" y="10" width="480" height="180" rx="15" fill="url(#game-grad)" stroke="#cbd5e1" stroke-width="2" />
-          <circle cx="80" cy="100" r="30" fill="rgba(255,255,255,0.1)" stroke="#fff" stroke-width="2" />
-          <path d="M65,100 H95 M80,85 V115" stroke="#fff" stroke-width="3" />
-          <rect x="380" y="80" width="40" height="40" rx="20" fill="rgba(255,255,255,0.1)" stroke="#fff" stroke-width="2" />
-          <text x="400" y="104" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">A</text>
-          
-          <text x="250" y="105" text-anchor="middle" font-size="20" font-weight="bold" fill="#fff" letter-spacing="1">
-            ${name || "YOUR GAME HERE"}
-          </text>
-          <text x="250" y="135" text-anchor="middle" font-size="10" fill="#cbd5e1" font-weight="bold">
-            GAME STUDIO BLUEPRINT
-          </text>
-        `;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        recalcAll();
       }
 
-      function drawExponentSVG() {
-        let base = num("exp-base");
-        let level = num("exp-level");
-        const svg = $("phase-svg-1b");
-        if (!svg) return;
+      function updateProgress() {
+        const pct = Math.round(((currentStep - 1) / (STEPS.length - 1)) * 100);
+        document.getElementById('progFill').style.width = pct + '%';
+        const stepNum = currentStep - 1;
+        document.getElementById('progLabel').textContent = `Step ${stepNum} of 5`;
+      }
 
-        // Show a worked EXAMPLE (2³ = 8) as the default so the card always has
-        // something to "look at first"; switch to the student's own numbers as
-        // soon as they enter a valid base and level.
-        const isExample = isNaN(base) || isNaN(level) || base < 2 || level < 2;
-        if (isExample) {
-          base = 2;
-          level = 3;
+      // ---- Math helpers ----
+      function gcd(a, b) {
+        return b === 0 ? a : gcd(b, a % b);
+      }
+
+      function showReadout(id, html) {
+        const el = document.getElementById(id);
+        el.innerHTML = html;
+        el.classList.add('show');
+      }
+
+      // ---- Recalc and Validation Engine ----
+      function recalcAll() {
+        calcBaseScore();
+        calcMultipliers();
+        validateEquiv();
+        validateFactoring();
+        comparePartner();
+      }
+
+      // ---- Step 1 (Base Score) ----
+      function calcBaseScore() {
+        const ptRate = parseInt(document.getElementById('g-pt-rate').value) || 10;
+        const bnRate = parseInt(document.getElementById('g-bn-rate').value) || 5;
+        const constant = level === 2 ? (parseInt(document.getElementById('g-constant').value) || 0) : 0;
+        
+        // Update formula text display
+        const formulaDisplay = document.getElementById('base-formula-display');
+        let formulaText = `${ptRate}p + ${bnRate}b`;
+        if (level === 2 && constant > 0) {
+          formulaText += ` + ${constant}`;
+        }
+        formulaDisplay.textContent = formulaText;
+        
+        // Update factored display in Step 3
+        const factoredFormulaDisplay = document.getElementById('dist-my-formula');
+        if (factoredFormulaDisplay) {
+          factoredFormulaDisplay.textContent = formulaText;
         }
 
-        const total = Math.pow(base, level);
-        let dots = "";
-        if (total <= 128) {
-          const groups = Math.pow(base, level - 1);
-          for (let g = 0; g < groups; g++) {
-            const gx = 50 + (400 / groups) * g + 400 / groups / 2;
-            for (let b = 0; b < base; b++) {
-              const dy = 80 + b * 20;
-              dots += `<circle cx="${gx}" cy="${dy}" r="5" fill="#d4952a" stroke="#f57c00" stroke-width="1" />`;
-            }
+        // Targets for evaluations
+        const targetA = ptRate * 50 + bnRate * 10 + constant;
+        const targetB = ptRate * 100 + bnRate * 20 + constant;
+
+        // Validate user inputs
+        const evalA = document.getElementById('eval-a');
+        const evalAFeedback = document.getElementById('eval-a-feedback');
+        if (evalA.value !== '') {
+          const userVal = parseInt(evalA.value);
+          if (userVal === targetA) {
+            evalAFeedback.textContent = "Correct!";
+            evalAFeedback.className = "feedback correct";
+          } else {
+            evalAFeedback.textContent = `Try again. Evaluated as: ${ptRate}×50 + ${bnRate}×10${constant ? ' + ' + constant : ''}`;
+            evalAFeedback.className = "feedback incorrect";
           }
         } else {
-          dots = `<text x="250" y="105" text-anchor="middle" font-size="13" fill="#cbd5e1">${total} values (Too many to draw!)</text>`;
+          evalAFeedback.textContent = "";
+          evalAFeedback.className = "feedback";
         }
 
-        svg.innerHTML = `
-          <text x="250" y="30" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">Exponent Visualization: ${base}<sup>${level}</sup></text>
-          ${isExample ? `<rect x="372" y="14" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="28" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · 2³</text>` : ""}
-          ${dots}
-          <text x="250" y="170" text-anchor="middle" font-size="11" fill="#5e6e7e">
-            ${base} repeated ${level} times: ${Array(level).fill(base).join(" &times; ")} = <strong>${total}</strong>
-          </text>
-        `;
-      }
-
-      function drawExpressionSVG() {
-        let rate = num("coin-r");
-        let flat = num("coin-k");
-        let coins = num("coin-c");
-        const svg = $("phase-svg-1c");
-        if (!svg) return;
-
-        // Show a worked EXAMPLE (2c + 10 at c = 5 → 20) as the default so the
-        // machine always has something to "look at first"; switch to the
-        // student's own numbers as soon as they fill all three in.
-        const isExample = isNaN(rate) || isNaN(flat) || isNaN(coins);
-        if (isExample) {
-          rate = 2;
-          flat = 10;
-          coins = 5;
+        const evalB = document.getElementById('eval-b');
+        const evalBFeedback = document.getElementById('eval-b-feedback');
+        if (evalB.value !== '') {
+          const userVal = parseInt(evalB.value);
+          if (userVal === targetB) {
+            evalBFeedback.textContent = "Correct!";
+            evalBFeedback.className = "feedback correct";
+          } else {
+            evalBFeedback.textContent = `Try again. Evaluated as: ${ptRate}×100 + ${bnRate}×20${constant ? ' + ' + constant : ''}`;
+            evalBFeedback.className = "feedback incorrect";
+          }
+        } else {
+          evalBFeedback.textContent = "";
+          evalBFeedback.className = "feedback";
         }
 
-        const total = rate * coins + flat;
-
-        svg.innerHTML = `
-          <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Expression Flow Machine: ${rate}c + ${flat}</text>
-          ${isExample ? `<rect x="372" y="14" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="28" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · 2c + 10</text>` : ""}
-          
-          <g transform="translate(40, 70)">
-            <rect x="0" y="15" width="80" height="40" rx="8" fill="#e8f2fc" stroke="#1a6fb5" stroke-width="1.5" />
-            <text x="40" y="35" text-anchor="middle" font-size="11" font-weight="bold" fill="#1a6fb5">Input c = ${coins}</text>
-            
-            <line x1="80" y1="35" x2="120" y2="35" stroke="#cbd5e1" stroke-width="2" marker-end="url(#arr-arrow)" />
-            
-            <rect x="120" y="10" width="100" height="50" rx="8" fill="#e0f2f1" stroke="#004d40" stroke-width="1.5" />
-            <text x="170" y="33" text-anchor="middle" font-size="11" font-weight="bold" fill="#004d40">Multiply by ${rate}</text>
-            <text x="170" y="48" text-anchor="middle" font-size="10" fill="#00796b">${coins} &times; ${rate} = ${coins * rate}</text>
-            
-            <line x1="220" y1="35" x2="260" y2="35" stroke="#cbd5e1" stroke-width="2" marker-end="url(#arr-arrow)" />
-            
-            <rect x="260" y="10" width="100" height="50" rx="8" fill="#fff8e1" stroke="#ff8f00" stroke-width="1.5" />
-            <text x="310" y="33" text-anchor="middle" font-size="11" font-weight="bold" fill="#ff8f00">Add Bonus +${flat}</text>
-            <text x="310" y="48" text-anchor="middle" font-size="10" fill="#ffa000">${coins * rate} + ${flat} = ${total}</text>
-            
-            <line x1="360" y1="35" x2="400" y2="35" stroke="#cbd5e1" stroke-width="2" marker-end="url(#arr-arrow)" />
-            
-            <rect x="400" y="15" width="80" height="40" rx="8" fill="#e6f4ea" stroke="#0e8a7d" stroke-width="1.5" />
-            <text x="440" y="35" text-anchor="middle" font-size="11" font-weight="bold" fill="#0e8a7d">Score: ${total}</text>
-          </g>
-          
-          <defs>
-            <marker id="arr-arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-              <polygon points="0 0, 6 3, 0 6" fill="#cbd5e1" />
-            </marker>
-          </defs>
-        `;
+        runTestEngine();
       }
-    </script>
-    <script src="/assets/nt-page-enhance.js" defer></script>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-    <!-- nsr-injected:end -->
-    <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
-    <script type="application/json" id="pk-research">
-      {
-        "icon": "🔎",
-        "title": "Research Lab — Build the Pricing Formula",
-        "intro": "App makers turn pricing into an expression you can evaluate for any input. Look up how expressions work, then model your own.",
-        "brief": {
-          "theme": "field",
-          "title": "📊 Your Research Mission",
-          "hook": "Find how to <b>write and evaluate expressions</b>, then turn your pricing into one.",
-          "steps": [
-            "Open a link (new tab — you keep your project).",
-            "Record the rules in Field Notes.",
-            "Build and evaluate your expression in the math problems.",
-            "Check off the Investigation Checklist."
-          ]
-        },
-        "fieldNotes": {
-          "title": "Field Notes — Record What You Find",
-          "intro": "Jot the exact number or rule you find. You'll reuse these in the math below.",
-          "fields": [
-            {
-              "label": "What 'evaluate an expression' means",
-              "source": "Math is Fun",
-              "placeholder": "substitute a value for the variable",
-              "hint": "Replace the letter with a number, then compute."
-            },
-            {
-              "label": "What 'like terms' are",
-              "source": "Math is Fun",
-              "placeholder": "terms with the same variable",
-              "hint": "3x and 5x are like terms."
-            },
-            {
-              "label": "Your per-item price (a real number you choose)",
-              "source": "Your plan",
-              "placeholder": "$2 per level",
-              "hint": "This becomes the coefficient."
-            },
-            {
-              "label": "Your one-time/base fee",
-              "source": "Your plan",
-              "placeholder": "$5 to start",
-              "hint": "This becomes the constant."
+
+      function runTestEngine() {
+        const ptRate = parseInt(document.getElementById('g-pt-rate').value) || 10;
+        const bnRate = parseInt(document.getElementById('g-bn-rate').value) || 5;
+        const constant = level === 2 ? (parseInt(document.getElementById('g-constant').value) || 0) : 0;
+        const p = parseInt(document.getElementById('calc-p').value) || 0;
+        const b = parseInt(document.getElementById('calc-b').value) || 0;
+
+        const total = ptRate * p + bnRate * b + constant;
+        showReadout('calc-base-out', `
+          <strong>Base Score = ${total} points</strong><br>
+          <small>Breakdown: ${ptRate} × (${p} points) + ${bnRate} × (${b} bonuses)${constant ? ' + ' + constant + ' (constant)' : ''} = ${total}</small>
+        `);
+      }
+
+      // ---- Step 2 (Multipliers) ----
+      function calcMultipliers() {
+        const expBase = level === 2 ? (parseInt(document.getElementById('g-exp-base').value) || 2) : 2;
+
+        // Update display text for exponents base
+        document.querySelectorAll('.formula-m-base').forEach(el => el.textContent = expBase);
+        document.querySelector('.formula-m-exp2').textContent = `${expBase} × ${expBase}`;
+        document.querySelector('.formula-m-exp3').textContent = `${expBase} × ${expBase} × ${expBase}`;
+        document.querySelector('.formula-m-exp4').textContent = `${expBase} × ${expBase} × ${expBase} × ${expBase}`;
+        document.querySelector('.formula-m-exp5').textContent = `${expBase} × ${expBase} × ${expBase} × ${expBase} × ${expBase}`;
+
+        const targets = {
+          l2: Math.pow(expBase, 2),
+          l3: Math.pow(expBase, 3),
+          l4: Math.pow(expBase, 4),
+          l5: Math.pow(expBase, 5),
+        };
+
+        // Validate
+        for (let i = 2; i <= 5; i++) {
+          const valEl = document.getElementById('eval-m-l' + i);
+          const feedbackEl = document.getElementById('eval-m-l' + i + '-feedback');
+          if (valEl.value !== '') {
+            const userVal = parseInt(valEl.value);
+            if (userVal === targets['l' + i]) {
+              feedbackEl.textContent = "Correct!";
+              feedbackEl.className = "feedback correct";
+            } else {
+              feedbackEl.textContent = `Try again. Compute ${expBase} raised to power of ${i}.`;
+              feedbackEl.className = "feedback incorrect";
             }
-          ]
-        },
-        "mathTasks": [
-          {
-            "title": "1 · Write the expression",
-            "prompt": "Using your price (Field Note 3) and base fee (Field Note 4), write an expression like <b>2x + 5</b> for total cost, where x is the number of items.",
-            "level2": "State in words what x and each number mean."
-          },
-          {
-            "title": "2 · Evaluate it",
-            "prompt": "Evaluate your expression for x = 4 and x = 10. Show each substitution and computation.",
-            "level2": "Make a small table of x = 0, 4, 10 and their totals."
-          },
-          {
-            "title": "3 · Simplify",
-            "prompt": "Combine like terms in this: 3x + 2 + 2x + 4. Then evaluate your simplified expression for x = 5.",
-            "level2": "Explain why combining like terms does not change the value."
+          } else {
+            feedbackEl.textContent = "";
+            feedbackEl.className = "feedback";
           }
-        ],
-        "investigationChecklist": [
-          "I recorded what 'evaluate' means.",
-          "I recorded what like terms are.",
-          "I chose a real per-item price and base fee.",
-          "I wrote a cost expression.",
-          "I evaluated it for two values.",
-          "I combined like terms in an expression."
-        ],
-        "links": [
-          {
-            "icon": "🔤",
-            "name": "Math is Fun — Substitution (evaluating)",
-            "url": "https://www.mathsisfun.com/algebra/substitution.html",
-            "find": "How to replace a variable with a number.",
-            "look": "substitute, then calculate"
-          },
-          {
-            "icon": "➕",
-            "name": "Math is Fun — Like Terms",
-            "url": "https://www.mathsisfun.com/algebra/like-terms.html",
-            "find": "Which terms you can combine.",
-            "look": "same variable to the same power"
-          },
-          {
-            "icon": "📖",
-            "name": "Math is Fun — Algebra Definitions",
-            "url": "https://www.mathsisfun.com/algebra/definitions.html",
-            "find": "What a term, coefficient, and constant are.",
-            "look": "the labeled parts of an expression"
-          }
-        ],
-        "note": "These sites were picked for class. They open in a new tab so you keep your project. If a page asks you to sign in or buy something, just close it and come back."
+        }
+
+        runTotalScoreEngine();
       }
+
+      function runTotalScoreEngine() {
+        const expBase = level === 2 ? (parseInt(document.getElementById('g-exp-base').value) || 2) : 2;
+        const baseVal = parseInt(document.getElementById('calc-base-val').value) || 500;
+        const selectedLvl = parseInt(document.getElementById('calc-lvl-val').value) || 3;
+
+        const multiplier = Math.pow(expBase, selectedLvl);
+        const total = baseVal * multiplier;
+
+        showReadout('calc-total-out', `
+          <strong>Total Score = ${total} points</strong><br>
+          <small>Formula: Base Score × Exponent Multiplier = ${baseVal} × ${multiplier} (${expBase}<sup>${selectedLvl}</sup>) = ${total}</small>
+        `);
+      }
+
+      // ---- Step 3 (Equivalent Expressions) ----
+      function validateEquiv() {
+        // Challenge 1: 3(2p + 4b) vs 6p + 12b (Equivalent: Yes. Val for p=3, b=2 is 42)
+        validateChallenge(1, 42, 42, 'Yes');
+        // Challenge 2: 4(p + 3b) vs 4p + 3b (Equivalent: No. Val for p=3, b=2 is 36 vs 18)
+        validateChallenge(2, 36, 18, 'No');
+        // Challenge 3: 5(2p + b + 8) vs 10p + 5b + 40 (Equivalent: Yes. Val for p=3, b=2 is 80)
+        validateChallenge(3, 80, 80, 'Yes');
+      }
+
+      function validateChallenge(num, targetLeft, targetRight, targetAns) {
+        const leftEl = document.getElementById(`eq${num}-left`);
+        const rightEl = document.getElementById(`eq${num}-right`);
+        const ansEl = document.getElementById(`eq${num}-ans`);
+
+        const leftFb = document.getElementById(`eq${num}-left-feedback`);
+        const rightFb = document.getElementById(`eq${num}-right-feedback`);
+        const ansFb = document.getElementById(`eq${num}-ans-feedback`);
+
+        if (leftEl.value !== '') {
+          if (parseInt(leftEl.value) === targetLeft) {
+            leftFb.textContent = "Correct!";
+            leftFb.className = "feedback correct";
+          } else {
+            leftFb.textContent = "Incorrect value.";
+            leftFb.className = "feedback incorrect";
+          }
+        } else {
+          leftFb.textContent = ""; leftFb.className = "feedback";
+        }
+
+        if (rightEl.value !== '') {
+          if (parseInt(rightEl.value) === targetRight) {
+            rightFb.textContent = "Correct!";
+            rightFb.className = "feedback correct";
+          } else {
+            rightFb.textContent = "Incorrect value.";
+            rightFb.className = "feedback incorrect";
+          }
+        } else {
+          rightFb.textContent = ""; rightFb.className = "feedback";
+        }
+
+        if (ansEl.value !== '') {
+          if (ansEl.value === targetAns) {
+            ansFb.textContent = "Correct equivalence check!";
+            ansFb.className = "feedback correct";
+          } else {
+            ansFb.textContent = "Incorrect choice.";
+            ansFb.className = "feedback incorrect";
+          }
+        } else {
+          ansFb.textContent = ""; ansFb.className = "feedback";
+        }
+      }
+
+      function validateFactoring() {
+        if (level !== 2) return;
+        const ptRate = parseInt(document.getElementById('g-pt-rate').value) || 10;
+        const bnRate = parseInt(document.getElementById('g-bn-rate').value) || 5;
+
+        // Correct GCF and inside coefficients
+        const gcfVal = gcd(ptRate, bnRate);
+        const correctIn1 = ptRate / gcfVal;
+        const correctIn2 = bnRate / gcfVal;
+
+        const outEl = document.getElementById('dist-out');
+        const in1El = document.getElementById('dist-in1');
+        const in2El = document.getElementById('dist-in2');
+        const fbEl = document.getElementById('factoring-feedback');
+
+        if (outEl.value !== '' && in1El.value !== '' && in2El.value !== '') {
+          const userOut = parseInt(outEl.value);
+          const userIn1 = parseInt(in1El.value);
+          const userIn2 = parseInt(in2El.value);
+
+          if (userOut === gcfVal && userIn1 === correctIn1 && userIn2 === correctIn2) {
+            fbEl.textContent = `Correct Factoring! ${ptRate}p + ${bnRate}b = ${gcfVal}(${correctIn1}p + ${correctIn2}b)`;
+            fbEl.className = "feedback correct";
+          } else {
+            fbEl.textContent = `Incorrect factoring. Check the GCF of ${ptRate} and ${bnRate}.`;
+            fbEl.className = "feedback incorrect";
+          }
+        } else {
+          fbEl.textContent = "";
+          fbEl.className = "feedback";
+        }
+      }
+
+      // ---- Step 4 (Partner Score) ----
+      function comparePartner() {
+        const pName = document.getElementById('p-name').value || 'Classmate';
+        const pPtRate = parseInt(document.getElementById('p-pt-rate').value) || 8;
+        const pBnRate = parseInt(document.getElementById('p-bn-rate').value) || 6;
+        const pExpBase = level === 2 ? (parseInt(document.getElementById('p-exp-base').value) || 2) : 2;
+
+        // Your values
+        const myPtRate = parseInt(document.getElementById('g-pt-rate').value) || 10;
+        const myBnRate = parseInt(document.getElementById('g-bn-rate').value) || 5;
+        const myConstant = level === 2 ? (parseInt(document.getElementById('g-constant').value) || 0) : 0;
+        const myExpBase = level === 2 ? (parseInt(document.getElementById('g-exp-base').value) || 2) : 2;
+
+        // Calculations for p=80, b=15, level 3
+        const myBase = myPtRate * 80 + myBnRate * 15 + myConstant;
+        const myMult = Math.pow(myExpBase, 3);
+        const myTotal = myBase * myMult;
+
+        const pBase = pPtRate * 80 + pBnRate * 15;
+        const pMult = Math.pow(pExpBase, 3);
+        const pTotal = pBase * pMult;
+
+        let resultHtml = `
+          <table class="data-table" style="margin-bottom:12px;">
+            <thead>
+              <tr>
+                <th>Player</th>
+                <th>Base Score Formula</th>
+                <th>Base Score (p=80, b=15)</th>
+                <th>Level 3 Multiplier (Base<sup>3</sup>)</th>
+                <th>Total score</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>You</strong></td>
+                <td>${myPtRate}p + ${myBnRate}b${myConstant ? ' + ' + myConstant : ''}</td>
+                <td>${myBase}</td>
+                <td>${myMult} (${myExpBase}<sup>3</sup>)</td>
+                <td><strong>${myTotal}</strong></td>
+              </tr>
+              <tr>
+                <td><strong>${pName}</strong></td>
+                <td>${pPtRate}p + ${pBnRate}b</td>
+                <td>${pBase}</td>
+                <td>${pMult} (${pExpBase}<sup>3</sup>)</td>
+                <td><strong>${pTotal}</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        `;
+
+        if (myTotal > pTotal) {
+          resultHtml += `🏆 <strong>You win!</strong> Your scoring engine scored <strong>${myTotal - pTotal}</strong> more points than ${pName}.`;
+        } else if (pTotal > myTotal) {
+          resultHtml += `🎮 <strong>${pName} wins!</strong> Their scoring engine scored <strong>${pTotal - myTotal}</strong> more points than you.`;
+        } else {
+          resultHtml += `🤝 <strong>It's a tie!</strong> Both scoring engines scored exactly <strong>${myTotal}</strong> points.`;
+        }
+
+        showReadout('peer-out', resultHtml);
+      }
+
+      // ---- Step 5 (Finish/Report) ----
+      function buildReport() {
+        const gameTitle = document.getElementById('g-title').value || 'My Game';
+        const myPtRate = parseInt(document.getElementById('g-pt-rate').value) || 10;
+        const myBnRate = parseInt(document.getElementById('g-bn-rate').value) || 5;
+        const myConstant = level === 2 ? (parseInt(document.getElementById('g-constant').value) || 0) : 0;
+        const myExpBase = level === 2 ? (parseInt(document.getElementById('g-exp-base').value) || 2) : 2;
+
+        let baseFormula = `${myPtRate}p + ${myBnRate}b`;
+        if (level === 2 && myConstant > 0) {
+          baseFormula += ` + ${myConstant}`;
+        }
+
+        // Evaluations user answers vs correct answers
+        const userEvalA = document.getElementById('eval-a').value || '—';
+        const correctEvalA = myPtRate * 50 + myBnRate * 10 + myConstant;
+        const userEvalB = document.getElementById('eval-b').value || '—';
+        const correctEvalB = myPtRate * 100 + myBnRate * 20 + myConstant;
+
+        // Multipliers user answers vs correct
+        const userM2 = document.getElementById('eval-m-l2').value || '—';
+        const correctM2 = Math.pow(myExpBase, 2);
+        const userM3 = document.getElementById('eval-m-l3').value || '—';
+        const correctM3 = Math.pow(myExpBase, 3);
+        const userM4 = document.getElementById('eval-m-l4').value || '—';
+        const correctM4 = Math.pow(myExpBase, 4);
+        const userM5 = document.getElementById('eval-m-l5').value || '—';
+        const correctM5 = Math.pow(myExpBase, 5);
+
+        // Equivalences
+        const userEq1Left = document.getElementById('eq1-left').value || '—';
+        const userEq1Right = document.getElementById('eq1-right').value || '—';
+        const userEq1Ans = document.getElementById('eq1-ans').value || '—';
+
+        const userEq2Left = document.getElementById('eq2-left').value || '—';
+        const userEq2Right = document.getElementById('eq2-right').value || '—';
+        const userEq2Ans = document.getElementById('eq2-ans').value || '—';
+
+        const userEq3Left = document.getElementById('eq3-left').value || '—';
+        const userEq3Right = document.getElementById('eq3-right').value || '—';
+        const userEq3Ans = document.getElementById('eq3-ans').value || '—';
+
+        let propertySection = '';
+        if (level === 1) {
+          propertySection = `   Distributive Explanation: ${document.getElementById('dist-explain').value || '—'}`;
+        } else {
+          const userG = document.getElementById('dist-out').value || '—';
+          const userIn1 = document.getElementById('dist-in1').value || '—';
+          const userIn2 = document.getElementById('dist-in2').value || '—';
+          const correctG = gcd(myPtRate, myBnRate);
+          propertySection = `   Factored Expression: ${userG}(${userIn1}p + ${userIn2}b) [Target: ${correctG}(${myPtRate/correctG}p + ${myBnRate/correctG}b)]`;
+        }
+
+        // Duel
+        const pName = document.getElementById('p-name').value || 'Classmate';
+        const pPtRate = parseInt(document.getElementById('p-pt-rate').value) || 8;
+        const pBnRate = parseInt(document.getElementById('p-bn-rate').value) || 6;
+        const pExpBase = level === 2 ? (parseInt(document.getElementById('p-exp-base').value) || 2) : 2;
+
+        const myBase = myPtRate * 80 + myBnRate * 15 + myConstant;
+        const myMult = Math.pow(myExpBase, 3);
+        const myTotal = myBase * myMult;
+
+        const pBase = pPtRate * 80 + pBnRate * 15;
+        const pMult = Math.pow(pExpBase, 3);
+        const pTotal = pBase * pMult;
+
+        const winner = myTotal > pTotal ? 'You won!' : pTotal > myTotal ? `${pName} won!` : "It's a tie!";
+        const pReflect = document.getElementById('peer-reflect').value || '—';
+        const pitch = document.getElementById('pitch').value || '—';
+
+        const lines = [
+          '═══ GAME STUDIO SCORING ENGINE — UNIT 6 PROJECT (Version A) ═══',
+          '',
+          '📖 MATH STANDARDS: 6.EE.1, 6.EE.2, 6.EE.3, 6.EE.4',
+          `Game Title: ${gameTitle}`,
+          `Level Mode: Level ${level} (${level === 1 ? 'With Support' : 'Challenge'})`,
+          `Base Score Formula: ${baseFormula}`,
+          '',
+          '📊 STEP 1 — EVALUATION TESTS',
+          `   Setup A (p=50, b=10)   -> Entered: ${userEvalA} | Correct: ${correctEvalA}`,
+          `   Setup B (p=100, b=20)  -> Entered: ${userEvalB} | Correct: ${correctEvalB}`,
+          '',
+          '⚡ STEP 2 — LEVEL MULTIPLIER (Base ' + myExpBase + '^n)',
+          `   Level 2 Multiplier -> Entered: ${userM2} | Correct: ${correctM2}`,
+          `   Level 3 Multiplier -> Entered: ${userM3} | Correct: ${correctM3}`,
+          `   Level 4 Multiplier -> Entered: ${userM4} | Correct: ${correctM4}`,
+          `   Level 5 Multiplier -> Entered: ${userM5} | Correct: ${correctM5}`,
+          '',
+          '🟰 STEP 3 — EQUIVALENT EXPRESSIONS',
+          `   Challenge 1 [3(2p+4b) vs 6p+12b] -> Left: ${userEq1Left} | Right: ${userEq1Right} | Equiv: ${userEq1Ans} (Target: 42/42/Yes)`,
+          `   Challenge 2 [4(p+3b) vs 4p+3b]   -> Left: ${userEq2Left} | Right: ${userEq2Right} | Equiv: ${userEq2Ans} (Target: 36/18/No)`,
+          `   Challenge 3 [5(2p+b+8) vs 10p+5b+40] -> Left: ${userEq3Left} | Right: ${userEq3Right} | Equiv: ${userEq3Ans} (Target: 80/80/Yes)`,
+          propertySection,
+          '',
+          '👥 STEP 4 — PARTNER SCORING DUEL (at p=80, b=15, Level 3)',
+          `   Partner Name: ${pName} | Formula: ${pPtRate}p + ${pBnRate}b | Base: ${pExpBase}`,
+          `   Your Score: ${myTotal} points | Partner's Score: ${pTotal} points`,
+          `   Result: ${winner}`,
+          `   Reflection: ${pReflect}`,
+          '',
+          '✍️ STEP 5 — DESIGN PITCH',
+          pitch,
+          '',
+          '═══════════════════════════════',
+          `Generated: ${new Date().toLocaleString()}`,
+        ];
+
+        const box = document.getElementById('reportBox');
+        box.textContent = lines.join('\n');
+        box.classList.add('show');
+        
+        // Smooth scroll to report box
+        box.scrollIntoView({ behavior: 'smooth' });
+      }
+
+      function copyReport() {
+        const txt = document.getElementById('reportBox').textContent;
+        if (!txt) {
+          alert('Please click "Generate Summary" first.');
+          return;
+        }
+        navigator.clipboard?.writeText(txt).then(() => alert('Copied report to clipboard!'));
+      }
+
+      function downloadTxt() {
+        const txt = document.getElementById('reportBox').textContent;
+        if (!txt) {
+          alert('Please click "Generate Summary" first.');
+          return;
+        }
+        const a = document.createElement('a');
+        a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(txt);
+        a.download = 'game-scoring-engine-plan.txt';
+        a.click();
+      }
+
+      // ---- Init ----
+      buildTrail();
+      updateProgress();
+      
+      // Hook page calculations to run shortly after load (once save-resume has populated values)
+      window.addEventListener('load', () => {
+        setTimeout(recalcAll, 200);
+      });
     </script>
-    <script src="/shared/projects/projects-tabs.js" defer></script>
-    <script src="/shared/projects/projects-interactive.js" defer></script>
-    <script src="/shared/projects/manip-expr-machine.js" defer></script>
-    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-    <script src="/assets/math-workbench-launcher.js" defer></script>
-    <!-- mwb-injected:end -->
   </body>
 </html>

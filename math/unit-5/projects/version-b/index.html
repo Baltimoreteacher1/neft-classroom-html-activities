@@ -3,3001 +3,1153 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css" />
-    <title>
-      Community Mural &amp; Garden Planner — Unit 5 Culminating Project
-    </title>
-    <meta
-      name="description"
-      content="Unit 5 Area culminating project. Measure a real classroom wall and schoolyard garden plot, calculate area with trapezoid, triangle, and parallelogram formulas (6.G.1), compare with a partner, then compare to real community-garden plot sizes."
-    />
-    <link rel="stylesheet" href="/assets/shared.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-kit.css" />
-    <script src="/shared/projects/projects-kit.js" defer></script>
+    <title>Room Makeover Budget — Unit 5 Culminating Project</title>
+    <meta name="description" content="Unit 5 Area and Composite Figures culminating project. Students plan a room makeover by calculating floor area, wall paint coverage (subtracting windows/doors), and total makeover costs." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <style>
       :root {
-        --navy: #1a1a3e;
-        --blue: #283593;
-        --blue-light: #e8eaf6;
-        --teal: #00796b;
-        --teal-light: #e0f2f1;
-        --gold: #f57c00;
-        --gold-light: #fff3e0;
-        --coral: #c62828;
-        --coral-light: #ffebee;
-        --green: #388e3c;
-        --green-light: #e8f5e9;
-        --ink: #1a2633;
-        --muted: #5e6e7e;
-        --line: #e2e7ec;
-        --bg: #f7f9fb;
+        --navy: #1e1b4b; /* dark indigo */
+        --blue: #4f46e5; /* indigo / purple-blue */
+        --blue-lt: #e0e7ff; /* light indigo */
+        --teal: #7c3aed; /* purple accent */
+        --teal-lt: #f3e8ff; /* light purple */
+        --gold: #b45309; /* amber-600 */
+        --gold-lt: #fef3c7; /* amber-100 */
+        --green: #047857; /* emerald-600 */
+        --green-lt: #d1fae5; /* emerald-100 */
+        --coral: #be123c; /* rose-600 */
+        --ink: #0f172a; /* slate-900 */
+        --muted: #475569; /* slate-600 */
+        --line: #cbd5e1; /* slate-300 */
+        --bg: #f8fafc; /* slate-50 */
         --card: #ffffff;
         --radius: 16px;
-        --shadow: 0 4px 18px rgba(26, 26, 62, 0.1);
-        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+        --shadow: 0 2px 16px rgba(30, 27, 75, 0.08);
       }
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        margin: 0;
-        font-family: var(--font);
-        color: var(--ink);
-        background: var(--bg);
-        line-height: 1.55;
-      }
-      .wrap {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 0 20px 60px;
-      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: 'Inter', system-ui, sans-serif; color: var(--ink); background: var(--bg); line-height: 1.6; }
 
-      .phero {
-        background: linear-gradient(
-          135deg,
-          #1a1a3e 0%,
-          #283593 55%,
-          #00796b 100%
-        );
+      /* ---- Hero ---- */
+      .hero {
+        background: linear-gradient(135deg, #1e1b4b 0%, #4f46e5 60%, #7c3aed 100%);
         color: #fff;
-        padding: 40px 24px 34px;
+        padding: 36px 24px 28px;
         text-align: center;
-        position: relative;
-        overflow: hidden;
       }
-      .phero .deco {
-        font-size: 56px;
-        line-height: 1;
-      }
-      .phero h1 {
-        font-size: clamp(26px, 5vw, 40px);
-        margin: 10px 0 8px;
-        letter-spacing: -0.02em;
-      }
-      .phero p {
-        max-width: 640px;
-        margin: 0 auto;
-        color: rgba(255, 255, 255, 0.85);
-        font-size: 17px;
-      }
-      .tags {
-        margin-top: 16px;
-        display: flex;
-        gap: 8px;
-        justify-content: center;
-        flex-wrap: wrap;
-      }
-      .tag {
-        background: rgba(255, 255, 255, 0.14);
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        border-radius: 50px;
-        padding: 5px 14px;
-        font-size: 13px;
-        font-weight: 700;
-      }
-      .tag.gold {
-        background: var(--gold);
-        border-color: var(--gold);
-        color: #2a1c00;
-      }
+      .hero-emoji { font-size: 52px; line-height: 1; margin-bottom: 10px; }
+      .hero h1 { font-size: clamp(24px,5vw,38px); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; }
+      .hero-sub { color: rgba(255,255,255,.85); font-size: 16px; max-width: 580px; margin: 0 auto 16px; }
+      .hero-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; }
+      .tag { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.28); border-radius: 50px; padding: 4px 13px; font-size: 12px; font-weight: 700; letter-spacing: .04em; }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #fff; }
 
-      .toolbar {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        justify-content: center;
-        margin-top: 16px;
+      /* ---- Level selector ---- */
+      .level-bar {
+        display: flex; gap: 10px; justify-content: center;
+        background: rgba(255,255,255,.10); border-radius: 50px;
+        padding: 6px 10px; max-width: 400px; margin: 0 auto;
       }
-      .toolbar button {
-        background: rgba(255, 255, 255, 0.12);
-        color: #fff;
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        border-radius: 50px;
-        padding: 8px 16px;
-        font-weight: 700;
-        font-size: 13px;
-        cursor: pointer;
-        font-family: inherit;
+      .level-btn {
+        flex: 1; background: transparent; color: rgba(255,255,255,.75);
+        border: 2px solid rgba(255,255,255,.30); border-radius: 50px;
+        padding: 7px 16px; font-size: 13px; font-weight: 700;
+        cursor: pointer; font-family: inherit; transition: all .2s;
       }
-      .toolbar button:hover {
-        background: rgba(255, 255, 255, 0.22);
-      }
+      .level-btn.active { background: #fff; color: var(--navy); border-color: #fff; }
 
-      .intro-card {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-left: 6px solid var(--teal);
-        border-radius: var(--radius);
-        padding: 22px 24px;
-        margin: 26px 0;
-        box-shadow: var(--shadow);
-      }
-      .intro-card h2 {
-        margin: 0 0 8px;
-        font-size: 20px;
-      }
+      /* ---- Tab wizard ---- */
+      .wizard { max-width: 860px; margin: 0 auto; padding: 0 16px 60px; }
 
-      .phase {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-radius: var(--radius);
-        padding: 24px;
-        margin: 22px 0;
-        box-shadow: var(--shadow);
+      .step-trail {
+        display: flex; align-items: center; gap: 0;
+        padding: 22px 0 0; overflow-x: auto;
       }
-      .phase-head {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        margin-bottom: 6px;
+      .step-trail-item {
+        display: flex; align-items: center; gap: 6px;
+        cursor: pointer; white-space: nowrap; padding: 8px 12px;
+        border-radius: 10px; transition: background .15s;
       }
-      .phase-num {
-        flex: 0 0 auto;
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
-        background: var(--blue);
-        color: #fff;
-        font-weight: 800;
-        font-size: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+      .step-trail-item:hover { background: var(--blue-lt); }
+      .step-trail-item.active .s-num {
+        background: var(--blue); color: #fff;
       }
-      .phase h2 {
-        margin: 0;
-        font-size: 21px;
+      .step-trail-item.done .s-num {
+        background: var(--green); color: #fff;
       }
-      .phase .skill {
-        font-size: 12px;
-        font-weight: 700;
-        color: var(--muted);
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
+      .s-num {
+        width: 30px; height: 30px; border-radius: 50%;
+        background: var(--line); color: var(--muted);
+        font-weight: 800; font-size: 13px;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0; transition: all .2s;
       }
-      .phase > p {
-        color: var(--muted);
-      }
-      .arc-banner {
-        display: inline-block;
-        font-size: 12px;
-        font-weight: 800;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        color: var(--blue);
-        background: var(--blue-light);
-        border-radius: 50px;
-        padding: 4px 12px;
-        margin-bottom: 10px;
-      }
+      .s-label { font-size: 13px; font-weight: 600; color: var(--muted); }
+      .step-trail-item.active .s-label { color: var(--blue); }
+      .step-trail-item.done .s-label { color: var(--green); }
+      .step-arrow { color: var(--line); font-size: 16px; padding: 0 2px; }
 
-      .task {
-        background: var(--blue-light);
-        border-radius: 12px;
-        padding: 16px 18px;
-        margin: 16px 0;
-      }
-      .task strong {
-        color: var(--navy);
-      }
+      /* ---- Progress bar ---- */
+      .prog-wrap { margin: 14px 0 4px; }
+      .prog-bar { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; }
+      .prog-fill { height: 100%; background: linear-gradient(90deg,var(--blue),var(--teal)); border-radius: 99px; transition: width .4s ease; }
+      .prog-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
 
-      label.fld {
-        display: block;
-        font-weight: 700;
-        font-size: 14px;
-        margin: 14px 0 6px;
-      }
-      input[type="number"],
-      input[type="text"],
-      select,
-      textarea {
-        width: 100%;
-        padding: 11px 13px;
-        border: 2px solid var(--line);
-        border-radius: 10px;
-        font-family: inherit;
-        font-size: 15px;
-        background: #fff;
-      }
-      input:focus,
-      select:focus,
-      textarea:focus {
-        outline: none;
-        border-color: var(--blue);
-      }
-      textarea {
-        resize: vertical;
-        min-height: 80px;
-      }
-      .grid2 {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 14px;
-      }
-      .grid3 {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 14px;
-      }
-      @media (max-width: 560px) {
-        .grid2,
-        .grid3 {
-          grid-template-columns: 1fr;
-        }
-      }
+      /* ---- Step panel ---- */
+      .step-panel { display: none; animation: fadein .25s ease; }
+      .step-panel.active { display: block; }
+      @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
-      .btn {
-        background: var(--blue);
-        color: #fff;
-        border: none;
-        border-radius: 10px;
-        padding: 11px 20px;
-        font-weight: 800;
-        font-size: 15px;
-        cursor: pointer;
-        font-family: inherit;
-        margin-top: 14px;
+      /* ---- Card ---- */
+      .card {
+        background: var(--card); border: 1px solid var(--line);
+        border-radius: var(--radius); padding: 28px 26px;
+        box-shadow: var(--shadow); margin-top: 16px;
       }
-      .btn:hover {
-        filter: brightness(1.08);
+      .card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+      .card-icon {
+        width: 50px; height: 50px; border-radius: 14px;
+        background: var(--blue-lt); display: flex;
+        align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0;
       }
-      .btn.alt {
-        background: var(--teal);
-      }
-      .btn.ghost {
-        background: #fff;
-        color: var(--blue);
-        border: 2px solid var(--line);
-      }
+      .card-icon.gold { background: var(--gold-lt); }
+      .card-icon.teal { background: var(--teal-lt); }
+      .card-icon.green { background: var(--green-lt); }
+      .card-title { font-size: 20px; font-weight: 800; color: var(--navy); margin-bottom: 3px; }
+      .card-sub { font-size: 13px; color: var(--muted); font-weight: 500; }
 
-      .formula-box {
-        background: var(--navy);
-        color: #fff;
-        border-radius: 10px;
-        padding: 10px 16px;
-        margin: 12px 0;
-        font-size: 14px;
-        font-weight: 700;
-        display: inline-block;
+      /* ---- Instruction box ---- */
+      .instruct {
+        background: var(--blue-lt); border-left: 4px solid var(--blue);
+        border-radius: 10px; padding: 14px 16px; margin-bottom: 20px;
+        font-size: 15px; line-height: 1.6;
       }
-      .svg-sketch {
-        display: block;
-        margin: 12px auto;
-      }
+      .instruct.gold { background: var(--gold-lt); border-color: var(--gold); }
+      .instruct.teal { background: var(--teal-lt); border-color: var(--teal); }
+      .instruct.green { background: var(--green-lt); border-color: var(--green); }
 
+      /* ---- SVG visual ---- */
+      .visual-svg { display: block; width: 100%; max-width: 520px; margin: 0 auto 20px; border-radius: 12px; }
+
+      /* ---- Form inputs ---- */
+      label.lbl { display: block; font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 5px; margin-top: 14px; }
+      input[type="number"], input[type="text"], textarea, select {
+        width: 100%; padding: 10px 14px; border: 1.5px solid var(--line);
+        border-radius: 10px; font-size: 15px; font-family: inherit;
+        background: var(--bg); color: var(--ink); transition: border-color .2s;
+      }
+      input:focus, textarea:focus, select:focus { outline: none; border-color: var(--blue); }
+      textarea { min-height: 90px; resize: vertical; }
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
+
+      /* ---- Calc button & readout ---- */
+      .calc-btn {
+        background: var(--blue); color: #fff; border: none;
+        border-radius: 10px; padding: 11px 20px; font-size: 14px;
+        font-weight: 700; cursor: pointer; font-family: inherit;
+        margin-top: 12px; transition: background .2s;
+      }
+      .calc-btn:hover { background: #3c39a0; }
+      .calc-btn.gold { background: var(--gold); }
+      .calc-btn.gold:hover { background: #92400e; }
+      .calc-btn.teal { background: var(--teal); }
+      .calc-btn.teal:hover { background: #6d28d9; }
+      .calc-btn.green { background: var(--green); }
+      .calc-btn.green:hover { background: #065f46; }
       .readout {
-        margin-top: 16px;
-        border-radius: 12px;
-        padding: 16px 18px;
-        font-size: 15px;
-        background: var(--teal-light);
-        border: 1px solid #b2dfdb;
-        display: none;
+        background: var(--navy); color: #f5f3ff;
+        border-radius: 10px; padding: 14px 18px; margin-top: 12px;
+        font-size: 15px; line-height: 1.6; display: none;
       }
-      .readout.show {
-        display: block;
+      .readout.show { display: block; }
+      .readout strong { color: #c7d2fe; }
+
+      /* ---- Hint ---- */
+      details.hint { margin-top: 14px; }
+      details.hint summary {
+        cursor: pointer; font-size: 13px; font-weight: 600;
+        color: var(--blue); list-style: none; display: inline-flex;
+        align-items: center; gap: 5px;
       }
-      .readout .big {
-        font-size: 28px;
-        font-weight: 800;
-        color: var(--teal);
+      details.hint summary::before { content: "💡"; }
+      details.hint p { font-size: 14px; color: var(--muted); margin-top: 8px; padding: 10px 12px; background: var(--blue-lt); border-radius: 8px; }
+
+      /* ---- Level 2 extension ---- */
+      .lvl2-block {
+        border: 2px dashed var(--blue); border-radius: 12px;
+        padding: 14px 16px; margin-top: 18px;
       }
-      .feedback {
-        margin-top: 10px;
-        font-weight: 700;
-        min-height: 22px;
-      }
-      .feedback.ok {
-        color: var(--green);
-      }
-      .feedback.no {
-        color: var(--coral);
+      .lvl2-label {
+        display: inline-block; background: var(--blue); color: #fff;
+        font-size: 11px; font-weight: 800; letter-spacing: .05em;
+        border-radius: 50px; padding: 3px 10px; margin-bottom: 8px;
       }
 
-      .total-banner {
-        background: var(--gold-light);
-        border: 2px solid var(--gold);
-        border-radius: 12px;
-        padding: 14px 18px;
-        margin: 18px 0;
-        font-size: 15px;
-        font-weight: 700;
-        color: var(--navy);
-      }
-      .total-banner .tnum {
-        font-size: 22px;
-        color: var(--gold);
-      }
+      /* ---- Real-world data table ---- */
+      .data-table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14px; }
+      .data-table th { background: var(--navy); color: #fff; padding: 8px 12px; text-align: left; }
+      .data-table td { padding: 8px 12px; border-bottom: 1px solid var(--line); }
+      .data-table tr:last-child td { border-bottom: none; }
+      .data-table tr:nth-child(even) td { background: var(--bg); }
 
-      .hintbox {
-        margin-top: 12px;
-      }
-      .hintbox summary {
-        cursor: pointer;
-        font-weight: 700;
-        color: var(--blue);
-        font-size: 14px;
-      }
-      .hintbox p,
-      .hintbox div {
-        background: var(--gold-light);
-        border-radius: 10px;
-        padding: 12px 14px;
-        margin: 8px 0 0;
-        font-size: 14px;
-      }
+      /* ---- Checklist ---- */
+      .checklist { list-style: none; margin-top: 12px; }
+      .checklist li { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+      .checklist li:last-child { border-bottom: none; }
+      .checklist input[type="checkbox"] { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--green); flex-shrink: 0; }
 
-      .rubric {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 12px;
-        font-size: 14px;
-      }
-      .rubric th,
-      .rubric td {
-        border: 1px solid var(--line);
-        padding: 10px 12px;
-        text-align: left;
-        vertical-align: top;
-      }
-      .rubric th {
-        background: var(--navy);
-        color: #fff;
-        font-size: 13px;
-      }
-      .rubric td:first-child {
-        font-weight: 700;
-        width: 30%;
-      }
+      /* ---- Rubric ---- */
+      .rubric { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 14px; }
+      .rubric th { background: var(--navy); color: #fff; padding: 10px 12px; text-align: left; }
+      .rubric td { padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+      .rubric tr:last-child td { border-bottom: none; }
+      .score-4 { color: var(--green); font-weight: 700; }
+      .score-3 { color: var(--blue); font-weight: 700; }
+      .score-2 { color: var(--gold); font-weight: 700; }
 
-      .checklist {
-        list-style: none;
-        padding: 0;
-        margin: 12px 0 0;
+      /* ---- Nav buttons ---- */
+      .nav-row { display: flex; gap: 10px; margin-top: 24px; justify-content: space-between; }
+      .nav-btn {
+        background: var(--blue); color: #fff; border: none;
+        border-radius: 10px; padding: 12px 24px; font-size: 15px;
+        font-weight: 700; cursor: pointer; font-family: inherit;
+        display: flex; align-items: center; gap: 8px; transition: background .2s;
       }
-      .checklist li {
-        display: flex;
-        gap: 10px;
-        align-items: flex-start;
-        padding: 8px 0;
-        border-bottom: 1px solid var(--line);
-      }
-      .checklist input {
-        width: 20px;
-        height: 20px;
-        margin-top: 2px;
-        flex: 0 0 auto;
-      }
+      .nav-btn:hover { background: #3c39a0; }
+      .nav-btn.ghost { background: transparent; color: var(--blue); border: 2px solid var(--blue); }
+      .nav-btn.ghost:hover { background: var(--blue-lt); }
+      .nav-btn:disabled { opacity: .45; cursor: not-allowed; }
 
-      .progress-wrap {
-        position: sticky;
-        top: 0;
-        z-index: 5;
-        background: var(--bg);
-        padding: 12px 0;
+      /* ---- Report / pitch textarea ---- */
+      #pitch { min-height: 130px; }
+      .report-box {
+        background: var(--navy); color: #f5f3ff; border-radius: 12px;
+        padding: 20px; margin-top: 14px; font-size: 14px; line-height: 1.7;
+        white-space: pre-wrap; display: none;
       }
-      .progress-track {
-        height: 12px;
-        background: var(--line);
-        border-radius: 50px;
-        overflow: hidden;
+      .report-box.show { display: block; }
+      .export-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+      .export-btn {
+        background: transparent; border: 1.5px solid var(--line);
+        border-radius: 8px; padding: 7px 14px; font-size: 13px;
+        font-weight: 600; cursor: pointer; font-family: inherit;
+        color: var(--muted); transition: all .15s;
       }
-      .progress-fill {
-        height: 100%;
-        width: 0;
-        background: linear-gradient(90deg, var(--teal), var(--green));
-        transition: width 0.4s;
-      }
-      .progress-label {
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--muted);
-        margin-bottom: 6px;
-      }
+      .export-btn:hover { border-color: var(--blue); color: var(--blue); }
 
-      .footer {
-        text-align: center;
-        color: var(--muted);
-        font-size: 14px;
-        margin-top: 40px;
-      }
-      .printbtn {
-        background: var(--navy);
-      }
-      h3 {
-        font-size: 17px;
-      }
+      /* ---- Level-gated content ---- */
+      .lvl1-only { display: none; }
+      .lvl2-only { display: none; }
+      body.level-1 .lvl1-only { display: block; }
+      body.level-2 .lvl2-only { display: block; }
+      body.level-2 .lvl2-block { border-color: var(--blue); }
 
+      /* ---- Vocab cards ---- */
+      .vocab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 14px; }
+      .vocab-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+      .vocab-icon { font-size: 26px; margin-bottom: 6px; }
+      .vocab-term { font-size: 13px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
+      .vocab-def { font-size: 13px; color: var(--muted); line-height: 1.5; }
+      .vocab-ex { font-size: 12px; color: var(--blue); font-weight: 600; margin-top: 5px; }
+
+      /* ---- Print ---- */
       @media print {
-        .phero .deco,
-        .progress-wrap,
-        .btn,
-        .breadcrumb,
-        .hintbox,
-        .toolbar,
-        .pk-no-print {
-          display: none !important;
-        }
-        .phase,
-        .intro-card {
-          box-shadow: none;
-          break-inside: avoid;
-        }
-        body {
-          background: #fff;
-        }
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        html {
-          scroll-behavior: auto;
-        }
-        *,
-        *::before,
-        *::after {
-          animation-duration: 0.001ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.001ms !important;
-        }
+        .no-print { display: none !important; }
+        .hero { background: var(--navy) !important; }
+        body { background: #fff; }
+        .card { box-shadow: none; border-color: #ccc; }
       }
     </style>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <!-- nsr-injected:end -->
-    <link rel="stylesheet" href="/shared/projects/projects-premium.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-tabs.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-tplus.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-interactive.css" />
-    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-    <link rel="stylesheet" href="/assets/mobile-access.css" />
-    <!-- mobile-access-injected:end -->
   </head>
-  <body class="pk" data-pk-theme="u5">
-    <header class="phero">
-      <div class="deco">🎨</div>
-      <h1>Community Mural &amp; Garden Planner</h1>
-      <p>
-        You are the lead planner for <strong>your real school</strong>. Measure
-        an actual classroom wall and a real schoolyard garden plot, calculate
-        their areas, compare with a partner, then compare to real
-        community-garden plot sizes. Make the budget decision last.
-      </p>
-      <div class="tags">
-        <span class="tag gold">Unit 5 · Area</span>
+  <body class="level-1" id="body">
+
+    <!-- ====== HERO ====== -->
+    <header class="hero no-print">
+      <div class="hero-emoji">🎨</div>
+      <h1>Room Makeover Budget</h1>
+      <p class="hero-sub">Plan a room makeover by calculating floor area, paint coverage, and total costs.</p>
+      <div class="hero-tags">
+        <span class="tag gold">Unit 5 · Geometry</span>
         <span class="tag">6.G.1</span>
-        <span class="tag">Version B · Real-World Investigation</span>
+        <span class="tag">Version B</span>
       </div>
-      <div class="toolbar pk-no-print">
-        <button onclick="PK.toggleEs()">🌐 EN / ES help</button>
-        <span class="pk-level-toggle">
-          <button data-level-btn="level-1" type="button">
-            🟢 Level 1 (support)
-          </button>
-          <button data-level-btn="level-2" type="button">
-            🔵 Level 2 (challenge)
-          </button>
-        </span>
-        <button
-          class="pk-tts-toggle"
-          data-tts-toggle
-          type="button"
-          aria-pressed="false"
-          title="Read text aloud"
-        >
-          🔊 Read aloud
-        </button>
-        <button onclick="PK.save('u5ProjectB')">💾 Save</button>
-        <button
-          onclick="PK.load('u5ProjectB', { show: true, after: recalcAll })"
-        >
-          📂 Load
-        </button>
+      <div class="level-bar">
+        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">🟢 Level 1 — With Support</button>
+        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">🔵 Level 2 — Challenge</button>
       </div>
     </header>
 
-    <div class="wrap">
-      <div class="progress-wrap">
-        <div class="progress-label">
-          Project progress: <span id="pct">0</span>% complete
+    <!-- ====== WIZARD ====== -->
+    <div class="wizard">
+
+      <!-- Step trail -->
+      <nav class="step-trail no-print" id="stepTrail" aria-label="Project steps"></nav>
+
+      <!-- Progress bar -->
+      <div class="prog-wrap no-print">
+        <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+        <div class="prog-label" id="progLabel">Step 1 of 6</div>
+      </div>
+
+      <!-- ======================================
+           STEP 1 — KEY WORDS
+      ====================================== -->
+      <div class="step-panel active" id="step-1">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon gold">📖</div>
+            <div>
+              <div class="card-title">Key Words</div>
+              <div class="card-sub">Learn these 4 math words before you begin</div>
+            </div>
+          </div>
+
+          <!-- SVG Visual: unfolded room walls net -->
+          <svg class="visual-svg" viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #cbd5e1;border-radius:12px;">
+            <rect x="200" y="60" width="120" height="80" fill="#f3e8ff" stroke="#7c3aed" stroke-width="2" stroke-dasharray="4,4"/>
+            <text x="260" y="105" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e1b4b">FLOOR (L × W)</text>
+            
+            <rect x="200" y="10" width="120" height="50" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2"/>
+            <text x="260" y="40" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e1b4b">North Wall</text>
+            
+            <rect x="200" y="140" width="120" height="50" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2"/>
+            <text x="260" y="170" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e1b4b">South Wall</text>
+            
+            <rect x="150" y="60" width="50" height="80" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2"/>
+            <text x="175" y="105" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e1b4b" transform="rotate(-90 175 105)">West Wall</text>
+            
+            <rect x="320" y="60" width="50" height="80" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2"/>
+            <text x="345" y="105" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e1b4b" transform="rotate(90 345 105)">East Wall</text>
+            
+            <rect x="160" y="85" width="30" height="30" fill="#fff" stroke="#4f46e5" stroke-width="1"/>
+            <line x1="175" y1="85" x2="175" y2="115" stroke="#4f46e5" stroke-width="0.5"/>
+            <line x1="160" y1="100" x2="190" y2="100" stroke="#4f46e5" stroke-width="0.5"/>
+            
+            <rect x="245" y="30" width="30" height="30" fill="#fff" stroke="#4f46e5" stroke-width="1"/>
+            <circle cx="270" cy="45" r="2" fill="#4f46e5"/>
+            
+            <rect x="15" y="15" width="115" height="50" rx="8" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+            <text x="72" y="33" text-anchor="middle" font-size="10" font-weight="bold" fill="#1e1b4b">Wall Paint Area</text>
+            <text x="72" y="48" text-anchor="middle" font-size="9" fill="#475569">Total Walls - Openings</text>
+            
+            <rect x="390" y="135" width="115" height="50" rx="8" fill="#d1fae5" stroke="#059669" stroke-width="1.5"/>
+            <text x="447" y="153" text-anchor="middle" font-size="10" font-weight="bold" fill="#1e1b4b">Floor Area</text>
+            <text x="447" y="168" text-anchor="middle" font-size="9" fill="#475569">Length × Width</text>
+          </svg>
+
+          <div class="vocab-grid">
+            <div class="vocab-card">
+              <div class="vocab-icon">📐</div>
+              <div class="vocab-term">Area</div>
+              <div class="vocab-def">The amount of flat space inside a 2D shape. Measured in square units.</div>
+              <div class="vocab-ex">Floor = Length × Width</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">🧩</div>
+              <div class="vocab-term">Composite Figure</div>
+              <div class="vocab-def">A larger shape made by putting together smaller basic shapes.</div>
+              <div class="vocab-ex">Room floor + closet extension</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">🎨</div>
+              <div class="vocab-term">Wall Area</div>
+              <div class="vocab-def">The surface area of the walls, calculated by multiplying wall height by perimeter.</div>
+              <div class="vocab-ex">2 × (L + W) × Height</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">📦</div>
+              <div class="vocab-term">Net / Surface Coverage</div>
+              <div class="vocab-def">A flat 2D pattern showing all outer surfaces of a 3D object unfolded.</div>
+              <div class="vocab-ex">Unfolding walls flat to measure paint</div>
+            </div>
+          </div>
+
+          <div class="instruct" style="margin-top:20px">
+            ✅ Read each word card. When you're ready, click <strong>Next Step</strong>.
+          </div>
         </div>
-        <div class="progress-track">
-          <div class="progress-fill" id="pfill"></div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" disabled>← Back</button>
+          <button class="nav-btn" onclick="goStep(2)">Next Step →</button>
         </div>
       </div>
 
-      <div class="intro-card">
-        <h2>🌱 Your Mission</h2>
-        <p>
-          Plan a real school garden and mural with a
-          <strong>$600 budget</strong>. <strong>Part 1 (Self):</strong> measure
-          a real schoolyard garden plot (trapezoid), a real classroom wall for
-          the triangular mural, and a banner — your total area auto-adds up and
-          feeds the budget. <strong>Part 2 (Peer):</strong> compare plots with a
-          partner. <strong>Part 3 (World):</strong> compare to real
-          community-garden plot sizes. Finish with a planning brief, checklist,
-          and report.
-        </p>
+      <!-- ======================================
+           STEP 2 — FLOOR AREA
+      ====================================== -->
+      <div class="step-panel" id="step-2">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">📐</div>
+            <div>
+              <div class="card-title">Step 1 — Room Floor Area</div>
+              <div class="card-sub">Calculate the total area of your rectangular floor plan</div>
+            </div>
+          </div>
+
+          <div class="instruct">
+            <strong>Your job:</strong> Plan the dimensions of your room's floor. Multiply the length by the width to calculate the total floor area in square feet.
+          </div>
+
+          <!-- SVG: Floor layout -->
+          <svg id="floor-svg" class="visual-svg" viewBox="0 0 520 140" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #cbd5e1;border-radius:12px;">
+            <rect x="160" y="25" width="200" height="90" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2"/>
+            <text x="260" y="75" text-anchor="middle" font-size="14" font-weight="bold" fill="#1e1b4b" id="floor-svg-area">Area = L × W</text>
+            <text x="260" y="18" text-anchor="middle" font-size="12" fill="#475569" id="floor-svg-length">Length (L)</text>
+            <text x="145" y="75" text-anchor="middle" font-size="12" fill="#475569" id="floor-svg-width">Width (W)</text>
+          </svg>
+
+          <!-- Level 1 tip -->
+          <div class="instruct lvl1-only">
+            🟢 <strong>Level 1 tip:</strong> Try friendly round numbers like 15 ft length and 12 ft width.
+          </div>
+
+          <!-- Level 2 challenge -->
+          <div class="instruct lvl2-block lvl2-only">
+            <span class="lvl2-label">LEVEL 2 CHALLENGE — L-Shaped Composite Floor</span>
+            <p style="font-size:14px;margin:6px 0 10px">If your room has an L-shaped floor plan with a main area of 12 ft by 15 ft and a closet extension of 4 ft by 5 ft, what is the total area? Explain how you split the shape and computed the sum.</p>
+            <label class="lbl" for="composite-floor-ans">Your calculation &amp; explanation:</label>
+            <textarea id="composite-floor-ans" placeholder="To find the composite area, I split it into..."></textarea>
+          </div>
+
+          <div class="grid2">
+            <div>
+              <label class="lbl" for="floor-length">📏 Floor Length (ft)</label>
+              <input type="number" id="floor-length" min="1" placeholder="e.g. 15" oninput="recalcAll()" />
+            </div>
+            <div>
+              <label class="lbl" for="floor-width">📐 Floor Width (ft)</label>
+              <input type="number" id="floor-width" min="1" placeholder="e.g. 12" oninput="recalcAll()" />
+            </div>
+          </div>
+
+          <button class="calc-btn" onclick="calcFloor()">🧮 Calculate Floor Area</button>
+          <div class="readout" id="floor-out"></div>
+
+          <details class="hint">
+            <summary>Need a hint?</summary>
+            <p>Area of a rectangle = Length × Width.<br><strong>Example:</strong> A room that is 10 ft long and 10 ft wide has an area of 10 × 10 = 100 square feet.</p>
+          </details>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(1)">← Back</button>
+          <button class="nav-btn" onclick="goStep(3)">Next Step →</button>
+        </div>
       </div>
 
-      <!-- ===================== VISUAL MATH NOTES ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div
-            class="phase-num"
-            style="background: var(--gold); color: #2a1c00"
-          >
-            📒
-          </div>
-          <div>
-            <div class="skill">Before you start · Vocabulary</div>
-            <h2>Visual Math Notes</h2>
-          </div>
-        </div>
-        <p>
-          Learn these words first. Tap <strong>EN / ES help</strong> at the top
-          for Spanish.
-        </p>
-        <div class="pk-vocab">
-          <div class="pk-term">
-            <span class="pk-icon">📏</span><b>Base (b)</b>
-            <p>One full side of a shape that you measure along.</p>
-            <p class="pk-es">Base: un lado completo de la figura que mides.</p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">📐</span><b>Height (h) — perpendicular!</b>
-            <p>
-              The straight-up distance from the base, making a right angle — NOT
-              the slanted side.
-            </p>
-            <p class="pk-es">
-              Altura: la distancia recta (perpendicular) desde la base, no el
-              lado inclinado.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">▱</span><b>Parallelogram</b>
-            <p>
-              A 4-sided shape with both pairs of sides parallel. Area = b × h.
-            </p>
-            <p class="pk-es">
-              Paralelogramo: figura de 4 lados con lados paralelos. Área = b ×
-              h.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">🔺</span><b>Triangle</b>
-            <p>Exactly half a parallelogram. Area = ½ × b × h.</p>
-            <p class="pk-es">
-              Triángulo: la mitad de un paralelogramo. Área = ½ × b × h.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">⏢</span><b>Trapezoid</b>
-            <p>
-              A 4-sided shape with two parallel bases (b₁, b₂). Area =
-              ½(b₁+b₂)h.
-            </p>
-            <p class="pk-es">
-              Trapecio: figura con dos bases paralelas. Área = ½(b₁+b₂)h.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">🧩</span><b>Composite figure</b>
-            <p>
-              A shape made of simpler shapes. Decompose, find each, then add.
-            </p>
-            <p class="pk-es">
-              Figura compuesta: hecha de figuras simples. Descompón y suma.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">🟦</span><b>Square unit</b>
-            <p>How area is measured — like square feet (sq ft).</p>
-            <p class="pk-es">
-              Unidad cuadrada: cómo se mide el área, como pies cuadrados.
-            </p>
-          </div>
-        </div>
-        <div class="grid2" style="margin-top: 18px">
-          <div class="pk-callout">
-            <h3>Formula Bank</h3>
-            <ul class="pk-formula">
-              <li>
-                <span class="pk-f-name">Parallelogram / rectangle area</span>
-                <span class="pk-f-mean"
-                  >Multiply one full side (the base) by the straight-up height.
-                  Use the perpendicular height, not the slanted side.</span
-                >
-                <span class="pk-eg"
-                  >Example: base 9 ft × height 4 ft = 36 sq ft</span
-                >
-              </li>
-              <li>
-                <span class="pk-f-name">Triangle area</span>
-                <span class="pk-f-mean"
-                  >A triangle is half a parallelogram, so multiply base ×
-                  height, then take half.</span
-                >
-                <span class="pk-eg">Example: ½ × 14 ft × 10 ft = 70 sq ft</span>
-              </li>
-              <li>
-                <span class="pk-f-name">Trapezoid area</span>
-                <span class="pk-f-mean"
-                  >Add the two parallel bases, multiply by the height, then take
-                  half.</span
-                >
-                <span class="pk-eg"
-                  >Example: ½ × (8 + 12) ft × 6 ft = 60 sq ft</span
-                >
-              </li>
-              <li>
-                <span class="pk-f-name">Paint cans (round UP)</span>
-                <span class="pk-f-mean"
-                  >Divide the area by what one can covers, then round up — you
-                  cannot buy part of a can.</span
-                >
-                <span class="pk-eg"
-                  >Example: 70 ÷ 50 = 1.4 → round up to 2 cans</span
-                >
-              </li>
-              <li class="pk-lvl2">
-                <span class="pk-f-name">Find a missing side</span>
-                <span class="pk-f-mean"
-                  >If you already know the area, work backward: for a rectangle,
-                  height = Area ÷ base; for a trapezoid, second base = (2 × Area
-                  ÷ height) − first base.</span
-                >
-                <span class="pk-eg">Example: 36 sq ft ÷ 9 ft = 4 ft</span>
-              </li>
-            </ul>
-          </div>
-          <div class="pk-callout">
-            <h3>Sentence Frames</h3>
-            <p>"The area of my ___ is ___ sq ft because I used Area = ___."</p>
-            <p>
-              "I need ___ cans of paint because ___ ÷ ___ rounds UP to ___."
-            </p>
-            <p>"My plot is bigger / smaller than ___ by ___ sq ft."</p>
-            <p class="pk-es">
-              "El área de mi ___ es ___ pies² porque usé Área = ___."
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== PART 1 — SELF ===================== -->
-
-      <!-- ===================== PROJECT SETUP ===================== -->
-      <section class="phase" id="phase-setup" data-phase>
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--blue)">S</div>
-          <div>
-            <span class="arc-banner">Project Setup</span>
-            <h2>Measure &amp; Calculate Your Spaces</h2>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <div>
-            <p
-              style="
-                font-size: 15px;
-                color: var(--muted);
-                line-height: 1.6;
-                margin-bottom: 20px;
-              "
-            >
-              Welcome! Read the scenario below and select your level to begin
-              your design plan.
-            </p>
-            <div style="margin-top: 16px">
-              <svg
-                width="100%"
-                height="220"
-                viewBox="0 0 500 220"
-                style="
-                  background: white;
-                  border-radius: 12px;
-                  border: 1px solid #e2e8f0;
-                  max-width: 480px;
-                  margin: 0 auto;
-                  display: block;
-                "
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <defs>
-                  <linearGradient
-                    id="setup-grad"
-                    x1="0%"
-                    y1="0%"
-                    x2="100%"
-                    y2="100%"
-                  >
-                    <stop offset="0%" stop-color="#ffffff" />
-                    <stop offset="100%" stop-color="#f8fafc" />
-                  </linearGradient>
-                </defs>
-
-                <rect
-                  x="20"
-                  y="20"
-                  width="460"
-                  height="200"
-                  rx="15"
-                  fill="url(#setup-grad)"
-                  stroke="#2d874b"
-                  stroke-width="2"
-                />
-                <text
-                  x="250"
-                  y="60"
-                  text-anchor="middle"
-                  font-size="20"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  BLUEPRINT FLOOR PLAN
-                </text>
-                <path
-                  d="M50,80 H450 M50,110 H450 M50,140 H450 M50,170 H450 M100,70 V180 M200,70 V180 M300,70 V180 M400,70 V180"
-                  stroke="#e2e7ec"
-                  stroke-width="1"
-                />
-                <rect
-                  x="120"
-                  y="90"
-                  width="140"
-                  height="70"
-                  fill="rgba(45,135,75,0.15)"
-                  stroke="#2d874b"
-                  stroke-width="2"
-                  stroke-dasharray="4,4"
-                />
-              </svg>
+      <!-- ======================================
+           STEP 3 — WALL PAINT
+      ====================================== -->
+      <div class="step-panel" id="step-3">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon teal">🎨</div>
+            <div>
+              <div class="card-title">Step 2 — Wall Paint Coverage</div>
+              <div class="card-sub">Find wall area, subtract window/door areas, and compute gallons of paint</div>
             </div>
           </div>
 
-          <div
-            style="
-              background: var(--bg);
-              border: 1px solid var(--line);
-              border-radius: 12px;
-              padding: 20px;
-              box-shadow: var(--shadow);
-            "
-          >
-            <h3
-              style="
-                margin-top: 0;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-              "
-            >
-              <span>📋</span> Scenario &amp; Level Options
-            </h3>
-            <p style="font-size: 14px; line-height: 1.6; margin: 0 0 10px">
-              You are a <strong>community planner</strong>. Your school gave you
-              a $600 budget to build a garden and paint a mural, so you measure
-              each real space, find its area, and make sure your plan fits the
-              budget.
-            </p>
-            <ul
-              style="
-                font-size: 14px;
-                line-height: 1.6;
-                margin: 0;
-                padding-left: 18px;
-              "
-            >
-              <li>
-                <strong>Level 1 (support):</strong> find the area of one
-                rectangular garden plot and check that the soil cost stays under
-                budget.
-              </li>
-              <li>
-                <strong>Level 2 (challenge):</strong> add a trapezoid garden
-                plot, a triangular mural wall, and a banner, total every area,
-                and compare your plot to real community-garden sizes.
-              </li>
-            </ul>
-          </div>
-        </div>
-        <p>
-          Measure <strong>real spaces at your school</strong> in feet: a garden
-          plot, a classroom wall for the mural, and a banner. No tape measure?
-          Click <em>Use example numbers</em> to model the math, or count
-          <strong>floor / wall tiles</strong> and use one tile as one unit.
-        </p>
-
-        <div class="task pk-no-print">
-          <strong>Equity fallback — estimate in tiles:</strong> if you can't
-          measure in feet, count square tiles along each side and use those
-          numbers. Your "sq ft" then means "square tiles."
-        </div>
-
-        <!-- 1a Trapezoid garden plot -->
-
-        <div
-          style="
-            margin-top: 20px;
-            padding-top: 16px;
-            border-top: 1px solid var(--line);
-          "
-        >
-          <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px">
-            You can type your own numbers as you go, or click below to start
-            with our example numbers:
-          </p>
-          <button
-            class="btn ghost"
-            type="button"
-            onclick="useExamples()"
-            style="
-              width: 100%;
-              font-weight: bold;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              gap: 8px;
-            "
-          >
-            ✨ Use Example Numbers
-          </button>
-        </div>
-      </section>
-
-      <!-- ===================== PART 1A — SELF ===================== -->
-      <section class="phase" id="phase-1a" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">1a</div>
-          <div>
-            <span class="arc-banner">Part 1a · Self — your real plan</span>
-            <h2>⏢ Garden plot (trapezoid)</h2>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <div>
-            <div
-              class="pk-math-scaffold-card no-print"
-              style="
-                margin: 20px 0;
-                padding: 12px;
-                background: #fff;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-                max-width: 480px;
-                margin-left: auto;
-                margin-right: auto;
-              "
-            >
-              <svg
-                width="100%"
-                height="200"
-                viewBox="0 0 500 200"
-                style="background: #fff; border-radius: 8px"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <text
-                  x="250"
-                  y="30"
-                  text-anchor="middle"
-                  font-size="14"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  Area Shape Geometry Guide
-                </text>
-                <polygon
-                  points="180,140 320,140 280,80 200,80"
-                  fill="rgba(45,135,75,0.15)"
-                  stroke="#2d874b"
-                  stroke-width="2"
-                />
-                <line
-                  x1="200"
-                  y1="80"
-                  x2="200"
-                  y2="140"
-                  stroke="#c45a3c"
-                  stroke-width="1.5"
-                  stroke-dasharray="3,3"
-                />
-                <text
-                  x="192"
-                  y="115"
-                  font-size="9"
-                  fill="#c45a3c"
-                  font-weight="bold"
-                >
-                  h
-                </text>
-                <text
-                  x="250"
-                  y="155"
-                  text-anchor="middle"
-                  font-size="9"
-                  fill="#2d874b"
-                  font-weight="bold"
-                >
-                  base (b)
-                </text>
-                <text
-                  x="250"
-                  y="185"
-                  text-anchor="middle"
-                  font-size="11"
-                  font-weight="bold"
-                  fill="#2d874b"
-                >
-                  Area = base &times; height
-                </text>
-              </svg>
-            </div>
-
-            <svg
-              class="svg-sketch"
-              width="260"
-              height="110"
-              viewBox="0 0 260 110"
-              aria-label="Trapezoid diagram with b1, b2, and perpendicular height labels"
-            >
-              <polygon
-                points="50,85 210,85 190,20 70,20"
-                fill="#e8eaf6"
-                stroke="#283593"
-                stroke-width="2.5"
-              />
-              <line
-                x1="190"
-                y1="20"
-                x2="190"
-                y2="85"
-                stroke="#f57c00"
-                stroke-width="2"
-                stroke-dasharray="5,3"
-              />
-              <text
-                x="130"
-                y="102"
-                text-anchor="middle"
-                font-size="12"
-                fill="#1a1a3e"
-                font-weight="bold"
-              >
-                b₁ (bottom base)
-              </text>
-              <text
-                x="130"
-                y="15"
-                text-anchor="middle"
-                font-size="12"
-                fill="#1a1a3e"
-                font-weight="bold"
-              >
-                b₂ (top base)
-              </text>
-              <text
-                x="206"
-                y="58"
-                font-size="12"
-                fill="#f57c00"
-                font-weight="bold"
-              >
-                h
-              </text>
-            </svg>
-            <div class="formula-box">Area = ½ × (b₁ + b₂) × h</div>
-            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-              Level 1 tip: use whole numbers, like b₁ = 8, b₂ = 12, h = 6.
-            </p>
-            <div class="grid3">
-              <div>
-                <label class="fld" for="p1-b1">Base 1 (b₁) in feet</label>
-                <input
-                  type="number"
-                  id="p1-b1"
-                  data-save
-                  min="0.1"
-                  step="0.1"
-                  placeholder=""
-                  oninput="calcTrapezoid()"
-                />
-              </div>
-              <div>
-                <label class="fld" for="p1-b2">Base 2 (b₂) in feet</label>
-                <input
-                  type="number"
-                  id="p1-b2"
-                  data-save
-                  min="0.1"
-                  step="0.1"
-                  placeholder=""
-                  oninput="calcTrapezoid()"
-                />
-              </div>
-
-              <!-- ===================== INLINE RESEARCH LAB ===================== -->
-              <div class="pk-research-inline-card">
-                <div class="pk-research-inline-header">
-                  <span class="pk-research-badge">🔍 Research Required</span>
-                  <a
-                    href="https://www.almanac.com/vegetable-gardening-for-beginners"
-                    target="_blank"
-                    class="pk-research-inline-link"
-                    >🔗 Old Farmer's Almanac: Raised-Bed Gardening Standards
-                    ↗</a
-                  >
-                </div>
-                <p class="pk-research-inline-instructions">
-                  Research recommended structural standards for raised garden
-                  beds. Find the standard width (typically 4 feet to allow
-                  reaching from both sides). Enter the standard bed width below:
-                </p>
-                <div class="grid2">
-                  <div>
-                    <label class="fld" for="worldCountry"
-                      >Garden Design Guideline</label
-                    >
-                    <input
-                      type="text"
-                      id="worldCountry"
-                      data-save
-                      placeholder=""
-                      oninput="recalcAll()"
-                    />
-                  </div>
-                  <div>
-                    <label class="fld" for="worldSize"
-                      >Recommended Bed Width (feet)</label
-                    >
-                    <input
-                      type="number"
-                      id="worldSize"
-                      data-save
-                      step="any"
-                      min="0"
-                      placeholder=""
-                      oninput="recalcAll()"
-                    />
-                  </div>
-                </div>
-
-                <div
-                  style="
-                    margin-top: 12px;
-                    padding-top: 12px;
-                    border-top: 1px solid var(--line);
-                  "
-                >
-                  <label class="fld" for="p1-h"
-                    >Bed height from your research (ft) — used in the area
-                    calculation</label
-                  >
-                  <input
-                    type="number"
-                    id="p1-h"
-                    data-save
-                    readonly
-                    style="
-                      background: #f1f5f9;
-                      border-color: #cbd5e1;
-                      width: 100%;
-                    "
-                  />
-                </div>
-              </div>
-            </div>
-            <button class="btn" type="button" onclick="calcTrapezoid()">
-              Calculate garden plot area
-            </button>
-            <div class="readout" id="p1-out"></div>
-            <div
-              class="pki-manip"
-              data-manip="area-tiler"
-              data-unit="ft"
-              data-theme="garden"
-              data-accent="#283593"
-              data-accent2="#388e3c"
-            ></div>
-            <details class="hintbox">
-              <summary>Need a hint?</summary>
-              <p>
-                Add the two bases, multiply by height, then divide by 2.
-                Example: b₁ = 8, b₂ = 12, h = 6 → ½ × (8 + 12) × 6 = ½ × 20 × 6
-                = 60 sq ft.
-              </p>
-            </details>
-            <div class="pk-lvl2" style="margin-top: 16px">
-              <div class="task">
-                <strong>Level 2 extension:</strong> split your trapezoid into
-                one rectangle plus one triangle. Find each area and add them.
-                Show that your two-shape total matches the ½ × (b₁ + b₂) × h
-                answer, and explain why both methods give the same area.
-              </div>
-            </div>
-
-            <!-- 1b Triangle mural + paint cans -->
+          <div class="instruct teal">
+            <strong>Your job:</strong> Calculate the area of the 4 walls of your room. Find the total perimeter of the floor, multiply it by the wall height, and then subtract any windows or doors. Finally, find how many whole gallons of paint you need (1 gallon covers ~350 sq ft).
           </div>
 
-          <div
-            style="
-              background: var(--bg);
-              border: 2.5px solid var(--line);
-              border-radius: 18px;
-              padding: 20px;
-              box-shadow: var(--shadow);
-              height: fit-content;
-            "
-            class="pk-no-print"
-          >
-            <h3
-              style="
-                margin-top: 0;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                color: var(--navy);
-                font-size: 16px;
-              "
-            >
-              <span>💡</span> Guided Steps &amp; Help
-            </h3>
+          <!-- SVG: Wall layout -->
+          <svg class="visual-svg" viewBox="0 0 520 150" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #cbd5e1;border-radius:12px;">
+            <rect x="40" y="20" width="440" height="110" fill="#f1f5f9" stroke="#4f46e5" stroke-width="2"/>
+            <text x="260" y="15" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e1b4b">Wall Area = (Length × Height) − Openings</text>
+            <rect x="100" y="45" width="50" height="50" fill="#e0e7ff" stroke="#4f46e5" stroke-width="1.5"/>
+            <line x1="125" y1="45" x2="125" y2="95" stroke="#4f46e5" stroke-width="1"/>
+            <line x1="100" y1="70" x2="150" y2="70" stroke="#4f46e5" stroke-width="1"/>
+            <text x="125" y="112" text-anchor="middle" font-size="10" fill="#475569">Window</text>
+            <rect x="340" y="45" width="40" height="85" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+            <circle cx="372" cy="85" r="2.5" fill="#d97706"/>
+            <text x="360" y="40" text-anchor="middle" font-size="10" fill="#475569">Door</text>
+            <line x1="25" y1="20" x2="25" y2="130" stroke="#475569" stroke-width="1"/>
+            <polygon points="25,20 22,27 28,27" fill="#475569"/>
+            <polygon points="25,130 22,123 28,123" fill="#475569"/>
+            <text x="15" y="78" text-anchor="middle" font-size="10" fill="#475569" transform="rotate(-90 15 78)">Height</text>
+            <line x1="40" y1="140" x2="480" y2="140" stroke="#475569" stroke-width="1"/>
+            <polygon points="40,140 47,137 47,143" fill="#475569"/>
+            <polygon points="480,140 473,137 473,143" fill="#475569"/>
+            <text x="260" y="148" text-anchor="middle" font-size="10" fill="#475569">Length or Width</text>
+          </svg>
 
-            <p
-              style="
-                font-size: 13.5px;
-                line-height: 1.5;
-                color: var(--muted);
-                margin-bottom: 12px;
-              "
-            >
-              <strong>Finding Area of 2D Polygons on a Floor Plan:</strong>
-            </p>
-            <ol
-              style="
-                margin-left: 18px;
-                font-size: 13px;
-                line-height: 1.5;
-                display: grid;
-                gap: 8px;
-                color: var(--ink);
-              "
-            >
-              <li><b>Parallelogram/Rectangle</b>: Area = base × height.</li>
-              <li>
-                <b>Triangle</b>: Area = 1/2 × base × height (multiply base and
-                height, then divide by 2).
-              </li>
-              <li>
-                <b>Trapezoid</b>: Area = 1/2 × (b_1 + b_2) × h (add both
-                parallel bases, multiply by the height, and divide by 2).
-              </li>
-              <li>
-                <b>Composite Shapes</b>: Split the irregular layout into
-                standard shapes, calculate each area, and add them together.
-              </li>
-            </ol>
-            <div
-              style="
-                margin-top: 14px;
-                padding: 10px;
-                background: var(--sky);
-                border-radius: 8px;
-                font-size: 12px;
-              "
-            >
-              💡 <b>Formula Check:</b> Trapezoid bases of 6ft and 10ft, height
-              of 4ft. Area = 1/2 × (6 + 10) × 4 = 8 × 4 = 32 sq ft.
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== PART 1B — SELF ===================== -->
-      <section class="phase" id="phase-1b" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">1b</div>
-          <div>
-            <span class="arc-banner">Part 1b · Self — your real plan</span>
-            <h2>🔺 Mural panel (triangle) &amp; paint cans</h2>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <div>
-            <div
-              class="pk-math-scaffold-card no-print"
-              style="
-                margin: 20px 0;
-                padding: 12px;
-                background: #fff;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-                max-width: 480px;
-                margin-left: auto;
-                margin-right: auto;
-              "
-            >
-              <svg
-                width="100%"
-                height="200"
-                viewBox="0 0 500 200"
-                style="background: #fff; border-radius: 8px"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <text
-                  x="250"
-                  y="30"
-                  text-anchor="middle"
-                  font-size="14"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  Area Shape Geometry Guide
-                </text>
-                <polygon
-                  points="180,140 320,140 280,80 200,80"
-                  fill="rgba(45,135,75,0.15)"
-                  stroke="#2d874b"
-                  stroke-width="2"
-                />
-                <line
-                  x1="200"
-                  y1="80"
-                  x2="200"
-                  y2="140"
-                  stroke="#c45a3c"
-                  stroke-width="1.5"
-                  stroke-dasharray="3,3"
-                />
-                <text
-                  x="192"
-                  y="115"
-                  font-size="9"
-                  fill="#c45a3c"
-                  font-weight="bold"
-                >
-                  h
-                </text>
-                <text
-                  x="250"
-                  y="155"
-                  text-anchor="middle"
-                  font-size="9"
-                  fill="#2d874b"
-                  font-weight="bold"
-                >
-                  base (b)
-                </text>
-                <text
-                  x="250"
-                  y="185"
-                  text-anchor="middle"
-                  font-size="11"
-                  font-weight="bold"
-                  fill="#2d874b"
-                >
-                  Area = base &times; height
-                </text>
-              </svg>
-            </div>
-
-            <svg
-              class="svg-sketch"
-              width="220"
-              height="110"
-              viewBox="0 0 220 110"
-              aria-label="Triangle mural panel with base and perpendicular height"
-            >
-              <polygon
-                points="20,95 200,95 110,15"
-                fill="#e0f2f1"
-                stroke="#00796b"
-                stroke-width="2.5"
-              />
-              <line
-                x1="110"
-                y1="15"
-                x2="110"
-                y2="95"
-                stroke="#f57c00"
-                stroke-width="2"
-                stroke-dasharray="5,3"
-              />
-              <text
-                x="110"
-                y="107"
-                text-anchor="middle"
-                font-size="12"
-                fill="#1a1a3e"
-                font-weight="bold"
-              >
-                base (b)
-              </text>
-              <text
-                x="124"
-                y="60"
-                font-size="12"
-                fill="#f57c00"
-                font-weight="bold"
-              >
-                h
-              </text>
-            </svg>
-            <div class="formula-box">
-              Area = ½ × b × h&nbsp;|&nbsp;Cans = ⌈ Area ÷ coverage ⌉ (round UP)
-            </div>
-            <p>
-              You <strong>always round up</strong> cans — you can't buy a
-              fraction of a can.
-            </p>
-            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-              Level 1 tip: find the area first (½ × b × h), then divide by the
-              coverage. Try b = 10, h = 8 → ½ × 80 = 40 sq ft.
-            </p>
-            <div class="grid3">
-              <div>
-                <label class="fld" for="p2-base">Wall base (b) in feet</label>
-                <input
-                  type="number"
-                  id="p2-base"
-                  data-save
-                  min="0.1"
-                  step="0.1"
-                  placeholder=""
-                  oninput="calcMural()"
-                />
-              </div>
-              <div>
-                <label class="fld" for="p2-height"
-                  >Wall height (h) in feet</label
-                >
-                <input
-                  type="number"
-                  id="p2-height"
-                  data-save
-                  min="0.1"
-                  step="0.1"
-                  placeholder=""
-                  oninput="calcMural()"
-                />
-              </div>
-              <div>
-                <label class="fld" for="p2-coverage"
-                  >Coverage per can (sq ft)</label
-                >
-                <input
-                  type="number"
-                  id="p2-coverage"
-                  data-save
-                  min="1"
-                  step="1"
-                  placeholder=""
-                  oninput="calcMural()"
-                />
-              </div>
-            </div>
-            <button class="btn alt" type="button" onclick="calcMural()">
-              Calculate mural area &amp; paint
-            </button>
-            <div class="readout" id="p2-out"></div>
-            <details class="hintbox">
-              <summary>Need a hint?</summary>
-              <p>
-                Step 1: Area = ½ × b × h. Step 2: Cans = Area ÷ coverage. Step
-                3: round UP (ceiling). Even 2.1 cans means buying 3. Example: 70
-                ÷ 50 = 1.4 → 2 cans.
-              </p>
-            </details>
-            <div class="pk-lvl2" style="margin-top: 16px">
-              <div class="task">
-                <strong>Level 2 extension:</strong> if one can of paint costs
-                $28, how much will the paint for your mural cost? Multiply your
-                rounded-up can count by $28. Then explain why rounding the cans
-                up (not down) keeps you from running out of paint.
-              </div>
-            </div>
-
-            <!-- 1c Parallelogram banner -->
+          <!-- Level 1 tip -->
+          <div class="instruct lvl1-only teal">
+            🟢 <strong>Level 1 tip:</strong> Try standard room metrics: Height = 8 ft, Window Area = 30 sq ft, Door Area = 20 sq ft.
           </div>
 
-          <div
-            style="
-              background: var(--bg);
-              border: 2.5px solid var(--line);
-              border-radius: 18px;
-              padding: 20px;
-              box-shadow: var(--shadow);
-              height: fit-content;
-            "
-            class="pk-no-print"
-          >
-            <h3
-              style="
-                margin-top: 0;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                color: var(--navy);
-                font-size: 16px;
-              "
-            >
-              <span>💡</span> Guided Steps &amp; Help
-            </h3>
-
-            <p
-              style="
-                font-size: 13.5px;
-                line-height: 1.5;
-                color: var(--muted);
-                margin-bottom: 12px;
-              "
-            >
-              <strong>Finding Area of 2D Polygons on a Floor Plan:</strong>
-            </p>
-            <ol
-              style="
-                margin-left: 18px;
-                font-size: 13px;
-                line-height: 1.5;
-                display: grid;
-                gap: 8px;
-                color: var(--ink);
-              "
-            >
-              <li><b>Parallelogram/Rectangle</b>: Area = base × height.</li>
-              <li>
-                <b>Triangle</b>: Area = 1/2 × base × height (multiply base and
-                height, then divide by 2).
-              </li>
-              <li>
-                <b>Trapezoid</b>: Area = 1/2 × (b_1 + b_2) × h (add both
-                parallel bases, multiply by the height, and divide by 2).
-              </li>
-              <li>
-                <b>Composite Shapes</b>: Split the irregular layout into
-                standard shapes, calculate each area, and add them together.
-              </li>
-            </ol>
-            <div
-              style="
-                margin-top: 14px;
-                padding: 10px;
-                background: var(--sky);
-                border-radius: 8px;
-                font-size: 12px;
-              "
-            >
-              💡 <b>Formula Check:</b> Trapezoid bases of 6ft and 10ft, height
-              of 4ft. Area = 1/2 × (6 + 10) × 4 = 8 × 4 = 32 sq ft.
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== PART 1C — SELF ===================== -->
-      <section class="phase" id="phase-1c" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">1c</div>
-          <div>
-            <span class="arc-banner">Part 1c · Self — your real plan</span>
-            <h2>▱ School banner (parallelogram)</h2>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <div>
-            <div
-              class="pk-math-scaffold-card no-print"
-              style="
-                margin: 20px 0;
-                padding: 12px;
-                background: #fff;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-                max-width: 480px;
-                margin-left: auto;
-                margin-right: auto;
-              "
-            >
-              <svg
-                width="100%"
-                height="200"
-                viewBox="0 0 500 200"
-                style="background: #fff; border-radius: 8px"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <text
-                  x="250"
-                  y="30"
-                  text-anchor="middle"
-                  font-size="14"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  Area Shape Geometry Guide
-                </text>
-                <polygon
-                  points="180,140 320,140 280,80 200,80"
-                  fill="rgba(45,135,75,0.15)"
-                  stroke="#2d874b"
-                  stroke-width="2"
-                />
-                <line
-                  x1="200"
-                  y1="80"
-                  x2="200"
-                  y2="140"
-                  stroke="#c45a3c"
-                  stroke-width="1.5"
-                  stroke-dasharray="3,3"
-                />
-                <text
-                  x="192"
-                  y="115"
-                  font-size="9"
-                  fill="#c45a3c"
-                  font-weight="bold"
-                >
-                  h
-                </text>
-                <text
-                  x="250"
-                  y="155"
-                  text-anchor="middle"
-                  font-size="9"
-                  fill="#2d874b"
-                  font-weight="bold"
-                >
-                  base (b)
-                </text>
-                <text
-                  x="250"
-                  y="185"
-                  text-anchor="middle"
-                  font-size="11"
-                  font-weight="bold"
-                  fill="#2d874b"
-                >
-                  Area = base &times; height
-                </text>
-              </svg>
-            </div>
-
-            <svg
-              class="svg-sketch"
-              width="240"
-              height="100"
-              viewBox="0 0 240 100"
-              aria-label="Parallelogram banner with base and perpendicular height"
-            >
-              <polygon
-                points="30,85 210,85 190,15 10,15"
-                fill="#fff3e0"
-                stroke="#f57c00"
-                stroke-width="2.5"
-              />
-              <line
-                x1="190"
-                y1="15"
-                x2="190"
-                y2="85"
-                stroke="#283593"
-                stroke-width="2"
-                stroke-dasharray="5,3"
-              />
-              <text
-                x="115"
-                y="98"
-                text-anchor="middle"
-                font-size="12"
-                fill="#1a1a3e"
-                font-weight="bold"
-              >
-                base (b)
-              </text>
-              <text
-                x="205"
-                y="55"
-                font-size="12"
-                fill="#283593"
-                font-weight="bold"
-              >
-                h
-              </text>
-            </svg>
-            <div class="formula-box">Area = b × h</div>
-            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-              Level 1 tip: a parallelogram uses the same Area = b × h as a
-              rectangle. Try b = 9 and h = 4 → 36 sq ft.
-            </p>
-            <div class="grid2">
-              <div>
-                <label class="fld" for="p3-base">Banner base (b) in feet</label>
-                <input
-                  type="number"
-                  id="p3-base"
-                  data-save
-                  min="0.1"
-                  step="0.1"
-                  placeholder=""
-                  oninput="calcBanner()"
-                />
-              </div>
-              <div>
-                <label class="fld" for="p3-height"
-                  >Banner perpendicular height (h) in feet</label
-                >
-                <input
-                  type="number"
-                  id="p3-height"
-                  data-save
-                  min="0.1"
-                  step="0.1"
-                  placeholder=""
-                  oninput="calcBanner()"
-                />
-              </div>
-            </div>
-            <button class="btn" type="button" onclick="calcBanner()">
-              Calculate banner area
-            </button>
-            <div class="readout" id="p3-out"></div>
-            <details class="hintbox">
-              <summary>Need a hint?</summary>
-              <p>
-                Use b × h with the perpendicular height, not the slant side.
-                Example: b = 9, h = 4 → Area = 36 sq ft.
-              </p>
-            </details>
-            <div class="pk-lvl2" style="margin-top: 16px">
-              <div class="task">
-                <strong>Level 2 extension:</strong> your banner is a slanted
-                parallelogram, but it has the same area as a rectangle with the
-                same base and perpendicular height. Explain why sliding the
-                slanted top across does not change the area, and which
-                measurement you must NOT use by mistake — the slant side or the
-                perpendicular height.
-              </div>
-            </div>
-
-            <!-- Running total -->
-            <div class="total-banner" id="totalBanner">
-              🧮 Running total area planned:
-              <span class="tnum" id="totalArea">0</span> sq ft
-              <span
-                style="
-                  display: block;
-                  font-weight: 600;
-                  font-size: 13px;
-                  color: var(--muted);
-                  margin-top: 4px;
-                "
-                id="totalBreakdown"
-              ></span>
-            </div>
+          <!-- Level 2 challenge -->
+          <div class="instruct lvl2-block lvl2-only">
+            <span class="lvl2-label">LEVEL 2 CHALLENGE — Two Coats of Paint</span>
+            <p style="font-size:14px;margin:6px 0 10px">If you want to apply two complete coats of paint to all walls, how would your calculations change? How many total whole gallons would you need to buy?</p>
+            <label class="lbl" for="two-coats-reflect">Explain the double-coverage calculation:</label>
+            <textarea id="two-coats-reflect" placeholder="To apply two coats of paint..."></textarea>
           </div>
 
-          <div
-            style="
-              background: var(--bg);
-              border: 2.5px solid var(--line);
-              border-radius: 18px;
-              padding: 20px;
-              box-shadow: var(--shadow);
-              height: fit-content;
-            "
-            class="pk-no-print"
-          >
-            <h3
-              style="
-                margin-top: 0;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                color: var(--navy);
-                font-size: 16px;
-              "
-            >
-              <span>💡</span> Guided Steps &amp; Help
-            </h3>
-
-            <p
-              style="
-                font-size: 13.5px;
-                line-height: 1.5;
-                color: var(--muted);
-                margin-bottom: 12px;
-              "
-            >
-              <strong>Finding Area of 2D Polygons on a Floor Plan:</strong>
-            </p>
-            <ol
-              style="
-                margin-left: 18px;
-                font-size: 13px;
-                line-height: 1.5;
-                display: grid;
-                gap: 8px;
-                color: var(--ink);
-              "
-            >
-              <li><b>Parallelogram/Rectangle</b>: Area = base × height.</li>
-              <li>
-                <b>Triangle</b>: Area = 1/2 × base × height (multiply base and
-                height, then divide by 2).
-              </li>
-              <li>
-                <b>Trapezoid</b>: Area = 1/2 × (b_1 + b_2) × h (add both
-                parallel bases, multiply by the height, and divide by 2).
-              </li>
-              <li>
-                <b>Composite Shapes</b>: Split the irregular layout into
-                standard shapes, calculate each area, and add them together.
-              </li>
-            </ol>
-            <div
-              style="
-                margin-top: 14px;
-                padding: 10px;
-                background: var(--sky);
-                border-radius: 8px;
-                font-size: 12px;
-              "
-            >
-              💡 <b>Formula Check:</b> Trapezoid bases of 6ft and 10ft, height
-              of 4ft. Area = 1/2 × (6 + 10) × 4 = 8 × 4 = 32 sq ft.
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
-      <section class="pk-visualizer-card no-print">
-        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
-        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px">
-          This visual interactive canvas updates in real-time as you complete
-          your math calculations.
-        </p>
-        <div id="projectVisualizer"></div>
-      </section>
-
-      <!-- ===================== PART 2 — PEER ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--teal)">2</div>
-          <div>
-            <span class="arc-banner">Part 2 · Peer — compare plots</span>
-            <div class="skill">Compare areas &amp; reason · 6.G.1</div>
-            <h2>Compare With a Partner</h2>
-          </div>
-        </div>
-        <p>
-          Ask a partner for <strong>their</strong> garden plot dimensions (or
-          plot area), type them in, and auto-compare whose plot is larger and by
-          how much.
-        </p>
-        <div class="pk-callout pk-no-print" style="margin-bottom: 14px">
-          <h3>Interview Sentence Frames</h3>
-          <p>"What are your plot's two bases and height?"</p>
-          <p>"What is your plot area in square feet?"</p>
-          <p>"How many paint cans did your mural need?"</p>
-          <p class="pk-es">"¿Cuál es el área de tu parcela en pies²?"</p>
-        </div>
-        <div class="grid2">
-          <div>
-            <label class="fld" for="partnerName"
-              >Partner name or initials</label
-            >
-            <input type="text" id="partnerName" data-save placeholder="" />
-          </div>
-          <div>
-            <label class="fld" for="p-b1">Partner: plot base 1 (ft)</label>
-            <input
-              type="number"
-              id="p-b1"
-              data-save
-              min="0"
-              step="0.1"
-              oninput="comparePeer()"
-            />
-          </div>
-          <div>
-            <label class="fld" for="p-b2">Partner: plot base 2 (ft)</label>
-            <input
-              type="number"
-              id="p-b2"
-              data-save
-              min="0"
-              step="0.1"
-              oninput="comparePeer()"
-            />
-          </div>
-          <div>
-            <label class="fld" for="p-ph">Partner: plot height (ft)</label>
-            <input
-              type="number"
-              id="p-ph"
-              data-save
-              min="0"
-              step="0.1"
-              oninput="comparePeer()"
-            />
-          </div>
-        </div>
-        <button class="btn alt" type="button" onclick="comparePeer()">
-          Compare our plots
-        </button>
-        <div id="peerBox" class="pk-stats" style="margin-top: 16px"></div>
-        <div class="readout" id="peerVerdict"></div>
-        <label class="fld" for="peerReflect"
-          >Whose garden plot is larger, and by how much? How do you know?</label
-        >
-        <textarea id="peerReflect" data-save placeholder=""></textarea>
-      </section>
-
-      <!-- ===================== PART 3 — WORLD ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div
-            class="phase-num"
-            style="background: var(--gold); color: #2a1c00"
-          >
-            3
-          </div>
-          <div>
-            <span class="arc-banner"
-              >Part 3 · World — real community plots</span
-            >
-            <div class="skill">Compare to real data · 6.G.1</div>
-            <h2>How Does Your Plot Compare?</h2>
-          </div>
-        </div>
-        <p>
-          These are realistic typical community-garden plot sizes (in square
-          feet). See where your garden plot lands.
-        </p>
-        <div class="grid2">
-          <div>
-            <label class="fld" for="worldSelect"
-              >Pick a city to highlight</label
-            >
-            <select id="worldSelect" data-save onchange="worldGo()"></select>
-            <label class="fld" for="myWorld">My garden plot area (sq ft)</label>
-            <input
-              type="number"
-              id="myWorld"
-              data-save
-              step="0.1"
-              oninput="worldGo()"
-              placeholder=""
-            />
-            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
-              Tip: your trapezoid plot area from Part 1 auto-fills here.
-            </p>
-            <div id="worldMeter"></div>
-          </div>
-          <div>
-            <h3>Community Garden Plots 🌍</h3>
-            <div
-              style="
-                overflow: auto;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-              "
-            >
-              <table class="rubric" style="margin-top: 0">
-                <tr>
-                  <th>City program</th>
-                  <th>Typical plot (sq ft)</th>
-                </tr>
-                <tbody id="worldRows"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <div
-          class="phase"
-          style="margin: 18px 0 0; box-shadow: none; border-style: dashed"
-        >
-          <h3>🔬 What-If Lab</h3>
-          <p style="color: var(--muted); font-size: 14px">
-            Add feet to one base of your trapezoid plot and watch the area
-            change. Try +3 ft.
-          </p>
           <div class="grid2">
             <div>
-              <label class="fld" for="whatIfAdd"
-                >Feet to add to base 1 (b₁)</label
-              >
-              <input type="number" id="whatIfAdd" step="0.5" placeholder="" />
+              <label class="lbl" for="wall-height">↕️ Wall Height (ft)</label>
+              <input type="number" id="wall-height" min="1" placeholder="e.g. 8" oninput="recalcAll()" />
+            </div>
+            <div>
+              <label class="lbl" for="window-area">🪟 Total Windows Area to Subtract (sq ft)</label>
+              <input type="number" id="window-area" min="0" placeholder="e.g. 30" oninput="recalcAll()" />
+            </div>
+            <div>
+              <label class="lbl" for="door-area">🚪 Total Doors Area to Subtract (sq ft)</label>
+              <input type="number" id="door-area" min="0" placeholder="e.g. 20" oninput="recalcAll()" />
             </div>
           </div>
-          <button class="btn" type="button" onclick="runWhatIf()">
-            Run test
-          </button>
-          <div class="pk-whatif" id="whatIfBox" style="margin-top: 12px">
-            Enter a value to test.
-          </div>
+
+          <button class="calc-btn teal" onclick="calcPaint()">🎨 Calculate Paint Needed</button>
+          <div class="readout" id="paint-out"></div>
+
+          <details class="hint">
+            <summary>Need a hint?</summary>
+            <p>1. Find gross wall area: 2 × (Length + Width) × Height.<br>2. Subtract window + door area to find Net Area.<br>3. Divide Net Area by 350, then round UP to find whole gallons to buy.</p>
+          </details>
         </div>
 
-        <label class="fld" for="worldReflect"
-          >Is your plot bigger or smaller than the typical community plot? Why
-          might plot sizes differ between cities?</label
-        >
-        <textarea id="worldReflect" data-save placeholder=""></textarea>
-        <label class="fld" for="ethics"
-          >Ethics check: is a bigger garden plot always better? Explain.</label
-        >
-        <textarea id="ethics" data-save placeholder=""></textarea>
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(2)">← Back</button>
+          <button class="nav-btn" onclick="goStep(4)">Next Step →</button>
+        </div>
+      </div>
 
-        <!-- Level 2 reverse problem + minimize cost -->
-        <div class="pk-lvl2">
-          <div class="task">
-            <strong>Level 2 — find a missing dimension:</strong> a trapezoid
-            plot must have area 60 sq ft, with b₁ = 8 ft and h = 6 ft. What is
-            b₂? (Hint: b₂ = (2 × Area ÷ h) − b₁.)
+      <!-- ======================================
+           STEP 4 — PAINT & FLOORING COST
+      ====================================== -->
+      <div class="step-panel" id="step-4">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon gold">💵</div>
+            <div>
+              <div class="card-title">Step 3 — Paint &amp; Flooring Cost</div>
+              <div class="card-sub">Choose materials, calculate total cost, and compare with average budgets</div>
+            </div>
           </div>
+
+          <div class="instruct gold">
+            <strong>Your job:</strong> Select your flooring type and paint quality. Calculate the total cost and check where your makeover falls compared to typical real-world ranges.
+          </div>
+
+          <!-- SVG: Cost visual -->
+          <svg class="visual-svg" viewBox="0 0 520 120" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #cbd5e1;border-radius:12px;">
+            <text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e1b4b">Total Cost = Flooring Cost + Paint Cost</text>
+            <rect x="40" y="40" width="180" height="60" rx="10" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2"/>
+            <text x="130" y="65" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e1b4b">Flooring Cost</text>
+            <text x="130" y="85" text-anchor="middle" font-size="11" fill="#4f46e5">Area × Price/sq ft</text>
+            <text x="260" y="75" text-anchor="middle" font-size="22" fill="#7c3aed" font-weight="bold">+</text>
+            <rect x="300" y="40" width="180" height="60" rx="10" fill="#f3e8ff" stroke="#7c3aed" stroke-width="2"/>
+            <text x="390" y="65" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e1b4b">Paint Cost</text>
+            <text x="390" y="85" text-anchor="middle" font-size="11" fill="#7c3aed">Gallons × Price/gal</text>
+          </svg>
+
+          <!-- Level 2 challenge -->
+          <div class="instruct lvl2-block lvl2-only">
+            <span class="lvl2-label">LEVEL 2 CHALLENGE — Budget Strategy ($1,500 limit)</span>
+            <p style="font-size:14px;margin:6px 0 10px">If you have a strict limit of $1,500 for the makeover, what materials would you choose? Explain your optimization strategy.</p>
+            <label class="lbl" for="budget-strategy">Describe your strategy:</label>
+            <textarea id="budget-strategy" placeholder="To stay under $1,500, I will select..."></textarea>
+          </div>
+
           <div class="grid2">
             <div>
-              <label class="fld" for="revB2">Missing base b₂ (ft)</label>
-              <input
-                type="number"
-                id="revB2"
-                data-save
-                step="0.1"
-                placeholder=""
-              />
-              <button class="btn alt" type="button" onclick="checkReverse()">
-                Check b₂
-              </button>
-              <div class="feedback" id="revB2Fb"></div>
+              <label class="lbl" for="flooring-select">🪵 Flooring Type</label>
+              <select id="flooring-select" onchange="onFlooringChange()">
+                <option value="3.50">Carpet ($3.50 per sq ft)</option>
+                <option value="5.00">Laminate Wood ($5.00 per sq ft)</option>
+                <option value="9.00">Hardwood ($9.00 per sq ft)</option>
+                <option value="12.00">Ceramic Tile ($12.00 per sq ft)</option>
+                <option value="custom" class="lvl2-only">Custom Price (Level 2)</option>
+              </select>
+              <div id="custom-flooring-wrap" style="display:none;margin-top:8px;">
+                <label class="lbl" for="custom-flooring-price">Custom Flooring Price ($/sq ft)</label>
+                <input type="number" id="custom-flooring-price" step="0.01" min="0" oninput="recalcAll()" placeholder="e.g. 7.50">
+              </div>
+            </div>
+            <div>
+              <label class="lbl" for="paint-select">🎨 Paint Quality</label>
+              <select id="paint-select" onchange="onPaintChange()">
+                <option value="25.00">Budget Paint ($25.00 per gallon)</option>
+                <option value="45.00">Standard Paint ($45.00 per gallon)</option>
+                <option value="75.00">Premium Paint ($75.00 per gallon)</option>
+                <option value="custom" class="lvl2-only">Custom Price (Level 2)</option>
+              </select>
+              <div id="custom-paint-wrap" style="display:none;margin-top:8px;">
+                <label class="lbl" for="custom-paint-price">Custom Paint Price ($/gallon)</label>
+                <input type="number" id="custom-paint-price" step="0.01" min="0" oninput="recalcAll()" placeholder="e.g. 35.00">
+              </div>
             </div>
           </div>
-          <label class="fld" for="optReason"
-            >Minimize cost: soil costs $4.50/sq ft. Two plots cover 60 sq ft —
-            one trapezoid, one rectangle. Which is cheaper to fill, and
-            why?</label
-          >
-          <textarea id="optReason" data-save placeholder=""></textarea>
-        </div>
-      </section>
 
-      <!-- ===================== PART 4 — BUDGET DECISION ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--coral)">4</div>
-          <div>
-            <div class="skill">Budget Decision · 6.G.1 Application</div>
-            <h2>Which Garden Plot Fits the Budget?</h2>
-          </div>
-        </div>
-        <p>
-          Compare two possible plots against the
-          <strong>$600 project budget</strong>. Plot 1's area auto-fills from
-          your trapezoid in Part 1 — adjust if you like.
-        </p>
-        <div class="grid2">
-          <div>
-            <label class="fld" for="p4-area1"
-              >Plot 1 area (sq ft, auto from Part 1)</label
-            >
-            <input
-              type="number"
-              id="p4-area1"
-              data-save
-              min="0.1"
-              step="0.1"
-              placeholder=""
-              oninput="calcBudget()"
-            />
-          </div>
-          <div>
-            <label class="fld" for="p4-price1">Plot 1 cost per sq ft ($)</label>
-            <input
-              type="number"
-              id="p4-price1"
-              data-save
-              min="0.01"
-              step="0.01"
-              placeholder=""
-              oninput="calcBudget()"
-            />
-          </div>
-          <div>
-            <label class="fld" for="p4-area2">Plot 2 area (sq ft)</label>
-            <input
-              type="number"
-              id="p4-area2"
-              data-save
-              min="0.1"
-              step="0.1"
-              placeholder=""
-              oninput="calcBudget()"
-            />
-          </div>
-          <div>
-            <label class="fld" for="p4-price2">Plot 2 cost per sq ft ($)</label>
-            <input
-              type="number"
-              id="p4-price2"
-              data-save
-              min="0.01"
-              step="0.01"
-              placeholder=""
-              oninput="calcBudget()"
-            />
-          </div>
-        </div>
-        <button class="btn" type="button" onclick="calcBudget()">
-          Compare plots &amp; check budget
-        </button>
-        <div class="readout" id="p4-out"></div>
+          <button class="calc-btn gold" onclick="calcCost()">💵 Calculate Total Makeover Cost</button>
+          <div class="readout" id="cost-out"></div>
 
-        <div class="task" style="margin-top: 18px">
-          <strong>Quick check:</strong> A trapezoid garden plot has b₁ = 4 ft,
-          b₂ = 6 ft, and h = 3 ft. What is its area in square feet?
-        </div>
-        <label class="fld" for="check-trap">Your answer (sq ft)</label>
-        <input type="number" id="check-trap" data-save placeholder="" />
-        <button class="btn alt" type="button" onclick="checkTrap()">
-          Check answer
-        </button>
-        <div class="feedback" id="check-trapFb"></div>
-        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-          Level 1 worked step: ½ × (4 + 6) × 3 → ½ × 10 × 3 → ½ × 30 = 15.
-        </p>
-        <div class="pk-lvl2" style="margin-top: 16px">
-          <div class="task">
-            <strong>Level 2 extension:</strong> find the most garden you can
-            afford. With the $600 budget and your Plot 1 cost per square foot,
-            what is the largest plot area (in sq ft) you could fill? Divide the
-            budget by the cost per square foot to find out.
+          <div style="margin-top:22px;">
+            <h3 style="font-size:15px;font-weight:800;color:var(--navy);margin-bottom:6px;">🌎 Real Room Makeover Cost Ranges</h3>
+            <table class="data-table">
+              <thead>
+                <tr><th>Makeover Level</th><th>Typical Cost Range</th><th>Details</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Low Makeover</td><td>$1,000 – $2,000</td><td>DIY paint, budget carpet or vinyl flooring</td></tr>
+                <tr><td>Mid-Range Makeover</td><td>$2,500 – $5,000</td><td>Professional paint, laminate/engineered wood</td></tr>
+                <tr><td>High-End Makeover</td><td>$6,000+</td><td>Designer materials, premium hardwood or tile, custom labor</td></tr>
+              </tbody>
+            </table>
+            <label class="lbl" for="world-compare">Where does your makeover cost fit? Write one sentence comparing your cost to these average ranges.</label>
+            <textarea id="world-compare" placeholder="My total makeover cost is $___. This falls into the... because..."></textarea>
           </div>
-        </div>
-      </section>
 
-      <!-- ===================== DELIVERABLE ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--green)">★</div>
-          <div>
-            <div class="skill">Final Deliverable</div>
-            <h2>Your Planning Brief</h2>
+          <details class="hint">
+            <summary>Need a hint?</summary>
+            <p>Flooring Cost = Floor Area × Flooring Price.<br>Paint Cost = Paint Gallons × Paint Price.<br>Total Cost = Flooring Cost + Paint Cost.</p>
+          </details>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(3)">← Back</button>
+          <button class="nav-btn" onclick="goStep(5)">Next Step →</button>
+        </div>
+      </div>
+
+      <!-- ======================================
+           STEP 5 — PARTNER COMPARISON
+      ====================================== -->
+      <div class="step-panel" id="step-5">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon teal">👥</div>
+            <div>
+              <div class="card-title">Step 4 — Partner Comparison</div>
+              <div class="card-sub">Compare your room makeover plan with a classmate</div>
+            </div>
           </div>
-        </div>
-        <p>
-          Write a 3–5 sentence brief for the school council using your real
-          numbers: the size of each space, paint cans needed, and which plot you
-          recommend.
-        </p>
-        <textarea id="pitch" data-save placeholder=""></textarea>
 
-        <h3 style="margin: 22px 0 6px">Planning Checklist</h3>
-        <ul class="checklist" id="checklist">
-          <li>
-            <input type="checkbox" data-save id="ck1" /> I measured a real plot
-            and used Area = ½ × (b₁ + b₂) × h for the trapezoid.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck2" /> I used Area = ½ × b × h
-            for the triangular mural panel.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck3" /> I rounded paint cans UP
-            (ceiling) and explained why.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck4" /> I used Area = b × h for
-            the parallelogram banner.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck5" /> I compared plots with a
-            partner and explained who is larger.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck6" /> I compared my plot to
-            real community-garden plot sizes and made a budget decision.
-          </li>
-        </ul>
-
-        <div class="grid2" style="margin-top: 18px">
-          <div>
-            <button class="btn" type="button" onclick="buildReport()">
-              📝 Generate report
-            </button>
+          <div class="instruct teal">
+            <strong>Your job:</strong> Ask a partner for their measurements and costs. Write their answers below, then press Compare to see the mathematical differences.
           </div>
-          <div class="pk-no-print">
-            <button
-              class="btn ghost"
-              type="button"
-              onclick="PK.copyReport('reportBox')"
-            >
-              Copy report
-            </button>
-            <button
-              class="btn ghost"
-              type="button"
-              onclick="PK.downloadText('garden-mural-plan.txt', 'reportBox')"
-            >
-              Download .txt
-            </button>
-            <button class="btn ghost" type="button" onclick="downloadCsv()">
-              Download .csv
-            </button>
-            <button class="btn printbtn" type="button" onclick="window.print()">
-              🖨️ Print
-            </button>
+
+          <!-- SVG: Interview visual -->
+          <svg class="visual-svg" viewBox="0 0 520 100" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #cbd5e1;border-radius:12px;">
+            <text x="140" y="40" text-anchor="middle" font-size="28">🙋</text>
+            <text x="140" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e1b4b">You</text>
+            <rect x="185" y="38" width="150" height="30" rx="8" fill="#f3e8ff" stroke="#7c3aed" stroke-width="1.5"/>
+            <text x="260" y="58" text-anchor="middle" font-size="11" fill="#7c3aed">"What is your total cost?"</text>
+            <text x="380" y="40" text-anchor="middle" font-size="28">🙋</text>
+            <text x="380" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e1b4b">Partner</text>
+          </svg>
+
+          <!-- Level 2 challenge -->
+          <div class="instruct lvl2-block lvl2-only">
+            <span class="lvl2-label">LEVEL 2 CHALLENGE — Cost Efficiency Reflection</span>
+            <p style="font-size:14px;margin:6px 0 10px">Calculate your total cost per square foot of floor space (Total Cost ÷ Floor Area). Compare it to your partner's cost per square foot. What does this tell you about the efficiency of your material choices?</p>
+            <label class="lbl" for="efficiency-reflect">Explain cost efficiency comparison:</label>
+            <textarea id="efficiency-reflect" placeholder="My cost per square foot is... My partner's is... This shows that..."></textarea>
           </div>
-        </div>
-        <div class="pk-report" id="reportBox" style="margin-top: 16px">
-          Click "Generate report" to build your planning brief.
-        </div>
-      </section>
 
-      <!-- RUBRIC -->
-      <section class="phase">
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--navy)">✓</div>
-          <div>
-            <div class="skill">How You Are Scored</div>
-            <h2>Project Rubric</h2>
+          <label class="lbl" for="p-name">Partner's name or initials</label>
+          <input type="text" id="p-name" placeholder="e.g. Alex" oninput="recalcAll()" />
+
+          <div class="grid3">
+            <div>
+              <label class="lbl" for="p-area">Partner's Floor Area (sq ft)</label>
+              <input type="number" id="p-area" min="0" oninput="recalcAll()" placeholder="e.g. 150" />
+            </div>
+            <div>
+              <label class="lbl" for="p-gallons">Partner's Paint Gallons</label>
+              <input type="number" id="p-gallons" min="0" oninput="recalcAll()" placeholder="e.g. 3" />
+            </div>
+            <div>
+              <label class="lbl" for="p-cost">Partner's Total Cost ($)</label>
+              <input type="number" id="p-cost" step="0.01" min="0" oninput="recalcAll()" placeholder="e.g. 1250" />
+            </div>
           </div>
+
+          <button class="calc-btn teal" onclick="comparePeer()">📊 Compare Our Plans</button>
+          <div class="readout" id="peer-out"></div>
+
+          <label class="lbl" for="peer-reflect" style="margin-top:18px;">Who planned more budget-friendly? Explain using your calculations.</label>
+          <textarea id="peer-reflect" placeholder="My plan had ___ sq ft and $___ total. My partner had... I think..."></textarea>
         </div>
-        <table class="rubric">
-          <tr>
-            <th>Category</th>
-            <th>4 — Expert</th>
-            <th>3 — Proficient</th>
-            <th>2 — Developing</th>
-          </tr>
-          <tr>
-            <td>Trapezoid Area</td>
-            <td>Correct using ½ × (b₁ + b₂) × h with formula shown</td>
-            <td>Area is correct</td>
-            <td>Forgot the ½ or switched bases and height</td>
-          </tr>
-          <tr>
-            <td>Triangle Area + Paint</td>
-            <td>Area correct and cans correctly rounded up with explanation</td>
-            <td>Area and cans correct</td>
-            <td>Area correct but rounding error on cans</td>
-          </tr>
-          <tr>
-            <td>Parallelogram Area</td>
-            <td>Correct using perpendicular height, not slant side</td>
-            <td>Area is correct</td>
-            <td>Used slant side or arithmetic error</td>
-          </tr>
-          <tr>
-            <td>Comparison (Peer &amp; World)</td>
-            <td>Compares plots and world data with clear reasoning</td>
-            <td>Comparisons present and mostly correct</td>
-            <td>Comparison attempted</td>
-          </tr>
-          <tr>
-            <td>Application / Communication</td>
-            <td>Budget decision correct; brief justifies with all numbers</td>
-            <td>Budget decision correct; brief uses most numbers</td>
-            <td>Decision unclear or missing numbers</td>
-          </tr>
-        </table>
-      </section>
 
-      <p class="footer">
-        Neft Teacher · Unit 5 Culminating Project · Version B ·
-        <span id="yr"></span>
-      </p>
-    </div>
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(4)">← Back</button>
+          <button class="nav-btn green" onclick="goStep(6)">Next Step →</button>
+        </div>
+      </div>
 
+      <!-- ======================================
+           STEP 6 — FINISH
+      ====================================== -->
+      <div class="step-panel" id="step-6">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon green">🏆</div>
+            <div>
+              <div class="card-title">Step 5 — Finish &amp; Submit</div>
+              <div class="card-sub">Write your pitch, check the list, and review the rubric</div>
+            </div>
+          </div>
+
+          <div class="instruct green">
+            <strong>Your job:</strong> Write 3–5 sentences pitching your room makeover proposal using your real numbers. Then check off the checklist, review the rubric, and generate your report.
+          </div>
+
+          <!-- Pitch -->
+          <label class="lbl" for="pitch">✍️ Your Room Makeover Proposal Pitch (use your real math!)</label>
+          <textarea id="pitch" oninput="recalcAll()" placeholder="My room makeover proposal is a smart choice because... The floor area is ___ sq ft, which will look great with ___ flooring. I will paint the walls using ___ gallons of paint..."></textarea>
+
+          <!-- Checklist -->
+          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">✅ Checklist — Check off everything you completed</h3>
+          <ul class="checklist" id="checklist">
+            <li><input type="checkbox" id="ck1" /> I calculated the floor area using length × width.</li>
+            <li><input type="checkbox" id="ck2" /> I calculated the wall paint area by subtracting window/door areas.</li>
+            <li><input type="checkbox" id="ck3" /> I found the total gallons of paint needed (rounding up to whole gallons).</li>
+            <li><input type="checkbox" id="ck4" /> I calculated the total flooring and paint costs.</li>
+            <li><input type="checkbox" id="ck5" /> I compared my project cost to the real-world average room makeover ranges.</li>
+            <li><input type="checkbox" id="ck6" /> I compared my design and budget details with a partner.</li>
+            <li><input type="checkbox" id="ck7" /> I wrote a pitch for my design proposal using my calculations.</li>
+          </ul>
+
+          <!-- Rubric -->
+          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">📊 How You Are Scored</h3>
+          <table class="rubric">
+            <thead>
+              <tr><th>Skill</th><th class="score-4">4 — Expert</th><th class="score-3">3 — Proficient</th><th class="score-2">2 — Developing</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Floor &amp; Wall Area (6.G.1)</strong></td><td>Both floor and net wall area calculations are completely correct with detailed work shown.</td><td>Both calculations are correct but showing less detail.</td><td>One calculation is correct or minor computation errors.</td></tr>
+              <tr><td><strong>Paint Gallons</strong></td><td>Paint gallons needed are calculated correctly and correctly rounded up to the next whole gallon with clear explanation.</td><td>Gallons are calculated correctly but not rounded to whole units.</td><td>Significant errors in paint coverage logic.</td></tr>
+              <tr><td><strong>Makeover Budgeting</strong></td><td>Total flooring and paint costs are perfectly accurate based on choices, with excellent explanation of custom values (Level 2).</td><td>Total costs are accurate.</td><td>Computation errors in multiplication or addition.</td></tr>
+              <tr><td><strong>Comparisons</strong></td><td>Deep mathematical comparison of partner data and real-world ranges.</td><td>Both comparisons present.</td><td>Only one comparison completed.</td></tr>
+              <tr><td><strong>Proposal Pitch</strong></td><td>Uses all calculated math values to write a compelling, logical pitch.</td><td>Uses most numbers in the pitch.</td><td>Pitch is incomplete or doesn't use math data.</td></tr>
+            </tbody>
+          </table>
+
+          <!-- Report + export -->
+          <div class="nav-row no-print" style="margin-top:22px;flex-wrap:wrap;justify-content:flex-start;gap:8px;">
+            <button class="calc-btn" onclick="buildReport()">📝 Generate Summary</button>
+            <button class="export-btn" onclick="copyReport()">📋 Copy</button>
+            <button class="export-btn" onclick="downloadTxt()">⬇️ Download .txt</button>
+            <button class="export-btn" onclick="window.print()">🖨️ Print</button>
+          </div>
+          <pre class="report-box" id="reportBox"></pre>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(5)">← Back</button>
+          <button class="nav-btn green" onclick="alert('Great work! 🎉 Show this page to your teacher.')">🎉 I'm Done!</button>
+        </div>
+      </div>
+
+    </div><!-- end wizard -->
+
+    <!-- ====== SCRIPTS ====== -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <script src="/assets/app.js" defer></script>
     <script>
-      const yrEl = document.getElementById("yr");
-      if (yrEl) yrEl.textContent = new Date().getFullYear();
-      const $ = (id) => document.getElementById(id);
-      const num = (id) => {
-        const e = $(id);
-        return e ? parseFloat(e.value) : NaN;
-      };
-
-      function show(id, html) {
-        const el = $(id);
-        if (!el) return;
-        el.innerHTML = html;
-        el.classList.add("show");
-        updateTotal();
-        updateProgress();
-      }
-      function hide(id) {
-        $(id).classList.remove("show");
-      }
-
-      const proj = {
-        plot: null,
-        mural: null,
-        cans: null,
-        banner: null,
-        total: null,
-      };
-
-      /* ---- Part 1 calculators (kept in page) ---- */
-      function calcTrapezoid() {
-        const b1 = num("p1-b1"),
-          b2 = num("p1-b2"),
-          h = num("p1-h");
-        if (
-          isNaN(b1) ||
-          b1 <= 0 ||
-          isNaN(b2) ||
-          b2 <= 0 ||
-          isNaN(h) ||
-          h <= 0
-        ) {
-          hide("p1-out");
-          proj.plot = null;
-          updateTotal();
-          return;
-        }
-        const area = 0.5 * (b1 + b2) * h;
-        proj.plot = area;
-        show(
-          "p1-out",
-          '<div class="big">' +
-            area.toFixed(2) +
-            " sq ft</div>Area = ½ × (b₁ + b₂) × h = ½ × (" +
-            b1 +
-            " + " +
-            b2 +
-            ") × " +
-            h +
-            " = ½ × " +
-            (b1 + b2) +
-            " × " +
-            h +
-            " = <strong>" +
-            area.toFixed(2) +
-            " sq ft</strong>",
-        );
-      }
-
-      function calcMural() {
-        const b = num("p2-base"),
-          h = num("p2-height"),
-          cov = num("p2-coverage");
-        if (
-          isNaN(b) ||
-          b <= 0 ||
-          isNaN(h) ||
-          h <= 0 ||
-          isNaN(cov) ||
-          cov <= 0
-        ) {
-          hide("p2-out");
-          proj.mural = null;
-          proj.cans = null;
-          updateTotal();
-          return;
-        }
-        const area = 0.5 * b * h,
-          cans = Math.ceil(area / cov);
-        proj.mural = area;
-        proj.cans = cans;
-        show(
-          "p2-out",
-          '<div class="big">' +
-            area.toFixed(2) +
-            " sq ft — " +
-            cans +
-            " can" +
-            (cans !== 1 ? "s" : "") +
-            " of paint</div>Triangle area = ½ × " +
-            b +
-            " × " +
-            h +
-            " = <strong>" +
-            area.toFixed(2) +
-            " sq ft</strong><br>Cans = " +
-            area.toFixed(2) +
-            " ÷ " +
-            cov +
-            " = " +
-            (area / cov).toFixed(2) +
-            " → round UP → <strong>" +
-            cans +
-            " can" +
-            (cans !== 1 ? "s" : "") +
-            "</strong>.<br>⬆️ Always round up — you can't buy a fraction of a can.",
-        );
-      }
-
-      function calcBanner() {
-        const b = num("p3-base"),
-          h = num("p3-height");
-        if (isNaN(b) || b <= 0 || isNaN(h) || h <= 0) {
-          hide("p3-out");
-          proj.banner = null;
-          updateTotal();
-          return;
-        }
-        const area = b * h;
-        proj.banner = area;
-        show(
-          "p3-out",
-          '<div class="big">' +
-            area.toFixed(2) +
-            " sq ft</div>Area = b × h = <strong>" +
-            b +
-            " × " +
-            h +
-            " = " +
-            area.toFixed(2) +
-            " sq ft</strong>. Use the perpendicular height, not the slant side!",
-        );
-      }
-
-      // Auto-sum: trapezoid plot + mural + banner
-      function updateTotal() {
-        const parts = [proj.plot, proj.mural, proj.banner].filter(
-          (v) => v != null && !isNaN(v),
-        );
-        if (!parts.length) {
-          proj.total = null;
-          $("totalArea").textContent = "0";
-          $("totalBreakdown").textContent =
-            "Fill in the areas above to build your total.";
-          return;
-        }
-        const total = parts.reduce((a, c) => a + c, 0);
-        proj.total = total;
-        $("totalArea").textContent = total.toFixed(2);
-        const bits = [];
-        if (proj.plot != null) bits.push("plot " + proj.plot.toFixed(1));
-        if (proj.mural != null) bits.push("mural " + proj.mural.toFixed(1));
-        if (proj.banner != null) bits.push("banner " + proj.banner.toFixed(1));
-        $("totalBreakdown").textContent = "= " + bits.join(" + ") + " sq ft";
-        // feed budget Plot 1 area + world meter from the trapezoid plot
-        if (proj.plot != null && $("p4-area1")) {
-          $("p4-area1").value = proj.plot.toFixed(2);
-          calcBudget();
-        }
-        if (proj.plot != null && $("myWorld")) {
-          $("myWorld").value = proj.plot.toFixed(2);
-          worldGo();
-        }
-      }
-
-      /* ---- Part 4: budget decision (keeps original logic, area auto-fed) ---- */
-      function calcBudget() {
-        const a1 = num("p4-area1"),
-          c1 = num("p4-price1"),
-          a2 = num("p4-area2"),
-          c2 = num("p4-price2");
-        if (
-          isNaN(a1) ||
-          a1 <= 0 ||
-          isNaN(c1) ||
-          c1 <= 0 ||
-          isNaN(a2) ||
-          a2 <= 0 ||
-          isNaN(c2) ||
-          c2 <= 0
-        ) {
-          hide("p4-out");
-          return;
-        }
-        const cost1 = a1 * c1,
-          cost2 = a2 * c2,
-          budget = 600;
-        const fits1 = cost1 <= budget,
-          fits2 = cost2 <= budget;
-        let rec;
-        if (fits1 && fits2)
-          rec =
-            "Both plots fit the $600 budget. Plot 1 costs $" +
-            cost1.toFixed(2) +
-            " and Plot 2 costs $" +
-            cost2.toFixed(2) +
-            ". Choose based on the size you need.";
-        else if (fits1)
-          rec =
-            "✅ Plot 1 ($" +
-            cost1.toFixed(2) +
-            ") fits. ⚠️ Plot 2 ($" +
-            cost2.toFixed(2) +
-            ") is over budget.";
-        else if (fits2)
-          rec =
-            "⚠️ Plot 1 ($" +
-            cost1.toFixed(2) +
-            ") is over budget. ✅ Plot 2 ($" +
-            cost2.toFixed(2) +
-            ") fits.";
-        else
-          rec =
-            "⚠️ Both plots exceed the $600 budget. Renegotiate costs or pick a smaller plot!";
-        $("p4-out").innerHTML =
-          '<div class="big">Plot 1: $' +
-          cost1.toFixed(2) +
-          " &nbsp;|&nbsp; Plot 2: $" +
-          cost2.toFixed(2) +
-          "</div>Plot 1: " +
-          a1.toFixed(2) +
-          " sq ft × $" +
-          c1.toFixed(2) +
-          " = <strong>$" +
-          cost1.toFixed(2) +
-          "</strong><br>Plot 2: " +
-          a2.toFixed(2) +
-          " sq ft × $" +
-          c2.toFixed(2) +
-          " = <strong>$" +
-          cost2.toFixed(2) +
-          "</strong><br>" +
-          rec;
-        $("p4-out").classList.add("show");
-        updateProgress();
-      }
-
-      function checkTrap() {
-        PK.checkWork("check-trap", 15, 0);
-        updateProgress();
-      }
-      function checkReverse() {
-        // b2 = (2*60/6) - 8 = 20 - 8 = 12
-        PK.checkWork("revB2", 12, 0.01);
-        updateProgress();
-      }
-
-      /* ---- Part 2: peer compare (uses kit) ---- */
-      function comparePeer() {
-        const myPlot = proj.plot;
-        const b1 = num("p-b1"),
-          b2 = num("p-b2"),
-          h = num("p-ph");
-        let pPlot = NaN;
-        if (!isNaN(b1) && !isNaN(b2) && !isNaN(h)) pPlot = 0.5 * (b1 + b2) * h;
-        const rows = [];
-        if (myPlot != null && !isNaN(pPlot))
-          rows.push({
-            label: "Plot area sq ft",
-            me: myPlot,
-            partner: pPlot,
-            fmt: (x) => Number(x).toFixed(1),
-          });
-        if (!rows.length) {
-          $("peerBox").innerHTML =
-            '<p class="pk-fb">Finish Part 1 and enter your partner\'s plot dimensions to compare.</p>';
-          hide("peerVerdict");
-          return;
-        }
-        PK.peerCompare("peerBox", rows);
-        const diff = Math.abs(myPlot - pPlot);
-        const who =
-          myPlot > pPlot
-            ? "Your plot is larger"
-            : myPlot < pPlot
-              ? "Your partner's plot is larger"
-              : "Both plots are the same size";
-        $("peerVerdict").innerHTML =
-          '<div class="big">' +
-          who +
-          "</div>" +
-          (diff === 0
-            ? "They are equal!"
-            : "by <strong>" +
-              diff.toFixed(1) +
-              " sq ft</strong> (" +
-              myPlot.toFixed(1) +
-              " vs " +
-              pPlot.toFixed(1) +
-              ").");
-        $("peerVerdict").classList.add("show");
-        updateProgress();
-      }
-
-      /* ---- Part 3: world dataset + meter ---- */
-      // [city program, typical plot area sq ft] — realistic community-garden values
-      const world = [
-        ["New York, NY 🇺🇸", 100],
-        ["Chicago, IL 🇺🇸", 80],
-        ["Seattle, WA 🇺🇸", 100],
-        ["Toronto, Canada 🇨🇦", 120],
-        ["London, UK 🇬🇧", 90],
-        ["Berlin, Germany 🇩🇪", 215],
-        ["Tokyo, Japan 🇯🇵", 65],
-        ["Mexico City, MX 🇲🇽", 85],
+      // ---- State ----
+      const STEPS = [
+        { id: 1, label: 'Key Words', icon: '📖' },
+        { id: 2, label: 'Floor Area', icon: '📐' },
+        { id: 3, label: 'Wall Paint', icon: '🎨' },
+        { id: 4, label: 'Costs & Budget', icon: '💵' },
+        { id: 5, label: 'Compare', icon: '👥' },
+        { id: 6, label: 'Finish', icon: '🏆' },
       ];
-      function renderWorld() {
-        $("worldRows").innerHTML = world
-          .map((r) => `<tr><td>${r[0]}</td><td>${r[1]} sq ft</td></tr>`)
-          .join("");
-        $("worldSelect").innerHTML = world
-          .map(
-            (r, i) => `<option value="${i}">${r[0]} — ${r[1]} sq ft</option>`,
-          )
-          .join("");
-      }
+      let currentStep = 1;
+      const visited = new Set([1]);
 
-      function worldSample() {
-        return world.map((r) => r[1]);
-      }
-
-      function worldGo() {
-        const my = num("myWorld");
-        const customName = $("worldCountry")
-          ? $("worldCountry").value.trim()
-          : "";
-        const customSize = $("worldSize") ? num("worldSize") : NaN;
-
-        let sample = worldSample();
-        if (!isNaN(customSize) && customSize > 0) {
-          sample = [...sample, customSize];
-        }
-
-        const labels = { mean: "City avg", me: "Me" };
-
-        PK.worldMeter("worldMeter", sample, my, labels);
-
-        const fb = $("worldMeter");
-        if (!isNaN(customSize) && customSize > 0 && customName) {
-          const ratio = (my / customSize).toFixed(2);
-          const pct = Math.round((my / customSize) * 100);
-          const diff = Math.abs(my - customSize).toFixed(2);
-
-          let myValStr = false ? "$" + my.toFixed(2) : my + " ft";
-          let custValStr = false
-            ? "$" + customSize.toFixed(2)
-            : customSize + " ft";
-          let diffStr = false
-            ? "$" + Number(diff).toFixed(2)
-            : Number(diff).toFixed(2) + " ft";
-
-          const rel =
-            my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
-          const desc =
-            `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
-            `📊 Research Comparison: Your value (${myValStr}) is <strong>${rel}</strong> than <strong>${customName}</strong> (${custValStr}) ` +
-            `by <strong>${diffStr}</strong>. Your value is <strong>${pct}%</strong> (${ratio}x) of the size of the researched benchmark.` +
-            `</div>`;
-          fb.innerHTML += desc;
-        }
-
-        if (typeof drawVisualizer === "function") {
-          drawVisualizer();
-        }
-
-        updateProgress();
-      }
-
-      function runWhatIf() {
-        const b1 = num("p1-b1");
-        const b2 = num("p1-b2");
-        const h = num("p1-h");
-        const add = parseFloat($("whatIfAdd").value);
-        if ([b1, b2, h].some((x) => isNaN(x) || x <= 0)) {
-          $("whatIfBox").textContent =
-            "First enter base 1, base 2, and height for your plot in Part 1.";
-          return;
-        }
-        if (isNaN(add)) {
-          $("whatIfBox").textContent =
-            "Enter how many feet to add to base 1 (b₁).";
-          return;
-        }
-        if (b1 + add <= 0) {
-          $("whatIfBox").textContent =
-            "The new base 1 (b₁) must be greater than 0 ft.";
-          return;
-        }
-        const r = (x) => Math.round(x * 100) / 100;
-        const area = (x) => ((x + b2) / 2) * h;
-        PK.whatIf(
-          "whatIfBox",
-          { "b₁": b1 + " ft", area: r(area(b1)) + " sq ft" },
-          { "b₁": r(b1 + add) + " ft", area: r(area(b1 + add)) + " sq ft" },
-          "Add " +
-            add +
-            " ft to base 1 (b₂=" +
-            b2 +
-            " ft, height=" +
-            h +
-            " ft):",
-        );
-      }
-
-      /* ---- Use example numbers ---- */
-      function useExamples() {
-        const ex = {
-          worldCountry: "New York, NY",
-          worldSize: 4,
-          "p1-b1": 8,
-          "p1-b2": 12,
-          "p1-h": 6,
-          "p2-base": 14,
-          "p2-height": 10,
-          "p2-coverage": 50,
-          "p3-base": 9,
-          "p3-height": 4,
-          "p4-price1": 4.5,
-          "p4-area2": 45,
-          "p4-price2": 5.2,
-        };
-        Object.entries(ex).forEach(([k, v]) => {
-          if ($(k)) $(k).value = v;
-        });
+      // ---- Level toggle ----
+      function setLevel(n) {
+        document.getElementById('body').className = 'level-' + n;
+        document.getElementById('btn-lv1').classList.toggle('active', n === 1);
+        document.getElementById('btn-lv2').classList.toggle('active', n === 2);
         recalcAll();
       }
 
-      function syncResearch() {
-        const ws = $("worldSize");
-        if (!ws) return;
-        const val = num("worldSize");
-        if (isNaN(val) || val <= 0) return;
-        if ($("p1-b1") && $("p1-b2") && $("p1-h")) {
-          $("p1-b1").value = 12;
-          $("p1-b2").value = 8;
-          $("p1-h").value = (val / 10).toFixed(1);
-          if (typeof calcTrapezoid === "function") calcTrapezoid();
-        }
-        worldGo();
+      // ---- Build step trail ----
+      function buildTrail() {
+        const trail = document.getElementById('stepTrail');
+        trail.innerHTML = STEPS.map((s, i) => {
+          const isLast = i === STEPS.length - 1;
+          return `<span class="step-trail-item${s.id === currentStep ? ' active' : ''}${visited.has(s.id) && s.id !== currentStep ? ' done' : ''}" onclick="goStep(${s.id})">
+            <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? '✓' : s.id}</span>
+            <span class="s-label">${s.label}</span>
+          </span>${!isLast ? '<span class="step-arrow">›</span>' : ''}`;
+        }).join('');
       }
 
-      function drawVisualizer() {
-        let b1 = num("p1-b1") || 0;
-        let b2 = num("p1-b2") || 0;
-        let ph = num("p1-h") || 0;
-        let mb = num("p2-base") || 0;
-        let mh = num("p2-height") || 0;
-        let bb = num("p3-base") || 0;
-        let bh = num("p3-height") || 0;
+      // ---- Navigation ----
+      function goStep(n) {
+        if (n < 1 || n > STEPS.length) return;
+        document.getElementById('step-' + currentStep).classList.remove('active');
+        currentStep = n;
+        visited.add(n);
+        document.getElementById('step-' + n).classList.add('active');
+        buildTrail();
+        updateProgress();
+        recalcAll();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
 
-        // Show a worked EXAMPLE blueprint (8/12×6 trapezoid plot, 14×10 mural,
-        // 9×4 banner) as the default so the canvas always has something to look
-        // at; switch to the student's real spaces as soon as they enter a plot.
-        const isExample = !((b1 > 0 || b2 > 0) && ph > 0);
-        if (isExample) {
-          b1 = 8;
-          b2 = 12;
-          ph = 6;
-          mb = 14;
-          mh = 10;
-          bb = 9;
-          bh = 4;
+      function updateProgress() {
+        const pct = Math.round(((currentStep - 1) / (STEPS.length - 1)) * 100);
+        document.getElementById('progFill').style.width = pct + '%';
+        document.getElementById('progLabel').textContent = `Step ${currentStep} of ${STEPS.length}`;
+      }
+
+      // ---- Math helpers ----
+      function fmt(n) {
+        if (isNaN(n)) return '—';
+        return Number.isInteger(n) ? n.toFixed(0) : n.toFixed(2);
+      }
+
+      function showReadout(id, html) {
+        const el = document.getElementById(id);
+        if (el) {
+          el.innerHTML = html;
+          el.classList.add('show');
+        }
+      }
+
+      // ---- Toggle Custom Price Dropdowns ----
+      function onFlooringChange() {
+        const sel = document.getElementById('flooring-select').value;
+        document.getElementById('custom-flooring-wrap').style.display = (sel === 'custom') ? 'block' : 'none';
+        recalcAll();
+      }
+
+      function onPaintChange() {
+        const sel = document.getElementById('paint-select').value;
+        document.getElementById('custom-paint-wrap').style.display = (sel === 'custom') ? 'block' : 'none';
+        recalcAll();
+      }
+
+      // ---- Calculations ----
+      function calcFloor() {
+        const l = parseFloat(document.getElementById('floor-length').value);
+        const w = parseFloat(document.getElementById('floor-width').value);
+        
+        const sl = document.getElementById('floor-svg-length');
+        const sw = document.getElementById('floor-svg-width');
+        const sa = document.getElementById('floor-svg-area');
+        
+        if (sl) sl.textContent = !isNaN(l) ? l + ' ft' : 'Length (L)';
+        if (sw) sw.textContent = !isNaN(w) ? w + ' ft' : 'Width (W)';
+        if (sa) sa.textContent = (!isNaN(l) && !isNaN(w)) ? (l * w).toFixed(1) + ' sq ft' : 'Area = L × W';
+
+        if (isNaN(l) || isNaN(w) || l <= 0 || w <= 0) {
+          document.getElementById('floor-out').classList.remove('show');
+          return;
+        }
+        
+        const area = l * w;
+        showReadout('floor-out', `
+          <strong>Floor Area = ${fmt(area)} sq ft</strong><br>
+          Calculation: <strong>${fmt(l)} ft × ${fmt(w)} ft = ${fmt(area)} sq ft</strong>.<br>
+          <small>This is the total floor space that will need flooring material.</small>
+        `);
+      }
+
+      function calcPaint() {
+        const l = parseFloat(document.getElementById('floor-length').value);
+        const w = parseFloat(document.getElementById('floor-width').value);
+        const h = parseFloat(document.getElementById('wall-height').value);
+        const win = parseFloat(document.getElementById('window-area').value) || 0;
+        const door = parseFloat(document.getElementById('door-area').value) || 0;
+
+        if (isNaN(l) || isNaN(w)) {
+          showReadout('paint-out', `<strong>Error:</strong> Please go back to Step 1 and enter your Floor Length and Width first.`);
+          return;
+        }
+        if (isNaN(h) || h <= 0) {
+          document.getElementById('paint-out').classList.remove('show');
+          return;
         }
 
-        let html = "";
-        {
-          const maxDim = Math.max(b1, b2, ph, mb, mh, bb, bh, 1);
-          const scale = 90 / maxDim;
-          const baseY = 175;
-          let x = 40;
-          const place = (w) => {
-            const sx = x;
-            x += w + 22;
-            return sx;
-          };
-          const shapes = [];
-
-          // Garden plot (trapezoid: b1 bottom, b2 top)
-          {
-            const wb = b1 * scale,
-              wt = b2 * scale,
-              h = ph * scale,
-              footprint = Math.max(wb, wt),
-              sx = place(footprint),
-              cx = sx + footprint / 2;
-            shapes.push(`
-              <polygon points="${cx - wb / 2},${baseY} ${cx + wb / 2},${baseY} ${cx + wt / 2},${baseY - h} ${cx - wt / 2},${baseY - h}" fill="rgba(40,53,147,0.18)" stroke="#283593" stroke-width="2" />
-              <text x="${cx}" y="${baseY + 14}" text-anchor="middle" font-size="10" font-weight="bold" fill="#283593">Plot ½(${b1}+${b2})·${ph}</text>
-            `);
-          }
-
-          // Mural panel (triangle)
-          if (mb > 0 && mh > 0) {
-            const w = mb * scale,
-              h = mh * scale,
-              sx = place(w);
-            shapes.push(`
-              <polygon points="${sx},${baseY} ${sx + w},${baseY} ${sx + w / 2},${baseY - h}" fill="rgba(0,121,107,0.18)" stroke="#00796b" stroke-width="2" />
-              <text x="${sx + w / 2}" y="${baseY + 14}" text-anchor="middle" font-size="10" font-weight="bold" fill="#00796b">Mural ½·${mb}×${mh}</text>
-            `);
-          }
-
-          // School banner (parallelogram)
-          if (bb > 0 && bh > 0) {
-            const w = bb * scale,
-              h = bh * scale,
-              skew = Math.min(h * 0.35, 18),
-              sx = place(w + skew);
-            shapes.push(`
-              <polygon points="${sx + skew},${baseY - h} ${sx + skew + w},${baseY - h} ${sx + w},${baseY} ${sx},${baseY}" fill="rgba(245,124,0,0.18)" stroke="#f57c00" stroke-width="2" />
-              <text x="${sx + skew / 2 + w / 2}" y="${baseY + 14}" text-anchor="middle" font-size="10" font-weight="bold" fill="#f57c00">Banner ${bb}×${bh}</text>
-            `);
-          }
-
-          html = `
-            <line x1="30" y1="${baseY}" x2="470" y2="${baseY}" stroke="#cbd5e1" stroke-width="1.5" />
-            ${shapes.join("")}
-            <text x="250" y="215" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">Scale Garden Blueprint Map View</text>
-          `;
+        const perimeter = 2 * (l + w);
+        const grossWallArea = perimeter * h;
+        const netWallArea = grossWallArea - win - door;
+        
+        if (netWallArea <= 0) {
+          showReadout('paint-out', `<strong>Error:</strong> Subtracted area (windows + doors) cannot be larger than the total wall area (${fmt(grossWallArea)} sq ft).`);
+          return;
         }
 
-        const svgString = `
-          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
-            ${isExample ? `<rect x="400" y="16" width="80" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="440" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example</text>` : ""}
-            ${html}
-          </svg>
-        `;
-        $("projectVisualizer").innerHTML = svgString;
+        const paintNeeded = netWallArea / 350;
+        const gallonsToBuy = Math.ceil(paintNeeded);
+
+        showReadout('paint-out', `
+          <strong>Gross Wall Area:</strong> 2 × (${fmt(l)} + ${fmt(w)}) × ${fmt(h)} = <strong>${fmt(grossWallArea)} sq ft</strong><br>
+          <strong>Net Paintable Area:</strong> ${fmt(grossWallArea)} − ${fmt(win)} (windows) − ${fmt(door)} (doors) = <strong>${fmt(netWallArea)} sq ft</strong><br>
+          Paint Needed: You need <strong>${paintNeeded.toFixed(2)} gallons</strong> (covers 350 sq ft/gal).<br>
+          Gallons to Buy: <strong>${gallonsToBuy} whole gallons</strong> (rounded up).
+        `);
+      }
+
+      function calcCost() {
+        const l = parseFloat(document.getElementById('floor-length').value);
+        const w = parseFloat(document.getElementById('floor-width').value);
+        const floorArea = l * w;
+
+        // Resolve flooring price
+        const flooringSel = document.getElementById('flooring-select').value;
+        let flooringPrice = parseFloat(flooringSel);
+        if (flooringSel === 'custom') {
+          flooringPrice = parseFloat(document.getElementById('custom-flooring-price').value) || 0;
+        }
+
+        // Resolve paint gallons and price
+        const h = parseFloat(document.getElementById('wall-height').value);
+        const win = parseFloat(document.getElementById('window-area').value) || 0;
+        const door = parseFloat(document.getElementById('door-area').value) || 0;
+        const grossWallArea = 2 * (l + w) * h;
+        const netWallArea = grossWallArea - win - door;
+        const gallonsToBuy = Math.ceil(netWallArea / 350) || 0;
+
+        const paintSel = document.getElementById('paint-select').value;
+        let paintPrice = parseFloat(paintSel);
+        if (paintSel === 'custom') {
+          paintPrice = parseFloat(document.getElementById('custom-paint-price').value) || 0;
+        }
+
+        if (isNaN(floorArea) || isNaN(h)) {
+          showReadout('cost-out', `<strong>Error:</strong> Please make sure you completed the Floor Area and Wall Paint steps first.`);
+          return;
+        }
+
+        const flooringCost = floorArea * flooringPrice;
+        const paintCost = gallonsToBuy * paintPrice;
+        const totalCost = flooringCost + paintCost;
+
+        let rangeStr = '';
+        if (totalCost < 1000) rangeStr = 'below the typical Low Makeover range';
+        else if (totalCost <= 2000) rangeStr = 'within the typical Low Makeover range ($1,000 – $2,000)';
+        else if (totalCost < 2500) rangeStr = 'between Low and Mid-Range Makeover ranges';
+        else if (totalCost <= 5000) rangeStr = 'within the typical Mid-Range Makeover range ($2,500 – $5,000)';
+        else if (totalCost < 6000) rangeStr = 'between Mid-Range and High-End Makeover ranges';
+        else rangeStr = 'within the typical High-End Makeover range ($6,000+)';
+
+        showReadout('cost-out', `
+          Flooring Cost: ${fmt(floorArea)} sq ft × $${fmt(flooringPrice)}/sq ft = <strong>$${fmt(flooringCost)}</strong><br>
+          Paint Cost: ${gallonsToBuy} gallons × $${fmt(paintPrice)}/gallon = <strong>$${fmt(paintCost)}</strong><br>
+          Total Makeover Cost: $${fmt(flooringCost)} + $${fmt(paintCost)} = <strong>$${fmt(totalCost)}</strong><br>
+          <small>Your total cost is <strong>${rangeStr}</strong>.</small>
+        `);
+      }
+
+      function comparePeer() {
+        const l = parseFloat(document.getElementById('floor-length').value);
+        const w = parseFloat(document.getElementById('floor-width').value);
+        const floorArea = l * w;
+
+        const h = parseFloat(document.getElementById('wall-height').value);
+        const win = parseFloat(document.getElementById('window-area').value) || 0;
+        const door = parseFloat(document.getElementById('door-area').value) || 0;
+        const grossWallArea = 2 * (l + w) * h;
+        const netWallArea = grossWallArea - win - door;
+        const gallonsToBuy = Math.ceil(netWallArea / 350) || 0;
+
+        // Resolve flooring price
+        const flooringSel = document.getElementById('flooring-select').value;
+        let flooringPrice = parseFloat(flooringSel);
+        if (flooringSel === 'custom') {
+          flooringPrice = parseFloat(document.getElementById('custom-flooring-price').value) || 0;
+        }
+
+        // Resolve paint price
+        const paintSel = document.getElementById('paint-select').value;
+        let paintPrice = parseFloat(paintSel);
+        if (paintSel === 'custom') {
+          paintPrice = parseFloat(document.getElementById('custom-paint-price').value) || 0;
+        }
+
+        const totalCost = (floorArea * flooringPrice) + (gallonsToBuy * paintPrice);
+
+        const partnerName = document.getElementById('p-name').value || 'Partner';
+        const pArea = parseFloat(document.getElementById('p-area').value);
+        const pGallons = parseInt(document.getElementById('p-gallons').value);
+        const pCost = parseFloat(document.getElementById('p-cost').value);
+
+        if (isNaN(pArea) || isNaN(pGallons) || isNaN(pCost)) {
+          document.getElementById('peer-out').classList.remove('show');
+          return;
+        }
+
+        let html = '';
+        
+        // Floor Area diff
+        if (!isNaN(floorArea)) {
+          const areaDiff = floorArea - pArea;
+          html += `<strong>Floor Area:</strong> You: <strong>${fmt(floorArea)} sq ft</strong> | ${partnerName}: <strong>${fmt(pArea)} sq ft</strong> — `;
+          if (areaDiff > 0) {
+            html += `Your floor is <strong>${fmt(areaDiff)} sq ft larger</strong>.<br>`;
+          } else if (areaDiff < 0) {
+            html += `${partnerName}'s floor is <strong>${fmt(Math.abs(areaDiff))} sq ft larger</strong>.<br>`;
+          } else {
+            html += `Your floors have the exact same area!<br>`;
+          }
+        }
+
+        // Paint Gallons diff
+        if (!isNaN(gallonsToBuy)) {
+          const paintDiff = gallonsToBuy - pGallons;
+          html += `<strong>Paint Needed:</strong> You: <strong>${gallonsToBuy} gallons</strong> | ${partnerName}: <strong>${pGallons} gallons</strong> — `;
+          if (paintDiff > 0) {
+            html += `You need <strong>${paintDiff} more gallons</strong>.<br>`;
+          } else if (paintDiff < 0) {
+            html += `${partnerName} needs <strong>${Math.abs(paintDiff)} more gallons</strong>.<br>`;
+          } else {
+            html += `You need the exact same amount of paint!<br>`;
+          }
+        }
+
+        // Total Cost diff
+        if (!isNaN(totalCost)) {
+          const costDiff = totalCost - pCost;
+          html += `<strong>Total Makeover Cost:</strong> You: <strong>$${fmt(totalCost)}</strong> | ${partnerName}: <strong>$${fmt(pCost)}</strong> — `;
+          if (costDiff > 0) {
+            html += `Your makeover costs <strong>$${fmt(costDiff)} more</strong>.<br>`;
+          } else if (costDiff < 0) {
+            html += `${partnerName}'s makeover costs <strong>$${fmt(Math.abs(costDiff))} more</strong>.<br>`;
+          } else {
+            html += `Your room makeovers have the exact same total cost!<br>`;
+          }
+        }
+
+        showReadout('peer-out', html);
+      }
+
+      // ---- Report ----
+      function buildReport() {
+        const l = parseFloat(document.getElementById('floor-length').value);
+        const w = parseFloat(document.getElementById('floor-width').value);
+        const floorArea = l * w;
+
+        const h = parseFloat(document.getElementById('wall-height').value);
+        const win = parseFloat(document.getElementById('window-area').value) || 0;
+        const door = parseFloat(document.getElementById('door-area').value) || 0;
+        const grossWallArea = 2 * (l + w) * h;
+        const netWallArea = grossWallArea - win - door;
+        const gallonsToBuy = Math.ceil(netWallArea / 350) || 0;
+
+        // Resolve flooring price
+        const flooringSel = document.getElementById('flooring-select').value;
+        let flooringPrice = parseFloat(flooringSel);
+        let flooringName = document.getElementById('flooring-select').options[document.getElementById('flooring-select').selectedIndex].text;
+        if (flooringSel === 'custom') {
+          flooringPrice = parseFloat(document.getElementById('custom-flooring-price').value) || 0;
+          flooringName = `Custom Flooring ($${fmt(flooringPrice)}/sq ft)`;
+        }
+
+        // Resolve paint price
+        const paintSel = document.getElementById('paint-select').value;
+        let paintPrice = parseFloat(paintSel);
+        let paintName = document.getElementById('paint-select').options[document.getElementById('paint-select').selectedIndex].text;
+        if (paintSel === 'custom') {
+          paintPrice = parseFloat(document.getElementById('custom-paint-price').value) || 0;
+          paintName = `Custom Paint ($${fmt(paintPrice)}/gallon)`;
+        }
+
+        const flooringCost = floorArea * flooringPrice;
+        const paintCost = gallonsToBuy * paintPrice;
+        const totalCost = flooringCost + paintCost;
+
+        const pitch = document.getElementById('pitch').value;
+        const partner = document.getElementById('p-name').value;
+        const pArea = document.getElementById('p-area').value;
+        const pGallons = document.getElementById('p-gallons').value;
+        const pCost = document.getElementById('p-cost').value;
+        const pReflect = document.getElementById('peer-reflect').value;
+        const worldNote = document.getElementById('world-compare').value;
+
+        // Level-specific content
+        const isLevel2 = document.getElementById('body').classList.contains('level-2');
+        const compFloorAns = isLevel2 ? document.getElementById('composite-floor-ans').value : '';
+        const twoCoatsAns = isLevel2 ? document.getElementById('two-coats-reflect').value : '';
+        const budgetStrategy = isLevel2 ? document.getElementById('budget-strategy').value : '';
+        const efficiencyReflect = isLevel2 ? document.getElementById('efficiency-reflect').value : '';
+
+        const lines = [
+          '═══ ROOM MAKEOVER BUDGET — UNIT 5 PROJECT (Version B) ═══',
+          '',
+          '📐 MATH SKILLS USED: Area of Polygons, Composite Figures, Surface Coverage',
+          `   Level: ${isLevel2 ? 'Level 2 — Challenge' : 'Level 1 — With Support'}`,
+          '',
+          '📐 STEP 1 — FLOOR AREA',
+          `   Floor Dimensions: ${l ? l + ' ft' : '—'} × ${w ? w + ' ft' : '—'}`,
+          `   Floor Area = ${floorArea ? fmt(floorArea) + ' sq ft' : '—'}`,
+          isLevel2 && compFloorAns ? `   L-Shape Composite Floor Challenge: ${compFloorAns}` : '',
+          '',
+          '🎨 STEP 2 — WALL PAINT COVERAGE',
+          `   Wall Height: ${h ? h + ' ft' : '—'}`,
+          `   Subtracting: Windows = ${win} sq ft | Doors = ${door} sq ft`,
+          `   Gross Wall Area = ${grossWallArea ? fmt(grossWallArea) + ' sq ft' : '—'}`,
+          `   Net Paintable Area = ${netWallArea ? fmt(netWallArea) + ' sq ft' : '—'}`,
+          `   Gallons Needed = ${gallonsToBuy} gallons`,
+          isLevel2 && twoCoatsAns ? `   Two Coats Challenge: ${twoCoatsAns}` : '',
+          '',
+          '💵 STEP 3 — MAKEOVER COSTS',
+          `   Flooring: ${flooringName} = $${flooringCost ? fmt(flooringCost) : '—'}`,
+          `   Paint: ${paintName} = $${paintCost ? fmt(paintCost) : '—'}`,
+          `   Total Makeover Cost = $${totalCost ? fmt(totalCost) : '—'}`,
+          worldNote ? `   Real-World Comparison: ${worldNote}` : '',
+          isLevel2 && budgetStrategy ? `   Budget Strategy ($1,500 limit): ${budgetStrategy}` : '',
+          '',
+          '👥 STEP 4 — PARTNER COMPARISON',
+          `   Partner: ${partner || '—'}`,
+          `   Partner Floor Area: ${pArea || '—'} sq ft | Gallons: ${pGallons || '—'} | Cost: $${pCost || '—'}`,
+          pReflect ? `   Reflection: ${pReflect}` : '',
+          isLevel2 && efficiencyReflect ? `   Efficiency Reflection: ${efficiencyReflect}` : '',
+          '',
+          '✍️ MY PROPOSAL PITCH:',
+          pitch || '(no pitch written)',
+          '',
+          '═══════════════════════════════',
+          `Generated: ${new Date().toLocaleDateString()}`,
+        ].filter(line => line !== '');
+
+        const box = document.getElementById('reportBox');
+        box.textContent = lines.join('\n');
+        box.classList.add('show');
+      }
+
+      function copyReport() {
+        const txt = document.getElementById('reportBox').textContent;
+        navigator.clipboard?.writeText(txt).then(() => alert('Copied to clipboard!'));
+      }
+
+      function downloadTxt() {
+        const txt = document.getElementById('reportBox').textContent;
+        const a = document.createElement('a');
+        a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(txt);
+        a.download = 'room-makeover-plan.txt';
+        a.click();
       }
 
       function recalcAll() {
-        if (typeof syncResearch === "function") syncResearch();
-        calcTrapezoid();
-        calcMural();
-        calcBanner();
-        updateTotal();
-        calcBudget();
+        calcFloor();
+        calcPaint();
+        calcCost();
         comparePeer();
-        renderWorld();
-        worldGo();
-        updateProgress();
       }
 
-      /* ---- Report ---- */
-      function reportText() {
-        const f = (x) => (x == null ? "(not finished)" : Number(x).toFixed(2));
-        return (
-          "COMMUNITY MURAL & GARDEN PLANNER — MY REPORT\n" +
-          "============================================\n\n" +
-          "PART 1: MY SPACES (SELF)\n" +
-          "Garden plot (trapezoid): " +
-          f(proj.plot) +
-          " sq ft\n" +
-          "Mural panel (triangle): " +
-          f(proj.mural) +
-          " sq ft → " +
-          (proj.cans == null
-            ? "(not finished)"
-            : proj.cans + " cans of paint") +
-          "\n" +
-          "Banner (parallelogram): " +
-          f(proj.banner) +
-          " sq ft\n" +
-          "TOTAL AREA PLANNED: " +
-          f(proj.total) +
-          " sq ft\n\n" +
-          "PART 2: PEER COMPARISON\n" +
-          "Partner: " +
-          ($("partnerName").value || "(none)") +
-          "\n" +
-          "Reflection: " +
-          ($("peerReflect").value || "(not written)") +
-          "\n\n" +
-          "PART 3: WORLD COMPARISON\n" +
-          "My plot vs community plots: " +
-          ($("worldReflect").value || "(not written)") +
-          "\n" +
-          "Is bigger always better? " +
-          ($("ethics").value || "(not written)") +
-          "\n\n" +
-          "PLANNING BRIEF:\n" +
-          ($("pitch").value || "(not written)")
-        );
-      }
-      function buildReport() {
-        recalcAll();
-        PK.generateReport("reportBox", reportText());
-      }
-      function downloadCsv() {
-        const rows = [
-          ["field", "value"],
-          ["plot_sqft", proj.plot],
-          ["mural_sqft", proj.mural],
-          ["paint_cans", proj.cans],
-          ["banner_sqft", proj.banner],
-          ["total_area_sqft", proj.total],
-          ["partner", $("partnerName").value],
-          ["plot1_area", $("p4-area1").value],
-          ["plot2_area", $("p4-area2").value],
-        ];
-        PK.downloadCsv("garden-mural-data.csv", rows);
-      }
-
-      /* ---- Progress ---- */
-      function updateProgress() {
-        const readouts = document.querySelectorAll(".readout.show").length;
-        const trapOk = $("check-trapFb").querySelector(".pk-ok") ? 1 : 0;
-        const checks = document.querySelectorAll(
-          "#checklist input:checked",
-        ).length; // max 6
-        const peer = $("p-b1").value || $("p-b2").value ? 1 : 0;
-        const wrld = $("myWorld").value ? 1 : 0;
-        const pitch = $("pitch").value.trim().length > 20 ? 1 : 0;
-        const total =
-          Math.min(readouts, 5) + trapOk + checks + peer + wrld + pitch; // max 15
-        const pct = Math.min(100, Math.round((total / 15) * 100));
-        $("pfill").style.width = pct + "%";
-        $("pct").textContent = pct;
-      }
-      document
-        .getElementById("checklist")
-        .addEventListener("change", updateProgress);
-      document
-        .getElementById("pitch")
-        .addEventListener("input", updateProgress);
-
-      /* ---- Level hook ---- */
-      window.onLevelChange = function (level) {
-        if (level === "level-1") {
-          const empty =
-            !$("p1-b1").value && !$("p1-b2").value && !$("p1-h").value;
-          if (empty) {
-            $("p1-b1").value = 8;
-            $("p1-b2").value = 12;
-            $("p1-h").value = 6;
-            calcTrapezoid();
-          }
-        }
-      };
-
-      /* ---- init ---- */
-      document.addEventListener("DOMContentLoaded", function () {
-        renderWorld();
-        PK.initLevel({ storageKey: "u5ProjectB", default: "level-1" });
-        PK.initTts({ storageKey: "u5ProjectB" });
-        PK.load("u5ProjectB", { after: recalcAll });
-        updateTotal();
-        updateProgress();
-      });
+      // ---- Init ----
+      buildTrail();
+      updateProgress();
+      recalcAll();
     </script>
-    <script src="/assets/nt-page-enhance.js" defer></script>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-    <!-- nsr-injected:end -->
-    <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
-    <script type="application/json" id="pk-research">
-      {
-        "icon": "🔎",
-        "title": "Research Lab — Plan Like a Real Designer",
-        "intro": "Real landscape architects and muralists never guess — they look up the standards, then run the numbers. Use these trusted sites to gather facts, then bring those real numbers into your project.",
-        "brief": {
-          "theme": "field",
-          "title": "🌱 Your Research Mission",
-          "hook": "Before you finalize your garden and mural, gather <b>real facts</b> the pros use. Easy to find, quick to record — then your math is built on real data.",
-          "steps": [
-            "Open a link below (it opens in a new tab, so you keep your project).",
-            "Find the fact and type it into Field Notes.",
-            "Use your real numbers in the math problems.",
-            "Check off each box in the Investigation Checklist."
-          ]
-        },
-        "fieldNotes": {
-          "title": "Field Notes — Record What You Find",
-          "intro": "Jot the exact number or formula you find. You'll reuse these in the math below.",
-          "fields": [
-            {
-              "id": "fn-tri",
-              "label": "Area formula for a triangle",
-              "source": "Math is Fun",
-              "placeholder": "Area = ½ × b × h",
-              "hint": "Look for the formula in the colored box."
-            },
-            {
-              "id": "fn-trap",
-              "label": "Area formula for a trapezoid",
-              "source": "Math is Fun",
-              "placeholder": "Area = ½ × (a + b) × h",
-              "hint": "a and b are the two parallel sides (bases)."
-            },
-            {
-              "id": "fn-bedw",
-              "label": "Standard width of a raised garden bed (feet)",
-              "source": "Old Farmer's Almanac",
-              "placeholder": "about 4 ft",
-              "hint": "4 ft lets you reach the middle from both sides."
-            },
-            {
-              "id": "fn-bedl",
-              "label": "A common length of a raised garden bed (feet)",
-              "source": "Old Farmer's Almanac",
-              "placeholder": "6–8 ft",
-              "hint": "Pick one real length they list."
-            },
-            {
-              "id": "fn-paint",
-              "label": "Square feet one gallon of paint covers",
-              "source": "Any paint can label or store site",
-              "placeholder": "about 350–400 sq ft",
-              "hint": "Most wall paint covers ~350–400 sq ft per gallon."
-            }
-          ]
-        },
-        "mathTasks": [
-          {
-            "title": "1 · Garden bed area",
-            "prompt": "Use the bed width and length from Field Notes 3 and 4. Find the rectangular bed area with <b>A = length × width</b>.",
-            "level2": "Your real plot is a trapezoid. Using your two bases and height, find its area with A = ½ × (b₁ + b₂) × h."
-          },
-          {
-            "title": "2 · Mural paint needed",
-            "prompt": "Your mural panel is a triangle with the base and height from your plan. Find its area with <b>A = ½ × b × h</b>. Then, using Field Note 5, decide how many gallons of paint you need (round up to a whole gallon).",
-            "level2": "If one gallon costs $32, what is the total paint cost? Show the multiplication."
-          },
-          {
-            "title": "3 · Compare to the standard",
-            "prompt": "Is your community garden plot <b>bigger or smaller</b> than the standard raised bed from Field Notes 3 and 4? By how many square feet? Show the subtraction.",
-            "level2": "Express the difference as a fraction of the standard bed area."
-          }
-        ],
-        "investigationChecklist": [
-          "I found and recorded the triangle area formula.",
-          "I found and recorded the trapezoid area formula.",
-          "I looked up a real raised-bed size.",
-          "I found how many square feet one gallon of paint covers.",
-          "I used my real numbers (not made-up ones) in at least one math problem.",
-          "I compared my plot to the standard bed."
-        ],
-        "links": [
-          {
-            "icon": "🔺",
-            "name": "Math is Fun — Triangle (area)",
-            "url": "https://www.mathsisfun.com/triangle.html",
-            "find": "The triangle area formula with an example.",
-            "look": "Area = ½ × base × height"
-          },
-          {
-            "icon": "⏢",
-            "name": "Math is Fun — Trapezoid (area)",
-            "url": "https://www.mathsisfun.com/geometry/trapezoid.html",
-            "find": "The trapezoid area formula with the two bases.",
-            "look": "Area = ½ × (a + b) × height"
-          },
-          {
-            "icon": "▱",
-            "name": "Math is Fun — Parallelogram (area)",
-            "url": "https://www.mathsisfun.com/geometry/parallelogram.html",
-            "find": "How a parallelogram's area relates to a rectangle.",
-            "look": "Area = base × height"
-          },
-          {
-            "icon": "🌱",
-            "name": "Old Farmer's Almanac — Raised bed sizes",
-            "url": "https://www.almanac.com/vegetable-gardening-for-beginners",
-            "find": "Recommended widths and lengths for garden beds.",
-            "look": "the 4-foot width and common bed lengths"
-          }
-        ],
-        "note": "These sites were picked for class. They open in a new tab so you keep your project. If a page asks you to sign in or buy something, just close it and come back."
-      }
-    </script>
-    <script src="/shared/projects/projects-tabs.js" defer></script>
-    <script src="/shared/projects/projects-interactive.js" defer></script>
-    <script src="/shared/projects/manip-area-tiler.js" defer></script>
-    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-    <script src="/assets/math-workbench-launcher.js" defer></script>
-    <!-- mwb-injected:end -->
   </body>
 </html>

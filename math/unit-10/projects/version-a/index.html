@@ -3,2886 +3,1428 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Package Design Challenge — Unit 10 Culminating Project</title>
-    <meta
-      name="description"
-      content="Unit 10 Volume &amp; Surface Area culminating project. Measure a real box, compute volume (6.G.2) and surface area from nets (6.G.4), compare with a partner, and compare with real shipping boxes."
-    />
-    <link rel="stylesheet" href="/assets/shared.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-kit.css" />
-    <script src="/shared/projects/projects-kit.js" defer></script>
+    <meta name="description" content="Unit 10 Geometry culminating project. Design shipping packages by calculating volume and surface area from nets. Simple step-by-step, tab-based guide." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <style>
       :root {
         --navy: #0f2b3c;
-        --blue: #1a6fb5;
-        --blue-light: #e8f2fc;
+        --blue: #c9820f; /* gold/orange primary accent */
+        --blue-lt: #fdf3e0; /* light gold/orange secondary */
         --teal: #0e8a7d;
-        --teal-light: #e4f5f3;
-        --gold: #d4952a;
-        --gold-light: #fdf3e0;
+        --teal-lt: #e4f5f3;
+        --gold: #d97706; /* deeper orange/gold */
+        --gold-lt: #ffedd5;
+        --green: #1e7d40;
+        --green-lt: #e6f4eb;
         --coral: #c45a3c;
-        --coral-light: #fdeee9;
-        --green: #2d874b;
-        --green-light: #e6f4eb;
         --ink: #1a2633;
         --muted: #5e6e7e;
         --line: #e2e7ec;
-        --bg: #f7f9fb;
+        --bg: #f4f7fa;
         --card: #ffffff;
         --radius: 16px;
-        --shadow: 0 4px 18px rgba(15, 43, 60, 0.1);
-        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+        --shadow: 0 2px 16px rgba(15,43,60,.10);
       }
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        margin: 0;
-        font-family: var(--font);
-        color: var(--ink);
-        background: var(--bg);
-        line-height: 1.55;
-      }
-      .wrap {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 0 20px 60px;
-      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: 'Inter', system-ui, sans-serif; color: var(--ink); background: var(--bg); line-height: 1.6; }
 
-      .phero {
-        background: linear-gradient(135deg, #0f2b3c 0%, #1a6fb5 100%);
+      /* ---- Hero ---- */
+      .hero {
+        background: linear-gradient(135deg, #0f2b3c 0%, #c9820f 60%, #d97706 100%);
         color: #fff;
-        padding: 40px 24px 34px;
+        padding: 36px 24px 28px;
         text-align: center;
-        position: relative;
-        overflow: hidden;
       }
-      .phero .deco {
-        font-size: 56px;
-        line-height: 1;
+      .hero-emoji { font-size: 52px; line-height: 1; margin-bottom: 10px; }
+      .hero h1 { font-size: clamp(24px,5vw,38px); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; }
+      .hero-sub { color: rgba(255,255,255,.85); font-size: 16px; max-width: 580px; margin: 0 auto 16px; }
+      .hero-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; }
+      .tag { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.28); border-radius: 50px; padding: 4px 13px; font-size: 12px; font-weight: 700; letter-spacing: .04em; }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #fff; }
+
+      /* ---- Level selector ---- */
+      .level-bar {
+        display: flex; gap: 10px; justify-content: center;
+        background: rgba(255,255,255,.10); border-radius: 50px;
+        padding: 6px 10px; max-width: 400px; margin: 0 auto;
       }
-      .phero h1 {
-        font-size: clamp(26px, 5vw, 40px);
-        margin: 10px 0 8px;
-        letter-spacing: -0.02em;
+      .level-btn {
+        flex: 1; background: transparent; color: rgba(255,255,255,.75);
+        border: 2px solid rgba(255,255,255,.30); border-radius: 50px;
+        padding: 7px 16px; font-size: 13px; font-weight: 700;
+        cursor: pointer; font-family: inherit; transition: all .2s;
       }
-      .phero p {
-        max-width: 640px;
-        margin: 0 auto;
-        color: rgba(255, 255, 255, 0.85);
-        font-size: 17px;
+      .level-btn.active { background: #fff; color: var(--navy); border-color: #fff; }
+
+      /* ---- Tab wizard ---- */
+      .wizard { max-width: 860px; margin: 0 auto; padding: 0 16px 60px; }
+
+      .step-trail {
+        display: flex; align-items: center; gap: 0;
+        padding: 22px 0 0; overflow-x: auto;
       }
-      .tags {
-        margin-top: 16px;
-        display: flex;
-        gap: 8px;
-        justify-content: center;
-        flex-wrap: wrap;
+      .step-trail-item {
+        display: flex; align-items: center; gap: 6px;
+        cursor: pointer; white-space: nowrap; padding: 8px 12px;
+        border-radius: 10px; transition: background .15s;
       }
-      .tag {
-        background: rgba(255, 255, 255, 0.14);
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        border-radius: 50px;
-        padding: 5px 14px;
-        font-size: 13px;
-        font-weight: 700;
+      .step-trail-item:hover { background: var(--blue-lt); }
+      .step-trail-item.active .s-num {
+        background: var(--blue); color: #fff;
       }
-      .tag.gold {
-        background: var(--gold);
-        border-color: var(--gold);
-        color: #2a1c00;
+      .step-trail-item.done .s-num {
+        background: var(--green); color: #fff;
+      }
+      .s-num {
+        width: 30px; height: 30px; border-radius: 50%;
+        background: var(--line); color: var(--muted);
+        font-weight: 800; font-size: 13px;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0; transition: all .2s;
+      }
+      .s-label { font-size: 13px; font-weight: 600; color: var(--muted); }
+      .step-trail-item.active .s-label { color: var(--blue); }
+      .step-trail-item.done .s-label { color: var(--green); }
+      .step-arrow { color: var(--line); font-size: 16px; padding: 0 2px; }
+
+      /* ---- Progress bar ---- */
+      .prog-wrap { margin: 14px 0 4px; }
+      .prog-bar { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; }
+      .prog-fill { height: 100%; background: linear-gradient(90deg,var(--blue),var(--teal)); border-radius: 99px; transition: width .4s ease; }
+      .prog-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+      /* ---- Step panel ---- */
+      .step-panel { display: none; animation: fadein .25s ease; }
+      .step-panel.active { display: block; }
+      @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+      /* ---- Card ---- */
+      .card {
+        background: var(--card); border: 1px solid var(--line);
+        border-radius: var(--radius); padding: 28px 26px;
+        box-shadow: var(--shadow); margin-top: 16px;
+      }
+      .card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+      .card-icon {
+        width: 50px; height: 50px; border-radius: 14px;
+        background: var(--blue-lt); display: flex;
+        align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0;
+      }
+      .card-icon.gold { background: var(--gold-lt); }
+      .card-icon.teal { background: var(--teal-lt); }
+      .card-icon.green { background: var(--green-lt); }
+      .card-title { font-size: 20px; font-weight: 800; color: var(--navy); margin-bottom: 3px; }
+      .card-sub { font-size: 13px; color: var(--muted); font-weight: 500; }
+
+      /* ---- Instruction box ---- */
+      .instruct {
+        background: var(--blue-lt); border-left: 4px solid var(--blue);
+        border-radius: 10px; padding: 14px 16px; margin-bottom: 20px;
+        font-size: 15px; line-height: 1.6;
+      }
+      .instruct.gold { background: var(--gold-lt); border-color: var(--gold); }
+      .instruct.teal { background: var(--teal-lt); border-color: var(--teal); }
+      .instruct.green { background: var(--green-lt); border-color: var(--green); }
+
+      /* ---- SVG visual ---- */
+      .visual-svg { display: block; width: 100%; max-width: 520px; margin: 0 auto 20px; border-radius: 12px; }
+
+      /* ---- Form inputs ---- */
+      label.lbl { display: block; font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 5px; margin-top: 14px; }
+      input[type="number"], input[type="text"], textarea, select {
+        width: 100%; padding: 10px 14px; border: 1.5px solid var(--line);
+        border-radius: 10px; font-size: 15px; font-family: inherit;
+        background: var(--bg); color: var(--ink); transition: border-color .2s;
+      }
+      input:focus, textarea:focus, select:focus { outline: none; border-color: var(--blue); }
+      textarea { min-height: 90px; resize: vertical; }
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+      @media (max-width: 560px) { 
+        .grid2 { grid-template-columns: 1fr; } 
+        .grid3 { grid-template-columns: 1fr; }
       }
 
-      .toolbar {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        justify-content: center;
-        margin-top: 16px;
+      /* ---- Calc button & readout ---- */
+      .calc-btn {
+        background: var(--blue); color: #fff; border: none;
+        border-radius: 10px; padding: 11px 20px; font-size: 14px;
+        font-weight: 700; cursor: pointer; font-family: inherit;
+        margin-top: 12px; transition: background .2s;
       }
-      .toolbar button {
-        background: rgba(255, 255, 255, 0.12);
-        color: #fff;
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        border-radius: 50px;
-        padding: 8px 16px;
-        font-weight: 700;
-        font-size: 13px;
-        cursor: pointer;
-        font-family: inherit;
-      }
-      .toolbar button:hover {
-        background: rgba(255, 255, 255, 0.22);
-      }
-
-      .intro-card {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-left: 6px solid var(--gold);
-        border-radius: var(--radius);
-        padding: 22px 24px;
-        margin: 26px 0;
-        box-shadow: var(--shadow);
-      }
-      .intro-card h2 {
-        margin: 0 0 8px;
-        font-size: 20px;
-      }
-      .intro-card .scenario {
-        font-size: 16px;
-        color: var(--ink);
-      }
-
-      .phase {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-radius: var(--radius);
-        padding: 24px;
-        margin: 22px 0;
-        box-shadow: var(--shadow);
-      }
-      .phase-head {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        margin-bottom: 6px;
-      }
-      .phase-num {
-        flex: 0 0 auto;
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
-        background: var(--blue);
-        color: #fff;
-        font-weight: 800;
-        font-size: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .phase h2 {
-        margin: 0;
-        font-size: 21px;
-      }
-      .phase .skill {
-        font-size: 12px;
-        font-weight: 700;
-        color: var(--muted);
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-      }
-      .phase > p {
-        color: var(--muted);
-      }
-      .arc-banner {
-        display: inline-block;
-        font-size: 12px;
-        font-weight: 800;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        color: var(--blue);
-        background: var(--blue-light);
-        border-radius: 50px;
-        padding: 4px 12px;
-        margin-bottom: 10px;
-      }
-
-      .task {
-        background: var(--blue-light);
-        border-radius: 12px;
-        padding: 16px 18px;
-        margin: 16px 0;
-      }
-      .task strong {
-        color: var(--navy);
-      }
-
-      label.fld {
-        display: block;
-        font-weight: 700;
-        font-size: 14px;
-        margin: 14px 0 6px;
-      }
-      input[type="number"],
-      input[type="text"],
-      select,
-      textarea {
-        width: 100%;
-        padding: 11px 13px;
-        border: 2px solid var(--line);
-        border-radius: 10px;
-        font-family: inherit;
-        font-size: 15px;
-        background: #fff;
-      }
-      input:focus,
-      select:focus,
-      textarea:focus {
-        outline: none;
-        border-color: var(--blue);
-      }
-      textarea {
-        resize: vertical;
-        min-height: 80px;
-      }
-      .grid2 {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 14px;
-      }
-      .grid3 {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 14px;
-      }
-      @media (max-width: 560px) {
-        .grid2 {
-          grid-template-columns: 1fr;
-        }
-        .grid3 {
-          grid-template-columns: 1fr;
-        }
-      }
-
-      .btn {
-        background: var(--blue);
-        color: #fff;
-        border: none;
-        border-radius: 10px;
-        padding: 11px 20px;
-        font-weight: 800;
-        font-size: 15px;
-        cursor: pointer;
-        font-family: inherit;
-        margin-top: 14px;
-      }
-      .btn:hover {
-        filter: brightness(1.08);
-      }
-      .btn.alt {
-        background: var(--teal);
-      }
-      .btn.ghost {
-        background: #fff;
-        color: var(--blue);
-        border: 2px solid var(--line);
-      }
-
+      .calc-btn:hover { background: #b0700a; }
+      .calc-btn.gold { background: var(--gold); }
+      .calc-btn.gold:hover { background: #a36a0c; }
+      .calc-btn.teal { background: var(--teal); }
+      .calc-btn.teal:hover { background: #0a6b62; }
+      .calc-btn.green { background: var(--green); }
+      .calc-btn.green:hover { background: #185f31; }
       .readout {
-        margin-top: 16px;
-        border-radius: 12px;
-        padding: 16px 18px;
-        font-size: 15px;
-        background: var(--teal-light);
-        border: 1px solid #bfe6e0;
-        display: none;
+        background: var(--navy); color: #e8f4ff;
+        border-radius: 10px; padding: 14px 18px; margin-top: 12px;
+        font-size: 15px; line-height: 1.6; display: none;
       }
-      .readout.show {
-        display: block;
+      .readout.show { display: block; }
+      .readout strong { color: #fde047; }
+
+      /* ---- Hint ---- */
+      details.hint { margin-top: 14px; }
+      details.hint summary {
+        cursor: pointer; font-size: 13px; font-weight: 600;
+        color: var(--blue); list-style: none; display: inline-flex;
+        align-items: center; gap: 5px;
       }
-      .readout .big {
-        font-size: 28px;
-        font-weight: 800;
-        color: var(--teal);
+      details.hint summary::before { content: "💡"; }
+      details.hint p { font-size: 14px; color: var(--muted); margin-top: 8px; padding: 10px 12px; background: var(--blue-lt); border-radius: 8px; }
+
+      /* ---- Level 2 extension ---- */
+      .lvl2-block {
+        border: 2px dashed var(--blue); border-radius: 12px;
+        padding: 14px 16px; margin-top: 18px;
       }
-      .feedback {
-        margin-top: 10px;
-        font-weight: 700;
-        min-height: 22px;
-      }
-      .feedback.ok {
-        color: var(--green);
-      }
-      .feedback.no {
-        color: var(--coral);
+      .lvl2-label {
+        display: inline-block; background: var(--blue); color: #fff;
+        font-size: 11px; font-weight: 800; letter-spacing: .05em;
+        border-radius: 50px; padding: 3px 10px; margin-bottom: 8px;
       }
 
-      .hintbox {
-        margin-top: 12px;
-      }
-      .hintbox summary {
-        cursor: pointer;
-        font-weight: 700;
-        color: var(--blue);
-        font-size: 14px;
-      }
-      .hintbox p,
-      .hintbox div {
-        background: var(--gold-light);
-        border-radius: 10px;
-        padding: 12px 14px;
-        margin: 8px 0 0;
-        font-size: 14px;
-      }
+      /* ---- Real-world data table ---- */
+      .data-table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14px; }
+      .data-table th { background: var(--navy); color: #fff; padding: 8px 12px; text-align: left; }
+      .data-table td { padding: 8px 12px; border-bottom: 1px solid var(--line); }
+      .data-table tr:last-child td { border-bottom: none; }
+      .data-table tr:nth-child(even) td { background: var(--bg); }
 
-      .rubric {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 12px;
-        font-size: 14px;
-      }
-      .rubric th,
-      .rubric td {
-        border: 1px solid var(--line);
-        padding: 10px 12px;
-        text-align: left;
-        vertical-align: top;
-      }
-      .rubric th {
-        background: var(--navy);
-        color: #fff;
-        font-size: 13px;
-      }
-      .rubric td:first-child {
-        font-weight: 700;
-        width: 30%;
-      }
+      /* ---- Checklist ---- */
+      .checklist { list-style: none; margin-top: 12px; }
+      .checklist li { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+      .checklist li:last-child { border-bottom: none; }
+      .checklist input[type="checkbox"] { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--green); flex-shrink: 0; }
 
-      .checklist {
-        list-style: none;
-        padding: 0;
-        margin: 12px 0 0;
-      }
-      .checklist li {
-        display: flex;
-        gap: 10px;
-        align-items: flex-start;
-        padding: 8px 0;
-        border-bottom: 1px solid var(--line);
-      }
-      .checklist input {
-        width: 20px;
-        height: 20px;
-        margin-top: 2px;
-        flex: 0 0 auto;
-      }
+      /* ---- Rubric ---- */
+      .rubric { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 14px; }
+      .rubric th { background: var(--navy); color: #fff; padding: 10px 12px; text-align: left; }
+      .rubric td { padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+      .rubric tr:last-child td { border-bottom: none; }
+      .score-4 { color: var(--green); font-weight: 700; }
+      .score-3 { color: var(--blue); font-weight: 700; }
+      .score-2 { color: var(--gold); font-weight: 700; }
 
-      .progress-wrap {
-        position: sticky;
-        top: 0;
-        z-index: 5;
-        background: var(--bg);
-        padding: 12px 0;
+      /* ---- Nav buttons ---- */
+      .nav-row { display: flex; gap: 10px; margin-top: 24px; justify-content: space-between; }
+      .nav-btn {
+        background: var(--blue); color: #fff; border: none;
+        border-radius: 10px; padding: 12px 24px; font-size: 15px;
+        font-weight: 700; cursor: pointer; font-family: inherit;
+        display: flex; align-items: center; gap: 8px; transition: background .2s;
       }
-      .progress-track {
-        height: 12px;
-        background: var(--line);
-        border-radius: 50px;
-        overflow: hidden;
-      }
-      .progress-fill {
-        height: 100%;
-        width: 0;
-        background: linear-gradient(90deg, var(--teal), var(--green));
-        transition: width 0.4s;
-      }
-      .progress-label {
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--muted);
-        margin-bottom: 6px;
-      }
+      .nav-btn:hover { background: #b0700a; }
+      .nav-btn.ghost { background: transparent; color: var(--blue); border: 2px solid var(--blue); }
+      .nav-btn.ghost:hover { background: var(--blue-lt); }
+      .nav-btn:disabled { opacity: .45; cursor: not-allowed; }
 
-      .footer {
-        text-align: center;
-        color: var(--muted);
-        font-size: 14px;
-        margin-top: 40px;
+      /* ---- Report / pitch textarea ---- */
+      #pitch { min-height: 130px; }
+      .report-box {
+        background: var(--navy); color: #e8f4ff; border-radius: 12px;
+        padding: 20px; margin-top: 14px; font-size: 14px; line-height: 1.7;
+        white-space: pre-wrap; display: none;
       }
-      .printbtn {
-        background: var(--navy);
+      .report-box.show { display: block; }
+      .export-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+      .export-btn {
+        background: transparent; border: 1.5px solid var(--line);
+        border-radius: 8px; padding: 7px 14px; font-size: 13px;
+        font-weight: 600; cursor: pointer; font-family: inherit;
+        color: var(--muted); transition: all .15s;
       }
-      h3 {
-        font-size: 17px;
-      }
+      .export-btn:hover { border-color: var(--blue); color: var(--blue); }
 
+      /* ---- Level-gated content ---- */
+      .lvl1-only { display: none; }
+      .lvl2-only { display: none; }
+      body.level-1 .lvl1-only { display: block; }
+      body.level-2 .lvl2-only { display: block; }
+      body.level-2 .lvl2-block { border-color: var(--blue); }
+
+      /* ---- Vocab cards ---- */
+      .vocab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 14px; }
+      .vocab-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+      .vocab-icon { font-size: 26px; margin-bottom: 6px; }
+      .vocab-term { font-size: 13px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
+      .vocab-def { font-size: 13px; color: var(--muted); line-height: 1.5; }
+      .vocab-ex { font-size: 12px; color: var(--blue); font-weight: 600; margin-top: 5px; }
+
+      /* ---- Print ---- */
       @media print {
-        .phero .deco,
-        .progress-wrap,
-        .btn,
-        .breadcrumb,
-        .hintbox,
-        .toolbar,
-        .pk-no-print {
-          display: none !important;
-        }
-        .phase,
-        .intro-card {
-          box-shadow: none;
-          break-inside: avoid;
-        }
-        body {
-          background: #fff;
-        }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        html {
-          scroll-behavior: auto;
-        }
-        *,
-        *::before,
-        *::after {
-          animation-duration: 0.001ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.001ms !important;
-        }
+        .no-print { display: none !important; }
+        .hero { background: var(--navy) !important; }
+        body { background: #fff; }
+        .card { box-shadow: none; border-color: #ccc; }
       }
     </style>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <!-- nsr-injected:end -->
-    <link rel="stylesheet" href="/shared/projects/projects-premium.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-tabs.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-tplus.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-interactive.css" />
-    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-    <link rel="stylesheet" href="/assets/mobile-access.css" />
-    <!-- mobile-access-injected:end -->
   </head>
-  <body class="pk" data-pk-theme="u10">
-    <header class="phero">
-      <div class="deco">📦</div>
+  <body class="level-1" id="body">
+
+    <!-- ====== HERO ====== -->
+    <header class="hero no-print">
+      <div class="hero-emoji">📦</div>
       <h1>Package Design Challenge</h1>
-      <p>
-        You are a packaging engineer.
-        <strong>Measure a real box you own</strong>
-        — a cereal box, a shoebox, a delivery package — and use volume and
-        surface area to spec it out. Then compare with a partner, and finally
-        with real shipping boxes used across the country.
-      </p>
-      <div class="tags">
-        <span class="tag gold">Unit 10 · Volume &amp; Surface Area</span>
+      <p class="hero-sub">Design custom packages by calculating volume and surface area from nets.</p>
+      <div class="hero-tags">
+        <span class="tag gold">Unit 10 · Geometry</span>
         <span class="tag">6.G.2</span>
         <span class="tag">6.G.4</span>
-        <span class="tag">Version A · Design &amp; Build</span>
+        <span class="tag">Version A</span>
       </div>
-      <div class="toolbar pk-no-print">
-        <button onclick="PK.toggleEs()">🌐 EN / ES help</button>
-        <span class="pk-level-toggle">
-          <button data-level-btn="level-1" type="button">🟢 Level 1</button>
-          <button data-level-btn="level-2" type="button">🔵 Level 2</button>
-        </span>
-        <button
-          class="pk-tts-toggle"
-          data-tts-toggle
-          type="button"
-          aria-pressed="false"
-          title="Read text aloud"
-        >
-          🔊 Read aloud
-        </button>
-        <button onclick="PK.save('u10ProjectA')">💾 Save</button>
-        <button
-          onclick="PK.load('u10ProjectA', { show: true, after: recalcAll })"
-        >
-          📂 Load
-        </button>
+      <div class="level-bar">
+        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">🟢 Level 1 — With Support</button>
+        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">🔵 Level 2 — Challenge</button>
       </div>
     </header>
 
-    <div class="wrap">
-      <div class="progress-wrap">
-        <div class="progress-label">
-          Project progress: <span id="pct">0</span>% complete
-        </div>
-        <div class="progress-track">
-          <div class="progress-fill" id="pfill"></div>
-        </div>
+    <!-- ====== WIZARD ====== -->
+    <div class="wizard">
+
+      <!-- Step trail -->
+      <nav class="step-trail no-print" id="stepTrail" aria-label="Project steps"></nav>
+
+      <!-- Progress bar -->
+      <div class="prog-wrap no-print">
+        <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+        <div class="prog-label" id="progLabel">Step 1 of 6</div>
       </div>
 
-      <div class="intro-card">
-        <h2>📋 Your Mission</h2>
-        <p class="scenario">
-          Design a custom shipping box around a
-          <strong>real object you measure</strong>.
-          <strong>Part 1 (Self):</strong> measure your own box, find its volume,
-          its surface area from the net, and the cardboard cost.
-          <strong>Part 2 (Peer):</strong> compare your box with a partner's —
-          who used less material per cubic unit?
-          <strong>Part 3 (World):</strong> compare your box to real USPS
-          shipping boxes. Finish the spec sheet, checklist, and report.
-        </p>
-      </div>
-
-      <!-- ===================== VISUAL MATH NOTES ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div
-            class="phase-num"
-            style="background: var(--gold); color: #2a1c00"
-          >
-            📒
-          </div>
-          <div>
-            <div class="skill">Before you start · Vocabulary</div>
-            <h2>Visual Math Notes</h2>
-          </div>
-        </div>
-        <p>
-          Learn these words first. Tap <strong>EN / ES help</strong> at the top
-          for Spanish.
-        </p>
-        <div class="pk-vocab">
-          <div class="pk-term">
-            <span class="pk-icon">🧊</span><b>Volume</b>
-            <p>The amount of space inside a 3-D shape, in cubic units.</p>
-            <p class="pk-es">
-              Volumen: el espacio dentro de una figura 3-D, en unidades cúbicas.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">📐</span><b>Surface Area</b>
-            <p>The total area of all the outside faces, in square units.</p>
-            <p class="pk-es">
-              Área de superficie: el área total de todas las caras exteriores,
-              en unidades cuadradas.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">🗺️</span><b>Net</b>
-            <p>A flat pattern that folds up into a 3-D solid.</p>
-            <p class="pk-es">
-              Plantilla (net): un patrón plano que se dobla para formar un
-              sólido 3-D.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">📦</span><b>Rectangular Prism</b>
-            <p>A box shape with 6 rectangular faces.</p>
-            <p class="pk-es">
-              Prisma rectangular: una caja con 6 caras rectangulares.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">📏</span><b>Edge Length</b>
-            <p>How long one side of the box is (l, w, or h).</p>
-            <p class="pk-es">
-              Longitud de arista: lo que mide un lado de la caja (l, w o h).
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">⬜</span><b>Unit Cube</b>
-            <p>A cube 1 unit on every side; volume = 1 cubic unit.</p>
-            <p class="pk-es">
-              Cubo unitario: un cubo de 1 unidad por lado; volumen = 1 unidad
-              cúbica.
-            </p>
-          </div>
-        </div>
-        <div class="grid2" style="margin-top: 18px">
-          <div class="pk-callout">
-            <h3>Formula Bank</h3>
-            <ul class="pk-formula">
-              <li>
-                <span class="pk-f-name">Volume</span>
-                <span class="pk-f-mean"
-                  >How much space fits <b>inside</b> the box. Multiply length ×
-                  width × height.</span
-                >
-                <span class="pk-eg">Example: 8 × 5 × 3 = 120 cubic units</span>
-              </li>
-              <li>
-                <span class="pk-f-name">Surface area (closed box)</span>
-                <span class="pk-f-mean"
-                  >The cardboard needed to cover all <b>6 faces</b>. Add the
-                  three face pairs, then double them: 2(lw + lh + wh).</span
-                >
-                <span class="pk-eg"
-                  >Example: 2(40 + 24 + 15) = 158 square units</span
-                >
-              </li>
-              <li>
-                <span class="pk-f-name">Open-top surface area (no lid)</span>
-                <span class="pk-f-mean"
-                  >Same as a closed box, but leave off one top face: lw + 2lh +
-                  2wh.</span
-                >
-                <span class="pk-eg"
-                  >Example: 40 + 2(24) + 2(15) = 118 square units</span
-                >
-              </li>
-              <li>
-                <span class="pk-f-name">Material cost</span>
-                <span class="pk-f-mean"
-                  >What the cardboard costs. Multiply surface area by the price
-                  for one square unit.</span
-                >
-                <span class="pk-eg">Example: 158 × $0.05 = $7.90</span>
-              </li>
-              <li class="pk-lvl2">
-                <span class="pk-f-name">Material per cube (efficiency)</span>
-                <span class="pk-f-mean"
-                  >How much cardboard each unit of space costs. Divide surface
-                  area by volume — a smaller number is better.</span
-                >
-                <span class="pk-eg"
-                  >Example: 158 ÷ 120 ≈ 1.32 sq units per cube</span
-                >
-              </li>
-            </ul>
-          </div>
-          <div class="pk-callout">
-            <h3>Sentence Frames</h3>
-            <p>
-              "My box is ___ × ___ × ___, so its volume is ___ cubic units."
-            </p>
-            <p>
-              "The surface area is ___ square units, so the cardboard costs
-              $___."
-            </p>
-            <p>
-              "My box uses ___ square units per cube, which is more / less than
-              ___."
-            </p>
-            <p class="pk-es">
-              "Mi caja mide ___ × ___ × ___, así que su volumen es ___ unidades
-              cúbicas."
-            </p>
-          </div>
-        </div>
-        <div
-          class="pk-callout"
-          style="margin-top: 14px; background: var(--gold-light)"
-        >
-          <h3>🔗 Connections</h3>
-          <p>
-            <b>Cross-topic — unit rate:</b> "cost per square unit" is a
-            <em>unit rate</em> (a price for exactly 1 square unit), just like
-            cost per pound or miles per hour from earlier units.
-          </p>
-          <p>
-            <b>Net → 3-D bridge (6.G.4 ↔ area):</b> surface area is just the
-            <em>areas of rectangles</em> from earlier grades, added up. Unfold
-            the box into its flat net, find each rectangle's area, then fold it
-            back.
-          </p>
-        </div>
-      </section>
-
-      <!-- ===================== PART 1 — SELF ===================== -->
-
-      <!-- ===================== PROJECT SETUP ===================== -->
-      <section class="phase" id="phase-setup" data-phase>
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--blue)">S</div>
-          <div>
-            <span class="arc-banner">Project Setup</span>
-            <h2>Spec Out YOUR Real Box</h2>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <div>
-            <p
-              style="
-                font-size: 15px;
-                color: var(--muted);
-                line-height: 1.6;
-                margin-bottom: 20px;
-              "
-            >
-              Welcome! Read the scenario below and select your level to begin
-              your design plan.
-            </p>
-            <div style="margin-top: 16px">
-              <svg
-                width="100%"
-                height="220"
-                viewBox="0 0 500 220"
-                style="
-                  background: white;
-                  border-radius: 12px;
-                  border: 1px solid #e2e8f0;
-                  max-width: 480px;
-                  margin: 0 auto;
-                  display: block;
-                "
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <defs>
-                  <linearGradient
-                    id="setup-grad"
-                    x1="0%"
-                    y1="0%"
-                    x2="100%"
-                    y2="100%"
-                  >
-                    <stop offset="0%" stop-color="#ffffff" />
-                    <stop offset="100%" stop-color="#f8fafc" />
-                  </linearGradient>
-                </defs>
-
-                <rect
-                  x="20"
-                  y="20"
-                  width="460"
-                  height="200"
-                  rx="15"
-                  fill="url(#setup-grad)"
-                  stroke="#1a6fb5"
-                  stroke-width="2"
-                />
-                <text
-                  x="250"
-                  y="60"
-                  text-anchor="middle"
-                  font-size="20"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  3D DESIGN BLUEPRINT
-                </text>
-                <polygon
-                  points="210,120 270,120 290,90 230,90"
-                  fill="rgba(26,111,181,0.15)"
-                  stroke="#1a6fb5"
-                  stroke-width="1.5"
-                />
-                <polygon
-                  points="210,120 210,160 270,160 270,120"
-                  fill="rgba(26,111,181,0.2)"
-                  stroke="#1a6fb5"
-                  stroke-width="2"
-                />
-              </svg>
-            </div>
-          </div>
-
-          <div
-            style="
-              background: var(--bg);
-              border: 1px solid var(--line);
-              border-radius: 12px;
-              padding: 20px;
-              box-shadow: var(--shadow);
-            "
-          >
-            <h3
-              style="
-                margin-top: 0;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-              "
-            >
-              <span>📋</span> Scenario &amp; Level Options
-            </h3>
-            <p style="font-size: 14px; line-height: 1.6; margin: 0 0 10px">
-              You are a <strong>package designer</strong>. A company needs a
-              custom cardboard box built around one real object, and they want
-              to know how much material it takes and what it costs.
-            </p>
-            <ul
-              style="
-                font-size: 14px;
-                line-height: 1.6;
-                margin: 0;
-                padding-left: 18px;
-              "
-            >
-              <li>
-                <strong>Level 1 (support):</strong> design a box with
-                whole-number sides (like 8 × 5 × 3 in) and find its volume and
-                surface area.
-              </li>
-              <li>
-                <strong>Level 2 (challenge):</strong> use decimal measurements
-                from your real object and compare cardboard cost per cubic inch
-                against a partner's box.
-              </li>
-            </ul>
-          </div>
-        </div>
-        <p>
-          Find a real box at home or school. Use a ruler to measure its length,
-          width, and height (in inches — decimals are fine!). Don't have one
-          handy? Click <em>Use example numbers</em> to model the math.
-        </p>
-
-        <label class="fld" for="objName"
-          >What real object / box are you measuring?</label
-        >
-        <input
-          type="text"
-          id="objName"
-          data-save
-          placeholder=""
-          oninput="recalcAll()"
-        />
-
-        <!-- 1a Volume -->
-
-        <div
-          style="
-            margin-top: 20px;
-            padding-top: 16px;
-            border-top: 1px solid var(--line);
-          "
-        >
-          <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px">
-            You can type your own numbers as you go, or click below to start
-            with our example numbers:
-          </p>
-          <button
-            class="btn ghost"
-            type="button"
-            onclick="useExamples()"
-            style="
-              width: 100%;
-              font-weight: bold;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              gap: 8px;
-            "
-          >
-            ✨ Use Example Numbers
-          </button>
-        </div>
-      </section>
-
-      <!-- ===================== PART 1A — SELF ===================== -->
-      <section class="phase" id="phase-1a" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">1a</div>
-          <div>
-            <span class="arc-banner">Part 1a · Self — your real plan</span>
-            <h2>🧊 Box volume (V = l × w × h)</h2>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <div>
-            <div
-              class="pk-math-scaffold-card no-print"
-              style="
-                margin: 20px 0;
-                padding: 12px;
-                background: #fff;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-                max-width: 480px;
-                margin-left: auto;
-                margin-right: auto;
-              "
-            >
-              <svg
-                width="100%"
-                height="200"
-                viewBox="0 0 500 200"
-                style="background: #fff; border-radius: 8px"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <text
-                  x="250"
-                  y="30"
-                  text-anchor="middle"
-                  font-size="14"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  Rectangular Prism Box Guide
-                </text>
-                <polygon
-                  points="190,100 270,100 290,70 210,70"
-                  fill="rgba(26,111,181,0.1)"
-                  stroke="#1a6fb5"
-                />
-                <polygon
-                  points="190,100 190,150 270,150 270,100"
-                  fill="rgba(26,111,181,0.15)"
-                  stroke="#1a6fb5"
-                  stroke-width="1.5"
-                />
-                <polygon
-                  points="270,100 270,150 290,120 290,70"
-                  fill="rgba(26,111,181,0.05)"
-                  stroke="#1a6fb5"
-                />
-                <text
-                  x="230"
-                  y="165"
-                  text-anchor="middle"
-                  font-size="9"
-                  font-weight="bold"
-                  fill="#1a6fb5"
-                >
-                  length (l)
-                </text>
-                <text
-                  x="285"
-                  y="145"
-                  text-anchor="middle"
-                  font-size="9"
-                  font-weight="bold"
-                  fill="#1a6fb5"
-                >
-                  width (w)
-                </text>
-                <text
-                  x="175"
-                  y="125"
-                  text-anchor="middle"
-                  font-size="9"
-                  font-weight="bold"
-                  fill="#1a6fb5"
-                >
-                  height (h)
-                </text>
-              </svg>
-            </div>
-
-            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-              Level 1 tip: round each measurement to a whole number of inches
-              first.
-            </p>
-            <div class="grid3">
-              <!-- ===================== INLINE RESEARCH LAB ===================== -->
-              <div class="pk-research-inline-card">
-                <div class="pk-research-inline-header">
-                  <span class="pk-research-badge">🔍 Research Required</span>
-                  <a
-                    href="https://www.usps.com/ship/priority-mail.htm"
-                    target="_blank"
-                    class="pk-research-inline-link"
-                    >🔗 USPS: Priority Mail Flat Rate Box Sizes ↗</a
-                  >
-                </div>
-                <p class="pk-research-inline-instructions">
-                  Open the USPS shipping page (or measure a real box at home).
-                  Find the inside length, width, and height of a real shipping
-                  box in inches. Enter the box length below, then keep going
-                  with width and height to find its real volume:
-                </p>
-                <div class="grid2">
-                  <div>
-                    <label class="fld" for="worldCountry"
-                      >Box / Package Researched</label
-                    >
-                    <input
-                      type="text"
-                      id="worldCountry"
-                      data-save
-                      placeholder=""
-                      oninput="recalcAll()"
-                    />
-                  </div>
-                  <div>
-                    <label class="fld" for="v-length">Length (in)</label>
-                    <input
-                      type="number"
-                      id="v-length"
-                      data-save
-                      min="0.01"
-                      step="0.01"
-                      placeholder=""
-                      oninput="recalcAll()"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <label class="fld" for="v-width">Width (in)</label>
-                <input
-                  type="number"
-                  id="v-width"
-                  data-save
-                  min="0.01"
-                  step="0.01"
-                  placeholder=""
-                  oninput="recalcAll()"
-                />
-              </div>
-              <div>
-                <label class="fld" for="v-height">Height (in)</label>
-                <input
-                  type="number"
-                  id="v-height"
-                  data-save
-                  min="0.01"
-                  step="0.01"
-                  placeholder=""
-                  oninput="recalcAll()"
-                />
-              </div>
-            </div>
-            <button class="btn" type="button" onclick="calcVolume()">
-              Calculate volume
-            </button>
-            <div class="readout" id="vol-out"></div>
-            <div
-              class="pki-manip"
-              data-manip="cube-builder"
-              data-unit="in"
-              data-mode="box"
-            ></div>
-            <svg
-              id="phase-svg-1a"
-              class="pk-phase-svg no-print"
-              width="100%"
-              height="220"
-              viewBox="0 0 500 220"
-              style="
-                background: white;
-                border: 1px solid #e2e8f0;
-                border-radius: 12px;
-                margin-top: 14px;
-              "
-              xmlns="http://www.w3.org/2000/svg"
-            ></svg>
-
-            <div class="task" style="margin-top: 16px">
-              <strong>Check my work:</strong> Compute the volume of your box
-              yourself, then type it in.
-            </div>
-            <label class="fld" for="check-vol">My volume (cubic units)</label>
-            <input type="number" id="check-vol" data-save placeholder="" />
-            <button class="btn alt" type="button" onclick="checkVol()">
-              Check my work
-            </button>
-            <div class="feedback" id="check-volFb"></div>
-
-            <details class="hintbox">
-              <summary>Need a hint?</summary>
-              <p>
-                Multiply all three measurements. For an 8 × 5 × 3 box: 8 × 5 =
-                40 unit cubes on the bottom layer, then 40 × 3 = 120 cubic units
-                total. Fractional edges work too — 2.5 × 1.5 × 3 = 11.25 cubic
-                units.
-              </p>
-            </details>
-
-            <div class="pk-lvl2" style="margin-top: 16px">
-              <div class="task">
-                <strong>Level 2 extension:</strong> Re-measure one edge to the
-                nearest quarter-inch (a decimal like 5.25 in) and recompute the
-                volume. By how many cubic inches did your volume change, and
-                why?
-              </div>
-            </div>
-
-            <!-- 1b Surface area -->
-          </div>
-
-          <div
-            style="
-              background: var(--bg);
-              border: 2.5px solid var(--line);
-              border-radius: 18px;
-              padding: 20px;
-              box-shadow: var(--shadow);
-              height: fit-content;
-            "
-            class="pk-no-print"
-          >
-            <h3
-              style="
-                margin-top: 0;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                color: var(--navy);
-                font-size: 16px;
-              "
-            >
-              <span>💡</span> Guided Steps &amp; Help
-            </h3>
-
-            <p
-              style="
-                font-size: 13.5px;
-                line-height: 1.5;
-                color: var(--muted);
-                margin-bottom: 12px;
-              "
-            >
-              <strong>Prism Volume & Surface Area from 3D Nets:</strong>
-            </p>
-            <ol
-              style="
-                margin-left: 18px;
-                font-size: 13px;
-                line-height: 1.5;
-                display: grid;
-                gap: 8px;
-                color: var(--ink);
-              "
-            >
-              <li>
-                <b>Volume (V) of a rectangular prism</b>: V = l × w × h.
-                Multiply length, width, and height. If fractional, convert to
-                improper fractions first.
-              </li>
-              <li>
-                <b>Surface Area (SA)</b>: Sum of the areas of all 6 rectangular
-                faces in the unfolded net:
-                <ul>
-                  <li>Calculate Area = 2(lw + lh + wh).</li>
-                </ul>
-              </li>
-              <li>
-                Be sure to match the units: volume is cubic units (u³) and
-                surface area is square units (u²).
-              </li>
-            </ol>
-            <div
-              style="
-                margin-top: 14px;
-                padding: 10px;
-                background: var(--sky);
-                border-radius: 8px;
-                font-size: 12px;
-              "
-            >
-              💡 <b>Example:</b> Prism with l=5, w=3, h=2. Volume = 5 × 3 × 2 =
-              30 cubic units. Surface Area = 2(15 + 10 + 6) = 2(31) = 62 sq
-              units.
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== PART 1B — SELF ===================== -->
-      <section class="phase" id="phase-1b" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">1b</div>
-          <div>
-            <span class="arc-banner">Part 1b · Self — your real plan</span>
-            <h2>📐 Surface area from the net — SA = 2(lw + lh + wh)</h2>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <div>
-            <div
-              class="pk-math-scaffold-card no-print"
-              style="
-                margin: 20px 0;
-                padding: 12px;
-                background: #fff;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-                max-width: 480px;
-                margin-left: auto;
-                margin-right: auto;
-              "
-            >
-              <svg
-                width="100%"
-                height="200"
-                viewBox="0 0 500 200"
-                style="background: #fff; border-radius: 8px"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <text
-                  x="250"
-                  y="30"
-                  text-anchor="middle"
-                  font-size="14"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  Rectangular Prism Box Guide
-                </text>
-                <polygon
-                  points="190,100 270,100 290,70 210,70"
-                  fill="rgba(26,111,181,0.1)"
-                  stroke="#1a6fb5"
-                />
-                <polygon
-                  points="190,100 190,150 270,150 270,100"
-                  fill="rgba(26,111,181,0.15)"
-                  stroke="#1a6fb5"
-                  stroke-width="1.5"
-                />
-                <polygon
-                  points="270,100 270,150 290,120 290,70"
-                  fill="rgba(26,111,181,0.05)"
-                  stroke="#1a6fb5"
-                />
-                <text
-                  x="230"
-                  y="165"
-                  text-anchor="middle"
-                  font-size="9"
-                  font-weight="bold"
-                  fill="#1a6fb5"
-                >
-                  length (l)
-                </text>
-                <text
-                  x="285"
-                  y="145"
-                  text-anchor="middle"
-                  font-size="9"
-                  font-weight="bold"
-                  fill="#1a6fb5"
-                >
-                  width (w)
-                </text>
-                <text
-                  x="175"
-                  y="125"
-                  text-anchor="middle"
-                  font-size="9"
-                  font-weight="bold"
-                  fill="#1a6fb5"
-                >
-                  height (h)
-                </text>
-              </svg>
-            </div>
-
-            <p style="font-size: 14px; color: var(--muted)">
-              Uses the same length, width, and height you measured above.
-            </p>
-            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-              Level 1 tip: find one face pair at a time — top &amp; bottom,
-              front &amp; back, then the two sides — and add the three results.
-            </p>
-            <button class="btn" type="button" onclick="calcSA()">
-              Calculate surface area
-            </button>
-            <div class="readout" id="sa-out"></div>
-            <svg
-              id="phase-svg-1b"
-              class="pk-phase-svg no-print"
-              width="100%"
-              height="220"
-              viewBox="0 0 500 220"
-              style="
-                background: white;
-                border: 1px solid #e2e8f0;
-                border-radius: 12px;
-                margin-top: 14px;
-              "
-              xmlns="http://www.w3.org/2000/svg"
-            ></svg>
-
-            <div class="task" style="margin-top: 16px">
-              <strong>Check my work:</strong> Compute the surface area yourself,
-              then type it in.
-            </div>
-            <label class="fld" for="check-sa"
-              >My surface area (square units)</label
-            >
-            <input type="number" id="check-sa" data-save placeholder="" />
-            <button class="btn alt" type="button" onclick="checkSA()">
-              Check my work
-            </button>
-            <div class="feedback" id="check-saFb"></div>
-
-            <details class="hintbox">
-              <summary>Need a hint?</summary>
-              <p>
-                Find the three face pairs: top/bottom = 2(l × w), front/back =
-                2(l × h), sides = 2(w × h). Add them. For 8 × 5 × 3: 2(40) +
-                2(24) + 2(15) = 80 + 48 + 30 = 158 square units.
-              </p>
-            </details>
-
-            <div class="pk-lvl2" style="margin-top: 16px">
-              <div class="task">
-                <strong>Level 2 extension:</strong> Your box ships
-                <em>without a lid</em>. Find the open-top surface area (leave
-                off one l × w face): lw + 2lh + 2wh. How many square units of
-                cardboard does removing the lid save?
-              </div>
-            </div>
-
-            <!-- 1c cost -->
-          </div>
-
-          <div
-            style="
-              background: var(--bg);
-              border: 2.5px solid var(--line);
-              border-radius: 18px;
-              padding: 20px;
-              box-shadow: var(--shadow);
-              height: fit-content;
-            "
-            class="pk-no-print"
-          >
-            <h3
-              style="
-                margin-top: 0;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                color: var(--navy);
-                font-size: 16px;
-              "
-            >
-              <span>💡</span> Guided Steps &amp; Help
-            </h3>
-
-            <p
-              style="
-                font-size: 13.5px;
-                line-height: 1.5;
-                color: var(--muted);
-                margin-bottom: 12px;
-              "
-            >
-              <strong>Prism Volume & Surface Area from 3D Nets:</strong>
-            </p>
-            <ol
-              style="
-                margin-left: 18px;
-                font-size: 13px;
-                line-height: 1.5;
-                display: grid;
-                gap: 8px;
-                color: var(--ink);
-              "
-            >
-              <li>
-                <b>Volume (V) of a rectangular prism</b>: V = l × w × h.
-                Multiply length, width, and height. If fractional, convert to
-                improper fractions first.
-              </li>
-              <li>
-                <b>Surface Area (SA)</b>: Sum of the areas of all 6 rectangular
-                faces in the unfolded net:
-                <ul>
-                  <li>Calculate Area = 2(lw + lh + wh).</li>
-                </ul>
-              </li>
-              <li>
-                Be sure to match the units: volume is cubic units (u³) and
-                surface area is square units (u²).
-              </li>
-            </ol>
-            <div
-              style="
-                margin-top: 14px;
-                padding: 10px;
-                background: var(--sky);
-                border-radius: 8px;
-                font-size: 12px;
-              "
-            >
-              💡 <b>Example:</b> Prism with l=5, w=3, h=2. Volume = 5 × 3 × 2 =
-              30 cubic units. Surface Area = 2(15 + 10 + 6) = 2(31) = 62 sq
-              units.
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== PART 1C — SELF ===================== -->
-      <section class="phase" id="phase-1c" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">1c</div>
-          <div>
-            <span class="arc-banner">Part 1c · Self — your real plan</span>
-            <h2>💵 Cardboard cost (cost = SA × rate)</h2>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <div>
-            <div
-              class="pk-math-scaffold-card no-print"
-              style="
-                margin: 20px 0;
-                padding: 12px;
-                background: #fff;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-                max-width: 480px;
-                margin-left: auto;
-                margin-right: auto;
-              "
-            >
-              <svg
-                width="100%"
-                height="200"
-                viewBox="0 0 500 200"
-                style="background: #fff; border-radius: 8px"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <text
-                  x="250"
-                  y="30"
-                  text-anchor="middle"
-                  font-size="14"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  Rectangular Prism Box Guide
-                </text>
-                <polygon
-                  points="190,100 270,100 290,70 210,70"
-                  fill="rgba(26,111,181,0.1)"
-                  stroke="#1a6fb5"
-                />
-                <polygon
-                  points="190,100 190,150 270,150 270,100"
-                  fill="rgba(26,111,181,0.15)"
-                  stroke="#1a6fb5"
-                  stroke-width="1.5"
-                />
-                <polygon
-                  points="270,100 270,150 290,120 290,70"
-                  fill="rgba(26,111,181,0.05)"
-                  stroke="#1a6fb5"
-                />
-                <text
-                  x="230"
-                  y="165"
-                  text-anchor="middle"
-                  font-size="9"
-                  font-weight="bold"
-                  fill="#1a6fb5"
-                >
-                  length (l)
-                </text>
-                <text
-                  x="285"
-                  y="145"
-                  text-anchor="middle"
-                  font-size="9"
-                  font-weight="bold"
-                  fill="#1a6fb5"
-                >
-                  width (w)
-                </text>
-                <text
-                  x="175"
-                  y="125"
-                  text-anchor="middle"
-                  font-size="9"
-                  font-weight="bold"
-                  fill="#1a6fb5"
-                >
-                  height (h)
-                </text>
-              </svg>
-            </div>
-
-            <div class="grid2">
-              <div>
-                <label class="fld" for="cost-rate"
-                  >Cost per square unit ($)</label
-                >
-                <input
-                  type="number"
-                  id="cost-rate"
-                  data-save
-                  min="0.001"
-                  step="0.001"
-                  placeholder=""
-                  oninput="calcCost()"
-                />
-              </div>
-            </div>
-            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-              Level 1 tip: try a friendly rate like $0.05 per square unit, then
-              multiply it by your surface area to get the cost.
-            </p>
-            <button class="btn" type="button" onclick="calcCost()">
-              Calculate material cost
-            </button>
-            <div class="readout" id="cost-out"></div>
-            <svg
-              id="phase-svg-1c"
-              class="pk-phase-svg no-print"
-              width="100%"
-              height="220"
-              viewBox="0 0 500 220"
-              style="
-                background: white;
-                border: 1px solid #e2e8f0;
-                border-radius: 12px;
-                margin-top: 14px;
-              "
-              xmlns="http://www.w3.org/2000/svg"
-            ></svg>
-
-            <div class="task" style="margin-top: 16px">
-              <strong>Check my work:</strong> Multiply your surface area by the
-              rate, then type the cost.
-            </div>
-            <label class="fld" for="check-cost">My cardboard cost ($)</label>
-            <input
-              type="number"
-              id="check-cost"
-              data-save
-              step="0.01"
-              placeholder=""
-            />
-            <button class="btn alt" type="button" onclick="checkCost()">
-              Check my work
-            </button>
-            <div class="feedback" id="check-costFb"></div>
-
-            <!-- Level 2 optimization -->
-            <div class="pk-lvl2" style="margin-top: 22px">
-              <div class="task">
-                <strong>Level 2 — Minimize cost (optimization):</strong>
-                Keep your volume about the same, but find dimensions that give
-                the
-                <em>smallest surface area</em> (and so the cheapest box). Hint:
-                the closer a box is to a cube, the less material it needs.
-              </div>
-              <div class="grid3">
-                <div>
-                  <label class="fld" for="opt-l">New length (in)</label>
-                  <input
-                    type="number"
-                    id="opt-l"
-                    data-save
-                    min="0.01"
-                    step="0.01"
-                    placeholder=""
-                    oninput="calcOpt()"
-                  />
-                </div>
-                <div>
-                  <label class="fld" for="opt-w">New width (in)</label>
-                  <input
-                    type="number"
-                    id="opt-w"
-                    data-save
-                    min="0.01"
-                    step="0.01"
-                    oninput="calcOpt()"
-                  />
-                </div>
-                <div>
-                  <label class="fld" for="opt-h">New height (in)</label>
-                  <input
-                    type="number"
-                    id="opt-h"
-                    data-save
-                    min="0.01"
-                    step="0.01"
-                    oninput="calcOpt()"
-                  />
-                </div>
-              </div>
-              <button class="btn" type="button" onclick="calcOpt()">
-                Compare to my original box
-              </button>
-              <div class="readout" id="opt-out"></div>
-            </div>
-          </div>
-
-          <div
-            style="
-              background: var(--bg);
-              border: 2.5px solid var(--line);
-              border-radius: 18px;
-              padding: 20px;
-              box-shadow: var(--shadow);
-              height: fit-content;
-            "
-            class="pk-no-print"
-          >
-            <h3
-              style="
-                margin-top: 0;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                color: var(--navy);
-                font-size: 16px;
-              "
-            >
-              <span>💡</span> Guided Steps &amp; Help
-            </h3>
-
-            <p
-              style="
-                font-size: 13.5px;
-                line-height: 1.5;
-                color: var(--muted);
-                margin-bottom: 12px;
-              "
-            >
-              <strong>Prism Volume & Surface Area from 3D Nets:</strong>
-            </p>
-            <ol
-              style="
-                margin-left: 18px;
-                font-size: 13px;
-                line-height: 1.5;
-                display: grid;
-                gap: 8px;
-                color: var(--ink);
-              "
-            >
-              <li>
-                <b>Volume (V) of a rectangular prism</b>: V = l × w × h.
-                Multiply length, width, and height. If fractional, convert to
-                improper fractions first.
-              </li>
-              <li>
-                <b>Surface Area (SA)</b>: Sum of the areas of all 6 rectangular
-                faces in the unfolded net:
-                <ul>
-                  <li>Calculate Area = 2(lw + lh + wh).</li>
-                </ul>
-              </li>
-              <li>
-                Be sure to match the units: volume is cubic units (u³) and
-                surface area is square units (u²).
-              </li>
-            </ol>
-            <div
-              style="
-                margin-top: 14px;
-                padding: 10px;
-                background: var(--sky);
-                border-radius: 8px;
-                font-size: 12px;
-              "
-            >
-              💡 <b>Example:</b> Prism with l=5, w=3, h=2. Volume = 5 × 3 × 2 =
-              30 cubic units. Surface Area = 2(15 + 10 + 6) = 2(31) = 62 sq
-              units.
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
-      <section class="pk-visualizer-card no-print">
-        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
-        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px">
-          This visual interactive canvas updates in real-time as you complete
-          your math calculations.
-        </p>
-        <div id="projectVisualizer"></div>
-      </section>
-
-      <!-- ===================== PART 2 — PEER ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--teal)">2</div>
-          <div>
-            <span class="arc-banner"
-              >Part 2 · Peer — compare with a partner</span
-            >
-            <div class="skill">Compare &amp; reason · 6.G.2 · 6.G.4</div>
-            <h2>Whose Box Is More Efficient?</h2>
-          </div>
-        </div>
-        <p>
-          Ask a partner for <strong>their</strong> box's measurements and type
-          them in. We will compare volume, surface area, and material efficiency
-          (SA ÷ V).
-        </p>
-        <div class="pk-callout pk-no-print" style="margin-bottom: 14px">
-          <h3>Interview Sentence Frames</h3>
-          <p>
-            "What object did you measure? What were its length, width, and
-            height?"
-          </p>
-          <p>"What was your volume and surface area?"</p>
-          <p>"How many square units of material did you use per cubic unit?"</p>
-          <p class="pk-es">
-            "¿Qué objeto mediste? ¿Cuáles eran su largo, ancho y alto?"
-          </p>
-        </div>
-        <div class="grid2">
-          <div>
-            <label class="fld" for="partnerName"
-              >Partner name or initials</label
-            >
-            <input type="text" id="partnerName" data-save placeholder="" />
-          </div>
-          <div>
-            <label class="fld" for="p-obj">Partner: object measured</label>
-            <input type="text" id="p-obj" data-save placeholder="" />
-          </div>
-          <div>
-            <label class="fld" for="p-l">Partner: length (in)</label>
-            <input
-              type="number"
-              id="p-l"
-              data-save
-              min="0.01"
-              step="0.01"
-              oninput="comparePeer()"
-            />
-          </div>
-          <div>
-            <label class="fld" for="p-w">Partner: width (in)</label>
-            <input
-              type="number"
-              id="p-w"
-              data-save
-              min="0.01"
-              step="0.01"
-              oninput="comparePeer()"
-            />
-          </div>
-          <div>
-            <label class="fld" for="p-h">Partner: height (in)</label>
-            <input
-              type="number"
-              id="p-h"
-              data-save
-              min="0.01"
-              step="0.01"
-              oninput="comparePeer()"
-            />
-          </div>
-        </div>
-        <button class="btn alt" type="button" onclick="comparePeer()">
-          Compare our boxes
-        </button>
-        <div id="peerBox" class="pk-stats" style="margin-top: 16px"></div>
-        <div
-          id="peerWinner"
-          class="pk-whatif pk-no-print"
-          style="margin-top: 12px; display: none"
-        ></div>
-        <label class="fld" for="peerReflect"
-          >Who used less material per cubic unit, and why?</label
-        >
-        <textarea id="peerReflect" data-save placeholder=""></textarea>
-        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-          Level 1 tip: the box with the <em>smaller</em> SA ÷ V number used less
-          cardboard for each cubic unit of space inside.
-        </p>
-        <div class="pk-lvl2">
-          <div class="task">
-            <strong>Level 2 extension:</strong> If you and your partner each
-            shipped 100 boxes at your own cost rates, how much would each of you
-            spend on cardboard? Show the multiplication and find the difference.
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== PART 3 — WORLD ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div
-            class="phase-num"
-            style="background: var(--gold); color: #2a1c00"
-          >
-            3
-          </div>
-          <div>
-            <span class="arc-banner">Part 3 · World — real shipping boxes</span>
-            <div class="skill">Compare to real data · 6.G.2</div>
-            <h2>Your Box vs. Real Shipping Boxes</h2>
-          </div>
-        </div>
-        <p>
-          These are real USPS Priority Mail Flat Rate box sizes (in inches).
-          Pick what to compare and see where your box lands.
-        </p>
-        <div class="grid2">
-          <div>
-            <label class="fld" for="worldCat">Compare against</label>
-            <select id="worldCat" data-save onchange="worldGo()">
-              <option value="volume">Volume (cubic in)</option>
-              <option value="sa">Surface area (sq in)</option>
-            </select>
-            <label class="fld" for="myWorld">My number</label>
-            <input
-              type="number"
-              id="myWorld"
-              data-save
-              step="0.01"
-              oninput="worldGo()"
-              placeholder=""
-            />
-            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
-              Tip: type your box's volume (or surface area) from Part 1.
-            </p>
-            <div id="worldMeter"></div>
-          </div>
-          <div>
-            <h3>USPS Flat-Rate Boxes 🇺🇸</h3>
-            <div
-              style="
-                overflow: auto;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-              "
-            >
-              <table class="rubric" style="margin-top: 0">
-                <tr>
-                  <th>Box</th>
-                  <th>l × w × h (in)</th>
-                  <th>Volume</th>
-                  <th>SA</th>
-                </tr>
-                <tbody id="worldRows"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <div
-          class="phase"
-          style="margin: 18px 0 0; box-shadow: none; border-style: dashed"
-        >
-          <h3>🔬 What-If Lab</h3>
-          <p style="color: var(--muted); font-size: 14px">
-            Change one dimension by +1 inch and watch the surface area and cost
-            change. Which dimension changes the cost the most?
-          </p>
-          <div class="grid2">
+      <!-- ======================================
+           STEP 1 — KEY WORDS
+      ====================================== -->
+      <div class="step-panel active" id="step-1">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon gold">📖</div>
             <div>
-              <label class="fld" for="whatIfDim">Add 1 inch to…</label>
-              <select id="whatIfDim">
-                <option value="l">Length</option>
-                <option value="w">Width</option>
-                <option value="h">Height</option>
-              </select>
+              <div class="card-title">Key Words</div>
+              <div class="card-sub">Learn these 5 math terms before you begin</div>
             </div>
           </div>
-          <button class="btn" type="button" onclick="runWhatIf()">
-            Run test
-          </button>
-          <div class="pk-whatif" id="whatIfBox" style="margin-top: 12px">
-            Fill in your box dimensions in Part 1, then run the test.
-          </div>
-        </div>
 
-        <label class="fld" for="worldReflect"
-          >Is your box bigger or smaller than the real boxes? "Bigger volume
-          isn't always better" — when would a smaller box be the smarter
-          choice?</label
-        >
-        <textarea id="worldReflect" data-save placeholder=""></textarea>
-        <label class="fld" for="careful"
-          >Careful thinking: two boxes can hold the same volume but cost
-          different amounts to build. Why?</label
-        >
-        <textarea id="careful" data-save placeholder=""></textarea>
-        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-          Level 1 tip: read your volume from the table — a bigger number of
-          cubic inches means more space fits inside the box.
-        </p>
-        <div class="pk-lvl2">
-          <label class="fld" for="worldHard"
-            >Level 2 question: A Medium Flat Rate box is 11 × 8.5 × 5.5 in.
-            About how many of your boxes would fit inside its volume? Show the
-            division you used.</label
-          >
-          <textarea id="worldHard" data-save placeholder=""></textarea>
-        </div>
-      </section>
-
-      <!-- ===================== DELIVERABLE ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--green)">★</div>
-          <div>
-            <div class="skill">Final Deliverable</div>
-            <h2>Write Your Package Spec Sheet</h2>
-          </div>
-        </div>
-        <p>
-          Write a short spec sheet (3–5 sentences) that uses your real numbers
-          from above.
-        </p>
-        <textarea id="pitch" data-save placeholder=""></textarea>
-
-        <h3 style="margin: 22px 0 6px">Design Checklist</h3>
-        <ul class="checklist" id="checklist">
-          <li>
-            <input type="checkbox" data-save id="ck1" /> I measured a real box
-            and used V = l × w × h to find its volume.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck2" /> I found the surface
-            area from the net using SA = 2(lw + lh + wh).
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck3" /> I multiplied surface
-            area by the cost rate to find the material cost.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck4" /> I compared my box with
-            a partner's, including material per cubic unit.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck5" /> I compared my box to
-            real shipping boxes.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck6" /> My spec sheet explains
-            the design with real numbers.
-          </li>
-        </ul>
-
-        <div class="grid2" style="margin-top: 18px">
-          <div>
-            <button class="btn" type="button" onclick="buildReport()">
-              📝 Generate report
-            </button>
-          </div>
-          <div class="pk-no-print">
-            <button
-              class="btn ghost"
-              type="button"
-              onclick="PK.copyReport('reportBox')"
-            >
-              Copy report
-            </button>
-            <button
-              class="btn ghost"
-              type="button"
-              onclick="PK.downloadText('package-spec-sheet.txt', 'reportBox')"
-            >
-              Download .txt
-            </button>
-            <button class="btn ghost" type="button" onclick="downloadCsv()">
-              Download .csv
-            </button>
-            <button class="btn printbtn" type="button" onclick="window.print()">
-              🖨️ Print
-            </button>
-          </div>
-        </div>
-        <div class="pk-report" id="reportBox" style="margin-top: 16px">
-          Click "Generate report" to build your spec-sheet summary.
-        </div>
-      </section>
-
-      <!-- RUBRIC -->
-      <section class="phase">
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--navy)">✓</div>
-          <div>
-            <div class="skill">How You Are Scored</div>
-            <h2>Project Rubric</h2>
-          </div>
-        </div>
-        <table class="rubric">
-          <tr>
-            <th>Category</th>
-            <th>4 — Expert</th>
-            <th>3 — Proficient</th>
-            <th>2 — Developing</th>
-          </tr>
-          <tr>
-            <td>Volume (6.G.2)</td>
-            <td>
-              V = l×w×h correct with unit label; unit-cube reasoning explained
-              (incl. fractional edges)
-            </td>
-            <td>Volume correct</td>
-            <td>Formula used but computation error</td>
-          </tr>
-          <tr>
-            <td>Surface Area / Nets (6.G.4)</td>
-            <td>
-              All three face pairs identified and SA = 2(lw+lh+wh) applied
-              correctly
-            </td>
-            <td>Surface area correct</td>
-            <td>One face pair missing or minor error</td>
-          </tr>
-          <tr>
-            <td>Comparison (Peer &amp; World)</td>
-            <td>
-              Compares boxes and real data with efficiency (SA ÷ V) reasoning
-            </td>
-            <td>Comparisons present and mostly correct</td>
-            <td>Comparison attempted</td>
-          </tr>
-          <tr>
-            <td>Application / Communication</td>
-            <td>
-              Cost computed correctly; spec sheet justifies design with all
-              numbers and a trade-off
-            </td>
-            <td>Cost correct; spec sheet uses most numbers</td>
-            <td>Attempted; spec sheet unclear or missing numbers</td>
-          </tr>
-        </table>
-      </section>
-
-      <p class="footer">
-        Neft Teacher · Unit 10 Culminating Project · Version A ·
-        <span id="yr"></span>
-      </p>
-    </div>
-
-    <script>
-      const yrEl = document.getElementById("yr");
-      if (yrEl) yrEl.textContent = new Date().getFullYear();
-      const $ = (id) => document.getElementById(id);
-      const num = (id) => {
-        const e = $(id);
-        return e ? parseFloat(e.value) : NaN;
-      };
-      function round2(n) {
-        return Math.round(n * 100) / 100;
-      }
-      function show(id, html) {
-        const el = $(id);
-        if (!el) return;
-        el.innerHTML = html;
-        el.classList.add("show");
-        updateProgress();
-      }
-
-      // running state used by report, checks, world meter, peer
-      const proj = {
-        obj: "",
-        l: null,
-        w: null,
-        h: null,
-        vol: null,
-        sa: null,
-        rate: null,
-        cost: null,
-      };
-
-      function dims() {
-        const l = num("v-length"),
-          w = num("v-width"),
-          h = num("v-height");
-        if (isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0)
-          return null;
-        return { l, w, h };
-      }
-
-      function calcVolume() {
-        const d = dims();
-        if (!d) {
-          $("vol-out").classList.remove("show");
-          proj.vol = null;
-          return;
-        }
-        proj.l = d.l;
-        proj.w = d.w;
-        proj.h = d.h;
-        const v = round2(d.l * d.w * d.h);
-        proj.vol = v;
-        const name = ($("objName").value || "your box").trim();
-        const hasFrac = d.l % 1 || d.w % 1 || d.h % 1;
-        show(
-          "vol-out",
-          '<div class="big">' +
-            v +
-            " cubic units</div>" +
-            "V of <strong>" +
-            name +
-            "</strong> = " +
-            d.l +
-            " × " +
-            d.w +
-            " × " +
-            d.h +
-            " = <strong>" +
-            v +
-            " cubic units</strong>. " +
-            "Picture " +
-            round2(d.l * d.w) +
-            " unit cubes on the bottom layer, stacked " +
-            d.h +
-            " layers high. " +
-            (hasFrac
-              ? "(A fractional edge just makes some cubes partial — they still add up to " +
-                v +
-                ".)"
-              : ""),
-        );
-      }
-
-      function calcSA() {
-        const d = dims();
-        if (!d) {
-          $("sa-out").classList.remove("show");
-          proj.sa = null;
-          return;
-        }
-        const lw = round2(d.l * d.w),
-          lh = round2(d.l * d.h),
-          wh = round2(d.w * d.h);
-        const sa = round2(2 * (lw + lh + wh));
-        proj.sa = sa;
-        show(
-          "sa-out",
-          '<div class="big">' +
-            sa +
-            " square units</div>" +
-            "📐 <strong>Three face pairs from the net:</strong><br>" +
-            "&nbsp;&nbsp;Top &amp; Bottom (l × w): 2 × " +
-            lw +
-            " = <strong>" +
-            round2(2 * lw) +
-            "</strong><br>" +
-            "&nbsp;&nbsp;Front &amp; Back (l × h): 2 × " +
-            lh +
-            " = <strong>" +
-            round2(2 * lh) +
-            "</strong><br>" +
-            "&nbsp;&nbsp;Left &amp; Right (w × h): 2 × " +
-            wh +
-            " = <strong>" +
-            round2(2 * wh) +
-            "</strong><br>" +
-            "SA = 2(" +
-            lw +
-            " + " +
-            lh +
-            " + " +
-            wh +
-            ") = <strong>" +
-            sa +
-            " square units</strong>.",
-        );
-      }
-
-      function calcCost() {
-        if (proj.sa == null) calcSA();
-        const rate = num("cost-rate");
-        if (proj.sa == null || isNaN(rate) || rate <= 0) {
-          $("cost-out").classList.remove("show");
-          proj.cost = null;
-          return;
-        }
-        proj.rate = rate;
-        const cost = round2(proj.sa * rate);
-        proj.cost = cost;
-        show(
-          "cost-out",
-          '<div class="big">$' +
-            cost.toFixed(2) +
-            "</div>" +
-            proj.sa +
-            " sq units × $" +
-            rate.toFixed(3) +
-            " per sq unit = <strong>$" +
-            cost.toFixed(2) +
-            "</strong> of cardboard. " +
-            "Remember: $" +
-            rate.toFixed(3) +
-            " per square unit is a <em>unit rate</em>.",
-        );
-      }
-
-      /* ---- Check my work (uses kit) ---- */
-      function checkVol() {
-        if (proj.vol == null) calcVolume();
-        if (proj.vol == null) {
-          $("check-volFb").innerHTML =
-            '<span class="pk-bad">Enter your box dimensions first.</span>';
-          return;
-        }
-        PK.checkWork("check-vol", proj.vol, 0.5);
-        updateProgress();
-      }
-      function checkSA() {
-        if (proj.sa == null) calcSA();
-        if (proj.sa == null) {
-          $("check-saFb").innerHTML =
-            '<span class="pk-bad">Enter your box dimensions first.</span>';
-          return;
-        }
-        PK.checkWork("check-sa", proj.sa, 0.5);
-        updateProgress();
-      }
-      function checkCost() {
-        if (proj.cost == null) calcCost();
-        if (proj.cost == null) {
-          $("check-costFb").innerHTML =
-            '<span class="pk-bad">Enter dimensions and a cost rate first.</span>';
-          return;
-        }
-        PK.checkWork("check-cost", proj.cost, 0.01);
-        updateProgress();
-      }
-
-      /* ---- Level 2 optimization ---- */
-      function calcOpt() {
-        const l = num("opt-l"),
-          w = num("opt-w"),
-          h = num("opt-h");
-        if (isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0) {
-          $("opt-out").classList.remove("show");
-          return;
-        }
-        const v = round2(l * w * h);
-        const sa = round2(2 * (l * w + l * h + w * h));
-        let msg =
-          '<div class="big">' +
-          sa +
-          " sq units</div>" +
-          "New box " +
-          l +
-          " × " +
-          w +
-          " × " +
-          h +
-          ": V = <strong>" +
-          v +
-          "</strong>, SA = <strong>" +
-          sa +
-          "</strong>.";
-        if (proj.sa != null && proj.vol != null) {
-          const dv = round2(Math.abs(v - proj.vol));
-          if (sa < proj.sa) {
-            msg +=
-              " ✅ That is <strong>" +
-              round2(proj.sa - sa) +
-              " fewer square units</strong> than your original (SA " +
-              proj.sa +
-              "), at about the same volume (Δvolume = " +
-              dv +
-              "). The more cube-like shape costs less!";
-          } else {
-            msg +=
-              " ⚠️ That uses " +
-              round2(sa - proj.sa) +
-              " <strong>more</strong> square units than your original (SA " +
-              proj.sa +
-              "). Try dimensions closer to a cube.";
-          }
-        }
-        show("opt-out", msg);
-      }
-
-      /* ---- Part 2: peer compare ---- */
-      function comparePeer() {
-        const pl = num("p-l"),
-          pw = num("p-w"),
-          ph = num("p-h");
-        if (proj.vol == null) {
-          calcVolume();
-          calcSA();
-        }
-        if (
-          proj.vol == null ||
-          proj.sa == null ||
-          isNaN(pl) ||
-          isNaN(ph) ||
-          isNaN(pw) ||
-          pl <= 0 ||
-          pw <= 0 ||
-          ph <= 0
-        ) {
-          $("peerBox").innerHTML =
-            '<p class="pk-fb">Finish Part 1 and enter your partner’s length, width, and height to compare.</p>';
-          $("peerWinner").style.display = "none";
-          return;
-        }
-        const pv = round2(pl * pw * ph);
-        const psa = round2(2 * (pl * pw + pl * ph + pw * ph));
-        const myEff = round2(proj.sa / proj.vol);
-        const pEff = round2(psa / pv);
-        PK.peerCompare("peerBox", [
-          { label: "Volume", me: proj.vol, partner: pv },
-          { label: "Surface area", me: proj.sa, partner: psa },
-          {
-            label: "SA ÷ V (per cube)",
-            me: myEff,
-            partner: pEff,
-            fmt: (x) => Number(x).toFixed(2),
-          },
-        ]);
-        const who =
-          myEff < pEff
-            ? "Your box"
-            : pEff < myEff
-              ? "Your partner's box"
-              : "Both boxes equally";
-        $("peerWinner").style.display = "block";
-        $("peerWinner").innerHTML =
-          "<b>" +
-          who +
-          "</b> used less material per cubic unit (lower SA ÷ V is more efficient): you " +
-          myEff.toFixed(2) +
-          " vs. partner " +
-          pEff.toFixed(2) +
-          ".";
-        updateProgress();
-      }
-
-      /* ---- Part 3: world (real USPS flat-rate boxes, inches) ---- */
-      // [name, l, w, h]
-      const world = [
-        ["Small Flat Rate", 8.625, 5.375, 1.625],
-        ["Medium FR (top)", 11, 8.5, 5.5],
-        ["Medium FR (side)", 13.625, 11.875, 3.375],
-        ["Large Flat Rate", 12, 12, 5.5],
-        ["Shoebox (typical)", 13, 7, 5],
-        ["Cereal box (typical)", 12, 8, 2.5],
-      ];
-      function volOf(r) {
-        return round2(r[1] * r[2] * r[3]);
-      }
-      function saOf(r) {
-        return round2(2 * (r[1] * r[2] + r[1] * r[3] + r[2] * r[3]));
-      }
-      function renderWorld() {
-        $("worldRows").innerHTML = world
-          .map(
-            (r) =>
-              "<tr><td>" +
-              r[0] +
-              "</td><td>" +
-              r[1] +
-              " × " +
-              r[2] +
-              " × " +
-              r[3] +
-              "</td><td>" +
-              volOf(r) +
-              "</td><td>" +
-              saOf(r) +
-              "</td></tr>",
-          )
-          .join("");
-      }
-      function worldSample() {
-        const cat = ($("worldCat") || {}).value;
-        return world.map((r) => (cat === "volume" ? volOf(r) : saOf(r)));
-      }
-
-      function worldGo() {
-        const my = num("myWorld");
-        const customName = $("worldCountry")
-          ? $("worldCountry").value.trim()
-          : "";
-        const customSize = $("v-length") ? num("v-length") : NaN;
-
-        let sample = worldSample();
-        if (!isNaN(customSize) && customSize > 0) {
-          sample = [...sample, customSize];
-        }
-
-        const labels =
-          ($("worldCat") || {}).value === "costPerGuest" ||
-          ($("worldCat") || {}).value === "price"
-            ? { mean: "City avg $", me: "Me $" }
-            : { mean: "Sample avg", me: "Me" };
-
-        PK.worldMeter("worldMeter", sample, my, labels);
-
-        const fb = $("worldMeter");
-        if (!isNaN(customSize) && customSize > 0 && customName) {
-          const ratio = (my / customSize).toFixed(2);
-          const pct = Math.round((my / customSize) * 100);
-          const diff = Math.abs(my - customSize).toFixed(2);
-
-          let myValStr = false ? "$" + my.toFixed(2) : my + " units";
-          let custValStr = false
-            ? "$" + customSize.toFixed(2)
-            : customSize + " units";
-          let diffStr = false
-            ? "$" + Number(diff).toFixed(2)
-            : Number(diff).toFixed(2) + " units";
-
-          const rel =
-            my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
-          const desc =
-            `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
-            `📊 Research Comparison: Your value (${myValStr}) is <strong>${rel}</strong> than <strong>${customName}</strong> (${custValStr}) ` +
-            `by <strong>${diffStr}</strong>. Your value is <strong>${pct}%</strong> (${ratio}x) of the size of the researched benchmark.` +
-            `</div>`;
-          fb.innerHTML += desc;
-        }
-
-        if (typeof drawVisualizer === "function") {
-          drawVisualizer();
-        }
-
-        updateProgress();
-      }
-
-      function runWhatIf() {
-        const l = num("v-length"),
-          w = num("v-width"),
-          h = num("v-height");
-        const rate = num("cost-rate");
-        const dim = $("whatIfDim").value;
-        if ([l, w, h].some((x) => isNaN(x) || x <= 0)) {
-          $("whatIfBox").textContent =
-            "First enter your box length, width, and height in Part 1.";
-          return;
-        }
-        const r = (x) => Math.round(x * 100) / 100;
-        const SA = (L, W, H) => 2 * (L * W + L * H + W * H);
-        let nl = l,
-          nw = w,
-          nh = h;
-        if (dim === "l") nl += 1;
-        else if (dim === "w") nw += 1;
-        else nh += 1;
-        const before = SA(l, w, h);
-        const after = SA(nl, nw, nh);
-        const names = { l: "length", w: "width", h: "height" };
-        const beforeObj = { SA: r(before) + " sq in" };
-        const afterObj = { SA: r(after) + " sq in" };
-        if (!isNaN(rate) && rate > 0) {
-          beforeObj.cost = "$" + r(before * rate);
-          afterObj.cost = "$" + r(after * rate);
-        }
-        PK.whatIf(
-          "whatIfBox",
-          beforeObj,
-          afterObj,
-          "Add 1 inch to the " + names[dim] + ":",
-        );
-      }
-
-      /* ---- Use example numbers ---- */
-      function useExamples() {
-        const ex = {
-          worldCountry: "Medium Flat Rate Box",
-          "v-length": 8,
-          objName: "my cereal box (example)",
-          "v-width": 5,
-          "v-height": 3,
-          "cost-rate": 0.05,
-          myWorld: "",
-        };
-        Object.entries(ex).forEach(([k, v]) => {
-          if ($(k)) $(k).value = v;
-        });
-        recalcAll();
-      }
-
-      function drawVisualizer() {
-        let l = num("v-length") || 0;
-        let w = num("v-width") || 0;
-        let h = num("v-height") || 0;
-
-        // Default to a worked EXAMPLE (8 × 5 × 3) so the dashboard always shows
-        // a reference; switches to the student's real box once they enter it.
-        const isExample = !(l > 0 && w > 0 && h > 0);
-        if (isExample) {
-          l = 8;
-          w = 5;
-          h = 3;
-        }
-
-        let html = "";
-        if (l > 0 && w > 0 && h > 0) {
-          const maxDim = Math.max(l, w, h, 1);
-          const scale = 35 / maxDim;
-
-          const cx = 100,
-            cy = 130;
-          const dxX = 25 * scale,
-            dyX = 12 * scale;
-          const dxY = -25 * scale,
-            dyY = 12 * scale;
-          const dxZ = 0,
-            dyZ = -30 * scale;
-
-          const p0 = { x: cx, y: cy };
-          const p1 = { x: cx + w * dxX, y: cy + w * dyX };
-          const p2 = { x: cx + w * dxX + l * dxY, y: cy + w * dyX + l * dyY };
-          const p3 = { x: cx + l * dxY, y: cy + l * dyY };
-
-          const p4 = { x: p0.x, y: p0.y + h * dyZ };
-          const p5 = { x: p1.x, y: p1.y + h * dyZ };
-          const p6 = { x: p2.x, y: p2.y + h * dyZ };
-          const p7 = { x: p3.x, y: p3.y + h * dyZ };
-
-          const nScale = 14 / maxDim;
-          const nl = l * nScale;
-          const nw = w * nScale;
-          const nh = h * nScale;
-          const nx = 330,
-            ny = 120;
-
-          html = `
-            ${isExample ? `<rect x="206" y="4" width="88" height="18" rx="9" fill="#eef4ff" stroke="#1763c7" /><text x="250" y="17" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example box</text>` : ""}
-            <polygon points="${p0.x},${p0.y} ${p1.x},${p1.y} ${p2.x},${p2.y} ${p3.x},${p3.y}" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5" />
-            <polygon points="${p0.x},${p0.y} ${p1.x},${p1.y} ${p5.x},${p5.y} ${p4.x},${p4.y}" fill="rgba(26, 111, 181, 0.15)" stroke="#1a6fb5" stroke-width="2" />
-            <polygon points="${p1.x},${p1.y} ${p2.x},${p2.y} ${p6.x},${p6.y} ${p5.x},${p5.y}" fill="rgba(14, 138, 125, 0.15)" stroke="#0e8a7d" stroke-width="2" />
-            <polygon points="${p4.x},${p4.y} ${p5.x},${p5.y} ${p6.x},${p6.y} ${p7.x},${p7.y}" fill="rgba(212, 149, 42, 0.15)" stroke="#d4952a" stroke-width="2" />
-            <line x1="${p3.x}" y1="${p3.y}" x2="${p7.x}" y2="${p7.y}" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3,3" />
-            <line x1="${p2.x}" y1="${p2.y}" x2="${p7.x}" y2="${p7.y}" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3,3" />
-            <text x="${(p0.x + p1.x) / 2}" y="${(p0.y + p1.y) / 2 + 15}" font-size="9" font-weight="bold" fill="#1a6fb5" text-anchor="middle">W: ${w}</text>
-            <text x="${(p1.x + p2.x) / 2 + 15}" y="${(p1.y + p2.y) / 2}" font-size="9" font-weight="bold" fill="#0e8a7d" text-anchor="middle">L: ${l}</text>
-            <text x="${p5.x + 15}" y="${p5.y + (h * dyZ) / 2}" font-size="9" font-weight="bold" fill="#d4952a" text-anchor="middle">H: ${h}</text>
-            <text x="100" y="30" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">3D Wireframe View</text>
-            
-            <g transform="translate(${nx}, ${ny})">
-              <rect x="${-nl / 2}" y="${-nw / 2}" width="${nl}" height="${nw}" fill="rgba(26, 111, 181, 0.2)" stroke="#1a6fb5" stroke-dasharray="2,2" />
-              <rect x="${-nl / 2}" y="${-nw / 2 - nh}" width="${nl}" height="${nh}" fill="rgba(212, 149, 42, 0.2)" stroke="#d4952a" />
-              <rect x="${-nl / 2}" y="${nw / 2}" width="${nl}" height="${nh}" fill="rgba(212, 149, 42, 0.2)" stroke="#d4952a" />
-              <rect x="${-nl / 2 - nh}" y="${-nw / 2}" width="${nh}" height="${nw}" fill="rgba(14, 138, 125, 0.2)" stroke="#0e8a7d" />
-              <rect x="${nl / 2}" y="${-nw / 2}" width="${nh}" height="${nw}" fill="rgba(14, 138, 125, 0.2)" stroke="#0e8a7d" />
-              <rect x="${-nl / 2}" y="${-nw / 2 - 2 * nh}" width="${nl}" height="${nh}" fill="rgba(26, 111, 181, 0.2)" stroke="#1a6fb5" />
-              <text x="0" y="0" text-anchor="middle" font-size="9" font-weight="bold" fill="#1a6fb5">2D Net</text>
+          <!-- SVG Visual: vocab diagram -->
+          <svg class="visual-svg" viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">
+            <!-- 3D Box drawing -->
+            <g stroke-linejoin="round" stroke-linecap="round">
+              <!-- Top Face -->
+              <polygon points="40,90 70,60 140,60 110,90" fill="#e8f2fc" stroke="#1a6fb5" stroke-width="2"/>
+              <!-- Right Face -->
+              <polygon points="110,90 140,60 140,110 110,140" fill="#e6f4eb" stroke="#1e7d40" stroke-width="2"/>
+              <!-- Front Face -->
+              <polygon points="40,90 110,90 110,140 40,140" fill="#fdf3e0" stroke="#c9820f" stroke-width="2"/>
+              
+              <!-- 3D Labels -->
+              <text x="75" y="155" text-anchor="middle" font-size="11" font-weight="bold" fill="#c9820f">l (length)</text>
+              <text x="130" y="130" text-anchor="start" font-size="11" font-weight="bold" fill="#1e7d40">w (width)</text>
+              <text x="25" y="118" text-anchor="end" font-size="11" font-weight="bold" fill="#0f2b3c">h (height)</text>
+              <text x="90" y="35" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">3D Box Model</text>
             </g>
-            <text x="350" y="30" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">Flat Folding Net</text>
-            <text x="250" y="220" text-anchor="middle" font-size="12" font-weight="bold" fill="#2d874b">
-              Volume = ${(l * w * h).toFixed(0)} cu in | Surface Area = ${(2 * (l * w + w * h + l * h)).toFixed(0)} sq in
-            </text>
-          `;
-        }
 
-        const svgString = `
-          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
-            ${html}
+            <!-- Arrow connecting 3D Box to 2D Net -->
+            <path d="M 180,100 L 230,100" stroke="#5e6e7e" stroke-width="2" marker-end="url(#arrow)" stroke-dasharray="4,4"/>
+            <text x="205" y="90" text-anchor="middle" font-size="10" fill="#5e6e7e">unfold</text>
+
+            <!-- 2D Net drawing -->
+            <g stroke-linejoin="round" stroke-linecap="round">
+              <!-- Back -->
+              <rect x="345" y="15" width="50" height="35" fill="#fdf3e0" stroke="#c9820f" stroke-width="2"/>
+              <text x="370" y="36" text-anchor="middle" font-size="8" font-weight="bold" fill="#0f2b3c">Back</text>
+              
+              <!-- Top -->
+              <rect x="345" y="50" width="50" height="25" fill="#e8f2fc" stroke="#1a6fb5" stroke-width="2"/>
+              <text x="370" y="66" text-anchor="middle" font-size="8" font-weight="bold" fill="#0f2b3c">Top</text>
+
+              <!-- Front -->
+              <rect x="345" y="75" width="50" height="35" fill="#fdf3e0" stroke="#c9820f" stroke-width="2"/>
+              <text x="370" y="96" text-anchor="middle" font-size="8" font-weight="bold" fill="#0f2b3c">Front</text>
+
+              <!-- Bottom -->
+              <rect x="345" y="110" width="50" height="25" fill="#e8f2fc" stroke="#1a6fb5" stroke-width="2"/>
+              <text x="370" y="126" text-anchor="middle" font-size="8" font-weight="bold" fill="#0f2b3c">Bottom</text>
+
+              <!-- Left wing -->
+              <rect x="320" y="75" width="25" height="35" fill="#e6f4eb" stroke="#1e7d40" stroke-width="2"/>
+              <text x="332" y="96" text-anchor="middle" font-size="7" font-weight="bold" fill="#0f2b3c">Left</text>
+
+              <!-- Right wing -->
+              <rect x="395" y="75" width="25" height="35" fill="#e6f4eb" stroke="#1e7d40" stroke-width="2"/>
+              <text x="408" y="96" text-anchor="middle" font-size="7" font-weight="bold" fill="#0f2b3c">Right</text>
+
+              <!-- Labels on 2D Net -->
+              <text x="370" y="152" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">2D Unfolded Net</text>
+              <text x="370" y="10" text-anchor="middle" font-size="8" fill="#c9820f">l</text>
+              <text x="312" y="96" text-anchor="end" font-size="8" fill="#1e7d40">w</text>
+              <text x="305" y="70" text-anchor="middle" font-size="8" fill="#0f2b3c">h</text>
+
+              <!-- Folding dotted lines -->
+              <line x1="345" y1="50" x2="395" y2="50" stroke="#5e6e7e" stroke-width="1.5" stroke-dasharray="2,2"/>
+              <line x1="345" y1="75" x2="395" y2="75" stroke="#5e6e7e" stroke-width="1.5" stroke-dasharray="2,2"/>
+              <line x1="345" y1="110" x2="395" y2="110" stroke="#5e6e7e" stroke-width="1.5" stroke-dasharray="2,2"/>
+              <line x1="345" y1="75" x2="345" y2="110" stroke="#5e6e7e" stroke-width="1.5" stroke-dasharray="2,2"/>
+              <line x1="395" y1="75" x2="395" y2="110" stroke="#5e6e7e" stroke-width="1.5" stroke-dasharray="2,2"/>
+            </g>
           </svg>
-        `;
-        $("projectVisualizer").innerHTML = svgString;
-      }
 
-      function recalcAll() {
-        proj.obj = $("objName").value;
-        calcVolume();
+          <div class="vocab-grid">
+            <div class="vocab-card">
+              <div class="vocab-icon">🧊</div>
+              <div class="vocab-term">Volume</div>
+              <div class="vocab-def">The amount of space inside a 3D box, measured in unit cubes.</div>
+              <div class="vocab-ex">Volume = l × w × h</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">📐</div>
+              <div class="vocab-term">Surface Area</div>
+              <div class="vocab-def">The total area of all 6 outer rectangular faces added together.</div>
+              <div class="vocab-ex">SA = 2lw + 2lh + 2wh</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">🗺️</div>
+              <div class="vocab-term">Net</div>
+              <div class="vocab-def">A flat 2D pattern that folds up to make a 3D solid box shape.</div>
+              <div class="vocab-ex">6 rectangular faces</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">📦</div>
+              <div class="vocab-term">Rectangular Prism</div>
+              <div class="vocab-def">A 3D box shape with 6 flat rectangular faces.</div>
+              <div class="vocab-ex">Shipping container</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">⬜</div>
+              <div class="vocab-term">Face</div>
+              <div class="vocab-def">A flat rectangular side of a box. A closed box has 6 faces.</div>
+              <div class="vocab-ex">Top, Bottom, Front...</div>
+            </div>
+          </div>
+
+          <div class="instruct" style="margin-top:20px">
+            ✅ Read each vocabulary card. Once you are comfortable with these terms, click <strong>Next Step</strong>.
+          </div>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" disabled>← Back</button>
+          <button class="nav-btn" onclick="goStep(2)">Next Step →</button>
+        </div>
+      </div>
+
+      <!-- ======================================
+           STEP 2 — VOLUME CALCULATION
+      ====================================== -->
+      <div class="step-panel" id="step-2">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">🧊</div>
+            <div>
+              <div class="card-title">Step 1 — Calculate Box Volume</div>
+              <div class="card-sub">Measure your package and find its capacity</div>
+            </div>
+          </div>
+
+          <div class="instruct">
+            <strong>Your job:</strong> Enter the length, width, and height of your shipping package below. The blueprint will automatically draw your 3D package design.
+          </div>
+
+          <!-- Dynamic SVG Container for 3D Box -->
+          <div id="dynamic-box-svg-container"></div>
+
+          <div class="instruct lvl1-only">
+            🟢 <strong>Level 1 support:</strong> Try clean whole numbers, like <strong>8" length</strong>, <strong>5" width</strong>, and <strong>4" height</strong>.
+          </div>
+          <div class="instruct lvl2-block lvl2-only">
+            <span class="lvl2-label">LEVEL 2 CHALLENGE</span><br>
+            Measure a real delivery box or cereal box. Decimals (like 7.5 or 3.25) are encouraged!
+          </div>
+
+          <div class="grid3">
+            <div>
+              <label class="lbl" for="v-len">📐 Length (l) in inches</label>
+              <input type="number" id="v-len" min="0.1" step="0.1" placeholder="e.g. 8" oninput="updateVolumeCalc()" />
+            </div>
+            <div>
+              <label class="lbl" for="v-wid">📐 Width (w) in inches</label>
+              <input type="number" id="v-wid" min="0.1" step="0.1" placeholder="e.g. 5" oninput="updateVolumeCalc()" />
+            </div>
+            <div>
+              <label class="lbl" for="v-hgt">📐 Height (h) in inches</label>
+              <input type="number" id="v-hgt" min="0.1" step="0.1" placeholder="e.g. 4" oninput="updateVolumeCalc()" />
+            </div>
+          </div>
+
+          <div class="export-row" style="margin-top: 14px;">
+            <button class="export-btn" onclick="loadExampleNumbers()">📋 Use Example Numbers (8" × 5" × 4")</button>
+          </div>
+
+          <button class="calc-btn" onclick="updateVolumeCalc()">🧮 Calculate Volume</button>
+          <div class="readout" id="vol-out"></div>
+
+          <details class="hint">
+            <summary>Need a hint?</summary>
+            <p>Volume measures how much 3D space is inside the box. Multiply Length × Width × Height.<br><strong>Example:</strong> A box with Length = 6", Width = 4", Height = 3" has a volume of 6 × 4 × 3 = <strong>72 cubic inches</strong>.</p>
+          </details>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(1)">← Back</button>
+          <button class="nav-btn" onclick="goStep(3)">Next Step →</button>
+        </div>
+      </div>
+
+      <!-- ======================================
+           STEP 3 — SURFACE AREA FROM NET
+      ====================================== -->
+      <div class="step-panel" id="step-3">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon teal">📐</div>
+            <div>
+              <div class="card-title">Step 2 — Surface Area from Net</div>
+              <div class="card-sub">Calculate the area of all faces to find cardboard usage</div>
+            </div>
+          </div>
+
+          <div class="instruct teal">
+            <strong>Your job:</strong> Look at your custom unfolded 2D net. Multiply the correct sides to calculate the area of each rectangular face, then enter the areas below.
+          </div>
+
+          <div class="lvl2-block lvl2-only" style="margin-bottom: 20px;">
+            <span class="lvl2-label">LEVEL 2 CHALLENGE — Box Lid Configuration</span>
+            <label class="lbl" for="sa-lid-option">Is this a closed shipping box or an open-top tray?</label>
+            <select id="sa-lid-option" onchange="handleLidChange()">
+              <option value="closed" selected>Closed Box (all 6 faces)</option>
+              <option value="open">Open-Top Box (5 faces - no lid)</option>
+            </select>
+          </div>
+
+          <!-- Dynamic SVG Container for 2D Net -->
+          <div id="dynamic-net-svg-container"></div>
+
+          <div class="instruct lvl1-only">
+            🟢 <strong>Level 1 support:</strong> Opposite faces are identical in a rectangular prism! Top = Bottom, Front = Back, Left = Right.
+          </div>
+
+          <div class="grid3">
+            <div id="sa-bot-wrapper">
+              <label class="lbl" for="sa-bot">Bottom Face Area (l × w)</label>
+              <input type="number" id="sa-bot" min="0.1" step="0.1" placeholder="e.g. 40" oninput="calcSA()" />
+            </div>
+            <div id="sa-top-wrapper">
+              <label class="lbl" for="sa-top">Top Face Area (l × w)</label>
+              <input type="number" id="sa-top" min="0.1" step="0.1" placeholder="e.g. 40" oninput="calcSA()" />
+            </div>
+            <div id="sa-front-wrapper">
+              <label class="lbl" for="sa-front">Front Face Area (l × h)</label>
+              <input type="number" id="sa-front" min="0.1" step="0.1" placeholder="e.g. 32" oninput="calcSA()" />
+            </div>
+            <div id="sa-back-wrapper">
+              <label class="lbl" for="sa-back">Back Face Area (l × h)</label>
+              <input type="number" id="sa-back" min="0.1" step="0.1" placeholder="e.g. 32" oninput="calcSA()" />
+            </div>
+            <div id="sa-left-wrapper">
+              <label class="lbl" for="sa-left">Left Face Area (w × h)</label>
+              <input type="number" id="sa-left" min="0.1" step="0.1" placeholder="e.g. 20" oninput="calcSA()" />
+            </div>
+            <div id="sa-right-wrapper">
+              <label class="lbl" for="sa-right">Right Face Area (w × h)</label>
+              <input type="number" id="sa-right" min="0.1" step="0.1" placeholder="e.g. 20" oninput="calcSA()" />
+            </div>
+          </div>
+
+          <button class="calc-btn teal" onclick="calcSA()">⭐ Verify Face Areas</button>
+          <div class="readout" id="sa-out"></div>
+
+          <details class="hint">
+            <summary>Need a hint?</summary>
+            <p>Surface area is the sum of the areas of all flat rectangles. Find the area of each face (length × width) and add them all up.<br><strong>Closed Box SA = 2(lw) + 2(lh) + 2(wh)</strong></p>
+          </details>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(2)">← Back</button>
+          <button class="nav-btn" onclick="goStep(4)">Next Step →</button>
+        </div>
+      </div>
+
+      <!-- ======================================
+           STEP 4 — MATERIAL COST
+      ====================================== -->
+      <div class="step-panel" id="step-4">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon gold">💵</div>
+            <div>
+              <div class="card-title">Step 3 — Cardboard Material Cost</div>
+              <div class="card-sub">Determine the cost of producing your custom package</div>
+            </div>
+          </div>
+
+          <div class="instruct gold">
+            <strong>Your job:</strong> Enter a cardboard cost rate per square inch below to calculate the total manufacturing cost of your package design.
+          </div>
+
+          <div class="lvl2-block lvl2-only" style="margin-bottom: 20px;">
+            <span class="lvl2-label">LEVEL 2 CHALLENGE — Finish Selection</span>
+            <label class="lbl" for="mc-type">Choose your cardboard finish:</label>
+            <select id="mc-type" onchange="updateCostRate()">
+              <option value="0.02">Standard Kraft ($0.02 per sq in)</option>
+              <option value="0.03" selected>White Premium ($0.03 per sq in)</option>
+              <option value="0.05">Custom Glossy Print ($0.05 per sq in)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="lbl" for="mc-rate">💵 Cardboard cost per square inch ($)</label>
+            <input type="number" id="mc-rate" step="0.001" min="0.001" value="0.03" oninput="calcCost()" />
+          </div>
+
+          <button class="calc-btn gold" onclick="calcCost()">💵 Calculate Material Cost</button>
+          <div class="readout" id="cost-out"></div>
+
+          <!-- Real-world comparison -->
+          <div style="margin-top:22px;">
+            <h3 style="font-size:15px;font-weight:800;color:var(--navy);margin-bottom:6px;">🌎 Real-World Shipping Box Pricing</h3>
+            <p style="font-size:14px;color:var(--muted);margin-bottom:6px;">Below are average retail costs of shipping boxes based on their size category. Compare your box's calculated cardboard cost to these market rates.</p>
+            <table class="data-table">
+              <thead>
+                <tr><th>Box Category</th><th>Surface Area Range</th><th>Average Retail Cost</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Small Box (e.g. shoebox, small gift box)</td><td>Up to 80 sq in</td><td>$0.50 – $1.50</td></tr>
+                <tr><td>Medium Box (e.g. board game, medium delivery)</td><td>81 – 150 sq in</td><td>$1.50 – $3.00</td></tr>
+                <tr><td>Large Box (e.g. computer chassis, moving box)</td><td>Over 150 sq in</td><td>$3.00 – $6.00</td></tr>
+              </tbody>
+            </table>
+
+            <label class="lbl" for="world-compare" style="margin-top: 14px;">Where does your custom package fit compared to retail boxes? Write 1-2 reflection sentences.</label>
+            <textarea id="world-compare" placeholder="My box's cardboard material cost is $___. Compared to retail boxes, this is..."></textarea>
+          </div>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(3)">← Back</button>
+          <button class="nav-btn" onclick="goStep(5)">Next Step →</button>
+        </div>
+      </div>
+
+      <!-- ======================================
+           STEP 5 — PARTNER BOX
+      ====================================== -->
+      <div class="step-panel" id="step-5">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon teal">👥</div>
+            <div>
+              <div class="card-title">Step 4 — Compare Packages</div>
+              <div class="card-sub">Evaluate size and efficiency side-by-side with a partner</div>
+            </div>
+          </div>
+
+          <div class="instruct teal">
+            <strong>Your job:</strong> Interview a classmate. Ask for their box's length, width, and height, then enter them below to see the differences.
+          </div>
+
+          <div style="background:var(--teal-lt);border-radius:12px;padding:14px 16px;margin-bottom:18px;">
+            <strong style="font-size:14px;color:var(--teal);">Classmate Interview Checklist:</strong>
+            <ul style="margin-top:8px;font-size:14px;line-height:1.9;padding-left:18px;color:var(--ink);">
+              <li>What object are you designing a package for?</li>
+              <li>What are the dimensions (l × w × h) of your box?</li>
+              <li>Is your package open-top or closed?</li>
+            </ul>
+          </div>
+
+          <label class="lbl" for="p-name">Partner's Name</label>
+          <input type="text" id="p-name" placeholder="e.g. Alex" />
+
+          <div class="grid3" style="margin-top:4px;">
+            <div>
+              <label class="lbl" for="p-len">Partner's Length (in)</label>
+              <input type="number" id="p-len" min="0.1" step="0.1" placeholder="e.g. 10" oninput="comparePeer()" />
+            </div>
+            <div>
+              <label class="lbl" for="p-wid">Partner's Width (in)</label>
+              <input type="number" id="p-wid" min="0.1" step="0.1" placeholder="e.g. 6" oninput="comparePeer()" />
+            </div>
+            <div>
+              <label class="lbl" for="p-hgt">Partner's Height (in)</label>
+              <input type="number" id="p-hgt" min="0.1" step="0.1" placeholder="e.g. 3" oninput="comparePeer()" />
+            </div>
+          </div>
+
+          <div class="lvl2-block lvl2-only">
+            <span class="lvl2-label">LEVEL 2 CHALLENGE — Partner Box Lid</span>
+            <label class="lbl" for="p-lid-option">Partner's box configuration:</label>
+            <select id="p-lid-option" onchange="comparePeer()">
+              <option value="closed" selected>Closed Box</option>
+              <option value="open">Open-Top Box</option>
+            </select>
+          </div>
+
+          <button class="calc-btn teal" onclick="comparePeer()">📊 Compare Package Designs</button>
+          <div class="readout" id="peer-out"></div>
+
+          <label class="lbl" for="peer-reflect" style="margin-top:18px;">Which package is more material-efficient? Explain using volume and surface area numbers.</label>
+          <textarea id="peer-reflect" placeholder="My package has a volume of ___ cu in and SA of ___ sq in. My partner's box... I think ___ is more efficient because..."></textarea>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(4)">← Back</button>
+          <button class="nav-btn green" onclick="goStep(6)">Next Step →</button>
+        </div>
+      </div>
+
+      <!-- ======================================
+           STEP 6 — FINAL PITCH + CHECKLIST + RUBRIC
+      ====================================== -->
+      <div class="step-panel" id="step-6">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon green">🏆</div>
+            <div>
+              <div class="card-title">Step 5 — Finish &amp; Submit</div>
+              <div class="card-sub">Present your pitch, verify the checklist, and generate the final spec report</div>
+            </div>
+          </div>
+
+          <div class="instruct green">
+            <strong>Your job:</strong> Write a 3–5 sentence presentation pitch to the manufacturer. Explain why they should adopt your box design, citing your volume, surface area, and cost numbers.
+          </div>
+
+          <!-- Pitch -->
+          <label class="lbl" for="pitch">✍️ Manufacturer Presentation Pitch (Use your calculated data!)</label>
+          <textarea id="pitch" placeholder="Our package design is highly optimized for this object. It has a total shipping volume of ___ cu in to fit the item snuggly, while requiring only ___ sq in of cardboard. At a cost rate of $___, our total material cost is just $___, which is extremely competitive..."></textarea>
+
+          <!-- Checklist -->
+          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">✅ Project Checklist — Check off completed tasks</h3>
+          <ul class="checklist" id="checklist">
+            <li><input type="checkbox" id="ck1" /> I read and understood the key words in Step 0.</li>
+            <li><input type="checkbox" id="ck2" /> I measured my box and calculated its volume in Step 1.</li>
+            <li><input type="checkbox" id="ck3" /> I calculated the areas of all 6 faces from the net in Step 2.</li>
+            <li><input type="checkbox" id="ck4" /> I computed the cardboard material cost and compared it in Step 3.</li>
+            <li><input type="checkbox" id="ck5" /> I compared my package side-by-side with a classmate's in Step 4.</li>
+            <li><input type="checkbox" id="ck6" /> I wrote a presentation pitch and reviewed the grading rubric.</li>
+          </ul>
+
+          <!-- Rubric -->
+          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">📊 Packaging Engineering Rubric</h3>
+          <table class="rubric">
+            <thead>
+              <tr><th>Skill Standards</th><th class="score-4">4 — Expert</th><th class="score-3">3 — Proficient</th><th class="score-2">2 — Developing</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Volume (6.G.2)</strong></td><td>Volume is correct with clear explanation of unit cubes fitting inside</td><td>Volume correctly calculated using standard formula (l × w × h)</td><td>Dimensions entered but volume calculation is incorrect</td></tr>
+              <tr><td><strong>Surface Area (6.G.4)</strong></td><td>All face calculations correct from net, including open-top configuration (L2)</td><td>Surface area correctly calculated by adding face areas</td><td>Calculation errors present or missed opposite face pairs</td></tr>
+              <tr><td><strong>Cardboard Cost</strong></td><td>Accurately calculates total cost and reflects on retail market ranges</td><td>Accurately calculates cardboard cost (SA × rate)</td><td>Cost computed using wrong rate or wrong formula</td></tr>
+              <tr><td><strong>Partner Box Comparison</strong></td><td>Compares side-by-side and analyzes material efficiency using ratios (L2)</td><td>Conducts basic side-by-side comparison with partner</td><td>Partner dimensions not recorded or compared</td></tr>
+              <tr><td><strong>Presentation Pitch</strong></td><td>Persuasively justifies design using all calculated volume, SA, and cost data</td><td>Writes a clean design pitch using some calculated numbers</td><td>Pitch is incomplete or fails to mention measurements</td></tr>
+            </tbody>
+          </table>
+
+          <!-- Report + export buttons -->
+          <div class="nav-row no-print" style="margin-top:22px;flex-wrap:wrap;justify-content:flex-start;gap:8px;">
+            <button class="calc-btn" onclick="buildReport()">📝 Generate Summary</button>
+            <button class="export-btn" onclick="copyReport()">📋 Copy to Clipboard</button>
+            <button class="export-btn" onclick="downloadTxt()">⬇️ Download .txt</button>
+            <button class="export-btn" onclick="window.print()">🖨️ Print Project</button>
+          </div>
+          <pre class="report-box" id="reportBox"></pre>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(5)">← Back</button>
+          <button class="nav-btn green" onclick="alert('Congratulations! 🎉 Show this completed spec sheet to your teacher.')">🎉 Project Finished!</button>
+        </div>
+      </div>
+
+    </div><!-- end wizard -->
+
+    <!-- ====== SCRIPTS ====== -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <script src="/assets/app.js" defer></script>
+    <script>
+      // ---- State ----
+      const STEPS = [
+        { id: 1, label: 'Key Words', icon: '📖' },
+        { id: 2, label: 'Volume', icon: '🧊' },
+        { id: 3, label: 'Surface Area', icon: '📐' },
+        { id: 4, label: 'Material Cost', icon: '💵' },
+        { id: 5, label: 'Partner Box', icon: '👥' },
+        { id: 6, label: 'Finish', icon: '🏆' },
+      ];
+      let currentStep = 1;
+      const visited = new Set([1]);
+
+      // ---- Level toggle ----
+      function setLevel(n) {
+        document.getElementById('body').className = 'level-' + n;
+        document.getElementById('btn-lv1').classList.toggle('active', n === 1);
+        document.getElementById('btn-lv2').classList.toggle('active', n === 2);
+        
+        if (n === 2) {
+          updateCostRate();
+        } else {
+          document.getElementById('mc-rate').value = '0.03';
+        }
+        
+        handleLidChange();
+        updateVolumeCalc();
         calcSA();
         calcCost();
         comparePeer();
-        renderWorld();
-        worldGo();
-        calcOpt();
+      }
+
+      // ---- Build step trail ----
+      function buildTrail() {
+        const trail = document.getElementById('stepTrail');
+        trail.innerHTML = STEPS.map((s, i) => {
+          const isLast = i === STEPS.length - 1;
+          return `<span class="step-trail-item${s.id === currentStep ? ' active' : ''}${visited.has(s.id) && s.id !== currentStep ? ' done' : ''}" onclick="goStep(${s.id})">
+            <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? '✓' : s.id}</span>
+            <span class="s-label">${s.label}</span>
+          </span>${!isLast ? '<span class="step-arrow">›</span>' : ''}`;
+        }).join('');
+      }
+
+      // ---- Navigation ----
+      function goStep(n) {
+        if (n < 1 || n > STEPS.length) return;
+        document.getElementById('step-' + currentStep).classList.remove('active');
+        currentStep = n;
+        visited.add(n);
+        document.getElementById('step-' + n).classList.add('active');
+        buildTrail();
         updateProgress();
-
-        if (typeof drawPrismSVG === "function") {
-          drawPrismSVG();
-          drawNetSVG();
-          drawCostSVG();
+        
+        // Dynamic box/net calculations when step updates
+        if (n === 2) {
+          const l = parseFloat(document.getElementById('v-len').value);
+          const w = parseFloat(document.getElementById('v-wid').value);
+          const h = parseFloat(document.getElementById('v-hgt').value);
+          updateDynamicBoxSVG(l, w, h);
+        } else if (n === 3) {
+          const l = parseFloat(document.getElementById('v-len').value);
+          const w = parseFloat(document.getElementById('v-wid').value);
+          const h = parseFloat(document.getElementById('v-hgt').value);
+          updateDynamicNetSVG(l, w, h);
+          calcSA();
+        } else if (n === 4) {
+          calcCost();
+        } else if (n === 5) {
+          comparePeer();
         }
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
 
-      /* ---- Report ---- */
-      function reportText() {
-        const f = (x, d) =>
-          x == null
-            ? "(not finished)"
-            : typeof x === "number"
-              ? x.toFixed(d || 2)
-              : x;
-        return (
-          "PACKAGE DESIGN CHALLENGE — MY SPEC SHEET\n" +
-          "========================================\n\n" +
-          "PART 1: MY BOX (SELF)\n" +
-          "Object measured: " +
-          ($("objName").value || "(none)") +
-          "\n" +
-          "Dimensions (l × w × h): " +
-          ($("v-length").value || "-") +
-          " × " +
-          ($("v-width").value || "-") +
-          " × " +
-          ($("v-height").value || "-") +
-          "\n" +
-          "Volume: " +
-          (proj.vol == null ? "(not finished)" : proj.vol + " cubic units") +
-          "\n" +
-          "Surface area: " +
-          (proj.sa == null ? "(not finished)" : proj.sa + " square units") +
-          "\n" +
-          "Cardboard cost: $" +
-          f(proj.cost) +
-          " (at $" +
-          f(proj.rate, 3) +
-          " per sq unit)\n\n" +
-          "PART 2: PEER COMPARISON\n" +
-          "Partner: " +
-          ($("partnerName").value || "(none)") +
-          " — object: " +
-          ($("p-obj").value || "-") +
-          "\n" +
-          "Partner box (l × w × h): " +
-          ($("p-l").value || "-") +
-          " × " +
-          ($("p-w").value || "-") +
-          " × " +
-          ($("p-h").value || "-") +
-          "\n" +
-          "Reflection: " +
-          ($("peerReflect").value || "(not written)") +
-          "\n\n" +
-          "PART 3: WORLD COMPARISON\n" +
-          "My value vs real boxes: " +
-          ($("worldReflect").value || "(not written)") +
-          "\n" +
-          "Careful thinking: " +
-          ($("careful").value || "(not written)") +
-          "\n\n" +
-          "SPEC SHEET:\n" +
-          ($("pitch").value || "(not written)")
-        );
-      }
-      function buildReport() {
-        recalcAll();
-        PK.generateReport("reportBox", reportText());
-      }
-      function downloadCsv() {
-        const rows = [
-          ["field", "value"],
-          ["object", $("objName").value],
-          ["length", $("v-length").value],
-          ["width", $("v-width").value],
-          ["height", $("v-height").value],
-          ["volume", proj.vol],
-          ["surface_area", proj.sa],
-          ["cost_rate", proj.rate],
-          ["material_cost", proj.cost],
-          ["partner", $("partnerName").value],
-          ["partner_l", $("p-l").value],
-          ["partner_w", $("p-w").value],
-          ["partner_h", $("p-h").value],
-        ];
-        PK.downloadCsv("package-design-data.csv", rows);
-      }
-
-      /* ---- Progress ---- */
       function updateProgress() {
-        const readouts = document.querySelectorAll(".readout.show").length; // up to 4 (vol, sa, cost, opt)
-        const checks3 =
-          ($("check-volFb").querySelector(".pk-ok") ? 1 : 0) +
-          ($("check-saFb").querySelector(".pk-ok") ? 1 : 0) +
-          ($("check-costFb").querySelector(".pk-ok") ? 1 : 0);
-        const listChecks = document.querySelectorAll(
-          "#checklist input:checked",
-        ).length; // up to 6
-        const peer = $("p-l").value && $("p-w").value && $("p-h").value ? 1 : 0;
-        const wrld = $("myWorld").value ? 1 : 0;
-        const pitch = $("pitch").value.trim().length > 20 ? 1 : 0;
-        const total = readouts + checks3 + listChecks + peer + wrld + pitch; // max 4+3+6+1+1+1 = 16
-        const pct = Math.min(100, Math.round((total / 16) * 100));
-        $("pfill").style.width = pct + "%";
-        $("pct").textContent = pct;
+        const pct = Math.round(((currentStep - 1) / (STEPS.length - 1)) * 100);
+        document.getElementById('progFill').style.width = pct + '%';
+        document.getElementById('progLabel').textContent = `Step ${currentStep} of ${STEPS.length}`;
       }
-      document
-        .getElementById("checklist")
-        .addEventListener("change", updateProgress);
-      document
-        .getElementById("pitch")
-        .addEventListener("input", updateProgress);
 
-      /* ---- Level hook: Level 1 pre-fills whole-number sample if empty ---- */
-      window.onLevelChange = function (level) {
-        if (level === "level-1") {
-          const empty =
-            !$("v-length").value && !$("v-width").value && !$("v-height").value;
-          if (empty) {
-            $("objName").value = "sample box";
-            $("v-length").value = 8;
-            $("v-width").value = 5;
-            $("v-height").value = 3;
-            $("cost-rate").value = 0.05;
-            recalcAll();
+      // ---- Math helpers ----
+      function fmt(n) { return Number.isInteger(n) ? n.toFixed(0) : n.toFixed(2); }
+      
+      function showReadout(id, html) {
+        const el = document.getElementById(id);
+        el.innerHTML = html;
+        el.classList.add('show');
+      }
+
+      function getVal(id) {
+        const val = parseFloat(document.getElementById(id).value);
+        return isNaN(val) ? 0 : val;
+      }
+
+      function loadExampleNumbers() {
+        document.getElementById('v-len').value = 8;
+        document.getElementById('v-wid').value = 5;
+        document.getElementById('v-hgt').value = 4;
+        updateVolumeCalc();
+      }
+
+      // ---- Volume ----
+      function updateVolumeCalc() {
+        const l = parseFloat(document.getElementById('v-len').value);
+        const w = parseFloat(document.getElementById('v-wid').value);
+        const h = parseFloat(document.getElementById('v-hgt').value);
+
+        updateDynamicBoxSVG(l, w, h);
+        updateDynamicNetSVG(l, w, h);
+
+        if (isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0) {
+          document.getElementById('vol-out').classList.remove('show');
+          return;
+        }
+
+        const vol = l * w * h;
+        showReadout('vol-out', `
+          <strong>Volume = Length × Width × Height = ${l}" × ${w}" × ${h}" = <strong>${fmt(vol)}</strong> cubic inches (in³)</strong><br>
+          This means your package has a capacity of <strong>${fmt(vol)}</strong> unit cubes (1" × 1" × 1").<br>
+          <small>Formula: V = l × w × h = ${l} × ${w} × ${h} = ${fmt(vol)}</small>
+        `);
+        
+        calcSA();
+      }
+
+      // ---- Surface Area ----
+      function handleLidChange() {
+        const isLevel2 = document.getElementById('body').classList.contains('level-2');
+        const lidOpt = isLevel2 && document.getElementById('sa-lid-option') ? document.getElementById('sa-lid-option').value : 'closed';
+        const topWrap = document.getElementById('sa-top-wrapper');
+        const topInput = document.getElementById('sa-top');
+        
+        if (lidOpt === 'open') {
+          if (topWrap) topWrap.style.opacity = '0.5';
+          if (topInput) {
+            topInput.disabled = true;
+            topInput.value = '';
+            topInput.placeholder = '(No lid - 0)';
+          }
+        } else {
+          if (topWrap) topWrap.style.opacity = '1';
+          if (topInput) {
+            topInput.disabled = false;
+            topInput.placeholder = 'e.g. 40';
           }
         }
-      };
+        
+        const l = parseFloat(document.getElementById('v-len').value);
+        const w = parseFloat(document.getElementById('v-wid').value);
+        const h = parseFloat(document.getElementById('v-hgt').value);
+        updateDynamicNetSVG(l, w, h);
+        calcSA();
+      }
 
-      /* ---- init (runs after deferred kit script is ready) ---- */
-      document.addEventListener("DOMContentLoaded", function () {
-        renderWorld();
-        PK.initLevel({ storageKey: "u10ProjectA", default: "level-1" });
-        PK.initTts({ storageKey: "u10ProjectA" });
-        PK.load("u10ProjectA", { after: recalcAll });
-        updateProgress();
-      });
+      function calcSA() {
+        const l = parseFloat(document.getElementById('v-len').value);
+        const w = parseFloat(document.getElementById('v-wid').value);
+        const h = parseFloat(document.getElementById('v-hgt').value);
 
-      function drawPrismSVG() {
-        let l = num("v-length");
-        let w = num("v-width");
-        let h = num("v-height");
-        const svg = $("phase-svg-1a");
-        if (!svg) return;
-
-        // Default to a worked EXAMPLE (8 × 5 × 3) so the blueprint always shows
-        // a reference; switches to the student's box once they enter it.
-        const isExample =
-          isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0;
-        if (isExample) {
-          l = 8;
-          w = 5;
-          h = 3;
+        if (isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0) {
+          document.getElementById('sa-out').classList.remove('show');
+          return;
         }
 
-        const originX = 200,
-          originY = 140;
-        const scale = Math.min(100 / l, 100 / w, 100 / h);
-        const sw = l * scale;
+        const isLevel2 = document.getElementById('body').classList.contains('level-2');
+        const isOpenTop = isLevel2 && document.getElementById('sa-lid-option')?.value === 'open';
+
+        const topInput = document.getElementById('sa-top');
+        const topVal = isOpenTop ? 0 : parseFloat(topInput.value);
+        const botVal = parseFloat(document.getElementById('sa-bot').value);
+        const frontVal = parseFloat(document.getElementById('sa-front').value);
+        const backVal = parseFloat(document.getElementById('sa-back').value);
+        const leftVal = parseFloat(document.getElementById('sa-left').value);
+        const rightVal = parseFloat(document.getElementById('sa-right').value);
+
+        if ((!isOpenTop && isNaN(topVal)) || isNaN(botVal) || isNaN(frontVal) || isNaN(backVal) || isNaN(leftVal) || isNaN(rightVal)) {
+          document.getElementById('sa-out').classList.remove('show');
+          return;
+        }
+
+        const expectedLW = l * w;
+        const expectedLH = l * h;
+        const expectedWH = w * h;
+
+        let errors = [];
+        if (!isOpenTop && Math.abs(topVal - expectedLW) > 0.01) errors.push('Top Face');
+        if (Math.abs(botVal - expectedLW) > 0.01) errors.push('Bottom Face');
+        if (Math.abs(frontVal - expectedLH) > 0.01) errors.push('Front Face');
+        if (Math.abs(backVal - expectedLH) > 0.01) errors.push('Back Face');
+        if (Math.abs(leftVal - expectedWH) > 0.01) errors.push('Left Face');
+        if (Math.abs(rightVal - expectedWH) > 0.01) errors.push('Right Face');
+
+        if (errors.length > 0) {
+          showReadout('sa-out', `
+            <span style="color: #ef4444; font-weight: bold;">⚠️ Check your calculations for:</span> ${errors.join(', ')}.<br>
+            <small>Hint: Top and Bottom = length × width (${l} × ${w} = ${expectedLW}). Front and Back = length × height (${l} × ${h} = ${expectedLH}). Left and Right = width × height (${w} × ${h} = ${expectedWH}).</small>
+          `);
+          return;
+        }
+
+        let totalSA = 0;
+        let formulaText = '';
+        if (isOpenTop) {
+          totalSA = expectedLW + 2 * expectedLH + 2 * expectedWH;
+          formulaText = `Bottom (${botVal}) + Front (${frontVal}) + Back (${backVal}) + Left (${leftVal}) + Right (${rightVal}) = <strong>${fmt(totalSA)} sq in</strong>`;
+        } else {
+          totalSA = 2 * expectedLW + 2 * expectedLH + 2 * expectedWH;
+          formulaText = `Top (${topVal}) + Bottom (${botVal}) + Front (${frontVal}) + Back (${backVal}) + Left (${leftVal}) + Right (${rightVal}) = <strong>${fmt(totalSA)} sq in</strong>`;
+        }
+
+        showReadout('sa-out', `
+          <strong>Surface Area is Correct! 🎉</strong><br>
+          Total Surface Area = ${formulaText}<br>
+          <small>This is the exact cardboard surface area needed to build your package.</small>
+        `);
+      }
+
+      function getCalculatedSA() {
+        const l = parseFloat(document.getElementById('v-len').value);
+        const w = parseFloat(document.getElementById('v-wid').value);
+        const h = parseFloat(document.getElementById('v-hgt').value);
+        if (isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0) return null;
+
+        const isLevel2 = document.getElementById('body').classList.contains('level-2');
+        const isOpenTop = isLevel2 && document.getElementById('sa-lid-option')?.value === 'open';
+
+        const topInput = document.getElementById('sa-top');
+        const topVal = isOpenTop ? 0 : parseFloat(topInput.value);
+        const botVal = parseFloat(document.getElementById('sa-bot').value);
+        const frontVal = parseFloat(document.getElementById('sa-front').value);
+        const backVal = parseFloat(document.getElementById('sa-back').value);
+        const leftVal = parseFloat(document.getElementById('sa-left').value);
+        const rightVal = parseFloat(document.getElementById('sa-right').value);
+
+        if ((!isOpenTop && isNaN(topVal)) || isNaN(botVal) || isNaN(frontVal) || isNaN(backVal) || isNaN(leftVal) || isNaN(rightVal)) return null;
+
+        const expectedLW = l * w;
+        const expectedLH = l * h;
+        const expectedWH = w * h;
+
+        if (!isOpenTop && Math.abs(topVal - expectedLW) > 0.01) return null;
+        if (Math.abs(botVal - expectedLW) > 0.01) return null;
+        if (Math.abs(frontVal - expectedLH) > 0.01) return null;
+        if (Math.abs(backVal - expectedLH) > 0.01) return null;
+        if (Math.abs(leftVal - expectedWH) > 0.01) return null;
+        if (Math.abs(rightVal - expectedWH) > 0.01) return null;
+
+        return isOpenTop ? (expectedLW + 2 * expectedLH + 2 * expectedWH) : (2 * expectedLW + 2 * expectedLH + 2 * expectedWH);
+      }
+
+      // ---- Cost ----
+      function updateCostRate() {
+        const isLevel2 = document.getElementById('body').classList.contains('level-2');
+        if (isLevel2) {
+          const type = document.getElementById('mc-type').value;
+          document.getElementById('mc-rate').value = type;
+        }
+        calcCost();
+      }
+
+      function calcCost() {
+        const sa = getCalculatedSA();
+        if (sa === null) {
+          showReadout('cost-out', '<span style="color:#c45a3c;font-weight:bold;">⚠️ Complete and verify your Surface Area face calculations in Step 2 first!</span>');
+          return;
+        }
+
+        const rate = parseFloat(document.getElementById('mc-rate').value) || 0.03;
+        const cost = sa * rate;
+
+        let sizeCat = 'Small';
+        let realMin = 0.50, realMax = 1.50;
+        if (sa > 150) {
+          sizeCat = 'Large';
+          realMin = 3.00; realMax = 6.00;
+        } else if (sa > 80) {
+          sizeCat = 'Medium';
+          realMin = 1.50; realMax = 3.00;
+        }
+
+        showReadout('cost-out', `
+          <strong>Total Cardboard Cost: $${cost.toFixed(2)}</strong><br>
+          Formula: Surface Area × Cardboard Cost Rate = <strong>${fmt(sa)} sq in</strong> × <strong>$${rate.toFixed(3)}</strong> = <strong>$${cost.toFixed(2)}</strong><br>
+          <small>This is the direct material cost to manufacture your box's cardboard body.</small><br><br>
+          📦 <strong>Your design is a "${sizeCat}" package</strong> (based on surface area).<br>
+          Comparable pre-built shipping boxes on the market cost <strong>$${realMin.toFixed(2)} to $${realMax.toFixed(2)}</strong>.
+        `);
+      }
+
+      // ---- Peer compare ----
+      function comparePeer() {
+        const myL = parseFloat(document.getElementById('v-len').value);
+        const myW = parseFloat(document.getElementById('v-wid').value);
+        const myH = parseFloat(document.getElementById('v-hgt').value);
+        const myVol = myL * myW * myH;
+        const mySA = getCalculatedSA();
+        const rate = parseFloat(document.getElementById('mc-rate').value) || 0.03;
+        const myCost = mySA ? mySA * rate : 0;
+
+        if (isNaN(myL) || isNaN(myW) || isNaN(myH) || !mySA) {
+          showReadout('peer-out', '<span style="color:#c45a3c;font-weight:bold;">⚠️ Complete your own box specs (Steps 1 & 2) first!</span>');
+          return;
+        }
+
+        const pName = document.getElementById('p-name').value || 'Partner';
+        const pL = parseFloat(document.getElementById('p-len').value);
+        const pW = parseFloat(document.getElementById('p-wid').value);
+        const pH = parseFloat(document.getElementById('p-hgt').value);
+
+        if (isNaN(pL) || isNaN(pW) || isNaN(pH) || pL <= 0 || pW <= 0 || pH <= 0) {
+          document.getElementById('peer-out').classList.remove('show');
+          return;
+        }
+
+        const isLevel2 = document.getElementById('body').classList.contains('level-2');
+        const pOpen = isLevel2 && document.getElementById('p-lid-option')?.value === 'open';
+
+        const pVol = pL * pW * pH;
+        let pSA;
+        if (pOpen) {
+          pSA = pL * pW + 2 * pL * pH + 2 * pW * pH;
+        } else {
+          pSA = 2 * (pL * pW + pL * pH + pW * pH);
+        }
+        const pCost = pSA * rate;
+
+        const volDiff = pVol - myVol;
+        const saDiff = pSA - mySA;
+        const costDiff = pCost - myCost;
+
+        // Cardboard efficiency (ratio of SA to Volume)
+        const myEff = mySA / myVol;
+        const pEff = pSA / pVol;
+        const effDiff = pEff - myEff;
+
+        let tableHtml = `
+          <table class="data-table" style="margin-top:10px;">
+            <thead>
+              <tr>
+                <th>Specification</th>
+                <th>My Box</th>
+                <th>${pName}'s Box</th>
+                <th>Difference</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Dimensions (l × w × h)</strong></td>
+                <td>${myL}" × ${myW}" × ${myH}"</td>
+                <td>${pL}" × ${pW}" × ${pH}"</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td><strong>Volume (Capacity)</strong></td>
+                <td>${fmt(myVol)} cu in</td>
+                <td>${fmt(pVol)} cu in</td>
+                <td>${volDiff >= 0 ? '+' : ''}${fmt(volDiff)} cu in</td>
+              </tr>
+              <tr>
+                <td><strong>Surface Area (Cardboard)</strong></td>
+                <td>${fmt(mySA)} sq in</td>
+                <td>${fmt(pSA)} sq in</td>
+                <td>${saDiff >= 0 ? '+' : ''}${fmt(saDiff)} sq in</td>
+              </tr>
+              <tr>
+                <td><strong>Material Cost</strong></td>
+                <td>$${myCost.toFixed(2)}</td>
+                <td>$${pCost.toFixed(2)}</td>
+                <td>${costDiff >= 0 ? '+' : ''}$${costDiff.toFixed(2)}</td>
+              </tr>
+        `;
+
+        if (isLevel2) {
+          tableHtml += `
+              <tr>
+                <td><strong>Cardboard per Cube (ratio)</strong></td>
+                <td>${myEff.toFixed(3)} sq in/in³</td>
+                <td>${pEff.toFixed(3)} sq in/in³</td>
+                <td>${effDiff >= 0 ? '+' : ''}${effDiff.toFixed(3)}</td>
+              </tr>
+          `;
+        }
+
+        tableHtml += `
+            </tbody>
+          </table>
+        `;
+
+        let summaryText = '';
+        if (isLevel2) {
+          const betterName = myEff < pEff ? 'Your box' : `${pName}'s box`;
+          const worseName = myEff < pEff ? `${pName}'s box` : 'Your box';
+          summaryText = `<br>📊 <strong>Material Efficiency Analysis (L2):</strong> 
+            ${betterName} is more material-efficient because its surface-area-to-volume ratio is <strong>${Math.min(myEff, pEff).toFixed(3)}</strong>, which is lower than ${worseName}'s ratio of <strong>${Math.max(myEff, pEff).toFixed(3)}</strong>. 
+            A lower ratio means it uses less cardboard material to enclose each cubic inch of shipping volume.`;
+        } else {
+          summaryText = `<br>📊 <strong>Comparison Summary:</strong> 
+            ${pName}'s box holds <strong>${Math.abs(volDiff).toFixed(1)}</strong> cu in ${volDiff > 0 ? 'more' : 'less'} volume and uses <strong>${Math.abs(saDiff).toFixed(1)}</strong> sq in ${saDiff > 0 ? 'more' : 'less'} cardboard than your box.`;
+        }
+
+        showReadout('peer-out', tableHtml + summaryText);
+      }
+
+      // ---- Dynamic SVG Drawing Helpers ----
+      function updateDynamicBoxSVG(l, w, h) {
+        const container = document.getElementById('dynamic-box-svg-container');
+        if (!container) return;
+        if (isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0) {
+          container.innerHTML = `
+            <svg class="visual-svg" viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">
+              <text x="260" y="90" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter length, width, and height to see your 3D design blueprint!</text>
+            </svg>
+          `;
+          return;
+        }
+
+        const maxDim = Math.max(l, w, h);
+        const scale = Math.min(150 / maxDim, 80 / maxDim); 
+
+        const sl = l * scale;
+        const sw = w * scale * 0.6; 
         const sh = h * scale;
-        const sd = w * scale;
 
-        const dx = sd * 0.866;
-        const dy = -sd * 0.5;
+        const angleRad = Math.PI / 4;
+        const dx = sw * Math.cos(angleRad);
+        const dy = sw * Math.sin(angleRad);
 
-        svg.innerHTML = `
-          <text x="250" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">3D Isometric Prism Blueprint</text>
-          ${isExample ? `<rect x="372" y="14" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="28" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · 8×5×3</text>` : ""}
-          <polygon points="${originX},${originY} ${originX + sw},${originY} ${originX + sw},${originY - sh} ${originX},${originY - sh}" fill="rgba(26,111,181,0.15)" stroke="#1a6fb5" stroke-width="1.5" />
-          <polygon points="${originX},${originY - sh} ${originX + sw},${originY - sh} ${originX + sw + dx},${originY - sh + dy} ${originX + dx},${originY - sh + dy}" fill="rgba(26,111,181,0.08)" stroke="#1a6fb5" stroke-width="1.5" />
-          <polygon points="${originX + sw},${originY} ${originX + sw},${originY - sh} ${originX + sw + dx},${originY - sh + dy} ${originX + sw + dx},${originY + dy}" fill="rgba(26,111,181,0.22)" stroke="#1a6fb5" stroke-width="1.5" />
-          
-          <text x="${originX + sw / 2}" y="${originY + 15}" text-anchor="middle" font-size="10" font-weight="bold" fill="#1a6fb5">Length: ${l} in</text>
-          <text x="${originX + sw + dx / 2 + 10}" y="${originY + dy / 2 + 5}" font-size="10" font-weight="bold" fill="#1a6fb5">Width: ${w} in</text>
-          <text x="${originX - 10}" y="${originY - sh / 2}" text-anchor="end" font-size="10" font-weight="bold" fill="#1a6fb5">Height: ${h} in</text>
+        const xBL = 260 - sl/2 - dx/2; 
+        const yBL = 145 + dy/2;
+        const xBR = xBL + sl;
+        const yBR = yBL;
+        const xTR = xBR;
+        const yTR = yBL - sh;
+        const xTL = xBL;
+        const yTL = yBL - sh;
+
+        const xBL_B = xBL + dx;
+        const yBL_B = yBL - dy;
+        const xBR_B = xBR + dx;
+        const yBR_B = yBR - dy;
+        const xTR_B = xBR_B;
+        const yTR_B = yBR_B - sh;
+        const xTL_B = xBL_B;
+        const yTL_B = yBL_B - sh;
+
+        container.innerHTML = `
+          <svg class="visual-svg" viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">
+            <g stroke-linejoin="round" stroke-linecap="round">
+              <!-- Back edges -->
+              <polygon points="${xBL_B},${yBL_B} ${xBR_B},${yBR_B} ${xTR_B},${yTR_B} ${xTL_B},${yTL_B}" fill="#fafafa" stroke="#d1d5db" stroke-width="1" stroke-dasharray="2,2"/>
+              <line x1="${xBL}" y1="${yBL}" x2="${xBL_B}" y2="${yBL_B}" stroke="#d1d5db" stroke-width="1" stroke-dasharray="2,2" />
+              
+              <!-- Top Face -->
+              <polygon points="${xTL},${yTL} ${xTR},${yTR} ${xTR_B},${yTR_B} ${xTL_B},${yTL_B}" fill="#e8f2fc" stroke="#1a6fb5" stroke-width="2"/>
+              
+              <!-- Right Face -->
+              <polygon points="${xBR},${yBR} ${xTR},${yTR} ${xTR_B},${yTR_B} ${xBR_B},${yBR_B}" fill="#e6f4eb" stroke="#1e7d40" stroke-width="2"/>
+
+              <!-- Front Face -->
+              <polygon points="${xBL},${yBL} ${xBR},${yBR} ${xTR},${yTR} ${xTL},${yTL}" fill="#fdf3e0" stroke="#c9820f" stroke-width="2"/>
+              
+              <!-- Labels -->
+              <text x="${xBL + sl/2}" y="${yBL + 18}" text-anchor="middle" font-size="12" font-weight="bold" fill="#c9820f">l = ${l}"</text>
+              <text x="${xBL - 15}" y="${yBL - sh/2 + 4}" text-anchor="end" font-size="12" font-weight="bold" fill="#0f2b3c">h = ${h}"</text>
+              <text x="${xBR + dx/2 + 10}" y="${yBR - dy/2 + 15}" text-anchor="start" font-size="12" font-weight="bold" fill="#1e7d40">w = ${w}"</text>
+            </g>
+            <text x="260" y="24" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">📐 Your 3D Box Design Blueprint</text>
+          </svg>
         `;
       }
 
-      function drawNetSVG() {
-        let l = num("v-length");
-        let w = num("v-width");
-        let h = num("v-height");
-        const svg = $("phase-svg-1b");
-        if (!svg) return;
-
-        // Default to a worked EXAMPLE net so the blueprint always shows a
-        // reference; switches to the student's box once they enter dimensions.
-        const isExample =
-          isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0;
-        if (isExample) {
-          l = 8;
-          w = 5;
-          h = 3;
+      function updateDynamicNetSVG(l, w, h) {
+        const container = document.getElementById('dynamic-net-svg-container');
+        if (!container) return;
+        if (isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0) {
+          container.innerHTML = `
+            <svg class="visual-svg" viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">
+              <text x="260" y="90" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter length, width, and height to see your 2D unfolded net!</text>
+            </svg>
+          `;
+          return;
         }
 
-        svg.innerHTML = `
-          <text x="250" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Flat Unfolded Net Blueprint</text>
-          ${isExample ? `<rect x="372" y="14" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="28" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · 8×5×3</text>` : ""}
-          
-          <g transform="translate(140, 50)" stroke="#0e8a7d" stroke-width="1.5" fill="rgba(14, 138, 125, 0.1)">
-            <rect x="40" y="0" width="80" height="30" />
-            <text x="80" y="18" text-anchor="middle" font-size="8" fill="#0e8a7d" stroke="none">L &times; W</text>
-            
-            <rect x="0" y="30" width="40" height="50" />
-            <text x="20" y="58" text-anchor="middle" font-size="8" fill="#0e8a7d" stroke="none">W &times; H</text>
-            
-            <rect x="40" y="30" width="80" height="50" fill="rgba(14, 138, 125, 0.2)" />
-            <text x="80" y="58" text-anchor="middle" font-size="9" font-weight="bold" fill="#0e8a7d" stroke="none">L &times; H</text>
-            
-            <rect x="120" y="30" width="40" height="50" />
-            <text x="140" y="58" text-anchor="middle" font-size="8" fill="#0e8a7d" stroke="none">W &times; H</text>
-            
-            <rect x="40" y="80" width="80" height="30" />
-            <text x="80" y="98" text-anchor="middle" font-size="8" fill="#0e8a7d" stroke="none">L &times; W</text>
-            
-            <rect x="40" y="110" width="80" height="50" />
-            <text x="80" y="138" text-anchor="middle" font-size="9" fill="#0e8a7d" stroke="none">L &times; H</text>
-          </g>
+        const isLevel2 = document.getElementById('body').classList.contains('level-2');
+        const isOpenTop = isLevel2 && document.getElementById('sa-lid-option')?.value === 'open';
+
+        const netH = 2 * w + 2 * h;
+        const netW = l + 2 * w;
+
+        const scale = Math.min(140 / netH, 200 / netW);
+
+        const sl = l * scale;
+        const sw = w * scale;
+        const sh = h * scale;
+
+        const xCenter = 260;
+        const yCenter = 100;
+
+        const x1 = xCenter - sl/2;
+        const x2 = xCenter + sl/2;
+        const x0 = x1 - sw;
+        const x3 = x2 + sw;
+
+        const y0 = yCenter - (sh + sw + sh + sw)/2;
+        const y1 = y0 + sh;
+        const y2 = y1 + sw;
+        const y3 = y2 + sh;
+        const y4 = y3 + sw;
+
+        const topFill = isOpenTop ? 'none' : '#e8f2fc';
+        const topStroke = isOpenTop ? '#ef4444' : '#1a6fb5';
+        const topStrokeDash = isOpenTop ? '3,3' : 'none';
+
+        container.innerHTML = `
+          <svg class="visual-svg" viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">
+            <g stroke-linejoin="round" stroke-linecap="round">
+              <!-- Back face -->
+              <rect x="${x1}" y="${y0}" width="${sl}" height="${sh}" fill="#fdf3e0" stroke="#c9820f" stroke-width="2"/>
+              <text x="${xCenter}" y="${y0 + sh/2 + 4}" text-anchor="middle" font-size="10" font-weight="bold" fill="#0f2b3c">Back (${l}" × ${h}")</text>
+
+              <!-- Top face -->
+              <rect x="${x1}" y="${y1}" width="${sl}" height="${sw}" fill="${topFill}" stroke="${topStroke}" stroke-width="2" stroke-dasharray="${topStrokeDash}"/>
+              <text x="${xCenter}" y="${y1 + sw/2 + 4}" text-anchor="middle" font-size="10" font-weight="bold" fill="${isOpenTop ? '#ef4444' : '#0f2b3c'}">
+                ${isOpenTop ? 'NO LID (Open)' : `Top (${l}" × ${w}")`}
+              </text>
+
+              <!-- Front face -->
+              <rect x="${x1}" y="${y2}" width="${sl}" height="${sh}" fill="#fdf3e0" stroke="#c9820f" stroke-width="2"/>
+              <text x="${xCenter}" y="${y2 + sh/2 + 4}" text-anchor="middle" font-size="10" font-weight="bold" fill="#0f2b3c">Front (${l}" × ${h}")</text>
+
+              <!-- Bottom face -->
+              <rect x="${x1}" y="${y3}" width="${sl}" height="${sw}" fill="#e8f2fc" stroke="#1a6fb5" stroke-width="2"/>
+              <text x="${xCenter}" y="${y3 + sw/2 + 4}" text-anchor="middle" font-size="10" font-weight="bold" fill="#0f2b3c">Bottom (${l}" × ${w}")</text>
+
+              <!-- Left face -->
+              <rect x="${x0}" y="${y2}" width="${sw}" height="${sh}" fill="#e6f4eb" stroke="#1e7d40" stroke-width="2"/>
+              <text x="${x0 + sw/2}" y="${y2 + sh/2 + 4}" text-anchor="middle" font-size="9" font-weight="bold" fill="#0f2b3c">Left (${w}" × ${h}")</text>
+
+              <!-- Right face -->
+              <rect x="${x2}" y="${y2}" width="${sw}" height="${sh}" fill="#e6f4eb" stroke="#1e7d40" stroke-width="2"/>
+              <text x="${x2 + sw/2}" y="${y2 + sh/2 + 4}" text-anchor="middle" font-size="9" font-weight="bold" fill="#0f2b3c">Right (${w}" × ${h}")</text>
+
+              <!-- Folding lines -->
+              <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y1}" stroke="#5e6e7e" stroke-width="1.5" stroke-dasharray="3,3"/>
+              <line x1="${x1}" y1="${y2}" x2="${x2}" y2="${y2}" stroke="#5e6e7e" stroke-width="1.5" stroke-dasharray="3,3"/>
+              <line x1="${x1}" y1="${y3}" x2="${x2}" y2="${y3}" stroke="#5e6e7e" stroke-width="1.5" stroke-dasharray="3,3"/>
+              <line x1="${x1}" y1="${y2}" x2="${x1}" y2="${y3}" stroke="#5e6e7e" stroke-width="1.5" stroke-dasharray="3,3"/>
+              <line x1="${x2}" y1="${y2}" x2="${x2}" y2="${y3}" stroke="#5e6e7e" stroke-width="1.5" stroke-dasharray="3,3"/>
+            </g>
+            <text x="260" y="20" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">🗺️ 2D Unfolded Net Blueprint</text>
+          </svg>
         `;
       }
 
-      function drawCostSVG() {
-        const svg = $("phase-svg-1c");
-        if (!svg) return;
-        svg.innerHTML = `
-          <text x="250" y="40" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Cardboard Material & Shipping Cost calculator</text>
-          <rect x="80" y="70" width="340" height="80" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" />
-          <text x="250" y="105" text-anchor="middle" font-size="13" font-weight="bold" fill="#2d874b">Cost = SA &times; $0.03 / sq in</text>
-          <text x="250" y="130" text-anchor="middle" font-size="10" fill="#64748b">Calculates automatically when dimensions are populated</text>
-        `;
-      }
-    </script>
-    <script src="/assets/nt-page-enhance.js" defer></script>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-    <!-- nsr-injected:end -->
-    <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
-    <script type="application/json" id="pk-research">
-      {
-        "icon": "🔎",
-        "title": "Research Lab — Engineer the Box",
-        "intro": "Packaging and tank designers compute volume and surface area before they build. Look up the formulas, then size your design with real numbers.",
-        "brief": {
-          "theme": "field",
-          "title": "🐟 Your Research Mission",
-          "hook": "Find the <b>volume and surface-area formulas</b>, then size your design with real measurements.",
-          "steps": [
-            "Open a link (new tab — you keep your project).",
-            "Record formulas and real sizes in Field Notes.",
-            "Compute volume and surface area in the math problems.",
-            "Check off the Investigation Checklist."
-          ]
-        },
-        "fieldNotes": {
-          "title": "Field Notes — Record What You Find",
-          "intro": "Jot the exact number or rule you find. You'll reuse these in the math below.",
-          "fields": [
-            {
-              "label": "Volume formula for a rectangular prism",
-              "source": "Math is Fun",
-              "placeholder": "V = l × w × h",
-              "hint": "Three dimensions multiplied."
-            },
-            {
-              "label": "How surface area is found",
-              "source": "Math is Fun",
-              "placeholder": "add the areas of all 6 faces",
-              "hint": "Use a net to see every face."
-            },
-            {
-              "label": "A real length and width (inches)",
-              "source": "Any product / ruler",
-              "placeholder": "10 in × 6 in",
-              "hint": "Measure or read a real box/tank."
-            },
-            {
-              "label": "A real height (inches)",
-              "source": "Any product / ruler",
-              "placeholder": "8 in",
-              "hint": "The third dimension."
-            }
-          ]
-        },
-        "mathTasks": [
-          {
-            "title": "1 · Volume",
-            "prompt": "Use <b>V = l × w × h</b> with Field Notes 3 and 4 to find your design's volume. Show the multiplication and units (cubic inches).",
-            "level2": "If one dimension is a fraction (e.g., 6½ in), recompute the volume."
-          },
-          {
-            "title": "2 · Surface area",
-            "prompt": "Find the area of each of the 6 faces and add them for the total <b>surface area</b>. Show each face.",
-            "level2": "Which faces are equal, and how does that shortcut the work?"
-          },
-          {
-            "title": "3 · Material vs. space",
-            "prompt": "Explain which number (volume or surface area) tells you the space inside and which tells you the material to cover it.",
-            "level2": "If you double the height, what happens to the volume? Test with numbers."
+      // ---- Report Builder ----
+      function buildReport() {
+        const isLevel2 = document.getElementById('body').classList.contains('level-2');
+        const myL = parseFloat(document.getElementById('v-len').value);
+        const myW = parseFloat(document.getElementById('v-wid').value);
+        const myH = parseFloat(document.getElementById('v-hgt').value);
+        const myVol = myL * myW * myH;
+        const mySA = getCalculatedSA();
+        const rate = parseFloat(document.getElementById('mc-rate').value) || 0.03;
+        const myCost = mySA ? mySA * rate : 0;
+
+        const lidOpt = isLevel2 ? document.getElementById('sa-lid-option').value : 'closed';
+
+        const pName = document.getElementById('p-name').value || 'Partner';
+        const pL = parseFloat(document.getElementById('p-len').value);
+        const pW = parseFloat(document.getElementById('p-wid').value);
+        const pH = parseFloat(document.getElementById('p-hgt').value);
+        const pOpen = isLevel2 && document.getElementById('p-lid-option')?.value === 'open';
+
+        const pVol = pL * pW * pH;
+        let pSA = 0;
+        if (pL && pW && pH) {
+          if (pOpen) {
+            pSA = pL * pW + 2 * pL * pH + 2 * pW * pH;
+          } else {
+            pSA = 2 * (pL * pW + pL * pH + pW * pH);
           }
-        ],
-        "investigationChecklist": [
-          "I recorded the volume formula.",
-          "I recorded how to find surface area.",
-          "I measured a real length, width, and height.",
-          "I computed volume with units.",
-          "I added all 6 faces for surface area.",
-          "I explained volume vs. surface area."
-        ],
-        "links": [
-          {
-            "icon": "📦",
-            "name": "Math is Fun — Rectangular Prisms",
-            "url": "https://www.mathsisfun.com/geometry/cuboids-rectangular-prisms.html",
-            "find": "Volume and surface area of a box.",
-            "look": "V = l × w × h and the 6 faces"
-          },
-          {
-            "icon": "🟦",
-            "name": "Math is Fun — Area of Shapes",
-            "url": "https://www.mathsisfun.com/geometry/area.html",
-            "find": "The area formulas you add up for each face.",
-            "look": "area = length × width for a face"
-          },
-          {
-            "icon": "🧊",
-            "name": "Math is Fun — Cuboid (worked example)",
-            "url": "https://www.mathsisfun.com/cuboid.html",
-            "find": "A box with its volume and surface area worked out.",
-            "look": "the volume and surface-area numbers"
-          }
-        ],
-        "note": "These sites were picked for class. They open in a new tab so you keep your project. If a page asks you to sign in or buy something, just close it and come back."
+        }
+        const pCost = pSA * rate;
+
+        const pitch = document.getElementById('pitch').value || '';
+        const worldNote = document.getElementById('world-compare').value || '';
+        const peerReflect = document.getElementById('peer-reflect').value || '';
+
+        const cks = ['ck1', 'ck2', 'ck3', 'ck4', 'ck5', 'ck6'].map(id => {
+          const el = document.getElementById(id);
+          return el ? (el.checked ? '✅' : '❌') : '❌';
+        });
+
+        const lines = [
+          '═══ PACKAGE DESIGN CHALLENGE — UNIT 10 PROJECT (Version A) ═══',
+          '',
+          `📐 LEVEL: Level ${isLevel2 ? '2 (Challenge)' : '1 (With Support)'}`,
+          '',
+          '🧊 STEP 1 — VOLUME CALCULATION (6.G.2)',
+          `   Dimensions: ${myL || '—'}" × ${myW || '—'}" × ${myH || '—'}"`,
+          `   Calculated Volume: ${myVol ? fmt(myVol) + ' cubic inches' : '—'}`,
+          '',
+          '🗺️ STEP 2 — SURFACE AREA FROM NET (6.G.4)',
+          `   Box Type: ${lidOpt === 'open' ? 'Open-Top Box' : 'Closed Box'}`,
+          `   Face Areas:`,
+          `     - Bottom Face (l × w): ${document.getElementById('sa-bot').value || '—'} sq in`,
+          `     - Top Face (l × w): ${lidOpt === 'open' ? '0 (No lid)' : (document.getElementById('sa-top').value || '—')} sq in`,
+          `     - Front Face (l × h): ${document.getElementById('sa-front').value || '—'} sq in`,
+          `     - Back Face (l × h): ${document.getElementById('sa-back').value || '—'} sq in`,
+          `     - Left Face (w × h): ${document.getElementById('sa-left').value || '—'} sq in`,
+          `     - Right Face (w × h): ${document.getElementById('sa-right').value || '—'} sq in`,
+          `   Calculated Surface Area: ${mySA ? fmt(mySA) + ' square inches' : '—'}`,
+          '',
+          '💵 STEP 3 — MATERIAL COST',
+          `   Cardboard cost rate: $${rate.toFixed(3)} per sq in`,
+          `   Total Material Cost: ${myCost ? '$' + myCost.toFixed(2) : '—'}`,
+          worldNote ? `   Real-world Comparison Reflection:\n   "${worldNote}"` : '',
+          '',
+          '👥 STEP 4 — PARTNER COMPARISON',
+          `   Classmate: ${pName}`,
+          pL ? `   Classmate Dimensions: ${pL}" × ${pW}" × ${pH}"` : '',
+          pL ? `   Classmate Volume: ${fmt(pVol)} cu in | Surface Area: ${fmt(pSA)} sq in | Cost: $${pCost.toFixed(2)}` : '',
+          isLevel2 && pL ? `   Classmate Box Type: ${pOpen ? 'Open-Top' : 'Closed'}` : '',
+          isLevel2 && myVol && pVol ? `   Efficiencies (SA/Vol ratio): Mine: ${(mySA/myVol).toFixed(3)} | Partner: ${(pSA/pVol).toFixed(3)}` : '',
+          peerReflect ? `   Classmate Comparison Reflection:\n   "${peerReflect}"` : '',
+          '',
+          '✍️ MY PRESENTATION PITCH TO THE MANUFACTURER:',
+          pitch || '(no pitch written)',
+          '',
+          '✅ CHECKLIST STATUS:',
+          `   [${cks[0]}] Vocab read & understood`,
+          `   [${cks[1]}] Box measured & volume calculated`,
+          `   [${cks[2]}] Net unfolded & surface area computed`,
+          `   [${cks[3]}] Cardboard material cost calculated`,
+          `   [${cks[4]}] Compared side-by-side with classmate`,
+          `   [${cks[5]}] Pitch written & checked against rubric`,
+          '',
+          '═══════════════════════════════',
+          `Generated: ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}`,
+        ];
+
+        const box = document.getElementById('reportBox');
+        box.textContent = lines.join('\n');
+        box.classList.add('show');
       }
+
+      function copyReport() {
+        const txt = document.getElementById('reportBox').textContent;
+        if (!txt) {
+          alert('Please click Generate Summary first!');
+          return;
+        }
+        navigator.clipboard?.writeText(txt).then(() => alert('Copied to clipboard!'));
+      }
+
+      function downloadTxt() {
+        const txt = document.getElementById('reportBox').textContent;
+        if (!txt) {
+          alert('Please click Generate Summary first!');
+          return;
+        }
+        const a = document.createElement('a');
+        a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(txt);
+        a.download = 'package-design-challenge-spec.txt';
+        a.click();
+      }
+
+      // ---- Init ----
+      buildTrail();
+      updateProgress();
+      updateVolumeCalc();
     </script>
-    <script src="/shared/projects/projects-tabs.js" defer></script>
-    <script src="/shared/projects/projects-interactive.js" defer></script>
-    <script src="/shared/projects/manip-cube-builder.js" defer></script>
-    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-    <script src="/assets/math-workbench-launcher.js" defer></script>
-    <!-- mwb-injected:end -->
   </body>
 </html>

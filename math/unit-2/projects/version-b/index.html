@@ -3,2816 +3,1365 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Maker Workshop Cut List — Unit 2 Culminating Project</title>
-    <meta
-      name="description"
-      content="Unit 2 Fraction Division culminating project. Run YOUR own maker workshop by dividing real materials into fractional pieces, compare with a partner, and see how your yields stack up against standard board and pipe lengths."
-    />
-    <link rel="stylesheet" href="/assets/shared.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-kit.css" />
-    <script src="/shared/projects/projects-kit.js" defer></script>
+    <meta name="description" content="Unit 2 Fraction Division culminating project. Cut ropes, wood strips, and fabric using fraction division. Simple step-by-step, tab-based guide." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <style>
       :root {
-        --navy: #0f2b1a;
-        --blue: #1a6b3a;
-        --blue-light: #e8f7ee;
+        --navy: #2d1e0f;
+        --blue: #c9820f;
+        --blue-lt: #fdf3e0;
         --teal: #0e8a7d;
-        --teal-light: #e4f5f3;
-        --gold: #d4952a;
-        --gold-light: #fdf3e0;
+        --teal-lt: #e4f5f3;
+        --gold: #c9820f;
+        --gold-lt: #fdf3e0;
+        --green: #1e7d40;
+        --green-lt: #e6f4eb;
         --coral: #c45a3c;
-        --coral-light: #fdeee9;
-        --green: #2d874b;
-        --green-light: #e6f4eb;
-        --ink: #1a2633;
-        --muted: #5e6e7e;
-        --line: #e2e7ec;
-        --bg: #f7f9fb;
+        --ink: #2b251e;
+        --muted: #6e6255;
+        --line: #ebdcc8;
+        --bg: #faf7f2;
         --card: #ffffff;
         --radius: 16px;
-        --shadow: 0 4px 18px rgba(15, 43, 26, 0.1);
-        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+        --shadow: 0 4px 16px rgba(45,30,15, 0.08);
       }
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        margin: 0;
-        font-family: var(--font);
-        color: var(--ink);
-        background: var(--bg);
-        line-height: 1.55;
-      }
-      .wrap {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 0 20px 60px;
-      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: 'Inter', system-ui, sans-serif; color: var(--ink); background: var(--bg); line-height: 1.6; }
 
-      .phero {
-        background: linear-gradient(
-          135deg,
-          #0f2b1a 0%,
-          #1a6b3a 60%,
-          #0e8a7d 100%
-        );
+      /* ---- Hero ---- */
+      .hero {
+        background: linear-gradient(135deg, #2d1e0f 0%, #87540a 60%, #c9820f 100%);
         color: #fff;
-        padding: 40px 24px 34px;
+        padding: 36px 24px 28px;
         text-align: center;
-        position: relative;
-        overflow: hidden;
       }
-      .phero .deco {
-        font-size: 56px;
-        line-height: 1;
-      }
-      .phero h1 {
-        font-size: clamp(26px, 5vw, 40px);
-        margin: 10px 0 8px;
-        letter-spacing: -0.02em;
-      }
-      .phero p {
-        max-width: 640px;
-        margin: 0 auto;
-        color: rgba(255, 255, 255, 0.85);
-        font-size: 17px;
-      }
-      .tags {
-        margin-top: 16px;
-        display: flex;
-        gap: 8px;
-        justify-content: center;
-        flex-wrap: wrap;
-      }
-      .tag {
-        background: rgba(255, 255, 255, 0.14);
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        border-radius: 50px;
-        padding: 5px 14px;
-        font-size: 13px;
-        font-weight: 700;
-      }
-      .tag.gold {
-        background: var(--gold);
-        border-color: var(--gold);
-        color: #2a1c00;
-      }
+      .hero-emoji { font-size: 52px; line-height: 1; margin-bottom: 10px; }
+      .hero h1 { font-size: clamp(24px,5vw,38px); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; }
+      .hero-sub { color: rgba(255,255,255,.85); font-size: 16px; max-width: 580px; margin: 0 auto 16px; }
+      .hero-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; }
+      .tag { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.28); border-radius: 50px; padding: 4px 13px; font-size: 12px; font-weight: 700; letter-spacing: .04em; }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #fff; }
 
-      .toolbar {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        justify-content: center;
-        margin-top: 16px;
+      /* ---- Level selector ---- */
+      .level-bar {
+        display: flex; gap: 10px; justify-content: center;
+        background: rgba(255,255,255,.10); border-radius: 50px;
+        padding: 6px 10px; max-width: 400px; margin: 0 auto;
       }
-      .toolbar button {
-        background: rgba(255, 255, 255, 0.12);
-        color: #fff;
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        border-radius: 50px;
-        padding: 8px 16px;
-        font-weight: 700;
-        font-size: 13px;
-        cursor: pointer;
-        font-family: inherit;
+      .level-btn {
+        flex: 1; background: transparent; color: rgba(255,255,255,.75);
+        border: 2px solid rgba(255,255,255,.30); border-radius: 50px;
+        padding: 7px 16px; font-size: 13px; font-weight: 700;
+        cursor: pointer; font-family: inherit; transition: all .2s;
       }
-      .toolbar button:hover {
-        background: rgba(255, 255, 255, 0.22);
-      }
+      .level-btn.active { background: #fff; color: var(--navy); border-color: #fff; }
 
-      .intro-card {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-left: 6px solid var(--teal);
-        border-radius: var(--radius);
-        padding: 22px 24px;
-        margin: 26px 0;
-        box-shadow: var(--shadow);
-      }
-      .intro-card h2 {
-        margin: 0 0 8px;
-        font-size: 20px;
-      }
+      /* ---- Tab wizard ---- */
+      .wizard { max-width: 860px; margin: 0 auto; padding: 0 16px 60px; }
 
-      .phase {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-radius: var(--radius);
-        padding: 24px;
-        margin: 22px 0;
-        box-shadow: var(--shadow);
+      .step-trail {
+        display: flex; align-items: center; gap: 0;
+        padding: 22px 0 0; overflow-x: auto;
       }
-      .phase-head {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        margin-bottom: 6px;
+      .step-trail-item {
+        display: flex; align-items: center; gap: 6px;
+        cursor: pointer; white-space: nowrap; padding: 8px 12px;
+        border-radius: 10px; transition: background .15s;
       }
-      .phase-num {
-        flex: 0 0 auto;
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
-        background: var(--blue);
-        color: #fff;
-        font-weight: 800;
-        font-size: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+      .step-trail-item:hover { background: var(--blue-lt); }
+      .step-trail-item.active .s-num {
+        background: var(--blue); color: #fff;
       }
-      .phase h2 {
-        margin: 0;
-        font-size: 21px;
+      .step-trail-item.done .s-num {
+        background: var(--green); color: #fff;
       }
-      .phase .skill {
-        font-size: 12px;
-        font-weight: 700;
-        color: var(--muted);
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
+      .s-num {
+        width: 30px; height: 30px; border-radius: 50%;
+        background: var(--line); color: var(--muted);
+        font-weight: 800; font-size: 13px;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0; transition: all .2s;
       }
-      .phase > p {
-        color: var(--muted);
-      }
-      .arc-banner {
-        display: inline-block;
-        font-size: 12px;
-        font-weight: 800;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        color: var(--blue);
-        background: var(--blue-light);
-        border-radius: 50px;
-        padding: 4px 12px;
-        margin-bottom: 10px;
-      }
+      .s-label { font-size: 13px; font-weight: 600; color: var(--muted); }
+      .step-trail-item.active .s-label { color: var(--blue); }
+      .step-trail-item.done .s-label { color: var(--green); }
+      .step-arrow { color: var(--line); font-size: 16px; padding: 0 2px; }
 
-      .task {
-        background: var(--blue-light);
-        border-radius: 12px;
-        padding: 16px 18px;
-        margin: 16px 0;
-      }
-      .task strong {
-        color: var(--navy);
-      }
+      /* ---- Progress bar ---- */
+      .prog-wrap { margin: 14px 0 4px; }
+      .prog-bar { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; }
+      .prog-fill { height: 100%; background: linear-gradient(90deg,var(--blue),var(--teal)); border-radius: 99px; transition: width .4s ease; }
+      .prog-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
 
-      label.fld {
-        display: block;
-        font-weight: 700;
-        font-size: 14px;
-        margin: 14px 0 6px;
+      /* ---- Step panel ---- */
+      .step-panel { display: none; animation: fadein .25s ease; }
+      .step-panel.active { display: block; }
+      @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+      /* ---- Card ---- */
+      .card {
+        background: var(--card); border: 1px solid var(--line);
+        border-radius: var(--radius); padding: 28px 26px;
+        box-shadow: var(--shadow); margin-top: 16px;
       }
-      input[type="number"],
-      input[type="text"],
-      select,
-      textarea {
-        width: 100%;
-        padding: 11px 13px;
-        border: 2px solid var(--line);
-        border-radius: 10px;
-        font-family: inherit;
-        font-size: 15px;
-        background: #fff;
+      .card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+      .card-icon {
+        width: 50px; height: 50px; border-radius: 14px;
+        background: var(--blue-lt); display: flex;
+        align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0;
       }
-      input:focus,
-      select:focus,
-      textarea:focus {
-        outline: none;
-        border-color: var(--blue);
+      .card-icon.gold { background: var(--gold-lt); }
+      .card-icon.teal { background: var(--teal-lt); }
+      .card-icon.green { background: var(--green-lt); }
+      .card-title { font-size: 20px; font-weight: 800; color: var(--navy); margin-bottom: 3px; }
+      .card-sub { font-size: 13px; color: var(--muted); font-weight: 500; }
+
+      /* ---- Instruction box ---- */
+      .instruct {
+        background: var(--blue-lt); border-left: 4px solid var(--blue);
+        border-radius: 10px; padding: 14px 16px; margin-bottom: 20px;
+        font-size: 15px; line-height: 1.6;
       }
-      textarea {
-        resize: vertical;
-        min-height: 80px;
+      .instruct.gold { background: var(--gold-lt); border-color: var(--gold); }
+      .instruct.teal { background: var(--teal-lt); border-color: var(--teal); }
+      .instruct.green { background: var(--green-lt); border-color: var(--green); }
+
+      /* ---- SVG visual ---- */
+      .visual-svg { display: block; width: 100%; max-width: 520px; margin: 0 auto 20px; border-radius: 12px; }
+
+      /* ---- Form inputs ---- */
+      label.lbl { display: block; font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 5px; margin-top: 14px; }
+      input[type="number"], input[type="text"], textarea, select {
+        width: 100%; padding: 10px 14px; border: 1.5px solid var(--line);
+        border-radius: 10px; font-size: 15px; font-family: inherit;
+        background: var(--bg); color: var(--ink); transition: border-color .2s;
       }
-      .grid2 {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 14px;
-      }
-      .grid4 {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
-        gap: 10px;
-        align-items: end;
-      }
+      input:focus, textarea:focus, select:focus { outline: none; border-color: var(--blue); }
+      textarea { min-height: 90px; resize: vertical; }
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      .grid4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; align-items: end; }
       @media (max-width: 560px) {
-        .grid2 {
-          grid-template-columns: 1fr;
-        }
-        .grid4 {
-          grid-template-columns: 1fr 1fr;
-        }
+        .grid2 { grid-template-columns: 1fr; }
+        .grid4 { grid-template-columns: 1fr 1fr; }
       }
 
-      .frac-label {
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--muted);
-        text-align: center;
-        margin-bottom: 4px;
-      }
+      .frac-label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 4px; text-align: center; }
 
-      /* fraction-bar visual (Level 1) */
-      .frac-bar {
-        display: flex;
-        height: 26px;
-        border: 2px solid var(--blue);
-        border-radius: 6px;
-        overflow: hidden;
-        margin: 10px 0 4px;
-        max-width: 360px;
-        background: #fff;
+      /* ---- Calc button & readout ---- */
+      .calc-btn {
+        background: var(--blue); color: #fff; border: none;
+        border-radius: 10px; padding: 11px 20px; font-size: 14px;
+        font-weight: 700; cursor: pointer; font-family: inherit;
+        margin-top: 12px; transition: background .2s;
       }
-      .frac-bar span {
-        flex: 1 1 0;
-        border-right: 1px dashed #6fae87;
-      }
-      .frac-bar span:last-child {
-        border-right: 0;
-      }
-      .frac-bar span.fill {
-        background: var(--blue-light);
-      }
-
-      .btn {
-        background: var(--blue);
-        color: #fff;
-        border: none;
-        border-radius: 10px;
-        padding: 11px 20px;
-        font-weight: 800;
-        font-size: 15px;
-        cursor: pointer;
-        font-family: inherit;
-        margin-top: 14px;
-      }
-      .btn:hover {
-        filter: brightness(1.08);
-      }
-      .btn.alt {
-        background: var(--teal);
-      }
-      .btn.ghost {
-        background: #fff;
-        color: var(--blue);
-        border: 2px solid var(--line);
-      }
-
+      .calc-btn:hover { background: #a36a0c; }
+      .calc-btn.gold { background: var(--gold); }
+      .calc-btn.gold:hover { background: #a36a0c; }
+      .calc-btn.teal { background: var(--teal); }
+      .calc-btn.teal:hover { background: #0a6b62; }
+      .calc-btn.green { background: var(--green); }
+      .calc-btn.green:hover { background: #185f31; }
       .readout {
-        margin-top: 16px;
-        border-radius: 12px;
-        padding: 16px 18px;
-        font-size: 15px;
-        background: var(--teal-light);
-        border: 1px solid #bfe6e0;
-        display: none;
+        background: var(--navy); color: #fdf3e0;
+        border-radius: 10px; padding: 14px 18px; margin-top: 12px;
+        font-size: 15px; line-height: 1.6; display: none;
       }
-      .readout.show {
-        display: block;
+      .readout.show { display: block; }
+      .readout strong { color: #f2c777; }
+
+      /* ---- Hint ---- */
+      details.hint { margin-top: 14px; }
+      details.hint summary {
+        cursor: pointer; font-size: 13px; font-weight: 600;
+        color: var(--blue); list-style: none; display: inline-flex;
+        align-items: center; gap: 5px;
       }
-      .readout .big {
-        font-size: 28px;
-        font-weight: 800;
-        color: var(--teal);
+      details.hint summary::before { content: "💡"; }
+      details.hint p { font-size: 14px; color: var(--muted); margin-top: 8px; padding: 10px 12px; background: var(--blue-lt); border-radius: 8px; }
+
+      /* ---- Level 2 extension ---- */
+      .lvl2-block {
+        border: 2px dashed var(--blue); border-radius: 12px;
+        padding: 14px 16px; margin-top: 18px;
       }
-      .feedback {
-        margin-top: 10px;
-        font-weight: 700;
-        min-height: 22px;
-      }
-      .feedback.ok {
-        color: var(--green);
-      }
-      .feedback.no {
-        color: var(--coral);
+      .lvl2-label {
+        display: inline-block; background: var(--blue); color: #fff;
+        font-size: 11px; font-weight: 800; letter-spacing: .05em;
+        border-radius: 50px; padding: 3px 10px; margin-bottom: 8px;
       }
 
-      .hintbox {
-        margin-top: 12px;
-      }
-      .hintbox summary {
-        cursor: pointer;
-        font-weight: 700;
-        color: var(--blue);
-        font-size: 14px;
-      }
-      .hintbox p,
-      .hintbox div {
-        background: var(--gold-light);
-        border-radius: 10px;
-        padding: 12px 14px;
-        margin: 8px 0 0;
-        font-size: 14px;
-      }
+      /* ---- Real-world data table ---- */
+      .data-table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14px; }
+      .data-table th { background: var(--navy); color: #fff; padding: 8px 12px; text-align: left; }
+      .data-table td { padding: 8px 12px; border-bottom: 1px solid var(--line); }
+      .data-table tr:last-child td { border-bottom: none; }
+      .data-table tr:nth-child(even) td { background: var(--bg); }
 
-      .rubric {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 12px;
-        font-size: 14px;
-      }
-      .rubric th,
-      .rubric td {
-        border: 1px solid var(--line);
-        padding: 10px 12px;
-        text-align: left;
-        vertical-align: top;
-      }
-      .rubric th {
-        background: var(--navy);
-        color: #fff;
-        font-size: 13px;
-      }
-      .rubric td:first-child {
-        font-weight: 700;
-        width: 30%;
-      }
+      /* ---- Checklist ---- */
+      .checklist { list-style: none; margin-top: 12px; }
+      .checklist li { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+      .checklist li:last-child { border-bottom: none; }
+      .checklist input[type="checkbox"] { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--green); flex-shrink: 0; }
 
-      .checklist {
-        list-style: none;
-        padding: 0;
-        margin: 12px 0 0;
-      }
-      .checklist li {
-        display: flex;
-        gap: 10px;
-        align-items: flex-start;
-        padding: 8px 0;
-        border-bottom: 1px solid var(--line);
-      }
-      .checklist input {
-        width: 20px;
-        height: 20px;
-        margin-top: 2px;
-        flex: 0 0 auto;
-      }
+      /* ---- Rubric ---- */
+      .rubric { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 14px; }
+      .rubric th { background: var(--navy); color: #fff; padding: 10px 12px; text-align: left; }
+      .rubric td { padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+      .rubric tr:last-child td { border-bottom: none; }
+      .score-4 { color: var(--green); font-weight: 700; }
+      .score-3 { color: var(--blue); font-weight: 700; }
+      .score-2 { color: var(--gold); font-weight: 700; }
 
-      .progress-wrap {
-        position: sticky;
-        top: 0;
-        z-index: 5;
-        background: var(--bg);
-        padding: 12px 0;
+      /* ---- Nav buttons ---- */
+      .nav-row { display: flex; gap: 10px; margin-top: 24px; justify-content: space-between; }
+      .nav-btn {
+        background: var(--blue); color: #fff; border: none;
+        border-radius: 10px; padding: 12px 24px; font-size: 15px;
+        font-weight: 700; cursor: pointer; font-family: inherit;
+        display: flex; align-items: center; gap: 8px; transition: background .2s;
       }
-      .progress-track {
-        height: 12px;
-        background: var(--line);
-        border-radius: 50px;
-        overflow: hidden;
-      }
-      .progress-fill {
-        height: 100%;
-        width: 0;
-        background: linear-gradient(90deg, var(--teal), var(--green));
-        transition: width 0.4s;
-      }
-      .progress-label {
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--muted);
-        margin-bottom: 6px;
-      }
+      .nav-btn:hover { background: #a36a0c; }
+      .nav-btn.ghost { background: transparent; color: var(--blue); border: 2px solid var(--blue); }
+      .nav-btn.ghost:hover { background: var(--blue-lt); }
+      .nav-btn:disabled { opacity: .45; cursor: not-allowed; }
 
-      .footer {
-        text-align: center;
-        color: var(--muted);
-        font-size: 14px;
-        margin-top: 40px;
+      /* ---- Report / pitch textarea ---- */
+      #pitch { min-height: 130px; }
+      .report-box {
+        background: var(--navy); color: #fdf3e0; border-radius: 12px;
+        padding: 20px; margin-top: 14px; font-size: 14px; line-height: 1.7;
+        white-space: pre-wrap; display: none;
       }
-      .printbtn {
-        background: var(--navy);
+      .report-box.show { display: block; }
+      .export-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+      .export-btn {
+        background: transparent; border: 1.5px solid var(--line);
+        border-radius: 8px; padding: 7px 14px; font-size: 13px;
+        font-weight: 600; cursor: pointer; font-family: inherit;
+        color: var(--muted); transition: all .15s;
       }
-      h3 {
-        font-size: 17px;
-      }
+      .export-btn:hover { border-color: var(--blue); color: var(--blue); }
 
+      /* ---- Level-gated content ---- */
+      .lvl1-only { display: none; }
+      .lvl2-only { display: none; }
+      body.level-1 .lvl1-only { display: block; }
+      body.level-2 .lvl2-only { display: block; }
+      body.level-2 .lvl2-block { border-color: var(--blue); }
+
+      /* ---- Vocab cards ---- */
+      .vocab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 14px; }
+      .vocab-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+      .vocab-icon { font-size: 26px; margin-bottom: 6px; }
+      .vocab-term { font-size: 13px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
+      .vocab-def { font-size: 13px; color: var(--muted); line-height: 1.5; }
+      .vocab-ex { font-size: 12px; color: var(--blue); font-weight: 600; margin-top: 5px; }
+
+      /* ---- Print ---- */
       @media print {
-        .phero .deco,
-        .progress-wrap,
-        .btn,
-        .breadcrumb,
-        .hintbox,
-        .toolbar,
-        .pk-no-print {
-          display: none !important;
-        }
-        .phase,
-        .intro-card {
-          box-shadow: none;
-          break-inside: avoid;
-        }
-        body {
-          background: #fff;
-        }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        html {
-          scroll-behavior: auto;
-        }
-        *,
-        *::before,
-        *::after {
-          animation-duration: 0.001ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.001ms !important;
-        }
+        .no-print { display: none !important; }
+        .hero { background: var(--navy) !important; }
+        body { background: #fff; }
+        .card { box-shadow: none; border-color: #ccc; }
       }
     </style>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <!-- nsr-injected:end -->
-    <link rel="stylesheet" href="/shared/projects/projects-premium.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-tabs.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-tplus.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-interactive.css" />
-    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-    <link rel="stylesheet" href="/assets/mobile-access.css" />
-    <!-- mobile-access-injected:end -->
   </head>
-  <body class="pk" data-pk-theme="u2">
-    <header class="phero">
-      <div class="deco">🪚</div>
+  <body class="level-1" id="body">
+
+    <!-- ====== HERO ====== -->
+    <header class="hero no-print">
+      <div class="hero-emoji">🔧</div>
       <h1>Maker Workshop Cut List</h1>
-      <p>
-        You run <strong>your own</strong> maker workshop. Use
-        <em>your real materials and lengths</em>, cut them into fractional
-        pieces, compare with a partner, then see how your yields stack up
-        against standard board and pipe lengths.
-      </p>
-      <div class="tags">
+      <p class="hero-sub">Plan your cuts using division of fractions — step by step.</p>
+      <div class="hero-tags">
         <span class="tag gold">Unit 2 · Fraction Division</span>
         <span class="tag">6.NS.1</span>
-        <span class="tag">Version B · Real-World Investigation</span>
+        <span class="tag">Version B</span>
       </div>
-      <div class="toolbar pk-no-print">
-        <button onclick="PK.toggleEs()">🌐 EN / ES help</button>
-        <span class="pk-level-toggle">
-          <button data-level-btn="level-1" type="button">
-            🟢 Level 1 (support)
-          </button>
-          <button data-level-btn="level-2" type="button">
-            🔵 Level 2 (challenge)
-          </button>
-        </span>
-        <button
-          class="pk-tts-toggle"
-          data-tts-toggle
-          type="button"
-          aria-pressed="false"
-          title="Read text aloud"
-        >
-          🔊 Read aloud
-        </button>
-        <button onclick="PK.save('u2ProjectB')">💾 Save</button>
-        <button
-          onclick="PK.load('u2ProjectB', { show: true, after: recalcAll })"
-        >
-          📂 Load
-        </button>
+      <div class="level-bar">
+        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">🟢 Level 1 — With Support</button>
+        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">🔵 Level 2 — Challenge</button>
       </div>
     </header>
 
-    <div class="wrap">
-      <div class="progress-wrap">
-        <div class="progress-label">
-          Project progress: <span id="pct">0</span>% complete
+    <!-- ====== WIZARD ====== -->
+    <div class="wizard">
+
+      <!-- Step trail -->
+      <nav class="step-trail no-print" id="stepTrail" aria-label="Project steps"></nav>
+
+      <!-- Progress bar -->
+      <div class="prog-wrap no-print">
+        <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+        <div class="prog-label" id="progLabel">Step 1 of 6</div>
+      </div>
+
+      <!-- ======================================
+           STEP 0 — KEY WORDS
+      ====================================== -->
+      <div class="step-panel active" id="step-1">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon gold">📖</div>
+            <div>
+              <div class="card-title">Step 0 — Key Words</div>
+              <div class="card-sub">Learn these 4 math words before you begin</div>
+            </div>
+          </div>
+
+          <!-- SVG Visual: vocab diagram -->
+          <svg class="visual-svg" viewBox="0 0 520 165" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #ebdcc8;border-radius:12px;">
+            <!-- Total bracket at the top -->
+            <path d="M 40,35 L 40,25 L 480,25 L 480,35" fill="none" stroke="#2d1e0f" stroke-width="2"/>
+            <text x="260" y="18" text-anchor="middle" font-size="12" font-weight="bold" fill="#2d1e0f">Dividend: Total Length = 3 yards</text>
+
+            <!-- Wood board -->
+            <rect x="40" y="50" width="440" height="40" rx="4" fill="#fdf3e0" stroke="#d4952a" stroke-width="3"/>
+            
+            <!-- Wood grain details -->
+            <path d="M 50,70 Q 150,65 250,70 T 450,70" fill="none" stroke="#f6e1be" stroke-width="1.5" stroke-dasharray="10 5"/>
+            <path d="M 70,60 Q 200,65 320,60 T 420,60" fill="none" stroke="#f6e1be" stroke-width="1"/>
+
+            <!-- Cut lines (every 1/6th of 440px -> 73.33px) -->
+            <line x1="113.3" y1="46" x2="113.3" y2="94" stroke="#c45a3c" stroke-width="2" stroke-dasharray="3 2"/>
+            <line x1="186.7" y1="46" x2="186.7" y2="94" stroke="#c45a3c" stroke-width="2" stroke-dasharray="3 2"/>
+            <line x1="260.0" y1="46" x2="260.0" y2="94" stroke="#c45a3c" stroke-width="2" stroke-dasharray="3 2"/>
+            <line x1="333.3" y1="46" x2="333.3" y2="94" stroke="#c45a3c" stroke-width="2" stroke-dasharray="3 2"/>
+            <line x1="406.7" y1="46" x2="406.7" y2="94" stroke="#c45a3c" stroke-width="2" stroke-dasharray="3 2"/>
+
+            <!-- Saw icon above cut -->
+            <text x="260" y="42" text-anchor="middle" font-size="14">🪚</text>
+
+            <!-- Piece labels -->
+            <text x="76.7" y="74" text-anchor="middle" font-size="11" font-weight="bold" fill="#87540a">1/2 yd</text>
+            <text x="150" y="74" text-anchor="middle" font-size="11" font-weight="bold" fill="#87540a">1/2 yd</text>
+            <text x="223.3" y="74" text-anchor="middle" font-size="11" font-weight="bold" fill="#87540a">1/2 yd</text>
+            <text x="296.7" y="74" text-anchor="middle" font-size="11" font-weight="bold" fill="#87540a">1/2 yd</text>
+            <text x="370" y="74" text-anchor="middle" font-size="11" font-weight="bold" fill="#87540a">1/2 yd</text>
+            <text x="443.3" y="74" text-anchor="middle" font-size="11" font-weight="bold" fill="#87540a">1/2 yd</text>
+
+            <!-- Divisor label -->
+            <text x="260" y="112" text-anchor="middle" font-size="12" font-weight="bold" fill="#c45a3c">Divisor: Piece Size = 1/2 yard</text>
+
+            <!-- Quotient label -->
+            <text x="260" y="132" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e7d40">Quotient: 3 ÷ 1/2 = 6 equal pieces</text>
+            
+            <!-- Ruler markings -->
+            <line x1="40" y1="145" x2="480" y2="145" stroke="#5e6e7e" stroke-width="1.5"/>
+            <line x1="40" y1="140" x2="40" y2="145" stroke="#5e6e7e" stroke-width="1.5"/>
+            <line x1="186.7" y1="140" x2="186.7" y2="145" stroke="#5e6e7e" stroke-width="1.5"/>
+            <line x1="333.3" y1="140" x2="333.3" y2="145" stroke="#5e6e7e" stroke-width="1.5"/>
+            <line x1="480" y1="140" x2="480" y2="145" stroke="#5e6e7e" stroke-width="1.5"/>
+            
+            <text x="40" y="156" text-anchor="middle" font-size="9" fill="#5e6e7e">0</text>
+            <text x="186.7" y="156" text-anchor="middle" font-size="9" fill="#5e6e7e">1 yd</text>
+            <text x="333.3" y="156" text-anchor="middle" font-size="9" fill="#5e6e7e">2 yd</text>
+            <text x="480" y="156" text-anchor="middle" font-size="9" fill="#5e6e7e">3 yd</text>
+          </svg>
+
+          <div class="vocab-grid">
+            <div class="vocab-card">
+              <div class="vocab-icon">📏</div>
+              <div class="vocab-term">Dividend — Total Material</div>
+              <div class="vocab-def">The starting length of material that you want to divide or cut.</div>
+              <div class="vocab-ex">Total rope = 3 yards</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">🪚</div>
+              <div class="vocab-term">Divisor — Piece Size</div>
+              <div class="vocab-def">The length of each individual piece you are cutting off.</div>
+              <div class="vocab-ex">Each piece = 1/2 yard</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">🧱</div>
+              <div class="vocab-term">Quotient — Total Pieces</div>
+              <div class="vocab-def">The answer: the number of full pieces you can cut from the total.</div>
+              <div class="vocab-ex">3 ÷ 1/2 = 6 pieces</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">🔄</div>
+              <div class="vocab-term">Reciprocal — Flipped Fraction</div>
+              <div class="vocab-def">Flipping a fraction upside down to change division into multiplication.</div>
+              <div class="vocab-ex">Reciprocal of 2/3 is 3/2</div>
+            </div>
+          </div>
+
+          <div class="instruct" style="margin-top:20px">
+            ✅ Read each word card. When you're ready, click <strong>Next Step</strong>.
+          </div>
         </div>
-        <div class="progress-track">
-          <div class="progress-fill" id="pfill"></div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" disabled>← Back</button>
+          <button class="nav-btn" onclick="goStep(2)">Next Step →</button>
         </div>
       </div>
 
-      <div class="intro-card">
-        <h2>🔧 Your Mission</h2>
-        <p>
-          Run a real workshop in three steps.
-          <strong>Part 1 (Self):</strong> enter a material
-          <em>you actually want to cut</em> and divide your real lengths into
-          fractional pieces. <strong>Part 2 (Peer):</strong> swap cut lists with
-          a partner and compare who gets more pieces and whose cut wastes less.
-          <strong>Part 3 (World):</strong> compare your pieces-per-board to
-          standard board and pipe lengths. Finish the cut-list memo, checklist,
-          and report.
-        </p>
-      </div>
-
-      <!-- ===================== VISUAL MATH NOTES ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div
-            class="phase-num"
-            style="background: var(--gold); color: #2a1c00"
-          >
-            📒
-          </div>
-          <div>
-            <div class="skill">Before you start · Vocabulary</div>
-            <h2>Visual Math Notes</h2>
-          </div>
-        </div>
-        <p>
-          Learn these words first. Tap <strong>EN / ES help</strong> at the top
-          for Spanish.
-        </p>
-        <div class="pk-vocab">
-          <div class="pk-term">
-            <span class="pk-icon">📏</span><b>Dividend</b>
-            <p>The amount you start with and cut up (the whole board).</p>
-            <p class="pk-es">
-              Dividendo: la cantidad con la que empiezas y cortas.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">🪚</span><b>Divisor</b>
-            <p>The size of each piece you cut.</p>
-            <p class="pk-es">Divisor: el tamaño de cada pieza que cortas.</p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">🧱</span><b>Quotient</b>
-            <p>The answer — how many pieces you get.</p>
-            <p class="pk-es">
-              Cociente: la respuesta — cuántas piezas obtienes.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">🔄</span><b>Reciprocal</b>
-            <p>A fraction flipped upside down. 1/4 becomes 4/1.</p>
-            <p class="pk-es">
-              Recíproco: una fracción volteada. 1/4 se vuelve 4/1.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">📈</span><b>Improper Fraction</b>
-            <p>Top number bigger than bottom, like 7/2.</p>
-            <p class="pk-es">
-              Fracción impropia: el numerador es mayor que el denominador, como
-              7/2.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">🔢</span><b>Mixed Number</b>
-            <p>A whole number with a fraction, like 3 1/2.</p>
-            <p class="pk-es">
-              Número mixto: un entero con una fracción, como 3 1/2.
-            </p>
-          </div>
-        </div>
-        <div class="grid2" style="margin-top: 18px">
-          <div class="pk-callout">
-            <h3>Formula Bank</h3>
-            <ul class="pk-formula">
-              <li>
-                <span class="pk-f-name"
-                  >Divide by a fraction = multiply by its flip</span
-                >
-                <span class="pk-f-mean"
-                  >To divide by a fraction, flip the second fraction upside down
-                  (its reciprocal) and multiply instead.</span
-                >
-                <span class="pk-eg"
-                  >Example: 6 ÷ 2/3 = 6 × 3/2 = 18/2 = 9 pieces</span
-                >
-              </li>
-              <li>
-                <span class="pk-f-name"
-                  >Turn a mixed number into a fraction first</span
-                >
-                <span class="pk-f-mean"
-                  >Multiply the whole number by the bottom, add the top, and
-                  keep the same bottom number.</span
-                >
-                <span class="pk-eg">Example: 3 1/2 = (3×2 + 1)/2 = 7/2</span>
-              </li>
-              <li>
-                <span class="pk-f-name">Smaller pieces make more pieces</span>
-                <span class="pk-f-mean"
-                  >Cutting into a smaller fraction gives a bigger answer,
-                  because tiny pieces fit into the material more times.</span
-                >
-                <span class="pk-eg"
-                  >Example: 6 ÷ 1/4 = 24, but 6 ÷ 1/2 = 12</span
-                >
-              </li>
-              <li class="pk-lvl2">
-                <span class="pk-f-name">Full pieces and scrap</span>
-                <span class="pk-f-mean"
-                  >The whole-number part of your answer is the number of full
-                  pieces. Multiply the leftover part by the piece size to find
-                  the scrap.</span
-                >
-                <span class="pk-eg"
-                  >Example: 7 ÷ 2 = 3.5 → 3 full pieces, with 0.5 × 2 = 1 ft of
-                  scrap</span
-                >
-              </li>
-            </ul>
-          </div>
-          <div class="pk-callout">
-            <h3>Sentence Frames</h3>
-            <p>"I divided ___ by ___, so I get ___ pieces."</p>
-            <p>"Dividing by ___ is the same as multiplying by ___."</p>
-            <p>
-              "My cut leaves ___ of scrap, which is more / less than ___ because
-              ___."
-            </p>
-            <p class="pk-es">
-              "Dividí ___ entre ___, así que obtengo ___ piezas."
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== PART 1 — SELF ===================== -->
-
-      <!-- ===================== PROJECT SETUP ===================== -->
-      <section class="phase" id="phase-setup" data-phase>
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--blue)">S</div>
-          <div>
-            <span class="arc-banner">Project Setup</span>
-            <h2>Cut YOUR Materials</h2>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <div>
-            <p
-              style="
-                font-size: 15px;
-                color: var(--muted);
-                line-height: 1.6;
-                margin-bottom: 20px;
-              "
-            >
-              Welcome! Read the scenario below and select your level to begin
-              your design plan.
-            </p>
-            <div style="margin-top: 16px">
-              <svg
-                width="100%"
-                height="220"
-                viewBox="0 0 500 220"
-                style="
-                  background: white;
-                  border-radius: 12px;
-                  border: 1px solid #e2e8f0;
-                  max-width: 480px;
-                  margin: 0 auto;
-                  display: block;
-                "
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <defs>
-                  <linearGradient
-                    id="setup-grad"
-                    x1="0%"
-                    y1="0%"
-                    x2="100%"
-                    y2="100%"
-                  >
-                    <stop offset="0%" stop-color="#ffffff" />
-                    <stop offset="100%" stop-color="#f8fafc" />
-                  </linearGradient>
-                </defs>
-
-                <rect
-                  x="20"
-                  y="20"
-                  width="460"
-                  height="200"
-                  rx="15"
-                  fill="url(#setup-grad)"
-                  stroke="#c45a3c"
-                  stroke-width="2"
-                />
-                <text
-                  x="250"
-                  y="60"
-                  text-anchor="middle"
-                  font-size="20"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  WORKSHOP PREP STATION
-                </text>
-                <rect
-                  x="100"
-                  y="125"
-                  width="300"
-                  height="10"
-                  rx="5"
-                  fill="#d4952a"
-                />
-                <rect
-                  x="150"
-                  y="115"
-                  width="200"
-                  height="20"
-                  rx="4"
-                  fill="#a1887f"
-                />
-                <path
-                  d="M220,105 C210,80 230,60 250,60 C270,60 290,80 280,105 Z"
-                  fill="#fff"
-                  stroke="#5e6e7e"
-                  stroke-width="2"
-                />
-                <rect
-                  x="230"
-                  y="95"
-                  width="40"
-                  height="10"
-                  fill="#e8f2fc"
-                  stroke="#5e6e7e"
-                  stroke-width="2"
-                />
-              </svg>
+      <!-- ======================================
+           STEP 1 — ROPE CUTS
+      ====================================== -->
+      <div class="step-panel" id="step-2">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon gold">🪢</div>
+            <div>
+              <div class="card-title">Step 1 — Rope Cuts</div>
+              <div class="card-sub">Total rope (fraction or whole) ÷ piece length (unit fraction) = number of pieces</div>
             </div>
           </div>
 
-          <div
-            style="
-              background: var(--bg);
-              border: 1px solid var(--line);
-              border-radius: 12px;
-              padding: 20px;
-              box-shadow: var(--shadow);
-            "
-          >
-            <h3
-              style="
-                margin-top: 0;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-              "
-            >
-              <span>📋</span> Scenario &amp; Level Options
-            </h3>
-            <p style="font-size: 14px; line-height: 1.6; margin: 0 0 10px">
-              You are a <strong>maker in a workshop</strong>. Pick a board or
-              pipe you want to use, then divide its length into equal fractional
-              pieces so every cut comes out the same size.
-            </p>
-            <ul
-              style="
-                font-size: 14px;
-                line-height: 1.6;
-                margin: 0;
-                padding-left: 18px;
-              "
-            >
-              <li>
-                <strong>Level 1 (support):</strong> use friendly, round lengths
-                (cut a 6-foot board into 1/2-foot pieces).
-              </li>
-              <li>
-                <strong>Level 2 (challenge):</strong> use real, uneven lengths
-                (cut a 4 1/3-foot board into 3/4-foot pieces and read the
-                leftover).
-              </li>
-            </ul>
-          </div>
-        </div>
-        <p>
-          Enter a material <strong>you actually want to cut</strong> and your
-          own real lengths below. Not sure yet? Click
-          <em>Use example numbers</em> to model the math, then change everything
-          to fit your project.
-        </p>
-
-        <label class="fld" for="projectName">What are you building?</label>
-        <input type="text" id="projectName" data-save placeholder="" />
-
-        <!-- 1a Whole ÷ fraction -->
-
-        <div
-          style="
-            margin-top: 20px;
-            padding-top: 16px;
-            border-top: 1px solid var(--line);
-          "
-        >
-          <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px">
-            You can type your own numbers as you go, or click below to start
-            with our example numbers:
-          </p>
-          <button
-            class="btn ghost"
-            type="button"
-            onclick="useExamples()"
-            style="
-              width: 100%;
-              font-weight: bold;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              gap: 8px;
-            "
-          >
-            ✨ Use Example Numbers
-          </button>
-        </div>
-      </section>
-
-      <!-- ===================== PART 1A — SELF ===================== -->
-      <section class="phase" id="phase-1a" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">1a</div>
-          <div>
-            <span class="arc-banner">Part 1a · Self — your real plan</span>
-            <h2>📏 Shelf boards (whole number ÷ fraction)</h2>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <div>
-            <div
-              class="pk-math-scaffold-card no-print"
-              style="
-                margin: 20px 0;
-                padding: 12px;
-                background: #fff;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-                max-width: 480px;
-                margin-left: auto;
-                margin-right: auto;
-              "
-            >
-              <svg
-                width="100%"
-                height="200"
-                viewBox="0 0 500 200"
-                style="background: #fff; border-radius: 8px"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <text
-                  x="250"
-                  y="30"
-                  text-anchor="middle"
-                  font-size="14"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  Fraction Division Visualizer
-                </text>
-                <rect
-                  x="100"
-                  y="80"
-                  width="300"
-                  height="24"
-                  fill="#f1f5f9"
-                  stroke="#cbd5e1"
-                  stroke-width="1"
-                />
-                <rect
-                  x="100"
-                  y="80"
-                  width="200"
-                  height="24"
-                  fill="#ffb74d"
-                  stroke="#f57c00"
-                  stroke-width="1"
-                />
-                <rect
-                  x="100"
-                  y="130"
-                  width="300"
-                  height="24"
-                  fill="#f1f5f9"
-                  stroke="#cbd5e1"
-                  stroke-width="1"
-                />
-                <rect
-                  x="100"
-                  y="130"
-                  width="50"
-                  height="24"
-                  fill="#64b5f6"
-                  stroke="#1e88e5"
-                  stroke-width="1"
-                />
-                <text
-                  x="250"
-                  y="180"
-                  text-anchor="middle"
-                  font-size="11"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  How many parts fit into the total?
-                </text>
-              </svg>
-            </div>
-
-            <div class="task">
-              <strong>Setup:</strong> A board is <em>L</em> feet long. Each
-              shelf is <em>2/(d)</em> ft. How many full shelves? Formula: L ÷
-              (2/d) = L × (d/2).
-            </div>
-            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-              Level 1 tip: try a friendly board like 8 ft with 2/3 ft shelves.
-            </p>
-            <div class="grid2">
-              <div>
-                <label class="fld" for="p1-board">Board length (feet)</label>
-                <input
-                  type="number"
-                  id="p1-board"
-                  data-save
-                  min="1"
-                  placeholder=""
-                  oninput="calcPhase1()"
-                />
-              </div>
-              <div>
-                <div style="margin-top: 14px">
-                  <div
-                    class="frac-label"
-                    style="text-align: left; margin-bottom: 4px"
-                  >
-                    Each shelf is 2 / (denominator) ft
-                  </div>
-                  <input
-                    type="number"
-                    id="p1-denom"
-                    data-save
-                    min="1"
-                    placeholder=""
-                    oninput="calcPhase1()"
-                  />
-                </div>
-              </div>
-            </div>
-            <button class="btn" type="button" onclick="calcPhase1()">
-              Calculate shelves
-            </button>
-            <div class="readout" id="p1-out"></div>
-            <div
-              class="pki-manip"
-              data-manip="frac-divide"
-              data-whole-label="feet of board"
-              data-piece-label="foot per piece"
-              data-default-whole-n="3"
-              data-default-whole-d="1"
-              data-default-piece-n="3"
-              data-default-piece-d="4"
-              data-unit="ft"
-            ></div>
-            <details class="hintbox">
-              <summary>Need a hint?</summary>
-              <div>
-                Dividing by (2/3) is the same as multiplying by (3/2). So 8 ÷
-                (2/3) = 8 × (3/2) = 24/2 = 12 shelves. Check by multiplying
-                back: 12 × (2/3) = 8 ✅.
-                <span class="pk-lvl1"
-                  ><br /><br /><b>Level 1 worked step:</b> flip the divisor 2/3
-                  → 3/2, then 8 × 3 = 24, 24 ÷ 2 = 12.</span
-                >
-              </div>
-            </details>
-
-            <div class="pk-lvl2" style="margin-top: 16px">
-              <div class="task">
-                <strong>Level 2 extension (6.NS.1):</strong> A board is 7 ft
-                long and each shelf needs 5/6 ft. How many full shelves can you
-                cut, and how much board is left over? Show the reciprocal (flip)
-                step, then explain the leftover as a fraction of one shelf.
-              </div>
-            </div>
-
-            <!-- 1b Fraction ÷ fraction -->
+          <div class="instruct">
+            <strong>Your job:</strong> Enter the total length of rope you have. Then select the length of each piece (a unit fraction like 1/4) to see how many pieces you can cut.
           </div>
 
-          <div
-            style="
-              background: var(--bg);
-              border: 2.5px solid var(--line);
-              border-radius: 18px;
-              padding: 20px;
-              box-shadow: var(--shadow);
-              height: fit-content;
-            "
-            class="pk-no-print"
-          >
-            <h3
-              style="
-                margin-top: 0;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                color: var(--navy);
-                font-size: 16px;
-              "
-            >
-              <span>💡</span> Guided Steps &amp; Help
-            </h3>
+          <!-- SVG Visual: Rope cutting diagram -->
+          <svg id="rope-svg" class="visual-svg" viewBox="0 0 520 130" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #ebdcc8;border-radius:12px;">
+            <!-- Content will be drawn dynamically -->
+          </svg>
 
-            <p
-              style="
-                font-size: 13.5px;
-                line-height: 1.5;
-                color: var(--muted);
-                margin-bottom: 12px;
-              "
-            >
-              <strong>Dividing Fractions in Recipes & Measurements:</strong>
-            </p>
-            <ol
-              style="
-                margin-left: 18px;
-                font-size: 13px;
-                line-height: 1.5;
-                display: grid;
-                gap: 8px;
-                color: var(--ink);
-              "
-            >
-              <li>
-                Write down the division problem:
-                <b>Total Amount ÷ Serving Size</b>.
-              </li>
-              <li>
-                Convert any mixed numbers to <b>improper fractions</b> (e.g., 1
-                1/2 becomes 3/2).
-              </li>
-              <li>
-                Apply the <b>Keep-Change-Flip</b> rule:
-                <ul>
-                  <li><b>Keep</b> the first fraction.</li>
-                  <li><b>Change</b> division (÷) to multiplication (×).</li>
-                  <li><b>Flip</b> the second fraction to its reciprocal.</li>
-                </ul>
-              </li>
-              <li>
-                Multiply the numerators, multiply the denominators, and
-                simplify.
-              </li>
-            </ol>
-            <div
-              style="
-                margin-top: 14px;
-                padding: 10px;
-                background: var(--sky);
-                border-radius: 8px;
-                font-size: 12px;
-              "
-            >
-              💡 <b>Example:</b> 3/4 cup total ÷ 1/8 cup serving = 3/4 × 8/1 =
-              24/4 = 6 servings.
-            </div>
+          <!-- Level 1 support tip -->
+          <div class="instruct lvl1-only">
+            🟢 <strong>Level 1 tip:</strong> Try whole numbers like 4 feet of rope, and a piece length of 1/2 or 1/4 foot.
           </div>
-        </div>
-      </section>
-
-      <!-- ===================== PART 1B — SELF ===================== -->
-      <section class="phase" id="phase-1b" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">1b</div>
-          <div>
-            <span class="arc-banner">Part 1b · Self — your real plan</span>
-            <h2>🎀 Ribbon roll (fraction ÷ fraction)</h2>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <div>
-            <div
-              class="pk-math-scaffold-card no-print"
-              style="
-                margin: 20px 0;
-                padding: 12px;
-                background: #fff;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-                max-width: 480px;
-                margin-left: auto;
-                margin-right: auto;
-              "
-            >
-              <svg
-                width="100%"
-                height="200"
-                viewBox="0 0 500 200"
-                style="background: #fff; border-radius: 8px"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <text
-                  x="250"
-                  y="30"
-                  text-anchor="middle"
-                  font-size="14"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  Fraction Division Visualizer
-                </text>
-                <rect
-                  x="100"
-                  y="80"
-                  width="300"
-                  height="24"
-                  fill="#f1f5f9"
-                  stroke="#cbd5e1"
-                  stroke-width="1"
-                />
-                <rect
-                  x="100"
-                  y="80"
-                  width="200"
-                  height="24"
-                  fill="#ffb74d"
-                  stroke="#f57c00"
-                  stroke-width="1"
-                />
-                <rect
-                  x="100"
-                  y="130"
-                  width="300"
-                  height="24"
-                  fill="#f1f5f9"
-                  stroke="#cbd5e1"
-                  stroke-width="1"
-                />
-                <rect
-                  x="100"
-                  y="130"
-                  width="50"
-                  height="24"
-                  fill="#64b5f6"
-                  stroke="#1e88e5"
-                  stroke-width="1"
-                />
-                <text
-                  x="250"
-                  y="180"
-                  text-anchor="middle"
-                  font-size="11"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  How many parts fit into the total?
-                </text>
-              </svg>
-            </div>
-
-            <div class="task">
-              <strong>Setup:</strong> You have <em>a/b</em> yards of ribbon.
-              Each piece needs <em>c/d</em> yards. How many pieces? Formula:
-              (a/b) ÷ (c/d) = (a×d)/(b×c).
-            </div>
-            <div class="grid4">
-              <div>
-                <div class="frac-label">Ribbon — numerator (a)</div>
-                <input
-                  type="number"
-                  id="p2a"
-                  data-save
-                  min="1"
-                  placeholder=""
-                  oninput="calcPhase2()"
-                />
-              </div>
-              <div>
-                <div class="frac-label">Ribbon — denominator (b)</div>
-                <input
-                  type="number"
-                  id="p2b"
-                  data-save
-                  min="1"
-                  placeholder=""
-                  oninput="calcPhase2()"
-                />
-              </div>
-              <div>
-                <div class="frac-label">Per piece — numerator (c)</div>
-                <input
-                  type="number"
-                  id="p2c"
-                  data-save
-                  min="1"
-                  placeholder=""
-                  oninput="calcPhase2()"
-                />
-              </div>
-              <div>
-                <div class="frac-label">Per piece — denominator (d)</div>
-                <input
-                  type="number"
-                  id="p2d"
-                  data-save
-                  min="1"
-                  placeholder=""
-                  oninput="calcPhase2()"
-                />
-              </div>
-            </div>
-            <div class="pk-lvl1" id="p2-bar"></div>
-            <button class="btn alt" type="button" onclick="calcPhase2()">
-              Calculate ribbon pieces
-            </button>
-            <div class="readout" id="p2-out"></div>
-            <details class="hintbox">
-              <summary>Need a hint?</summary>
-              <p>
-                Multiply by the reciprocal: (5/6) ÷ (1/4) = (5/6) × (4/1) = 20/6
-                = 10/3 ≈ 3.33 pieces. That is 3 full pieces with 1/3 of a piece
-                left over (1/12 of a yard of ribbon).
-              </p>
-            </details>
-
-            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-              Level 1 tip: try friendly pieces like 3/4 of a yard cut into
-              1/8-yard pieces, then flip and multiply.
-            </p>
-            <div class="pk-lvl2" style="margin-top: 16px">
-              <div class="task">
-                <strong>Level 2 extension (6.NS.1):</strong> You have 11/12 yard
-                of ribbon and each bow needs 1/3 yard. How many full bows can
-                you tie, and what fraction of a bow is left over? Show the
-                reciprocal (flip) step, then explain the leftover in terms of
-                one bow.
-              </div>
-            </div>
-
-            <!-- 1c Mixed ÷ fraction -->
+          <!-- Level 2 challenge tip -->
+          <div class="instruct lvl2-block lvl2-only">
+            <span class="lvl2-label">LEVEL 2 CHALLENGE</span><br>
+            Try entering a fraction for the total rope (like 9/4 feet) to see how the reciprocal rule divides fractions!
           </div>
 
-          <div
-            style="
-              background: var(--bg);
-              border: 2.5px solid var(--line);
-              border-radius: 18px;
-              padding: 20px;
-              box-shadow: var(--shadow);
-              height: fit-content;
-            "
-            class="pk-no-print"
-          >
-            <h3
-              style="
-                margin-top: 0;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                color: var(--navy);
-                font-size: 16px;
-              "
-            >
-              <span>💡</span> Guided Steps &amp; Help
-            </h3>
-
-            <p
-              style="
-                font-size: 13.5px;
-                line-height: 1.5;
-                color: var(--muted);
-                margin-bottom: 12px;
-              "
-            >
-              <strong>Dividing Fractions in Recipes & Measurements:</strong>
-            </p>
-            <ol
-              style="
-                margin-left: 18px;
-                font-size: 13px;
-                line-height: 1.5;
-                display: grid;
-                gap: 8px;
-                color: var(--ink);
-              "
-            >
-              <li>
-                Write down the division problem:
-                <b>Total Amount ÷ Serving Size</b>.
-              </li>
-              <li>
-                Convert any mixed numbers to <b>improper fractions</b> (e.g., 1
-                1/2 becomes 3/2).
-              </li>
-              <li>
-                Apply the <b>Keep-Change-Flip</b> rule:
-                <ul>
-                  <li><b>Keep</b> the first fraction.</li>
-                  <li><b>Change</b> division (÷) to multiplication (×).</li>
-                  <li><b>Flip</b> the second fraction to its reciprocal.</li>
-                </ul>
-              </li>
-              <li>
-                Multiply the numerators, multiply the denominators, and
-                simplify.
-              </li>
-            </ol>
-            <div
-              style="
-                margin-top: 14px;
-                padding: 10px;
-                background: var(--sky);
-                border-radius: 8px;
-                font-size: 12px;
-              "
-            >
-              💡 <b>Example:</b> 3/4 cup total ÷ 1/8 cup serving = 3/4 × 8/1 =
-              24/4 = 6 servings.
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== PART 1C — SELF ===================== -->
-      <section class="phase" id="phase-1c" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">1c</div>
-          <div>
-            <span class="arc-banner">Part 1c · Self — your real plan</span>
-            <h2>🔧 Pipe sections (mixed number ÷ fraction)</h2>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <div>
-            <div
-              class="pk-math-scaffold-card no-print"
-              style="
-                margin: 20px 0;
-                padding: 12px;
-                background: #fff;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-                max-width: 480px;
-                margin-left: auto;
-                margin-right: auto;
-              "
-            >
-              <svg
-                width="100%"
-                height="200"
-                viewBox="0 0 500 200"
-                style="background: #fff; border-radius: 8px"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <text
-                  x="250"
-                  y="30"
-                  text-anchor="middle"
-                  font-size="14"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  Fraction Division Visualizer
-                </text>
-                <rect
-                  x="100"
-                  y="80"
-                  width="300"
-                  height="24"
-                  fill="#f1f5f9"
-                  stroke="#cbd5e1"
-                  stroke-width="1"
-                />
-                <rect
-                  x="100"
-                  y="80"
-                  width="200"
-                  height="24"
-                  fill="#ffb74d"
-                  stroke="#f57c00"
-                  stroke-width="1"
-                />
-                <rect
-                  x="100"
-                  y="130"
-                  width="300"
-                  height="24"
-                  fill="#f1f5f9"
-                  stroke="#cbd5e1"
-                  stroke-width="1"
-                />
-                <rect
-                  x="100"
-                  y="130"
-                  width="50"
-                  height="24"
-                  fill="#64b5f6"
-                  stroke="#1e88e5"
-                  stroke-width="1"
-                />
-                <text
-                  x="250"
-                  y="180"
-                  text-anchor="middle"
-                  font-size="11"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  How many parts fit into the total?
-                </text>
-              </svg>
-            </div>
-
-            <div class="task">
-              <strong>Setup:</strong> Pipe is <em>W + n/d</em> meters long. Each
-              piece is 1/4 m. Convert the mixed number to an improper fraction,
-              then divide by 1/4.
-            </div>
-            <div class="grid4">
-              <!-- ===================== INLINE RESEARCH LAB ===================== -->
-              <div class="pk-research-inline-card">
-                <div class="pk-research-inline-header">
-                  <span class="pk-research-badge">🔍 Research Required</span>
-                  <a
-                    href="https://en.wikipedia.org/wiki/Lumber#Dimensional_lumber"
-                    target="_blank"
-                    class="pk-research-inline-link"
-                    >🔗 The Home Depot Lumber Dimensions Guide ↗</a
-                  >
-                </div>
-                <p class="pk-research-inline-instructions">
-                  Open the website or look up the dimensional standards for
-                  common soft lumber. Find the ACTUAL thickness/width of a
-                  standard 2x4 board (standard is 3 1/2 inches, or 7/2 inches).
-                  Enter the thickness below:
-                </p>
-                <div class="grid2">
-                  <div>
-                    <label class="fld" for="worldCountry"
-                      >Lumber Specification</label
-                    >
-                    <input
-                      type="text"
-                      id="worldCountry"
-                      data-save
-                      placeholder=""
-                      oninput="recalcAll()"
-                    />
-                  </div>
-                  <div>
-                    <label class="fld" for="worldSize"
-                      >Actual Board Width (inches)</label
-                    >
-                    <input
-                      type="number"
-                      id="worldSize"
-                      data-save
-                      step="any"
-                      min="0"
-                      placeholder=""
-                      oninput="recalcAll()"
-                    />
-                  </div>
-                </div>
-
-                <div
-                  style="
-                    margin-top: 12px;
-                    padding-top: 12px;
-                    border-top: 1px solid var(--line);
-                  "
-                >
-                  <label class="fld"
-                    >Equivalent Mixed Number (used in calculation)</label
-                  >
-                  <div style="display: flex; gap: 8px; align-items: center">
-                    <input
-                      type="number"
-                      id="p3w"
-                      data-save
-                      readonly
-                      style="
-                        width: 70px;
-                        text-align: center;
-                        background: #f1f5f9;
-                        border-color: #cbd5e1;
-                      "
-                    />
-                    <input
-                      type="number"
-                      id="p3n"
-                      data-save
-                      readonly
-                      style="
-                        width: 60px;
-                        text-align: center;
-                        background: #f1f5f9;
-                        border-color: #cbd5e1;
-                      "
-                    />
-                    <span>/</span>
-                    <input
-                      type="number"
-                      id="p3d"
-                      data-save
-                      readonly
-                      style="
-                        width: 60px;
-                        text-align: center;
-                        background: #f1f5f9;
-                        border-color: #cbd5e1;
-                      "
-                    />
-                    <span>inches</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="task" style="margin-top: 12px">
-              <strong>Cut size is fixed at 1/4 meter</strong> (standard
-              quarter-meter pipe fitting).
-            </div>
-            <button class="btn" type="button" onclick="calcPhase3()">
-              Calculate pipe pieces
-            </button>
-            <div class="readout" id="p3-out"></div>
-            <details class="hintbox">
-              <summary>Need a hint?</summary>
-              <p>
-                Convert 3 1/2 to an improper fraction: (3×2+1)/2 = 7/2 meters.
-                Then divide: (7/2) ÷ (1/4) = (7/2) × (4/1) = 28/2 = 14 pieces.
-                Dividing by 1/4 is the same as multiplying by 4!
-              </p>
-            </details>
-
-            <!-- 1d Quick check -->
-            <div class="task" style="margin-top: 24px">
-              <strong>Quick division check:</strong> A 5-foot rope is cut into
-              1/2-foot pieces. How many full pieces? (Hint: 5 ÷ 1/2 = ?)
-            </div>
-            <label class="fld" for="check-rope"
-              >Your answer (number of pieces)</label
-            >
-            <input type="number" id="check-rope" data-save placeholder="" />
-            <button class="btn alt" type="button" onclick="checkRope()">
-              Check answer
-            </button>
-            <div class="feedback" id="check-ropeFb"></div>
-            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-              Level 1 worked step: 5 ÷ (1/2) → flip → 5 × 2 = 10.
-            </p>
-            <div class="pk-lvl2" style="margin-top: 16px">
-              <div class="task">
-                <strong>Level 2 extension (6.NS.1):</strong> A 4 1/2-ft pipe is
-                cut into 2/3-ft sections. How many full sections do you get, and
-                what fraction of one section is left over? Convert the mixed
-                number to an improper fraction first, then explain the remainder
-                in terms of a single section.
-              </div>
-            </div>
-          </div>
-
-          <div
-            style="
-              background: var(--bg);
-              border: 2.5px solid var(--line);
-              border-radius: 18px;
-              padding: 20px;
-              box-shadow: var(--shadow);
-              height: fit-content;
-            "
-            class="pk-no-print"
-          >
-            <h3
-              style="
-                margin-top: 0;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                color: var(--navy);
-                font-size: 16px;
-              "
-            >
-              <span>💡</span> Guided Steps &amp; Help
-            </h3>
-
-            <p
-              style="
-                font-size: 13.5px;
-                line-height: 1.5;
-                color: var(--muted);
-                margin-bottom: 12px;
-              "
-            >
-              <strong>Dividing Fractions in Recipes & Measurements:</strong>
-            </p>
-            <ol
-              style="
-                margin-left: 18px;
-                font-size: 13px;
-                line-height: 1.5;
-                display: grid;
-                gap: 8px;
-                color: var(--ink);
-              "
-            >
-              <li>
-                Write down the division problem:
-                <b>Total Amount ÷ Serving Size</b>.
-              </li>
-              <li>
-                Convert any mixed numbers to <b>improper fractions</b> (e.g., 1
-                1/2 becomes 3/2).
-              </li>
-              <li>
-                Apply the <b>Keep-Change-Flip</b> rule:
-                <ul>
-                  <li><b>Keep</b> the first fraction.</li>
-                  <li><b>Change</b> division (÷) to multiplication (×).</li>
-                  <li><b>Flip</b> the second fraction to its reciprocal.</li>
-                </ul>
-              </li>
-              <li>
-                Multiply the numerators, multiply the denominators, and
-                simplify.
-              </li>
-            </ol>
-            <div
-              style="
-                margin-top: 14px;
-                padding: 10px;
-                background: var(--sky);
-                border-radius: 8px;
-                font-size: 12px;
-              "
-            >
-              💡 <b>Example:</b> 3/4 cup total ÷ 1/8 cup serving = 3/4 × 8/1 =
-              24/4 = 6 servings.
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
-      <section class="pk-visualizer-card no-print">
-        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
-        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px">
-          This visual interactive canvas updates in real-time as you complete
-          your math calculations.
-        </p>
-        <div id="projectVisualizer"></div>
-      </section>
-
-      <!-- ===================== PART 2 — PEER ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--teal)">2</div>
-          <div>
-            <span class="arc-banner">Part 2 · Peer — swap cut lists</span>
-            <div class="skill">Compare &amp; reason · 6.NS.1</div>
-            <h2>Cut-List Swap &amp; Compare</h2>
-          </div>
-        </div>
-        <p>
-          Trade cut lists with a partner. Interview them, type in their numbers,
-          then auto-compare: who gets more pieces? Whose cut wastes less?
-        </p>
-        <div class="pk-callout pk-no-print" style="margin-bottom: 14px">
-          <h3>Interview Sentence Frames</h3>
-          <p>"How many shelves did your board make? What was your divisor?"</p>
-          <p>"How many ribbon pieces, and how much was left over?"</p>
-          <p>"How many pipe sections did you cut?"</p>
-          <p class="pk-es">
-            "¿Cuántas piezas obtuviste? ¿Cuál fue tu divisor?"
-          </p>
-        </div>
-        <div class="grid2">
-          <div>
-            <label class="fld" for="partnerName"
-              >Partner name or initials</label
-            >
-            <input type="text" id="partnerName" data-save placeholder="" />
-          </div>
-          <div>
-            <label class="fld" for="p-shelves"
-              >Partner: shelves (Part 1a)</label
-            >
-            <input
-              type="number"
-              id="p-shelves"
-              data-save
-              min="0"
-              oninput="comparePeer()"
-            />
-          </div>
-          <div>
-            <label class="fld" for="p-ribbon"
-              >Partner: full ribbon pieces (Part 1b)</label
-            >
-            <input
-              type="number"
-              id="p-ribbon"
-              data-save
-              min="0"
-              oninput="comparePeer()"
-            />
-          </div>
-          <div>
-            <label class="fld" for="p-pipe"
-              >Partner: pipe pieces (Part 1c)</label
-            >
-            <input
-              type="number"
-              id="p-pipe"
-              data-save
-              min="0"
-              oninput="comparePeer()"
-            />
-          </div>
-        </div>
-        <button class="btn alt" type="button" onclick="comparePeer()">
-          Compare our cut lists
-        </button>
-        <div id="peerBox" class="pk-stats" style="margin-top: 16px"></div>
-        <label class="fld" for="peerReflect"
-          >Who gets more pieces, and how do you know?</label
-        >
-        <textarea id="peerReflect" data-save placeholder=""></textarea>
-      </section>
-
-      <!-- ===================== PART 3 — WORLD ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div
-            class="phase-num"
-            style="background: var(--gold); color: #2a1c00"
-          >
-            3
-          </div>
-          <div>
-            <span class="arc-banner"
-              >Part 3 · World — standard material lengths</span
-            >
-            <div class="skill">Compare to real data · 6.NS.1</div>
-            <h2>How Many Pieces Do Standard Materials Make?</h2>
-          </div>
-        </div>
-        <p>
-          These are standard board and pipe lengths: length ÷ cut size = pieces.
-          Pick a category and see where your number lands.
-        </p>
-        <div class="grid2">
-          <div>
-            <label class="fld" for="worldCat">Compare against</label>
-            <select id="worldCat" data-save onchange="worldGo()">
-              <option value="pieces">Pieces per material</option>
-              <option value="length">Material length (ft)</option>
-            </select>
-            <label class="fld" for="myWorld">My number</label>
-            <input
-              type="number"
-              id="myWorld"
-              data-save
-              step="0.01"
-              oninput="worldGo()"
-              placeholder=""
-            />
-            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
-              Tip: your shelves or pieces from Part 1 are a great value to type
-              here.
-            </p>
-            <div id="worldMeter"></div>
-          </div>
-          <div>
-            <h3>Standard Material Lengths 🪵</h3>
-            <div
-              style="
-                overflow: auto;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-              "
-            >
-              <table class="rubric" style="margin-top: 0">
-                <tr>
-                  <th>Material</th>
-                  <th>Length (ft)</th>
-                  <th>Cut</th>
-                  <th>Pieces</th>
-                </tr>
-                <tbody id="worldRows"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <div
-          class="phase"
-          style="margin: 18px 0 0; box-shadow: none; border-style: dashed"
-        >
-          <h3>🔬 What-If Lab</h3>
-          <p style="color: var(--muted); font-size: 14px">
-            Change a piece size and watch how many pieces you get. Smaller
-            pieces → more pieces!
-          </p>
           <div class="grid2">
             <div>
-              <label class="fld" for="wi-length">Material length (ft)</label>
-              <input type="number" id="wi-length" step="0.01" placeholder="" />
+              <label class="lbl" for="rope-type">Choose Input Type for Total Rope</label>
+              <select id="rope-type" onchange="toggleRopeInput()">
+                <option value="whole">Whole Number (e.g. 4 feet)</option>
+                <option value="fraction">Fraction (e.g. 9/4 feet)</option>
+              </select>
             </div>
             <div>
-              <label class="fld" for="wi-cut"
-                >New cut size (ft, like 0.5 for 1/2)</label
-              >
-              <input type="number" id="wi-cut" step="0.01" placeholder="" />
+              <label class="lbl" for="rope-divisor-den">Piece Length (1 / denominator)</label>
+              <select id="rope-divisor-den" onchange="calcRope()">
+                <option value="2">1/2 foot</option>
+                <option value="3">1/3 foot</option>
+                <option value="4" selected>1/4 foot</option>
+                <option value="5">1/5 foot</option>
+                <option value="6">1/6 foot</option>
+                <option value="8">1/8 foot</option>
+              </select>
             </div>
           </div>
-          <button class="btn" type="button" onclick="runWhatIf()">
-            Run test
-          </button>
-          <div class="pk-whatif" id="whatIfBox" style="margin-top: 12px">
-            Enter values to test.
+
+          <div class="grid2" style="margin-top: 10px;">
+            <div id="rope-whole-container" style="width:100%;">
+              <label class="lbl" for="rope-whole">Total Rope Length (feet)</label>
+              <input type="number" id="rope-whole" min="1" value="4" oninput="calcRope()" />
+            </div>
+            <div id="rope-frac-container" style="display:none; width:100%;" class="grid2">
+              <div>
+                <label class="lbl" for="rope-num">Numerator</label>
+                <input type="number" id="rope-num" min="1" value="9" oninput="calcRope()" />
+              </div>
+              <div>
+                <label class="lbl" for="rope-den">Denominator</label>
+                <input type="number" id="rope-den" min="1" value="4" oninput="calcRope()" />
+              </div>
+            </div>
+          </div>
+
+          <button class="calc-btn" onclick="calcRope()">🪢 Calculate Rope Cuts</button>
+          <div class="readout" id="rope-out"></div>
+
+          <details class="hint">
+            <summary>Need a hint?</summary>
+            <p>To divide by a unit fraction (like 1/4), multiply the total length by the reciprocal (4/1 or 4). This shows how many quarters fit into the whole length.<br><strong>Example:</strong> 4 ft ÷ 1/4 ft = 4 × 4 = 16 pieces.</p>
+          </details>
+
+          <div class="lvl2-block lvl2-only" style="margin-top:18px">
+            <span class="lvl2-label">LEVEL 2 EXTENSION — Explain the Reciprocal</span>
+            <p style="font-size:14px;margin:6px 0 10px">Why does dividing a number by 1/4 give you the exact same result as multiplying by 4? Explain using a rope model.</p>
+            <textarea id="rope-reflect" placeholder="Dividing by 1/4 is the same as multiplying by 4 because there are 4 quarter-pieces in every 1 foot..."></textarea>
           </div>
         </div>
 
-        <label class="fld" for="worldReflect"
-          >Does your material make more or fewer pieces than the standard
-          lengths? Why might that be?</label
-        >
-        <textarea id="worldReflect" data-save placeholder=""></textarea>
-        <div class="pk-lvl2">
-          <label class="fld" for="worldHard"
-            >Level 2 question: A 7-foot board is cut into 3/4-ft pieces. How
-            many full pieces, and how much board (if any) is left over? Then say
-            whether 3/4-ft cuts or 2/3-ft cuts waste less. Show your
-            thinking.</label
-          >
-          <textarea id="worldHard" data-save placeholder=""></textarea>
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(1)">← Back</button>
+          <button class="nav-btn" onclick="goStep(3)">Next Step →</button>
         </div>
-        <label class="fld" for="careful"
-          >Careful thinking: why is it tricky to compare "pieces" between two
-          different materials?</label
-        >
-        <textarea id="careful" data-save placeholder=""></textarea>
-      </section>
+      </div>
 
-      <!-- ===================== DELIVERABLE ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--green)">★</div>
-          <div>
-            <div class="skill">Final Deliverable</div>
-            <h2>Write Your Cut-List Memo</h2>
+      <!-- ======================================
+           STEP 2 — WOOD STRIPS
+      ====================================== -->
+      <div class="step-panel" id="step-3">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon gold">🪵</div>
+            <div>
+              <div class="card-title">Step 2 — Wood Strips</div>
+              <div class="card-sub">Total board (mixed number) ÷ strip length (fraction) = number of strips</div>
+            </div>
           </div>
-        </div>
-        <p>
-          Write a 3–5 sentence cut-list memo using your real numbers from above.
-        </p>
-        <textarea id="pitch" data-save placeholder=""></textarea>
 
-        <h3 style="margin: 22px 0 6px">Cut-List Checklist</h3>
-        <ul class="checklist" id="checklist">
-          <li>
-            <input type="checkbox" data-save id="ck1" /> I divided a whole
-            number by a fraction to find shelf pieces.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck2" /> I divided a fraction by
-            a fraction to find ribbon pieces.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck3" /> I converted a mixed
-            number to an improper fraction before dividing.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck4" /> I answered and checked
-            the quick-check problem (5 ÷ 1/2 = 10).
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck5" /> I swapped cut lists
-            with a partner and compared pieces.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck6" /> I compared my pieces to
-            the standard material sample.
-          </li>
-        </ul>
-
-        <div class="grid2" style="margin-top: 18px">
-          <div>
-            <button class="btn" type="button" onclick="buildReport()">
-              📝 Generate report
-            </button>
+          <div class="instruct">
+            <strong>Your job:</strong> Enter your total wood board size as a mixed number (e.g., 4 1/2 feet). Then enter your strip length as a fraction (e.g., 3/4 foot) to see how many strips you can yield.
           </div>
-          <div class="pk-no-print">
-            <button
-              class="btn ghost"
-              type="button"
-              onclick="PK.copyReport('reportBox')"
-            >
-              Copy report
-            </button>
-            <button
-              class="btn ghost"
-              type="button"
-              onclick="
-                PK.downloadText('maker-workshop-cut-list.txt', 'reportBox')
-              "
-            >
-              Download .txt
-            </button>
-            <button class="btn ghost" type="button" onclick="downloadCsv()">
-              Download .csv
-            </button>
-            <button class="btn printbtn" type="button" onclick="window.print()">
-              🖨️ Print
-            </button>
-          </div>
-        </div>
-        <div class="pk-report" id="reportBox" style="margin-top: 16px">
-          Click "Generate report" to build your cut-list summary.
-        </div>
-      </section>
 
-      <!-- RUBRIC -->
-      <section class="phase">
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--navy)">✓</div>
-          <div>
-            <div class="skill">How You Are Scored</div>
-            <h2>Project Rubric</h2>
-          </div>
-        </div>
-        <table class="rubric">
-          <tr>
-            <th>Category</th>
-            <th>4 — Expert</th>
-            <th>3 — Proficient</th>
-            <th>2 — Developing</th>
-          </tr>
-          <tr>
-            <td>Whole ÷ Fraction</td>
-            <td>
-              Correct shelf count, leftover shown, and multiplication check
-              works
-            </td>
-            <td>Correct number of shelves</td>
-            <td>Set up correctly but computation error</td>
-          </tr>
-          <tr>
-            <td>Fraction ÷ Fraction</td>
-            <td>
-              Correct piece count, simplified fraction, decimal, and leftover
-              explained
-            </td>
-            <td>Correct number of pieces</td>
-            <td>Multiply-by-reciprocal attempted with error</td>
-          </tr>
-          <tr>
-            <td>Mixed Numbers</td>
-            <td>
-              Correct conversion and division, full pieces and remainder both
-              shown
-            </td>
-            <td>Correct number of pipe pieces</td>
-            <td>Conversion or division step has an error</td>
-          </tr>
-          <tr>
-            <td>Comparison (Peer &amp; World)</td>
-            <td>
-              Compares pieces with partner and standard materials using clear
-              reasoning
-            </td>
-            <td>Comparisons present and mostly correct</td>
-            <td>Comparison attempted</td>
-          </tr>
-          <tr>
-            <td>Communication</td>
-            <td>
-              Memo gives the full cut list with all real numbers and units
-            </td>
-            <td>Memo uses most numbers correctly</td>
-            <td>Memo is unclear or missing key values</td>
-          </tr>
-        </table>
-      </section>
-
-      <p class="footer">
-        Neft Teacher · Unit 2 Culminating Project · Version B ·
-        <span id="yr"></span>
-      </p>
-    </div>
-
-    <script>
-      const yrEl = document.getElementById("yr");
-      if (yrEl) yrEl.textContent = new Date().getFullYear();
-      const $ = (id) => document.getElementById(id);
-      const num = (id) => {
-        const e = $(id);
-        return e ? parseFloat(e.value) : NaN;
-      };
-
-      /* ---- fraction helpers (kept in page) ---- */
-      function gcd(a, b) {
-        a = Math.abs(Math.round(a));
-        b = Math.abs(Math.round(b));
-        while (b) {
-          [a, b] = [b, a % b];
-        }
-        return a || 1;
-      }
-      function simplify(n, d) {
-        if (d === 0) return { num: 0, den: 1 };
-        const g = gcd(Math.abs(n), Math.abs(d));
-        return { num: n / g, den: d / g };
-      }
-      function fracStr(n, d) {
-        const s = simplify(n, d);
-        return s.den === 1 ? String(s.num) : s.num + "/" + s.den;
-      }
-      function mixedStr(n, d) {
-        const s = simplify(n, d);
-        if (s.den === 1) return String(s.num);
-        const whole = Math.floor(s.num / s.den),
-          rem = s.num % s.den;
-        if (whole === 0) return s.num + "/" + s.den;
-        if (rem === 0) return String(whole);
-        return whole + " and " + rem + "/" + s.den;
-      }
-      function show(id, html) {
-        const el = $(id);
-        if (!el) return;
-        el.innerHTML = html;
-        el.classList.add("show");
-        updateProgress();
-      }
-      function hide(id) {
-        $(id).classList.remove("show");
-      }
-
-      // running state used by report, peer compare + world meter
-      const proj = { shelves: null, ribbon: null, pipe: null };
-
-      /* ---- Part 1a: whole ÷ fraction ---- */
-      function calcPhase1() {
-        const L = num("p1-board"),
-          d = num("p1-denom");
-        if (isNaN(L) || L <= 0 || isNaN(d) || d <= 0) {
-          hide("p1-out");
-          proj.shelves = null;
-          return;
-        }
-        const rNum = L * d,
-          rDen = 2,
-          decimal = rNum / rDen;
-        const fullPieces = Math.floor(decimal);
-        proj.shelves = fullPieces;
-        const remPieces = rNum - fullPieces * rDen;
-        const leftNum = remPieces * 2,
-          leftDen = rDen * d;
-        const leftStr =
-          leftNum > 0
-            ? fracStr(leftNum, leftDen) + " ft left over"
-            : "no scrap — perfect cut! ✅";
-        show(
-          "p1-out",
-          '<div class="big">' +
-            fullPieces +
-            " shelves</div>" +
-            L +
-            " ÷ (2/" +
-            d +
-            ") = " +
-            L +
-            " × (" +
-            d +
-            "/2) = " +
-            rNum +
-            "/2 = <strong>" +
-            fracStr(rNum, rDen) +
-            "</strong> = <strong>" +
-            mixedStr(rNum, rDen) +
-            "</strong><br>" +
-            "Full shelves: <strong>" +
-            fullPieces +
-            "</strong> · " +
-            leftStr,
-        );
-      }
-
-      /* ---- Part 1b: fraction ÷ fraction ---- */
-      function calcPhase2() {
-        const a = num("p2a"),
-          b = num("p2b"),
-          c = num("p2c"),
-          d = num("p2d");
-        renderFracBar(a, b);
-        if (
-          isNaN(a) ||
-          a <= 0 ||
-          isNaN(b) ||
-          b <= 0 ||
-          isNaN(c) ||
-          c <= 0 ||
-          isNaN(d) ||
-          d <= 0
-        ) {
-          hide("p2-out");
-          proj.ribbon = null;
-          return;
-        }
-        const rNum = a * d,
-          rDen = b * c,
-          decimal = rNum / rDen;
-        const fullPieces = Math.floor(decimal);
-        proj.ribbon = fullPieces;
-        const remPiecesNum = rNum - fullPieces * rDen;
-        const leftNum = remPiecesNum * c,
-          leftDen = rDen * d;
-        const leftStr =
-          leftNum > 0
-            ? fracStr(leftNum, leftDen) + " yd of ribbon left over"
-            : "no scrap — perfect cut! ✅";
-        show(
-          "p2-out",
-          '<div class="big">' +
-            mixedStr(rNum, rDen) +
-            " pieces</div>" +
-            "(" +
-            a +
-            "/" +
-            b +
-            ") ÷ (" +
-            c +
-            "/" +
-            d +
-            ") = (" +
-            a +
-            "×" +
-            d +
-            ")/(" +
-            b +
-            "×" +
-            c +
-            ") = " +
-            rNum +
-            "/" +
-            rDen +
-            (fracStr(rNum, rDen) !== rNum + "/" + rDen
-              ? " = <strong>" + fracStr(rNum, rDen) + "</strong>"
-              : "") +
-            " ≈ <strong>" +
-            decimal.toFixed(4).replace(/\.?0+$/, "") +
-            "</strong><br>" +
-            "Full pieces: <strong>" +
-            fullPieces +
-            "</strong> · " +
-            leftStr,
-        );
-      }
-      function renderFracBar(a, b) {
-        const bar = $("p2-bar");
-        if (isNaN(a) || isNaN(b) || b <= 0 || a < 0 || b > 16 || a > b) {
-          bar.innerHTML = "";
-          return;
-        }
-        let cells = "";
-        for (let i = 0; i < b; i++)
-          cells += '<span class="' + (i < a ? "fill" : "") + '"></span>';
-        bar.innerHTML =
-          '<div style="font-size:13px;color:var(--muted);font-weight:700;margin-top:8px;">Your ribbon: ' +
-          a +
-          "/" +
-          b +
-          ' of a yard shaded</div><div class="frac-bar">' +
-          cells +
-          "</div>";
-      }
-
-      /* ---- Part 1c: mixed ÷ 1/4 ---- */
-      function calcPhase3() {
-        const w = num("p3w"),
-          n = num("p3n"),
-          d = num("p3d");
-        if (isNaN(w) || w < 0 || isNaN(n) || n < 0 || isNaN(d) || d <= 0) {
-          hide("p3-out");
-          proj.pipe = null;
-          return;
-        }
-        const mixNum = w * d + n,
-          mixDen = d;
-        const rNum = mixNum * 4,
-          rDen = mixDen,
-          decimal = rNum / rDen;
-        const fullPieces = Math.floor(decimal);
-        proj.pipe = fullPieces;
-        const remNum = rNum - fullPieces * rDen;
-        const leftStr =
-          remNum > 0
-            ? fracStr(remNum, rDen * 4) + " m left over"
-            : "no scrap — perfect cut! ✅";
-        show(
-          "p3-out",
-          '<div class="big">' +
-            fullPieces +
-            " pieces (1/4 m each)</div>" +
-            "Step 1 — Convert: " +
-            w +
-            " and " +
-            n +
-            "/" +
-            d +
-            " = (" +
-            w +
-            "×" +
-            d +
-            "+" +
-            n +
-            ")/" +
-            d +
-            " = <strong>" +
-            mixNum +
-            "/" +
-            mixDen +
-            "</strong> m<br>" +
-            "Step 2 — Divide: (" +
-            mixNum +
-            "/" +
-            mixDen +
-            ") ÷ (1/4) = (" +
-            mixNum +
-            "/" +
-            mixDen +
-            ") × 4 = " +
-            rNum +
-            "/" +
-            rDen +
-            " = <strong>" +
-            fracStr(rNum, rDen) +
-            "</strong> = <strong>" +
-            mixedStr(rNum, rDen) +
-            "</strong><br>" +
-            "Full pieces: <strong>" +
-            fullPieces +
-            "</strong> · " +
-            leftStr,
-        );
-      }
-
-      /* ---- Part 1d: quick check ---- */
-      function checkRope() {
-        const ok = PK.checkWork("check-rope", 10, 0);
-        updateProgress();
-        return ok;
-      }
-
-      /* ---- Part 2: peer compare (uses kit) ---- */
-      function comparePeer() {
-        const rows = [];
-        const myS = proj.shelves,
-          myR = proj.ribbon,
-          myP = proj.pipe;
-        const pS = num("p-shelves"),
-          pR = num("p-ribbon"),
-          pP = num("p-pipe");
-        if (myS != null && !isNaN(pS))
-          rows.push({ label: "Shelves", me: myS, partner: pS });
-        if (myR != null && !isNaN(pR))
-          rows.push({ label: "Ribbon pieces", me: myR, partner: pR });
-        if (myP != null && !isNaN(pP))
-          rows.push({ label: "Pipe pieces", me: myP, partner: pP });
-        if (!rows.length) {
-          $("peerBox").innerHTML =
-            '<p class="pk-fb">Finish Part 1 and enter partner numbers to compare.</p>';
-          return;
-        }
-        PK.peerCompare("peerBox", rows);
-        updateProgress();
-      }
-
-      /* ---- Part 3: world dataset + meter ---- */
-      // [material, lengthFt, cutLabel, pieces] — standard board/pipe lengths
-      const world = [
-        ["Pine 2x4 stud", 8, "2/3 ft", 12],
-        ["Plywood strip", 6, "3/4 ft", 8],
-        ["Oak shelf board", 10, "5/6 ft", 12],
-        ["Copper pipe", 3.5, "1/4 ft", 14],
-        ["PVC pipe", 5, "1/2 ft", 10],
-        ["Dowel rod", 4.5, "3/8 ft", 12],
-        ["Trim molding", 12, "1 1/4 ft", 9],
-        ["Steel rod", 3.75, "1/2 ft", 7],
-      ];
-      const wIdx = { pieces: 3, length: 1 };
-      function renderWorld() {
-        $("worldRows").innerHTML = world
-          .map(
-            (r) =>
-              "<tr><td>" +
-              r[0] +
-              "</td><td>" +
-              r[1] +
-              "</td><td>" +
-              r[2] +
-              "</td><td>" +
-              r[3] +
-              "</td></tr>",
-          )
-          .join("");
-      }
-      function worldSample() {
-        return world.map((r) => r[wIdx[($("worldCat") || {}).value]]);
-      }
-
-      function worldGo() {
-        const my = num("myWorld");
-        const customName = $("worldCountry")
-          ? $("worldCountry").value.trim()
-          : "";
-        const customSize = $("worldSize") ? num("worldSize") : NaN;
-
-        let sample = worldSample();
-        if (!isNaN(customSize) && customSize > 0) {
-          sample = [...sample, customSize];
-        }
-
-        const labels =
-          ($("worldCat") || {}).value === "costPerGuest" ||
-          ($("worldCat") || {}).value === "price"
-            ? { mean: "City avg $", me: "Me $" }
-            : { mean: "City avg", me: "Me" };
-
-        PK.worldMeter("worldMeter", sample, my, labels);
-
-        const fb = $("worldMeter");
-        if (!isNaN(customSize) && customSize > 0 && customName) {
-          const ratio = (my / customSize).toFixed(2);
-          const pct = Math.round((my / customSize) * 100);
-          const diff = Math.abs(my - customSize).toFixed(2);
-
-          let myValStr = false ? "$" + my.toFixed(2) : my + " in";
-          let custValStr = false
-            ? "$" + customSize.toFixed(2)
-            : customSize + " in";
-          let diffStr = false
-            ? "$" + Number(diff).toFixed(2)
-            : Number(diff).toFixed(2) + " in";
-
-          const rel =
-            my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
-          const desc =
-            `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
-            `📊 Research Comparison: Your value (${myValStr}) is <strong>${rel}</strong> than <strong>${customName}</strong> (${custValStr}) ` +
-            `by <strong>${diffStr}</strong>. Your value is <strong>${pct}%</strong> (${ratio}x) of the size of the researched benchmark.` +
-            `</div>`;
-          fb.innerHTML += desc;
-        }
-
-        if (typeof drawVisualizer === "function") {
-          drawVisualizer();
-        }
-
-        updateProgress();
-      }
-
-      function runWhatIf() {
-        const len = parseFloat($("wi-length").value);
-        const cut = parseFloat($("wi-cut").value);
-        if (isNaN(len) || len <= 0 || isNaN(cut) || cut <= 0) {
-          $("whatIfBox").textContent =
-            "Enter a material length and a cut size — both greater than 0.";
-          return;
-        }
-        const r = (x) => Math.round(x * 100) / 100;
-        const half = cut / 2;
-        PK.whatIf(
-          "whatIfBox",
-          { "cut size": cut + " ft", pieces: r(len / cut) },
-          { "cut size": half + " ft", pieces: r(len / half) },
-          "Length of " +
-            len +
-            " ft ÷ cut size = pieces. Cut the piece size in half → twice as many pieces:",
-        );
-      }
-
-      /* ---- Use example numbers ---- */
-      function useExamples() {
-        const ex = {
-          worldCountry: "2x4 Stud",
-          worldSize: 3.5,
-          projectName: "shop cut list",
-          "p1-board": 8,
-          "p1-denom": 3,
-          p2a: 5,
-          p2b: 6,
-          p2c: 1,
-          p2d: 4,
-          p3w: 3,
-          p3n: 1,
-          p3d: 2,
-        };
-        Object.entries(ex).forEach(([k, v]) => {
-          if ($(k)) $(k).value = v;
-        });
-        recalcAll();
-      }
-
-      function decimalToFraction(val) {
-        const eps = 0.005;
-        if (Math.abs(val - 3.5) < eps) return { num: 7, den: 2 };
-        if (Math.abs(val - 5.5) < eps) return { num: 11, den: 2 };
-        if (Math.abs(val - 1.5) < eps) return { num: 3, den: 2 };
-        if (Math.abs(val - 7.25) < eps) return { num: 29, den: 4 };
-        if (Math.abs(val - 9.25) < eps) return { num: 37, den: 4 };
-        if (Math.abs(val - 11.25) < eps) return { num: 45, den: 4 };
-
-        const len = String(val).split(".")[1]?.length || 0;
-        if (len === 0) return { num: Math.round(val), den: 1 };
-        const den = Math.pow(10, len);
-        const num = Math.round(val * den);
-        const gcdVal = (a, b) => (b ? gcdVal(b, a % b) : a);
-        const g = gcdVal(num, den);
-        return { num: num / g, den: den / g };
-      }
-
-      function syncResearch() {
-        const ws = $("worldSize");
-        if (!ws) return;
-        const val = num("worldSize");
-        if (isNaN(val) || val <= 0) return;
-        const frac = decimalToFraction(val);
-        if ($("p3w") && $("p3n") && $("p3d")) {
-          $("p3w").value = Math.floor(val);
-          $("p3n").value = frac.num % frac.den;
-          $("p3d").value = frac.den;
-          if (typeof calcPhase3 === "function") calcPhase3();
-        }
-        worldGo();
-      }
-
-      function drawVisualizer() {
-        // Draw real piece counts from the page's actual inputs.
-        const clampCount = (v) => {
-          v = Math.floor(v);
-          return isFinite(v) && v > 0 ? Math.min(v, 24) : 0;
-        };
-        // Phase 1a — shelves: L ÷ (2/denom) = L × denom / 2
-        let board = clampCount((num("p1-board") * num("p1-denom")) / 2);
-        // Phase 1b — ribbon: (a/b) ÷ (c/d) = (a×d)/(b×c)
-        let ribbon = clampCount(
-          (num("p2a") * num("p2d")) / (num("p2b") * num("p2c")),
-        );
-        // Phase 1c — pipe: (w + n/d) ÷ (1/4) = (w + n/d) × 4
-        let box = clampCount((num("p3w") + num("p3n") / num("p3d")) * 4);
-
-        // Show a worked EXAMPLE rip-cut blueprint by default so the canvas
-        // always has cuts to read; switch to the real cut-list once any
-        // material input is entered.
-        const isExample =
-          isNaN(num("p1-board")) &&
-          isNaN(num("p1-denom")) &&
-          isNaN(num("p2a")) &&
-          isNaN(num("p2b")) &&
-          isNaN(num("p2c")) &&
-          isNaN(num("p2d")) &&
-          isNaN(num("p3w")) &&
-          isNaN(num("p3n")) &&
-          isNaN(num("p3d"));
-        if (isExample) {
-          board = 8;
-          ribbon = 4;
-          box = 6;
-        }
-
-        let p1Html = "";
-        if (board > 0) {
-          const totalW = 140;
-          const pieceW = totalW / board;
-          let pieces = "";
-          for (let i = 0; i < board; i++) {
-            const x = 30 + i * pieceW;
-            pieces += `
-              <rect x="${x}" y="95" width="${pieceW}" height="20" fill="rgba(26, 111, 181, 0.15)" stroke="#1a6fb5" />
-              <text x="${x + pieceW / 2}" y="108" text-anchor="middle" font-size="8" fill="#1a6fb5">1/${board}</text>
-            `;
-          }
-          p1Html = `
-            <rect x="30" y="95" width="140" height="20" fill="none" stroke="#0f2b3c" stroke-width="2" />
-            ${pieces}
-            <text x="100" y="80" text-anchor="middle" font-size="10" font-weight="bold" fill="#0f2b3c">Plank Cuts</text>
-          `;
-        }
-
-        let p2Html = "";
-        if (ribbon > 0) {
-          const totalW = 140;
-          const pieceW = totalW / ribbon;
-          let pieces = "";
-          for (let i = 0; i < ribbon; i++) {
-            const x = 180 + i * pieceW;
-            pieces += `
-              <rect x="${x}" y="95" width="${pieceW}" height="20" fill="rgba(14, 138, 125, 0.15)" stroke="#0e8a7d" />
-              <text x="${x + pieceW / 2}" y="108" text-anchor="middle" font-size="8" fill="#0e8a7d">1/${ribbon}</text>
-            `;
-          }
-          p2Html = `
-            <rect x="180" y="95" width="140" height="20" fill="none" stroke="#0f2b3c" stroke-width="2" />
-            ${pieces}
-            <text x="250" y="80" text-anchor="middle" font-size="10" font-weight="bold" fill="#0f2b3c">Ribbon Cuts</text>
-          `;
-        }
-
-        let p3Html = "";
-        if (box > 0) {
-          const totalW = 140;
-          const pieceW = totalW / box;
-          let pieces = "";
-          for (let i = 0; i < box; i++) {
-            const x = 330 + i * pieceW;
-            pieces += `
-              <rect x="${x}" y="95" width="${pieceW}" height="20" fill="rgba(212, 149, 42, 0.15)" stroke="#d4952a" />
-              <text x="${x + pieceW / 2}" y="108" text-anchor="middle" font-size="8" fill="#d4952a">1/${box}</text>
-            `;
-          }
-          p3Html = `
-            <rect x="330" y="95" width="140" height="20" fill="none" stroke="#0f2b3c" stroke-width="2" />
-            ${pieces}
-            <text x="400" y="80" text-anchor="middle" font-size="10" font-weight="bold" fill="#0f2b3c">Pipe Cuts</text>
-          `;
-        }
-
-        const svgString = `
-          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
-            <text x="250" y="35" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Workshop Blueprint Material Rip-Cuts</text>
-            ${isExample ? `<rect x="372" y="18" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="32" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example cut-list</text>` : ""}
-            ${p1Html}
-            ${p2Html}
-            ${p3Html}
+          <!-- SVG Visual: Board cutting diagram -->
+          <svg id="wood-svg" class="visual-svg" viewBox="0 0 520 130" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #ebdcc8;border-radius:12px;">
+            <!-- Content will be drawn dynamically -->
           </svg>
-        `;
-        $("projectVisualizer").innerHTML = svgString;
+
+          <!-- Level 1 support tip -->
+          <div class="instruct lvl1-only">
+            🟢 <strong>Level 1 tip:</strong> Try 4 1/2 feet (4 whole, 1 numerator, 2 denominator) and cut it into 1/2 or 3/4 foot strips.
+          </div>
+          <!-- Level 2 challenge tip -->
+          <div class="instruct lvl2-block lvl2-only">
+            <span class="lvl2-label">LEVEL 2 CHALLENGE</span><br>
+            Use custom fractions that do not divide evenly (like 5 1/4 feet divided by 2/3 foot strips) to see the exact remaining scrap wood.
+          </div>
+
+          <label class="lbl">Total Wood Board Size (Mixed Number: Whole &amp; Fraction)</label>
+          <div class="grid4">
+            <div>
+              <span class="frac-label">Whole Feet</span>
+              <input type="number" id="w-whole" min="0" value="4" oninput="calcWood()" />
+            </div>
+            <div>
+              <span class="frac-label">Numerator</span>
+              <input type="number" id="w-num" min="0" value="1" oninput="calcWood()" />
+            </div>
+            <div>
+              <span class="frac-label">Denominator</span>
+              <input type="number" id="w-den" min="1" value="2" oninput="calcWood()" />
+            </div>
+          </div>
+
+          <label class="lbl" style="margin-top: 20px;">Strip Length (Fraction of a Foot)</label>
+          <div class="grid2">
+            <div>
+              <span class="frac-label">Numerator</span>
+              <input type="number" id="w-strip-num" min="1" value="3" oninput="calcWood()" />
+            </div>
+            <div>
+              <span class="frac-label">Denominator</span>
+              <input type="number" id="w-strip-den" min="1" value="4" oninput="calcWood()" />
+            </div>
+          </div>
+
+          <button class="calc-btn" onclick="calcWood()">🪵 Calculate Wood Strips</button>
+          <div class="readout" id="wood-out"></div>
+
+          <details class="hint">
+            <summary>Need a hint?</summary>
+            <p>1. Convert the mixed number total to an improper fraction.<br>2. Multiply by the reciprocal of the strip length fraction.<br><strong>Example:</strong> 4 1/2 ft = 9/2 ft. Strip length is 3/4 ft. Reciprocal is 4/3. Multiply: 9/2 × 4/3 = 36/6 = 6 strips.</p>
+          </details>
+
+          <div class="lvl2-block lvl2-only" style="margin-top:18px">
+            <span class="lvl2-label">LEVEL 2 EXTENSION — Scrap Wood Calculation</span>
+            <p style="font-size:14px;margin:6px 0 10px">If you cut a board and get 5 2/3 strips, the leftover strip fraction is 2/3. If each strip is 3/4 ft long, explain why the scrap is exactly 1/2 ft long.</p>
+            <textarea id="wood-reflect" placeholder="The leftover represents 2/3 of a strip. Since a full strip is 3/4 feet, the scrap is 2/3 × 3/4 = 6/12 = 1/2 foot."></textarea>
+          </div>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(2)">← Back</button>
+          <button class="nav-btn" onclick="goStep(4)">Next Step →</button>
+        </div>
+      </div>
+
+      <!-- ======================================
+           STEP 3 — FABRIC CUTS
+      ====================================== -->
+      <div class="step-panel" id="step-4">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon gold">🧵</div>
+            <div>
+              <div class="card-title">Step 3 — Fabric Cuts &amp; Supplies</div>
+              <div class="card-sub">Total fabric ÷ swatch size = number of swatches; scale to supplier rolls</div>
+            </div>
+          </div>
+
+          <div class="instruct">
+            <strong>Your job:</strong> Enter the size of the fabric swatches you want to make. Then, compare how many pieces you get from standard retail rolls and boards versus your workshop's custom sizes.
+          </div>
+
+          <!-- Level 1 support tip -->
+          <div class="instruct lvl1-only">
+            🟢 <strong>Level 1 tip:</strong> Enter a fabric swatch size of 2/3 yard to see the division calculations on a 15-yard bolt.
+          </div>
+          <!-- Level 2 challenge tip -->
+          <div class="instruct lvl2-block lvl2-only">
+            <span class="lvl2-label">LEVEL 2 CHALLENGE</span><br>
+            Try fabric swatch sizes that are non-unit fractions, like 3/8 yard, and find the exact scrap fabric left on a 15-yard bolt.
+          </div>
+
+          <label class="lbl">Fabric Swatch Size (Fraction of a Yard)</label>
+          <div class="grid2">
+            <div>
+              <span class="frac-label">Numerator</span>
+              <input type="number" id="f-swatch-num" min="1" value="2" oninput="calcFabric()" />
+            </div>
+            <div>
+              <span class="frac-label">Denominator</span>
+              <input type="number" id="f-swatch-den" min="1" value="3" oninput="calcFabric()" />
+            </div>
+          </div>
+
+          <button class="calc-btn" onclick="calcFabric()">🧵 Calculate Fabric Cuts</button>
+          <div class="readout" id="fabric-out"></div>
+
+          <!-- Commercial scale table -->
+          <div style="margin-top:22px;">
+            <h3 style="font-size:15px;font-weight:800;color:var(--navy);margin-bottom:6px;">🏭 Commercial Supply Yield Table</h3>
+            <p style="font-size:14px;color:var(--muted);margin-bottom:10px;">Compare how many total pieces can be harvested from full standard-sized retail supplies using your cut dimensions.</p>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Material Type</th>
+                  <th>Standard Supplier Size</th>
+                  <th>Your Piece/Swatch Size</th>
+                  <th>Yield (Full Pieces)</th>
+                  <th>Remaining Scrap</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>🪢 Standard Rope Spool</strong></td>
+                  <td>25 feet</td>
+                  <td id="td-rope-divisor">1/4 ft</td>
+                  <td id="td-rope-yield">—</td>
+                  <td id="td-rope-scrap">0 ft</td>
+                </tr>
+                <tr>
+                  <td><strong>🧵 Fabric Bolt</strong></td>
+                  <td>15 yards</td>
+                  <td id="td-fabric-divisor">2/3 yd</td>
+                  <td id="td-fabric-yield">—</td>
+                  <td id="td-fabric-scrap">—</td>
+                </tr>
+                <tr>
+                  <td><strong>🪵 Lumber Board</strong></td>
+                  <td>8 feet</td>
+                  <td id="td-wood-divisor">3/4 ft</td>
+                  <td id="td-wood-yield">—</td>
+                  <td id="td-wood-scrap">—</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <label class="lbl" for="world-compare" style="margin-top:18px;">Which material yields the most pieces when scaled up? Write a one-sentence reflection.</label>
+            <textarea id="world-compare" placeholder="Scaling up shows that the rope yields the most pieces because..."></textarea>
+          </div>
+
+          <div class="lvl2-block lvl2-only" style="margin-top:18px">
+            <span class="lvl2-label">LEVEL 2 EXTENSION — Efficiency &amp; Optimization</span>
+            <p style="font-size:14px;margin:6px 0 10px">If a fabric bolt has 15 yards and your swatches are 2/3 yard, you get 22 swatches and 1/3 yard of scrap. What divisor (swatch size) could you use instead to guarantee exactly zero scrap fabric?</p>
+            <textarea id="fabric-reflect" placeholder="To guarantee zero scrap fabric, the swatch size divisor must divide 15 evenly. For example, swatches of 3/5 yard or 5/6 yard..."></textarea>
+          </div>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(3)">← Back</button>
+          <button class="nav-btn" onclick="goStep(5)">Next Step →</button>
+        </div>
+      </div>
+
+      <!-- ======================================
+           STEP 4 — PARTNER COMPARE
+      ====================================== -->
+      <div class="step-panel" id="step-5">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon gold">👥</div>
+            <div>
+              <div class="card-title">Step 4 — Partner Compare</div>
+              <div class="card-sub">Compare cut lists and yields with a partner</div>
+            </div>
+          </div>
+
+          <div class="instruct">
+            <strong>Your job:</strong> Interview a classmate and write down their yields. Press Compare to see who yielded more pieces and whose cuts are more efficient.
+          </div>
+
+          <!-- SVG Visual: Comparison diagram -->
+          <svg class="visual-svg" viewBox="0 0 520 100" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #ebdcc8;border-radius:12px;">
+            <text x="140" y="40" text-anchor="middle" font-size="28">👷</text>
+            <text x="140" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#2d1e0f">Your Workshop</text>
+            <rect x="185" y="38" width="150" height="30" rx="8" fill="#fdf3e0" stroke="#c9820f" stroke-width="1.5"/>
+            <text x="260" y="59" text-anchor="middle" font-size="11" fill="#c9820f" font-weight="bold">"What were your yields?"</text>
+            <text x="380" y="40" text-anchor="middle" font-size="28">👷</text>
+            <text x="380" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#2d1e0f">Partner Workshop</text>
+          </svg>
+
+          <label class="lbl" for="p-name">Partner's Name</label>
+          <input type="text" id="p-name" value="Alex" />
+
+          <div class="grid2">
+            <div>
+              <label class="lbl" for="p-rope">Partner's Rope Pieces</label>
+              <input type="number" id="p-rope" min="0" value="10" oninput="comparePeer()" />
+            </div>
+            <div>
+              <label class="lbl" for="p-wood">Partner's Wood Strips</label>
+              <input type="number" id="p-wood" min="0" value="5" oninput="comparePeer()" />
+            </div>
+          </div>
+          <div style="margin-top: 10px;">
+            <label class="lbl" for="p-fabric">Partner's Fabric Swatches</label>
+            <input type="number" id="p-fabric" min="0" value="20" oninput="comparePeer()" />
+          </div>
+
+          <button class="calc-btn" onclick="comparePeer()">📊 Compare Cut Lists</button>
+          <div class="readout" id="peer-out"></div>
+
+          <label class="lbl" for="peer-reflect" style="margin-top:18px;">Write down whose workshop design yielded more total pieces. Explain why using your mathematical values.</label>
+          <textarea id="peer-reflect" placeholder="My workshop yielded... My partner's workshop... I think... because..."></textarea>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(4)">← Back</button>
+          <button class="nav-btn green" onclick="goStep(6)">Next Step →</button>
+        </div>
+      </div>
+
+      <!-- ======================================
+           STEP 5 — FINISH
+      ====================================== -->
+      <div class="step-panel" id="step-6">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon green">🏆</div>
+            <div>
+              <div class="card-title">Step 5 — Finish &amp; Submit</div>
+              <div class="card-sub">Generate your final cut list summary and review your scoring rubric</div>
+            </div>
+          </div>
+
+          <div class="instruct green">
+            <strong>Your job:</strong> Write 3–5 sentences summarizing your workshop cut list and the mathematical patterns you noticed (such as the reciprocal rule).
+          </div>
+
+          <label class="lbl" for="pitch">✍️ Final Workshop Cut List Memo</label>
+          <textarea id="pitch" placeholder="To organize my Maker Workshop, I used fraction division (6.NS.1) to split my materials. For the rope, I cut a total of... yielding... For the wood strips, I converted the mixed number to... yielding..."></textarea>
+
+          <!-- Checklist -->
+          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">✅ Checklist — Check off everything you completed</h3>
+          <ul class="checklist" id="checklist">
+            <li><input type="checkbox" id="ck1" /> I defined the core terms for fraction division.</li>
+            <li><input type="checkbox" id="ck2" /> I completed the rope division calculations and visual.</li>
+            <li><input type="checkbox" id="ck3" /> I solved the wood board division involving mixed numbers.</li>
+            <li><input type="checkbox" id="ck4" /> I compared fabric cuts to standard commercial sizes.</li>
+            <li><input type="checkbox" id="ck5" /> I compared my results side-by-side with a classmate.</li>
+            <li><input type="checkbox" id="ck6" /> I wrote a workshop memo summarizing my plan.</li>
+          </ul>
+
+          <!-- Rubric -->
+          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">📊 Scoring Rubric</h3>
+          <table class="rubric">
+            <thead>
+              <tr>
+                <th>Skill</th>
+                <th class="score-4">4 — Expert</th>
+                <th class="score-3">3 — Proficient</th>
+                <th class="score-2">2 — Developing</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Fraction Division</strong></td>
+                <td>Both division models set up and solved with clear improper/reciprocal steps.</td>
+                <td>Both division models solved correctly.</td>
+                <td>Setup is correct, but made calculation or representation errors.</td>
+              </tr>
+              <tr>
+                <td><strong>Scrap &amp; Remainders</strong></td>
+                <td>Correctly calculates and explains the physical scrap lengths in feet/yards.</td>
+                <td>Correctly identifies whole-number pieces and fraction leftovers.</td>
+                <td>Confuses the fraction of a piece with the physical length of scrap.</td>
+              </tr>
+              <tr>
+                <td><strong>Commercial Scale</strong></td>
+                <td>Accurately scales up to 25ft, 15yd, and 8ft sizes, showing perfect yields and waste.</td>
+                <td>Completes comparison table with valid computations.</td>
+                <td>Comparison table contains arithmetic errors or is incomplete.</td>
+              </tr>
+              <tr>
+                <td><strong>Reflection</strong></td>
+                <td>Provides deep comparisons and explains how smaller divisors generate larger quotients.</td>
+                <td>Compares lists and writes reflection sentences.</td>
+                <td>Reflections are very short or lack mathematical backing.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Report generating buttons -->
+          <div class="nav-row no-print" style="margin-top:22px;flex-wrap:wrap;justify-content:flex-start;gap:8px;">
+            <button class="calc-btn" onclick="buildReport()">📝 Generate Summary</button>
+            <button class="export-btn" onclick="copyReport()">📋 Copy</button>
+            <button class="export-btn" onclick="downloadTxt()">⬇️ Download .txt</button>
+            <button class="export-btn" onclick="window.print()">🖨️ Print</button>
+          </div>
+          <pre class="report-box" id="reportBox"></pre>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(5)">← Back</button>
+          <button class="nav-btn green" onclick="alert('Congratulations! 🎉 Show your cut list report to your teacher.')">🎉 I'm Done!</button>
+        </div>
+      </div>
+
+    </div><!-- end wizard -->
+
+    <!-- ====== SCRIPTS ====== -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <script src="/assets/app.js" defer></script>
+    <script>
+      // ---- State ----
+      const STEPS = [
+        { id: 1, label: 'Key Words', icon: '📖' },
+        { id: 2, label: 'Rope Cuts', icon: '🪢' },
+        { id: 3, label: 'Wood Strips', icon: '🪵' },
+        { id: 4, label: 'Fabric Cuts', icon: '🧵' },
+        { id: 5, label: 'Compare', icon: '👥' },
+        { id: 6, label: 'Finish', icon: '🏆' },
+      ];
+      let currentStep = 1;
+      const visited = new Set([1]);
+
+      // ---- Level toggle ----
+      function setLevel(n) {
+        document.getElementById('body').className = 'level-' + n;
+        document.getElementById('btn-lv1').classList.toggle('active', n === 1);
+        document.getElementById('btn-lv2').classList.toggle('active', n === 2);
+        
+        calcRope();
+        calcWood();
+        calcFabric();
       }
 
-      function recalcAll() {
-        if (typeof syncResearch === "function") syncResearch();
-        calcPhase1();
-        calcPhase2();
-        calcPhase3();
-        comparePeer();
-        renderWorld();
-        worldGo();
+      // ---- Build step trail ----
+      function buildTrail() {
+        const trail = document.getElementById('stepTrail');
+        trail.innerHTML = STEPS.map((s, i) => {
+          const isLast = i === STEPS.length - 1;
+          return `<span class="step-trail-item${s.id === currentStep ? ' active' : ''}${visited.has(s.id) && s.id !== currentStep ? ' done' : ''}" onclick="goStep(${s.id})">
+            <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? '✓' : s.id}</span>
+            <span class="s-label">${s.label}</span>
+          </span>${!isLast ? '<span class="step-arrow">›</span>' : ''}`;
+        }).join('');
+      }
+
+      // ---- Navigation ----
+      function goStep(n) {
+        if (n < 1 || n > STEPS.length) return;
+        document.getElementById('step-' + currentStep).classList.remove('active');
+        currentStep = n;
+        visited.add(n);
+        document.getElementById('step-' + n).classList.add('active');
+        buildTrail();
         updateProgress();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
 
-      /* ---- Report ---- */
-      function reportText() {
-        return (
-          "MAKER WORKSHOP CUT LIST — MY REPORT\n" +
-          "====================================\n\n" +
-          "Project: " +
-          ($("projectName").value || "(not named)") +
-          "\n\n" +
-          "PART 1: MY CUT LIST (SELF)\n" +
-          "Shelves (whole ÷ fraction): " +
-          (proj.shelves == null ? "(not finished)" : proj.shelves) +
-          "\n" +
-          "Ribbon pieces (fraction ÷ fraction): " +
-          (proj.ribbon == null
-            ? "(not finished)"
-            : proj.ribbon + " full pieces") +
-          "\n" +
-          "Pipe pieces (mixed ÷ 1/4): " +
-          (proj.pipe == null ? "(not finished)" : proj.pipe + " pieces") +
-          "\n" +
-          "Quick check (5 ÷ 1/2): " +
-          ($("check-rope").value || "-") +
-          " pieces\n\n" +
-          "PART 2: PEER COMPARISON\n" +
-          "Partner: " +
-          ($("partnerName").value || "(none)") +
-          "\n" +
-          "Partner shelves: " +
-          ($("p-shelves").value || "-") +
-          "  ribbon: " +
-          ($("p-ribbon").value || "-") +
-          "  pipe: " +
-          ($("p-pipe").value || "-") +
-          "\n" +
-          "Reflection: " +
-          ($("peerReflect").value || "(not written)") +
-          "\n\n" +
-          "PART 3: WORLD COMPARISON\n" +
-          "My pieces vs standard materials: " +
-          ($("worldReflect").value || "(not written)") +
-          "\n" +
-          "Careful thinking: " +
-          ($("careful").value || "(not written)") +
-          "\n\n" +
-          "CUT-LIST MEMO:\n" +
-          ($("pitch").value || "(not written)")
-        );
-      }
-      function buildReport() {
-        recalcAll();
-        PK.generateReport("reportBox", reportText());
-      }
-      function downloadCsv() {
-        const rows = [
-          ["field", "value"],
-          ["project", $("projectName").value],
-          ["shelves", proj.shelves],
-          ["ribbon_pieces", proj.ribbon],
-          ["pipe_pieces", proj.pipe],
-          ["quick_check_rope", $("check-rope").value],
-          ["partner", $("partnerName").value],
-          ["partner_shelves", $("p-shelves").value],
-          ["partner_ribbon", $("p-ribbon").value],
-          ["partner_pipe", $("p-pipe").value],
-        ];
-        PK.downloadCsv("maker-workshop-data.csv", rows);
-      }
-
-      /* ---- Progress ---- */
       function updateProgress() {
-        const readouts = document.querySelectorAll(".readout.show").length; // max 3
-        const ropeOk = $("check-ropeFb").querySelector(".pk-ok") ? 1 : 0;
-        const checks = document.querySelectorAll(
-          "#checklist input:checked",
-        ).length; // max 6
-        const peer =
-          $("p-shelves").value || $("p-ribbon").value || $("p-pipe").value
-            ? 1
-            : 0;
-        const wrld = $("myWorld").value ? 1 : 0;
-        const pitch = $("pitch").value.trim().length > 20 ? 1 : 0;
-        const total = readouts + ropeOk + checks + peer + wrld + pitch; // max 3+1+6+1+1+1 = 13
-        const pct = Math.min(100, Math.round((total / 13) * 100));
-        $("pfill").style.width = pct + "%";
-        $("pct").textContent = pct;
+        const pct = Math.round(((currentStep - 1) / (STEPS.length - 1)) * 100);
+        document.getElementById('progFill').style.width = pct + '%';
+        document.getElementById('progLabel').textContent = `Step ${currentStep} of ${STEPS.length}`;
       }
-      document
-        .getElementById("checklist")
-        .addEventListener("change", updateProgress);
-      document
-        .getElementById("pitch")
-        .addEventListener("input", updateProgress);
 
-      /* ---- Level hook: Level 1 pre-fills friendly numbers if empty ---- */
-      window.onLevelChange = function (level) {
-        if (level === "level-1") {
-          const empty =
-            !$("p1-board").value && !$("p2a").value && !$("p3w").value;
-          if (empty) {
-            useExamples();
+      // ---- Math helpers ----
+      function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
+      
+      function showReadout(id, html) {
+        const el = document.getElementById(id);
+        el.innerHTML = html;
+        el.classList.add('show');
+      }
+
+      function toggleRopeInput() {
+        const type = document.getElementById('rope-type').value;
+        const wholeContainer = document.getElementById('rope-whole-container');
+        const fracContainer = document.getElementById('rope-frac-container');
+        if (type === 'whole') {
+          wholeContainer.style.display = 'block';
+          fracContainer.style.display = 'none';
+        } else {
+          wholeContainer.style.display = 'none';
+          fracContainer.style.display = 'flex';
+        }
+        calcRope();
+      }
+
+      // ---- Rope Cuts ----
+      function calcRope() {
+        const type = document.getElementById('rope-type').value;
+        let num, den;
+        if (type === 'whole') {
+          num = parseInt(document.getElementById('rope-whole').value) || 0;
+          den = 1;
+        } else {
+          num = parseInt(document.getElementById('rope-num').value) || 0;
+          den = parseInt(document.getElementById('rope-den').value) || 1;
+        }
+        const divDen = parseInt(document.getElementById('rope-divisor-den').value) || 4;
+
+        if (num <= 0 || den <= 0) return;
+
+        const totalVal = num / den;
+        const qNum = num * divDen;
+        const qDen = den;
+        const qVal = qNum / qDen;
+
+        const wholePieces = Math.floor(qVal);
+        const remNum = qNum % qDen;
+        
+        let quotientStr = '';
+        if (remNum === 0) {
+          quotientStr = `<strong>${wholePieces} pieces</strong>`;
+        } else {
+          const commonG = gcd(remNum, qDen);
+          quotientStr = `<strong>${wholePieces} and ${remNum/commonG}/${qDen/commonG} pieces</strong> (or ${wholePieces} full pieces + a leftover)`;
+        }
+
+        const rec = divDen + '/1';
+        showReadout('rope-out', `
+          <strong>Total Rope Length:</strong> ${type === 'whole' ? num : num + '/' + den} feet<br>
+          <strong>Piece Length:</strong> 1/${divDen} foot<br>
+          <strong>Division:</strong> ${type === 'whole' ? num : num + '/' + den} ÷ 1/${divDen} = ${type === 'whole' ? num : num + '/' + den} × ${rec} = <strong>${qNum}/${qDen}</strong><br>
+          <strong>Result:</strong> ${quotientStr}<br>
+          <small>Multiplying by the reciprocal ${rec} shows there are ${divDen} quarter-pieces in every whole foot.</small>
+        `);
+
+        updateRopeSVG(totalVal, divDen, wholePieces, qVal);
+        updateComparisonTableWrapper();
+      }
+
+      function updateRopeSVG(totalVal, divDen, wholePieces, qVal) {
+        const svg = document.getElementById('rope-svg');
+        if (!svg) return;
+        
+        const width = 440;
+        const maxVal = Math.max(totalVal, 1);
+        const scale = width / maxVal;
+        
+        let html = `
+          <text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#2d1e0f">Rope Cutting Visualizer</text>
+        `;
+        
+        const ropeLength = totalVal * scale;
+        html += `
+          <line x1="40" y1="60" x2="${40 + ropeLength}" y2="60" stroke="#b48a53" stroke-width="12" stroke-linecap="round"/>
+          <line x1="40" y1="60" x2="${40 + ropeLength}" y2="60" stroke="#ebdcc8" stroke-width="2" stroke-dasharray="8 6" stroke-linecap="round"/>
+        `;
+        
+        const stepSize = (1 / divDen) * scale;
+        const totalCuts = Math.floor(qVal);
+        for (let i = 1; i <= totalCuts; i++) {
+          const x = 40 + i * stepSize;
+          if (x <= 40 + ropeLength) {
+            html += `
+              <line x1="${x}" y1="50" x2="${x}" y2="70" stroke="#c45a3c" stroke-width="2"/>
+              <circle cx="${x}" cy="60" r="3" fill="#c45a3c"/>
+            `;
           }
         }
-      };
-
-      /* ---- init (runs after deferred kit script is ready) ---- */
-      document.addEventListener("DOMContentLoaded", function () {
-        renderWorld();
-        PK.initLevel({ storageKey: "u2ProjectB", default: "level-1" });
-        PK.initTts({ storageKey: "u2ProjectB" });
-        PK.load("u2ProjectB", { after: recalcAll });
-        updateProgress();
-      });
-    </script>
-    <script src="/assets/nt-page-enhance.js" defer></script>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-    <!-- nsr-injected:end -->
-    <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
-    <script type="application/json" id="pk-research">
-      {
-        "icon": "🔎",
-        "title": "Research Lab — Measure Like a Maker",
-        "intro": "Carpenters and bakers divide by fractions all day. Look up the rules and real measurements, then cut the math down to size.",
-        "brief": {
-          "theme": "field",
-          "title": "🔧 Your Research Mission",
-          "hook": "Find the <b>fraction-division rule</b> and real measurements, then use them like a real maker.",
-          "steps": [
-            "Open a link (new tab — you keep your project).",
-            "Record the rule and real sizes in Field Notes.",
-            "Use them in the math problems.",
-            "Check off the Investigation Checklist."
-          ]
-        },
-        "fieldNotes": {
-          "title": "Field Notes — Record What You Find",
-          "intro": "Jot the exact number or rule you find. You'll reuse these in the math below.",
-          "fields": [
-            {
-              "label": "Rule for dividing by a fraction",
-              "source": "Math is Fun",
-              "placeholder": "multiply by the reciprocal",
-              "hint": "'Keep, change, flip.'"
-            },
-            {
-              "label": "What a reciprocal is",
-              "source": "Math is Fun",
-              "placeholder": "flip the fraction (3/4 → 4/3)",
-              "hint": "Numerator and denominator swap."
-            },
-            {
-              "label": "A real length you will cut (inches or feet)",
-              "source": "Your project / ruler",
-              "placeholder": "12 in",
-              "hint": "Measure or pick a real board/strip length."
-            },
-            {
-              "label": "The fraction-size of each piece",
-              "source": "Your plan",
-              "placeholder": "3/4 in pieces",
-              "hint": "How big is one cut piece?"
-            }
-          ]
-        },
-        "mathTasks": [
-          {
-            "title": "1 · How many pieces?",
-            "prompt": "Take your full length (Field Note 3) and divide by your piece size (Field Note 4) using <b>division by a fraction</b>. How many pieces do you get?",
-            "level2": "If some length is left over, what fraction of a piece is it?"
-          },
-          {
-            "title": "2 · Reverse it",
-            "prompt": "If you need 8 pieces that are each 1/2 ft long, how many feet of material do you need? Show the multiplication.",
-            "level2": "Write the matching division equation that undoes your multiplication."
-          },
-          {
-            "title": "3 · Check with a model",
-            "prompt": "Draw or describe a number-line or area model that shows your Problem 1 answer is correct.",
-            "level2": "Explain in one sentence why dividing by a fraction gives a bigger number."
+        
+        if (qVal > totalCuts) {
+          const xEnd = 40 + ropeLength;
+          html += `
+            <path d="M ${xEnd - 5},52 L ${xEnd + 2},60 L ${xEnd - 5},68" fill="none" stroke="#c45a3c" stroke-width="2"/>
+          `;
+        }
+        
+        for (let ft = 0; ft <= Math.ceil(totalVal); ft++) {
+          const x = 40 + ft * scale;
+          if (x <= 480) {
+            html += `
+              <line x1="${x}" y1="80" x2="${x}" y2="85" stroke="#5e6e7e" stroke-width="1"/>
+              <text x="${x}" y="98" text-anchor="middle" font-size="10" fill="#5e6e7e">${ft} ft</text>
+            `;
           }
-        ],
-        "investigationChecklist": [
-          "I recorded the divide-by-a-fraction rule.",
-          "I recorded what a reciprocal is.",
-          "I found a real length to cut.",
-          "I used fraction division to count pieces.",
-          "I wrote a multiplication equation that reverses it.",
-          "I modeled or explained why my answer makes sense."
-        ],
-        "links": [
-          {
-            "icon": "📏",
-            "name": "Math is Fun — Dividing Fractions",
-            "url": "https://www.mathsisfun.com/fractions_division.html",
-            "find": "The 'keep, change, flip' method with examples.",
-            "look": "multiply by the reciprocal"
-          },
-          {
-            "icon": "🔁",
-            "name": "Math is Fun — Reciprocal",
-            "url": "https://www.mathsisfun.com/reciprocal.html",
-            "find": "What a reciprocal is and how to make one.",
-            "look": "flip the top and bottom"
-          },
-          {
-            "icon": "🍰",
-            "name": "Math is Fun — Mixed Fractions",
-            "url": "https://www.mathsisfun.com/mixed-fractions.html",
-            "find": "How to turn mixed numbers into improper fractions before dividing.",
-            "look": "the convert-to-improper steps"
-          }
-        ],
-        "note": "These sites were picked for class. They open in a new tab so you keep your project. If a page asks you to sign in or buy something, just close it and come back."
+        }
+        
+        html += `
+          <text x="260" y="118" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e7d40">Yields ${wholePieces} full piece(s) of 1/${divDen} ft</text>
+        `;
+        
+        svg.innerHTML = html;
       }
+
+      // ---- Wood Strips ----
+      function calcWood() {
+        const whole = parseInt(document.getElementById('w-whole').value) || 0;
+        const num = parseInt(document.getElementById('w-num').value) || 0;
+        const den = parseInt(document.getElementById('w-den').value) || 1;
+        
+        const sNum = parseInt(document.getElementById('w-strip-num').value) || 0;
+        const sDen = parseInt(document.getElementById('w-strip-den').value) || 1;
+
+        if (sNum <= 0 || sDen <= 0 || (whole === 0 && num === 0)) return;
+
+        const impNum = whole * den + num;
+        const impDen = den;
+        
+        const resNum = impNum * sDen;
+        const resDen = impDen * sNum;
+        const rawVal = resNum / resDen;
+        
+        const fullStrips = Math.floor(rawVal);
+        const remStripsNum = resNum % resDen;
+        
+        let resultStr = '';
+        if (remStripsNum === 0) {
+          resultStr = `<strong>${fullStrips} strips</strong>`;
+        } else {
+          const commonG = gcd(remStripsNum, resDen);
+          const reducedNum = remStripsNum / commonG;
+          const reducedDen = resDen / commonG;
+          resultStr = `<strong>${fullStrips} and ${reducedNum}/${reducedDen} strips</strong>`;
+          
+          const scrapNum = impNum * sDen - fullStrips * sNum * impDen;
+          const scrapDen = impDen * sDen;
+          const scG = gcd(scrapNum, scrapDen);
+          const fScNum = scrapNum / scG;
+          const fScDen = scrapDen / scG;
+          if (fScNum > 0) {
+            resultStr += ` (gives <strong>${fullStrips} full strips</strong> + <strong>${fScNum}/${fScDen} ft</strong> of scrap wood)`;
+          }
+        }
+
+        const rec = sDen + '/' + sNum;
+        showReadout('wood-out', `
+          <strong>Total Board:</strong> ${whole > 0 ? whole + ' ' : ''}${num > 0 ? num + '/' + den : ''} feet (equals <strong>${impNum}/${impDen} ft</strong>)<br>
+          <strong>Strip Size:</strong> ${sNum}/${sDen} foot<br>
+          <strong>Division:</strong> ${impNum}/${impDen} ÷ ${sNum}/${sDen} = ${impNum}/${impDen} × ${rec} = <strong>${resNum}/${resDen}</strong><br>
+          <strong>Result:</strong> ${resultStr}<br>
+          <small>Formula: Multiply by the reciprocal of the divisor (${rec}).</small>
+        `);
+
+        updateWoodSVG(whole, num, den, sNum, sDen, fullStrips, rawVal);
+        updateComparisonTableWrapper();
+      }
+
+      function updateWoodSVG(whole, num, den, sNum, sDen, fullStrips, rawVal) {
+        const svg = document.getElementById('wood-svg');
+        if (!svg) return;
+        
+        const totalVal = whole + (num / den);
+        const stripVal = sNum / sDen;
+        
+        const width = 440;
+        const maxVal = Math.max(totalVal, 1);
+        const scale = width / maxVal;
+        
+        let html = `
+          <text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#2d1e0f">Wood Board Cutting Visualizer</text>
+        `;
+        
+        const boardLength = totalVal * scale;
+        html += `
+          <rect x="40" y="50" width="${boardLength}" height="36" rx="4" fill="#fdf3e0" stroke="#d4952a" stroke-width="2"/>
+        `;
+        
+        const stepSize = stripVal * scale;
+        for (let i = 0; i < fullStrips; i++) {
+          const xStart = 40 + i * stepSize;
+          html += `
+            <rect x="${xStart}" y="51" width="${stepSize - 2}" height="34" fill="#e6f4eb" stroke="#1e7d40" stroke-width="1"/>
+            <text x="${xStart + stepSize/2}" y="72" text-anchor="middle" font-size="10" fill="#1e7d40" font-weight="bold">#${i+1}</text>
+          `;
+        }
+        
+        const usedLength = fullStrips * stepSize;
+        if (boardLength > usedLength + 1) {
+          const xScrap = 40 + usedLength;
+          const wScrap = boardLength - usedLength;
+          html += `
+            <rect x="${xScrap}" y="51" width="${wScrap}" height="34" fill="#fdeee9" stroke="#c45a3c" stroke-width="1"/>
+            <text x="${xScrap + wScrap/2}" y="72" text-anchor="middle" font-size="9" fill="#c45a3c" font-weight="bold">Scrap</text>
+          `;
+        }
+        
+        for (let ft = 0; ft <= Math.ceil(totalVal); ft++) {
+          const x = 40 + ft * scale;
+          if (x <= 480) {
+            html += `
+              <line x1="${x}" y1="92" x2="${x}" y2="97" stroke="#5e6e7e" stroke-width="1"/>
+              <text x="${x}" y="108" text-anchor="middle" font-size="9" fill="#5e6e7e">${ft} ft</text>
+            `;
+          }
+        }
+        
+        svg.innerHTML = html;
+      }
+
+      // ---- Fabric Cuts ----
+      function calcFabric() {
+        const fNum = parseInt(document.getElementById('f-swatch-num').value) || 0;
+        const fDen = parseInt(document.getElementById('f-swatch-den').value) || 1;
+        
+        if (fNum <= 0 || fDen <= 0) return;
+        
+        const totalBolt = 15;
+        const resNum = totalBolt * fDen;
+        const resDen = fNum;
+        const rawVal = resNum / resDen;
+        
+        const fullSwatches = Math.floor(rawVal);
+        const remNum = resNum % resDen;
+        
+        let resultStr = '';
+        if (remNum === 0) {
+          resultStr = `<strong>${fullSwatches} swatches</strong>`;
+        } else {
+          const commonG = gcd(remNum, resDen);
+          const reducedNum = remNum / commonG;
+          const reducedDen = resDen / commonG;
+          resultStr = `<strong>${fullSwatches} and ${reducedNum}/${reducedDen} swatches</strong>`;
+          
+          const scrapNum = 15 * fDen - fullSwatches * fNum;
+          const scrapDen = fDen;
+          const scG = gcd(scrapNum, scrapDen);
+          const fScNum = scrapNum / scG;
+          const fScDen = scrapDen / scG;
+          if (fScNum > 0) {
+            resultStr += ` (gives <strong>${fullSwatches} full swatches</strong> + <strong>${fScNum}/${fScDen} yd</strong> of scrap fabric)`;
+          }
+        }
+
+        const rec = fDen + '/' + fNum;
+        showReadout('fabric-out', `
+          <strong>Total Bolt Size:</strong> 15 yards<br>
+          <strong>Swatch Size:</strong> ${fNum}/${fDen} yard<br>
+          <strong>Division:</strong> 15 ÷ ${fNum}/${fDen} = 15 × ${rec} = <strong>${resNum}/${resDen}</strong><br>
+          <strong>Result:</strong> ${resultStr}<br>
+        `);
+
+        updateComparisonTableWrapper();
+      }
+
+      function updateComparisonTableWrapper() {
+        const fNum = parseInt(document.getElementById('f-swatch-num').value) || 0;
+        const fDen = parseInt(document.getElementById('f-swatch-den').value) || 1;
+        
+        const ropeDivDen = parseInt(document.getElementById('rope-divisor-den').value) || 4;
+        const ropeYield = 25 * ropeDivDen;
+        
+        let fabricYieldStr = '—';
+        let fabricScrapStr = '—';
+        if (fNum && fDen) {
+          const rawVal = (15 * fDen) / fNum;
+          const full = Math.floor(rawVal);
+          const rem = (15 * fDen) % fNum;
+          if (rem === 0) {
+            fabricYieldStr = `${full} swatches`;
+            fabricScrapStr = `0 yd`;
+          } else {
+            const cg = gcd(rem, fNum);
+            fabricYieldStr = `${full} ${rem/cg}/${fNum/cg} swatches`;
+            const scrapNum = 15 * fDen - full * fNum;
+            const scG = gcd(scrapNum, fDen);
+            fabricScrapStr = `${scrapNum/scG}/${fDen/scG} yd`;
+          }
+        }
+        
+        let woodYieldStr = '—';
+        let woodScrapStr = '—';
+        const wSNum = parseInt(document.getElementById('w-strip-num').value) || 3;
+        const wSDen = parseInt(document.getElementById('w-strip-den').value) || 4;
+        
+        if (wSNum > 0 && wSDen > 0) {
+          const rawWVal = (8 * wSDen) / wSNum;
+          const wFull = Math.floor(rawWVal);
+          const wRem = (8 * wSDen) % wSNum;
+          if (wRem === 0) {
+            woodYieldStr = `${wFull} strips`;
+            woodScrapStr = `0 ft`;
+          } else {
+            const cg = gcd(wRem, wSNum);
+            woodYieldStr = `${wFull} ${wRem/cg}/${wSNum/cg} strips`;
+            const scrapNum = 8 * wSDen - wFull * wSNum;
+            const scG = gcd(scrapNum, wSDen);
+            woodScrapStr = `${scrapNum/scG}/${wSDen/scG} ft`;
+          }
+        }
+        
+        document.getElementById('td-rope-divisor').textContent = `1/${ropeDivDen} ft`;
+        document.getElementById('td-rope-yield').textContent = `${ropeYield} pieces`;
+        document.getElementById('td-rope-scrap').textContent = `0 ft`;
+        
+        document.getElementById('td-fabric-divisor').textContent = fNum ? `${fNum}/${fDen} yd` : '—';
+        document.getElementById('td-fabric-yield').innerHTML = fNum ? `<strong>${fabricYieldStr}</strong>` : '—';
+        document.getElementById('td-fabric-scrap').textContent = fNum ? fabricScrapStr : '—';
+        
+        document.getElementById('td-wood-divisor').textContent = `${wSNum}/${wSDen} ft`;
+        document.getElementById('td-wood-yield').innerHTML = `<strong>${woodYieldStr}</strong>`;
+        document.getElementById('td-wood-scrap').textContent = woodScrapStr;
+      }
+
+      // ---- Partner Compare ----
+      function comparePeer() {
+        const pName = document.getElementById('p-name').value || 'Partner';
+        
+        const rType = document.getElementById('rope-type').value;
+        const rWhole = parseInt(document.getElementById('rope-whole').value) || 0;
+        const rNum = parseInt(document.getElementById('rope-num').value) || 0;
+        const rDen = parseInt(document.getElementById('rope-den').value) || 1;
+        const rDivDen = parseInt(document.getElementById('rope-divisor-den').value) || 4;
+        const myRopeVal = rType === 'whole' ? (rWhole * rDivDen) : (rNum * rDivDen / rDen);
+        
+        const wWhole = parseInt(document.getElementById('w-whole').value) || 0;
+        const wNum = parseInt(document.getElementById('w-num').value) || 0;
+        const wDen = parseInt(document.getElementById('w-den').value) || 1;
+        const wSNum = parseInt(document.getElementById('w-strip-num').value) || 3;
+        const wSDen = parseInt(document.getElementById('w-strip-den').value) || 4;
+        const myWoodVal = wSNum > 0 ? ((wWhole * wDen + wNum) * wSDen) / (wDen * wSNum) : 0;
+        
+        const fNum = parseInt(document.getElementById('f-swatch-num').value) || 0;
+        const fDen = parseInt(document.getElementById('f-swatch-den').value) || 1;
+        const myFabricVal = fNum > 0 ? (15 * fDen) / fNum : 0;
+
+        const pRope = parseFloat(document.getElementById('p-rope').value);
+        const pWood = parseFloat(document.getElementById('p-wood').value);
+        const pFabric = parseFloat(document.getElementById('p-fabric').value);
+
+        if (isNaN(pRope) && isNaN(pWood) && isNaN(pFabric)) {
+          showReadout('peer-out', 'Please enter at least one of your partner\'s yields to compare.');
+          return;
+        }
+
+        let html = `<strong>Side-by-Side Comparison with ${pName}:</strong><br><br>`;
+        
+        if (!isNaN(pRope)) {
+          const diff = myRopeVal - pRope;
+          html += `🪢 <strong>Rope Pieces:</strong> You: <strong>${myRopeVal.toFixed(2)}</strong> | ${pName}: <strong>${pRope}</strong><br>`;
+          html += `   <em>Result:</em> ${diff > 0 ? 'You got ' + diff.toFixed(2) + ' more.' : diff < 0 ? pName + ' got ' + Math.abs(diff).toFixed(2) + ' more.' : 'Same yield!'}<br><br>`;
+        }
+        
+        if (!isNaN(pWood)) {
+          const diff = myWoodVal - pWood;
+          html += `🪵 <strong>Wood Strips:</strong> You: <strong>${myWoodVal.toFixed(2)}</strong> | ${pName}: <strong>${pWood}</strong><br>`;
+          html += `   <em>Result:</em> ${diff > 0 ? 'You got ' + diff.toFixed(2) + ' more.' : diff < 0 ? pName + ' got ' + Math.abs(diff).toFixed(2) + ' more.' : 'Same yield!'}<br><br>`;
+        }
+
+        if (!isNaN(pFabric)) {
+          const diff = myFabricVal - pFabric;
+          html += `🧵 <strong>Fabric Swatches:</strong> You: <strong>${myFabricVal.toFixed(2)}</strong> | ${pName}: <strong>${pFabric}</strong><br>`;
+          html += `   <em>Result:</em> ${diff > 0 ? 'You got ' + diff.toFixed(2) + ' more.' : diff < 0 ? pName + ' got ' + Math.abs(diff).toFixed(2) + ' more.' : 'Same yield!'}<br>`;
+        }
+
+        showReadout('peer-out', html);
+      }
+
+      // ---- Report ----
+      function buildReport() {
+        const rType = document.getElementById('rope-type').value;
+        const rWhole = document.getElementById('rope-whole').value;
+        const rNum = document.getElementById('rope-num').value;
+        const rDen = document.getElementById('rope-den').value;
+        const rDivDen = document.getElementById('rope-divisor-den').value;
+        
+        const wWhole = document.getElementById('w-whole').value;
+        const wNum = document.getElementById('w-num').value;
+        const wDen = document.getElementById('w-den').value;
+        const wSNum = document.getElementById('w-strip-num').value;
+        const wSDen = document.getElementById('w-strip-den').value;
+        
+        const fNum = document.getElementById('f-swatch-num').value;
+        const fDen = document.getElementById('f-swatch-den').value;
+        
+        const pName = document.getElementById('p-name').value;
+        const pRope = document.getElementById('p-rope').value;
+        const pWood = document.getElementById('p-wood').value;
+        const pFabric = document.getElementById('p-fabric').value;
+        
+        const worldReflect = document.getElementById('world-compare').value;
+        const peerReflect = document.getElementById('peer-reflect').value;
+        const pitch = document.getElementById('pitch').value;
+        
+        let ropeTotal = '';
+        let ropePieces = '';
+        if (rType === 'whole' && rWhole) {
+          ropeTotal = rWhole + ' ft';
+          ropePieces = (rWhole * rDivDen) + ' pieces';
+        } else if (rType === 'fraction' && rNum && rDen) {
+          ropeTotal = rNum + '/' + rDen + ' ft';
+          ropePieces = ((rNum * rDivDen) / rDen).toFixed(2) + ' pieces';
+        }
+        
+        let woodTotal = '';
+        let woodStrips = '';
+        if (wSNum && wSDen && (wWhole || wNum)) {
+          woodTotal = `${wWhole ? wWhole + ' ' : ''}${wNum ? wNum + '/' + wDen : ''} ft`;
+          const totalF = (parseInt(wWhole)||0) + (parseInt(wNum)||0)/(parseInt(wDen)||1);
+          const stripF = parseInt(wSNum)/parseInt(wSDen);
+          woodStrips = (totalF / stripF).toFixed(2) + ' strips';
+        }
+        
+        let fabricSwatches = '';
+        if (fNum && fDen) {
+          fabricSwatches = ((15 * fDen) / fNum).toFixed(2) + ' swatches';
+        }
+
+        const lines = [
+          '═══ MAKER WORKSHOP CUT LIST — UNIT 2 PROJECT (Version B) ═══',
+          '',
+          '🪚 MATH STANDARDS: 6.NS.1 (Fraction Division)',
+          '',
+          '🪢 STEP 1 — ROPE CUTS',
+          `   Total Rope: ${ropeTotal || '—'} | Piece Size: 1/${rDivDen} ft`,
+          `   Yield = ${ropePieces || '—'}`,
+          '',
+          '🪵 STEP 2 — WOOD STRIPS',
+          `   Total Board: ${woodTotal || '—'} | Strip Size: ${wSNum}/${wSDen} ft`,
+          `   Yield = ${woodStrips || '—'}`,
+          '',
+          '🧵 STEP 3 — FABRIC CUTS & SUPPLIES',
+          `   Total Bolt: 15 yd | Swatch Size: ${fNum ? fNum + '/' + fDen + ' yd' : '—'}`,
+          `   Yield = ${fabricSwatches || '—'}`,
+          worldReflect ? `   Supply Scale Reflection: ${worldReflect}` : '',
+          '',
+          '👥 STEP 4 — PARTNER COMPARISON',
+          `   Partner Name: ${pName || '—'}`,
+          `   Partner Yields: Rope: ${pRope || '—'} | Wood: ${pWood || '—'} | Fabric: ${pFabric || '—'}`,
+          peerReflect ? `   Reflection: ${peerReflect}` : '',
+          '',
+          '✍️ WORKSHOP MEMO / PITCH:',
+          pitch || '(no memo written)',
+          '',
+          '═══════════════════════════════',
+          `Generated: ${new Date().toLocaleDateString()}`,
+        ].filter(Boolean);
+
+        const box = document.getElementById('reportBox');
+        box.textContent = lines.join('\n');
+        box.classList.add('show');
+      }
+
+      function copyReport() {
+        const txt = document.getElementById('reportBox').textContent;
+        navigator.clipboard?.writeText(txt).then(() => alert('Copied to clipboard!'));
+      }
+
+      function downloadTxt() {
+        const txt = document.getElementById('reportBox').textContent;
+        const a = document.createElement('a');
+        a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(txt);
+        a.download = 'maker-workshop-cut-list.txt';
+        a.click();
+      }
+
+      // ---- Init ----
+      buildTrail();
+      updateProgress();
+      calcRope();
+      calcWood();
+      calcFabric();
     </script>
-    <script src="/shared/projects/projects-tabs.js" defer></script>
-    <script src="/shared/projects/projects-interactive.js" defer></script>
-    <script src="/shared/projects/manip-frac-divide.js" defer></script>
-    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-    <script src="/assets/math-workbench-launcher.js" defer></script>
-    <!-- mwb-injected:end -->
-  </body>
-</html>

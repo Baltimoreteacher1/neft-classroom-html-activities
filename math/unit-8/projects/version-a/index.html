@@ -3,2905 +3,1332 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
     <title>Escape Room Architect — Unit 8 Culminating Project</title>
-    <meta
-      name="description"
-      content="Unit 8 Equations &amp; Inequalities culminating project. Build YOUR own math escape room with one-step equations and inverse operations, swap puzzles with a partner, then compare to sample escape rooms."
-    />
-    <link rel="stylesheet" href="/assets/shared.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-kit.css" />
-    <script src="/shared/projects/projects-kit.js" defer></script>
+    <meta name="description" content="Unit 8 Equations culminating project. Design an escape room using algebraic equations. Simple step-by-step, tab-based guide." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <style>
       :root {
-        --navy: #0f2b3c;
-        --blue: #1a6fb5;
-        --blue-light: #e8f2fc;
-        --teal: #0e8a7d;
-        --teal-light: #e4f5f3;
-        --gold: #d4952a;
-        --gold-light: #fdf3e0;
-        --coral: #c45a3c;
-        --coral-light: #fdeee9;
-        --green: #2d874b;
-        --green-light: #e6f4eb;
-        --purple: #6d3fa0;
-        --purple-light: #f0eafa;
-        --ink: #1a2633;
-        --muted: #5e6e7e;
-        --line: #e2e7ec;
-        --bg: #f7f9fb;
+        --navy: #1a0533;       /* Dark purple */
+        --blue: #6d3fa0;       /* Indigo/purple primary accent */
+        --blue-lt: #f0eafa;    /* Light purple background */
+        --teal: #0e8a7d;       /* Teal */
+        --teal-lt: #e4f5f3;    /* Teal light */
+        --gold: #d4952a;       /* Gold */
+        --gold-lt: #fdf3e0;    /* Gold light */
+        --green: #2d874b;      /* Green */
+        --green-lt: #e6f4eb;   /* Green light */
+        --coral: #c45a3c;      /* Coral */
+        --ink: #1a2633;        /* Dark ink */
+        --muted: #5e6e7e;      /* Muted text */
+        --line: #e2e7ec;       /* Line color */
+        --bg: #f7f5fa;         /* Light background tint */
         --card: #ffffff;
         --radius: 16px;
-        --shadow: 0 4px 18px rgba(15, 43, 60, 0.1);
-        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+        --shadow: 0 2px 16px rgba(26,5,51,.10);
       }
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        margin: 0;
-        font-family: var(--font);
-        color: var(--ink);
-        background: var(--bg);
-        line-height: 1.55;
-      }
-      .wrap {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 0 20px 60px;
-      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: 'Inter', system-ui, sans-serif; color: var(--ink); background: var(--bg); line-height: 1.6; }
 
-      .phero {
-        background: linear-gradient(
-          135deg,
-          #1a0533 0%,
-          #6d3fa0 60%,
-          #1a6fb5 100%
-        );
+      /* ---- Hero ---- */
+      .hero {
+        background: linear-gradient(135deg, #1a0533 0%, #6d3fa0 60%, #0e8a7d 100%);
         color: #fff;
-        padding: 40px 24px 34px;
+        padding: 36px 24px 28px;
         text-align: center;
-        position: relative;
-        overflow: hidden;
       }
-      .phero .deco {
-        font-size: 56px;
-        line-height: 1;
-      }
-      .phero h1 {
-        font-size: clamp(26px, 5vw, 40px);
-        margin: 10px 0 8px;
-        letter-spacing: -0.02em;
-      }
-      .phero p {
-        max-width: 640px;
-        margin: 0 auto;
-        color: rgba(255, 255, 255, 0.85);
-        font-size: 17px;
-      }
-      .tags {
-        margin-top: 16px;
-        display: flex;
-        gap: 8px;
-        justify-content: center;
-        flex-wrap: wrap;
-      }
-      .tag {
-        background: rgba(255, 255, 255, 0.14);
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        border-radius: 50px;
-        padding: 5px 14px;
-        font-size: 13px;
-        font-weight: 700;
-      }
-      .tag.gold {
-        background: var(--gold);
-        border-color: var(--gold);
-        color: #2a1c00;
-      }
+      .hero-emoji { font-size: 52px; line-height: 1; margin-bottom: 10px; }
+      .hero h1 { font-size: clamp(24px,5vw,38px); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; }
+      .hero-sub { color: rgba(255,255,255,.85); font-size: 16px; max-width: 580px; margin: 0 auto 16px; }
+      .hero-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; }
+      .tag { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.28); border-radius: 50px; padding: 4px 13px; font-size: 12px; font-weight: 700; letter-spacing: .04em; }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #fff; }
 
-      .toolbar {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        justify-content: center;
-        margin-top: 16px;
+      /* ---- Level selector ---- */
+      .level-bar {
+        display: flex; gap: 10px; justify-content: center;
+        background: rgba(255,255,255,.10); border-radius: 50px;
+        padding: 6px 10px; max-width: 400px; margin: 0 auto;
       }
-      .toolbar button {
-        background: rgba(255, 255, 255, 0.12);
-        color: #fff;
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        border-radius: 50px;
-        padding: 8px 16px;
-        font-weight: 700;
-        font-size: 13px;
-        cursor: pointer;
-        font-family: inherit;
+      .level-btn {
+        flex: 1; background: transparent; color: rgba(255,255,255,.75);
+        border: 2px solid rgba(255,255,255,.30); border-radius: 50px;
+        padding: 7px 16px; font-size: 13px; font-weight: 700;
+        cursor: pointer; font-family: inherit; transition: all .2s;
       }
-      .toolbar button:hover {
-        background: rgba(255, 255, 255, 0.22);
-      }
+      .level-btn.active { background: #fff; color: var(--navy); border-color: #fff; }
 
-      .intro-card {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-left: 6px solid var(--purple);
-        border-radius: var(--radius);
-        padding: 22px 24px;
-        margin: 26px 0;
-        box-shadow: var(--shadow);
-      }
-      .intro-card h2 {
-        margin: 0 0 8px;
-        font-size: 20px;
-      }
-      .intro-card .scenario {
-        font-size: 16px;
-        color: var(--ink);
-      }
+      /* ---- Tab wizard ---- */
+      .wizard { max-width: 860px; margin: 0 auto; padding: 0 16px 60px; }
 
-      .phase {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-radius: var(--radius);
-        padding: 24px;
-        margin: 22px 0;
-        box-shadow: var(--shadow);
+      .step-trail {
+        display: flex; align-items: center; gap: 0;
+        padding: 22px 0 0; overflow-x: auto;
       }
-      .phase-head {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        margin-bottom: 6px;
+      .step-trail-item {
+        display: flex; align-items: center; gap: 6px;
+        cursor: pointer; white-space: nowrap; padding: 8px 12px;
+        border-radius: 10px; transition: background .15s;
       }
-      .phase-num {
-        flex: 0 0 auto;
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
-        background: var(--purple);
-        color: #fff;
-        font-weight: 800;
-        font-size: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+      .step-trail-item:hover { background: var(--blue-lt); }
+      .step-trail-item.active .s-num {
+        background: var(--blue); color: #fff;
       }
-      .phase h2 {
-        margin: 0;
-        font-size: 21px;
+      .step-trail-item.done .s-num {
+        background: var(--green); color: #fff;
       }
-      .phase .skill {
-        font-size: 12px;
-        font-weight: 700;
-        color: var(--muted);
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
+      .s-num {
+        width: 30px; height: 30px; border-radius: 50%;
+        background: var(--line); color: var(--muted);
+        font-weight: 800; font-size: 13px;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0; transition: all .2s;
       }
-      .phase > p {
-        color: var(--muted);
-      }
-      .arc-banner {
-        display: inline-block;
-        font-size: 12px;
-        font-weight: 800;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        color: var(--purple);
-        background: var(--purple-light);
-        border-radius: 50px;
-        padding: 4px 12px;
-        margin-bottom: 10px;
-      }
+      .s-label { font-size: 13px; font-weight: 600; color: var(--muted); }
+      .step-trail-item.active .s-label { color: var(--blue); }
+      .step-trail-item.done .s-label { color: var(--green); }
+      .step-arrow { color: var(--line); font-size: 16px; padding: 0 2px; }
 
-      .task {
-        background: var(--purple-light);
-        border-radius: 12px;
-        padding: 16px 18px;
-        margin: 16px 0;
-      }
-      .task strong {
-        color: var(--purple);
-      }
+      /* ---- Progress bar ---- */
+      .prog-wrap { margin: 14px 0 4px; }
+      .prog-bar { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; }
+      .prog-fill { height: 100%; background: linear-gradient(90deg,var(--blue),var(--teal)); border-radius: 99px; transition: width .4s ease; }
+      .prog-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
 
-      .eq-display {
-        background: var(--blue-light);
-        border-radius: 12px;
-        padding: 14px 18px;
-        margin: 14px 0;
-        font-size: 22px;
-        font-weight: 800;
-        color: var(--navy);
-        text-align: center;
-        letter-spacing: 0.03em;
-      }
+      /* ---- Step panel ---- */
+      .step-panel { display: none; animation: fadein .25s ease; }
+      .step-panel.active { display: block; }
+      @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
-      label.fld {
-        display: block;
-        font-weight: 700;
-        font-size: 14px;
-        margin: 14px 0 6px;
+      /* ---- Card ---- */
+      .card {
+        background: var(--card); border: 1px solid var(--line);
+        border-radius: var(--radius); padding: 28px 26px;
+        box-shadow: var(--shadow); margin-top: 16px;
       }
-      input[type="number"],
-      input[type="text"],
-      select,
-      textarea {
-        width: 100%;
-        padding: 11px 13px;
-        border: 2px solid var(--line);
-        border-radius: 10px;
-        font-family: inherit;
-        font-size: 15px;
-        background: #fff;
+      .card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+      .card-icon {
+        width: 50px; height: 50px; border-radius: 14px;
+        background: var(--blue-lt); display: flex;
+        align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0;
       }
-      input:focus,
-      select:focus,
-      textarea:focus {
-        outline: none;
-        border-color: var(--blue);
-      }
-      textarea {
-        resize: vertical;
-        min-height: 80px;
-      }
-      .grid2 {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 14px;
-      }
-      @media (max-width: 560px) {
-        .grid2 {
-          grid-template-columns: 1fr;
-        }
-      }
+      .card-icon.gold { background: var(--gold-lt); }
+      .card-icon.teal { background: var(--teal-lt); }
+      .card-icon.green { background: var(--green-lt); }
+      .card-title { font-size: 20px; font-weight: 800; color: var(--navy); margin-bottom: 3px; }
+      .card-sub { font-size: 13px; color: var(--muted); font-weight: 500; }
 
-      .btn {
-        background: var(--purple);
-        color: #fff;
-        border: none;
-        border-radius: 10px;
-        padding: 11px 20px;
-        font-weight: 800;
-        font-size: 15px;
-        cursor: pointer;
-        font-family: inherit;
-        margin-top: 14px;
+      /* ---- Instruction box ---- */
+      .instruct {
+        background: var(--blue-lt); border-left: 4px solid var(--blue);
+        border-radius: 10px; padding: 14px 16px; margin-bottom: 20px;
+        font-size: 15px; line-height: 1.6;
       }
-      .btn:hover {
-        filter: brightness(1.08);
-      }
-      .btn.alt {
-        background: var(--teal);
-      }
-      .btn.blue {
-        background: var(--blue);
-      }
-      .btn.ghost {
-        background: #fff;
-        color: var(--purple);
-        border: 2px solid var(--line);
-      }
+      .instruct.gold { background: var(--gold-lt); border-color: var(--gold); }
+      .instruct.teal { background: var(--teal-lt); border-color: var(--teal); }
+      .instruct.green { background: var(--green-lt); border-color: var(--green); }
 
+      /* ---- SVG visual ---- */
+      .visual-svg { display: block; width: 100%; max-width: 520px; margin: 0 auto 20px; border-radius: 12px; }
+
+      /* ---- Form inputs ---- */
+      label.lbl { display: block; font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 5px; margin-top: 14px; }
+      input[type="number"], input[type="text"], textarea, select {
+        width: 100%; padding: 10px 14px; border: 1.5px solid var(--line);
+        border-radius: 10px; font-size: 15px; font-family: inherit;
+        background: var(--bg); color: var(--ink); transition: border-color .2s;
+      }
+      input:focus, textarea:focus, select:focus { outline: none; border-color: var(--blue); }
+      textarea { min-height: 90px; resize: vertical; }
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
+
+      /* ---- Calc button & readout ---- */
+      .calc-btn {
+        background: var(--blue); color: #fff; border: none;
+        border-radius: 10px; padding: 11px 20px; font-size: 14px;
+        font-weight: 700; cursor: pointer; font-family: inherit;
+        margin-top: 12px; transition: background .2s;
+      }
+      .calc-btn:hover { background: #563082; }
+      .calc-btn.gold { background: var(--gold); }
+      .calc-btn.gold:hover { background: #a36a0c; }
+      .calc-btn.teal { background: var(--teal); }
+      .calc-btn.teal:hover { background: #0a6b62; }
+      .calc-btn.green { background: var(--green); }
+      .calc-btn.green:hover { background: #185f31; }
       .readout {
-        margin-top: 16px;
-        border-radius: 12px;
-        padding: 16px 18px;
-        font-size: 15px;
-        background: var(--purple-light);
-        border: 1px solid #c8a8e8;
-        display: none;
+        background: var(--navy); color: #e8f4ff;
+        border-radius: 10px; padding: 14px 18px; margin-top: 12px;
+        font-size: 15px; line-height: 1.6; display: none;
       }
-      .readout.show {
-        display: block;
+      .readout.show { display: block; }
+      .readout strong { color: #f3e8ff; }
+
+      /* ---- Hint ---- */
+      details.hint { margin-top: 14px; }
+      details.hint summary {
+        cursor: pointer; font-size: 13px; font-weight: 600;
+        color: var(--blue); list-style: none; display: inline-flex;
+        align-items: center; gap: 5px;
       }
-      .readout .big {
-        font-size: 28px;
-        font-weight: 800;
-        color: var(--purple);
+      details.hint summary::before { content: "💡"; }
+      details.hint p { font-size: 14px; color: var(--muted); margin-top: 8px; padding: 10px 12px; background: var(--blue-lt); border-radius: 8px; }
+
+      /* ---- Level 2 extension ---- */
+      .lvl2-block {
+        border: 2px dashed var(--blue); border-radius: 12px;
+        padding: 14px 16px; margin-top: 18px;
       }
-      .feedback {
-        margin-top: 10px;
-        font-weight: 700;
-        min-height: 22px;
-      }
-      .feedback.ok {
-        color: var(--green);
-      }
-      .feedback.no {
-        color: var(--coral);
+      .lvl2-label {
+        display: inline-block; background: var(--blue); color: #fff;
+        font-size: 11px; font-weight: 800; letter-spacing: .05em;
+        border-radius: 50px; padding: 3px 10px; margin-bottom: 8px;
       }
 
-      .hintbox {
-        margin-top: 12px;
-      }
-      .hintbox summary {
-        cursor: pointer;
-        font-weight: 700;
-        color: var(--blue);
-        font-size: 14px;
-      }
-      .hintbox p {
-        background: var(--gold-light);
-        border-radius: 10px;
-        padding: 12px 14px;
-        margin: 8px 0 0;
-        font-size: 14px;
-      }
+      /* ---- Real-world data table ---- */
+      .data-table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14px; }
+      .data-table th { background: var(--navy); color: #fff; padding: 8px 12px; text-align: left; }
+      .data-table td { padding: 8px 12px; border-bottom: 1px solid var(--line); }
+      .data-table tr:last-child td { border-bottom: none; }
+      .data-table tr:nth-child(even) td { background: var(--bg); }
 
-      /* Number line SVG wrapper (reused from B's drawNumberLine for the L2 inequality lock) */
-      .nline-wrap {
-        margin-top: 16px;
-        overflow-x: auto;
+      /* ---- Comparison stats ---- */
+      .stat-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
+      .stat-box {
+        flex: 1; min-width: 120px; background: var(--bg);
+        border: 1px solid var(--line); border-radius: 12px;
+        padding: 14px; text-align: center;
       }
-      .nline-wrap svg {
-        display: block;
-        margin: 0 auto;
-      }
+      .stat-num { font-size: 24px; font-weight: 800; color: var(--blue); }
+      .stat-lbl { font-size: 12px; color: var(--muted); margin-top: 3px; }
 
-      .rubric {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 12px;
-        font-size: 14px;
-      }
-      .rubric th,
-      .rubric td {
-        border: 1px solid var(--line);
-        padding: 10px 12px;
-        text-align: left;
-        vertical-align: top;
-      }
-      .rubric th {
-        background: var(--navy);
-        color: #fff;
-        font-size: 13px;
-      }
-      .rubric td:first-child {
-        font-weight: 700;
-        width: 30%;
-      }
+      /* ---- Checklist ---- */
+      .checklist { list-style: none; margin-top: 12px; }
+      .checklist li { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+      .checklist li:last-child { border-bottom: none; }
+      .checklist input[type="checkbox"] { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--green); flex-shrink: 0; }
 
-      .checklist {
-        list-style: none;
-        padding: 0;
-        margin: 12px 0 0;
-      }
-      .checklist li {
-        display: flex;
-        gap: 10px;
-        align-items: flex-start;
-        padding: 8px 0;
-        border-bottom: 1px solid var(--line);
-      }
-      .checklist input {
-        width: 20px;
-        height: 20px;
-        margin-top: 2px;
-        flex: 0 0 auto;
-      }
+      /* ---- Rubric ---- */
+      .rubric { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 14px; }
+      .rubric th { background: var(--navy); color: #fff; padding: 10px 12px; text-align: left; }
+      .rubric td { padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+      .rubric tr:last-child td { border-bottom: none; }
+      .score-4 { color: var(--green); font-weight: 700; }
+      .score-3 { color: var(--blue); font-weight: 700; }
+      .score-2 { color: var(--gold); font-weight: 700; }
 
-      .progress-wrap {
-        position: sticky;
-        top: 0;
-        z-index: 5;
-        background: var(--bg);
-        padding: 12px 0;
+      /* ---- Nav buttons ---- */
+      .nav-row { display: flex; gap: 10px; margin-top: 24px; justify-content: space-between; }
+      .nav-btn {
+        background: var(--blue); color: #fff; border: none;
+        border-radius: 10px; padding: 12px 24px; font-size: 15px;
+        font-weight: 700; cursor: pointer; font-family: inherit;
+        display: flex; align-items: center; gap: 8px; transition: background .2s;
       }
-      .progress-track {
-        height: 12px;
-        background: var(--line);
-        border-radius: 50px;
-        overflow: hidden;
-      }
-      .progress-fill {
-        height: 100%;
-        width: 0;
-        background: linear-gradient(90deg, var(--purple), var(--blue));
-        transition: width 0.4s;
-      }
-      .progress-label {
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--muted);
-        margin-bottom: 6px;
-      }
+      .nav-btn:hover { background: #563082; }
+      .nav-btn.ghost { background: transparent; color: var(--blue); border: 2px solid var(--blue); }
+      .nav-btn.ghost:hover { background: var(--blue-lt); }
+      .nav-btn:disabled { opacity: .45; cursor: not-allowed; }
 
-      .footer {
-        text-align: center;
-        color: var(--muted);
-        font-size: 14px;
-        margin-top: 40px;
+      /* ---- Report / pitch textarea ---- */
+      #pitch { min-height: 130px; }
+      .report-box {
+        background: var(--navy); color: #e8f4ff; border-radius: 12px;
+        padding: 20px; margin-top: 14px; font-size: 14px; line-height: 1.7;
+        white-space: pre-wrap; display: none;
       }
-      .printbtn {
-        background: var(--navy);
+      .report-box.show { display: block; }
+      .export-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+      .export-btn {
+        background: transparent; border: 1.5px solid var(--line);
+        border-radius: 8px; padding: 7px 14px; font-size: 13px;
+        font-weight: 600; cursor: pointer; font-family: inherit;
+        color: var(--muted); transition: all .15s;
       }
-      h3 {
-        font-size: 17px;
-      }
+      .export-btn:hover { border-color: var(--blue); color: var(--blue); }
 
+      /* ---- Level-gated content ---- */
+      .lvl1-only { display: none; }
+      .lvl2-only { display: none; }
+      body.level-1 .lvl1-only { display: block; }
+      body.level-2 .lvl2-only { display: block; }
+      body.level-2 .lvl2-block { border-color: var(--blue); }
+
+      /* ---- Vocab cards ---- */
+      .vocab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 14px; }
+      .vocab-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+      .vocab-icon { font-size: 26px; margin-bottom: 6px; }
+      .vocab-term { font-size: 13px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
+      .vocab-def { font-size: 13px; color: var(--muted); line-height: 1.5; }
+      .vocab-ex { font-size: 12px; color: var(--blue); font-weight: 600; margin-top: 5px; }
+
+      /* ---- Print ---- */
       @media print {
-        .phero .deco,
-        .progress-wrap,
-        .btn,
-        .breadcrumb,
-        .hintbox,
-        .toolbar,
-        .pk-no-print {
-          display: none !important;
-        }
-        .phase,
-        .intro-card {
-          box-shadow: none;
-          break-inside: avoid;
-        }
-        body {
-          background: #fff;
-        }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        html {
-          scroll-behavior: auto;
-        }
-        *,
-        *::before,
-        *::after {
-          animation-duration: 0.001ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.001ms !important;
-        }
+        .no-print { display: none !important; }
+        .hero { background: var(--navy) !important; }
+        body { background: #fff; }
+        .card { box-shadow: none; border-color: #ccc; }
       }
     </style>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <!-- nsr-injected:end -->
-    <link rel="stylesheet" href="/shared/projects/projects-premium.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-tabs.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-tplus.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-interactive.css" />
-    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
-  <body class="pk" data-pk-theme="u8">
-    <header class="phero">
-      <div class="deco">🔐</div>
+  </head>
+  <body class="level-1" id="body">
+
+    <!-- ====== HERO ====== -->
+    <header class="hero no-print">
+      <div class="hero-emoji">🏛️</div>
       <h1>Escape Room Architect</h1>
-      <p>
-        Design <strong>your own</strong> math escape room. Name it, pick a
-        theme, and set all four lock clues from <em>your own numbers</em>. Then
-        swap with a partner to crack each other's locks, and see how your room
-        compares to real sample escape rooms.
-      </p>
-      <div class="tags">
-        <span class="tag gold">Unit 8 · Equations &amp; Inequalities</span>
+      <p class="hero-sub">Design an escape room using algebra, secret codes, and equations.</p>
+      <div class="hero-tags">
+        <span class="tag gold">Unit 8 · Equations</span>
         <span class="tag">6.EE.5</span>
         <span class="tag">6.EE.6</span>
         <span class="tag">6.EE.7</span>
-        <span class="tag">Version A · Design &amp; Build</span>
+        <span class="tag">Version A</span>
       </div>
-      <div class="toolbar pk-no-print">
-        <button onclick="PK.toggleEs()">🌐 EN / ES help</button>
-        <span class="pk-level-toggle">
-          <button data-level-btn="level-1" type="button">🟢 Level 1</button>
-          <button data-level-btn="level-2" type="button">🔵 Level 2</button>
-        </span>
-        <button class="pk-tts-toggle" data-tts-toggle type="button" aria-pressed="false" title="Read text aloud">🔊 Read aloud</button>
-        <button onclick="PK.save('u8ProjectA')">💾 Save</button>
-        <button
-          onclick="PK.load('u8ProjectA', { show: true, after: recalcAll })"
-        >
-          📂 Load
-        </button>
+      <div class="level-bar">
+        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">🟢 Level 1 — One-Step</button>
+        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">🔵 Level 2 — Challenge</button>
       </div>
     </header>
 
-    <div class="wrap">
-      <div class="progress-wrap">
-        <div class="progress-label">
-          Project progress: <span id="pct">0</span>% complete
+    <!-- ====== WIZARD ====== -->
+    <div class="wizard">
+
+      <!-- Step trail -->
+      <nav class="step-trail no-print" id="stepTrail" aria-label="Project steps"></nav>
+
+      <!-- Progress bar -->
+      <div class="prog-wrap no-print">
+        <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+        <div class="prog-label" id="progLabel">Step 1 of 6</div>
+      </div>
+
+      <!-- ======================================
+           STEP 1 — KEY WORDS
+      ====================================== -->
+      <div class="step-panel active" id="step-1">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon gold">📖</div>
+            <div>
+              <div class="card-title">Key Words</div>
+              <div class="card-sub">Learn these 5 math words before you begin</div>
+            </div>
+          </div>
+
+          <!-- SVG Visual: balance scale representing equation -->
+          <svg class="visual-svg" viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #cbd5e1;border-radius:12px;">
+            <!-- Stand & Base -->
+            <polygon points="260,150 240,170 280,170" fill="#475569" />
+            <line x1="260" y1="60" x2="260" y2="150" stroke="#475569" stroke-width="4" />
+            <circle cx="260" cy="60" r="6" fill="#1e1b4b" />
+            
+            <!-- Balance Beam -->
+            <line x1="120" y1="60" x2="400" y2="60" stroke="#6d28d9" stroke-width="6" stroke-linecap="round" />
+            
+            <!-- Hangers and Pans -->
+            <!-- Left Side -->
+            <line x1="120" y1="60" x2="120" y2="110" stroke="#94a3b8" stroke-width="2" />
+            <path d="M 80,110 L 160,110 Q 120,135 80,110" fill="#f5f3ff" stroke="#6d28d9" stroke-width="2" />
+            <!-- Left weights: Box (x) + 3 circles -->
+            <rect x="90" y="90" width="22" height="20" rx="4" fill="#c45a3c" />
+            <text x="101" y="104" text-anchor="middle" font-size="12" font-weight="bold" fill="white">x</text>
+            <circle cx="120" cy="100" r="5" fill="#0d9488" />
+            <circle cx="132" cy="100" r="5" fill="#0d9488" />
+            <circle cx="144" cy="100" r="5" fill="#0d9488" />
+            <text x="120" y="125" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e1b4b">x + 3</text>
+
+            <!-- Equal sign in center -->
+            <text x="260" y="115" text-anchor="middle" font-size="32" font-weight="bold" fill="#6d28d9">=</text>
+            
+            <!-- Right Side -->
+            <line x1="400" y1="60" x2="400" y2="110" stroke="#94a3b8" stroke-width="2" />
+            <path d="M 360,110 L 440,110 Q 400,135 360,110" fill="#f5f3ff" stroke="#6d28d9" stroke-width="2" />
+            <!-- Right weights: 8 circles -->
+            <circle cx="375" cy="100" r="5" fill="#0d9488" />
+            <circle cx="387" cy="100" r="5" fill="#0d9488" />
+            <circle cx="399" cy="100" r="5" fill="#0d9488" />
+            <circle cx="411" cy="100" r="5" fill="#0d9488" />
+            <circle cx="423" cy="100" r="5" fill="#0d9488" />
+            <circle cx="381" cy="90" r="5" fill="#0d9488" />
+            <circle cx="393" cy="90" r="5" fill="#0d9488" />
+            <circle cx="405" cy="90" r="5" fill="#0d9488" />
+            <text x="400" y="125" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e1b4b">8</text>
+            
+            <!-- Equation Label -->
+            <text x="260" y="35" text-anchor="middle" font-size="14" font-weight="800" fill="#1e1b4b">An Equation is a Balanced Scale: x + 3 = 8</text>
+          </svg>
+
+          <div class="vocab-grid">
+            <div class="vocab-card">
+              <div class="vocab-icon">⚖️</div>
+              <div class="vocab-term">Equation — Ecuación</div>
+              <div class="vocab-def">A mathematical sentence stating that two sides are equal (=).</div>
+              <div class="vocab-ex">x + 3 = 8</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">🔤</div>
+              <div class="vocab-term">Variable — Variable</div>
+              <div class="vocab-def">A letter or symbol that stands for an unknown number.</div>
+              <div class="vocab-ex">x is the variable</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">🔁</div>
+              <div class="vocab-term">Inverse Operation — Op. Inversa</div>
+              <div class="vocab-def">Operations that undo each other, like + and −.</div>
+              <div class="vocab-ex">Addition undoes subtraction</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">🎯</div>
+              <div class="vocab-term">Solution — Solución</div>
+              <div class="vocab-def">The value of the variable that makes the equation true.</div>
+              <div class="vocab-ex">In x + 3 = 8, solution is x = 5</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">🔎</div>
+              <div class="vocab-term">Substitution — Sustitución</div>
+              <div class="vocab-def">Replacing a variable with a value to check if it works.</div>
+              <div class="vocab-ex">Plug in 5: 5 + 3 = 8 ✓</div>
+            </div>
+          </div>
+
+          <div class="instruct" style="margin-top:20px">
+            ✅ Read each word card. When you're ready, click <strong>Next Step</strong>.
+          </div>
         </div>
-        <div class="progress-track">
-          <div class="progress-fill" id="pfill"></div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" disabled>← Back</button>
+          <button class="nav-btn" onclick="goStep(2)">Next Step →</button>
         </div>
       </div>
 
-      <div class="intro-card">
-        <h2>🗝️ Your Mission</h2>
-        <p class="scenario">
-          Build a real escape room in three steps.
-          <strong>Part 1 (Self):</strong> name your room, choose a theme, and
-          set all four lock clues using <em>your own</em> numbers.
-          <strong>Part 2 (Peer):</strong> swap rooms with a partner — they enter
-          your equations and try to crack the combinations, auto-checked against
-          your key. <strong>Part 3 (World):</strong> compare your hardest lock
-          to sample escape rooms. Finish the blueprint, checklist, and report.
-        </p>
-      </div>
-
-      <!-- ===================== VISUAL MATH NOTES ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div
-            class="phase-num"
-            style="background: var(--gold); color: #2a1c00"
-          >
-            📒
-          </div>
-          <div>
-            <div class="skill">Before you start · Vocabulary</div>
-            <h2>Visual Math Notes</h2>
-          </div>
-        </div>
-        <p>
-          Learn these words first. Tap <strong>EN / ES help</strong> at the top
-          for Spanish.
-        </p>
-        <div class="pk-vocab">
-          <div class="pk-term">
-            <span class="pk-icon">🔤</span><b>Variable</b>
-            <p>A letter (like x) that stands for an unknown number.</p>
-            <p class="pk-es">
-              Variable: una letra (como x) que representa un número desconocido.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">🔁</span><b>Inverse Operation</b>
-            <p>The operation that undoes another: + undoes −, × undoes ÷.</p>
-            <p class="pk-es">
-              Operación inversa: la que deshace otra: + deshace −, × deshace ÷.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">✖️</span><b>Coefficient</b>
-            <p>The number multiplied by the variable, like the 4 in 4x.</p>
-            <p class="pk-es">
-              Coeficiente: el número que multiplica a la variable, como el 4 en
-              4x.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">🎯</span><b>Solution</b>
-            <p>The value of the variable that makes the equation true.</p>
-            <p class="pk-es">
-              Solución: el valor de la variable que hace verdadera la ecuación.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">⚖️</span><b>Equation</b>
-            <p>A math sentence saying two amounts are equal, with an = sign.</p>
-            <p class="pk-es">
-              Ecuación: una oración matemática que dice que dos cantidades son
-              iguales (=).
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">🔎</span><b>Substitution</b>
-            <p>Putting your answer back into the equation to check it.</p>
-            <p class="pk-es">
-              Sustitución: poner tu respuesta en la ecuación para comprobarla.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">↔️</span><b>Inequality</b>
-            <p>Compares amounts with &gt;, &lt;, ≥, or ≤ instead of =.</p>
-            <p class="pk-es">
-              Desigualdad: compara cantidades con &gt;, &lt;, ≥ o ≤ en vez de =.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">⚪</span><b>Open / Closed Circle</b>
-            <p>
-              Open circle = not included (&gt; or &lt;); closed = included (≥ or
-              ≤).
-            </p>
-            <p class="pk-es">
-              Círculo abierto = no incluido (&gt; o &lt;); cerrado = incluido (≥
-              o ≤).
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">⬆️</span><b>At Least / At Most</b>
-            <p>"At least" means ≥ (or more). "At most" means ≤ (or fewer).</p>
-            <p class="pk-es">
-              "Al menos" = ≥ (o más). "Como máximo" = ≤ (o menos).
-            </p>
-          </div>
-        </div>
-        <div class="grid2" style="margin-top: 18px">
-          <div class="pk-callout">
-            <h3>Formula Bank</h3>
-            <ul class="pk-formula">
-              <li>
-                <span class="pk-f-name">Undo addition</span>
-                <span class="pk-f-mean"
-                  >If a number is added to x, subtract that number from
-                  <b>both sides</b> to get x by itself.</span
-                >
-                <span class="pk-eg">Example: x + 8 = 15 → x = 15 − 8 = 7</span>
-              </li>
-              <li>
-                <span class="pk-f-name">Undo subtraction</span>
-                <span class="pk-f-mean"
-                  >If a number is taken away from x, add it back to
-                  <b>both sides</b>.</span
-                >
-                <span class="pk-eg">Example: x − 6 = 10 → x = 10 + 6 = 16</span>
-              </li>
-              <li>
-                <span class="pk-f-name">Undo multiplication</span>
-                <span class="pk-f-mean"
-                  >If x is multiplied by a number, divide <b>both sides</b> by
-                  that number.</span
-                >
-                <span class="pk-eg">Example: 4x = 28 → x = 28 ÷ 4 = 7</span>
-              </li>
-              <li>
-                <span class="pk-f-name">Undo division</span>
-                <span class="pk-f-mean"
-                  >If x is divided by a number, multiply <b>both sides</b> by
-                  that number.</span
-                >
-                <span class="pk-eg">Example: x ÷ 3 = 6 → x = 6 × 3 = 18</span>
-              </li>
-              <li>
-                <span class="pk-f-name">Check by substitution</span>
-                <span class="pk-f-mean"
-                  >Put your answer back in for x. Both sides must be
-                  equal.</span
-                >
-                <span class="pk-eg">Example: 7 + 8 = 15 ✓</span>
-              </li>
-              <li class="pk-lvl2">
-                <span class="pk-f-name">Two-step lock</span>
-                <span class="pk-f-mean"
-                  >Undo in reverse: first subtract the number added, then divide
-                  by the coefficient.</span
-                >
-                <span class="pk-eg">Example: 3x + 7 = 220 → 3x = 213 → x = 71</span>
-              </li>
-              <li class="pk-lvl2">
-                <span class="pk-f-name">Inequality direction</span>
-                <span class="pk-f-mean"
-                  >"At least" means x ≥ the number: closed (filled) circle, shade
-                  to the right.</span
-                >
-                <span class="pk-eg">Example: "at least 50" → x ≥ 50</span>
-              </li>
-            </ul>
-          </div>
-          <div class="pk-callout">
-            <h3>Sentence Frames</h3>
-            <p>"My equation is ___ because the clue says ___."</p>
-            <p>"To solve, I used the inverse operation ___, so x = ___."</p>
-            <p>
-              "I checked by substitution: ___ + ___ = ___, so it is correct."
-            </p>
-            <p class="pk-es">
-              "Mi ecuación es ___ porque la pista dice ___. Para resolver usé la
-              operación inversa ___, así que x = ___."
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== PART 1 — SELF ===================== -->
-      
-      <!-- ===================== PROJECT SETUP ===================== -->
-      <section class="phase" id="phase-setup" data-phase>
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--blue)">S</div>
-          <div>
-            <span class="arc-banner">Project Setup</span>
-            <h2>Build YOUR Escape Room</h2>
-          </div>
-        </div>
-        
-        <div class="grid2">
-          <div>
-            <p style="font-size: 15px; color: var(--muted); line-height: 1.6; margin-bottom: 20px;">
-              Welcome! Read the scenario below and select your level to begin your design plan.
-            </p>
-            <div style="margin-top: 16px;">
-              
-    <svg width="100%" height="220" viewBox="0 0 500 220" style="background:white; border-radius:12px; border: 1px solid #e2e8f0; max-width: 480px; margin: 0 auto; display: block;" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="setup-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#ffffff" />
-          <stop offset="100%" stop-color="#f8fafc" />
-        </linearGradient>
-      </defs>
-      
-      <rect x="20" y="20" width="460" height="200" rx="15" fill="url(#setup-grad)" stroke="#c45a3c" stroke-width="2"/>
-      <text x="250" y="60" text-anchor="middle" font-size="20" font-weight="bold" fill="#0f2b3c">EQUATION LOCK</text>
-      <rect x="180" y="90" width="140" height="80" rx="8" fill="none" stroke="#c45a3c" stroke-width="4" stroke-dasharray="5,5"/>
-      <text x="250" y="147" text-anchor="middle" font-size="34" font-weight="bold" fill="#c45a3c">x = ?</text>
-    
-    </svg>
-  
+      <!-- ======================================
+           STEP 2 — SET THE CODE
+      ====================================== -->
+      <div class="step-panel" id="step-2">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">🔒</div>
+            <div>
+              <div class="card-title">Step 1 — Set the Code</div>
+              <div class="card-sub">Pick a secret code and write an addition/subtraction equation for it</div>
             </div>
           </div>
-          
-          <div style="background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 20px; box-shadow: var(--shadow);">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px;">
-              <span>📋</span> Scenario &amp; Level Options
-            </h3>
-            <p style="font-size: 14px; line-height: 1.6; margin: 0 0 10px">
-              You are an <strong>escape room architect</strong>. Players are
-              locked in your themed room and must solve four equation locks to
-              get out, so every clue you write has to have exactly one
-              whole-number answer.
-            </p>
-            <ul style="font-size: 14px; line-height: 1.6; margin: 0; padding-left: 18px">
-              <li><strong>Level 1 (support):</strong> build the four one-step
-                locks (x + p = q, x − p = q, p·x = q, x ÷ p = q) using small
-                whole numbers.</li>
-              <li><strong>Level 2 (challenge):</strong> swap Lock D for a
-                two-step combo lock (p·x + r = q) and make at least one answer
-                larger than 20.</li>
-            </ul>
-          </div>
-        </div>
-        <p>
-          Name your room, pick a theme, and set
-          <strong>your own</strong> numbers for all four locks. Not sure yet?
-          Click <em>Use example numbers</em> to model the math, then change
-          everything to make it yours.
-        </p>
-        
 
-        <div class="grid2">
-          <div>
-            <label class="fld" for="roomName">Name your escape room</label>
-            <input
-              type="text"
-              id="roomName"
-              data-save
-              placeholder=""
-              oninput="updateProgress()"
-            />
+          <div class="instruct">
+            <strong>Your job:</strong> Your escape room needs a secret code to unlock the first door. Pick your code, then write an equation that equals that code. Players will solve your equation to find the secret code!
           </div>
-          <div>
-            <label class="fld" for="roomTheme">Pick a theme</label>
-            <select id="roomTheme" data-save onchange="updateProgress()">
-              <option value="">Choose a theme…</option>
-              <option>Haunted Library</option>
-              <option>Space Station</option>
-              <option>Pirate Ship</option>
-              <option>Secret Spy Lab</option>
-              <option>Pharaoh's Tomb</option>
-              <option>Wizard's Tower</option>
-            </select>
-          </div>
-        </div>
 
-        <!-- Lock A: addition -->
+          <!-- SVG: Lock Visual -->
+          <svg id="code-svg" class="visual-svg" viewBox="0 0 520 140" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #cbd5e1;border-radius:12px;">
+            <!-- Background Lock Graphics -->
+            <rect x="180" y="20" width="160" height="100" rx="10" fill="#f0eafa" stroke="#6d3fa0" stroke-width="2" />
+            <path d="M 210,35 L 210,20 A 40,40 0 0 1 290,20 L 290,35" fill="none" stroke="#6d3fa0" stroke-width="4" stroke-linecap="round" />
+            <!-- Lock Center Circle / Keyhole -->
+            <circle cx="260" cy="70" r="28" fill="#1a0533" />
+            <!-- Text inside lock: the secret code -->
+            <text x="260" y="78" id="svg-secret-val" text-anchor="middle" font-size="24" font-weight="bold" fill="#f0eafa">?</text>
             
-            <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line);">
-              <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px;">
-                You can type your own numbers as you go, or click below to start with our example numbers:
-              </p>
-              <button class="btn ghost" type="button" onclick="useExamples()" style="width: 100%; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                ✨ Use Example Numbers
-              </button>
+            <!-- Equation Label on Left -->
+            <rect x="20" y="45" width="140" height="50" rx="8" fill="#e4f5f3" stroke="#0e8a7d" stroke-width="1.5" />
+            <text x="90" y="68" text-anchor="middle" font-size="11" font-weight="bold" fill="#1a0533">YOUR SECRET CODE</text>
+            <text x="90" y="85" id="svg-secret-lbl" text-anchor="middle" font-size="12" fill="#0e8a7d">x = ?</text>
+            
+            <!-- Equation on Right -->
+            <rect x="360" y="45" width="140" height="50" rx="8" fill="#fdf3e0" stroke="#d4952a" stroke-width="1.5" />
+            <text x="430" y="68" text-anchor="middle" font-size="11" font-weight="bold" fill="#1a0533">CLUE EQUATION</text>
+            <text x="430" y="85" id="svg-eq-lbl" text-anchor="middle" font-size="12" fill="#d4952a">x [op] c = R</text>
+          </svg>
+
+          <!-- Level 1 hint -->
+          <div class="instruct lvl1-only">
+            🟢 <strong>Level 1 tip:</strong> Pick a secret code between 1 and 20 (e.g. 12) and a constant between 1 and 10.
+          </div>
+          <!-- Level 2 hint -->
+          <div class="instruct lvl2-block lvl2-only">
+            <span class="lvl2-label">LEVEL 2 CHALLENGE</span><br>
+            Try using a secret number greater than 20, or include decimals (e.g., secret code = 25.5, equation constant = 4.5).
+          </div>
+
+          <!-- Project Setup fields -->
+          <div class="grid2" style="margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid var(--line);">
+            <div>
+              <label class="lbl" for="roomName">🏛️ Name your escape room</label>
+              <input type="text" id="roomName" placeholder="e.g. Pharaoh's Curse" />
             </div>
-      </section>
-  
+            <div>
+              <label class="lbl" for="roomTheme">🎨 Choose a Room Theme</label>
+              <select id="roomTheme">
+                <option value="">Choose a theme...</option>
+                <option value="Ancient Egypt">Ancient Egypt</option>
+                <option value="Haunted Castle">Haunted Castle</option>
+                <option value="Space Station">Space Station</option>
+                <option value="Secret Spy Lab">Secret Spy Lab</option>
+              </select>
+            </div>
+          </div>
 
-      <!-- ===================== PART 1A — SELF ===================== -->
-      <section class="phase" id="phase-1a" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">1a</div>
-          <div>
-            <span class="arc-banner">Part 1a · Self — your real plan</span>
-            <h2>🔒 Lock A — Addition clue (x + p = q)</h2>
-          </div>
-        </div>
-        
-        <div class="grid2">
-          <div>
-            
-    <div class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
-      <svg id="phase-svg-1a" width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px" xmlns="http://www.w3.org/2000/svg"></svg>
-    </div>
-  
-            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-          Level 1 tip: keep numbers small, like p = 5 and q = 12, so x is easy.
-        </p>
-        <div class="task">
-          <strong>Your clue:</strong> "When you add <em>p</em> to the secret
-          combination, you get <em>q</em>." The combination is the solution x.
-          Use q &gt; p so x is positive.
-        </div>
-        <div class="pk-lvl2">
-          <div class="task">
-            <strong>Level 2 extension:</strong> Predict x in your head before you
-            press Solve, then check. Prove your code is correct two ways: show
-            x = q − p AND substitute it back so x + p = q. Can you choose p and q
-            so the code is a two-digit number?
-          </div>
-        </div>
-        <div class="grid2">
-          <div>
-            <label class="fld" for="a-p">p — amount added to x</label>
-            <input
-              type="number"
-              id="a-p"
-              data-save
-              min="1"
-              max="99"
-              placeholder=""
-              oninput="solveLockA()"
-            />
-          </div>
-          
-        <!-- ===================== INLINE RESEARCH LAB ===================== -->
-        <div class="pk-research-inline-card">
-          <div class="pk-research-inline-header">
-            <span class="pk-research-badge">🔍 Research Required</span>
-            <a href="https://en.wikipedia.org/wiki/Escape_room" target="_blank" class="pk-research-inline-link">🔗 Wikipedia: Escape Rooms — How They Work ↗</a>
-          </div>
-          <p class="pk-research-inline-instructions">Open the Escape Room page. Find one real number you could turn into a lock code — for example, the year escape rooms were invented or a typical time limit in minutes. Use that number as the total your clue should add up to (q) below:</p>
           <div class="grid2">
             <div>
-              <label class="fld" for="worldCountry">Escape Room Fact Researched</label>
-              <input type="text" id="worldCountry" data-save placeholder="" oninput="recalcAll()">
+              <label class="lbl" for="s-code">🔢 Pick your secret code (solution x)</label>
+              <input type="number" id="s-code" step="any" placeholder="e.g. 12" oninput="updateEq()" />
             </div>
             <div>
-              <label class="fld" for="a-q">q — what the clue totals</label>
-              <input
-              type="number"
-              id="a-q"
-              data-save
-              min="2"
-              max="199"
-              placeholder=""
-              oninput="solveLockA()"
-            />
-            </div>
-          </div>
-        </div>
-    
-        </div>
-        <button class="btn" type="button" onclick="solveLockA()">
-          Solve &amp; Verify Lock A
-        </button>
-        <div class="readout" id="a-out"></div>
-        <div class="pki-manip" data-manip="balance" data-theme="lock"></div>
-        <details class="hintbox">
-          <summary>Need a hint?</summary>
-          <p>
-            Addition is undone by subtraction. For x + 8 = 15, subtract 8 from
-            both sides: x = 15 − 8 = 7. Verify: 7 + 8 = 15 ✓
-          </p>
-        </details>
-
-        <!-- Lock B: subtraction -->
-          </div>
-          
-          <div style="background: var(--bg); border: 2.5px solid var(--line); border-radius: 18px; padding: 20px; box-shadow: var(--shadow); height: fit-content;" class="pk-no-print">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px; color: var(--navy); font-size: 16px;">
-              <span>💡</span> Guided Steps &amp; Help
-            </h3>
-            
-      <p style="font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-bottom: 12px;">
-        <strong>Solving One-Variable Equations:</strong>
-      </p>
-      <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>Decide what is unknown — call it <b>x</b>.</li>
-        <li>Write the equation from the situation (for example, x + p = q or p · x = q).</li>
-        <li>Undo with the <b>inverse operation</b> to isolate x:
-          <ul>
-            <li>Subtract to undo addition; add to undo subtraction.</li>
-            <li>Divide to undo multiplication; multiply to undo division.</li>
-          </ul>
-        </li>
-        <li>Do the same operation to <b>both sides</b> of the equation.</li>
-        <li><b>Check:</b> substitute your x back in and confirm both sides are equal.</li>
-      </ol>
-      <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
-        💡 <b>Example:</b> To solve x + 8 = 15, subtract 8 from both sides to get x = 7. Check: 7 + 8 = 15. ✓
-      </div>
-    
-          </div>
-        </div>
-      </section>
-    
-
-      <!-- ===================== PART 1B — SELF ===================== -->
-      <section class="phase" id="phase-1b" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">1b</div>
-          <div>
-            <span class="arc-banner">Part 1b · Self — your real plan</span>
-            <h2>🔒 Lock B — Subtraction clue (x − p = q)</h2>
-          </div>
-        </div>
-        
-        <div class="grid2">
-          <div>
-            
-    <div class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
-      <svg id="phase-svg-1b" width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px" xmlns="http://www/w3.org/2000/svg"></svg>
-    </div>
-  
-            <div class="task">
-          <strong>Your clue:</strong> "When you take away <em>p</em> from the
-          combination, you get <em>q</em>." So x − p = q, which means x = q + p.
-        </div>
-        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-          Level 1 tip: subtraction is undone by adding. Start with q, then add p
-          back. Try p = 4 and q = 10 so x = 14.
-        </p>
-        <div class="pk-lvl2">
-          <div class="task">
-            <strong>Level 2 extension:</strong> Pick p and q so the code x is
-            greater than 100. Explain in words why x is always q + p for this
-            lock, then write your own take-away clue as a sentence.
-          </div>
-        </div>
-        <div class="grid2">
-          <div>
-            <label class="fld" for="b-p">p — amount taken away</label>
-            <input
-              type="number"
-              id="b-p"
-              data-save
-              min="1"
-              max="99"
-              placeholder=""
-              oninput="solveLockB()"
-            />
-          </div>
-          <div>
-            <label class="fld" for="b-q">q — what is left</label>
-            <input
-              type="number"
-              id="b-q"
-              data-save
-              min="1"
-              max="199"
-              placeholder=""
-              oninput="solveLockB()"
-            />
-          </div>
-        </div>
-        <button class="btn blue" type="button" onclick="solveLockB()">
-          Solve &amp; Verify Lock B
-        </button>
-        <div class="readout" id="b-out"></div>
-        <details class="hintbox">
-          <summary>Need a hint?</summary>
-          <p>
-            Subtraction is undone by addition. For x − 6 = 10, add 6 to both
-            sides: x = 10 + 6 = 16. Verify: 16 − 6 = 10 ✓
-          </p>
-        </details>
-
-        <!-- Lock C: multiplication / division -->
-          </div>
-          
-          <div style="background: var(--bg); border: 2.5px solid var(--line); border-radius: 18px; padding: 20px; box-shadow: var(--shadow); height: fit-content;" class="pk-no-print">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px; color: var(--navy); font-size: 16px;">
-              <span>💡</span> Guided Steps &amp; Help
-            </h3>
-            
-      <p style="font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-bottom: 12px;">
-        <strong>Solving One-Variable Equations:</strong>
-      </p>
-      <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>Decide what is unknown — call it <b>x</b>.</li>
-        <li>Write the equation from the situation (for example, x + p = q or p · x = q).</li>
-        <li>Undo with the <b>inverse operation</b> to isolate x:
-          <ul>
-            <li>Subtract to undo addition; add to undo subtraction.</li>
-            <li>Divide to undo multiplication; multiply to undo division.</li>
-          </ul>
-        </li>
-        <li>Do the same operation to <b>both sides</b> of the equation.</li>
-        <li><b>Check:</b> substitute your x back in and confirm both sides are equal.</li>
-      </ol>
-      <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
-        💡 <b>Example:</b> To solve x + 8 = 15, subtract 8 from both sides to get x = 7. Check: 7 + 8 = 15. ✓
-      </div>
-    
-          </div>
-        </div>
-      </section>
-    
-
-      <!-- ===================== PART 1C — SELF ===================== -->
-      <section class="phase" id="phase-1c" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">1c</div>
-          <div>
-            <span class="arc-banner">Part 1c · Self — your real plan</span>
-            <h2>🔒 Lock C — Multiplication clue (p·x = q)</h2>
-          </div>
-        </div>
-        
-        <div class="grid2">
-          <div>
-            
-    <div class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
-      <svg id="phase-svg-1c" width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px" xmlns="http://www/w3.org/2000/svg"></svg>
-    </div>
-  
-            <div class="task">
-          <strong>Your clue:</strong> "The combination times <em>p</em> equals
-          <em>q</em>." Pick values so q ÷ p has no remainder (whole-number
-          combination). Example: p = 4, q = 28 → x = 7.
-        </div>
-        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-          Level 1 tip: pick q from the times table of p so it divides evenly.
-          Try p = 4 and q = 28 so x = 7.
-        </p>
-        <div class="pk-lvl2">
-          <div class="task">
-            <strong>Level 2 extension:</strong> Choose p and q so the code is a
-            two-digit number, then rewrite the same lock as a division clue
-            (x = q ÷ p) and show both clues give the same x.
-          </div>
-        </div>
-        <div class="grid2">
-          <div>
-            <label class="fld" for="c-p"
-              >p — coefficient (multiplied by x)</label
-            >
-            <input
-              type="number"
-              id="c-p"
-              data-save
-              min="2"
-              max="20"
-              placeholder=""
-              oninput="solveLockC()"
-            />
-          </div>
-          <div>
-            <label class="fld" for="c-q"
-              >q — right side (must divide evenly by p)</label
-            >
-            <input
-              type="number"
-              id="c-q"
-              data-save
-              min="2"
-              max="400"
-              placeholder=""
-              oninput="solveLockC()"
-            />
-          </div>
-        </div>
-        <button class="btn alt" type="button" onclick="solveLockC()">
-          Solve &amp; Verify Lock C
-        </button>
-        <div class="readout" id="c-out"></div>
-        <details class="hintbox">
-          <summary>Need a hint?</summary>
-          <p>
-            Multiplication is undone by division. For 4x = 28, divide both sides
-            by 4: x = 28 ÷ 4 = 7. Verify: 4 × 7 = 28 ✓. Make sure q ÷ p has no
-            remainder!
-          </p>
-        </details>
-
-        <!-- Lock D: Level 1 (division) vs Level 2 (two-step or inequality) -->
-        <div class="pk-lvl1">
-          </div>
-          
-          <div style="background: var(--bg); border: 2.5px solid var(--line); border-radius: 18px; padding: 20px; box-shadow: var(--shadow); height: fit-content;" class="pk-no-print">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px; color: var(--navy); font-size: 16px;">
-              <span>💡</span> Guided Steps &amp; Help
-            </h3>
-            
-      <p style="font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-bottom: 12px;">
-        <strong>Solving One-Variable Equations:</strong>
-      </p>
-      <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>Decide what is unknown — call it <b>x</b>.</li>
-        <li>Write the equation from the situation (for example, x + p = q or p · x = q).</li>
-        <li>Undo with the <b>inverse operation</b> to isolate x:
-          <ul>
-            <li>Subtract to undo addition; add to undo subtraction.</li>
-            <li>Divide to undo multiplication; multiply to undo division.</li>
-          </ul>
-        </li>
-        <li>Do the same operation to <b>both sides</b> of the equation.</li>
-        <li><b>Check:</b> substitute your x back in and confirm both sides are equal.</li>
-      </ol>
-      <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
-        💡 <b>Example:</b> To solve x + 8 = 15, subtract 8 from both sides to get x = 7. Check: 7 + 8 = 15. ✓
-      </div>
-    
-          </div>
-        </div>
-      </section>
-    
-
-      <!-- ===================== PART 1D — SELF ===================== -->
-      <section class="phase" id="phase-1d" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">1d</div>
-          <div>
-            <span class="arc-banner">Part 1d · Self — your real plan</span>
-            <h2>🔒 Lock D — Division clue (x ÷ p = q)</h2>
-          </div>
-        </div>
-        
-        <div class="grid2">
-          <div>
-            
-    <div class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
-      <svg id="phase-svg-1d" width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px" xmlns="http://www/w3.org/2000/svg"></svg>
-    </div>
-  
-            <div class="task">
-            <strong>Your clue:</strong> "The combination divided by
-            <em>p</em> equals <em>q</em>." So x ÷ p = q, which means x = q × p.
-          </div>
-          <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-            Level 1 tip: multiplication undoes division, so x = q × p. Try p = 3
-            and q = 6 so x = 18.
-          </p>
-          <div class="pk-lvl2">
-            <div class="task">
-              <strong>Level 2 extension:</strong> Make the code land above 100 by
-              choosing a larger q. Then write the matching multiplication lock
-              (p·x = ?) that has the same answer x.
-            </div>
-          </div>
-          <div class="grid2">
-            <div>
-              <label class="fld" for="d1-p">p — divisor</label>
-              <input
-                type="number"
-                id="d1-p"
-                data-save
-                min="2"
-                max="12"
-                placeholder=""
-                oninput="solveLockD1()"
-              />
+              <label class="lbl" for="s-op">➕ Choose Equation Operation</label>
+              <select id="s-op" onchange="updateEq()">
+                <option value="addition">Addition (x + constant = result)</option>
+                <option value="subtraction">Subtraction (x - constant = result)</option>
+              </select>
             </div>
             <div>
-              <label class="fld" for="d1-q">q — quotient (right side)</label>
-              <input
-                type="number"
-                id="d1-q"
-                data-save
-                min="1"
-                max="50"
-                placeholder=""
-                oninput="solveLockD1()"
-              />
+              <label class="lbl" for="s-const">🔢 Choose constant number</label>
+              <input type="number" id="s-const" step="any" placeholder="e.g. 7" oninput="updateEq()" />
             </div>
           </div>
-          <button class="btn" type="button" onclick="solveLockD1()">
-            Solve &amp; Verify Lock D
-          </button>
-          <div class="readout" id="d1-out"></div>
-        </div>
 
-        <div class="pk-lvl2">
-          </div>
-          
-          <div style="background: var(--bg); border: 2.5px solid var(--line); border-radius: 18px; padding: 20px; box-shadow: var(--shadow); height: fit-content;" class="pk-no-print">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px; color: var(--navy); font-size: 16px;">
-              <span>💡</span> Guided Steps &amp; Help
-            </h3>
-            
-      <p style="font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-bottom: 12px;">
-        <strong>Solving One-Variable Equations:</strong>
-      </p>
-      <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>Decide what is unknown — call it <b>x</b>.</li>
-        <li>Write the equation from the situation (for example, x + p = q or p · x = q).</li>
-        <li>Undo with the <b>inverse operation</b> to isolate x:
-          <ul>
-            <li>Subtract to undo addition; add to undo subtraction.</li>
-            <li>Divide to undo multiplication; multiply to undo division.</li>
-          </ul>
-        </li>
-        <li>Do the same operation to <b>both sides</b> of the equation.</li>
-        <li><b>Check:</b> substitute your x back in and confirm both sides are equal.</li>
-      </ol>
-      <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
-        💡 <b>Example:</b> To solve x + 8 = 15, subtract 8 from both sides to get x = 7. Check: 7 + 8 = 15. ✓
-      </div>
-    
-          </div>
-        </div>
-      </section>
-    
+          <button class="calc-btn" onclick="verifySetCode()">🔒 Verify Clue Equation</button>
+          <div class="readout" id="setCode-out"></div>
 
-      <!-- ===================== PART 1E — SELF ===================== -->
-      <section class="phase" id="phase-1e" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">1e</div>
-          <div>
-            <span class="arc-banner">Part 1e · Self — your real plan</span>
-            <h2>🔒 Lock D — Two-step combo lock (p·x + r = q)</h2>
-          </div>
-        </div>
-        
-        <div class="grid2">
-          <div>
-            
-    <div class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
-      <svg id="phase-svg-1e" width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px" xmlns="http://www/w3.org/2000/svg"></svg>
-    </div>
-  
-            <div class="task">
-            <strong>Level 2 challenge:</strong> Make a harder lock with two
-            steps: p·x + r = q, so x = (q − r) ÷ p. Choose values so the
-            combination is a whole number <strong>greater than 50</strong> to
-            make a tough final lock.
-          </div>
-          <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-            Level 1 tip: do it in two steps — first subtract r, then divide by p.
-            Try p = 3, r = 7, q = 220 so x = 71.
-          </p>
-          <div class="grid2">
-            <div>
-              <label class="fld" for="d2-p">p — coefficient</label>
-              <input
-                type="number"
-                id="d2-p"
-                data-save
-                min="2"
-                max="9"
-                placeholder=""
-                oninput="solveLockD2()"
-              />
-            </div>
-            <div>
-              <label class="fld" for="d2-r">r — number added</label>
-              <input
-                type="number"
-                id="d2-r"
-                data-save
-                min="1"
-                max="99"
-                placeholder=""
-                oninput="solveLockD2()"
-              />
-            </div>
-            <div>
-              <label class="fld" for="d2-q">q — right side</label>
-              <input
-                type="number"
-                id="d2-q"
-                data-save
-                min="2"
-                max="999"
-                placeholder=""
-                oninput="solveLockD2()"
-              />
-            </div>
-          </div>
-          <button class="btn" type="button" onclick="solveLockD2()">
-            Solve &amp; Verify Lock D
-          </button>
-          <div class="readout" id="d2-out"></div>
-          <details class="hintbox">
+          <details class="hint">
             <summary>Need a hint?</summary>
-            <p>
-              Undo in reverse order: first subtract r from both sides, then
-              divide by p. For 3x + 7 = 220, subtract 7 → 3x = 213, divide by 3
-              → x = 71. Verify: 3 × 71 + 7 = 220 ✓
-            </p>
+            <p>To write an addition equation, start with your secret code (e.g., 12). Add a number to it (e.g., 12 + 5 = 17). Your equation is x + 5 = 17. When players subtract 5 from 17, they get 12!</p>
           </details>
         </div>
-          </div>
-          
-          <div style="background: var(--bg); border: 2.5px solid var(--line); border-radius: 18px; padding: 20px; box-shadow: var(--shadow); height: fit-content;" class="pk-no-print">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px; color: var(--navy); font-size: 16px;">
-              <span>💡</span> Guided Steps &amp; Help
-            </h3>
-            
-      <p style="font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-bottom: 12px;">
-        <strong>Solving One-Variable Equations:</strong>
-      </p>
-      <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>Decide what is unknown — call it <b>x</b>.</li>
-        <li>Write the equation from the situation (for example, x + p = q or p · x = q).</li>
-        <li>Undo with the <b>inverse operation</b> to isolate x:
-          <ul>
-            <li>Subtract to undo addition; add to undo subtraction.</li>
-            <li>Divide to undo multiplication; multiply to undo division.</li>
-          </ul>
-        </li>
-        <li>Do the same operation to <b>both sides</b> of the equation.</li>
-        <li><b>Check:</b> substitute your x back in and confirm both sides are equal.</li>
-      </ol>
-      <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
-        💡 <b>Example:</b> To solve x + 8 = 15, subtract 8 from both sides to get x = 7. Check: 7 + 8 = 15. ✓
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(1)">← Back</button>
+          <button class="nav-btn" onclick="goStep(3)">Next Step →</button>
+        </div>
       </div>
-    
-          </div>
-        </div>
-      </section>
-    
 
-      
-      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
-      <section class="pk-visualizer-card no-print">
-        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
-        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
-          This visual interactive canvas updates in real-time as you complete your math calculations.
-        </p>
-        <div id="projectVisualizer"></div>
-      </section>
-  
-      <!-- ===================== PART 2 — PEER ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--teal)">2</div>
-          <div>
-            <span class="arc-banner">Part 2 · Peer — swap &amp; crack</span>
-            <div class="skill">Solve &amp; verify by substitution · 6.EE.5</div>
-            <h2>Swap Rooms &amp; Crack the Locks</h2>
-          </div>
-        </div>
-        <p>
-          Hand your room to a partner. They read <strong>your</strong> Lock A
-          and Lock C equations (shown below) and type the combinations they get.
-          Their answers are auto-checked against your verified key by
-          substitution.
-        </p>
-        <div class="pk-callout pk-no-print" style="margin-bottom: 14px">
-          <h3>Sentence Frames</h3>
-          <p>"Your Lock A is ___, so I subtract ___ and get x = ___."</p>
-          <p>"Your Lock C is ___, so I divide by ___ and get x = ___."</p>
-          <p>"I checked by substitution: ___ , so my answer is right."</p>
-          <p class="pk-es">
-            "Tu candado A es ___, así que resto ___ y obtengo x = ___."
-          </p>
-        </div>
-        <label class="fld" for="partnerName">Partner name or initials</label>
-        <input
-          type="text"
-          id="partnerName"
-          data-save
-          placeholder=""
-          oninput="updateProgress()"
-        />
-
-        <div class="eq-display" id="peer-eqA">
-          Set Lock A above to show its equation here.
-        </div>
-        <label class="fld" for="peerA"
-          >Partner solves Lock A — combination (x)</label
-        >
-        <input
-          type="number"
-          id="peerA"
-          data-save
-          placeholder=""
-          oninput="checkPeer()"
-        />
-        <div class="feedback" id="peerAFb"></div>
-
-        <div class="eq-display" id="peer-eqC" style="margin-top: 18px">
-          Set Lock C above to show its equation here.
-        </div>
-        <label class="fld" for="peerC"
-          >Partner solves Lock C — combination (x)</label
-        >
-        <input
-          type="number"
-          id="peerC"
-          data-save
-          placeholder=""
-          oninput="checkPeer()"
-        />
-        <div class="feedback" id="peerCFb"></div>
-
-        <button class="btn alt" type="button" onclick="checkPeer()">
-          Check partner's answers
-        </button>
-
-        <label class="fld" for="peerReflect" style="margin-top: 18px"
-          >Which of your locks was hardest for your partner, and why?</label
-        >
-        <textarea
-          id="peerReflect"
-          data-save
-          placeholder=""
-        ></textarea>
-      </section>
-
-      <!-- ===================== PART 3 — WORLD ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div
-            class="phase-num"
-            style="background: var(--gold); color: #2a1c00"
-          >
-            3
-          </div>
-          <div>
-            <span class="arc-banner">Part 3 · World — sample escape rooms</span>
-            <div class="skill">Compare to real designs · 6.EE.7</div>
-            <h2>How Does Your Room Compare?</h2>
-          </div>
-        </div>
-        <p>
-          These are sample student escape rooms with their number of locks and
-          the average combination (solution). Pick what to compare and see where
-          your room lands.
-        </p>
-        <div class="grid2">
-          <div>
-            <label class="fld" for="worldCat">Compare against</label>
-            <select id="worldCat" data-save onchange="worldGo()">
-              <option value="locks">Number of locks</option>
-              <option value="avgSolution">
-                Average combination (solution)
-              </option>
-              <option value="hardest">Hardest lock combination</option>
-            </select>
-            <label class="fld" for="myWorld">My number</label>
-            <input
-              type="number"
-              id="myWorld"
-              data-save
-              step="0.01"
-              oninput="worldGo()"
-              placeholder=""
-            />
-            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
-              Tip: for "hardest lock," type your biggest combination (Lock D is
-              usually it).
-            </p>
-            <div id="worldMeter"></div>
-          </div>
-          <div>
-            <h3>Sample Escape Rooms 🔐</h3>
-            <div
-              style="
-                overflow: auto;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-              "
-            >
-              <table class="rubric" style="margin-top: 0">
-                <tr>
-                  <th>Room</th>
-                  <th>Locks</th>
-                  <th>Avg sol.</th>
-                  <th>Hardest</th>
-                </tr>
-                <tbody id="worldRows"></tbody>
-              </table>
+      <!-- ======================================
+           STEP 3 — SOLVE A CLUE EQUATION
+      ====================================== -->
+      <div class="step-panel" id="step-3">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon teal">🔑</div>
+            <div>
+              <div class="card-title">Step 2 — Solve a Clue Equation</div>
+              <div class="card-sub">Choose a lock and solve its multiplication or division equation</div>
             </div>
           </div>
-        </div>
 
-        <!-- What-If Lab: inequality lock (combo > 50 for Level 2) -->
-        <div
-          class="phase"
-          style="margin: 18px 0 0; box-shadow: none; border-style: dashed"
-        >
-          <h3>🔬 What-If Lab — design an inequality lock</h3>
-          <p style="color: var(--muted); font-size: 14px">
-            Some escape rooms use an inequality instead of an exact number: the
-            lock opens only when the combination is <strong>at least</strong> a
-            target. Set a target and watch the solution set and number line
-            update live.
-          </p>
+          <div class="instruct teal">
+            <strong>Your job:</strong> Choose one of the pre-designed locks in your escape room. Solve its multiplication or division equation step-by-step using inverse operations to find the code.
+          </div>
+
+          <!-- SVG: Combination Lock -->
+          <svg class="visual-svg" viewBox="0 0 520 140" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #cbd5e1;border-radius:12px;">
+            <!-- Lock Body -->
+            <rect x="200" y="30" width="120" height="90" rx="15" fill="#f0eafa" stroke="#6d3fa0" stroke-width="2.5" />
+            <path d="M 220,30 L 220,15 A 30,30 0 0 1 280,15 L 280,30" fill="none" stroke="#6d3fa0" stroke-width="4.5" stroke-linecap="round" />
+            
+            <!-- Lock Dial -->
+            <circle cx="260" cy="80" r="24" fill="#1a0533" />
+            <circle cx="260" cy="80" r="18" fill="none" stroke="#f0eafa" stroke-dasharray="4,4" stroke-width="2" />
+            <polygon points="260,60 256,68 264,68" fill="#c45a3c" />
+            
+            <!-- Decorative side brackets -->
+            <line x1="80" y1="75" x2="160" y2="75" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="4,4" />
+            <line x1="360" y1="75" x2="440" y2="75" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="4,4" />
+            <text x="120" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#6d3fa0">CLUE LOCK</text>
+            <text x="400" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#6d3fa0">COMBINATION</text>
+            <text x="120" y="95" text-anchor="middle" font-size="11" fill="#5e6e7e">Equation Input</text>
+            <text x="400" y="95" text-anchor="middle" font-size="11" fill="#5e6e7e">Secret Code</text>
+          </svg>
+
+          <div class="lvl1-only instruct teal">
+            🟢 <strong>Level 1 tip:</strong> Select a simple whole number equation like 3x = 36 or x / 4 = 8.
+          </div>
+          <div class="lvl2-block lvl2-only">
+            <span class="lvl2-label">LEVEL 2 CHALLENGE</span><br>
+            Select a decimal lock equation like 12x = 180 or x / 2.5 = 12.
+          </div>
+
+          <label class="lbl" for="clue-select">🔓 Choose a Lock Clue Equation to Solve</label>
+          <select id="clue-select" onchange="loadClue()">
+            <option value="">Select an equation...</option>
+            <option value="3x = 36">The Cipher Lock (3x = 36)</option>
+            <option value="x / 4 = 8">The Laser Grid Lock (x / 4 = 8)</option>
+            <option value="12x = 180">The Chamber Lock (12x = 180)</option>
+            <option value="x / 2.5 = 12">The Trapdoor Lock (x / 2.5 = 12)</option>
+          </select>
+
+          <div class="eq-display" id="clue-eq-disp">Choose a lock clue above to begin</div>
+
           <div class="grid2">
             <div>
-              <label class="fld" for="ineqTarget"
-                >Lock opens when combination is at least…</label
-              >
-              <input
-                type="number"
-                id="ineqTarget"
-                data-save
-                min="1"
-                placeholder=""
-                oninput="runIneq()"
-              />
+              <label class="lbl" for="c-op">1. Operation in Equation</label>
+              <select id="c-op">
+                <option value="">Choose operation...</option>
+                <option value="Multiplication">Multiplication (•)</option>
+                <option value="Division">Division (÷)</option>
+              </select>
             </div>
             <div>
-              <label class="fld" for="ineqTest"
-                >Try a combination — does it open the lock?</label
-              >
-              <input
-                type="number"
-                id="ineqTest"
-                data-save
-                placeholder=""
-                oninput="runIneq()"
-              />
+              <label class="lbl" for="c-inv-op">2. Inverse Operation to Use</label>
+              <select id="c-inv-op">
+                <option value="">Choose inverse...</option>
+                <option value="Addition">Addition (+)</option>
+                <option value="Subtraction">Subtraction (-)</option>
+                <option value="Multiplication">Multiplication (•)</option>
+                <option value="Division">Division (÷)</option>
+              </select>
+            </div>
+            <div>
+              <label class="lbl" for="c-inv-val">3. Perform with what number? (both sides)</label>
+              <input type="number" id="c-inv-val" step="any" placeholder="e.g. 3" />
+            </div>
+            <div>
+              <label class="lbl" for="c-sol">4. Final Solution (x = ?)</label>
+              <input type="number" id="c-sol" step="any" placeholder="e.g. 12" />
             </div>
           </div>
-          <div class="pk-whatif" id="ineqBox" style="margin-top: 12px">
-            Enter a target to build the inequality lock.
+
+          <button class="calc-btn teal" onclick="verifyClueSolve()">🔑 Verify Clue Solution</button>
+          <div class="readout" id="clueSolve-out"></div>
+
+          <details class="hint">
+            <summary>Need a hint?</summary>
+            <p>If the variable is multiplied by a number (like 3x = 36), the inverse operation is division. Divide both sides of the equation by that number (36 ÷ 3) to get the solution x = 12.</p>
+          </details>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(2)">← Back</button>
+          <button class="nav-btn" onclick="goStep(4)">Next Step →</button>
+        </div>
+      </div>
+
+      <!-- ======================================
+           STEP 4 — CHECK & COMPARE
+      ====================================== -->
+      <div class="step-panel" id="step-4">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon gold">⚖️</div>
+            <div>
+              <div class="card-title">Step 3 — Check &amp; Compare</div>
+              <div class="card-sub">Substitute to verify your solution, then compare to real escape room stats</div>
+            </div>
           </div>
-          <div class="nline-wrap" id="nline-wrap" style="display: none"></div>
-          <p
-            class="pk-lvl2"
-            style="font-size: 14px; color: var(--muted); margin-top: 12px"
-          >
-            Level 2: make your Lock D combination
-            <strong>greater than 50</strong> and use it as the target — players
-            must reach x ≥ 50 to escape.
-          </p>
-        </div>
 
-        <label class="fld" for="worldReflect" style="margin-top: 18px"
-          >Is your room harder or easier than the samples? Use a number to
-          explain.</label
-        >
-        <textarea
-          id="worldReflect"
-          data-save
-          placeholder=""
-        ></textarea>
-        <div class="pk-lvl2">
-          <label class="fld" for="worldHard"
-            >Level 2 question: A sample room's hardest lock is 5x − 3 = 97.
-            Solve it and explain each step.</label
-          >
-          <textarea
-            id="worldHard"
-            data-save
-            placeholder=""
-          ></textarea>
-        </div>
-      </section>
-
-      <!-- ===================== DELIVERABLE ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--green)">★</div>
-          <div>
-            <div class="skill">Final Deliverable</div>
-            <h2>Complete the Escape Room Blueprint</h2>
+          <div class="instruct gold">
+            <strong>Your job:</strong> Always check your answer! Substitute your solved value back into the original equation. Then, check out real-world escape room stats to see how your puzzle compares.
           </div>
-        </div>
-        <p>
-          Write your blueprint (3–5 sentences) using your real numbers. Name
-          each lock, give its equation, and state the combination (solution).
-        </p>
-        <textarea
-          id="pitch"
-          data-save
-          placeholder=""
-        ></textarea>
 
-        <h3 style="margin: 22px 0 6px">Blueprint Checklist</h3>
-        <ul class="checklist" id="checklist">
-          <li>
-            <input type="checkbox" data-save id="ck1" /> I named my room and
-            picked a theme.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck2" /> I solved an addition
-            and a subtraction lock and verified each by substitution.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck3" /> I solved a
-            multiplication/division (or two-step) lock and verified it.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck4" /> A partner cracked my
-            locks and I checked their answers.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck5" /> I compared my room to
-            the sample escape rooms.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck6" /> My blueprint names
-            every lock's equation and solution.
-          </li>
-        </ul>
+          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin-bottom:6px;">🔍 Part 1: Check by Substitution</h3>
+          <p style="font-size:14px;color:var(--muted);margin-bottom:12px;">Plug your solution back in for x. The math statement must balance:</p>
 
-        <div class="grid2" style="margin-top: 18px">
-          <div>
-            <button class="btn" type="button" onclick="buildReport()">
-              📝 Generate report
-            </button>
+          <div id="check-template-container" style="background: var(--bg); padding: 14px; border-radius: 10px; margin-top: 10px; font-size: 16px; font-weight: bold; text-align: center;">
+            <span style="color: var(--muted)">Choose a lock in Step 2 first!</span>
           </div>
-          <div class="pk-no-print">
-            <button
-              class="btn ghost"
-              type="button"
-              onclick="PK.copyReport('reportBox')"
-            >
-              Copy report
-            </button>
-            <button
-              class="btn ghost"
-              type="button"
-              onclick="
-                PK.downloadText('escape-room-blueprint.txt', 'reportBox')
-              "
-            >
-              Download .txt
-            </button>
-            <button class="btn ghost" type="button" onclick="downloadCsv()">
-              Download .csv
-            </button>
-            <button class="btn printbtn" type="button" onclick="window.print()">
-              🖨️ Print
-            </button>
-          </div>
-        </div>
-        <div class="pk-report" id="reportBox" style="margin-top: 16px">
-          Click "Generate report" to build your blueprint summary.
-        </div>
-      </section>
 
-      <!-- RUBRIC -->
-      <section class="phase">
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--navy)">✓</div>
-          <div>
-            <div class="skill">How You Are Scored</div>
-            <h2>Project Rubric</h2>
-          </div>
-        </div>
-        <table class="rubric">
-          <tr>
-            <th>Category</th>
-            <th>4 — Expert</th>
-            <th>3 — Proficient</th>
-            <th>2 — Developing</th>
-          </tr>
-          <tr>
-            <td>Writing Equations (6.EE.6)</td>
-            <td>All locks use a variable; clues match equations perfectly</td>
-            <td>Equations correct</td>
-            <td>Variable used but an equation has an error</td>
-          </tr>
-          <tr>
-            <td>Add/Sub Equations (6.EE.7)</td>
-            <td>Solutions correct; substitution check shown for each</td>
-            <td>Solutions correct</td>
-            <td>Attempted with a computation error</td>
-          </tr>
-          <tr>
-            <td>Mult/Div (or 2-step) (6.EE.7)</td>
-            <td>Solution correct; inverse operations and substitution shown</td>
-            <td>Solution correct</td>
-            <td>Attempted with a computation error</td>
-          </tr>
-          <tr>
-            <td>Comparison (Peer &amp; World)</td>
-            <td>Checks partner work and compares to samples with reasoning</td>
-            <td>Comparisons present and mostly correct</td>
-            <td>Comparison attempted</td>
-          </tr>
-          <tr>
-            <td>Communication</td>
-            <td>
-              Blueprint names all locks with equations, solutions, and reasoning
-            </td>
-            <td>Blueprint names most locks with equations and solutions</td>
-            <td>Blueprint incomplete or missing solutions</td>
-          </tr>
-        </table>
-      </section>
+          <button class="calc-btn gold" onclick="verifyCheck()">⚖️ Verify Substitution</button>
+          <div class="readout" id="check-out"></div>
 
-      <p class="footer">
-        Neft Teacher · Unit 8 Culminating Project · Version A ·
-        <span id="yr"></span>
-      </p>
-    </div>
-
-    <script>
-      const yrEl = document.getElementById("yr");
-      if (yrEl) yrEl.textContent = new Date().getFullYear();
-      const $ = (id) => document.getElementById(id);
-      const num = (id) => { const e = $(id); return e ? parseFloat(e.value) : NaN; };
-
-      function show(id, html) {
-        const el = $(id);
-        if (!el) return;
-        el.innerHTML = html;
-        el.classList.add("show");
-        updateProgress();
-      }
-      function hide(id) {
-        const el = $(id);
-        if (el) el.classList.remove("show");
-      }
-
-      // running state used by peer, world, report
-      const proj = {
-        aP: null,
-        aQ: null,
-        aX: null,
-        bP: null,
-        bQ: null,
-        bX: null,
-        cP: null,
-        cQ: null,
-        cX: null,
-        dX: null,
-        dEq: null,
-      };
-
-      /* ---- Lock A: x + p = q ---- */
-      function solveLockA() {
-        const p = num("a-p"),
-          q = num("a-q");
-        if (isNaN(p) || p <= 0 || isNaN(q) || q <= 0) {
-          hide("a-out");
-          proj.aP = proj.aQ = proj.aX = null;
-          refreshPeerEqs();
-          return;
-        }
-        if (q <= p) {
-          show(
-            "a-out",
-            "⚠️ Make sure q is greater than p so the combination is positive.",
-          );
-          proj.aX = null;
-          refreshPeerEqs();
-          return;
-        }
-        const x = q - p,
-          verify = x + p;
-        proj.aP = p;
-        proj.aQ = q;
-        proj.aX = x;
-        show(
-          "a-out",
-          '<div class="big">x = ' +
-            x +
-            "</div>" +
-            "Equation: <strong>x + " +
-            p +
-            " = " +
-            q +
-            "</strong><br>" +
-            "Inverse operation: subtract " +
-            p +
-            " from both sides → x = " +
-            q +
-            " − " +
-            p +
-            " = <strong>" +
-            x +
-            "</strong><br>" +
-            "Substitution check: " +
-            x +
-            " + " +
-            p +
-            " = <strong>" +
-            verify +
-            "</strong>" +
-            (verify === q ? " ✅ Verified! Lock A combination." : " ❌"),
-        );
-        refreshPeerEqs();
-      }
-
-      /* ---- Lock B: x − p = q ---- */
-      function solveLockB() {
-        const p = num("b-p"),
-          q = num("b-q");
-        if (isNaN(p) || p <= 0 || isNaN(q) || q <= 0) {
-          hide("b-out");
-          proj.bP = proj.bQ = proj.bX = null;
-          return;
-        }
-        const x = q + p,
-          verify = x - p;
-        proj.bP = p;
-        proj.bQ = q;
-        proj.bX = x;
-        show(
-          "b-out",
-          '<div class="big">x = ' +
-            x +
-            "</div>" +
-            "Equation: <strong>x − " +
-            p +
-            " = " +
-            q +
-            "</strong><br>" +
-            "Inverse operation: add " +
-            p +
-            " to both sides → x = " +
-            q +
-            " + " +
-            p +
-            " = <strong>" +
-            x +
-            "</strong><br>" +
-            "Substitution check: " +
-            x +
-            " − " +
-            p +
-            " = <strong>" +
-            verify +
-            "</strong>" +
-            (verify === q ? " ✅ Verified! Lock B combination." : " ❌"),
-        );
-      }
-
-      /* ---- Lock C: p·x = q ---- */
-      function solveLockC() {
-        const p = num("c-p"),
-          q = num("c-q");
-        if (isNaN(p) || p <= 0 || isNaN(q) || q <= 0) {
-          hide("c-out");
-          proj.cP = proj.cQ = proj.cX = null;
-          refreshPeerEqs();
-          return;
-        }
-        if (q % p !== 0) {
-          show(
-            "c-out",
-            "⚠️ " +
-              q +
-              " ÷ " +
-              p +
-              " has a remainder. Pick q so it divides evenly by p (example: p = 4, q = 28).",
-          );
-          proj.cX = null;
-          refreshPeerEqs();
-          return;
-        }
-        const x = q / p,
-          verify = p * x;
-        proj.cP = p;
-        proj.cQ = q;
-        proj.cX = x;
-        show(
-          "c-out",
-          '<div class="big">x = ' +
-            x +
-            "</div>" +
-            "Equation: <strong>" +
-            p +
-            "x = " +
-            q +
-            "</strong><br>" +
-            "Inverse operation: divide both sides by " +
-            p +
-            " → x = " +
-            q +
-            " ÷ " +
-            p +
-            " = <strong>" +
-            x +
-            "</strong><br>" +
-            "Substitution check: " +
-            p +
-            " × " +
-            x +
-            " = <strong>" +
-            verify +
-            "</strong>" +
-            (verify === q ? " ✅ Verified! Lock C combination." : " ❌"),
-        );
-        refreshPeerEqs();
-      }
-
-      /* ---- Lock D (Level 1): x ÷ p = q ---- */
-      function solveLockD1() {
-        const p = num("d1-p"),
-          q = num("d1-q");
-        if (isNaN(p) || p <= 0 || isNaN(q) || q <= 0) {
-          hide("d1-out");
-          proj.dX = null;
-          proj.dEq = null;
-          return;
-        }
-        const x = q * p,
-          verify = x / p;
-        proj.dX = x;
-        proj.dEq = "x ÷ " + p + " = " + q;
-        show(
-          "d1-out",
-          '<div class="big">x = ' +
-            x +
-            "</div>" +
-            "Equation: <strong>x ÷ " +
-            p +
-            " = " +
-            q +
-            "</strong><br>" +
-            "Inverse operation: multiply both sides by " +
-            p +
-            " → x = " +
-            q +
-            " × " +
-            p +
-            " = <strong>" +
-            x +
-            "</strong><br>" +
-            "Substitution check: " +
-            x +
-            " ÷ " +
-            p +
-            " = <strong>" +
-            verify +
-            "</strong>" +
-            (verify === q ? " ✅ Verified! Lock D combination." : " ❌"),
-        );
-      }
-
-      /* ---- Lock D (Level 2): p·x + r = q ---- */
-      function solveLockD2() {
-        const p = num("d2-p"),
-          r = num("d2-r"),
-          q = num("d2-q");
-        if (isNaN(p) || p <= 0 || isNaN(r) || r < 0 || isNaN(q) || q <= 0) {
-          hide("d2-out");
-          proj.dX = null;
-          proj.dEq = null;
-          return;
-        }
-        if (q <= r) {
-          show(
-            "d2-out",
-            "⚠️ Make q greater than r so the combination is positive.",
-          );
-          proj.dX = null;
-          return;
-        }
-        if ((q - r) % p !== 0) {
-          show(
-            "d2-out",
-            "⚠️ (q − r) ÷ p must be a whole number. Try q = " +
-              (p * Math.round((q - r) / p) + r) +
-              " with p = " +
-              p +
-              ", r = " +
-              r +
-              ".",
-          );
-          proj.dX = null;
-          return;
-        }
-        const x = (q - r) / p,
-          verify = p * x + r;
-        proj.dX = x;
-        proj.dEq = p + "x + " + r + " = " + q;
-        const tough =
-          x > 50
-            ? " 🔒 Tough final lock — combination is greater than 50!"
-            : " (Tip: aim for a combination greater than 50 for a tougher lock.)";
-        show(
-          "d2-out",
-          '<div class="big">x = ' +
-            x +
-            "</div>" +
-            "Equation: <strong>" +
-            p +
-            "x + " +
-            r +
-            " = " +
-            q +
-            "</strong><br>" +
-            "Step 1 — subtract " +
-            r +
-            ": " +
-            p +
-            "x = " +
-            (q - r) +
-            "<br>" +
-            "Step 2 — divide by " +
-            p +
-            ": x = " +
-            (q - r) +
-            " ÷ " +
-            p +
-            " = <strong>" +
-            x +
-            "</strong><br>" +
-            "Substitution check: " +
-            p +
-            " × " +
-            x +
-            " + " +
-            r +
-            " = <strong>" +
-            verify +
-            "</strong>" +
-            (verify === q ? " ✅ Verified!" + tough : " ❌"),
-        );
-      }
-
-      /* ---- Part 2: peer swap & crack (auto-check by substitution) ---- */
-      function refreshPeerEqs() {
-        $("peer-eqA").textContent =
-          proj.aX != null
-            ? "Lock A:  x + " + proj.aP + " = " + proj.aQ
-            : "Set Lock A above to show its equation here.";
-        $("peer-eqC").textContent =
-          proj.cX != null
-            ? "Lock C:  " + proj.cP + "x = " + proj.cQ
-            : "Set Lock C above to show its equation here.";
-      }
-      function checkPeer() {
-        // Lock A
-        const fbA = $("peerAFb");
-        const rawA = $("peerA").value.trim();
-        if (proj.aX == null) {
-          fbA.textContent = "Set your Lock A first.";
-          fbA.className = "feedback no";
-        } else if (rawA === "") {
-          fbA.textContent = "";
-          fbA.className = "feedback";
-        } else {
-          const v = num("peerA");
-          if (v === proj.aX) {
-            fbA.textContent =
-              "✅ Correct! " +
-              v +
-              " + " +
-              proj.aP +
-              " = " +
-              proj.aQ +
-              " — Lock A opens.";
-            fbA.className = "feedback ok";
-          } else {
-            fbA.textContent =
-              "❌ Not yet. Subtract " +
-              proj.aP +
-              " from " +
-              proj.aQ +
-              ". Substitution would not give " +
-              proj.aQ +
-              ".";
-            fbA.className = "feedback no";
-          }
-        }
-        // Lock C
-        const fbC = $("peerCFb");
-        const rawC = $("peerC").value.trim();
-        if (proj.cX == null) {
-          fbC.textContent = "Set your Lock C first.";
-          fbC.className = "feedback no";
-        } else if (rawC === "") {
-          fbC.textContent = "";
-          fbC.className = "feedback";
-        } else {
-          const v = num("peerC");
-          if (v === proj.cX) {
-            fbC.textContent =
-              "✅ Correct! " +
-              proj.cP +
-              " × " +
-              v +
-              " = " +
-              proj.cQ +
-              " — Lock C opens.";
-            fbC.className = "feedback ok";
-          } else {
-            fbC.textContent =
-              "❌ Not yet. Divide " +
-              proj.cQ +
-              " by " +
-              proj.cP +
-              ". Check by substitution.";
-            fbC.className = "feedback no";
-          }
-        }
-        updateProgress();
-      }
-
-      /* ---- Part 3: world dataset + meter ---- */
-      // [room, locks, avgSolution, hardest] — sample student escape rooms
-      const world = [
-        ["The Vault", 4, 11, 24],
-        ["Lost Temple", 5, 9, 30],
-        ["Cyber Heist", 6, 14, 48],
-        ["Ghost Manor", 3, 7, 18],
-        ["Sky Station", 5, 12, 55],
-        ["Pirate's Cove", 4, 10, 36],
-        ["Dragon Keep", 6, 16, 64],
-        ["Spy Bunker", 4, 8, 27],
-      ];
-      const wIdx = { locks: 1, avgSolution: 2, hardest: 3 };
-      function renderWorld() {
-        $("worldRows").innerHTML = world
-          .map(
-            (r) =>
-              "<tr><td>" +
-              r[0] +
-              "</td><td>" +
-              r[1] +
-              "</td><td>" +
-              r[2] +
-              "</td><td>" +
-              r[3] +
-              "</td></tr>",
-          )
-          .join("");
-      }
-      function worldSample() {
-        return world.map((r) => r[wIdx[($("worldCat") || {}).value]]);
-      }
-      
-      function worldGo() {
-        const my = num("myWorld");
-        const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
-        const customSize = $("a-q") ? num("a-q") : NaN;
-        
-        let sample = worldSample();
-        if (!isNaN(customSize) && customSize > 0) {
-          sample = [...sample, customSize];
-        }
-        
-        const labels =
-          ($("worldCat") || {}).value === "costPerGuest" || ($("worldCat") || {}).value === "price"
-            ? { mean: "City avg $", me: "Me $" }
-            : { mean: "City avg", me: "Me" };
+          <!-- Real-world comparison stats -->
+          <div style="margin-top:24px; padding-top:16px; border-top:1px solid var(--line);">
+            <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin-bottom:6px;">🌎 Part 2: Real-World Escape Room Stats</h3>
+            <p style="font-size:14px;color:var(--muted);margin-bottom:6px;">Compare your clue's difficulty to these average escape room design metrics:</p>
+            <table class="data-table">
+              <thead>
+                <tr><th>Escape Room Metric</th><th>Average Value</th><th>Designer Guidelines</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>Solve Rate</strong></td><td>30% – 40%</td><td>Under 20% is extreme; over 60% is easy.</td></tr>
+                <tr><td><strong>Average Time to Solve</strong></td><td>45 – 60 minutes</td><td>Players spend 5–10 min per lock puzzle.</td></tr>
+                <tr><td><strong>Cost Per Person</strong></td><td>$25 – $35</td><td>Typical ticket price per player.</td></tr>
+              </tbody>
+            </table>
             
-        PK.worldMeter("worldMeter", sample, my, labels);
-        
-        const fb = $("worldMeter");
-        if (!isNaN(customSize) && customSize > 0 && customName) {
-          const ratio = (my / customSize).toFixed(2);
-          const pct = Math.round((my / customSize) * 100);
-          const diff = Math.abs(my - customSize).toFixed(2);
-          
-          let myValStr = false ? "$" + my.toFixed(2) : my + " bits";
-          let custValStr = false ? "$" + customSize.toFixed(2) : customSize + " bits";
-          let diffStr = false ? "$" + Number(diff).toFixed(2) : Number(diff).toFixed(2) + " bits";
+            <label class="lbl" for="diff-rating">How would you rate the difficulty of your clue equation?</label>
+            <select id="diff-rating">
+              <option value="">Choose difficulty...</option>
+              <option value="Easy">🟢 Easy (Solve rate 60%+)</option>
+              <option value="Medium">🟡 Medium (Solve rate 40% - 60%)</option>
+              <option value="Hard">🔴 Hard (Solve rate 30% or less)</option>
+            </select>
+            
+            <label class="lbl" for="stat-reflect">Compare your clue equation to these stats. Why is a 30-40% solve rate common, and how does your puzzle fit in?</label>
+            <textarea id="stat-reflect" placeholder="My clue equation has a difficulty rating of... compared to the average stats, this means..."></textarea>
+          </div>
 
-          const rel = my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
-          const desc = `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
-            `📊 Research Comparison: Your value (${myValStr}) is <strong>${rel}</strong> than <strong>${customName}</strong> (${custValStr}) ` +
-            `by <strong>${diffStr}</strong>. Your value is <strong>${pct}%</strong> (${ratio}x) of the size of the researched benchmark.` +
-            `</div>`;
-          fb.innerHTML += desc;
-        }
-        
-        if (typeof drawVisualizer === 'function') {
-          drawVisualizer();
-        }
-        
-        updateProgress();
-      }
-  
+          <details class="hint">
+            <summary>Need a hint?</summary>
+            <p>Substitution means swapping the variable x with the number you calculated. If your equation is 3x = 36 and you got x = 12, write 3 • 12 = 36. Since 36 equals 36, the solution is correct!</p>
+          </details>
+        </div>
 
-      /* ---- What-If Lab: inequality lock (reuses drawNumberLine ported from Version B) ---- */
-      function runIneq() {
-        const goal = num("ineqTarget");
-        const test = $("ineqTest").value.trim();
-        if (isNaN(goal) || goal <= 0) {
-          $("ineqBox").innerHTML =
-            "Enter a target to build the inequality lock.";
-          $("nline-wrap").style.display = "none";
-          return;
-        }
-        let testHtml = "";
-        if (test !== "") {
-          const t = num("ineqTest");
-          testHtml =
-            "<br><b>Try " +
-            t +
-            ":</b> " +
-            t +
-            " ≥ " +
-            goal +
-            " → " +
-            (t >= goal
-              ? '<span style="color:var(--green)">✅ TRUE — the lock opens!</span>'
-              : '<span style="color:var(--coral)">❌ FALSE — combination too low, lock stays shut.</span>');
-        }
-        $("ineqBox").innerHTML =
-          "<b>Inequality lock:</b> x ≥ " +
-          goal +
-          " (closed circle at " +
-          goal +
-          ", shade right).<br>" +
-          "Solution set: every combination of " +
-          goal +
-          " or more — " +
-          goal +
-          ", " +
-          (goal + 1) +
-          ", " +
-          (goal + 5) +
-          ", " +
-          (goal + 20) +
-          " … on forever." +
-          testHtml;
-        drawNumberLine(goal, ">=", "≥", true, true);
-        $("nline-wrap").style.display = "block";
-        updateProgress();
-      }
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(3)">← Back</button>
+          <button class="nav-btn" onclick="goStep(5)">Next Step →</button>
+        </div>
+      </div>
 
-      // Ported from Version B — reusable inequality number line SVG
-      function drawNumberLine(goal, sym, symDisplay, isClosed, isRight) {
-        const W = 520,
-          H = 80,
-          cx = W / 2,
-          y = 44,
-          tickH = 10,
-          labelY = y + 22,
-          arrowLen = 18,
-          tickSpacing = 50;
-        const ticks = [];
-        for (let i = -4; i <= 4; i++)
-          ticks.push({ val: goal + i, x: cx + i * tickSpacing });
-        const shadeColor = "#6d3fa0",
-          shadeOpacity = "0.18";
-        let shadeX, shadeW;
-        if (isRight) {
-          shadeX = cx;
-          shadeW = cx + 4 * tickSpacing + arrowLen;
-        } else {
-          shadeX = cx - 4 * tickSpacing - arrowLen;
-          shadeW = cx;
-        }
-        const circleFill = isClosed ? shadeColor : "#fff";
-        let svg =
-          '<svg xmlns="http://www.w3.org/2000/svg" width="' +
-          W +
-          '" height="' +
-          H +
-          '" viewBox="0 0 ' +
-          W +
-          " " +
-          H +
-          '" role="img" aria-label="Number line showing x ' +
-          symDisplay +
-          " " +
-          goal +
-          '">';
-        svg +=
-          '<rect x="' +
-          shadeX +
-          '" y="' +
-          (y - 6) +
-          '" width="' +
-          Math.abs(shadeW - shadeX) +
-          '" height="12" fill="' +
-          shadeColor +
-          '" opacity="' +
-          shadeOpacity +
-          '"/>';
-        svg +=
-          '<line x1="' +
-          (cx - 4 * tickSpacing - arrowLen) +
-          '" y1="' +
-          y +
-          '" x2="' +
-          (cx + 4 * tickSpacing + arrowLen) +
-          '" y2="' +
-          y +
-          '" stroke="#1a2633" stroke-width="2.5"/>';
-        svg +=
-          '<polygon points="' +
-          (cx + 4 * tickSpacing + arrowLen) +
-          "," +
-          y +
-          " " +
-          (cx + 4 * tickSpacing + arrowLen - 10) +
-          "," +
-          (y - 5) +
-          " " +
-          (cx + 4 * tickSpacing + arrowLen - 10) +
-          "," +
-          (y + 5) +
-          '" fill="#1a2633"/>';
-        svg +=
-          '<polygon points="' +
-          (cx - 4 * tickSpacing - arrowLen) +
-          "," +
-          y +
-          " " +
-          (cx - 4 * tickSpacing - arrowLen + 10) +
-          "," +
-          (y - 5) +
-          " " +
-          (cx - 4 * tickSpacing - arrowLen + 10) +
-          "," +
-          (y + 5) +
-          '" fill="#1a2633"/>';
-        ticks.forEach(function (t) {
-          if (Math.abs(t.val - goal) <= 2) {
-            svg +=
-              '<line x1="' +
-              t.x +
-              '" y1="' +
-              (y - tickH) +
-              '" x2="' +
-              t.x +
-              '" y2="' +
-              (y + tickH) +
-              '" stroke="#1a2633" stroke-width="1.5"/>';
-            svg +=
-              '<text x="' +
-              t.x +
-              '" y="' +
-              labelY +
-              '" text-anchor="middle" font-size="13" font-family="sans-serif" fill="#1a2633">' +
-              t.val +
-              "</text>";
-          }
-        });
-        svg +=
-          '<circle cx="' +
-          cx +
-          '" cy="' +
-          y +
-          '" r="7" fill="' +
-          circleFill +
-          '" stroke="' +
-          shadeColor +
-          '" stroke-width="2.5"/>';
-        svg +=
-          '<text x="' +
-          cx +
-          '" y="' +
-          (y - 14) +
-          '" text-anchor="middle" font-size="13" font-weight="700" font-family="sans-serif" fill="' +
-          shadeColor +
-          '">x ' +
-          symDisplay +
-          " " +
-          goal +
-          "</text>";
-        svg += "</svg>";
-        $("nline-wrap").innerHTML = svg;
-      }
+      <!-- ======================================
+           STEP 5 — PARTNER CLUES
+      ====================================== -->
+      <div class="step-panel" id="step-5">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon teal">👥</div>
+            <div>
+              <div class="card-title">Step 4 — Partner Clues</div>
+              <div class="card-sub">Swap one clue equation with a partner and solve theirs</div>
+            </div>
+          </div>
 
-      /* ---- Use example numbers ---- */
-      function useExamples() {
-        const ex = {
-          
-          "worldCountry": "AES-128 Key",
-          "a-q": 128,
-          roomName: "The Vault of Numbers",
-          roomTheme: "Secret Spy Lab",
-          "a-p": 8,
-          "b-p": 6,
-          "b-q": 10,
-          "c-p": 4,
-          "c-q": 28,
-          "d1-p": 3,
-          "d1-q": 5,
-          "d2-p": 3,
-          "d2-r": 7,
-          "d2-q": 220,
-          ineqTarget: 50,
-          ineqTest: 71,
-          myWorld: "",
-          
-        };
-        Object.entries(ex).forEach(([k, v]) => {
-          if ($(k)) $(k).value = v;
-        });
-        recalcAll();
-      }
+          <div class="instruct teal">
+            <strong>Your job:</strong> Swap one clue equation with a partner. Enter their name and equation below, then solve it step-by-step using inverse operations.
+          </div>
 
-      
-
-      
-      function drawVisualizer() {
-        const aP = num("a-p"), aQ = num("a-q");
-        const bP = num("b-p"), bQ = num("b-q");
-        const cP = num("c-p"), cQ = num("c-q");
-        const lockA = (!isNaN(aP) && !isNaN(aQ)) ? aQ - aP : NaN;
-        const lockB = (!isNaN(bP) && !isNaN(bQ)) ? bQ + bP : NaN;
-        const lockC = (!isNaN(cP) && !isNaN(cQ) && cP !== 0) ? cQ / cP : NaN;
-
-        const isUnlocked = (!isNaN(lockA) && !isNaN(lockB) && !isNaN(lockC));
-        let angle = 0;
-        if (isUnlocked) {
-          angle = (lockA + lockB + lockC) * 5;
-        }
-        
-        const svgString = `
-          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
-            <g transform="translate(250, 110)">
-              <!-- Outer Lock Ring -->
-              <circle cx="0" cy="0" r="70" fill="#cbd5e1" stroke="#0f2b3c" stroke-width="4" />
+          <!-- SVG: Swap Clues Visual -->
+          <svg class="visual-svg" viewBox="0 0 520 100" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #cbd5e1;border-radius:12px;">
+            <!-- Key graphic passing -->
+            <g transform="translate(160, 20)">
+              <!-- Left Person -->
+              <circle cx="20" cy="20" r="10" fill="#6d3fa0" />
+              <line x1="20" y1="30" x2="20" y2="60" stroke="#6d3fa0" stroke-width="3" />
+              <line x1="20" y1="40" x2="0" y2="50" stroke="#6d3fa0" stroke-width="2" />
+              <line x1="20" y1="40" x2="40" y2="40" stroke="#6d3fa0" stroke-width="2" /> <!-- Holding key -->
+              <text x="20" y="80" text-anchor="middle" font-size="11" font-weight="bold" fill="#1a0533">You</text>
               
-              <!-- Rotating Dial -->
-              <g transform="rotate(${angle})">
-                <circle cx="0" cy="0" r="50" fill="#f1f5f9" stroke="#5e6e7e" stroke-width="2" />
-                <line x1="0" y1="-50" x2="0" y2="-40" stroke="#ef4444" stroke-width="3" />
-                <circle cx="0" cy="-35" r="3" fill="#0f2b3c" />
-                <text x="0" y="5" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">DIAL</text>
-              </g>
-              <!-- Index Pointer -->
-              <polygon points="0,-75 -5,-65 5,-65" fill="#ef4444" />
+              <!-- Key -->
+              <path d="M 50,40 L 90,40 M 80,40 L 80,48 M 87,40 L 87,48" stroke="#d4952a" stroke-width="3" stroke-linecap="round" />
+              <circle cx="46" cy="40" r="6" fill="none" stroke="#d4952a" stroke-width="3" />
+              
+              <!-- Right Person -->
+              <circle cx="180" cy="20" r="10" fill="#0e8a7d" />
+              <line x1="180" y1="30" x2="180" y2="60" stroke="#0e8a7d" stroke-width="3" />
+              <line x1="180" y1="40" x2="160" y2="40" stroke="#0e8a7d" stroke-width="2" /> <!-- Reaching for key -->
+              <line x1="180" y1="40" x2="200" y2="50" stroke="#0e8a7d" stroke-width="2" />
+              <text x="180" y="80" text-anchor="middle" font-size="11" font-weight="bold" fill="#1a0533">Partner</text>
             </g>
-            
-            ${isUnlocked ? `
-              <text x="250" y="210" text-anchor="middle" font-size="14" font-weight="bold" fill="#2d874b">🔓 COMBINATION SAFE OPENED!</text>
-            ` : `
-              <text x="250" y="210" text-anchor="middle" font-size="14" font-weight="bold" fill="#c45a3c">🔒 LOCK DIAL SECURED</text>
-            `}
           </svg>
-        `;
-        $("projectVisualizer").innerHTML = svgString;
-      }
-    
-  
-function recalcAll() {
-        solveLockA();
-        solveLockB();
-        solveLockC();
-        if (document.body.classList.contains("pk-level-2")) solveLockD2();
-        else solveLockD1();
-        checkPeer();
-        renderWorld();
-        worldGo();
-        runIneq();
-        updateProgress();
-      
-        if(typeof drawLockASVG === "function"){drawLockASVG(); drawLockBSVG(); drawLockCSVG(); drawLockDSVG(); drawLockESVG();}}
 
-      /* ---- Report ---- */
-      function reportText() {
-        const f = (x) => (x == null ? "(not finished)" : x);
-        return (
-          "ESCAPE ROOM ARCHITECT — MY BLUEPRINT\n" +
-          "====================================\n\n" +
-          "Room name: " +
-          ($("roomName").value || "(unnamed)") +
-          "\n" +
-          "Theme: " +
-          ($("roomTheme").value || "(none)") +
-          "\n\n" +
-          "PART 1: MY LOCKS (SELF)\n" +
-          "Lock A (x + p = q): x + " +
-          f(proj.aP) +
-          " = " +
-          f(proj.aQ) +
-          "  →  x = " +
-          f(proj.aX) +
-          "\n" +
-          "Lock B (x − p = q): x − " +
-          f(proj.bP) +
-          " = " +
-          f(proj.bQ) +
-          "  →  x = " +
-          f(proj.bX) +
-          "\n" +
-          "Lock C (p·x = q): " +
-          f(proj.cP) +
-          "x = " +
-          f(proj.cQ) +
-          "  →  x = " +
-          f(proj.cX) +
-          "\n" +
-          "Lock D: " +
-          (proj.dEq || "(not finished)") +
-          "  →  x = " +
-          f(proj.dX) +
-          "\n\n" +
-          "PART 2: PEER (SWAP & CRACK)\n" +
-          "Partner: " +
-          ($("partnerName").value || "(none)") +
-          "\n" +
-          "Partner Lock A answer: " +
-          ($("peerA").value || "-") +
-          "  |  Lock C answer: " +
-          ($("peerC").value || "-") +
-          "\n" +
-          "Reflection: " +
-          ($("peerReflect").value || "(not written)") +
-          "\n\n" +
-          "PART 3: WORLD COMPARISON\n" +
-          "Comparison: " +
-          ($("worldReflect").value || "(not written)") +
-          "\n\n" +
-          "BLUEPRINT PITCH:\n" +
-          ($("pitch").value || "(not written)")
-        );
-      }
-      function buildReport() {
-        recalcAll();
-        PK.generateReport("reportBox", reportText());
-      }
-      function downloadCsv() {
-        const rows = [
-          ["field", "value"],
-          ["room_name", $("roomName").value],
-          ["theme", $("roomTheme").value],
-          ["lockA_eq", "x+" + proj.aP + "=" + proj.aQ],
-          ["lockA_x", proj.aX],
-          ["lockB_eq", "x-" + proj.bP + "=" + proj.bQ],
-          ["lockB_x", proj.bX],
-          ["lockC_eq", proj.cP + "x=" + proj.cQ],
-          ["lockC_x", proj.cX],
-          ["lockD_eq", proj.dEq],
-          ["lockD_x", proj.dX],
-          ["partner", $("partnerName").value],
-          ["partner_lockA", $("peerA").value],
-          ["partner_lockC", $("peerC").value],
-        ];
-        PK.downloadCsv("escape-room-data.csv", rows);
-      }
+          <div class="grid2">
+            <div>
+              <label class="lbl" for="p-name">👤 Partner's Name</label>
+              <input type="text" id="p-name" placeholder="e.g. Sam" />
+            </div>
+            <div>
+              <label class="lbl" for="p-eq">📝 Partner's Clue Equation</label>
+              <input type="text" id="p-eq" placeholder="e.g. 5x = 45 or x / 3 = 10" />
+            </div>
+            <div>
+              <label class="lbl" for="p-op">➕ Operation in Partner's Equation</label>
+              <select id="p-op">
+                <option value="">Choose operation...</option>
+                <option value="Addition">Addition (+)</option>
+                <option value="Subtraction">Subtraction (-)</option>
+                <option value="Multiplication">Multiplication (•)</option>
+                <option value="Division">Division (÷)</option>
+              </select>
+            </div>
+            <div>
+              <label class="lbl" for="p-inv-op">🔁 Inverse Operation to Use</label>
+              <select id="p-inv-op">
+                <option value="">Choose inverse...</option>
+                <option value="Addition">Addition (+)</option>
+                <option value="Subtraction">Subtraction (-)</option>
+                <option value="Multiplication">Multiplication (•)</option>
+                <option value="Division">Division (÷)</option>
+              </select>
+            </div>
+            <div>
+              <label class="lbl" for="p-op-num">🔢 Number to apply (both sides)</label>
+              <input type="number" id="p-op-num" step="any" placeholder="e.g. 5" />
+            </div>
+            <div>
+              <label class="lbl" for="p-sol">🔑 Solution to Partner's Clue (x = ?)</label>
+              <input type="number" id="p-sol" step="any" placeholder="e.g. 9" />
+            </div>
+          </div>
 
-      /* ---- Progress ---- */
-      function updateProgress() {
-        const readouts = document.querySelectorAll(".readout.show").length; // up to 4 locks
-        const named =
-          $("roomName").value.trim() && $("roomTheme").value ? 1 : 0;
-        const peerA =
-          $("peerAFb").querySelector(".pk-ok") ||
-          $("peerAFb").classList.contains("ok")
-            ? 1
-            : 0;
-        const peerC =
-          $("peerCFb").querySelector(".pk-ok") ||
-          $("peerCFb").classList.contains("ok")
-            ? 1
-            : 0;
-        const wrld = $("myWorld").value ? 1 : 0;
-        const checks = document.querySelectorAll(
-          "#checklist input:checked",
-        ).length; // max 6
-        const pitch = $("pitch").value.trim().length > 20 ? 1 : 0;
-        const total = readouts + named + peerA + peerC + wrld + checks + pitch; // max 4+1+1+1+1+6+1 = 15
-        const pct = Math.min(100, Math.round((total / 15) * 100));
-        $("pfill").style.width = pct + "%";
-        $("pct").textContent = pct;
-      }
-      document
-        .getElementById("checklist")
-        .addEventListener("change", updateProgress);
-      document
-        .getElementById("pitch")
-        .addEventListener("input", updateProgress);
-      document
-        .getElementById("peerReflect")
-        .addEventListener("input", updateProgress);
-      document
-        .getElementById("worldReflect")
-        .addEventListener("input", updateProgress);
+          <h3 style="font-size:15px;font-weight:800;color:var(--navy);margin-top:18px;margin-bottom:6px;">🔎 Substitution Check:</h3>
+          <div class="grid2">
+            <div>
+              <label class="lbl" for="p-check-lhs">Plugged in Left Side (LHS) value</label>
+              <input type="number" id="p-check-lhs" step="any" placeholder="e.g. 45" />
+            </div>
+            <div>
+              <label class="lbl" for="p-check-rhs">Balanced Right Side (RHS) value</label>
+              <input type="number" id="p-check-rhs" step="any" placeholder="e.g. 45" />
+            </div>
+          </div>
 
-      /* ---- Level hook ---- */
-      window.onLevelChange = function (level) {
-        // recompute Lock D in the correct mode when level changes
-        if (level === "level-2") solveLockD2();
-        else solveLockD1();
-        if (level === "level-1") {
-          const empty = !$("a-p").value && !$("a-q").value;
-          if (empty) {
-            $("a-p").value = 5;
-            $("a-q").value = 12;
-            solveLockA();
-          }
-        }
-        updateProgress();
-      };
+          <button class="calc-btn teal" onclick="verifyPartnerClue()">👥 Verify Partner's Clue</button>
+          <div class="readout" id="partner-out"></div>
 
-      /* ---- init ---- */
-      document.addEventListener("DOMContentLoaded", function () {
-        renderWorld();
-        PK.initLevel({ storageKey: "u8ProjectA", default: "level-1" });
-        PK.initTts({ storageKey: "u8ProjectA" });
-        PK.load("u8ProjectA", { after: recalcAll });
-        refreshPeerEqs();
-        updateProgress();
-      });
-    
-      function drawLockASVG() {
-        let p = num("a-p");
-        let q = num("a-q");
-        const svg = $("phase-svg-1a");
-        if (!svg) return;
+          <details class="hint">
+            <summary>Need a hint?</summary>
+            <p>Make sure to ask your partner what equation they wrote. If they wrote x - 6 = 14, their operation is subtraction, so you will use addition (+ 6) on both sides to solve it! Substitution will be 20 - 6 = 14.</p>
+          </details>
+        </div>
 
-        const isExample = isNaN(p) || isNaN(q) || q <= p;
-        if (isExample) {
-          p = 5;
-          q = 12;
-        }
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(4)">← Back</button>
+          <button class="nav-btn" onclick="goStep(6)">Next Step →</button>
+        </div>
+      </div>
 
-        const x = q - p;
+      <!-- ======================================
+           STEP 6 — FINISH & REPORT GENERATOR
+      ====================================== -->
+      <div class="step-panel" id="step-6">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon green">🏆</div>
+            <div>
+              <div class="card-title">Step 5 — Finish &amp; Submit</div>
+              <div class="card-sub">Write your blueprint pitch, check off the list, and print your report</div>
+            </div>
+          </div>
 
-        svg.innerHTML = `
-          <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Lock A: x + ${p} = ${q} (x = ${x})</text>
-          ${isExample ? `<rect x="372" y="16" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example</text>` : ""}
+          <div class="instruct green">
+            <strong>Your job:</strong> Write a 3–5 sentence pitch for your escape room blueprint. Explain your theme, how players will solve equations, and what secret codes they'll find.
+          </div>
 
-          <line x1="250" y1="170" x2="250" y2="70" stroke="#475569" stroke-width="6" />
-          <polygon points="220,180 280,180 250,165" fill="#475569" />
-          <line x1="140" y1="70" x2="360" y2="70" stroke="#475569" stroke-width="4" />
-          
-          <g transform="translate(140, 70)">
-            <line x1="0" y1="0" x2="-40" y2="60" stroke="#94a3b8" stroke-width="1.5" />
-            <line x1="0" y1="0" x2="40" y2="60" stroke="#94a3b8" stroke-width="1.5" />
-            <rect x="-50" y="60" width="100" height="8" fill="#475569" rx="2" />
-            <rect x="-35" y="35" width="25" height="25" fill="#6366F1" rx="4" />
-            <text x="-22.5" y="52" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff">x</text>
-            <rect x="5" y="35" width="30" height="25" fill="#ffb74d" rx="4" />
-            <text x="20" y="52" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">${p}</text>
-          </g>
-          
-          <g transform="translate(360, 70)">
-            <line x1="0" y1="0" x2="-40" y2="60" stroke="#94a3b8" stroke-width="1.5" />
-            <line x1="0" y1="0" x2="40" y2="60" stroke="#94a3b8" stroke-width="1.5" />
-            <rect x="-50" y="60" width="100" height="8" fill="#475569" rx="2" />
-            <rect x="-20" y="30" width="40" height="30" fill="#0e8a7d" rx="4" />
-            <text x="0" y="50" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">${q}</text>
-          </g>
-        `;
-      }
-      
-      function drawLockBSVG() {
-        let p = num("b-p");
-        let q = num("b-q");
-        const svg = $("phase-svg-1b");
-        if (!svg) return;
+          <!-- Blueprint pitch text -->
+          <label class="lbl" for="pitch">✍️ Escape Room Blueprint Pitch (use your actual numbers!)</label>
+          <textarea id="pitch" placeholder="Welcome to my escape room blueprint! The theme is... Players must solve equations to crack codes. My first lock uses the equation... to find the code..."></textarea>
 
-        const isExample = isNaN(p) || isNaN(q);
-        if (isExample) {
-          p = 4;
-          q = 10;
-        }
+          <!-- Checklist -->
+          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">✅ Checklist — Check off everything you completed</h3>
+          <ul class="checklist">
+            <li><input type="checkbox" id="ck1" /> I named my room and picked an escape theme.</li>
+            <li><input type="checkbox" id="ck2" /> I wrote an addition/subtraction equation for Lock A.</li>
+            <li><input type="checkbox" id="ck3" /> I solved a multiplication/division clue equation step-by-step.</li>
+            <li><input type="checkbox" id="ck4" /> I verified my solution using substitution.</li>
+            <li><input type="checkbox" id="ck5" /> I compared my puzzle difficulty to real escape room stats.</li>
+            <li><input type="checkbox" id="ck6" /> I swapped equations with a partner and solved theirs.</li>
+          </ul>
 
-        const x = q + p;
+          <!-- Rubric -->
+          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">📊 How You Are Scored</h3>
+          <table class="rubric">
+            <thead>
+              <tr><th>Skill</th><th class="score-4">4 — Expert</th><th class="score-3">3 — Proficient</th><th class="score-2">2 — Developing</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Equation Writing (6.EE.6)</strong></td><td>Addition/subtraction equation is correct, matches theme, and equals secret code.</td><td>Equation is correct and equals secret code.</td><td>Minor equation writing error.</td></tr>
+              <tr><td><strong>Equation Solving (6.EE.7)</strong></td><td>Multiplication/division equation solved step-by-step with correct inverse operation.</td><td>Equation is solved correctly.</td><td>Computational error in solution.</td></tr>
+              <tr><td><strong>Substitution (6.EE.5)</strong></td><td>Substitution setup is accurate and shows perfect algebraic balance on both sides.</td><td>Shows correct substitution check.</td><td>Incorrect values plugged in.</td></tr>
+              <tr><td><strong>Blueprint Pitch</strong></td><td>Uses real project numbers, explains room theme, and writes 3-5 sentences.</td><td>Writes pitch with most elements.</td><td>Pitch is incomplete or missing.</td></tr>
+            </tbody>
+          </table>
 
-        svg.innerHTML = `
-          <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Lock B: x - ${p} = ${q} (x = ${x})</text>
-          ${isExample ? `<rect x="372" y="16" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example</text>` : ""}
+          <!-- Report + export buttons -->
+          <div class="nav-row no-print" style="margin-top:22px;flex-wrap:wrap;justify-content:flex-start;gap:8px;">
+            <button class="calc-btn green" onclick="buildReport()">📝 Generate Summary</button>
+            <button class="export-btn" onclick="copyReport()">📋 Copy</button>
+            <button class="export-btn" onclick="downloadTxt()">⬇️ Download .txt</button>
+            <button class="export-btn" onclick="window.print()">🖨️ Print</button>
+          </div>
+          <pre class="report-box" id="reportBox"></pre>
+        </div>
 
-          <line x1="250" y1="170" x2="250" y2="70" stroke="#475569" stroke-width="6" />
-          <polygon points="220,180 280,180 250,165" fill="#475569" />
-          <line x1="140" y1="70" x2="360" y2="70" stroke="#475569" stroke-width="4" />
-          
-          <g transform="translate(140, 70)">
-            <line x1="0" y1="0" x2="-40" y2="60" stroke="#94a3b8" stroke-width="1.5" />
-            <line x1="0" y1="0" x2="40" y2="60" stroke="#94a3b8" stroke-width="1.5" />
-            <rect x="-50" y="60" width="100" height="8" fill="#475569" rx="2" />
-            <rect x="-20" y="30" width="40" height="30" fill="#6366F1" rx="4" />
-            <text x="0" y="50" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff">x</text>
-          </g>
-          
-          <g transform="translate(360, 70)">
-            <line x1="0" y1="0" x2="-40" y2="60" stroke="#94a3b8" stroke-width="1.5" />
-            <line x1="0" y1="0" x2="40" y2="60" stroke="#94a3b8" stroke-width="1.5" />
-            <rect x="-50" y="60" width="100" height="8" fill="#475569" rx="2" />
-            <rect x="-35" y="35" width="30" height="25" fill="#0e8a7d" rx="4" />
-            <text x="-20" y="52" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">${q}</text>
-            <rect x="5" y="35" width="30" height="25" fill="#ffb74d" rx="4" />
-            <text x="20" y="52" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">+${p}</text>
-          </g>
-        `;
-      }
-      
-      function drawLockCSVG() {
-        let p = num("c-p");
-        let q = num("c-q");
-        const svg = $("phase-svg-1c");
-        if (!svg) return;
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(5)">← Back</button>
+          <button class="nav-btn green" onclick="alert('Congratulations! 🏆 You have designed an escape room. Show this page to your teacher.')">🏆 I'm Done!</button>
+        </div>
+      </div>
 
-        const isExample = isNaN(p) || isNaN(q) || p <= 0;
-        if (isExample) {
-          p = 4;
-          q = 28;
-        }
+    </div><!-- end wizard -->
 
-        const x = q / p;
-
-        svg.innerHTML = `
-          <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Lock C: ${p}x = ${q} (x = ${x.toFixed(1)})</text>
-          ${isExample ? `<rect x="372" y="16" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example</text>` : ""}
-
-          <line x1="250" y1="170" x2="250" y2="70" stroke="#475569" stroke-width="6" />
-          <polygon points="220,180 280,180 250,165" fill="#475569" />
-          <line x1="140" y1="70" x2="360" y2="70" stroke="#475569" stroke-width="4" />
-          
-          <g transform="translate(140, 70)">
-            <line x1="0" y1="0" x2="-40" y2="60" stroke="#94a3b8" stroke-width="1.5" />
-            <line x1="0" y1="0" x2="40" y2="60" stroke="#94a3b8" stroke-width="1.5" />
-            <rect x="-50" y="60" width="100" height="8" fill="#475569" rx="2" />
-            <rect x="-20" y="30" width="40" height="30" fill="#6366F1" rx="4" />
-            <text x="0" y="50" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff">${p}&times;x</text>
-          </g>
-          
-          <g transform="translate(360, 70)">
-            <line x1="0" y1="0" x2="-40" y2="60" stroke="#94a3b8" stroke-width="1.5" />
-            <line x1="0" y1="0" x2="40" y2="60" stroke="#94a3b8" stroke-width="1.5" />
-            <rect x="-50" y="60" width="100" height="8" fill="#475569" rx="2" />
-            <rect x="-20" y="30" width="40" height="30" fill="#0e8a7d" rx="4" />
-            <text x="0" y="50" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">${q}</text>
-          </g>
-        `;
-      }
-      
-      function drawLockDSVG() {
-        let p = num("d1-p");
-        let q = num("d1-q");
-        const svg = $("phase-svg-1d");
-        if (!svg) return;
-
-        const isExample = isNaN(p) || isNaN(q) || p <= 0;
-        if (isExample) {
-          p = 3;
-          q = 6;
-        }
-
-        const x = q * p;
-
-        svg.innerHTML = `
-          <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Lock D: x / ${p} = ${q} (x = ${x})</text>
-          ${isExample ? `<rect x="372" y="16" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example</text>` : ""}
-
-          <line x1="250" y1="170" x2="250" y2="70" stroke="#475569" stroke-width="6" />
-          <polygon points="220,180 280,180 250,165" fill="#475569" />
-          <line x1="140" y1="70" x2="360" y2="70" stroke="#475569" stroke-width="4" />
-          
-          <g transform="translate(140, 70)">
-            <line x1="0" y1="0" x2="-40" y2="60" stroke="#94a3b8" stroke-width="1.5" />
-            <line x1="0" y1="0" x2="40" y2="60" stroke="#94a3b8" stroke-width="1.5" />
-            <rect x="-50" y="60" width="100" height="8" fill="#475569" rx="2" />
-            <rect x="-20" y="35" width="40" height="25" fill="#6366F1" rx="4" />
-            <text x="0" y="52" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">x / ${p}</text>
-          </g>
-          
-          <g transform="translate(360, 70)">
-            <line x1="0" y1="0" x2="-40" y2="60" stroke="#94a3b8" stroke-width="1.5" />
-            <line x1="0" y1="0" x2="40" y2="60" stroke="#94a3b8" stroke-width="1.5" />
-            <rect x="-50" y="60" width="100" height="8" fill="#475569" rx="2" />
-            <rect x="-20" y="30" width="40" height="30" fill="#0e8a7d" rx="4" />
-            <text x="0" y="50" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">${q}</text>
-          </g>
-        `;
-      }
-      
-      function drawLockESVG() {
-        let p = num("d2-p");
-        let r = num("d2-r");
-        let q = num("d2-q");
-        const svg = $("phase-svg-1e");
-        if (!svg) return;
-
-        const isExample = isNaN(p) || isNaN(r) || isNaN(q) || p <= 0;
-        if (isExample) {
-          p = 3;
-          r = 7;
-          q = 220;
-        }
-
-        const x = (q - r) / p;
-        const xLabel = Number.isInteger(x) ? x : x.toFixed(1);
-
-        svg.innerHTML = `
-          <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Lock D: ${p}x + ${r} = ${q} (x = ${xLabel})</text>
-          ${isExample ? `<rect x="372" y="16" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example</text>` : ""}
-
-          <line x1="250" y1="170" x2="250" y2="70" stroke="#475569" stroke-width="6" />
-          <polygon points="220,180 280,180 250,165" fill="#475569" />
-          <line x1="140" y1="70" x2="360" y2="70" stroke="#475569" stroke-width="4" />
-
-          <g transform="translate(140, 70)">
-            <line x1="0" y1="0" x2="-40" y2="60" stroke="#94a3b8" stroke-width="1.5" />
-            <line x1="0" y1="0" x2="40" y2="60" stroke="#94a3b8" stroke-width="1.5" />
-            <rect x="-50" y="60" width="100" height="8" fill="#475569" rx="2" />
-            <rect x="-45" y="35" width="40" height="25" fill="#6366F1" rx="4" />
-            <text x="-25" y="52" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">${p}&times;x</text>
-            <rect x="5" y="35" width="35" height="25" fill="#ffb74d" rx="4" />
-            <text x="22" y="52" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">+${r}</text>
-          </g>
-
-          <g transform="translate(360, 70)">
-            <line x1="0" y1="0" x2="-40" y2="60" stroke="#94a3b8" stroke-width="1.5" />
-            <line x1="0" y1="0" x2="40" y2="60" stroke="#94a3b8" stroke-width="1.5" />
-            <rect x="-50" y="60" width="100" height="8" fill="#475569" rx="2" />
-            <rect x="-25" y="30" width="50" height="30" fill="#0e8a7d" rx="4" />
-            <text x="0" y="50" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">${q}</text>
-          </g>
-        `;
-      }
-    
-    </script>
-    <script src="/assets/nt-page-enhance.js" defer></script>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <!-- ====== SCRIPTS ====== -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-    <!-- nsr-injected:end -->
-        <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
-    <script type="application/json" id="pk-research">
-      {
-        "icon": "🔎",
-        "title": "Research Lab — Solve to the Goal",
-        "intro": "Escape room designers use one-step equations to set each lock's secret code. Look up how to solve them, then build a real lock.",
-        "brief": {
-          "theme": "field",
-          "title": "🔐 Your Research Mission",
-          "hook": "Find how to <b>solve a one-step equation</b>, then use it to set a real lock code.",
-          "steps": [
-            "Open a link (new tab — you keep your project).",
-            "Record the rules in Field Notes.",
-            "Solve for the unknown in the math problems.",
-            "Check off the Investigation Checklist."
-          ]
-        },
-        "fieldNotes": {
-          "title": "Field Notes — Record What You Find",
-          "intro": "Jot the exact number or rule you find. You'll reuse these in the math below.",
-          "fields": [
-            {
-              "label": "How to solve x + p = q",
-              "source": "Math is Fun",
-              "placeholder": "subtract p from both sides",
-              "hint": "Do the inverse operation to both sides."
-            },
-            {
-              "label": "What 'inverse operation' means",
-              "source": "Math is Fun",
-              "placeholder": "the operation that undoes it",
-              "hint": "Add undoes subtract; multiply undoes divide."
-            },
-            {
-              "label": "Your lock's total q (what the clue equals)",
-              "source": "Your plan",
-              "placeholder": "15",
-              "hint": "The number your clue adds up to."
-            },
-            {
-              "label": "The number p added in your clue",
-              "source": "Your plan",
-              "placeholder": "8",
-              "hint": "Amount added to the secret code x."
-            }
-          ]
-        },
-        "mathTasks": [
-          {
-            "title": "1 · Build Lock A",
-            "prompt": "Write your Lock A equation <b>x + p = q</b> using Field Notes 3 and 4. Solve for x (the secret code) by using the inverse operation. Show both sides.",
-            "level2": "Check your answer by substituting it back in."
-          },
-          {
-            "title": "2 · Division lock",
-            "prompt": "Pick a divisor p and a quotient q, then write a division lock <b>x ÷ p = q</b> and solve for the secret code x.",
-            "level2": "Change your divisor p and recompute the new secret code."
-          },
-          {
-            "title": "3 · Verify",
-            "prompt": "Explain in one sentence why you do the SAME operation to both sides of an equation.",
-            "level2": "Write a one-step equation a classmate could solve, with the answer hidden."
-          }
-        ],
-        "investigationChecklist": [
-          "I recorded how to solve x + p = q.",
-          "I recorded what an inverse operation is.",
-          "I set a real lock total and clue number.",
-          "I wrote and solved a one-step equation.",
-          "I checked my solution by substituting.",
-          "I explained the 'same to both sides' rule."
-        ],
-        "links": [
-          {
-            "icon": "⚖️",
-            "name": "Math is Fun — Solving Equations",
-            "url": "https://www.mathsisfun.com/algebra/equations-solving.html",
-            "find": "How to undo an operation on both sides.",
-            "look": "do the same thing to both sides"
-          },
-          {
-            "icon": "🔰",
-            "name": "Math is Fun — Introduction to Algebra",
-            "url": "https://www.mathsisfun.com/algebra/introduction.html",
-            "find": "What a variable and equation are.",
-            "look": "the unknown and the equals sign"
-          },
-          {
-            "icon": "🧩",
-            "name": "Math is Fun — Mathematical Models",
-            "url": "https://www.mathsisfun.com/algebra/mathematical-models.html",
-            "find": "How to turn a real situation into an equation.",
-            "look": "the worked word-problem-to-equation example"
-          }
-        ],
-        "note": "These sites were picked for class. They open in a new tab so you keep your project. If a page asks you to sign in or buy something, just close it and come back."
+    <script src="/assets/app.js" defer></script>
+    <script>
+      // ---- State ----
+      const STEPS = [
+        { id: 1, label: 'Key Words', icon: '📖' },
+        { id: 2, label: 'Set the Code', icon: '🔒' },
+        { id: 3, label: 'Solve Clue', icon: '🔑' },
+        { id: 4, label: 'Check & Compare', icon: '⚖️' },
+        { id: 5, label: 'Partner Clues', icon: '👥' },
+        { id: 6, label: 'Finish', icon: '🏆' },
+      ];
+      let currentStep = 1;
+      const visited = new Set([1]);
+
+      // ---- Level toggle ----
+      function setLevel(n) {
+        document.getElementById('body').className = 'level-' + n;
+        document.getElementById('btn-lv1').classList.toggle('active', n === 1);
+        document.getElementById('btn-lv2').classList.toggle('active', n === 2);
       }
+
+      // ---- Build step trail ----
+      function buildTrail() {
+        const trail = document.getElementById('stepTrail');
+        if (!trail) return;
+        trail.innerHTML = STEPS.map((s, i) => {
+          const isLast = i === STEPS.length - 1;
+          return `<span class="step-trail-item${s.id === currentStep ? ' active' : ''}${visited.has(s.id) && s.id !== currentStep ? ' done' : ''}" onclick="goStep(${s.id})">
+            <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? '✓' : s.id}</span>
+            <span class="s-label">${s.label}</span>
+          </span>${!isLast ? '<span class="step-arrow">›</span>' : ''}`;
+        }).join('');
+      }
+
+      // ---- Navigation ----
+      function goStep(n) {
+        if (n < 1 || n > STEPS.length) return;
+        document.getElementById('step-' + currentStep).classList.remove('active');
+        currentStep = n;
+        visited.add(n);
+        document.getElementById('step-' + n).classList.add('active');
+        buildTrail();
+        updateProgress();
+        // If transitioning to Step 4 (Check & Compare), sync the template
+        if (n === 4) {
+          updateCheckTemplate();
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function updateProgress() {
+        const pct = Math.round(((currentStep - 1) / (STEPS.length - 1)) * 100);
+        const fill = document.getElementById('progFill');
+        const lbl = document.getElementById('progLabel');
+        if (fill) fill.style.width = pct + '%';
+        if (lbl) lbl.textContent = `Step ${currentStep} of ${STEPS.length}`;
+      }
+
+      // ---- Helper function to display readout ----
+      function showReadout(id, html) {
+        const el = document.getElementById(id);
+        if (el) {
+          el.innerHTML = html;
+          el.classList.add('show');
+        }
+      }
+
+      // ==================== STEP 2 (SET THE CODE) ====================
+      function updateEq() {
+        const s = parseFloat(document.getElementById('s-code').value);
+        const op = document.getElementById('s-op').value;
+        const c = parseFloat(document.getElementById('s-const').value);
+        
+        const svgSecretVal = document.getElementById('svg-secret-val');
+        const svgSecretLbl = document.getElementById('svg-secret-lbl');
+        const svgEqLbl = document.getElementById('svg-eq-lbl');
+        
+        if (isNaN(s)) {
+          if (svgSecretVal) svgSecretVal.textContent = '?';
+          if (svgSecretLbl) svgSecretLbl.textContent = 'x = ?';
+          if (svgEqLbl) svgEqLbl.textContent = 'x [op] c = R';
+          return;
+        }
+        
+        if (svgSecretVal) svgSecretVal.textContent = s;
+        if (svgSecretLbl) svgSecretLbl.textContent = `x = ${s}`;
+        
+        if (isNaN(c)) {
+          if (svgEqLbl) svgEqLbl.textContent = op === 'addition' ? 'x + ? = ?' : 'x - ? = ?';
+          return;
+        }
+        
+        if (op === 'subtraction') {
+          if (s < c) {
+            if (svgEqLbl) svgEqLbl.textContent = `Warning: x < constant`;
+            return;
+          }
+          const res = s - c;
+          if (svgEqLbl) svgEqLbl.textContent = `x - ${c} = ${res}`;
+        } else {
+          const res = s + c;
+          if (svgEqLbl) svgEqLbl.textContent = `x + ${c} = ${res}`;
+        }
+      }
+
+      function verifySetCode() {
+        const s = parseFloat(document.getElementById('s-code').value);
+        const op = document.getElementById('s-op').value;
+        const c = parseFloat(document.getElementById('s-const').value);
+        
+        if (isNaN(s) || isNaN(c)) {
+          showReadout('setCode-out', `⚠️ Please enter both your secret code and constant number.`);
+          return;
+        }
+        
+        if (op === 'subtraction' && s < c) {
+          showReadout('setCode-out', `⚠️ For subtraction, the secret code (${s}) must be greater than the constant (${c}) so players don't have to solve with negative numbers.`);
+          return;
+        }
+        
+        const res = op === 'addition' ? (s + c) : (s - c);
+        const symbol = op === 'addition' ? '+' : '-';
+        const eqStr = `x ${symbol} ${c} = ${res}`;
+        
+        showReadout('setCode-out', `
+          <strong>Lock A Clue Equation Set: ${eqStr}</strong><br>
+          ✅ Let's check it by substitution:<br>
+          If we substitute <strong>x = ${s}</strong> into your equation:<br>
+          <code>${s} ${symbol} ${c} = ${res}</code><br>
+          Since <code>${res} = ${res}</code>, the equation is perfectly balanced! Your clue is ready for players.
+        `);
+      }
+
+      // ==================== STEP 3 (SOLVE A CLUE EQUATION) ====================
+      function loadClue() {
+        const sel = document.getElementById('clue-select').value;
+        const disp = document.getElementById('clue-eq-disp');
+        
+        // Reset fields
+        document.getElementById('c-op').value = '';
+        document.getElementById('c-inv-op').value = '';
+        document.getElementById('c-inv-val').value = '';
+        document.getElementById('c-sol').value = '';
+        const out = document.getElementById('clueSolve-out');
+        if (out) out.classList.remove('show');
+        
+        if (sel) {
+          disp.textContent = sel;
+        } else {
+          disp.textContent = 'Choose a lock clue above to begin';
+        }
+      }
+
+      function verifyClueSolve() {
+        const sel = document.getElementById('clue-select').value;
+        const op = document.getElementById('c-op').value;
+        const invOp = document.getElementById('c-inv-op').value;
+        const invVal = parseFloat(document.getElementById('c-inv-val').value);
+        const sol = parseFloat(document.getElementById('c-sol').value);
+        
+        if (!sel) {
+          showReadout('clueSolve-out', `⚠️ Please select a lock clue from the dropdown first.`);
+          return;
+        }
+        
+        if (!op || !invOp || isNaN(invVal) || isNaN(sol)) {
+          showReadout('clueSolve-out', `⚠️ Please complete all step-by-step fields to verify your solution.`);
+          return;
+        }
+        
+        let correct = false;
+        let explanation = '';
+        
+        if (sel === '3x = 36') {
+          if (op === 'Multiplication' && invOp === 'Division' && invVal === 3 && sol === 12) {
+            correct = true;
+            explanation = `Since x is multiplied by 3, dividing both sides by 3 isolates x: 36 ÷ 3 = 12.`;
+          }
+        } else if (sel === 'x / 4 = 8') {
+          if (op === 'Division' && invOp === 'Multiplication' && invVal === 4 && sol === 32) {
+            correct = true;
+            explanation = `Since x is divided by 4, multiplying both sides by 4 isolates x: 8 × 4 = 32.`;
+          }
+        } else if (sel === '12x = 180') {
+          if (op === 'Multiplication' && invOp === 'Division' && invVal === 12 && sol === 15) {
+            correct = true;
+            explanation = `Since x is multiplied by 12, dividing both sides by 12 isolates x: 180 ÷ 12 = 15.`;
+          }
+        } else if (sel === 'x / 2.5 = 12') {
+          if (op === 'Division' && invOp === 'Multiplication' && invVal === 2.5 && sol === 30) {
+            correct = true;
+            explanation = `Since x is divided by 2.5, multiplying both sides by 2.5 isolates x: 12 × 2.5 = 30.`;
+          }
+        }
+        
+        if (correct) {
+          showReadout('clueSolve-out', `
+            <strong>Correct! x = ${sol}</strong><br>
+            ✅ ${explanation}<br>
+            Your step-by-step inverse operations are accurate. You have cracked the lock!
+          `);
+        } else {
+          showReadout('clueSolve-out', `
+            <strong>❌ Not quite correct yet.</strong><br>
+            Double check your work:<br>
+            1. Identify the operation in the original equation (is x multiplied or divided?).<br>
+            2. Choose the opposite operation (inverse) to undo it.<br>
+            3. Apply that number to both sides, then re-calculate the final solution.
+          `);
+        }
+      }
+
+      // ==================== STEP 4 (CHECK & COMPARE) ====================
+      function updateCheckTemplate() {
+        const sel = document.getElementById('clue-select').value;
+        const container = document.getElementById('check-template-container');
+        if (!sel) {
+          container.innerHTML = `<span style="color: var(--muted)">Choose and solve a lock clue in Step 2 first!</span>`;
+          return;
+        }
+        
+        if (sel === '3x = 36') {
+          container.innerHTML = `
+            3 × <input type="number" id="check-sol-val" style="width: 80px; display: inline-block; padding: 4px; text-align: center;" /> 
+            = <input type="number" id="check-res-val" style="width: 80px; display: inline-block; padding: 4px; text-align: center;" />
+          `;
+        } else if (sel === 'x / 4 = 8') {
+          container.innerHTML = `
+            <input type="number" id="check-sol-val" style="width: 80px; display: inline-block; padding: 4px; text-align: center;" /> 
+            ÷ 4 = <input type="number" id="check-res-val" style="width: 80px; display: inline-block; padding: 4px; text-align: center;" />
+          `;
+        } else if (sel === '12x = 180') {
+          container.innerHTML = `
+            12 × <input type="number" id="check-sol-val" style="width: 80px; display: inline-block; padding: 4px; text-align: center;" /> 
+            = <input type="number" id="check-res-val" style="width: 80px; display: inline-block; padding: 4px; text-align: center;" />
+          `;
+        } else if (sel === 'x / 2.5 = 12') {
+          container.innerHTML = `
+            <input type="number" id="check-sol-val" style="width: 80px; display: inline-block; padding: 4px; text-align: center;" /> 
+            ÷ 2.5 = <input type="number" id="check-res-val" style="width: 80px; display: inline-block; padding: 4px; text-align: center;" />
+          `;
+        }
+      }
+
+      function verifyCheck() {
+        const sel = document.getElementById('clue-select').value;
+        const solVal = parseFloat(document.getElementById('check-sol-val')?.value);
+        const resVal = parseFloat(document.getElementById('check-res-val')?.value);
+        
+        if (!sel) {
+          showReadout('check-out', `⚠️ Please select and solve a lock clue in the previous step first.`);
+          return;
+        }
+        
+        if (isNaN(solVal) || isNaN(resVal)) {
+          showReadout('check-out', `⚠️ Please fill in both values of the check equation.`);
+          return;
+        }
+        
+        let correct = false;
+        
+        if (sel === '3x = 36') {
+          if (solVal === 12 && resVal === 36) correct = true;
+        } else if (sel === 'x / 4 = 8') {
+          if (solVal === 32 && resVal === 8) correct = true;
+        } else if (sel === '12x = 180') {
+          if (solVal === 15 && resVal === 180) correct = true;
+        } else if (sel === 'x / 2.5 = 12') {
+          if (solVal === 30 && resVal === 12) correct = true;
+        }
+        
+        if (correct) {
+          showReadout('check-out', `
+            <strong>Check Passed! 🎉</strong><br>
+            Your substitution is correct! Substituting <strong>x = ${solVal}</strong> balances the equation perfectly.<br>
+            It is mathematically verified.
+          `);
+        } else {
+          showReadout('check-out', `
+            <strong>❌ Check Failed.</strong><br>
+            Check your numbers. If your solution is correct, substituting it back should make the math statement true.<br>
+            For example: ${sel === '3x = 36' ? '3 × 12 = 36' : sel === 'x / 4 = 8' ? '32 ÷ 4 = 8' : sel === '12x = 180' ? '12 × 15 = 180' : '30 ÷ 2.5 = 12'}.
+          `);
+        }
+      }
+
+      // ==================== STEP 5 (PARTNER CLUES) ====================
+      function verifyPartnerClue() {
+        const name = document.getElementById('p-name').value;
+        const eqStr = document.getElementById('p-eq').value.trim().toLowerCase();
+        const op = document.getElementById('p-op').value;
+        const invOp = document.getElementById('p-inv-op').value;
+        const opNum = parseFloat(document.getElementById('p-op-num').value);
+        const sol = parseFloat(document.getElementById('p-sol').value);
+        const lhs = parseFloat(document.getElementById('p-check-lhs').value);
+        const rhs = parseFloat(document.getElementById('p-check-rhs').value);
+        
+        if (!name || !eqStr || !op || !invOp || isNaN(opNum) || isNaN(sol) || isNaN(lhs) || isNaN(rhs)) {
+          showReadout('partner-out', `⚠️ Please complete all fields to verify your partner's clue.`);
+          return;
+        }
+        
+        let expectedOp = '';
+        let expectedInv = '';
+        let expectedOpNum = 0;
+        let expectedSol = 0;
+        let parsed = false;
+        
+        // Match multiplication: e.g. "5x = 45", "5 * x = 45", "x * 5 = 45"
+        let match = eqStr.match(/^(\d+(?:\.\d+)?)\s*\*?\s*([a-z])\s*=\s*(\d+(?:\.\d+)?)$/);
+        if (match) {
+          expectedOp = 'Multiplication';
+          expectedInv = 'Division';
+          expectedOpNum = parseFloat(match[1]);
+          expectedSol = parseFloat(match[3]) / expectedOpNum;
+          parsed = true;
+        } else {
+          // Match division: e.g. "x / 3 = 10", "x/3 = 10"
+          match = eqStr.match(/^([a-z])\s*\/\s*(\d+(?:\.\d+)?)\s*=\s*(\d+(?:\.\d+)?)$/);
+          if (match) {
+            expectedOp = 'Division';
+            expectedInv = 'Multiplication';
+            expectedOpNum = parseFloat(match[2]);
+            expectedSol = parseFloat(match[3]) * expectedOpNum;
+            parsed = true;
+          } else {
+            // Match addition: e.g. "x + 6 = 20"
+            match = eqStr.match(/^([a-z])\s*\+\s*(\d+(?:\.\d+)?)\s*=\s*(\d+(?:\.\d+)?)$/);
+            if (match) {
+              expectedOp = 'Addition';
+              expectedInv = 'Subtraction';
+              expectedOpNum = parseFloat(match[2]);
+              expectedSol = parseFloat(match[4]) - expectedOpNum;
+              parsed = true;
+            } else {
+              // Match subtraction: e.g. "x - 4 = 12"
+              match = eqStr.match(/^([a-z])\s*-\s*(\d+(?:\.\d+)?)\s*=\s*(\d+(?:\.\d+)?)$/);
+              if (match) {
+                expectedOp = 'Subtraction';
+                expectedInv = 'Addition';
+                expectedOpNum = parseFloat(match[2]);
+                expectedSol = parseFloat(match[4]) + expectedOpNum;
+                parsed = true;
+              }
+            }
+          }
+        }
+        
+        if (parsed) {
+          const opMatch = op === expectedOp;
+          const invMatch = invOp === expectedInv;
+          const numMatch = Math.abs(opNum - expectedOpNum) < 0.001;
+          const solMatch = Math.abs(sol - expectedSol) < 0.001;
+          const checkMatch = lhs === rhs;
+          
+          if (opMatch && invMatch && numMatch && solMatch && checkMatch) {
+            showReadout('partner-out', `
+              <strong>Equation Verified! 🎉</strong><br>
+              ✅ Partner: <strong>${name}</strong><br>
+              ✅ Equation: <strong>${eqStr}</strong><br>
+              ✅ Solution: <strong>x = ${sol}</strong> is correct.<br>
+              ✅ Substitution: <strong>${lhs} = ${rhs}</strong> is balanced!<br>
+              Great job working with your peer to solve their escape room clue.
+            `);
+          } else {
+            let errorMsg = `<strong>❌ Verification feedback:</strong><br>`;
+            if (!opMatch) errorMsg += `- The operation in the equation is not ${op}.<br>`;
+            if (!invMatch) errorMsg += `- The inverse operation is not ${invOp}.<br>`;
+            if (!numMatch) errorMsg += `- The number used in the inverse operation should be ${expectedOpNum}.<br>`;
+            if (!solMatch) errorMsg += `- The solution x = ${sol} is incorrect. Expected: ${expectedSol}.<br>`;
+            if (!checkMatch) errorMsg += `- The substitution sides do not match (LHS ${lhs} vs RHS ${rhs}).<br>`;
+            showReadout('partner-out', errorMsg);
+          }
+        } else {
+          // Fallback if parsing fails
+          if (lhs === rhs) {
+            showReadout('partner-out', `
+              <strong>Equation Completed! 👍</strong><br>
+              We couldn't automatically parse the equation format, but your substitution check shows <strong>${lhs} = ${rhs}</strong> is balanced.<br>
+              Double check with <strong>${name}</strong> that your solution of <strong>x = ${sol}</strong> is correct!
+            `);
+          } else {
+            showReadout('partner-out', `
+              <strong>❌ Verification failed.</strong><br>
+              We couldn't parse the equation, and your substitution check does not balance (LHS ${lhs} is not equal to RHS ${rhs}).
+            `);
+          }
+        }
+      }
+
+      // ==================== STEP 6 (REPORT GENERATOR) ====================
+      function buildReport() {
+        const roomName = document.getElementById('roomName')?.value || 'Unnamed Room';
+        const roomTheme = document.getElementById('roomTheme')?.value || 'No Theme';
+        const sCode = document.getElementById('s-code')?.value || '—';
+        const sOp = document.getElementById('s-op')?.value || '—';
+        const sConst = document.getElementById('s-const')?.value || '—';
+        
+        // Find set code result
+        let myEq = '—';
+        if (sCode !== '—' && sConst !== '—') {
+          const sVal = parseFloat(sCode);
+          const cVal = parseFloat(sConst);
+          if (sOp === 'addition') {
+            myEq = `x + ${cVal} = ${sVal + cVal}`;
+          } else {
+            myEq = `x - ${cVal} = ${sVal - cVal}`;
+          }
+        }
+
+        const clueSel = document.getElementById('clue-select')?.value || '—';
+        const clueSol = document.getElementById('c-sol')?.value || '—';
+        const clueOp = document.getElementById('c-op')?.value || '—';
+        const clueInv = document.getElementById('c-inv-op')?.value || '—';
+        const clueInvVal = document.getElementById('c-inv-val')?.value || '—';
+
+        const diffRating = document.getElementById('diff-rating')?.value || '—';
+        const statReflect = document.getElementById('stat-reflect')?.value || '—';
+
+        const pName = document.getElementById('p-name')?.value || '—';
+        const pEq = document.getElementById('p-eq')?.value || '—';
+        const pSol = document.getElementById('p-sol')?.value || '—';
+
+        const pitch = document.getElementById('pitch')?.value || '(no pitch written)';
+
+        const lines = [
+          '═══ ESCAPE ROOM ARCHITECT — UNIT 8 PROJECT (Version A) ═══',
+          '',
+          '🏛️ ESCAPE ROOM DETAILS',
+          `   Room Name: ${roomName}`,
+          `   Theme: ${roomTheme}`,
+          '',
+          '🔒 STEP 1 — SECRET CODE EQUATION (6.EE.6)',
+          `   Secret Code: ${sCode}`,
+          `   Equation: ${myEq}`,
+          '',
+          '🔑 STEP 2 — SOLVE A CLUE EQUATION (6.EE.7)',
+          `   Clue Equation: ${clueSel}`,
+          `   Operation: ${clueOp} | Inverse: ${clueInv} by ${clueInvVal}`,
+          `   Solution: x = ${clueSol}`,
+          '',
+          '⚖️ STEP 3 — CHECK & COMPARE (6.EE.5)',
+          `   Difficulty Rating: ${diffRating}`,
+          `   Reflection: ${statReflect}`,
+          '',
+          '👥 STEP 4 — PARTNER CLUE SWAP',
+          `   Partner Name: ${pName}`,
+          `   Partner's Equation: ${pEq}`,
+          `   Partner's Solution: x = ${pSol}`,
+          '',
+          '✍️ MY ESCAPE ROOM BLUEPRINT PITCH:',
+          pitch,
+          '',
+          '═══════════════════════════════',
+          `Generated: ${new Date().toLocaleDateString()}`,
+        ];
+        const box = document.getElementById('reportBox');
+        if (box) {
+          box.textContent = lines.join('\n');
+          box.classList.add('show');
+        }
+      }
+
+      function copyReport() {
+        const txt = document.getElementById('reportBox')?.textContent;
+        if (txt) {
+          navigator.clipboard?.writeText(txt).then(() => alert('Copied to clipboard!'));
+        }
+      }
+
+      function downloadTxt() {
+        const txt = document.getElementById('reportBox')?.textContent;
+        if (txt) {
+          const a = document.createElement('a');
+          a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(txt);
+          a.download = 'escape-room-blueprint.txt';
+          a.click();
+        }
+      }
+
+      // ---- Init ----
+      buildTrail();
+      updateProgress();
     </script>
-    <script src="/shared/projects/projects-tabs.js" defer></script>
-    <script src="/shared/projects/projects-interactive.js" defer></script>
-<script src="/shared/projects/manip-balance.js" defer></script>
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+  </body>
 </html>
