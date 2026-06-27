@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>App Pricing Engine — Unit 6 Culminating Project</title>
     <meta
       name="description"
@@ -455,11 +455,13 @@
     <!-- nsr-injected:end -->
     <link rel="stylesheet" href="/shared/projects/projects-premium.css" />
     <link rel="stylesheet" href="/shared/projects/projects-tabs.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-tplus.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-interactive.css" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
-  <body class="pk">
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
+  <body class="pk" data-pk-theme="u6">
     <header class="phero">
       <div class="deco">📱</div>
       <h1>App Pricing Engine</h1>
@@ -487,6 +489,15 @@
             🔵 Level 2 (challenge)
           </button>
         </span>
+        <button
+          class="pk-tts-toggle"
+          data-tts-toggle
+          type="button"
+          aria-pressed="false"
+          title="Read text aloud"
+        >
+          🔊 Read aloud
+        </button>
         <button onclick="PK.save('u6ProjectB')">💾 Save</button>
         <button
           onclick="PK.load('u6ProjectB', { show: true, after: recalcAll })"
@@ -541,7 +552,7 @@
         <div class="pk-vocab">
           <div class="pk-term">
             <span class="pk-icon">🔢</span><b>Base</b>
-            <p>The number being multiplied in a power. In 3⁴ the base is 3.</p>
+            <p>The number you multiply in a power. In 3⁴ the base is 3.</p>
             <p class="pk-es">
               Base: el número que se multiplica en una potencia. En 3⁴ la base
               es 3.
@@ -550,7 +561,7 @@
           <div class="pk-term">
             <span class="pk-icon">⬆️</span><b>Exponent</b>
             <p>
-              How many times to use the base as a factor. 3⁴ uses 3 four times.
+              How many times you multiply the base. In 3⁴ you use 3 four times.
             </p>
             <p class="pk-es">
               Exponente: cuántas veces se usa la base como factor. 3⁴ usa el 3
@@ -559,9 +570,7 @@
           </div>
           <div class="pk-term">
             <span class="pk-icon">🧩</span><b>Expanded Form</b>
-            <p>
-              Writing a power as repeated multiplication: 3⁴ = 3 × 3 × 3 × 3.
-            </p>
+            <p>Writing a power out as multiplication: 3⁴ = 3 × 3 × 3 × 3.</p>
             <p class="pk-es">
               Forma desarrollada: escribir una potencia como multiplicación
               repetida: 3⁴ = 3 × 3 × 3 × 3.
@@ -570,8 +579,7 @@
           <div class="pk-term">
             <span class="pk-icon">✖️</span><b>Coefficient</b>
             <p>
-              The number multiplied by a variable. In 9.99n the coefficient is
-              9.99.
+              The number in front of a letter. In 9.99n the coefficient is 9.99.
             </p>
             <p class="pk-es">
               Coeficiente: el número que multiplica a una variable. En 9.99n el
@@ -588,8 +596,8 @@
           <div class="pk-term">
             <span class="pk-icon">📌</span><b>Constant</b>
             <p>
-              A fixed number that does not change. In 9.99n + 4.50, 4.50 is
-              constant.
+              A number that never changes. In 9.99n + 4.50, the 4.50 stays the
+              same.
             </p>
             <p class="pk-es">
               Constante: un número fijo que no cambia. En 9.99n + 4.50, el 4.50
@@ -599,7 +607,7 @@
           <div class="pk-term">
             <span class="pk-icon">🧱</span><b>Term</b>
             <p>
-              A part of an expression separated by + or −. 9.99n + 4.50 has two
+              A piece of an expression split by + or −. 9.99n + 4.50 has two
               terms.
             </p>
             <p class="pk-es">
@@ -610,7 +618,8 @@
           <div class="pk-term">
             <span class="pk-icon">🟰</span><b>Equivalent</b>
             <p>
-              Two expressions that always give the same value for every input.
+              Two expressions that always equal the same answer, no matter the
+              number.
             </p>
             <p class="pk-es">
               Equivalente: dos expresiones que siempre dan el mismo valor para
@@ -620,8 +629,8 @@
           <div class="pk-term">
             <span class="pk-icon">📤</span><b>Distributive Property</b>
             <p>
-              Multiply outside the parentheses by each term inside: a(b + c) =
-              ab + ac.
+              Multiply the outside number by each part inside: a(b + c) = ab +
+              ac.
             </p>
             <p class="pk-es">
               Propiedad distributiva: multiplica el factor de afuera por cada
@@ -632,17 +641,57 @@
         <div class="grid2" style="margin-top: 18px">
           <div class="pk-callout">
             <h3>Formula Bank</h3>
-            <p><b>App cost:</b> p · n + fee → price × months + setup fee</p>
-            <p>
-              <b>Evaluate:</b> substitute n, multiply first, then add the fee
-            </p>
-            <p><b>Equivalent (6.EE.4):</b> same value for every n</p>
-            <p class="pk-lvl2">
-              <b>Distributive (6.EE.3):</b> a(b + c) = a·b + a·c
-            </p>
-            <p class="pk-lvl2">
-              <b>Crossover:</b> where two plans cost the same
-            </p>
+            <ul class="pk-formula">
+              <li>
+                <span class="pk-f-name">App cost expression</span>
+                <span class="pk-f-mean"
+                  >Your total is <b>price × months + setup fee</b>. The price
+                  per month is the coefficient; the one-time fee is the
+                  constant.</span
+                >
+                <span class="pk-eg"
+                  >Example: 9.99n + 4.50, and at n = 6 → 64.44</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Evaluate an expression</span>
+                <span class="pk-f-mean"
+                  >Put the number of months in for n, then do the math in order:
+                  multiply before you add.</span
+                >
+                <span class="pk-eg"
+                  >Example: 5n + 10 when n = 3 → 15 + 10 = 25</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Equivalent expressions (6.EE.4)</span>
+                <span class="pk-f-mean"
+                  >Two expressions that always give the same total for every
+                  number of months n.</span
+                >
+                <span class="pk-eg"
+                  >Example: 3(n + 2) and 3n + 6 are equal for every n</span
+                >
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">Distributive property (6.EE.3)</span>
+                <span class="pk-f-mean"
+                  >Multiply the number outside the parentheses by each part
+                  inside, then add the results.</span
+                >
+                <span class="pk-eg">Example: 4(n + 3) = 4n + 12</span>
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">Crossover point</span>
+                <span class="pk-f-mean"
+                  >The number of months where two different plans cost the exact
+                  same total.</span
+                >
+                <span class="pk-eg"
+                  >Example: 6n and 4n + 20 are equal at n = 10 (both = 60)</span
+                >
+              </li>
+            </ul>
           </div>
           <div class="pk-callout">
             <h3>Sentence Frames</h3>
@@ -657,7 +706,7 @@
       </section>
 
       <!-- ===================== PART 1 — SELF ===================== -->
-      
+
       <!-- ===================== PROJECT SETUP ===================== -->
       <section class="phase" id="phase-setup" data-phase>
         <div class="phase-head">
@@ -667,39 +716,143 @@
             <h2>Model YOUR App's Cost</h2>
           </div>
         </div>
-        
+
         <div class="grid2">
           <div>
-            <p style="font-size: 15px; color: var(--muted); line-height: 1.6; margin-bottom: 20px;">
-              Welcome! Read the scenario below and select your level to begin your design plan.
+            <p
+              style="
+                font-size: 15px;
+                color: var(--muted);
+                line-height: 1.6;
+                margin-bottom: 20px;
+              "
+            >
+              Welcome! Read the scenario below and select your level to begin
+              your design plan.
             </p>
-            <div style="margin-top: 16px;">
-              
-    <svg width="100%" height="220" viewBox="0 0 500 220" style="background:white; border-radius:12px; border: 1px solid #e2e8f0; max-width: 480px; margin: 0 auto; display: block;" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="setup-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#ffffff" />
-          <stop offset="100%" stop-color="#f8fafc" />
-        </linearGradient>
-      </defs>
-      
-      <rect x="20" y="20" width="460" height="200" rx="15" fill="url(#setup-grad)" stroke="#6d3fa0" stroke-width="2"/>
-      <text x="250" y="60" text-anchor="middle" font-size="20" font-weight="bold" fill="#0f2b3c">EQUATION BALANCE SCALE</text>
-      <line x1="250" y1="170" x2="250" y2="100" stroke="#1a2633" stroke-width="4"/>
-      <line x1="150" y1="100" x2="350" y2="100" stroke="#1a2633" stroke-width="4"/>
-      <path d="M150,100 V140 C150,150 190,150 190,140 V100" fill="none" stroke="#6d3fa0" stroke-width="2"/>
-      <path d="M310,100 V140 C310,150 350,150 350,140 V100" fill="none" stroke="#6d3fa0" stroke-width="2"/>
-    
-    </svg>
-  
+            <div style="margin-top: 16px">
+              <svg
+                width="100%"
+                height="220"
+                viewBox="0 0 500 220"
+                style="
+                  background: white;
+                  border-radius: 12px;
+                  border: 1px solid #e2e8f0;
+                  max-width: 480px;
+                  margin: 0 auto;
+                  display: block;
+                "
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <defs>
+                  <linearGradient
+                    id="setup-grad"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop offset="0%" stop-color="#ffffff" />
+                    <stop offset="100%" stop-color="#f8fafc" />
+                  </linearGradient>
+                </defs>
+
+                <rect
+                  x="20"
+                  y="20"
+                  width="460"
+                  height="200"
+                  rx="15"
+                  fill="url(#setup-grad)"
+                  stroke="#6d3fa0"
+                  stroke-width="2"
+                />
+                <text
+                  x="250"
+                  y="60"
+                  text-anchor="middle"
+                  font-size="20"
+                  font-weight="bold"
+                  fill="#0f2b3c"
+                >
+                  EQUATION BALANCE SCALE
+                </text>
+                <line
+                  x1="250"
+                  y1="170"
+                  x2="250"
+                  y2="100"
+                  stroke="#1a2633"
+                  stroke-width="4"
+                />
+                <line
+                  x1="150"
+                  y1="100"
+                  x2="350"
+                  y2="100"
+                  stroke="#1a2633"
+                  stroke-width="4"
+                />
+                <path
+                  d="M150,100 V140 C150,150 190,150 190,140 V100"
+                  fill="none"
+                  stroke="#6d3fa0"
+                  stroke-width="2"
+                />
+                <path
+                  d="M310,100 V140 C310,150 350,150 350,140 V100"
+                  fill="none"
+                  stroke="#6d3fa0"
+                  stroke-width="2"
+                />
+              </svg>
             </div>
           </div>
-          
-          <div style="background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 20px; box-shadow: var(--shadow);">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px;">
+
+          <div
+            style="
+              background: var(--bg);
+              border: 1px solid var(--line);
+              border-radius: 12px;
+              padding: 20px;
+              box-shadow: var(--shadow);
+            "
+          >
+            <h3
+              style="
+                margin-top: 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+              "
+            >
               <span>📋</span> Scenario &amp; Level Options
             </h3>
-            <h2>Model YOUR App's Cost</h2>
+            <p style="font-size: 14px; line-height: 1.6; margin: 0 0 10px">
+              You are an <strong>app pricing analyst</strong>. Your job is to
+              write an expression for the total cost of an app plan using its
+              monthly price, one-time setup fee, and number of months.
+            </p>
+            <ul
+              style="
+                font-size: 14px;
+                line-height: 1.6;
+                margin: 0;
+                padding-left: 18px;
+              "
+            >
+              <li>
+                <strong>Level 1 (support):</strong> use the example numbers to
+                find the total cost of a plan like 8m + 5 for a set number of
+                months.
+              </li>
+              <li>
+                <strong>Level 2 (challenge):</strong> compare two real app
+                plans, evaluate both at the same number of months, and find the
+                month where they cost the same.
+              </li>
+            </ul>
           </div>
         </div>
         <p>
@@ -707,18 +860,35 @@
           numbers. Not sure of the exact price? Click
           <em>Use example numbers</em> to model the math, then change them.
         </p>
-        
-            
-            <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line);">
-              <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px;">
-                You can type your own numbers as you go, or click below to start with our example numbers:
-              </p>
-              <button class="btn ghost" type="button" onclick="useExamples()" style="width: 100%; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                ✨ Use Example Numbers
-              </button>
-            </div>
+
+        <div
+          style="
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--line);
+          "
+        >
+          <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px">
+            You can type your own numbers as you go, or click below to start
+            with our example numbers:
+          </p>
+          <button
+            class="btn ghost"
+            type="button"
+            onclick="useExamples()"
+            style="
+              width: 100%;
+              font-weight: bold;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 8px;
+            "
+          >
+            ✨ Use Example Numbers
+          </button>
+        </div>
       </section>
-  
 
       <!-- ===================== PART 1A — SELF ===================== -->
       <section class="phase" id="phase-1a" data-phase>
@@ -729,48 +899,121 @@
             <h2>📱 Name your app</h2>
           </div>
         </div>
-        
+
         <div class="grid2">
           <div>
-            
-    <div class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
-      <svg id="phase-svg-1a" width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px" xmlns="http://www.w3.org/2000/svg"></svg>
-    </div>
-  
-            <label class="fld" for="appName">App you actually use</label>
-        <input
-          type="text"
-          id="appName"
-          data-save
-          placeholder="example: StreamPro"
-          oninput="updateProgress()"
-        />
+            <div
+              class="pk-math-scaffold-card no-print"
+              style="
+                margin: 20px 0;
+                padding: 12px;
+                background: #fff;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+                max-width: 480px;
+                margin-left: auto;
+                margin-right: auto;
+              "
+            >
+              <svg
+                id="phase-svg-1a"
+                width="100%"
+                height="200"
+                viewBox="0 0 500 200"
+                style="background: #fff; border-radius: 8px"
+                xmlns="http://www.w3.org/2000/svg"
+              ></svg>
+            </div>
 
-        <!-- 1a Cost expression -->
+            <label class="fld" for="appName">App you actually use</label>
+            <input
+              type="text"
+              id="appName"
+              data-save
+              placeholder=""
+              oninput="updateProgress()"
+            />
+
+            <!-- 1a Cost expression -->
           </div>
-          
-          <div style="background: var(--bg); border: 2.5px solid var(--line); border-radius: 18px; padding: 20px; box-shadow: var(--shadow); height: fit-content;" class="pk-no-print">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px; color: var(--navy); font-size: 16px;">
+
+          <div
+            style="
+              background: var(--bg);
+              border: 2.5px solid var(--line);
+              border-radius: 18px;
+              padding: 20px;
+              box-shadow: var(--shadow);
+              height: fit-content;
+            "
+            class="pk-no-print"
+          >
+            <h3
+              style="
+                margin-top: 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: var(--navy);
+                font-size: 16px;
+              "
+            >
               <span>💡</span> Guided Steps &amp; Help
             </h3>
-            
-      <p style="font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-bottom: 12px;">
-        <strong>Writing and Evaluating Algebraic Expressions:</strong>
-      </p>
-      <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>Identify the constant (one-time fee) and the rate (cost per item).</li>
-        <li>Write the variable expression: $\text{Rate} \times x + \text{Constant}$ (e.g. $15x + 50$, where $x$ is the variable).</li>
-        <li><b>Evaluate the expression</b>: Replace the variable $x$ with the specified number of items.</li>
-        <li>Follow the <b>Order of Operations (PEMDAS)</b>: Multiply first, then add the constant.</li>
-      </ol>
-      <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
-        💡 <b>Example:</b> Gym cost is $15 per month plus a $30 signup fee. Expression = $15m + 30$. For 6 months: $(15 \times 6) + 30 = 90 + 30 = \mathbf{\$120}$.
-      </div>
-    
+
+            <p
+              style="
+                font-size: 13.5px;
+                line-height: 1.5;
+                color: var(--muted);
+                margin-bottom: 12px;
+              "
+            >
+              <strong>Writing and Evaluating Algebraic Expressions:</strong>
+            </p>
+            <ol
+              style="
+                margin-left: 18px;
+                font-size: 13px;
+                line-height: 1.5;
+                display: grid;
+                gap: 8px;
+                color: var(--ink);
+              "
+            >
+              <li>
+                Identify the constant (one-time fee) and the rate (cost per
+                item).
+              </li>
+              <li>
+                Write the variable expression: Rate × x + Constant (e.g. 15x +
+                50, where x is the variable).
+              </li>
+              <li>
+                <b>Evaluate the expression</b>: Replace the variable x with the
+                specified number of items.
+              </li>
+              <li>
+                Follow the <b>Order of Operations (PEMDAS)</b>: Multiply first,
+                then add the constant.
+              </li>
+            </ol>
+            <div
+              style="
+                margin-top: 14px;
+                padding: 10px;
+                background: var(--sky);
+                border-radius: 8px;
+                font-size: 12px;
+              "
+            >
+              💡 <b>Example:</b> Gym cost is $15 per month plus a $30 signup
+              fee. Expression = 15m + 30. For 6 months: (15 × 6) + 30 = 90 + 30
+              = 120.
+            </div>
           </div>
         </div>
       </section>
-    
 
       <!-- ===================== PART 1B — SELF ===================== -->
       <section class="phase" id="phase-1b" data-phase>
@@ -781,160 +1024,272 @@
             <h2>💵 Your cost expression (write &amp; evaluate · 6.EE.2)</h2>
           </div>
         </div>
-        
+
         <div class="grid2">
           <div>
-            
-    <div class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
-      <svg id="phase-svg-1b" width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px" xmlns="http://www/w3.org/2000/svg"></svg>
-    </div>
-  
+            <div
+              class="pk-math-scaffold-card no-print"
+              style="
+                margin: 20px 0;
+                padding: 12px;
+                background: #fff;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+                max-width: 480px;
+                margin-left: auto;
+                margin-right: auto;
+              "
+            >
+              <svg
+                id="phase-svg-1b"
+                width="100%"
+                height="200"
+                viewBox="0 0 500 200"
+                style="background: #fff; border-radius: 8px"
+                xmlns="http://www/w3.org/2000/svg"
+              ></svg>
+            </div>
+
             <p>
-          Set your own <strong>monthly price p</strong> and one-time
-          <strong>setup fee</strong>. Your expression is
-          <strong><span id="exprLabel">p·n + fee</span></strong
-          >. Then pick a realistic number of months <em>n</em>.
-        </p>
-        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-          Level 1 tip: try a price like $9.99, a setup fee of $0–$5, and 6
-          months.
-        </p>
-        <div class="grid2">
-          
-        <!-- ===================== INLINE RESEARCH LAB ===================== -->
-        <div class="pk-research-inline-card">
-          <div class="pk-research-inline-header">
-            <span class="pk-research-badge">🔍 Research Required</span>
-            <a href="https://en.wikipedia.org/wiki/Streaming_television#Pricing" target="_blank" class="pk-research-inline-link">🔗 Wikipedia: Pricing of major video streaming apps ↗</a>
-          <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px;">
-            <a href="https://developer.apple.com/support/purchase-activation/" target="_blank" class="pk-research-inline-link">🍎 Apple App Store Developer Fees ↗</a>
-            <a href="https://support.google.com/googleplay/android-developer/answer/112622" target="_blank" class="pk-research-inline-link">🤖 Google Play Store Developer Pricing ↗</a>
-          </div>
-          </div>
-          <p class="pk-research-inline-instructions">Open the database or check current pricing. Find the standard monthly fee of a Netflix Standard plan. Enter the monthly cost below:</p>
-          <div class="grid2">
-            <div>
-              <label class="fld" for="worldCountry">Streaming App Researched</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. Netflix Standard" oninput="recalcAll()">
+              Set your own <strong>monthly price p</strong> and one-time
+              <strong>setup fee</strong>. Your expression is
+              <strong><span id="exprLabel">p·n + fee</span></strong
+              >. Then pick a realistic number of months <em>n</em>.
+            </p>
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: try a price like $9.99, a setup fee of $0–$5, and 6
+              months.
+            </p>
+            <div class="grid2">
+              <!-- ===================== INLINE RESEARCH LAB ===================== -->
+              <div class="pk-research-inline-card">
+                <div class="pk-research-inline-header">
+                  <span class="pk-research-badge">🔍 Research Required</span>
+                  <a
+                    href="https://en.wikipedia.org/wiki/Streaming_television#Pricing"
+                    target="_blank"
+                    class="pk-research-inline-link"
+                    >🔗 Wikipedia: Pricing of major video streaming apps ↗</a
+                  >
+                  <div
+                    style="
+                      display: flex;
+                      flex-wrap: wrap;
+                      gap: 8px;
+                      margin-top: 6px;
+                    "
+                  >
+                    <a
+                      href="https://developer.apple.com/support/purchase-activation/"
+                      target="_blank"
+                      class="pk-research-inline-link"
+                      >🍎 Apple App Store Developer Fees ↗</a
+                    >
+                    <a
+                      href="https://support.google.com/googleplay/android-developer/answer/112622"
+                      target="_blank"
+                      class="pk-research-inline-link"
+                      >🤖 Google Play Store Developer Pricing ↗</a
+                    >
+                  </div>
+                </div>
+                <p class="pk-research-inline-instructions">
+                  Open the database or check current pricing. Find the standard
+                  monthly fee of a Netflix Standard plan. Enter the monthly cost
+                  below:
+                </p>
+                <div class="grid2">
+                  <div>
+                    <label class="fld" for="worldCountry"
+                      >Streaming App Researched</label
+                    >
+                    <input
+                      type="text"
+                      id="worldCountry"
+                      data-save
+                      placeholder=""
+                      oninput="recalcAll()"
+                    />
+                  </div>
+                  <div>
+                    <label class="fld" for="cost-p">Monthly price p ($)</label>
+                    <input
+                      type="number"
+                      id="cost-p"
+                      data-save
+                      step="0.01"
+                      min="0"
+                      placeholder=""
+                      oninput="calcCost()"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label class="fld" for="cost-fee">One-time setup fee ($)</label>
+                <input
+                  type="number"
+                  id="cost-fee"
+                  data-save
+                  step="0.01"
+                  min="0"
+                  placeholder=""
+                  oninput="calcCost()"
+                />
+              </div>
             </div>
-            <div>
-              <label class="fld" for="cost-p">Monthly price p ($)</label>
-              <input
-              type="number"
-              id="cost-p"
-              data-save
-              step="0.01"
-              min="0"
-              placeholder="example: 9.99"
-              oninput="calcCost()"
-            />
-            </div>
-          </div>
-        </div>
-    
-          <div>
-            <label class="fld" for="cost-fee">One-time setup fee ($)</label>
+            <label class="fld" for="cost-n">Months you would subscribe n</label>
             <input
               type="number"
-              id="cost-fee"
+              id="cost-n"
               data-save
-              step="0.01"
-              min="0"
-              placeholder="example: 4.50"
+              min="1"
+              placeholder=""
               oninput="calcCost()"
             />
-          </div>
-        </div>
-        <label class="fld" for="cost-n">Months you would subscribe n</label>
-        <input
-          type="number"
-          id="cost-n"
-          data-save
-          min="1"
-          placeholder="example: 6"
-          oninput="calcCost()"
-        />
-        <button class="btn alt" type="button" onclick="calcCost()">
-          Evaluate my cost pn + fee
-        </button>
-        <div class="readout" id="cost-out"></div>
+            <button class="btn alt" type="button" onclick="calcCost()">
+              Evaluate my cost pn + fee
+            </button>
+            <div class="readout" id="cost-out"></div>
+            <div
+              class="pki-manip"
+              data-manip="expr-machine"
+              data-coef-name="price per month"
+              data-var-name="months"
+              data-const-name="setup fee"
+              data-result-name="cost"
+              data-default-a="5"
+              data-default-x="6"
+              data-default-b="4"
+            ></div>
 
-        <div class="pk-lvl1" style="margin-top: 16px">
-          <div class="task">
-            <strong>Level 1 — pick the right expression:</strong> "$9.99 each
-            month, plus a one-time $4.50 setup fee" is written as…
+            <div class="pk-lvl1" style="margin-top: 16px">
+              <div class="task">
+                <strong>Level 1 — pick the right expression:</strong> "$9.99
+                each month, plus a one-time $4.50 setup fee" is written as…
+              </div>
+              <label class="fld" for="mc-expr"
+                >Choose the matching expression</label
+              >
+              <select id="mc-expr" data-save onchange="checkMcExpr()">
+                <option value="">— choose —</option>
+                <option value="a">9.99 + n + 4.50</option>
+                <option value="b">9.99n + 4.50</option>
+                <option value="c">9.99n × 4.50</option>
+                <option value="d">4.50n + 9.99</option>
+              </select>
+              <div class="feedback" id="mc-exprFb"></div>
+            </div>
+            <div class="pk-lvl2" style="margin-top: 16px">
+              <div class="task">
+                <strong>Level 2 — name the parts:</strong> In your expression
+                <em>pn + fee</em>, write a sentence naming the coefficient, the
+                variable, and the constant using your own numbers.
+              </div>
+              <label class="fld" for="parts2"
+                >Identify coefficient, variable, and constant</label
+              >
+              <input type="text" id="parts2" data-save placeholder="" />
+            </div>
+            <details class="hintbox">
+              <summary>Need a hint?</summary>
+              <p>
+                "$p each month" means p times n, written pn. "Plus a one-time
+                setup fee" means + fee, added only once at the end. So the cost
+                is pn + fee. Multiply before adding (order of operations).
+              </p>
+            </details>
           </div>
-          <label class="fld" for="mc-expr"
-            >Choose the matching expression</label
+
+          <div
+            style="
+              background: var(--bg);
+              border: 2.5px solid var(--line);
+              border-radius: 18px;
+              padding: 20px;
+              box-shadow: var(--shadow);
+              height: fit-content;
+            "
+            class="pk-no-print"
           >
-          <select id="mc-expr" data-save onchange="checkMcExpr()">
-            <option value="">— choose —</option>
-            <option value="a">9.99 + n + 4.50</option>
-            <option value="b">9.99n + 4.50</option>
-            <option value="c">9.99n × 4.50</option>
-            <option value="d">4.50n + 9.99</option>
-          </select>
-          <div class="feedback" id="mc-exprFb"></div>
-        </div>
-        <div class="pk-lvl2" style="margin-top: 16px">
-          <div class="task">
-            <strong>Level 2 — name the parts:</strong> In your expression
-            <em>pn + fee</em>, write a sentence naming the coefficient, the
-            variable, and the constant using your own numbers.
-          </div>
-          <label class="fld" for="parts2"
-            >Identify coefficient, variable, and constant</label
-          >
-          <input
-            type="text"
-            id="parts2"
-            data-save
-            placeholder="example: coefficient 9.99, variable n, constant 4.50"
-          />
-        </div>
-        <details class="hintbox">
-          <summary>Need a hint?</summary>
-          <p>
-            "$p each month" means p times n, written pn. "Plus a one-time setup
-            fee" means + fee, added only once at the end. So the cost is pn +
-            fee. Multiply before adding (order of operations).
-          </p>
-        </details>
-          </div>
-          
-          <div style="background: var(--bg); border: 2.5px solid var(--line); border-radius: 18px; padding: 20px; box-shadow: var(--shadow); height: fit-content;" class="pk-no-print">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px; color: var(--navy); font-size: 16px;">
+            <h3
+              style="
+                margin-top: 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: var(--navy);
+                font-size: 16px;
+              "
+            >
               <span>💡</span> Guided Steps &amp; Help
             </h3>
-            
-      <p style="font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-bottom: 12px;">
-        <strong>Writing and Evaluating Algebraic Expressions:</strong>
-      </p>
-      <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>Identify the constant (one-time fee) and the rate (cost per item).</li>
-        <li>Write the variable expression: $\text{Rate} \times x + \text{Constant}$ (e.g. $15x + 50$, where $x$ is the variable).</li>
-        <li><b>Evaluate the expression</b>: Replace the variable $x$ with the specified number of items.</li>
-        <li>Follow the <b>Order of Operations (PEMDAS)</b>: Multiply first, then add the constant.</li>
-      </ol>
-      <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
-        💡 <b>Example:</b> Gym cost is $15 per month plus a $30 signup fee. Expression = $15m + 30$. For 6 months: $(15 \times 6) + 30 = 90 + 30 = \mathbf{\$120}$.
-      </div>
-    
+
+            <p
+              style="
+                font-size: 13.5px;
+                line-height: 1.5;
+                color: var(--muted);
+                margin-bottom: 12px;
+              "
+            >
+              <strong>Writing and Evaluating Algebraic Expressions:</strong>
+            </p>
+            <ol
+              style="
+                margin-left: 18px;
+                font-size: 13px;
+                line-height: 1.5;
+                display: grid;
+                gap: 8px;
+                color: var(--ink);
+              "
+            >
+              <li>
+                Identify the constant (one-time fee) and the rate (cost per
+                item).
+              </li>
+              <li>
+                Write the variable expression: Rate × x + Constant (e.g. 15x +
+                50, where x is the variable).
+              </li>
+              <li>
+                <b>Evaluate the expression</b>: Replace the variable x with the
+                specified number of items.
+              </li>
+              <li>
+                Follow the <b>Order of Operations (PEMDAS)</b>: Multiply first,
+                then add the constant.
+              </li>
+            </ol>
+            <div
+              style="
+                margin-top: 14px;
+                padding: 10px;
+                background: var(--sky);
+                border-radius: 8px;
+                font-size: 12px;
+              "
+            >
+              💡 <b>Example:</b> Gym cost is $15 per month plus a $30 signup
+              fee. Expression = 15m + 30. For 6 months: (15 × 6) + 30 = 90 + 30
+              = 120.
+            </div>
           </div>
         </div>
       </section>
-    
 
-      
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
       <section class="pk-visualizer-card no-print">
         <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
-        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
-          This visual interactive canvas updates in real-time as you complete your math calculations.
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px">
+          This visual interactive canvas updates in real-time as you complete
+          your math calculations.
         </p>
         <div id="projectVisualizer"></div>
       </section>
-  
+
       <!-- ===================== PART 2 — PEER ===================== -->
       <section class="phase">
         <div class="phase-head">
@@ -950,6 +1305,11 @@
           price and setup fee, then pick the same number of months to evaluate
           both plans. Who charges less? Where do they cross over?
         </p>
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 tip: put the same number of months into both plans. Do price ×
+          months first, then add the setup fee. The smaller total is the cheaper
+          plan at that number of months.
+        </p>
         <div class="pk-callout pk-no-print" style="margin-bottom: 14px">
           <h3>Interview Sentence Frames</h3>
           <p>"What is your app's monthly price? What is your setup fee?"</p>
@@ -964,12 +1324,7 @@
             <label class="fld" for="partnerName"
               >Partner name or initials</label
             >
-            <input
-              type="text"
-              id="partnerName"
-              data-save
-              placeholder="example: A.J."
-            />
+            <input type="text" id="partnerName" data-save placeholder="" />
           </div>
           <div>
             <label class="fld" for="p-p">Partner: monthly price p ($)</label>
@@ -979,7 +1334,7 @@
               data-save
               step="0.01"
               min="0"
-              placeholder="example: 7.50"
+              placeholder=""
               oninput="comparePeer()"
             />
           </div>
@@ -991,7 +1346,7 @@
               data-save
               step="0.01"
               min="0"
-              placeholder="example: 12.00"
+              placeholder=""
               oninput="comparePeer()"
             />
           </div>
@@ -1002,7 +1357,7 @@
               id="cmp-n"
               data-save
               min="1"
-              placeholder="example: 6"
+              placeholder=""
               oninput="comparePeer()"
             />
           </div>
@@ -1015,21 +1370,13 @@
         <label class="fld" for="peerReflect"
           >Whose plan charges less, and at what point does it change?</label
         >
-        <textarea
-          id="peerReflect"
-          data-save
-          placeholder="At ___ months, my plan costs $___ and my partner's costs $___, so ___."
-        ></textarea>
+        <textarea id="peerReflect" data-save placeholder=""></textarea>
         <div class="pk-lvl2">
           <label class="fld" for="crossover2"
             >Level 2: Set the two plans equal (pn + fee = p₂n + fee₂) and solve
             for the crossover month n. Show your steps.</label
           >
-          <textarea
-            id="crossover2"
-            data-save
-            placeholder="pn + fee = p₂n + fee₂ → ... → n = ___ because ___"
-          ></textarea>
+          <textarea id="crossover2" data-save placeholder=""></textarea>
         </div>
       </section>
 
@@ -1057,6 +1404,11 @@
           <strong>pn + fee</strong>. Pick one and see where your value lands at
           the same number of months.
         </p>
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 tip: read one row from the table, then use the same test
+          months for your own plan. Compare the two totals — is yours higher or
+          lower?
+        </p>
         <div class="grid2">
           <div>
             <label class="fld" for="worldCat">Compare against</label>
@@ -1073,7 +1425,7 @@
               min="1"
               value="6"
               oninput="worldGo()"
-              placeholder="example: 6"
+              placeholder=""
             />
             <label class="fld" for="myWorld">My number ($)</label>
             <input
@@ -1082,7 +1434,7 @@
               data-save
               step="0.01"
               oninput="worldGo()"
-              placeholder="type your value"
+              placeholder=""
             />
             <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
               Tip: your total cost from Part 1 (pn + fee) is a great value to
@@ -1152,32 +1504,20 @@
           >Is your plan cheaper or pricier than the sample plans? Why might that
           be?</label
         >
-        <textarea
-          id="worldReflect"
-          data-save
-          placeholder="My total is ___ the sample average because my price is ___ and my fee is ___."
-        ></textarea>
+        <textarea id="worldReflect" data-save placeholder=""></textarea>
         <div class="pk-lvl2">
           <label class="fld" for="worldHard"
             >Level 2: Justify in writing why 2(n + 3) equals 2n + 6 using the
             distributive property, then design a third, fairer pricing plan and
             explain it.</label
           >
-          <textarea
-            id="worldHard"
-            data-save
-            placeholder="2(n + 3) = 2·n + 2·3 = 2n + 6 by the distributive property. A fairer plan would be ___ because ___."
-          ></textarea>
+          <textarea id="worldHard" data-save placeholder=""></textarea>
         </div>
         <label class="fld" for="careful"
           >Careful thinking: why is it tricky to say one plan is "best" for
           every customer?</label
         >
-        <textarea
-          id="careful"
-          data-save
-          placeholder="It depends on ___ because ___."
-        ></textarea>
+        <textarea id="careful" data-save placeholder=""></textarea>
       </section>
 
       <!-- ===================== DELIVERABLE ===================== -->
@@ -1193,11 +1533,7 @@
           Write a short pricing memo (3–5 sentences) that uses your real numbers
           and expressions from above.
         </p>
-        <textarea
-          id="pitch"
-          data-save
-          placeholder="Manager, the app ___ costs $___ per month plus a $___ setup fee, so its expression is ___n + ___. After ___ months the total is $___. Compared to my partner's plan, mine ___. I verified that 2(n + 3) = 2n + 6 using the distributive property. I recommend ___ because ___."
-        ></textarea>
+        <textarea id="pitch" data-save placeholder=""></textarea>
 
         <h3 style="margin: 22px 0 6px">Analyst Checklist</h3>
         <ul class="checklist" id="checklist">
@@ -1322,7 +1658,10 @@
       const yrEl = document.getElementById("yr");
       if (yrEl) yrEl.textContent = new Date().getFullYear();
       const $ = (id) => document.getElementById(id);
-      const num = (id) => { const e = $(id); return e ? parseFloat(e.value) : NaN; };
+      const num = (id) => {
+        const e = $(id);
+        return e ? parseFloat(e.value) : NaN;
+      };
 
       function show(id, html) {
         const el = $(id);
@@ -1542,49 +1881,55 @@
         if (cat === "total") return world.map((r) => worldTotal(r));
         return world.map((r) => r[wIdx[cat]]);
       }
-      
+
       function worldGo() {
         const my = num("myWorld");
-        const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
+        const customName = $("worldCountry")
+          ? $("worldCountry").value.trim()
+          : "";
         const customSize = $("cost-p") ? num("cost-p") : NaN;
-        
+
         let sample = worldSample();
         if (!isNaN(customSize) && customSize > 0) {
           sample = [...sample, customSize];
         }
-        
+
         const labels =
-          ($("worldCat") || {}).value === "costPerGuest" || ($("worldCat") || {}).value === "price"
-            ? { mean: "City avg $", me: "Me $" }
-            : { mean: "City avg", me: "Me" };
-            
+          ($("worldCat") || {}).value === "costPerGuest" ||
+          ($("worldCat") || {}).value === "price"
+            ? { mean: "Sample avg $", me: "Me $" }
+            : { mean: "Sample avg", me: "Me" };
+
         PK.worldMeter("worldMeter", sample, my, labels);
-        
+
         const fb = $("worldMeter");
         if (!isNaN(customSize) && customSize > 0 && customName) {
           const ratio = (my / customSize).toFixed(2);
           const pct = Math.round((my / customSize) * 100);
           const diff = Math.abs(my - customSize).toFixed(2);
-          
+
           let myValStr = true ? "$" + my.toFixed(2) : my + "";
           let custValStr = true ? "$" + customSize.toFixed(2) : customSize + "";
-          let diffStr = true ? "$" + Number(diff).toFixed(2) : Number(diff).toFixed(2) + "";
+          let diffStr = true
+            ? "$" + Number(diff).toFixed(2)
+            : Number(diff).toFixed(2) + "";
 
-          const rel = my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
-          const desc = `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
+          const rel =
+            my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
+          const desc =
+            `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
             `📊 Research Comparison: Your value (${myValStr}) is <strong>${rel}</strong> than <strong>${customName}</strong> (${custValStr}) ` +
             `by <strong>${diffStr}</strong>. Your value is <strong>${pct}%</strong> (${ratio}x) of the size of the researched benchmark.` +
             `</div>`;
           fb.innerHTML += desc;
         }
-        
-        if (typeof drawVisualizer === 'function') {
+
+        if (typeof drawVisualizer === "function") {
           drawVisualizer();
         }
-        
+
         updateProgress();
       }
-  
 
       /* ---- Equivalent-expression prover: 2(n+3) vs 2n+6 ---- */
       function proveEquiv() {
@@ -1627,7 +1972,7 @@
       }
 
       /* ---- What-If: add one more month ---- */
-      
+
       function runWhatIf() {
         const p = num("cost-p");
         const fee = num("cost-fee");
@@ -1645,13 +1990,11 @@
           "Add one more month (cost = $" + p + "·n + $" + fee + " setup):",
         );
       }
-  
 
       /* ---- Use example numbers ---- */
       function useExamples() {
         const ex = {
-          
-          "worldCountry": "Netflix Standard",
+          worldCountry: "Netflix Standard",
           "cost-p": 15.49,
           appName: "StreamPro",
           "cost-fee": 4.5,
@@ -1661,7 +2004,6 @@
           "cmp-n": 6,
           worldN: 6,
           myWorld: "",
-          
         };
         Object.entries(ex).forEach(([k, v]) => {
           if ($(k)) $(k).value = v;
@@ -1669,52 +2011,64 @@
         recalcAll();
       }
 
-      
-
-      
       function drawVisualizer() {
-        const leftExpr = num("exp-left") || 0;
-        const rightExpr = num("exp-right") || 0;
-        
+        const myPrice = num("cost-p");
+        const myFee = num("cost-fee");
+        let months = num("cmp-n");
+        if (isNaN(months)) months = num("cost-n");
+        const partnerPrice = num("p-p");
+        const partnerFee = num("p-fee");
+
+        const hasMine = !isNaN(myPrice) && !isNaN(myFee) && !isNaN(months);
+        const hasTheirs =
+          !isNaN(partnerPrice) && !isNaN(partnerFee) && !isNaN(months);
+        const leftExpr = hasMine ? myPrice * months + myFee : 0;
+        const rightExpr = hasTheirs ? partnerPrice * months + partnerFee : 0;
+
         let html = "";
         const tilt = Math.min(Math.max((leftExpr - rightExpr) * 2, -15), 15);
-        const isBal = (leftExpr === rightExpr && leftExpr > 0);
-        
-        if (leftExpr > 0 || rightExpr > 0) {
+        const isBal = hasMine && hasTheirs && leftExpr === rightExpr;
+
+        if (hasMine || hasTheirs) {
           html = `
             <g transform="translate(250, 150)">
               <!-- Balance Stand -->
               <line x1="0" y1="0" x2="0" y2="60" stroke="#0f2b3c" stroke-width="6" />
               <polygon points="-30,60 30,60 20,55 -20,55" fill="#0f2b3c" />
-              
+
               <!-- Tilted Beam -->
               <g transform="rotate(${tilt})">
                 <line x1="-120" y1="0" x2="120" y2="0" stroke="#0f2b3c" stroke-width="4" />
-                
+
                 <!-- Left Pan -->
                 <line x1="-100" y1="0" x2="-100" y2="40" stroke="#5e6e7e" stroke-width="1.5" />
                 <path d="M -130 40 L -70 40 L -80 50 L -120 50 Z" fill="#cbd5e1" stroke="#5e6e7e" stroke-width="1.5" />
-                <text x="-100" y="32" text-anchor="middle" font-size="10" font-weight="bold" fill="#1a6fb5">Left: ${leftExpr}</text>
-                
+                <text x="-100" y="32" text-anchor="middle" font-size="10" font-weight="bold" fill="#1a6fb5">Mine: $${leftExpr.toFixed(2)}</text>
+
                 <!-- Right Pan -->
                 <line x1="100" y1="0" x2="100" y2="40" stroke="#5e6e7e" stroke-width="1.5" />
                 <path d="M 70 40 L 130 40 L 120 50 L 80 50 Z" fill="#cbd5e1" stroke="#5e6e7e" stroke-width="1.5" />
-                <text x="100" y="32" text-anchor="middle" font-size="10" font-weight="bold" fill="#0e8a7d">Right: ${rightExpr}</text>
+                <text x="100" y="32" text-anchor="middle" font-size="10" font-weight="bold" fill="#0e8a7d">Partner: $${rightExpr.toFixed(2)}</text>
               </g>
             </g>
-            
-            ${isBal ? `
-              <text x="250" y="60" text-anchor="middle" font-size="14" font-weight="bold" fill="#2d874b">⚖️ BALANCED EQUALITY!</text>
-            ` : `
-              <text x="250" y="60" text-anchor="middle" font-size="14" font-weight="bold" fill="#c45a3c">⚖️ UNBALANCED EXPRESSIONS</text>
-            `}
+
+            <text x="250" y="40" text-anchor="middle" font-size="11" fill="#5e6e7e">Total cost for ${months} month${months === 1 ? "" : "s"}</text>
+            ${
+              isBal
+                ? `
+              <text x="250" y="60" text-anchor="middle" font-size="14" font-weight="bold" fill="#2d874b">⚖️ BALANCED — both plans cost the same!</text>
+            `
+                : `
+              <text x="250" y="60" text-anchor="middle" font-size="14" font-weight="bold" fill="#c45a3c">⚖️ UNBALANCED — one plan costs more</text>
+            `
+            }
           `;
         } else {
           html = `
-            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Left & Right expressions to balance scale</text>
+            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter your plan in Part 1 and your partner's plan in Part 2 to balance the scale</text>
           `;
         }
-        
+
         const svgString = `
           <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
             ${html}
@@ -1722,17 +2076,20 @@
         `;
         $("projectVisualizer").innerHTML = svgString;
       }
-    
-  
-function recalcAll() {
+
+      function recalcAll() {
         costLabel();
         calcCost();
         comparePeer();
         renderWorld();
         worldGo();
         updateProgress();
-      
-        if(typeof drawNamingSVG === "function"){drawNamingSVG(); drawExpressionSVG();}}
+
+        if (typeof drawNamingSVG === "function") {
+          drawNamingSVG();
+          drawExpressionSVG();
+        }
+      }
 
       /* ---- Report ---- */
       function reportText() {
@@ -1842,15 +2199,16 @@ function recalcAll() {
         costLabel();
         renderWorld();
         PK.initLevel({ storageKey: "u6ProjectB", default: "level-1" });
+        PK.initTts({ storageKey: "u6ProjectB" });
         PK.load("u6ProjectB", { after: recalcAll });
         updateProgress();
       });
-    
+
       function drawNamingSVG() {
         const name = $("appName") ? $("appName").value.trim() : "";
         const svg = $("phase-svg-1a");
         if (!svg) return;
-        
+
         svg.innerHTML = `
           <defs>
             <linearGradient id="app-grad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -1872,23 +2230,29 @@ function recalcAll() {
           </text>
         `;
       }
-      
+
       function drawExpressionSVG() {
-        const rate = num("cost-p");
-        const flat = num("cost-fee");
-        const months = num("cost-n");
+        let rate = num("cost-p");
+        let flat = num("cost-fee");
+        let months = num("cost-n");
         const svg = $("phase-svg-1b");
         if (!svg) return;
-        
-        if (isNaN(rate) || isNaN(flat) || isNaN(months)) {
-          svg.innerHTML = '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter monthly price, fee & months to draw flow machine</text>';
-          return;
+
+        // Show a worked EXAMPLE (5n + 10 at n = 6 → 40) as the default so the
+        // machine always has something to "look at first"; switch to the
+        // student's own numbers as soon as they fill all three in.
+        const isExample = isNaN(rate) || isNaN(flat) || isNaN(months);
+        if (isExample) {
+          rate = 5;
+          flat = 10;
+          months = 6;
         }
-        
+
         const total = rate * months + flat;
-        
+
         svg.innerHTML = `
           <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Expression Flow Machine: ${rate}n + ${flat}</text>
+          ${isExample ? `<rect x="372" y="14" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="28" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · 5n + 10</text>` : ""}
           
           <g transform="translate(40, 70)">
             <rect x="0" y="15" width="80" height="40" rx="8" fill="#e8f2fc" stroke="#1a6fb5" stroke-width="1.5" />
@@ -1898,13 +2262,13 @@ function recalcAll() {
             
             <rect x="120" y="10" width="100" height="50" rx="8" fill="#e0f2f1" stroke="#004d40" stroke-width="1.5" />
             <text x="170" y="33" text-anchor="middle" font-size="11" font-weight="bold" fill="#004d40">Monthly $${rate}</text>
-            <text x="170" y="48" text-anchor="middle" font-size="10" fill="#00796b">${months} &times; $${rate} = $${(months*rate).toFixed(2)}</text>
+            <text x="170" y="48" text-anchor="middle" font-size="10" fill="#00796b">${months} &times; $${rate} = $${(months * rate).toFixed(2)}</text>
             
             <line x1="220" y1="35" x2="260" y2="35" stroke="#cbd5e1" stroke-width="2" marker-end="url(#arr-arrow)" />
             
             <rect x="260" y="10" width="100" height="50" rx="8" fill="#fff8e1" stroke="#ff8f00" stroke-width="1.5" />
             <text x="310" y="33" text-anchor="middle" font-size="11" font-weight="bold" fill="#ff8f00">Setup Fee $${flat}</text>
-            <text x="310" y="48" text-anchor="middle" font-size="10" fill="#ffa000">$${(months*rate).toFixed(2)} + $${flat.toFixed(2)}</text>
+            <text x="310" y="48" text-anchor="middle" font-size="10" fill="#ffa000">$${(months * rate).toFixed(2)} + $${flat.toFixed(2)}</text>
             
             <line x1="360" y1="35" x2="400" y2="35" stroke="#cbd5e1" stroke-width="2" marker-end="url(#arr-arrow)" />
             
@@ -1919,15 +2283,114 @@ function recalcAll() {
           </defs>
         `;
       }
-    
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
+    <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
+    <script type="application/json" id="pk-research">
+      {
+        "icon": "🔎",
+        "title": "Research Lab — Build the Pricing Formula",
+        "intro": "App makers turn pricing into an expression you can evaluate for any input. Look up how expressions work, then model your own.",
+        "brief": {
+          "theme": "field",
+          "title": "📊 Your Research Mission",
+          "hook": "Find how to <b>write and evaluate expressions</b>, then turn your pricing into one.",
+          "steps": [
+            "Open a link (new tab — you keep your project).",
+            "Record the rules in Field Notes.",
+            "Build and evaluate your expression in the math problems.",
+            "Check off the Investigation Checklist."
+          ]
+        },
+        "fieldNotes": {
+          "title": "Field Notes — Record What You Find",
+          "intro": "Jot the exact number or rule you find. You'll reuse these in the math below.",
+          "fields": [
+            {
+              "label": "What 'evaluate an expression' means",
+              "source": "Math is Fun",
+              "placeholder": "substitute a value for the variable",
+              "hint": "Replace the letter with a number, then compute."
+            },
+            {
+              "label": "What 'like terms' are",
+              "source": "Math is Fun",
+              "placeholder": "terms with the same variable",
+              "hint": "3x and 5x are like terms."
+            },
+            {
+              "label": "Your per-item price (a real number you choose)",
+              "source": "Your plan",
+              "placeholder": "$2 per level",
+              "hint": "This becomes the coefficient."
+            },
+            {
+              "label": "Your one-time/base fee",
+              "source": "Your plan",
+              "placeholder": "$5 to start",
+              "hint": "This becomes the constant."
+            }
+          ]
+        },
+        "mathTasks": [
+          {
+            "title": "1 · Write the expression",
+            "prompt": "Using your price (Field Note 3) and base fee (Field Note 4), write an expression like <b>2x + 5</b> for total cost, where x is the number of items.",
+            "level2": "State in words what x and each number mean."
+          },
+          {
+            "title": "2 · Evaluate it",
+            "prompt": "Evaluate your expression for x = 4 and x = 10. Show each substitution and computation.",
+            "level2": "Make a small table of x = 0, 4, 10 and their totals."
+          },
+          {
+            "title": "3 · Simplify",
+            "prompt": "Combine like terms in this: 3x + 2 + 2x + 4. Then evaluate your simplified expression for x = 5.",
+            "level2": "Explain why combining like terms does not change the value."
+          }
+        ],
+        "investigationChecklist": [
+          "I recorded what 'evaluate' means.",
+          "I recorded what like terms are.",
+          "I chose a real per-item price and base fee.",
+          "I wrote a cost expression.",
+          "I evaluated it for two values.",
+          "I combined like terms in an expression."
+        ],
+        "links": [
+          {
+            "icon": "🔤",
+            "name": "Math is Fun — Substitution (evaluating)",
+            "url": "https://www.mathsisfun.com/algebra/substitution.html",
+            "find": "How to replace a variable with a number.",
+            "look": "substitute, then calculate"
+          },
+          {
+            "icon": "➕",
+            "name": "Math is Fun — Like Terms",
+            "url": "https://www.mathsisfun.com/algebra/like-terms.html",
+            "find": "Which terms you can combine.",
+            "look": "same variable to the same power"
+          },
+          {
+            "icon": "📖",
+            "name": "Math is Fun — Algebra Definitions",
+            "url": "https://www.mathsisfun.com/algebra/definitions.html",
+            "find": "What a term, coefficient, and constant are.",
+            "look": "the labeled parts of an expression"
+          }
+        ],
+        "note": "These sites were picked for class. They open in a new tab so you keep your project. If a page asks you to sign in or buy something, just close it and come back."
+      }
+    </script>
     <script src="/shared/projects/projects-tabs.js" defer></script>
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <script src="/shared/projects/projects-interactive.js" defer></script>
+    <script src="/shared/projects/manip-expr-machine.js" defer></script>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+  </body>
 </html>

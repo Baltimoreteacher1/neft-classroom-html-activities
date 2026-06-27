@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Submarine Mission Control — Unit 7 Culminating Project</title>
     <meta
       name="description"
@@ -442,11 +442,13 @@
     <!-- nsr-injected:end -->
     <link rel="stylesheet" href="/shared/projects/projects-premium.css" />
     <link rel="stylesheet" href="/shared/projects/projects-tabs.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-tplus.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-interactive.css" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
-  <body class="pk">
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
+  <body class="pk" data-pk-theme="u7">
     <header class="phero">
       <div class="deco">🌊</div>
       <h1>Submarine Mission Control</h1>
@@ -468,6 +470,15 @@
           <button data-level-btn="level-1" type="button">🟢 Level 1</button>
           <button data-level-btn="level-2" type="button">🔵 Level 2</button>
         </span>
+        <button
+          class="pk-tts-toggle"
+          data-tts-toggle
+          type="button"
+          aria-pressed="false"
+          title="Read text aloud"
+        >
+          🔊 Read aloud
+        </button>
         <button onclick="PK.save('u7ProjectB')">💾 Save</button>
         <button
           onclick="PK.load('u7ProjectB', { show: true, after: recalcAll })"
@@ -543,10 +554,7 @@
               <text x="4" y="13" font-size="9" fill="#d4952a">|−3|=3</text>
             </svg>
             <b>Absolute Value</b>
-            <p>
-              |n| is the distance from 0 on a number line — never negative.
-              |−120| = 120 m from sea level.
-            </p>
+            <p>How far a number is from 0. It is never negative.</p>
             <p class="pk-es">
               Valor absoluto: |n| es la distancia desde 0 — nunca es negativo.
               |−120| = 120.
@@ -569,10 +577,7 @@
               <polygon points="56,19 60,22 56,25" fill="#0a4f7a" />
             </svg>
             <b>Ordering Integers</b>
-            <p>
-              On a number line, left is less. More negative = smaller. −7 &lt;
-              −3 &lt; 0 &lt; 2.
-            </p>
+            <p>On a number line, numbers on the left are smaller.</p>
             <p class="pk-es">
               Ordenar enteros: a la izquierda es menor. Más negativo = más
               pequeño.
@@ -602,8 +607,8 @@
             </svg>
             <b>Sea Level = 0 (reference)</b>
             <p>
-              Zero is the reference point. Above sea level is positive (+),
-              below is negative (−).
+              Zero is the starting point. Above the water is positive, below is
+              negative.
             </p>
             <p class="pk-es">
               Nivel del mar = 0: arriba es positivo (+), abajo es negativo (−).
@@ -633,10 +638,7 @@
               <text x="13" y="13" font-size="9" fill="#c45a3c">−</text>
             </svg>
             <b>Integer (positive / negative)</b>
-            <p>
-              Whole numbers including negatives: …−2, −1, 0, 1, 2… Negatives
-              describe below-zero amounts.
-            </p>
+            <p>A whole number, like −2, 0, or 5. It can be negative.</p>
             <p class="pk-es">
               Entero: números enteros con negativos: …−2, −1, 0, 1, 2…
             </p>
@@ -680,10 +682,7 @@
               </text>
             </svg>
             <b>Range / Spread (Level 2)</b>
-            <p>
-              Range = greatest − least. It measures how spread out a set of
-              readings is.
-            </p>
+            <p>How spread out the numbers are: biggest minus smallest.</p>
             <p class="pk-es">
               Rango = mayor − menor. Mide qué tan dispersos están los datos.
             </p>
@@ -692,14 +691,66 @@
         <div class="grid2" style="margin-top: 18px">
           <div class="pk-callout">
             <h3>Formula Bank</h3>
-            <p><b>Absolute value:</b> |n| = distance from 0 (sea level = 0)</p>
-            <p><b>Distance from sea level:</b> |depth|</p>
-            <p><b>Total vertical span:</b> |lowest| + |highest|</p>
-            <p>
-              <b>Order:</b> least → greatest, left → right on the number line
-            </p>
-            <p><b>Safe check:</b> |depth| ≤ limit → safe</p>
-            <p class="pk-lvl2"><b>Range (Level 2):</b> greatest − least</p>
+            <ul class="pk-formula">
+              <li>
+                <span class="pk-f-name">Absolute value</span>
+                <span class="pk-f-mean"
+                  >How far a number is from 0 (sea level) on the number line. It
+                  is never negative.</span
+                >
+                <span class="pk-eg"
+                  >Example: a diver at −18 m is |−18| = 18 m from the
+                  surface.</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Distance from sea level</span>
+                <span class="pk-f-mean"
+                  >Take the absolute value of the depth or height. Sea level is
+                  the zero point.</span
+                >
+                <span class="pk-eg"
+                  >Example: |−40| = 40 m below the surface.</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Total vertical span</span>
+                <span class="pk-f-mean"
+                  >Add how far the lowest point is below zero to how far the
+                  highest point is above zero.</span
+                >
+                <span class="pk-eg"
+                  >Example: |−40| + |25| = 40 + 25 = 65 m from bottom to
+                  top.</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Order integers</span>
+                <span class="pk-f-mean"
+                  >On a number line, numbers get bigger from left to right. The
+                  most negative number is the least.</span
+                >
+                <span class="pk-eg">Example: −12 &lt; −3 &lt; 0 &lt; 7.</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Safe check</span>
+                <span class="pk-f-mean"
+                  >Compare the distance from 0 to the limit. If |depth| ≤ limit,
+                  it is safe.</span
+                >
+                <span class="pk-eg"
+                  >Example: |−30| = 30 ≤ 40 limit → safe.</span
+                >
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">Range / spread (Level 2)</span>
+                <span class="pk-f-mean"
+                  >Range = greatest − least. It tells how spread out the
+                  readings are.</span
+                >
+                <span class="pk-eg">Example: 7 − (−12) = 19.</span>
+              </li>
+            </ul>
           </div>
           <div class="pk-callout">
             <h3>Sentence Frames</h3>
@@ -721,7 +772,7 @@
       </section>
 
       <!-- ===================== PART 1 — SELF ===================== -->
-      
+
       <!-- ===================== PROJECT SETUP ===================== -->
       <section class="phase" id="phase-setup" data-phase>
         <div class="phase-head">
@@ -731,38 +782,136 @@
             <h2>Your Highs, Lows &amp; Temperatures</h2>
           </div>
         </div>
-        
+
         <div class="grid2">
           <div>
-            <p style="font-size: 15px; color: var(--muted); line-height: 1.6; margin-bottom: 20px;">
-              Welcome! Read the scenario below and select your level to begin your design plan.
+            <p
+              style="
+                font-size: 15px;
+                color: var(--muted);
+                line-height: 1.6;
+                margin-bottom: 20px;
+              "
+            >
+              Welcome! Read the scenario below and select your level to begin
+              your design plan.
             </p>
-            <div style="margin-top: 16px;">
-              
-    <svg width="100%" height="220" viewBox="0 0 500 220" style="background:white; border-radius:12px; border: 1px solid #e2e8f0; max-width: 480px; margin: 0 auto; display: block;" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="setup-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#ffffff" />
-          <stop offset="100%" stop-color="#f8fafc" />
-        </linearGradient>
-      </defs>
-      
-      <rect x="20" y="20" width="460" height="200" rx="15" fill="url(#setup-grad)" stroke="#2d874b" stroke-width="2"/>
-      <text x="250" y="60" text-anchor="middle" font-size="20" font-weight="bold" fill="#0f2b3c">SPEED RATE TRACKER</text>
-      <path d="M180,150 A70,70 0 0,1 320,150" fill="none" stroke="#e2e7ec" stroke-width="10"/>
-      <path d="M180,150 A70,70 0 0,1 270,95" fill="none" stroke="#2d874b" stroke-width="10"/>
-      <line x1="250" y1="150" x2="270" y2="90" stroke="#c45a3c" stroke-width="3"/>
-    
-    </svg>
-  
+            <div style="margin-top: 16px">
+              <svg
+                width="100%"
+                height="220"
+                viewBox="0 0 500 220"
+                style="
+                  background: white;
+                  border-radius: 12px;
+                  border: 1px solid #e2e8f0;
+                  max-width: 480px;
+                  margin: 0 auto;
+                  display: block;
+                "
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <defs>
+                  <linearGradient
+                    id="setup-grad"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop offset="0%" stop-color="#ffffff" />
+                    <stop offset="100%" stop-color="#f8fafc" />
+                  </linearGradient>
+                </defs>
+
+                <rect
+                  x="20"
+                  y="20"
+                  width="460"
+                  height="200"
+                  rx="15"
+                  fill="url(#setup-grad)"
+                  stroke="#2d874b"
+                  stroke-width="2"
+                />
+                <text
+                  x="250"
+                  y="60"
+                  text-anchor="middle"
+                  font-size="20"
+                  font-weight="bold"
+                  fill="#0f2b3c"
+                >
+                  DEPTH GAUGE
+                </text>
+                <path
+                  d="M180,150 A70,70 0 0,1 320,150"
+                  fill="none"
+                  stroke="#e2e7ec"
+                  stroke-width="10"
+                />
+                <path
+                  d="M180,150 A70,70 0 0,1 270,95"
+                  fill="none"
+                  stroke="#2d874b"
+                  stroke-width="10"
+                />
+                <line
+                  x1="250"
+                  y1="150"
+                  x2="270"
+                  y2="90"
+                  stroke="#c45a3c"
+                  stroke-width="3"
+                />
+              </svg>
             </div>
           </div>
-          
-          <div style="background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 20px; box-shadow: var(--shadow);">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px;">
+
+          <div
+            style="
+              background: var(--bg);
+              border: 1px solid var(--line);
+              border-radius: 12px;
+              padding: 20px;
+              box-shadow: var(--shadow);
+            "
+          >
+            <h3
+              style="
+                margin-top: 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+              "
+            >
               <span>📋</span> Scenario &amp; Level Options
             </h3>
-            <h2>Your Highs, Lows &amp; Temperatures</h2>
+            <p style="font-size: 14px; line-height: 1.6; margin: 0 0 10px">
+              You are a <strong>submarine mission-control officer</strong>. You
+              log real elevations and temperatures as positive and negative
+              integers, then use absolute value and ordering to read how high,
+              how deep, and how cold each one is.
+            </p>
+            <ul
+              style="
+                font-size: 14px;
+                line-height: 1.6;
+                margin: 0;
+                padding-left: 18px;
+              "
+            >
+              <li>
+                <strong>Level 1 (support):</strong> enter a high of +50 m and a
+                low of -85 m, then use |-85| to say how far below sea level that
+                is.
+              </li>
+              <li>
+                <strong>Level 2 (challenge):</strong> order four temperatures
+                like -18, -5, 18, 35 from coldest to warmest and find the range
+                (warmest - coldest).
+              </li>
+            </ul>
           </div>
         </div>
         <p>
@@ -770,20 +919,37 @@
           been is positive (+), lowest is negative (−). Not sure? Click
           <em>Use example numbers</em>.
         </p>
-        
 
         <!-- 1a Integers in context -->
-            
-            <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line);">
-              <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px;">
-                You can type your own numbers as you go, or click below to start with our example numbers:
-              </p>
-              <button class="btn ghost" type="button" onclick="useExamples()" style="width: 100%; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                ✨ Use Example Numbers
-              </button>
-            </div>
+
+        <div
+          style="
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--line);
+          "
+        >
+          <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px">
+            You can type your own numbers as you go, or click below to start
+            with our example numbers:
+          </p>
+          <button
+            class="btn ghost"
+            type="button"
+            onclick="useExamples()"
+            style="
+              width: 100%;
+              font-weight: bold;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 8px;
+            "
+          >
+            ✨ Use Example Numbers
+          </button>
+        </div>
       </section>
-  
 
       <!-- ===================== PART 1A — SELF ===================== -->
       <section class="phase" id="phase-1a" data-phase>
@@ -794,105 +960,251 @@
             <h2>🏔️ Highest &amp; lowest places (integers in context)</h2>
           </div>
         </div>
-        
-        <div class="grid2">
-          <div>
-            
-    <div class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
-      <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px;" xmlns="http://www.w3.org/2000/svg">
-        
-      <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Math Diagram Guide</text>
-      <rect x="150" y="60" width="200" height="90" rx="10" fill="rgba(14,138,125,0.1)" stroke="#0e8a7d" stroke-width="1.5"/>
-      <text x="250" y="110" text-anchor="middle" font-size="11" font-weight="bold" fill="#0e8a7d">Interactive Calculation Visual</text>
-    
-      </svg>
-    </div>
-  
-            <div class="task">
-          <strong>Enter:</strong> the highest place you have been above sea
-          level (positive, e.g., a mountain or plane), and the lowest below sea
-          level (negative, e.g., a deep pool, a basement, a valley below sea
-          level — or use a famous one).
-        </div>
-        <div class="grid2">
-          
-        <!-- ===================== INLINE RESEARCH LAB ===================== -->
-        <div class="pk-research-inline-card">
-          <div class="pk-research-inline-header">
-            <span class="pk-research-badge">🔍 Research Required</span>
-            <a href="https://www.ngdc.noaa.gov/mgg/bathymetry/relief.html" target="_blank" class="pk-research-inline-link">🔗 NOAA: Marine Geology & Ocean Bathymetry Relief ↗</a>
-          </div>
-          <p class="pk-research-inline-instructions">Open the NOAA database page. Look up the average depth of the Atlantic Ocean in meters (often 3,646 meters, represented as -3646 m). Enter the depth below as a negative integer:</p>
-          <div class="grid2">
-            <div>
-              <label class="fld" for="worldCountry">Ocean/Trench Researched</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. Mariana Trench" oninput="recalcAll()">
-            </div>
-            <div>
-              <label class="fld" for="high">Researched Ocean Depth (negative m)</label>
-              <input
-              type="number"
-              id="high"
-              data-save
-              min="0"
-              placeholder="example: 2500"
-              oninput="calcContext()"
-            />
-            </div>
-          </div>
-        </div>
-    
-          <div>
-            <label class="fld" for="low"
-              >Lowest place (meters, enter negative)</label
-            >
-            <input
-              type="number"
-              id="low"
-              data-save
-              max="0"
-              placeholder="example: -85"
-              oninput="calcContext()"
-            />
-          </div>
-        </div>
-        <button class="btn" type="button" onclick="calcContext()">
-          Interpret these values
-        </button>
-        <div class="readout" id="context-out"></div>
-        <details class="hintbox">
-          <summary>Need a hint?</summary>
-          <p>
-            Positive integers = above sea level (mountains, planes). Negative
-            integers = below sea level. Zero (sea level) is the reference point
-            — neither positive nor negative.
-          </p>
-        </details>
 
-        <!-- 1b Absolute value -->
+        <div class="grid2">
+          <div>
+            <div
+              class="pk-math-scaffold-card no-print"
+              style="
+                margin: 20px 0;
+                padding: 12px;
+                background: #fff;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+                max-width: 480px;
+                margin-left: auto;
+                margin-right: auto;
+              "
+            >
+              <svg
+                width="100%"
+                height="200"
+                viewBox="0 0 500 200"
+                style="background: #fff; border-radius: 8px"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <text
+                  x="250"
+                  y="30"
+                  text-anchor="middle"
+                  font-size="14"
+                  font-weight="bold"
+                  fill="#0f2b3c"
+                >
+                  Math Diagram Guide
+                </text>
+                <rect
+                  x="150"
+                  y="60"
+                  width="200"
+                  height="90"
+                  rx="10"
+                  fill="rgba(14,138,125,0.1)"
+                  stroke="#0e8a7d"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="250"
+                  y="110"
+                  text-anchor="middle"
+                  font-size="11"
+                  font-weight="bold"
+                  fill="#0e8a7d"
+                >
+                  Interactive Calculation Visual
+                </text>
+              </svg>
+            </div>
+
+            <div class="task">
+              <strong>Enter:</strong> the highest place you have been above sea
+              level (positive, e.g., a mountain or plane), and the lowest below
+              sea level (negative, e.g., a deep pool, a basement, a valley below
+              sea level — or use a famous one).
+            </div>
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: start with friendly numbers like a high of +50 m and
+              a low of −50 m. The low is the same distance below sea level as
+              the high is above it, because |−50| = 50.
+            </p>
+            <div class="grid2">
+              <!-- ===================== INLINE RESEARCH LAB ===================== -->
+              <div class="pk-research-inline-card">
+                <div class="pk-research-inline-header">
+                  <span class="pk-research-badge">🔍 Research Required</span>
+                  <a
+                    href="https://www.ngdc.noaa.gov/mgg/bathymetry/relief.html"
+                    target="_blank"
+                    class="pk-research-inline-link"
+                    >🔗 NOAA: Marine Geology & Ocean Bathymetry Relief ↗</a
+                  >
+                </div>
+                <p class="pk-research-inline-instructions">
+                  Open the NOAA database page. Look up the average depth of the
+                  Atlantic Ocean in meters (often 3,646 meters, represented as
+                  -3646 m). Enter the depth below as a negative integer:
+                </p>
+                <div class="grid2">
+                  <div>
+                    <label class="fld" for="worldCountry"
+                      >Ocean/Trench Researched</label
+                    >
+                    <input
+                      type="text"
+                      id="worldCountry"
+                      data-save
+                      placeholder=""
+                      oninput="recalcAll()"
+                    />
+                  </div>
+                  <div>
+                    <label class="fld" for="high"
+                      >Researched Ocean Depth (negative m)</label
+                    >
+                    <input
+                      type="number"
+                      id="high"
+                      data-save
+                      min="0"
+                      placeholder=""
+                      oninput="calcContext()"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label class="fld" for="low"
+                  >Lowest place (meters, enter negative)</label
+                >
+                <input
+                  type="number"
+                  id="low"
+                  data-save
+                  max="0"
+                  placeholder=""
+                  oninput="calcContext()"
+                />
+              </div>
+            </div>
+            <button class="btn" type="button" onclick="calcContext()">
+              Interpret these values
+            </button>
+            <div class="readout" id="context-out"></div>
+            <details class="hintbox">
+              <summary>Need a hint?</summary>
+              <p>
+                Positive integers = above sea level (mountains, planes).
+                Negative integers = below sea level. Zero (sea level) is the
+                reference point — neither positive nor negative.
+              </p>
+            </details>
+
+            <div class="pk-lvl2">
+              <div class="task">
+                <strong>Level 2 extension:</strong> Find the
+                <em>total vertical span</em> from your lowest point to your
+                highest point by adding their distances from sea level: |lowest|
+                + |highest|. Explain why you add instead of subtract when one
+                value is below zero and the other is above.
+              </div>
+            </div>
+
+            <div
+              class="pk-no-print"
+              style="
+                margin-top: 16px;
+                padding: 12px;
+                background: #fff;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+              "
+            >
+              <svg
+                id="phase-svg-1a"
+                width="100%"
+                height="200"
+                viewBox="0 0 500 200"
+                style="background: #fff; border-radius: 8px"
+                xmlns="http://www.w3.org/2000/svg"
+              ></svg>
+            </div>
+
+            <!-- 1b Absolute value -->
           </div>
-          
-          <div style="background: var(--bg); border: 2.5px solid var(--line); border-radius: 18px; padding: 20px; box-shadow: var(--shadow); height: fit-content;" class="pk-no-print">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px; color: var(--navy); font-size: 16px;">
+
+          <div
+            style="
+              background: var(--bg);
+              border: 2.5px solid var(--line);
+              border-radius: 18px;
+              padding: 20px;
+              box-shadow: var(--shadow);
+              height: fit-content;
+            "
+            class="pk-no-print"
+          >
+            <h3
+              style="
+                margin-top: 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: var(--navy);
+                font-size: 16px;
+              "
+            >
               <span>💡</span> Guided Steps &amp; Help
             </h3>
-            
-      <p style="font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-bottom: 12px;">
-        <strong>Reading integers in real life:</strong>
-      </p>
-      <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>Positive numbers (+) mean <b>above</b> zero — above sea level, or hotter than 0°.</li>
-        <li>Negative numbers (−) mean <b>below</b> zero — below sea level, or colder than 0°.</li>
-        <li>Zero is the reference point. The farther a number is from 0, the larger its size.</li>
-      </ol>
-      <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
-        💡 <b>Example:</b> Mount Everest is <b>+8,849 m</b> (above sea level); the Dead Sea shore is <b>−430 m</b> (below sea level).
-      </div>
-    
+
+            <p
+              style="
+                font-size: 13.5px;
+                line-height: 1.5;
+                color: var(--muted);
+                margin-bottom: 12px;
+              "
+            >
+              <strong>Reading integers in real life:</strong>
+            </p>
+            <ol
+              style="
+                margin-left: 18px;
+                font-size: 13px;
+                line-height: 1.5;
+                display: grid;
+                gap: 8px;
+                color: var(--ink);
+              "
+            >
+              <li>
+                Positive numbers (+) mean <b>above</b> zero — above sea level,
+                or hotter than 0°.
+              </li>
+              <li>
+                Negative numbers (−) mean <b>below</b> zero — below sea level,
+                or colder than 0°.
+              </li>
+              <li>
+                Zero is the reference point. The farther a number is from 0, the
+                larger its size.
+              </li>
+            </ol>
+            <div
+              style="
+                margin-top: 14px;
+                padding: 10px;
+                background: var(--sky);
+                border-radius: 8px;
+                font-size: 12px;
+              "
+            >
+              💡 <b>Example:</b> Mount Everest is <b>+8,849 m</b> (above sea
+              level); the Dead Sea shore is <b>−430 m</b> (below sea level).
+            </div>
           </div>
         </div>
       </section>
-    
 
       <!-- ===================== PART 1B — SELF ===================== -->
       <section class="phase" id="phase-1b" data-phase>
@@ -903,73 +1215,206 @@
             <h2>📏 Distance from sea level (absolute value)</h2>
           </div>
         </div>
-        
+
         <div class="grid2">
           <div>
-            
-    <div class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
-      <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px;" xmlns="http://www.w3.org/2000/svg">
-        
-      <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Math Diagram Guide</text>
-      <rect x="150" y="60" width="200" height="90" rx="10" fill="rgba(14,138,125,0.1)" stroke="#0e8a7d" stroke-width="1.5"/>
-      <text x="250" y="110" text-anchor="middle" font-size="11" font-weight="bold" fill="#0e8a7d">Interactive Calculation Visual</text>
-    
-      </svg>
-    </div>
-  
-            <p style="color: var(--muted); font-size: 14px">
-          The absolute value of your lowest place tells how far below sea level
-          it is — always positive.
-        </p>
-        <div class="task">
-          <strong>Rule:</strong> distance from sea level = |depth|. A depth of
-          −120 m means 120 m below sea level. |−120| = 120.
-        </div>
-        <label class="fld" for="av-depth">Depth reading (meters)</label>
-        <input
-          type="number"
-          id="av-depth"
-          data-save
-          placeholder="example: -120"
-          oninput="calcAbsVal()"
-        />
-        <button class="btn alt" type="button" onclick="calcAbsVal()">
-          Calculate distance from sea level
-        </button>
-        <div class="readout" id="absval-out"></div>
-        <details class="hintbox">
-          <summary>Need a hint?</summary>
-          <p>
-            Absolute value is the distance from zero — never negative. |−45| =
-            45 because −45 is 45 units left of 0. Remove the sign, keep the
-            number.
-          </p>
-        </details>
+            <div
+              class="pk-math-scaffold-card no-print"
+              style="
+                margin: 20px 0;
+                padding: 12px;
+                background: #fff;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+                max-width: 480px;
+                margin-left: auto;
+                margin-right: auto;
+              "
+            >
+              <svg
+                width="100%"
+                height="200"
+                viewBox="0 0 500 200"
+                style="background: #fff; border-radius: 8px"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <text
+                  x="250"
+                  y="30"
+                  text-anchor="middle"
+                  font-size="14"
+                  font-weight="bold"
+                  fill="#0f2b3c"
+                >
+                  Math Diagram Guide
+                </text>
+                <rect
+                  x="150"
+                  y="60"
+                  width="200"
+                  height="90"
+                  rx="10"
+                  fill="rgba(14,138,125,0.1)"
+                  stroke="#0e8a7d"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="250"
+                  y="110"
+                  text-anchor="middle"
+                  font-size="11"
+                  font-weight="bold"
+                  fill="#0e8a7d"
+                >
+                  Interactive Calculation Visual
+                </text>
+              </svg>
+            </div>
 
-        <!-- 1c Temperatures / ordering -->
+            <p style="color: var(--muted); font-size: 14px">
+              The absolute value of your lowest place tells how far below sea
+              level it is — always positive.
+            </p>
+            <div class="task">
+              <strong>Rule:</strong> distance from sea level = |depth|. A depth
+              of −120 m means 120 m below sea level. |−120| = 120.
+            </div>
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: a depth of −50 m is |−50| = 50 m below the surface.
+              Just drop the negative sign to read the distance.
+            </p>
+            <label class="fld" for="av-depth">Depth reading (meters)</label>
+            <input
+              type="number"
+              id="av-depth"
+              data-save
+              placeholder=""
+              oninput="calcAbsVal()"
+            />
+            <button class="btn alt" type="button" onclick="calcAbsVal()">
+              Calculate distance from sea level
+            </button>
+            <div class="readout" id="absval-out"></div>
+            <div
+              class="pki-manip"
+              data-manip="number-line"
+              data-range="120"
+              data-unit="m"
+            ></div>
+            <details class="hintbox">
+              <summary>Need a hint?</summary>
+              <p>
+                Absolute value is the distance from zero — never negative. |−45|
+                = 45 because −45 is 45 units left of 0. Remove the sign, keep
+                the number.
+              </p>
+            </details>
+
+            <div class="pk-lvl2">
+              <div class="task">
+                <strong>Level 2 extension:</strong> A submarine rises from −120
+                m to −45 m. How far did it travel? Use |−120| − |−45| = 120 − 45
+                = 75 m, and explain why you <em>subtract</em> here (both points
+                are below zero, on the same side of sea level) instead of
+                adding.
+              </div>
+            </div>
+
+            <div
+              class="pk-no-print"
+              style="
+                margin-top: 16px;
+                padding: 12px;
+                background: #fff;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+              "
+            >
+              <svg
+                id="phase-svg-1b"
+                width="100%"
+                height="200"
+                viewBox="0 0 500 200"
+                style="background: #fff; border-radius: 8px"
+                xmlns="http://www.w3.org/2000/svg"
+              ></svg>
+            </div>
+
+            <!-- 1c Temperatures / ordering -->
           </div>
-          
-          <div style="background: var(--bg); border: 2.5px solid var(--line); border-radius: 18px; padding: 20px; box-shadow: var(--shadow); height: fit-content;" class="pk-no-print">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px; color: var(--navy); font-size: 16px;">
+
+          <div
+            style="
+              background: var(--bg);
+              border: 2.5px solid var(--line);
+              border-radius: 18px;
+              padding: 20px;
+              box-shadow: var(--shadow);
+              height: fit-content;
+            "
+            class="pk-no-print"
+          >
+            <h3
+              style="
+                margin-top: 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: var(--navy);
+                font-size: 16px;
+              "
+            >
               <span>💡</span> Guided Steps &amp; Help
             </h3>
-            
-      <p style="font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-bottom: 12px;">
-        <strong>Absolute value = distance from zero:</strong>
-      </p>
-      <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>Absolute value, written |n|, asks <i>how far</i> a number is from 0 — direction does not matter.</li>
-        <li>To find it, just drop the negative sign. The result is never negative.</li>
-        <li>Use it when you want a distance, like how deep below sea level something is.</li>
-      </ol>
-      <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
-        💡 <b>Example:</b> |−430| = <b>430 m</b>. The Dead Sea shore is 430 m from sea level.
-      </div>
-    
+
+            <p
+              style="
+                font-size: 13.5px;
+                line-height: 1.5;
+                color: var(--muted);
+                margin-bottom: 12px;
+              "
+            >
+              <strong>Absolute value = distance from zero:</strong>
+            </p>
+            <ol
+              style="
+                margin-left: 18px;
+                font-size: 13px;
+                line-height: 1.5;
+                display: grid;
+                gap: 8px;
+                color: var(--ink);
+              "
+            >
+              <li>
+                Absolute value, written |n|, asks <i>how far</i> a number is
+                from 0 — direction does not matter.
+              </li>
+              <li>
+                To find it, just drop the negative sign. The result is never
+                negative.
+              </li>
+              <li>
+                Use it when you want a distance, like how deep below sea level
+                something is.
+              </li>
+            </ol>
+            <div
+              style="
+                margin-top: 14px;
+                padding: 10px;
+                background: var(--sky);
+                border-radius: 8px;
+                font-size: 12px;
+              "
+            >
+              💡 <b>Example:</b> |−430| = <b>430 m</b>. The Dead Sea shore is
+              430 m from sea level.
+            </div>
           </div>
         </div>
       </section>
-    
 
       <!-- ===================== PART 1C — SELF ===================== -->
       <section class="phase" id="phase-1c" data-phase>
@@ -980,149 +1425,257 @@
             <h2>🌡️ Order your temperature life (compare &amp; order)</h2>
           </div>
         </div>
-        
-        <div class="grid2">
-          <div>
-            
-    <div class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
-      <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px;" xmlns="http://www.w3.org/2000/svg">
-        
-      <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Math Diagram Guide</text>
-      <rect x="150" y="60" width="200" height="90" rx="10" fill="rgba(14,138,125,0.1)" stroke="#0e8a7d" stroke-width="1.5"/>
-      <text x="250" y="110" text-anchor="middle" font-size="11" font-weight="bold" fill="#0e8a7d">Interactive Calculation Visual</text>
-    
-      </svg>
-    </div>
-  
-            <p style="color: var(--muted); font-size: 14px">
-          Enter real temperatures from your life. Sort them from coldest to
-          warmest. More negative = colder.
-        </p>
-        <div class="grid2">
-          <div>
-            <label class="fld" for="t1">Today's temperature (°C)</label
-            ><input
-              type="number"
-              id="t1"
-              data-save
-              placeholder="example: 18"
-              oninput="orderReadings()"
-            />
-          </div>
-          <div>
-            <label class="fld" for="t2">A freezer temperature (°C)</label
-            ><input
-              type="number"
-              id="t2"
-              data-save
-              placeholder="example: -18"
-              oninput="orderReadings()"
-            />
-          </div>
-          <div>
-            <label class="fld" for="t3">Coldest day you remember (°C)</label
-            ><input
-              type="number"
-              id="t3"
-              data-save
-              placeholder="example: -5"
-              oninput="orderReadings()"
-            />
-          </div>
-          <div>
-            <label class="fld" for="t4">Hottest day you remember (°C)</label
-            ><input
-              type="number"
-              id="t4"
-              data-save
-              placeholder="example: 35"
-              oninput="orderReadings()"
-            />
-          </div>
-          <div class="pk-lvl2">
-            <label class="fld" for="t5"
-              >A fridge temperature (°C, Level 2)</label
-            ><input
-              type="number"
-              id="t5"
-              data-save
-              placeholder="example: 4"
-              oninput="orderReadings()"
-            />
-          </div>
-        </div>
-        <button class="btn" type="button" onclick="orderReadings()">
-          Sort temperatures coldest to warmest
-        </button>
-        <div class="readout" id="order-out"></div>
-        <details class="hintbox">
-          <summary>Need a hint?</summary>
-          <p>
-            On a number line, numbers to the left are less. −18 &lt; −5 &lt; 4
-            &lt; 18 &lt; 35. The most negative number is the coldest.
-          </p>
-        </details>
-        <div class="pk-lvl2" style="margin-top: 16px">
-          <div class="task">
-            <strong>Level 2 — Range &amp; Outlier Detective:</strong> after
-            sorting, the page reports your range (warmest − coldest) and flags
-            any value far from the others.
-          </div>
-        </div>
 
-        <!-- 1d Quick check -->
-        <div class="task" style="margin-top: 18px">
-          <strong>Quick check:</strong> What is |−45|?
-        </div>
-        <label class="fld" for="check-abs">Your answer</label>
-        <input
-          type="number"
-          id="check-abs"
-          data-save
-          placeholder="Type a number"
-        />
-        <button class="btn alt" type="button" onclick="checkAbs()">
-          Check answer
-        </button>
-        <div class="feedback" id="check-absFb"></div>
-        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-          Level 1 worked step: |−45| means the distance from 0 to −45 — count 45
-          steps, drop the sign → 45.
-        </p>
+        <div class="grid2">
+          <div>
+            <div
+              class="pk-math-scaffold-card no-print"
+              style="
+                margin: 20px 0;
+                padding: 12px;
+                background: #fff;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+                max-width: 480px;
+                margin-left: auto;
+                margin-right: auto;
+              "
+            >
+              <svg
+                width="100%"
+                height="200"
+                viewBox="0 0 500 200"
+                style="background: #fff; border-radius: 8px"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <text
+                  x="250"
+                  y="30"
+                  text-anchor="middle"
+                  font-size="14"
+                  font-weight="bold"
+                  fill="#0f2b3c"
+                >
+                  Math Diagram Guide
+                </text>
+                <rect
+                  x="150"
+                  y="60"
+                  width="200"
+                  height="90"
+                  rx="10"
+                  fill="rgba(14,138,125,0.1)"
+                  stroke="#0e8a7d"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="250"
+                  y="110"
+                  text-anchor="middle"
+                  font-size="11"
+                  font-weight="bold"
+                  fill="#0e8a7d"
+                >
+                  Interactive Calculation Visual
+                </text>
+              </svg>
+            </div>
+
+            <p style="color: var(--muted); font-size: 14px">
+              Enter real temperatures from your life. Sort them from coldest to
+              warmest. More negative = colder.
+            </p>
+            <div class="grid2">
+              <div>
+                <label class="fld" for="t1">Today's temperature (°C)</label
+                ><input
+                  type="number"
+                  id="t1"
+                  data-save
+                  placeholder=""
+                  oninput="orderReadings()"
+                />
+              </div>
+              <div>
+                <label class="fld" for="t2">A freezer temperature (°C)</label
+                ><input
+                  type="number"
+                  id="t2"
+                  data-save
+                  placeholder=""
+                  oninput="orderReadings()"
+                />
+              </div>
+              <div>
+                <label class="fld" for="t3">Coldest day you remember (°C)</label
+                ><input
+                  type="number"
+                  id="t3"
+                  data-save
+                  placeholder=""
+                  oninput="orderReadings()"
+                />
+              </div>
+              <div>
+                <label class="fld" for="t4">Hottest day you remember (°C)</label
+                ><input
+                  type="number"
+                  id="t4"
+                  data-save
+                  placeholder=""
+                  oninput="orderReadings()"
+                />
+              </div>
+              <div class="pk-lvl2">
+                <label class="fld" for="t5"
+                  >A fridge temperature (°C, Level 2)</label
+                ><input
+                  type="number"
+                  id="t5"
+                  data-save
+                  placeholder=""
+                  oninput="orderReadings()"
+                />
+              </div>
+            </div>
+            <button class="btn" type="button" onclick="orderReadings()">
+              Sort temperatures coldest to warmest
+            </button>
+            <div class="readout" id="order-out"></div>
+            <details class="hintbox">
+              <summary>Need a hint?</summary>
+              <p>
+                On a number line, numbers to the left are less. −18 &lt; −5 &lt;
+                4 &lt; 18 &lt; 35. The most negative number is the coldest.
+              </p>
+            </details>
+            <div
+              class="pk-no-print"
+              style="
+                margin-top: 16px;
+                padding: 12px;
+                background: #fff;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+              "
+            >
+              <svg
+                id="phase-svg-1c"
+                width="100%"
+                height="200"
+                viewBox="0 0 500 200"
+                style="background: #fff; border-radius: 8px"
+                xmlns="http://www.w3.org/2000/svg"
+              ></svg>
+            </div>
+
+            <div class="pk-lvl2" style="margin-top: 16px">
+              <div class="task">
+                <strong>Level 2 — Range &amp; Outlier Detective:</strong> after
+                sorting, the page reports your range (warmest − coldest) and
+                flags any value far from the others.
+              </div>
+            </div>
+
+            <!-- 1d Quick check -->
+            <div class="task" style="margin-top: 18px">
+              <strong>Quick check:</strong> What is |−45|?
+            </div>
+            <label class="fld" for="check-abs">Your answer</label>
+            <input type="number" id="check-abs" data-save placeholder="" />
+            <button class="btn alt" type="button" onclick="checkAbs()">
+              Check answer
+            </button>
+            <div class="feedback" id="check-absFb"></div>
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 worked step: |−45| means the distance from 0 to −45 —
+              count 45 steps, drop the sign → 45.
+            </p>
           </div>
-          
-          <div style="background: var(--bg); border: 2.5px solid var(--line); border-radius: 18px; padding: 20px; box-shadow: var(--shadow); height: fit-content;" class="pk-no-print">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px; color: var(--navy); font-size: 16px;">
+
+          <div
+            style="
+              background: var(--bg);
+              border: 2.5px solid var(--line);
+              border-radius: 18px;
+              padding: 20px;
+              box-shadow: var(--shadow);
+              height: fit-content;
+            "
+            class="pk-no-print"
+          >
+            <h3
+              style="
+                margin-top: 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: var(--navy);
+                font-size: 16px;
+              "
+            >
               <span>💡</span> Guided Steps &amp; Help
             </h3>
-            
-      <p style="font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-bottom: 12px;">
-        <strong>Comparing and ordering integers:</strong>
-      </p>
-      <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>On a number line, numbers get <b>larger</b> as you move right and <b>smaller</b> as you move left.</li>
-        <li>Every negative number is less than 0, and every positive number is greater than 0 — so any positive beats any negative.</li>
-        <li>For two negatives, the one <b>closer to 0</b> is larger: −2 &gt; −9.</li>
-      </ol>
-      <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
-        💡 <b>Example:</b> Order −9, 3, −2, 0 from least to greatest → <b>−9 &lt; −2 &lt; 0 &lt; 3</b>.
-      </div>
-    
+
+            <p
+              style="
+                font-size: 13.5px;
+                line-height: 1.5;
+                color: var(--muted);
+                margin-bottom: 12px;
+              "
+            >
+              <strong>Comparing and ordering integers:</strong>
+            </p>
+            <ol
+              style="
+                margin-left: 18px;
+                font-size: 13px;
+                line-height: 1.5;
+                display: grid;
+                gap: 8px;
+                color: var(--ink);
+              "
+            >
+              <li>
+                On a number line, numbers get <b>larger</b> as you move right
+                and <b>smaller</b> as you move left.
+              </li>
+              <li>
+                Every negative number is less than 0, and every positive number
+                is greater than 0 — so any positive beats any negative.
+              </li>
+              <li>
+                For two negatives, the one <b>closer to 0</b> is larger: −2 &gt;
+                −9.
+              </li>
+            </ol>
+            <div
+              style="
+                margin-top: 14px;
+                padding: 10px;
+                background: var(--sky);
+                border-radius: 8px;
+                font-size: 12px;
+              "
+            >
+              💡 <b>Example:</b> Order −9, 3, −2, 0 from least to greatest →
+              <b>−9 &lt; −2 &lt; 0 &lt; 3</b>.
+            </div>
           </div>
         </div>
       </section>
-    
 
-      
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
       <section class="pk-visualizer-card no-print">
         <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
-        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
-          This visual interactive canvas updates in real-time as you complete your math calculations.
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px">
+          This visual interactive canvas updates in real-time as you complete
+          your math calculations.
         </p>
         <div id="projectVisualizer"></div>
       </section>
-  
+
       <!-- ===================== PART 2 — PEER ===================== -->
       <section class="phase">
         <div class="phase-head">
@@ -1151,12 +1704,7 @@
             <label class="fld" for="partnerName"
               >Partner name or initials</label
             >
-            <input
-              type="text"
-              id="partnerName"
-              data-save
-              placeholder="example: A.J."
-            />
+            <input type="text" id="partnerName" data-save placeholder="" />
           </div>
           <div>
             <label class="fld" for="p-depth"
@@ -1212,11 +1760,7 @@
           >Whose lowest place is farther from sea level, and how do you
           know?</label
         >
-        <textarea
-          id="peerReflect"
-          data-save
-          placeholder="My |depth| is ___ while my partner's is ___, so ___."
-        ></textarea>
+        <textarea id="peerReflect" data-save placeholder=""></textarea>
       </section>
 
       <!-- ===================== PART 3 — WORLD ===================== -->
@@ -1256,7 +1800,7 @@
               data-save
               step="1"
               oninput="worldGo()"
-              placeholder="type your value"
+              placeholder=""
             />
             <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
               Tip: your lowest depth from Part 1 is a great value to type here.
@@ -1299,12 +1843,7 @@
               <label class="fld" for="whatIfVal"
                 >New value to add to the sample</label
               >
-              <input
-                type="number"
-                id="whatIfVal"
-                step="1"
-                placeholder="example: -6000"
-              />
+              <input type="number" id="whatIfVal" step="1" placeholder="" />
             </div>
           </div>
           <button class="btn" type="button" onclick="runWhatIf()">
@@ -1319,32 +1858,20 @@
           >Is your number deeper/colder or shallower/warmer than the world
           sample? Why?</label
         >
-        <textarea
-          id="worldReflect"
-          data-save
-          placeholder="My number is ___ the sample because ___."
-        ></textarea>
+        <textarea id="worldReflect" data-save placeholder=""></textarea>
         <div class="pk-lvl2">
           <label class="fld" for="worldHard"
             >Level 2 question: The Mariana Trench is −10935 m and the Titanic
             rests at −3800 m. How much deeper is the trench? Show your thinking
             with absolute value.</label
           >
-          <textarea
-            id="worldHard"
-            data-save
-            placeholder="|−10935| − |−3800| = ___ because ___"
-          ></textarea>
+          <textarea id="worldHard" data-save placeholder=""></textarea>
         </div>
         <label class="fld" for="careful"
           >Careful thinking: why can a "bigger" negative number actually mean
           deeper or colder?</label
         >
-        <textarea
-          id="careful"
-          data-save
-          placeholder="A more negative number means ___ because on the number line ___."
-        ></textarea>
+        <textarea id="careful" data-save placeholder=""></textarea>
       </section>
 
       <!-- ===================== DELIVERABLE ===================== -->
@@ -1359,11 +1886,7 @@
         <p>
           Write a 3–5 sentence mission log using your real numbers from above.
         </p>
-        <textarea
-          id="pitch"
-          data-save
-          placeholder="Mission log: My lowest place is ___ meters (below sea level). It is ___ meters from sea level because |___| = ___. My temperatures ordered from coldest to warmest are: ___. Compared to the world sample, my number is ___ because ___."
-        ></textarea>
+        <textarea id="pitch" data-save placeholder=""></textarea>
 
         <h3 style="margin: 22px 0 6px">Mission Checklist</h3>
         <ul class="checklist" id="checklist">
@@ -1497,7 +2020,10 @@
       const yrEl = document.getElementById("yr");
       if (yrEl) yrEl.textContent = new Date().getFullYear();
       const $ = (id) => document.getElementById(id);
-      const num = (id) => { const e = $(id); return e ? parseFloat(e.value) : NaN; };
+      const num = (id) => {
+        const e = $(id);
+        return e ? parseFloat(e.value) : NaN;
+      };
 
       function show(id, html) {
         const el = $(id);
@@ -1801,50 +2327,58 @@
       function worldSample() {
         return worldData[($("worldCat") || {}).value].sample();
       }
-      
+
       function worldGo() {
         const my = num("myWorld");
-        const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
+        const customName = $("worldCountry")
+          ? $("worldCountry").value.trim()
+          : "";
         const customSize = $("high") ? num("high") : NaN;
-        
+
         let sample = worldSample();
         if (!isNaN(customSize) && customSize > 0) {
           sample = [...sample, customSize];
         }
-        
+
         const labels =
-          ($("worldCat") || {}).value === "costPerGuest" || ($("worldCat") || {}).value === "price"
+          ($("worldCat") || {}).value === "costPerGuest" ||
+          ($("worldCat") || {}).value === "price"
             ? { mean: "City avg $", me: "Me $" }
             : { mean: "City avg", me: "Me" };
-            
+
         PK.worldMeter("worldMeter", sample, my, labels);
-        
+
         const fb = $("worldMeter");
         if (!isNaN(customSize) && customSize > 0 && customName) {
           const ratio = (my / customSize).toFixed(2);
           const pct = Math.round((my / customSize) * 100);
           const diff = Math.abs(my - customSize).toFixed(2);
-          
-          let myValStr = false ? "$" + my.toFixed(2) : my + " m";
-          let custValStr = false ? "$" + customSize.toFixed(2) : customSize + " m";
-          let diffStr = false ? "$" + Number(diff).toFixed(2) : Number(diff).toFixed(2) + " m";
 
-          const rel = my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
-          const desc = `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
+          let myValStr = false ? "$" + my.toFixed(2) : my + " m";
+          let custValStr = false
+            ? "$" + customSize.toFixed(2)
+            : customSize + " m";
+          let diffStr = false
+            ? "$" + Number(diff).toFixed(2)
+            : Number(diff).toFixed(2) + " m";
+
+          const rel =
+            my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
+          const desc =
+            `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
             `📊 Research Comparison: Your value (${myValStr}) is <strong>${rel}</strong> than <strong>${customName}</strong> (${custValStr}) ` +
             `by <strong>${diffStr}</strong>. Your value is <strong>${pct}%</strong> (${ratio}x) of the size of the researched benchmark.` +
             `</div>`;
           fb.innerHTML += desc;
         }
-        
-        if (typeof drawVisualizer === 'function') {
+
+        if (typeof drawVisualizer === "function") {
           drawVisualizer();
         }
-        
+
         updateProgress();
       }
-  
-      
+
       function runWhatIf() {
         const v = parseFloat($("whatIfVal").value);
         let sample = worldSample();
@@ -1858,8 +2392,10 @@
         }
         const before = PK.mean(sample);
         const after = PK.mean(sample.concat([v]));
-        
-        let beforeStr = false ? "$" + before.toFixed(2) : before.toFixed(2) + " m";
+
+        let beforeStr = false
+          ? "$" + before.toFixed(2)
+          : before.toFixed(2) + " m";
         let afterStr = false ? "$" + after.toFixed(2) : after.toFixed(2) + " m";
         let vStr = false ? "$" + v.toFixed(2) : v + " m";
 
@@ -1867,17 +2403,15 @@
           "whatIfBox",
           { average: beforeStr },
           { average: afterStr },
-          "Adding a value of " + vStr + " to the sample:"
+          "Adding a value of " + vStr + " to the sample:",
         );
       }
-  
 
       /* ---- Use example numbers ---- */
       function useExamples() {
         const ex = {
-          
-          "worldCountry": "Atlantic Ocean Floor",
-          "high": -3646,
+          worldCountry: "Atlantic Ocean Floor",
+          high: -3646,
           high: 2500,
           low: -85,
           "av-depth": -120,
@@ -1886,7 +2420,6 @@
           t3: -5,
           t4: 35,
           t5: 4,
-          
         };
         Object.entries(ex).forEach(([k, v]) => {
           if ($(k)) $(k).value = v;
@@ -1894,39 +2427,47 @@
         recalcAll();
       }
 
-      
-
-      
       function drawVisualizer() {
-        const subY = num("sub-depth");
-        const targetY = num("target-depth");
-        
+        let high = num("high");
+        let low = num("low");
+        let depth = num("av-depth");
+
+        // Default to a worked EXAMPLE profile so the dashboard always shows a
+        // reference; switches to the student's readings as they enter them.
+        const isExample = isNaN(high) && isNaN(low) && isNaN(depth);
+        if (isExample) {
+          high = 100;
+          low = -50;
+          depth = -30;
+        }
+
+        const vals = [high, low, depth].filter((v) => !isNaN(v));
         let html = "";
-        if (!isNaN(subY)) {
-          const maxVal = Math.max(Math.abs(subY), Math.abs(targetY || 0), 4000);
-          const subPy = 50 + (Math.abs(subY) / maxVal) * 140;
-          const targetPy = targetY ? (50 + (Math.abs(targetY) / maxVal) * 140) : null;
-          
+        if (vals.length) {
+          const maxVal = Math.max(...vals.map((v) => Math.abs(v)), 1);
+          const yFor = (v) => 120 - (v / maxVal) * 70;
+
+          const plot = (v, label, color) => {
+            if (isNaN(v)) return "";
+            const y = yFor(v);
+            return `
+              <line x1="120" y1="${y}" x2="380" y2="${y}" stroke="${color}" stroke-width="2" stroke-dasharray="${v < 0 ? "4,3" : "0"}" />
+              <circle cx="250" cy="${y}" r="6" fill="${color}" />
+              <text x="388" y="${y + 4}" font-size="10" font-weight="bold" fill="${color}">${label}: ${v}m</text>
+            `;
+          };
+
           html = `
-            <line x1="100" y1="50" x2="400" y2="50" stroke="#0284c7" stroke-width="2" />
-            <text x="100" y="45" font-size="10" font-weight="bold" fill="#0284c7">Sea Level (0m)</text>
-            
-            <circle cx="250" cy="${subPy}" r="8" fill="#d4952a" />
-            <text x="265" y="${subPy + 4}" font-size="10" font-weight="bold" fill="#d4952a">Sub: ${subY}m</text>
-            
-            ${targetPy ? `
-              <line x1="150" y1="${targetPy}" x2="350" y2="${targetPy}" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="3,3" />
-              <text x="160" y="${targetPy - 5}" font-size="9" fill="#5e6e7e">Target Depth: ${targetY}m</text>
-            ` : ""}
-            
-            <text x="250" y="220" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">Submarine Vertical Depth Profile</text>
-          `;
-        } else {
-          html = `
-            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Submarine Depth to draw vertical profile</text>
+            ${isExample ? `<rect x="360" y="10" width="128" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="424" y="24" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example profile</text>` : ""}
+            <line x1="120" y1="120" x2="380" y2="120" stroke="#0284c7" stroke-width="2" />
+            <text x="120" y="115" font-size="10" font-weight="bold" fill="#0284c7">Sea Level (0m)</text>
+            ${plot(high, "High", "#0e8a7d")}
+            ${plot(low, "Low", "#c45a3c")}
+            ${plot(depth, "Reading", "#d4952a")}
+            <text x="250" y="220" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">Elevation &amp; Depth Profile</text>
           `;
         }
-        
+
         const svgString = `
           <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
             ${html}
@@ -1934,9 +2475,8 @@
         `;
         $("projectVisualizer").innerHTML = svgString;
       }
-    
-  
-function recalcAll() {
+
+      function recalcAll() {
         calcContext();
         calcAbsVal();
         orderReadings();
@@ -1944,8 +2484,13 @@ function recalcAll() {
         renderWorld();
         worldGo();
         updateProgress();
-      
-        if(typeof drawSubmarineSVG === "function"){drawSubmarineSVG(); drawAbsValSVG(); drawOrderingSVG();}}
+
+        if (typeof drawSubmarineSVG === "function") {
+          drawSubmarineSVG();
+          drawAbsValSVG();
+          drawOrderingSVG();
+        }
+      }
 
       /* ---- Report ---- */
       function reportText() {
@@ -2052,23 +2597,28 @@ function recalcAll() {
       document.addEventListener("DOMContentLoaded", function () {
         renderWorld();
         PK.initLevel({ storageKey: "u7ProjectB", default: "level-1" });
+        PK.initTts({ storageKey: "u7ProjectB" });
         PK.load("u7ProjectB", { after: recalcAll });
         updateProgress();
       });
-    
+
       function drawSubmarineSVG() {
-        const high = num("high");
-        const low = num("low");
+        let high = num("high");
+        let low = num("low");
         const svg = $("phase-svg-1a");
         if (!svg) return;
-        
-        if (isNaN(high) || isNaN(low)) {
-          svg.innerHTML = '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter high & low depths to draw marine profile</text>';
-          return;
+
+        // Show a worked EXAMPLE profile (surface 100 m, trench −50 m) as the
+        // default reference; switches to the student's readings on input.
+        const isExample = isNaN(high) || isNaN(low);
+        if (isExample) {
+          high = 100;
+          low = -50;
         }
-        
+
         svg.innerHTML = `
           <text x="250" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Sea Depth Vertical Profile</text>
+          ${isExample ? `<rect x="372" y="12" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="26" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example profile</text>` : ""}
           
           <rect x="180" y="50" width="140" height="110" fill="rgba(30,136,229,0.15)" stroke="#1e88e5" stroke-dasharray="2" />
           <line x1="160" y1="50" x2="340" y2="50" stroke="#0e8a7d" stroke-width="2" />
@@ -2081,21 +2631,24 @@ function recalcAll() {
           <text x="330" y="154" font-size="10" font-weight="bold" fill="#c45a3c">Trench Depth: ${low}m</text>
         `;
       }
-      
+
       function drawAbsValSVG() {
-        const depth = num("av-depth");
+        let depth = num("av-depth");
         const svg = $("phase-svg-1b");
         if (!svg) return;
-        
-        if (isNaN(depth)) {
-          svg.innerHTML = '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter depth reading to draw absolute value</text>';
-          return;
+
+        // Show a worked EXAMPLE (a submarine at −50 m, |−50| = 50 m from the
+        // surface) as the default reference; switches to the reading on input.
+        const isExample = isNaN(depth);
+        if (isExample) {
+          depth = -50;
         }
-        
+
         const dist = Math.abs(depth);
-        
+
         svg.innerHTML = `
           <text x="250" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Absolute Value: |depth| = Distance</text>
+          ${isExample ? `<rect x="372" y="12" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="26" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · −50 m</text>` : ""}
           
           <line x1="250" y1="50" x2="250" y2="160" stroke="#cbd5e1" stroke-width="2" />
           
@@ -2109,50 +2662,163 @@ function recalcAll() {
           <text x="200" y="100" text-anchor="end" font-size="12" font-weight="bold" fill="#c45a3c">|${depth}| = ${dist}m</text>
         `;
       }
-      
+
       function drawOrderingSVG() {
-        const t1 = num("t1");
-        const t2 = num("t2");
-        const t3 = num("t3");
-        const t4 = num("t4");
-        const t5 = num("t5") || 0;
+        let t1 = num("t1");
+        let t2 = num("t2");
+        let t3 = num("t3");
+        let t4 = num("t4");
         const svg = $("phase-svg-1c");
         if (!svg) return;
-        
-        if (isNaN(t1) || isNaN(t2) || isNaN(t3) || isNaN(t4)) {
-          svg.innerHTML = '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter temperatures to draw thermometer ordering scale</text>';
-          return;
+
+        // Show a worked EXAMPLE set (12, −5, 8, −12) as the default reference so
+        // the scale always has something to read; switches to the student's
+        // temperatures once all four are entered.
+        const isExample = isNaN(t1) || isNaN(t2) || isNaN(t3) || isNaN(t4);
+        if (isExample) {
+          t1 = 12;
+          t2 = -5;
+          t3 = 8;
+          t4 = -12;
         }
-        
+        const t5 = num("t5") || 0;
+
         const temps = [t1, t2, t3, t4];
         if (!isNaN(t5)) temps.push(t5);
-        temps.sort((a,b) => a-b);
-        
-        let scales = '';
+        temps.sort((a, b) => a - b);
+
+        let scales = "";
         for (let i = 0; i < temps.length; i++) {
           const tx = 80 + (340 / (temps.length - 1)) * i;
           scales += `
-            <line x1="${tx}" y1="90" x2="${tx}" y2="130" stroke="${temps[i] < 0 ? '#1e88e5' : '#c45a3c'}" stroke-width="2.5" />
-            <circle cx="${tx}" cy="${temps[i] < 0 ? 130 : 90}" r="5" fill="${temps[i] < 0 ? '#1e88e5' : '#c45a3c'}" />
+            <line x1="${tx}" y1="90" x2="${tx}" y2="130" stroke="${temps[i] < 0 ? "#1e88e5" : "#c45a3c"}" stroke-width="2.5" />
+            <circle cx="${tx}" cy="${temps[i] < 0 ? 130 : 90}" r="5" fill="${temps[i] < 0 ? "#1e88e5" : "#c45a3c"}" />
             <text x="${tx}" y="150" text-anchor="middle" font-size="10" font-weight="bold" fill="#0f2b3c">${temps[i]}°C</text>
           `;
         }
-        
+
         svg.innerHTML = `
           <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Colder to Warmer Temperature Order</text>
+          ${isExample ? `<rect x="372" y="14" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="28" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example set</text>` : ""}
           <line x1="50" y1="110" x2="450" y2="110" stroke="#cbd5e1" stroke-width="2" marker-end="url(#arr-arrow)" />
           ${scales}
         `;
       }
-    
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
+    <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
+    <script type="application/json" id="pk-research">
+      {
+        "icon": "🔎",
+        "title": "Research Lab — Map the Real Extremes",
+        "intro": "Pilots and explorers use positive and negative numbers for depth, altitude, and temperature. Look up real values, then compare them.",
+        "brief": {
+          "theme": "field",
+          "title": "🔭 Your Research Mission",
+          "hook": "Find <b>real highs and lows</b> (temperatures, elevations, depths) and compare them with integers.",
+          "steps": [
+            "Open a link (new tab — you keep your project).",
+            "Record real values in Field Notes.",
+            "Compare them in the math problems.",
+            "Check off the Investigation Checklist."
+          ]
+        },
+        "fieldNotes": {
+          "title": "Field Notes — Record What You Find",
+          "intro": "Jot the exact number or rule you find. You'll reuse these in the math below.",
+          "fields": [
+            {
+              "label": "What absolute value means",
+              "source": "Math is Fun",
+              "placeholder": "distance from 0",
+              "hint": "Always zero or positive."
+            },
+            {
+              "label": "A real LOW value (below zero)",
+              "source": "a temperature/elevation table",
+              "placeholder": "-12 °F",
+              "hint": "A cold temp or a depth below sea level."
+            },
+            {
+              "label": "A real HIGH value (above zero)",
+              "source": "a temperature/elevation table",
+              "placeholder": "+88 °F",
+              "hint": "A warm temp or an elevation."
+            },
+            {
+              "label": "A sea-level reference",
+              "source": "Atlas",
+              "placeholder": "0 ft = sea level",
+              "hint": "The zero point you compare to."
+            }
+          ]
+        },
+        "mathTasks": [
+          {
+            "title": "1 · Order them",
+            "prompt": "Place your low and high values (Field Notes 2 and 3) on a number line and order them with < or >. Which is greater?",
+            "level2": "Add a third real value and order all three."
+          },
+          {
+            "title": "2 · Distance",
+            "prompt": "Use <b>absolute value</b> to find how far each value is from 0. Which is farther from zero?",
+            "level2": "How far apart are the two values from each other? Show the math."
+          },
+          {
+            "title": "3 · Real meaning",
+            "prompt": "Write one sentence explaining what a negative value means in your context (colder than, below sea level, etc.).",
+            "level2": "Give a real example where a smaller (more negative) number is actually 'deeper' or 'colder'."
+          }
+        ],
+        "investigationChecklist": [
+          "I recorded what absolute value means.",
+          "I found a real value below zero.",
+          "I found a real value above zero.",
+          "I ordered values with < or >.",
+          "I used absolute value for distance from 0.",
+          "I explained what negative means in context."
+        ],
+        "links": [
+          {
+            "icon": "➖",
+            "name": "Math is Fun — Integers",
+            "url": "https://www.mathsisfun.com/positive-negative-integers.html",
+            "find": "How positive and negative numbers compare.",
+            "look": "left is less, right is greater"
+          },
+          {
+            "icon": "📏",
+            "name": "Math is Fun — Absolute Value",
+            "url": "https://www.mathsisfun.com/numbers/absolute-value.html",
+            "find": "Distance from zero, always positive.",
+            "look": "the | | bars"
+          },
+          {
+            "icon": "🧭",
+            "name": "Math is Fun — Number Line",
+            "url": "https://www.mathsisfun.com/number-line.html",
+            "find": "How to place positive and negative numbers in order.",
+            "look": "values left and right of 0"
+          },
+          {
+            "icon": "🌡️",
+            "name": "Wikipedia — US temperature extremes (table)",
+            "url": "https://en.wikipedia.org/wiki/U.S._state_and_territory_temperature_extremes",
+            "find": "Real record high and low temps in a table.",
+            "look": "a state's record low (a negative number)"
+          }
+        ],
+        "note": "These sites were picked for class. They open in a new tab so you keep your project. If a page asks you to sign in or buy something, just close it and come back."
+      }
+    </script>
     <script src="/shared/projects/projects-tabs.js" defer></script>
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <script src="/shared/projects/projects-interactive.js" defer></script>
+    <script src="/shared/projects/manip-number-line.js" defer></script>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+  </body>
 </html>

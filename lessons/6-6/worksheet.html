@@ -45,6 +45,8 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
 .ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
 .ws-correct{font-weight:700;color:var(--teal);}
 .ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-watch{margin:4px 0 0;color:#9a4a12;font-size:12px;background:#fff3e6;border-left:3px solid #e08a3c;padding:5px 10px;border-radius:0 8px 8px 0;}
+.ws-scaffold-note{margin:0 0 14px;background:var(--soft);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:600;color:var(--navy);font-size:12.5px;}
 .ws-match{display:flex;gap:24px;flex-wrap:wrap;}
 .ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
 .ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
@@ -75,15 +77,49 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
   @page{margin:1.5cm;}
   a{color:#000;}
 }
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
 </style>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
 </head>
 <body>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.EE.4</span>
+      <span class="ws-ver">Level 0</span>
+    </div>
+    <h1 class="ws-title">Equivalent Expressions</h1>
+    <p class="ws-sub">Practice — Level 0</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h3 class="ws-bank-h">📕 Word Bank</h3>
+    <div class="ws-bankwords"><span class="ws-bankword">Equivalent</span><span class="ws-bankword">Simplify</span><span class="ws-bankword">Like Terms</span><span class="ws-bankword">Combine</span><span class="ws-bankword">Coefficient</span></div>
+  </section><section class="ws-example">
+    <h3 class="ws-example-h">✏️ Worked Example</h3>
+    <ol class="ws-example-steps"><li><b>Expression:</b> 3x + 5 + 2x + 1</li><li><b>Combine:</b> 3x + 2x + 5 + 1</li><li><b>Simplify:</b> 5x² + 6</li></ol>
+  </section>
+    <p class="ws-scaffold-note">🧩 Extra support: use the word bank and the worked example. A sentence starter is given under each problem.</p>
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Which expression is equivalent to 4x + 3x?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>7x</li><li class="ws-opt"><span class="ws-bub">B</span>12x</li><li class="ws-opt"><span class="ws-bub">C</span>7x²</li><li class="ws-opt"><span class="ws-bub">D</span>43x</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Which expression is equivalent to 2(m + 5)?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>2m + 10</li><li class="ws-opt"><span class="ws-bub">B</span>2m + 5</li><li class="ws-opt"><span class="ws-bub">C</span>m + 10</li><li class="ws-opt"><span class="ws-bub">D</span>7m</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Which property is shown: 3(x + 7) = 3x + 21?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Distributive</li><li class="ws-opt"><span class="ws-bub">B</span>Commutative</li><li class="ws-opt"><span class="ws-bub">C</span>Associative</li><li class="ws-opt"><span class="ws-bub">D</span>Identity</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Simplify: 5n + 2n</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>7n</li><li class="ws-opt"><span class="ws-bub">B</span>10n</li><li class="ws-opt"><span class="ws-bub">C</span>7n²</li><li class="ws-opt"><span class="ws-bub">D</span>52n</li></ol></div></li></ol>
+  </section>
 <section class="ws-page">
     <header class="ws-head">
     <div class="ws-head-top">
@@ -101,10 +137,11 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <h3 class="ws-example-h">✏️ Worked Example</h3>
     <ol class="ws-example-steps"><li><b>Expression:</b> 3x + 5 + 2x + 1</li><li><b>Combine:</b> 3x + 2x + 5 + 1</li><li><b>Simplify:</b> 5x² + 6</li></ol>
   </section>
+    
     <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Which expression is equivalent to 4x + 3x?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>7x</li><li class="ws-opt"><span class="ws-bub">B</span>12x</li><li class="ws-opt"><span class="ws-bub">C</span>7x²</li><li class="ws-opt"><span class="ws-bub">D</span>43x</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Which expression is equivalent to 2(m + 5)?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>2m + 10</li><li class="ws-opt"><span class="ws-bub">B</span>2m + 5</li><li class="ws-opt"><span class="ws-bub">C</span>m + 10</li><li class="ws-opt"><span class="ws-bub">D</span>7m</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Which property is shown: 3(x + 7) = 3x + 21?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>Distributive</li><li class="ws-opt"><span class="ws-bub">B</span>Commutative</li><li class="ws-opt"><span class="ws-bub">C</span>Associative</li><li class="ws-opt"><span class="ws-bub">D</span>Identity</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Simplify: 5n + 2n</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>7n</li><li class="ws-opt"><span class="ws-bub">B</span>10n</li><li class="ws-opt"><span class="ws-bub">C</span>7n²</li><li class="ws-opt"><span class="ws-bub">D</span>52n</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Sort each pair of expressions by whether they are equivalent or not.</p>
   <p class="ws-prompt">Categories: <b>equivalent · not-equivalent</b></p>
-  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm"></span>3x + 2x and 5x</li><li><span class="ws-blank ws-blank-sm"></span>2(n + 4) and 2n + 8</li><li><span class="ws-blank ws-blank-sm"></span>4a + 3 and 7a</li><li><span class="ws-blank ws-blank-sm"></span>x + x and 2x</li><li><span class="ws-blank ws-blank-sm"></span>3y + 2 and 5y</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Equivalent Expressions.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Equivalent expressions give the same answer for every value of the variable.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm"></span>3x + 2x and 5x</li><li><span class="ws-blank ws-blank-sm"></span>2(n + 4) and 2n + 8</li><li><span class="ws-blank ws-blank-sm"></span>4a + 3 and 7a</li><li><span class="ws-blank ws-blank-sm"></span>x + x and 2x</li><li><span class="ws-blank ws-blank-sm"></span>3y + 2 and 5y</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Distributive Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Expression</span><span class="ws-step-w">3(x + 4)</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Distribute</span><span class="ws-step-w">Multiply the 3 by the first term only: 3 · x + 4</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Result</span><span class="ws-step-w">3(x + 4) = 3x + 4</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
   <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
   </section>
@@ -119,14 +156,47 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     
+    
     <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Match each expression with its simplified form.</p>
   <p class="ws-prompt">Categories: <b>match</b></p>
   <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm"></span>8y + 2y → 10y</li><li><span class="ws-blank ws-blank-sm"></span>3(a + 6) → 3a + 18</li><li><span class="ws-blank ws-blank-sm"></span>5n + 4 + 2n → 7n + 4</li><li><span class="ws-blank ws-blank-sm"></span>9p − 3p → 6p</li><li><span class="ws-blank ws-blank-sm"></span>4(2x − 1) → 8x − 4</li><li><span class="ws-blank ws-blank-sm"></span>6t + t → 7t</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Write the letter of the matching answer next to each.</p>
   <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>6x + 2x</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>3(n + 5)</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>4a + 7 + a</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>2(3y − 4)</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>10m − 4m + 1</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>5(x + 2)</li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span>6m + 1</li><li><span class="ws-bub ws-bub-sm">B</span>6y − 8</li><li><span class="ws-bub ws-bub-sm">C</span>5x + 10</li><li><span class="ws-bub ws-bub-sm">D</span>8x</li><li><span class="ws-bub ws-bub-sm">E</span>3n + 15</li><li><span class="ws-bub ws-bub-sm">F</span>5a + 7</li></ul></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
-  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>2x + 5x + 1</td><td></td><td></td></tr><tr><td>4(x + 2)</td><td></td><td></td></tr><tr><td>3x + 4 + x − 1</td><td></td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Both equal 14 — they are equivalent because 3x + 2x = 5x.</p><div class="ws-work"><span class="ws-work-label">Show your work</span></div></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Equivalent Expressions.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Equivalent expressions give the same answer for every value of the variable.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>2x + 5x + 1</td><td></td><td></td></tr><tr><td>4(x + 2)</td><td></td><td></td></tr><tr><td>3x + 4 + x − 1</td><td></td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Both equal 14 — they are equivalent because 3x + 2x = 5x.</p><div class="ws-work"><span class="ws-work-label">Show your work</span></div></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Combining Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Expression</span><span class="ws-step-w">7x + 3 + 2x</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Combine</span><span class="ws-step-w">Combine every number you see: 7x + 2x + 3 = 9x + 3, then add the 9 and 3 too</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Result</span><span class="ws-step-w">7x + 3 + 2x = 12x</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
   <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.EE.4</span>
+      <span class="ws-ver">Challenge</span>
+    </div>
+    <h1 class="ws-title">Equivalent Expressions</h1>
+    <p class="ws-sub">Practice — Challenge</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Find the Simplification Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Expression</span><span class="ws-step-w">3x + 5 + 2x + 1</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Combine</span><span class="ws-step-w">3x + 2x + 5 + 1</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Simplify</span><span class="ws-step-w">5x² + 6</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A student says 2x + 3 and 5x are equivalent because both equal 5 when x = 1. Is the student correct? Explain why testing one value is not enough to prove equivalence, and find a value of x where they give different results.</p><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
+  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>4x + 8</td><td></td><td></td></tr><tr><td>3a + 2a + 5</td><td></td><td></td></tr><tr><td>6(n − 2)</td><td></td><td></td></tr></tbody></table></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.EE.4</span>
+      <span class="ws-ver">Level 0 — Answer Key</span>
+    </div>
+    <h1 class="ws-title">Equivalent Expressions</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Which expression is equivalent to 4x + 3x?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>7x</li><li class="ws-opt"><span class="ws-bub">B</span>12x</li><li class="ws-opt"><span class="ws-bub">C</span>7x²</li><li class="ws-opt"><span class="ws-bub">D</span>43x</li></ol><p class="ws-keynote">4x + 3x = 7x. Combine the coefficients: 4 + 3 = 7.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Equivalent Expressions is skipping the key idea: &quot;Equivalent expressions give the same answer for every value of the variable.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Which expression is equivalent to 2(m + 5)?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>2m + 10</li><li class="ws-opt"><span class="ws-bub">B</span>2m + 5</li><li class="ws-opt"><span class="ws-bub">C</span>m + 10</li><li class="ws-opt"><span class="ws-bub">D</span>7m</li></ol><p class="ws-keynote">2(m + 5) = 2m + 10 using the distributive property.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Equivalent Expressions is skipping the key idea: &quot;Equivalent expressions give the same answer for every value of the variable.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Which property is shown: 3(x + 7) = 3x + 21?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>Distributive</li><li class="ws-opt"><span class="ws-bub">B</span>Commutative</li><li class="ws-opt"><span class="ws-bub">C</span>Associative</li><li class="ws-opt"><span class="ws-bub">D</span>Identity</li></ol><p class="ws-keynote">Multiplying 3 by each term inside the parentheses is the distributive property.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Equivalent Expressions is skipping the key idea: &quot;Equivalent expressions give the same answer for every value of the variable.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Simplify: 5n + 2n</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>7n</li><li class="ws-opt"><span class="ws-bub">B</span>10n</li><li class="ws-opt"><span class="ws-bub">C</span>7n²</li><li class="ws-opt"><span class="ws-bub">D</span>52n</li></ol><p class="ws-keynote">5n + 2n = 7n. Add the coefficients: 5 + 2 = 7. The variable stays as n.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Equivalent Expressions is skipping the key idea: &quot;Equivalent expressions give the same answer for every value of the variable.&quot; — always check your work against this rule before you submit.</p></div></li></ol>
   </section>
 <section class="ws-page">
     <header class="ws-head">
@@ -139,12 +209,13 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     
-    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Which expression is equivalent to 4x + 3x?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>7x</li><li class="ws-opt"><span class="ws-bub">B</span>12x</li><li class="ws-opt"><span class="ws-bub">C</span>7x²</li><li class="ws-opt"><span class="ws-bub">D</span>43x</li></ol><p class="ws-keynote">4x + 3x = 7x. Combine the coefficients: 4 + 3 = 7.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Which expression is equivalent to 2(m + 5)?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>2m + 10</li><li class="ws-opt"><span class="ws-bub">B</span>2m + 5</li><li class="ws-opt"><span class="ws-bub">C</span>m + 10</li><li class="ws-opt"><span class="ws-bub">D</span>7m</li></ol><p class="ws-keynote">2(m + 5) = 2m + 10 using the distributive property.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Which property is shown: 3(x + 7) = 3x + 21?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>Distributive</li><li class="ws-opt"><span class="ws-bub">B</span>Commutative</li><li class="ws-opt"><span class="ws-bub">C</span>Associative</li><li class="ws-opt"><span class="ws-bub">D</span>Identity</li></ol><p class="ws-keynote">Multiplying 3 by each term inside the parentheses is the distributive property.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Simplify: 5n + 2n</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>7n</li><li class="ws-opt"><span class="ws-bub">B</span>10n</li><li class="ws-opt"><span class="ws-bub">C</span>7n²</li><li class="ws-opt"><span class="ws-bub">D</span>52n</li></ol><p class="ws-keynote">5n + 2n = 7n. Add the coefficients: 5 + 2 = 7. The variable stays as n.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Sort each pair of expressions by whether they are equivalent or not.</p>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Which expression is equivalent to 4x + 3x?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>7x</li><li class="ws-opt"><span class="ws-bub">B</span>12x</li><li class="ws-opt"><span class="ws-bub">C</span>7x²</li><li class="ws-opt"><span class="ws-bub">D</span>43x</li></ol><p class="ws-keynote">4x + 3x = 7x. Combine the coefficients: 4 + 3 = 7.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Equivalent Expressions is skipping the key idea: &quot;Equivalent expressions give the same answer for every value of the variable.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Which expression is equivalent to 2(m + 5)?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>2m + 10</li><li class="ws-opt"><span class="ws-bub">B</span>2m + 5</li><li class="ws-opt"><span class="ws-bub">C</span>m + 10</li><li class="ws-opt"><span class="ws-bub">D</span>7m</li></ol><p class="ws-keynote">2(m + 5) = 2m + 10 using the distributive property.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Equivalent Expressions is skipping the key idea: &quot;Equivalent expressions give the same answer for every value of the variable.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Which property is shown: 3(x + 7) = 3x + 21?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>Distributive</li><li class="ws-opt"><span class="ws-bub">B</span>Commutative</li><li class="ws-opt"><span class="ws-bub">C</span>Associative</li><li class="ws-opt"><span class="ws-bub">D</span>Identity</li></ol><p class="ws-keynote">Multiplying 3 by each term inside the parentheses is the distributive property.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Equivalent Expressions is skipping the key idea: &quot;Equivalent expressions give the same answer for every value of the variable.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Simplify: 5n + 2n</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>7n</li><li class="ws-opt"><span class="ws-bub">B</span>10n</li><li class="ws-opt"><span class="ws-bub">C</span>7n²</li><li class="ws-opt"><span class="ws-bub">D</span>52n</li></ol><p class="ws-keynote">5n + 2n = 7n. Add the coefficients: 5 + 2 = 7. The variable stays as n.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Equivalent Expressions is skipping the key idea: &quot;Equivalent expressions give the same answer for every value of the variable.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Sort each pair of expressions by whether they are equivalent or not.</p>
   <p class="ws-prompt">Categories: <b>equivalent · not-equivalent</b></p>
-  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm">equivalent</span>3x + 2x and 5x</li><li><span class="ws-blank ws-blank-sm">equivalent</span>2(n + 4) and 2n + 8</li><li><span class="ws-blank ws-blank-sm">not-equivalent</span>4a + 3 and 7a</li><li><span class="ws-blank ws-blank-sm">equivalent</span>x + x and 2x</li><li><span class="ws-blank ws-blank-sm">not-equivalent</span>3y + 2 and 5y</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Equivalent Expressions.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Equivalent expressions give the same answer for every value of the variable.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm">equivalent</span>3x + 2x and 5x</li><li><span class="ws-blank ws-blank-sm">equivalent</span>2(n + 4) and 2n + 8</li><li><span class="ws-blank ws-blank-sm">not-equivalent</span>4a + 3 and 7a</li><li><span class="ws-blank ws-blank-sm">equivalent</span>x + x and 2x</li><li><span class="ws-blank ws-blank-sm">not-equivalent</span>3y + 2 and 5y</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Distributive Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Expression</span><span class="ws-step-w">3(x + 4)</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Distribute</span><span class="ws-step-w">Multiply the 3 by the first term only: 3 · x + 4</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Result</span><span class="ws-step-w">3(x + 4) = 3x + 4</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
-  <p class="ws-keynote">See worked solution.</p></div></li></ol>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: The 3 must multiply BOTH terms inside the parentheses, not just the first one: 3 · x + 3 · 4 = 3x + 12. Check x = 2: 3(2 + 4) = 18 and 3(2) + 12 = 18, but 3(2) + 4 = 10 — so 3x + 4 is wrong.</p></div></li></ol>
   </section>
 <section class="ws-page">
     <header class="ws-head">
@@ -157,20 +228,33 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     
+    
     <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Match each expression with its simplified form.</p>
   <p class="ws-prompt">Categories: <b>match</b></p>
   <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm">match</span>8y + 2y → 10y</li><li><span class="ws-blank ws-blank-sm">match</span>3(a + 6) → 3a + 18</li><li><span class="ws-blank ws-blank-sm">match</span>5n + 4 + 2n → 7n + 4</li><li><span class="ws-blank ws-blank-sm">match</span>9p − 3p → 6p</li><li><span class="ws-blank ws-blank-sm">match</span>4(2x − 1) → 8x − 4</li><li><span class="ws-blank ws-blank-sm">match</span>6t + t → 7t</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Write the letter of the matching answer next to each.</p>
   <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">D</span>6x + 2x</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">E</span>3(n + 5)</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">F</span>4a + 7 + a</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span>2(3y − 4)</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span>10m − 4m + 1</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span>5(x + 2)</li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span>6m + 1</li><li><span class="ws-bub ws-bub-sm">B</span>6y − 8</li><li><span class="ws-bub ws-bub-sm">C</span>5x + 10</li><li><span class="ws-bub ws-bub-sm">D</span>8x</li><li><span class="ws-bub ws-bub-sm">E</span>3n + 15</li><li><span class="ws-bub ws-bub-sm">F</span>5a + 7</li></ul></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
-  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>2x + 5x + 1</td><td></td><td></td></tr><tr><td>4(x + 2)</td><td></td><td></td></tr><tr><td>3x + 4 + x − 1</td><td></td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Both equal 14 — they are equivalent because 3x + 2x = 5x.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Equivalent Expressions.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Equivalent expressions give the same answer for every value of the variable.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>2x + 5x + 1</td><td></td><td></td></tr><tr><td>4(x + 2)</td><td></td><td></td></tr><tr><td>3x + 4 + x − 1</td><td></td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Both equal 14 — they are equivalent because 3x + 2x = 5x.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Combining Mistake</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Expression</span><span class="ws-step-w">7x + 3 + 2x</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Combine</span><span class="ws-step-w">Combine every number you see: 7x + 2x + 3 = 9x + 3, then add the 9 and 3 too</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Result</span><span class="ws-step-w">7x + 3 + 2x = 12x</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
-  <p class="ws-keynote">See worked solution.</p></div></li></ol>
+  <p class="ws-keynote">The mistake is in Step 2. Correct work: Only LIKE terms combine. 7x and 2x are like terms (7x + 2x = 9x), but the 3 is a constant and cannot be added to the 9x. The simplified form is 9x + 3. Check x = 2: 7(2) + 3 + 2(2) = 21 and 9(2) + 3 = 21, but 12(2) = 24 — so 12x is wrong.</p></div></li></ol>
   </section>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.EE.4</span>
+      <span class="ws-ver">Challenge — Answer Key</span>
+    </div>
+    <h1 class="ws-title">Equivalent Expressions</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Find the Simplification Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Expression</span><span class="ws-step-w">3x + 5 + 2x + 1</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Combine</span><span class="ws-step-w">3x + 2x + 5 + 1</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Simplify</span><span class="ws-step-w">5x² + 6</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: 3x + 2x = 5x (NOT 5x²). When you combine like terms, you add the coefficients, not multiply them. The correct answer is 5x + 6.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A student says 2x + 3 and 5x are equivalent because both equal 5 when x = 1. Is the student correct? Explain why testing one value is not enough to prove equivalence, and find a value of x where they give different results.</p><p class="ws-keynote">Look for: equivalent, substitute, all values, counterexample, not equal, test.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
+  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>4x + 8</td><td></td><td></td></tr><tr><td>3a + 2a + 5</td><td></td><td></td></tr><tr><td>6(n − 2)</td><td></td><td></td></tr></tbody></table></div></li></ol>
+  </section>
 </body>
 </html>

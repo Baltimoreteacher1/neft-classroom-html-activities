@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Smoothie Bar Designer — Unit 3 Culminating Project</title>
     <meta
       name="description"
@@ -446,11 +446,13 @@
     <!-- nsr-injected:end -->
     <link rel="stylesheet" href="/shared/projects/projects-premium.css" />
     <link rel="stylesheet" href="/shared/projects/projects-tabs.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-tplus.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-interactive.css" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
-  <body class="pk">
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
+  <body class="pk" data-pk-theme="u3">
     <header class="phero">
       <div class="deco">🥤</div>
       <h1>Smoothie Bar Designer</h1>
@@ -473,6 +475,15 @@
           <button data-level-btn="level-1" type="button">🟢 Level 1</button>
           <button data-level-btn="level-2" type="button">🔵 Level 2</button>
         </span>
+        <button
+          class="pk-tts-toggle"
+          data-tts-toggle
+          type="button"
+          aria-pressed="false"
+          title="Read text aloud"
+        >
+          🔊 Read aloud
+        </button>
         <button onclick="PK.save('u3ProjectA')">💾 Save</button>
         <button
           onclick="PK.load('u3ProjectA', { show: true, after: recalcAll })"
@@ -528,8 +539,7 @@
           <div class="pk-term">
             <span class="pk-icon">⚖️</span><b>Ratio</b>
             <p>
-              A compare of two amounts, like 6 cups fruit to 4 cups yogurt
-              (6:4).
+              Two amounts compared, like 6 cups fruit to 4 cups yogurt (6:4).
             </p>
             <p class="pk-es">
               Razón: una comparación de dos cantidades, como 6 tazas de fruta
@@ -539,8 +549,7 @@
           <div class="pk-term">
             <span class="pk-icon">🟰</span><b>Equivalent Ratio</b>
             <p>
-              The same ratio made bigger or smaller by × the same number. 6:4 =
-              12:8.
+              The same ratio in bigger or smaller numbers. 6:4 is like 12:8.
             </p>
             <p class="pk-es">
               Razón equivalente: la misma razón al multiplicar ambas partes por
@@ -549,9 +558,7 @@
           </div>
           <div class="pk-term">
             <span class="pk-icon">1️⃣</span><b>Unit Rate</b>
-            <p>
-              How much for just ONE: total ÷ quantity, like dollars per 1 cup.
-            </p>
+            <p>How much you get for just one, like the price of 1 cup.</p>
             <p class="pk-es">
               Tasa unitaria: cuánto por UNO solo: total ÷ cantidad, como dólares
               por 1 taza.
@@ -559,9 +566,7 @@
           </div>
           <div class="pk-term">
             <span class="pk-icon">🛒</span><b>Better Buy</b>
-            <p>
-              The pack with the LOWER price per cup (lower unit price wins).
-            </p>
+            <p>The pack that costs less for each cup. Less per cup wins.</p>
             <p class="pk-es">
               Mejor compra: el paquete con MENOR precio por taza (gana el menor
               precio unitario).
@@ -571,16 +576,56 @@
         <div class="grid2" style="margin-top: 18px">
           <div class="pk-callout">
             <h3>Formula Bank</h3>
-            <p><b>Ratio:</b> a : b (fruit : yogurt)</p>
-            <p>
-              <b>Equivalent ratio:</b> multiply both parts by the same factor
-            </p>
-            <p><b>Unit rate:</b> total ÷ quantity</p>
-            <p><b>Better buy:</b> price ÷ number of cups → smaller is better</p>
-            <p class="pk-lvl2">
-              <b>Rate as data (preview):</b> mean of the per-cup prices = (sum
-              of prices) ÷ (how many)
-            </p>
+            <ul class="pk-formula">
+              <li>
+                <span class="pk-f-name">Ratio</span>
+                <span class="pk-f-mean"
+                  >A way to compare two amounts, like cups of fruit to cups of
+                  yogurt. Write it as <b>fruit : yogurt</b>.</span
+                >
+                <span class="pk-eg"
+                  >Example: 4 cups fruit : 2 cups yogurt = 4 : 2</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Equivalent ratio</span>
+                <span class="pk-f-mean"
+                  >The same recipe made bigger or smaller. Multiply (or divide)
+                  <b>both</b> parts by the same number.</span
+                >
+                <span class="pk-eg"
+                  >Example: 4 : 2 = 8 : 4 (both parts × 2)</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Unit rate</span>
+                <span class="pk-f-mean"
+                  >How much for just <b>one</b>. Divide the total by the number
+                  of items.</span
+                >
+                <span class="pk-eg">Example: $6 ÷ 4 cups = $1.50 per cup</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Better buy</span>
+                <span class="pk-f-mean"
+                  >Find the price for one cup of each pack. The
+                  <b>smaller</b> price per cup is the better buy.</span
+                >
+                <span class="pk-eg"
+                  >Example: $1.50 per cup beats $2.00 per cup</span
+                >
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">Average price (preview)</span>
+                <span class="pk-f-mean"
+                  >Add up all the per-cup prices, then divide by how many prices
+                  you added.</span
+                >
+                <span class="pk-eg"
+                  >Example: ($1.50 + $2.00 + $2.50) ÷ 3 = $2.00 each</span
+                >
+              </li>
+            </ul>
           </div>
           <div class="pk-callout">
             <h3>Sentence Frames</h3>
@@ -597,7 +642,7 @@
       </section>
 
       <!-- ===================== PART 1 — SELF ===================== -->
-      
+
       <!-- ===================== PROJECT SETUP ===================== -->
       <section class="phase" id="phase-setup" data-phase>
         <div class="phase-head">
@@ -607,39 +652,155 @@
             <h2>Build YOUR Smoothie Recipe</h2>
           </div>
         </div>
-        
+
         <div class="grid2">
           <div>
-            <p style="font-size: 15px; color: var(--muted); line-height: 1.6; margin-bottom: 20px;">
-              Welcome! Read the scenario below and select your level to begin your design plan.
+            <p
+              style="
+                font-size: 15px;
+                color: var(--muted);
+                line-height: 1.6;
+                margin-bottom: 20px;
+              "
+            >
+              Welcome! Read the scenario below and select your level to begin
+              your design plan.
             </p>
-            <div style="margin-top: 16px;">
-              
-    <svg width="100%" height="220" viewBox="0 0 500 220" style="background:white; border-radius:12px; border: 1px solid #e2e8f0; max-width: 480px; margin: 0 auto; display: block;" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="setup-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#ffffff" />
-          <stop offset="100%" stop-color="#f8fafc" />
-        </linearGradient>
-      </defs>
-      
-      <rect x="20" y="20" width="460" height="200" rx="15" fill="url(#setup-grad)" stroke="#0e8a7d" stroke-width="2"/>
-      <text x="250" y="60" text-anchor="middle" font-size="20" font-weight="bold" fill="#0f2b3c">SOLAR ENERGY GRID</text>
-      <circle cx="100" cy="110" r="30" fill="#ffb74d" stroke="#f57c00" stroke-width="2"/>
-      <polygon points="300,150 380,150 360,100 280,100" fill="#37474f" stroke="#0e8a7d" stroke-width="2"/>
-      <line x1="330" y1="100" x2="330" y2="150" stroke="#e2e8f0" stroke-width="1"/>
-      <line x1="290" y1="125" x2="370" y2="125" stroke="#e2e8f0" stroke-width="1"/>
-    
-    </svg>
-  
+            <div style="margin-top: 16px">
+              <svg
+                width="100%"
+                height="220"
+                viewBox="0 0 500 220"
+                style="
+                  background: white;
+                  border-radius: 12px;
+                  border: 1px solid #e2e8f0;
+                  max-width: 480px;
+                  margin: 0 auto;
+                  display: block;
+                "
+                xmlns="http://www.w3.org/2000/svg"
+                role="img"
+                aria-label="Smoothie recipe ratio: 6 cups fruit to 4 cups yogurt"
+              >
+                <defs>
+                  <linearGradient
+                    id="setup-grad"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop offset="0%" stop-color="#e11d48" />
+                    <stop offset="100%" stop-color="#fb923c" />
+                  </linearGradient>
+                </defs>
+                <rect
+                  x="20"
+                  y="20"
+                  width="460"
+                  height="200"
+                  rx="15"
+                  fill="url(#setup-grad)"
+                />
+                <text
+                  x="250"
+                  y="54"
+                  text-anchor="middle"
+                  font-size="20"
+                  font-weight="bold"
+                  fill="#ffffff"
+                >
+                  SMOOTHIE RECIPE RATIO
+                </text>
+                <text
+                  x="250"
+                  y="76"
+                  text-anchor="middle"
+                  font-size="12"
+                  fill="#ffe4d6"
+                >
+                  fruit : yogurt = 6 : 4
+                </text>
+                <text
+                  x="118"
+                  y="104"
+                  text-anchor="middle"
+                  font-size="12"
+                  font-weight="bold"
+                  fill="#ffffff"
+                >
+                  FRUIT (6)
+                </text>
+                <g>
+                  <circle cx="60" cy="135" r="13" fill="#ffffff" />
+                  <circle cx="92" cy="135" r="13" fill="#ffffff" />
+                  <circle cx="124" cy="135" r="13" fill="#ffffff" />
+                  <circle cx="60" cy="167" r="13" fill="#ffffff" />
+                  <circle cx="92" cy="167" r="13" fill="#ffffff" />
+                  <circle cx="124" cy="167" r="13" fill="#ffffff" />
+                </g>
+                <text
+                  x="360"
+                  y="104"
+                  text-anchor="middle"
+                  font-size="12"
+                  font-weight="bold"
+                  fill="#ffffff"
+                >
+                  YOGURT (4)
+                </text>
+                <g>
+                  <circle cx="332" cy="135" r="13" fill="#fde68a" />
+                  <circle cx="364" cy="135" r="13" fill="#fde68a" />
+                  <circle cx="332" cy="167" r="13" fill="#fde68a" />
+                  <circle cx="364" cy="167" r="13" fill="#fde68a" />
+                </g>
+              </svg>
             </div>
           </div>
-          
-          <div style="background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 20px; box-shadow: var(--shadow);">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px;">
+
+          <div
+            style="
+              background: var(--bg);
+              border: 1px solid var(--line);
+              border-radius: 12px;
+              padding: 20px;
+              box-shadow: var(--shadow);
+            "
+          >
+            <h3
+              style="
+                margin-top: 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+              "
+            >
               <span>📋</span> Scenario &amp; Level Options
             </h3>
-            <h2>Build YOUR Smoothie Recipe</h2>
+            <p style="font-size: 14px; line-height: 1.6; margin: 0 0 10px">
+              You run a <strong>smoothie bar</strong>. Start from a
+              <strong>real recipe from your own kitchen</strong>, write it as a
+              fruit-to-yogurt ratio, scale it up, and price it per cup.
+            </p>
+            <ul
+              style="
+                font-size: 14px;
+                line-height: 1.6;
+                margin: 0;
+                padding-left: 18px;
+              "
+            >
+              <li>
+                <strong>Level 1 (support):</strong> use friendly amounts (like 6
+                cups fruit : 4 cups yogurt).
+              </li>
+              <li>
+                <strong>Level 2 (challenge):</strong> use your real amounts and
+                simplify the ratio.
+              </li>
+            </ul>
           </div>
         </div>
         <p>
@@ -648,20 +809,37 @@
           Not sure yet? Click <em>Use example numbers</em> to model the math,
           then change them to your real recipe.
         </p>
-        
 
         <!-- 1a Ratio -->
-            
-            <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line);">
-              <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px;">
-                You can type your own numbers as you go, or click below to start with our example numbers:
-              </p>
-              <button class="btn ghost" type="button" onclick="useExamples()" style="width: 100%; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                ✨ Use Example Numbers
-              </button>
-            </div>
+
+        <div
+          style="
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--line);
+          "
+        >
+          <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px">
+            You can type your own numbers as you go, or click below to start
+            with our example numbers:
+          </p>
+          <button
+            class="btn ghost"
+            type="button"
+            onclick="useExamples()"
+            style="
+              width: 100%;
+              font-weight: bold;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 8px;
+            "
+          >
+            ✨ Use Example Numbers
+          </button>
+        </div>
       </section>
-  
 
       <!-- ===================== PART 1A — SELF ===================== -->
       <section class="phase" id="phase-1a" data-phase>
@@ -672,101 +850,255 @@
             <h2>⚖️ Write your recipe ratio (6.RP.1)</h2>
           </div>
         </div>
-        
-        <div class="grid2">
-          <div>
-            
-    <div class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
-      <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px;" xmlns="http://www.w3.org/2000/svg">
-        
-      <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Ratio Tape Diagram</text>
-      <g transform="translate(100, 70)">
-        <text x="-10" y="16" text-anchor="end" font-size="10" font-weight="bold" fill="#1a6fb5">Part A</text>
-        <rect x="0" y="0" width="50" height="24" fill="rgba(26,111,181,0.2)" stroke="#1a6fb5"/>
-        <rect x="50" y="0" width="50" height="24" fill="rgba(26,111,181,0.2)" stroke="#1a6fb5"/>
-      </g>
-      <g transform="translate(100, 110)">
-        <text x="-10" y="16" text-anchor="end" font-size="10" font-weight="bold" fill="#d4952a">Part B</text>
-        <rect x="0" y="0" width="50" height="24" fill="rgba(212,149,42,0.2)" stroke="#d4952a"/>
-        <rect x="50" y="0" width="50" height="24" fill="rgba(212,149,42,0.2)" stroke="#d4952a"/>
-        <rect x="100" y="0" width="50" height="24" fill="rgba(212,149,42,0.2)" stroke="#d4952a"/>
-      </g>
-    
-      </svg>
-    </div>
-  
-            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-          Level 1 tip: pick amounts that share a factor, like 4 and 6, so you
-          can see simplifying work. The fruit box is pre-filled to get you
-          started.
-        </p>
-        <div class="grid2">
-          <div>
-            <label class="fld" for="r-fruit"
-              >Cups of fruit (from your real recipe)</label
-            >
-            <input
-              type="number"
-              id="r-fruit"
-              data-save
-              min="1"
-              max="50"
-              placeholder="example: 6"
-              oninput="calcRatio()"
-            />
-          </div>
-          <div>
-            <label class="fld" for="r-yogurt">Cups of yogurt or milk</label>
-            <input
-              type="number"
-              id="r-yogurt"
-              data-save
-              min="1"
-              max="50"
-              placeholder="example: 4"
-              oninput="calcRatio()"
-            />
-          </div>
-        </div>
-        <button class="btn" type="button" onclick="calcRatio()">
-          Show my ratio in all 3 forms
-        </button>
-        <div class="readout" id="ratio-out"></div>
-        <details class="hintbox">
-          <summary>Need a hint?</summary>
-          <p>
-            A ratio compares two quantities. 6 cups of fruit and 4 cups of
-            yogurt can be written <strong>6:4</strong>, <strong>6 to 4</strong>,
-            or <strong>6/4</strong>. To simplify, divide both by their GCF.
-            GCF(6, 4) = 2, so 6:4 simplifies to <strong>3:2</strong>.
-          </p>
-        </details>
 
-        <!-- 1b Ratio table -->
+        <div class="grid2">
+          <div>
+            <div
+              class="pk-math-scaffold-card no-print"
+              style="
+                margin: 20px 0;
+                padding: 12px;
+                background: #fff;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+                max-width: 480px;
+                margin-left: auto;
+                margin-right: auto;
+              "
+            >
+              <svg
+                width="100%"
+                height="200"
+                viewBox="0 0 500 200"
+                style="background: #fff; border-radius: 8px"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <text
+                  x="250"
+                  y="30"
+                  text-anchor="middle"
+                  font-size="14"
+                  font-weight="bold"
+                  fill="#0f2b3c"
+                >
+                  Ratio Tape Diagram
+                </text>
+                <g transform="translate(100, 70)">
+                  <text
+                    x="-10"
+                    y="16"
+                    text-anchor="end"
+                    font-size="10"
+                    font-weight="bold"
+                    fill="#1a6fb5"
+                  >
+                    Part A
+                  </text>
+                  <rect
+                    x="0"
+                    y="0"
+                    width="50"
+                    height="24"
+                    fill="rgba(26,111,181,0.2)"
+                    stroke="#1a6fb5"
+                  />
+                  <rect
+                    x="50"
+                    y="0"
+                    width="50"
+                    height="24"
+                    fill="rgba(26,111,181,0.2)"
+                    stroke="#1a6fb5"
+                  />
+                </g>
+                <g transform="translate(100, 110)">
+                  <text
+                    x="-10"
+                    y="16"
+                    text-anchor="end"
+                    font-size="10"
+                    font-weight="bold"
+                    fill="#d4952a"
+                  >
+                    Part B
+                  </text>
+                  <rect
+                    x="0"
+                    y="0"
+                    width="50"
+                    height="24"
+                    fill="rgba(212,149,42,0.2)"
+                    stroke="#d4952a"
+                  />
+                  <rect
+                    x="50"
+                    y="0"
+                    width="50"
+                    height="24"
+                    fill="rgba(212,149,42,0.2)"
+                    stroke="#d4952a"
+                  />
+                  <rect
+                    x="100"
+                    y="0"
+                    width="50"
+                    height="24"
+                    fill="rgba(212,149,42,0.2)"
+                    stroke="#d4952a"
+                  />
+                </g>
+              </svg>
+            </div>
+
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: pick amounts that share a factor, like 4 and 6, so
+              you can see simplifying work. The fruit box is pre-filled to get
+              you started.
+            </p>
+            <div class="grid2">
+              <div>
+                <label class="fld" for="r-fruit"
+                  >Cups of fruit (from your real recipe)</label
+                >
+                <input
+                  type="number"
+                  id="r-fruit"
+                  data-save
+                  min="1"
+                  max="50"
+                  placeholder=""
+                  oninput="calcRatio()"
+                />
+              </div>
+              <div>
+                <label class="fld" for="r-yogurt">Cups of yogurt or milk</label>
+                <input
+                  type="number"
+                  id="r-yogurt"
+                  data-save
+                  min="1"
+                  max="50"
+                  placeholder=""
+                  oninput="calcRatio()"
+                />
+              </div>
+            </div>
+            <button class="btn" type="button" onclick="calcRatio()">
+              Show my ratio in all 3 forms
+            </button>
+            <div class="readout" id="ratio-out"></div>
+            <div
+              class="pki-manip"
+              data-manip="ratio-build"
+              data-label-a="cups of fruit"
+              data-label-b="cups of yogurt"
+              data-rate-name="cups"
+              data-tile-a="🍓"
+              data-tile-b="🥛"
+              data-default-a="6"
+              data-default-b="4"
+            ></div>
+            <details class="hintbox">
+              <summary>Need a hint?</summary>
+              <p>
+                A ratio compares two quantities. 6 cups of fruit and 4 cups of
+                yogurt can be written <strong>6:4</strong>,
+                <strong>6 to 4</strong>, or <strong>6/4</strong>. To simplify,
+                divide both by their GCF. GCF(6, 4) = 2, so 6:4 simplifies to
+                <strong>3:2</strong>.
+              </p>
+            </details>
+
+            <div class="pk-lvl2">
+              <div class="task">
+                <strong>Level 2 extension (6.RP.1):</strong> Write your recipe
+                as a <em>part-to-whole</em> ratio too. If your recipe is 4 cups
+                fruit to 2 cups yogurt, that is 6 cups total, so fruit is
+                <code>4 : 6</code> of the whole batch. What fraction of your own
+                batch is fruit? Simplify it.
+              </div>
+            </div>
+
+            <!-- 1b Ratio table -->
           </div>
-          
-          <div style="background: var(--bg); border: 2.5px solid var(--line); border-radius: 18px; padding: 20px; box-shadow: var(--shadow); height: fit-content;" class="pk-no-print">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px; color: var(--navy); font-size: 16px;">
+
+          <div
+            style="
+              background: var(--bg);
+              border: 2.5px solid var(--line);
+              border-radius: 18px;
+              padding: 20px;
+              box-shadow: var(--shadow);
+              height: fit-content;
+            "
+            class="pk-no-print"
+          >
+            <h3
+              style="
+                margin-top: 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: var(--navy);
+                font-size: 16px;
+              "
+            >
               <span>💡</span> Guided Steps &amp; Help
             </h3>
-            
-      <p style="font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-bottom: 12px;">
-        <strong>Working with Ratios, Rates, & Tape Diagrams:</strong>
-      </p>
-      <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>Identify the parts in your ratio: <b>Part A : Part B</b> (e.g. 2 cups blue paint to 3 cups yellow paint).</li>
-        <li>Add the parts to find the <b>Total Parts</b> in the whole mixture ($2 + 3 = 5$ parts).</li>
-        <li>Divide the total mixture volume by the total parts to find the <b>Value of One Box</b> in your tape diagram.</li>
-        <li>Multiply the value of one box by the parts of each ingredient to find the target amounts.</li>
-      </ol>
-      <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
-        💡 <b>Example:</b> Ratio 2:3 (Total parts = 5). For 15 gallons total, each part is $15 ÷ 5 = 3$ gallons. Blue = $2 \times 3 = 6$ gallons, Yellow = $3 \times 3 = 9$ gallons.
-      </div>
-    
+
+            <p
+              style="
+                font-size: 13.5px;
+                line-height: 1.5;
+                color: var(--muted);
+                margin-bottom: 12px;
+              "
+            >
+              <strong>Working with Ratios, Rates, & Tape Diagrams:</strong>
+            </p>
+            <ol
+              style="
+                margin-left: 18px;
+                font-size: 13px;
+                line-height: 1.5;
+                display: grid;
+                gap: 8px;
+                color: var(--ink);
+              "
+            >
+              <li>
+                Identify the parts in your ratio: <b>Part A : Part B</b> (e.g. 2
+                cups blue paint to 3 cups yellow paint).
+              </li>
+              <li>
+                Add the parts to find the <b>Total Parts</b> in the whole
+                mixture (2 + 3 = 5 parts).
+              </li>
+              <li>
+                Divide the total mixture volume by the total parts to find the
+                <b>Value of One Box</b> in your tape diagram.
+              </li>
+              <li>
+                Multiply the value of one box by the parts of each ingredient to
+                find the target amounts.
+              </li>
+            </ol>
+            <div
+              style="
+                margin-top: 14px;
+                padding: 10px;
+                background: var(--sky);
+                border-radius: 8px;
+                font-size: 12px;
+              "
+            >
+              💡 <b>Example:</b> Ratio 2:3 (Total parts = 5). For 15 gallons
+              total, each part is 15 ÷ 5 = 3 gallons. Blue = 2 × 3 = 6 gallons,
+              Yellow = 3 × 3 = 9 gallons.
+            </div>
           </div>
         </div>
       </section>
-    
 
       <!-- ===================== PART 1B — SELF ===================== -->
       <section class="phase" id="phase-1b" data-phase>
@@ -777,71 +1109,217 @@
             <h2>🟰 Scale it up — ratio table (6.RP.3)</h2>
           </div>
         </div>
-        
+
         <div class="grid2">
           <div>
-            
-    <div class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
-      <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px;" xmlns="http://www.w3.org/2000/svg">
-        
-      <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Ratio Tape Diagram</text>
-      <g transform="translate(100, 70)">
-        <text x="-10" y="16" text-anchor="end" font-size="10" font-weight="bold" fill="#1a6fb5">Part A</text>
-        <rect x="0" y="0" width="50" height="24" fill="rgba(26,111,181,0.2)" stroke="#1a6fb5"/>
-        <rect x="50" y="0" width="50" height="24" fill="rgba(26,111,181,0.2)" stroke="#1a6fb5"/>
-      </g>
-      <g transform="translate(100, 110)">
-        <text x="-10" y="16" text-anchor="end" font-size="10" font-weight="bold" fill="#d4952a">Part B</text>
-        <rect x="0" y="0" width="50" height="24" fill="rgba(212,149,42,0.2)" stroke="#d4952a"/>
-        <rect x="50" y="0" width="50" height="24" fill="rgba(212,149,42,0.2)" stroke="#d4952a"/>
-        <rect x="100" y="0" width="50" height="24" fill="rgba(212,149,42,0.2)" stroke="#d4952a"/>
-      </g>
-    
-      </svg>
-    </div>
-  
-            <p style="font-size: 14px; color: var(--muted)">
-          Your recipe is one batch. Build an equivalent ratio table for 1×, 2×,
-          and 3× so you can serve a crowd without changing the taste. It uses
-          your recipe numbers from above.
-        </p>
-        <button class="btn alt" type="button" onclick="calcTable()">
-          Build ratio table
-        </button>
-        <div class="readout" id="table-out"></div>
-        <details class="hintbox">
-          <summary>Need a hint?</summary>
-          <p>
-            Multiply both parts by the same number. Base 6:4 → 2× = 12:8 → 3× =
-            18:12. All three are equivalent because they all simplify to 3:2.
-          </p>
-        </details>
+            <div
+              class="pk-math-scaffold-card no-print"
+              style="
+                margin: 20px 0;
+                padding: 12px;
+                background: #fff;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+                max-width: 480px;
+                margin-left: auto;
+                margin-right: auto;
+              "
+            >
+              <svg
+                width="100%"
+                height="200"
+                viewBox="0 0 500 200"
+                style="background: #fff; border-radius: 8px"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <text
+                  x="250"
+                  y="30"
+                  text-anchor="middle"
+                  font-size="14"
+                  font-weight="bold"
+                  fill="#0f2b3c"
+                >
+                  Ratio Tape Diagram
+                </text>
+                <g transform="translate(100, 70)">
+                  <text
+                    x="-10"
+                    y="16"
+                    text-anchor="end"
+                    font-size="10"
+                    font-weight="bold"
+                    fill="#1a6fb5"
+                  >
+                    Part A
+                  </text>
+                  <rect
+                    x="0"
+                    y="0"
+                    width="50"
+                    height="24"
+                    fill="rgba(26,111,181,0.2)"
+                    stroke="#1a6fb5"
+                  />
+                  <rect
+                    x="50"
+                    y="0"
+                    width="50"
+                    height="24"
+                    fill="rgba(26,111,181,0.2)"
+                    stroke="#1a6fb5"
+                  />
+                </g>
+                <g transform="translate(100, 110)">
+                  <text
+                    x="-10"
+                    y="16"
+                    text-anchor="end"
+                    font-size="10"
+                    font-weight="bold"
+                    fill="#d4952a"
+                  >
+                    Part B
+                  </text>
+                  <rect
+                    x="0"
+                    y="0"
+                    width="50"
+                    height="24"
+                    fill="rgba(212,149,42,0.2)"
+                    stroke="#d4952a"
+                  />
+                  <rect
+                    x="50"
+                    y="0"
+                    width="50"
+                    height="24"
+                    fill="rgba(212,149,42,0.2)"
+                    stroke="#d4952a"
+                  />
+                  <rect
+                    x="100"
+                    y="0"
+                    width="50"
+                    height="24"
+                    fill="rgba(212,149,42,0.2)"
+                    stroke="#d4952a"
+                  />
+                </g>
+              </svg>
+            </div>
 
-        <!-- 1c Unit rate -->
+            <p style="font-size: 14px; color: var(--muted)">
+              Your recipe is one batch. Build an equivalent ratio table for 1×,
+              2×, and 3× so you can serve a crowd without changing the taste. It
+              uses your recipe numbers from above.
+            </p>
+            <button class="btn alt" type="button" onclick="calcTable()">
+              Build ratio table
+            </button>
+            <div class="readout" id="table-out"></div>
+            <details class="hintbox">
+              <summary>Need a hint?</summary>
+              <p>
+                Multiply both parts by the same number. Base 6:4 → 2× = 12:8 →
+                3× = 18:12. All three are equivalent because they all simplify
+                to 3:2.
+              </p>
+            </details>
+
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: to go from 1× to 2×, just double both numbers. 6:4
+              doubled is 12:8 — the taste stays the same.
+            </p>
+            <div class="pk-lvl2">
+              <div class="task">
+                <strong>Level 2 extension (6.RP.3):</strong> A customer orders
+                <strong>10×</strong> your batch. Extend your ratio table to 10×
+                and find both amounts. Then explain how you know it is still the
+                same recipe.
+              </div>
+            </div>
+
+            <!-- 1c Unit rate -->
           </div>
-          
-          <div style="background: var(--bg); border: 2.5px solid var(--line); border-radius: 18px; padding: 20px; box-shadow: var(--shadow); height: fit-content;" class="pk-no-print">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px; color: var(--navy); font-size: 16px;">
+
+          <div
+            style="
+              background: var(--bg);
+              border: 2.5px solid var(--line);
+              border-radius: 18px;
+              padding: 20px;
+              box-shadow: var(--shadow);
+              height: fit-content;
+            "
+            class="pk-no-print"
+          >
+            <h3
+              style="
+                margin-top: 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: var(--navy);
+                font-size: 16px;
+              "
+            >
               <span>💡</span> Guided Steps &amp; Help
             </h3>
-            
-      <p style="font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-bottom: 12px;">
-        <strong>Working with Ratios, Rates, & Tape Diagrams:</strong>
-      </p>
-      <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>Identify the parts in your ratio: <b>Part A : Part B</b> (e.g. 2 cups blue paint to 3 cups yellow paint).</li>
-        <li>Add the parts to find the <b>Total Parts</b> in the whole mixture ($2 + 3 = 5$ parts).</li>
-        <li>Divide the total mixture volume by the total parts to find the <b>Value of One Box</b> in your tape diagram.</li>
-        <li>Multiply the value of one box by the parts of each ingredient to find the target amounts.</li>
-      </ol>
-      <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
-        💡 <b>Example:</b> Ratio 2:3 (Total parts = 5). For 15 gallons total, each part is $15 ÷ 5 = 3$ gallons. Blue = $2 \times 3 = 6$ gallons, Yellow = $3 \times 3 = 9$ gallons.
-      </div>
-    
+
+            <p
+              style="
+                font-size: 13.5px;
+                line-height: 1.5;
+                color: var(--muted);
+                margin-bottom: 12px;
+              "
+            >
+              <strong>Working with Ratios, Rates, & Tape Diagrams:</strong>
+            </p>
+            <ol
+              style="
+                margin-left: 18px;
+                font-size: 13px;
+                line-height: 1.5;
+                display: grid;
+                gap: 8px;
+                color: var(--ink);
+              "
+            >
+              <li>
+                Identify the parts in your ratio: <b>Part A : Part B</b> (e.g. 2
+                cups blue paint to 3 cups yellow paint).
+              </li>
+              <li>
+                Add the parts to find the <b>Total Parts</b> in the whole
+                mixture (2 + 3 = 5 parts).
+              </li>
+              <li>
+                Divide the total mixture volume by the total parts to find the
+                <b>Value of One Box</b> in your tape diagram.
+              </li>
+              <li>
+                Multiply the value of one box by the parts of each ingredient to
+                find the target amounts.
+              </li>
+            </ol>
+            <div
+              style="
+                margin-top: 14px;
+                padding: 10px;
+                background: var(--sky);
+                border-radius: 8px;
+                font-size: 12px;
+              "
+            >
+              💡 <b>Example:</b> Ratio 2:3 (Total parts = 5). For 15 gallons
+              total, each part is 15 ÷ 5 = 3 gallons. Blue = 2 × 3 = 6 gallons,
+              Yellow = 3 × 3 = 9 gallons.
+            </div>
           </div>
         </div>
       </section>
-    
 
       <!-- ===================== PART 1C — SELF ===================== -->
       <section class="phase" id="phase-1c" data-phase>
@@ -852,102 +1330,264 @@
             <h2>1️⃣ Price one smoothie — unit rate (6.RP.2)</h2>
           </div>
         </div>
-        
+
         <div class="grid2">
           <div>
-            
-    <div class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
-      <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px;" xmlns="http://www.w3.org/2000/svg">
-        
-      <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Ratio Tape Diagram</text>
-      <g transform="translate(100, 70)">
-        <text x="-10" y="16" text-anchor="end" font-size="10" font-weight="bold" fill="#1a6fb5">Part A</text>
-        <rect x="0" y="0" width="50" height="24" fill="rgba(26,111,181,0.2)" stroke="#1a6fb5"/>
-        <rect x="50" y="0" width="50" height="24" fill="rgba(26,111,181,0.2)" stroke="#1a6fb5"/>
-      </g>
-      <g transform="translate(100, 110)">
-        <text x="-10" y="16" text-anchor="end" font-size="10" font-weight="bold" fill="#d4952a">Part B</text>
-        <rect x="0" y="0" width="50" height="24" fill="rgba(212,149,42,0.2)" stroke="#d4952a"/>
-        <rect x="50" y="0" width="50" height="24" fill="rgba(212,149,42,0.2)" stroke="#d4952a"/>
-        <rect x="100" y="0" width="50" height="24" fill="rgba(212,149,42,0.2)" stroke="#d4952a"/>
-      </g>
-    
-      </svg>
-    </div>
-  
-            <div class="grid2">
-          
-        <!-- ===================== INLINE RESEARCH LAB ===================== -->
-        <div class="pk-research-inline-card">
-          <div class="pk-research-inline-header">
-            <span class="pk-research-badge">🔍 Research Required</span>
-            <a href="https://www.ers.usda.gov/data-products/fruit-and-vegetable-prices/" target="_blank" class="pk-research-inline-link">🔗 USDA Fruit and Vegetable Prices Data ↗</a>
-          </div>
-          <p class="pk-research-inline-instructions">Open the USDA Fruit Prices database. Look up the average retail cost per pound of fresh strawberries. Enter the researched price below to compute your ratios:</p>
-          <div class="grid2">
-            <div>
-              <label class="fld" for="worldCountry">Researched Fruit Name</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. Strawberries" oninput="recalcAll()">
-            </div>
-            <div>
-              <label class="fld" for="u-cost">Strawberry Cost per Pound ($)</label>
-              <input
-              type="number"
-              id="u-cost"
-              data-save
-              step="0.01"
-              min="0.01"
-              placeholder="example: 9.00"
-              oninput="calcUnitRate()"
-            />
-            </div>
-          </div>
-        </div>
-    
-          <div>
-            <label class="fld" for="u-smoothies"
-              >Smoothies one batch makes</label
+            <div
+              class="pk-math-scaffold-card no-print"
+              style="
+                margin: 20px 0;
+                padding: 12px;
+                background: #fff;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+                max-width: 480px;
+                margin-left: auto;
+                margin-right: auto;
+              "
             >
-            <input
-              type="number"
-              id="u-smoothies"
-              data-save
-              min="1"
-              placeholder="example: 3"
-              oninput="calcUnitRate()"
-            />
-          </div>
-        </div>
-        <button class="btn" type="button" onclick="calcUnitRate()">
-          Calculate cost per smoothie
-        </button>
-        <div class="readout" id="unit-out"></div>
+              <svg
+                width="100%"
+                height="200"
+                viewBox="0 0 500 200"
+                style="background: #fff; border-radius: 8px"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <text
+                  x="250"
+                  y="30"
+                  text-anchor="middle"
+                  font-size="14"
+                  font-weight="bold"
+                  fill="#0f2b3c"
+                >
+                  Ratio Tape Diagram
+                </text>
+                <g transform="translate(100, 70)">
+                  <text
+                    x="-10"
+                    y="16"
+                    text-anchor="end"
+                    font-size="10"
+                    font-weight="bold"
+                    fill="#1a6fb5"
+                  >
+                    Part A
+                  </text>
+                  <rect
+                    x="0"
+                    y="0"
+                    width="50"
+                    height="24"
+                    fill="rgba(26,111,181,0.2)"
+                    stroke="#1a6fb5"
+                  />
+                  <rect
+                    x="50"
+                    y="0"
+                    width="50"
+                    height="24"
+                    fill="rgba(26,111,181,0.2)"
+                    stroke="#1a6fb5"
+                  />
+                </g>
+                <g transform="translate(100, 110)">
+                  <text
+                    x="-10"
+                    y="16"
+                    text-anchor="end"
+                    font-size="10"
+                    font-weight="bold"
+                    fill="#d4952a"
+                  >
+                    Part B
+                  </text>
+                  <rect
+                    x="0"
+                    y="0"
+                    width="50"
+                    height="24"
+                    fill="rgba(212,149,42,0.2)"
+                    stroke="#d4952a"
+                  />
+                  <rect
+                    x="50"
+                    y="0"
+                    width="50"
+                    height="24"
+                    fill="rgba(212,149,42,0.2)"
+                    stroke="#d4952a"
+                  />
+                  <rect
+                    x="100"
+                    y="0"
+                    width="50"
+                    height="24"
+                    fill="rgba(212,149,42,0.2)"
+                    stroke="#d4952a"
+                  />
+                </g>
+              </svg>
+            </div>
 
-        <!-- 1d Better buy -->
+            <div class="grid2">
+              <!-- ===================== INLINE RESEARCH LAB ===================== -->
+              <div class="pk-research-inline-card">
+                <div class="pk-research-inline-header">
+                  <span class="pk-research-badge">🔍 Research Required</span>
+                  <a
+                    href="https://www.ers.usda.gov/data-products/fruit-and-vegetable-prices/"
+                    target="_blank"
+                    class="pk-research-inline-link"
+                    >🔗 USDA Fruit and Vegetable Prices Data ↗</a
+                  >
+                </div>
+                <p class="pk-research-inline-instructions">
+                  Open the USDA Fruit Prices database. Look up the average
+                  retail cost per pound of fresh strawberries. Enter the
+                  researched price below to compute your ratios:
+                </p>
+                <div class="grid2">
+                  <div>
+                    <label class="fld" for="worldCountry"
+                      >Researched Fruit Name</label
+                    >
+                    <input
+                      type="text"
+                      id="worldCountry"
+                      data-save
+                      placeholder=""
+                      oninput="recalcAll()"
+                    />
+                  </div>
+                  <div>
+                    <label class="fld" for="u-cost"
+                      >Strawberry Cost per Pound ($)</label
+                    >
+                    <input
+                      type="number"
+                      id="u-cost"
+                      data-save
+                      step="0.01"
+                      min="0.01"
+                      placeholder=""
+                      oninput="calcUnitRate()"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label class="fld" for="u-smoothies"
+                  >Smoothies one batch makes</label
+                >
+                <input
+                  type="number"
+                  id="u-smoothies"
+                  data-save
+                  min="1"
+                  placeholder=""
+                  oninput="calcUnitRate()"
+                />
+              </div>
+            </div>
+            <button class="btn" type="button" onclick="calcUnitRate()">
+              Calculate cost per smoothie
+            </button>
+            <div class="readout" id="unit-out"></div>
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: unit rate means "for ONE." Divide the total cost by
+              the number of smoothies. $6 ÷ 4 smoothies = $1.50 each.
+            </p>
+            <div class="pk-lvl2">
+              <div class="task">
+                <strong>Level 2 extension (6.RP.2):</strong> Use your cost per
+                smoothie to predict the price of <strong>7</strong> smoothies.
+                Then explain why multiplying the unit rate by 7 gives the right
+                total.
+              </div>
+            </div>
+
+            <!-- 1d Better buy -->
           </div>
-          
-          <div style="background: var(--bg); border: 2.5px solid var(--line); border-radius: 18px; padding: 20px; box-shadow: var(--shadow); height: fit-content;" class="pk-no-print">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px; color: var(--navy); font-size: 16px;">
+
+          <div
+            style="
+              background: var(--bg);
+              border: 2.5px solid var(--line);
+              border-radius: 18px;
+              padding: 20px;
+              box-shadow: var(--shadow);
+              height: fit-content;
+            "
+            class="pk-no-print"
+          >
+            <h3
+              style="
+                margin-top: 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: var(--navy);
+                font-size: 16px;
+              "
+            >
               <span>💡</span> Guided Steps &amp; Help
             </h3>
-            
-      <p style="font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-bottom: 12px;">
-        <strong>Working with Ratios, Rates, & Tape Diagrams:</strong>
-      </p>
-      <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>Identify the parts in your ratio: <b>Part A : Part B</b> (e.g. 2 cups blue paint to 3 cups yellow paint).</li>
-        <li>Add the parts to find the <b>Total Parts</b> in the whole mixture ($2 + 3 = 5$ parts).</li>
-        <li>Divide the total mixture volume by the total parts to find the <b>Value of One Box</b> in your tape diagram.</li>
-        <li>Multiply the value of one box by the parts of each ingredient to find the target amounts.</li>
-      </ol>
-      <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
-        💡 <b>Example:</b> Ratio 2:3 (Total parts = 5). For 15 gallons total, each part is $15 ÷ 5 = 3$ gallons. Blue = $2 \times 3 = 6$ gallons, Yellow = $3 \times 3 = 9$ gallons.
-      </div>
-    
+
+            <p
+              style="
+                font-size: 13.5px;
+                line-height: 1.5;
+                color: var(--muted);
+                margin-bottom: 12px;
+              "
+            >
+              <strong>Working with Ratios, Rates, & Tape Diagrams:</strong>
+            </p>
+            <ol
+              style="
+                margin-left: 18px;
+                font-size: 13px;
+                line-height: 1.5;
+                display: grid;
+                gap: 8px;
+                color: var(--ink);
+              "
+            >
+              <li>
+                Identify the parts in your ratio: <b>Part A : Part B</b> (e.g. 2
+                cups blue paint to 3 cups yellow paint).
+              </li>
+              <li>
+                Add the parts to find the <b>Total Parts</b> in the whole
+                mixture (2 + 3 = 5 parts).
+              </li>
+              <li>
+                Divide the total mixture volume by the total parts to find the
+                <b>Value of One Box</b> in your tape diagram.
+              </li>
+              <li>
+                Multiply the value of one box by the parts of each ingredient to
+                find the target amounts.
+              </li>
+            </ol>
+            <div
+              style="
+                margin-top: 14px;
+                padding: 10px;
+                background: var(--sky);
+                border-radius: 8px;
+                font-size: 12px;
+              "
+            >
+              💡 <b>Example:</b> Ratio 2:3 (Total parts = 5). For 15 gallons
+              total, each part is 15 ÷ 5 = 3 gallons. Blue = 2 × 3 = 6 gallons,
+              Yellow = 3 × 3 = 9 gallons.
+            </div>
           </div>
         </div>
       </section>
-    
 
       <!-- ===================== PART 1D — SELF ===================== -->
       <section class="phase" id="phase-1d" data-phase>
@@ -958,146 +1598,291 @@
             <h2>🛒 Smart shopping — better buy (6.RP.3)</h2>
           </div>
         </div>
-        
-        <div class="grid2">
-          <div>
-            
-    <div class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
-      <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px;" xmlns="http://www.w3.org/2000/svg">
-        
-      <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Ratio Tape Diagram</text>
-      <g transform="translate(100, 70)">
-        <text x="-10" y="16" text-anchor="end" font-size="10" font-weight="bold" fill="#1a6fb5">Part A</text>
-        <rect x="0" y="0" width="50" height="24" fill="rgba(26,111,181,0.2)" stroke="#1a6fb5"/>
-        <rect x="50" y="0" width="50" height="24" fill="rgba(26,111,181,0.2)" stroke="#1a6fb5"/>
-      </g>
-      <g transform="translate(100, 110)">
-        <text x="-10" y="16" text-anchor="end" font-size="10" font-weight="bold" fill="#d4952a">Part B</text>
-        <rect x="0" y="0" width="50" height="24" fill="rgba(212,149,42,0.2)" stroke="#d4952a"/>
-        <rect x="50" y="0" width="50" height="24" fill="rgba(212,149,42,0.2)" stroke="#d4952a"/>
-        <rect x="100" y="0" width="50" height="24" fill="rgba(212,149,42,0.2)" stroke="#d4952a"/>
-      </g>
-    
-      </svg>
-    </div>
-  
-            <p style="font-size: 14px; color: var(--muted)">
-          Compare two packs of the same ingredient. Which costs less per cup?
-        </p>
-        <div class="grid2">
-          <div>
-            <label class="fld" for="b-price1">Pack A: total price ($)</label>
-            <input
-              type="number"
-              id="b-price1"
-              data-save
-              step="0.01"
-              min="0.01"
-              placeholder="example: 4.50"
-              oninput="calcBetterBuy()"
-            />
-          </div>
-          <div>
-            <label class="fld" for="b-cups1">Pack A: number of cups</label>
-            <input
-              type="number"
-              id="b-cups1"
-              data-save
-              min="1"
-              placeholder="example: 3"
-              oninput="calcBetterBuy()"
-            />
-          </div>
-          <div>
-            <label class="fld" for="b-price2">Pack B: total price ($)</label>
-            <input
-              type="number"
-              id="b-price2"
-              data-save
-              step="0.01"
-              min="0.01"
-              placeholder="example: 7.20"
-              oninput="calcBetterBuy()"
-            />
-          </div>
-          <div>
-            <label class="fld" for="b-cups2">Pack B: number of cups</label>
-            <input
-              type="number"
-              id="b-cups2"
-              data-save
-              min="1"
-              placeholder="example: 6"
-              oninput="calcBetterBuy()"
-            />
-          </div>
-        </div>
-        <button class="btn alt" type="button" onclick="calcBetterBuy()">
-          Find the better buy
-        </button>
-        <div class="readout" id="buy-out"></div>
-        <details class="hintbox">
-          <summary>Need a hint?</summary>
-          <p>
-            Unit rate has a denominator of 1. Cost per smoothie = total ÷
-            smoothies ($9.00 ÷ 3 = $3.00). Better buy = price ÷ cups for each
-            pack: $4.50 ÷ 3 = $1.50/cup vs $7.20 ÷ 6 = $1.20/cup. Lower unit
-            price wins.
-          </p>
-        </details>
 
-        <!-- 1e quick self-check -->
-        <div class="task" style="margin-top: 18px">
-          <strong>Quick ratio check:</strong> Simplify the ratio 12:18. Write it
-          as A:B.
-        </div>
-        <label class="fld" for="check-ratio"
-          >Your simplified ratio (e.g., 2:3)</label
-        >
-        <input type="text" id="check-ratio" data-save placeholder="e.g., 2:3" />
-        <button class="btn alt" type="button" onclick="checkRatioFn()">
-          Check answer
-        </button>
-        <div class="feedback" id="check-ratioFb"></div>
-        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-          Level 1 worked step: GCF(12, 18) = 6 → 12 ÷ 6 = 2 and 18 ÷ 6 = 3 →
-          2:3.
-        </p>
+        <div class="grid2">
+          <div>
+            <div
+              class="pk-math-scaffold-card no-print"
+              style="
+                margin: 20px 0;
+                padding: 12px;
+                background: #fff;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+                max-width: 480px;
+                margin-left: auto;
+                margin-right: auto;
+              "
+            >
+              <svg
+                width="100%"
+                height="200"
+                viewBox="0 0 500 200"
+                style="background: #fff; border-radius: 8px"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <text
+                  x="250"
+                  y="30"
+                  text-anchor="middle"
+                  font-size="14"
+                  font-weight="bold"
+                  fill="#0f2b3c"
+                >
+                  Ratio Tape Diagram
+                </text>
+                <g transform="translate(100, 70)">
+                  <text
+                    x="-10"
+                    y="16"
+                    text-anchor="end"
+                    font-size="10"
+                    font-weight="bold"
+                    fill="#1a6fb5"
+                  >
+                    Part A
+                  </text>
+                  <rect
+                    x="0"
+                    y="0"
+                    width="50"
+                    height="24"
+                    fill="rgba(26,111,181,0.2)"
+                    stroke="#1a6fb5"
+                  />
+                  <rect
+                    x="50"
+                    y="0"
+                    width="50"
+                    height="24"
+                    fill="rgba(26,111,181,0.2)"
+                    stroke="#1a6fb5"
+                  />
+                </g>
+                <g transform="translate(100, 110)">
+                  <text
+                    x="-10"
+                    y="16"
+                    text-anchor="end"
+                    font-size="10"
+                    font-weight="bold"
+                    fill="#d4952a"
+                  >
+                    Part B
+                  </text>
+                  <rect
+                    x="0"
+                    y="0"
+                    width="50"
+                    height="24"
+                    fill="rgba(212,149,42,0.2)"
+                    stroke="#d4952a"
+                  />
+                  <rect
+                    x="50"
+                    y="0"
+                    width="50"
+                    height="24"
+                    fill="rgba(212,149,42,0.2)"
+                    stroke="#d4952a"
+                  />
+                  <rect
+                    x="100"
+                    y="0"
+                    width="50"
+                    height="24"
+                    fill="rgba(212,149,42,0.2)"
+                    stroke="#d4952a"
+                  />
+                </g>
+              </svg>
+            </div>
+
+            <p style="font-size: 14px; color: var(--muted)">
+              Compare two packs of the same ingredient. Which costs less per
+              cup?
+            </p>
+            <div class="grid2">
+              <div>
+                <label class="fld" for="b-price1"
+                  >Pack A: total price ($)</label
+                >
+                <input
+                  type="number"
+                  id="b-price1"
+                  data-save
+                  step="0.01"
+                  min="0.01"
+                  placeholder=""
+                  oninput="calcBetterBuy()"
+                />
+              </div>
+              <div>
+                <label class="fld" for="b-cups1">Pack A: number of cups</label>
+                <input
+                  type="number"
+                  id="b-cups1"
+                  data-save
+                  min="1"
+                  placeholder=""
+                  oninput="calcBetterBuy()"
+                />
+              </div>
+              <div>
+                <label class="fld" for="b-price2"
+                  >Pack B: total price ($)</label
+                >
+                <input
+                  type="number"
+                  id="b-price2"
+                  data-save
+                  step="0.01"
+                  min="0.01"
+                  placeholder=""
+                  oninput="calcBetterBuy()"
+                />
+              </div>
+              <div>
+                <label class="fld" for="b-cups2">Pack B: number of cups</label>
+                <input
+                  type="number"
+                  id="b-cups2"
+                  data-save
+                  min="1"
+                  placeholder=""
+                  oninput="calcBetterBuy()"
+                />
+              </div>
+            </div>
+            <button class="btn alt" type="button" onclick="calcBetterBuy()">
+              Find the better buy
+            </button>
+            <div class="readout" id="buy-out"></div>
+            <details class="hintbox">
+              <summary>Need a hint?</summary>
+              <p>
+                Unit rate has a denominator of 1. Cost per smoothie = total ÷
+                smoothies (9.00 ÷ 3 =3.00). Better buy = price ÷ cups for each
+                pack: 4.50 ÷ 3 =1.50/cup vs 7.20 ÷ 6 =1.20/cup. Lower unit price
+                wins.
+              </p>
+            </details>
+
+            <!-- 1e quick self-check -->
+            <div class="task" style="margin-top: 18px">
+              <strong>Quick ratio check:</strong> Simplify the ratio 12:18.
+              Write it as A:B.
+            </div>
+            <label class="fld" for="check-ratio"
+              >Your simplified ratio (e.g., 2:3)</label
+            >
+            <input type="text" id="check-ratio" data-save placeholder="" />
+            <button class="btn alt" type="button" onclick="checkRatioFn()">
+              Check answer
+            </button>
+            <div class="feedback" id="check-ratioFb"></div>
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 worked step: GCF(12, 18) = 6 → 12 ÷ 6 = 2 and 18 ÷ 6 = 3 →
+              2:3.
+            </p>
+            <div class="pk-lvl2">
+              <div class="task">
+                <strong>Level 2 extension (6.RP.3):</strong> Pack A is 32 oz for
+                $4.00 and Pack B is 48 oz for $5.40. Find the price per ounce of
+                each and decide the better buy. Which is cheaper per ounce, and
+                by how much?
+              </div>
+            </div>
           </div>
-          
-          <div style="background: var(--bg); border: 2.5px solid var(--line); border-radius: 18px; padding: 20px; box-shadow: var(--shadow); height: fit-content;" class="pk-no-print">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px; color: var(--navy); font-size: 16px;">
+
+          <div
+            style="
+              background: var(--bg);
+              border: 2.5px solid var(--line);
+              border-radius: 18px;
+              padding: 20px;
+              box-shadow: var(--shadow);
+              height: fit-content;
+            "
+            class="pk-no-print"
+          >
+            <h3
+              style="
+                margin-top: 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: var(--navy);
+                font-size: 16px;
+              "
+            >
               <span>💡</span> Guided Steps &amp; Help
             </h3>
-            
-      <p style="font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-bottom: 12px;">
-        <strong>Working with Ratios, Rates, & Tape Diagrams:</strong>
-      </p>
-      <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>Identify the parts in your ratio: <b>Part A : Part B</b> (e.g. 2 cups blue paint to 3 cups yellow paint).</li>
-        <li>Add the parts to find the <b>Total Parts</b> in the whole mixture ($2 + 3 = 5$ parts).</li>
-        <li>Divide the total mixture volume by the total parts to find the <b>Value of One Box</b> in your tape diagram.</li>
-        <li>Multiply the value of one box by the parts of each ingredient to find the target amounts.</li>
-      </ol>
-      <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
-        💡 <b>Example:</b> Ratio 2:3 (Total parts = 5). For 15 gallons total, each part is $15 ÷ 5 = 3$ gallons. Blue = $2 \times 3 = 6$ gallons, Yellow = $3 \times 3 = 9$ gallons.
-      </div>
-    
+
+            <p
+              style="
+                font-size: 13.5px;
+                line-height: 1.5;
+                color: var(--muted);
+                margin-bottom: 12px;
+              "
+            >
+              <strong>Working with Ratios, Rates, & Tape Diagrams:</strong>
+            </p>
+            <ol
+              style="
+                margin-left: 18px;
+                font-size: 13px;
+                line-height: 1.5;
+                display: grid;
+                gap: 8px;
+                color: var(--ink);
+              "
+            >
+              <li>
+                Identify the parts in your ratio: <b>Part A : Part B</b> (e.g. 2
+                cups blue paint to 3 cups yellow paint).
+              </li>
+              <li>
+                Add the parts to find the <b>Total Parts</b> in the whole
+                mixture (2 + 3 = 5 parts).
+              </li>
+              <li>
+                Divide the total mixture volume by the total parts to find the
+                <b>Value of One Box</b> in your tape diagram.
+              </li>
+              <li>
+                Multiply the value of one box by the parts of each ingredient to
+                find the target amounts.
+              </li>
+            </ol>
+            <div
+              style="
+                margin-top: 14px;
+                padding: 10px;
+                background: var(--sky);
+                border-radius: 8px;
+                font-size: 12px;
+              "
+            >
+              💡 <b>Example:</b> Ratio 2:3 (Total parts = 5). For 15 gallons
+              total, each part is 15 ÷ 5 = 3 gallons. Blue = 2 × 3 = 6 gallons,
+              Yellow = 3 × 3 = 9 gallons.
+            </div>
           </div>
         </div>
       </section>
-    
 
-      
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
       <section class="pk-visualizer-card no-print">
         <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
-        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
-          This visual interactive canvas updates in real-time as you complete your math calculations.
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px">
+          This visual interactive canvas updates in real-time as you complete
+          your math calculations.
         </p>
         <div id="projectVisualizer"></div>
       </section>
-  
+
       <!-- ===================== PART 2 — PEER ===================== -->
       <section class="phase">
         <div class="phase-head">
@@ -1126,12 +1911,7 @@
             <label class="fld" for="partnerName"
               >Partner name or initials</label
             >
-            <input
-              type="text"
-              id="partnerName"
-              data-save
-              placeholder="example: A.J."
-            />
+            <input type="text" id="partnerName" data-save placeholder="" />
           </div>
           <div>
             <label class="fld" for="p-common"
@@ -1176,11 +1956,7 @@
           >Whose smoothie is fruitier at the same cups of yogurt, and how do you
           know?</label
         >
-        <textarea
-          id="peerReflect"
-          data-save
-          placeholder="At ___ cups of yogurt, my recipe has ___ cups of fruit and my partner's has ___, so ___."
-        ></textarea>
+        <textarea id="peerReflect" data-save placeholder=""></textarea>
       </section>
 
       <!-- ===================== PART 3 — WORLD ===================== -->
@@ -1222,7 +1998,7 @@
               data-save
               step="0.01"
               oninput="worldGo()"
-              placeholder="type your $/cup"
+              placeholder=""
             />
             <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
               Tip: your better-buy unit price from Part 1 is a great value to
@@ -1270,12 +2046,7 @@
               <label class="fld" for="whatIfVal"
                 >New per-cup price to add ($)</label
               >
-              <input
-                type="number"
-                id="whatIfVal"
-                step="0.01"
-                placeholder="example: 5.00"
-              />
+              <input type="number" id="whatIfVal" step="0.01" placeholder="" />
             </div>
           </div>
           <button class="btn" type="button" onclick="runWhatIf()">
@@ -1290,11 +2061,7 @@
           >Is your ingredient cheaper or pricier per cup than the world average?
           Why might that be?</label
         >
-        <textarea
-          id="worldReflect"
-          data-save
-          placeholder="My unit price is ___ the world average because ___."
-        ></textarea>
+        <textarea id="worldReflect" data-save placeholder=""></textarea>
 
         <div class="pk-lvl2">
           <div class="task" style="margin-top: 4px">
@@ -1312,27 +2079,19 @@
             id="worldMean"
             data-save
             step="0.01"
-            placeholder="sum of prices ÷ how many"
+            placeholder=""
           />
           <label class="fld" for="worldOutlier"
             >Which store is the outlier, and how does it change the mean?</label
           >
-          <textarea
-            id="worldOutlier"
-            data-save
-            placeholder="The outlier is ___ at $___ per cup. It pulls the mean UP because ___."
-          ></textarea>
+          <textarea id="worldOutlier" data-save placeholder=""></textarea>
         </div>
 
         <label class="fld" for="careful"
           >Careful thinking: why can it be unfair to compare ingredient prices
           between countries?</label
         >
-        <textarea
-          id="careful"
-          data-save
-          placeholder="It can be unfair to compare because ___ (shipping, season, money, store size...)."
-        ></textarea>
+        <textarea id="careful" data-save placeholder=""></textarea>
       </section>
 
       <!-- ===================== DELIVERABLE ===================== -->
@@ -1348,11 +2107,7 @@
           Write a short pitch (3–5 sentences) using your real numbers from
           above.
         </p>
-        <textarea
-          id="pitch"
-          data-save
-          placeholder="My real recipe uses a ratio of ___ cups of fruit to ___ cups of yogurt, which simplifies to ___. For a triple batch I need ___ cups of fruit and ___ cups of yogurt. Each smoothie costs $___ to make (unit rate), and the better-buy pack costs $___ per cup. My ingredient is cheaper / pricier than the world average of $___ per cup because ___."
-        ></textarea>
+        <textarea id="pitch" data-save placeholder=""></textarea>
 
         <h3 style="margin: 22px 0 6px">Smoothie Bar Checklist</h3>
         <ul class="checklist" id="checklist">
@@ -1482,7 +2237,10 @@
       const yrEl = document.getElementById("yr");
       if (yrEl) yrEl.textContent = new Date().getFullYear();
       const $ = (id) => document.getElementById(id);
-      const num = (id) => { const e = $(id); return e ? parseFloat(e.value) : NaN; };
+      const num = (id) => {
+        const e = $(id);
+        return e ? parseFloat(e.value) : NaN;
+      };
 
       /* ---- Unit-specific calculators (kept in page) ---- */
       function gcd(a, b) {
@@ -1783,50 +2541,56 @@
         const idx = parseInt(($("worldCat") || {}).value, 10);
         return world.map((r) => r[idx]);
       }
-      
+
       function worldGo() {
         const my = num("myWorld");
-        const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
+        const customName = $("worldCountry")
+          ? $("worldCountry").value.trim()
+          : "";
         const customSize = $("u-cost") ? num("u-cost") : NaN;
-        
+
         let sample = worldSample();
         if (!isNaN(customSize) && customSize > 0) {
           sample = [...sample, customSize];
         }
-        
+
         const labels =
-          ($("worldCat") || {}).value === "costPerGuest" || ($("worldCat") || {}).value === "price"
+          ($("worldCat") || {}).value === "costPerGuest" ||
+          ($("worldCat") || {}).value === "price"
             ? { mean: "City avg $", me: "Me $" }
             : { mean: "City avg", me: "Me" };
-            
+
         PK.worldMeter("worldMeter", sample, my, labels);
-        
+
         const fb = $("worldMeter");
         if (!isNaN(customSize) && customSize > 0 && customName) {
           const ratio = (my / customSize).toFixed(2);
           const pct = Math.round((my / customSize) * 100);
           const diff = Math.abs(my - customSize).toFixed(2);
-          
+
           let myValStr = true ? "$" + my.toFixed(2) : my + "";
           let custValStr = true ? "$" + customSize.toFixed(2) : customSize + "";
-          let diffStr = true ? "$" + Number(diff).toFixed(2) : Number(diff).toFixed(2) + "";
+          let diffStr = true
+            ? "$" + Number(diff).toFixed(2)
+            : Number(diff).toFixed(2) + "";
 
-          const rel = my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
-          const desc = `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
+          const rel =
+            my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
+          const desc =
+            `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
             `📊 Research Comparison: Your value (${myValStr}) is <strong>${rel}</strong> than <strong>${customName}</strong> (${custValStr}) ` +
             `by <strong>${diffStr}</strong>. Your value is <strong>${pct}%</strong> (${ratio}x) of the size of the researched benchmark.` +
             `</div>`;
           fb.innerHTML += desc;
         }
-        
-        if (typeof drawVisualizer === 'function') {
+
+        if (typeof drawVisualizer === "function") {
           drawVisualizer();
         }
-        
+
         updateProgress();
       }
-  
-      
+
       function runWhatIf() {
         const v = parseFloat($("whatIfVal").value);
         let sample = worldSample();
@@ -1840,7 +2604,7 @@
         }
         const before = PK.mean(sample);
         const after = PK.mean(sample.concat([v]));
-        
+
         let beforeStr = true ? "$" + before.toFixed(2) : before.toFixed(2) + "";
         let afterStr = true ? "$" + after.toFixed(2) : after.toFixed(2) + "";
         let vStr = true ? "$" + v.toFixed(2) : v + "";
@@ -1849,16 +2613,14 @@
           "whatIfBox",
           { average: beforeStr },
           { average: afterStr },
-          "Adding a value of " + vStr + " to the sample:"
+          "Adding a value of " + vStr + " to the sample:",
         );
       }
-  
 
       /* ---- Use example numbers ---- */
       function useExamples() {
         const ex = {
-          
-          "worldCountry": "Strawberries 🍓",
+          worldCountry: "Strawberries 🍓",
           "u-cost": 2.5,
           "r-fruit": 6,
           "r-yogurt": 4,
@@ -1871,7 +2633,6 @@
           "p-yogurt": 5,
           "p-common": 12,
           myWorld: "",
-          
         };
         Object.entries(ex).forEach(([k, v]) => {
           if ($(k)) $(k).value = v;
@@ -1879,51 +2640,49 @@
         recalcAll();
       }
 
-      
-
-      
       function drawVisualizer() {
-        const s = num("ratio-s") || 0;
-        const b = num("ratio-b") || 0;
-        
-        let html = "";
-        if (s > 0 || b > 0) {
-          const sum = s + b;
-          const pctS = (s / sum) * 100;
-          const fillH = 120;
-          const sH = (s / sum) * fillH;
-          const bH = (b / sum) * fillH;
-          
-          html = `
+        let s = num("r-fruit") || 0;
+        let b = num("r-yogurt") || 0;
+
+        // Show a worked EXAMPLE recipe (4 cups fruit : 2 cups yogurt) by default
+        // so the blender always has something to look at; switches to the
+        // student's own recipe as soon as they enter it.
+        const isExample = !(s > 0 || b > 0);
+        if (isExample) {
+          s = 4;
+          b = 2;
+        }
+
+        const sum = s + b;
+        const fillH = 120;
+        const sH = (s / sum) * fillH;
+        const bH = (b / sum) * fillH;
+
+        const html = `
             <!-- Blender Jar -->
             <path d="M 210 50 L 290 50 L 275 180 L 225 180 Z" fill="none" stroke="#0f2b3c" stroke-width="3" />
             <path d="M 290 80 C 315 80, 315 140, 280 140" fill="none" stroke="#0f2b3c" stroke-width="2.5" />
-            
-            <!-- Strawberry Fill (Red) -->
-            <path d="M ${225 + 5 * (180 - sH) / 130} ${180 - sH} L ${275 - 5 * (180 - sH) / 130} ${180 - sH} L 275 180 L 225 180 Z" fill="rgba(239, 68, 68, 0.7)" />
-            <!-- Banana Fill (Yellow) -->
-            <path d="M ${210 + 15 * (50 + bH) / 130} ${50} L ${290 - 15 * (50 + bH) / 130} ${50} L ${275 - 5 * (180 - sH) / 130} ${180 - sH} L ${225 + 5 * (180 - sH) / 130} ${180 - sH} Z" fill="rgba(253, 224, 71, 0.7)" />
-            
-            <text x="190" y="100" text-anchor="end" font-size="11" font-weight="bold" fill="#ef4444">Strawberries: ${s} pts</text>
-            <text x="310" y="100" text-anchor="start" font-size="11" font-weight="bold" fill="#eab308">Bananas: ${b} pts</text>
-            <text x="250" y="210" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">Strawberry-Banana Ratio = ${s} : ${b}</text>
+
+            <!-- Fruit Fill (Red) -->
+            <path d="M ${225 + (5 * (180 - sH)) / 130} ${180 - sH} L ${275 - (5 * (180 - sH)) / 130} ${180 - sH} L 275 180 L 225 180 Z" fill="rgba(239, 68, 68, 0.7)" />
+            <!-- Yogurt / Milk Fill (Cream) -->
+            <path d="M ${210 + (15 * (50 + bH)) / 130} ${50} L ${290 - (15 * (50 + bH)) / 130} ${50} L ${275 - (5 * (180 - sH)) / 130} ${180 - sH} L ${225 + (5 * (180 - sH)) / 130} ${180 - sH} Z" fill="rgba(254, 243, 199, 0.8)" />
+
+            <text x="190" y="100" text-anchor="end" font-size="11" font-weight="bold" fill="#ef4444">Fruit: ${s} cups</text>
+            <text x="310" y="100" text-anchor="start" font-size="11" font-weight="bold" fill="#b45309">Yogurt/Milk: ${b} cups</text>
+            <text x="250" y="210" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">Fruit-to-Yogurt Ratio = ${s} : ${b}</text>
           `;
-        } else {
-          html = `
-            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Ingredient Ratios to blend</text>
-          `;
-        }
-        
+
         const svgString = `
           <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            ${isExample ? `<rect x="372" y="12" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="26" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · 4 : 2</text>` : ""}
             ${html}
           </svg>
         `;
         $("projectVisualizer").innerHTML = svgString;
       }
-    
-  
-function recalcAll() {
+
+      function recalcAll() {
         calcRatio();
         calcUnitRate();
         calcBetterBuy();
@@ -2032,6 +2791,7 @@ function recalcAll() {
       document.addEventListener("DOMContentLoaded", function () {
         renderWorld();
         PK.initLevel({ storageKey: "u3ProjectA", default: "level-1" });
+        PK.initTts({ storageKey: "u3ProjectA" });
         PK.load("u3ProjectA", { after: recalcAll });
         updateProgress();
       });
@@ -2040,9 +2800,109 @@ function recalcAll() {
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
+    <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
+    <script type="application/json" id="pk-research">
+      {
+        "icon": "🔎",
+        "title": "Research Lab — Scout the Real Rates",
+        "intro": "Coaches and scouts compare players using ratios and unit rates. Pull real stats, then compute the rates yourself.",
+        "brief": {
+          "theme": "field",
+          "title": "📋 Your Research Mission",
+          "hook": "Find <b>real stats</b> and turn them into ratios and unit rates like a real analyst.",
+          "steps": [
+            "Open a link (new tab — you keep your project).",
+            "Record real numbers in Field Notes.",
+            "Compute the rates in the math problems.",
+            "Check off the Investigation Checklist."
+          ]
+        },
+        "fieldNotes": {
+          "title": "Field Notes — Record What You Find",
+          "intro": "Jot the exact number or rule you find. You'll reuse these in the math below.",
+          "fields": [
+            {
+              "label": "What a unit rate is",
+              "source": "Math is Fun",
+              "placeholder": "amount per 1 (per game, per hour)",
+              "hint": "Divide to get 'per one'."
+            },
+            {
+              "label": "A real stat total (points, miles, etc.)",
+              "source": "ESPN / box score",
+              "placeholder": "84 points",
+              "hint": "Pick any real player or team total."
+            },
+            {
+              "label": "The matching count (games, hours, items)",
+              "source": "ESPN / box score",
+              "placeholder": "6 games",
+              "hint": "What was that total spread across?"
+            },
+            {
+              "label": "A second total + count to compare",
+              "source": "ESPN / box score",
+              "placeholder": "150 pts / 10 games",
+              "hint": "Lets you compare two unit rates."
+            }
+          ]
+        },
+        "mathTasks": [
+          {
+            "title": "1 · Unit rate",
+            "prompt": "Using Field Notes 2 and 3, find the <b>unit rate</b> (amount per 1). Show the division.",
+            "level2": "Write the rate as a ratio in two ways (e.g., 14 : 1 and 14 per game)."
+          },
+          {
+            "title": "2 · Compare",
+            "prompt": "Find the unit rate for your second example (Field Note 4). Which is the better rate, and how do you know?",
+            "level2": "By how much does the better rate beat the other? Show the subtraction."
+          },
+          {
+            "title": "3 · Predict",
+            "prompt": "Using your best unit rate, predict the total for 12 of the unit (e.g., 12 games). Show the multiplication.",
+            "level2": "Build a ratio table with 1, 6, and 12 units."
+          }
+        ],
+        "investigationChecklist": [
+          "I recorded what a unit rate is.",
+          "I found real stats (total and count).",
+          "I computed a unit rate by dividing.",
+          "I compared two unit rates.",
+          "I used a rate to make a prediction.",
+          "I wrote a ratio at least two ways."
+        ],
+        "links": [
+          {
+            "icon": "1️⃣",
+            "name": "Math is Fun — Ratios",
+            "url": "https://www.mathsisfun.com/numbers/ratio.html",
+            "find": "What a ratio is and how to write it.",
+            "look": "ratios as 'a to b', a:b, and a/b"
+          },
+          {
+            "icon": "⚡",
+            "name": "Math is Fun — Unit Price (rates)",
+            "url": "https://www.mathsisfun.com/measure/unit-price.html",
+            "find": "How to find 'per one' by dividing.",
+            "look": "divide to get the rate per 1"
+          },
+          {
+            "icon": "🏀",
+            "name": "ESPN — NBA player stats table",
+            "url": "https://www.espn.com/nba/stats",
+            "find": "A real player's points and games played, right in the table.",
+            "look": "the PTS column and games (GP)"
+          }
+        ],
+        "note": "These sites were picked for class. They open in a new tab so you keep your project. If a page asks you to sign in or buy something, just close it and come back."
+      }
+    </script>
     <script src="/shared/projects/projects-tabs.js" defer></script>
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <script src="/shared/projects/projects-interactive.js" defer></script>
+    <script src="/shared/projects/manip-ratio-build.js" defer></script>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+  </body>
 </html>

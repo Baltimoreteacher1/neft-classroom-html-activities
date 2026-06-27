@@ -20,16 +20,24 @@ import {
   mountTeacherPanel,
   buildWelcomeTeacherNotes,
   isTeacherMode,
+  initTeacherAccess,
+  mountIdentityTeacherButton,
 } from "./teacher-mode.js";
 import { t, stackHtml, phaseName } from "./i18n.js";
 import { PHASE_TIME_ESTIMATES } from "./content-enrichment.js";
 import "@engine/styles/design-system.css";
 import "@engine/styles/themes.css";
+import "@engine/styles/editorial.css";
 
 export function createApp(config) {
   const root = document.getElementById("app");
   root.innerHTML = "";
   root.className = "app";
+  // Publisher-grade editorial design layer (engine/styles/editorial.css) — the
+  // approved look now applies to EVERY lesson, not just flagship pilots.
+  document.body.classList.add("editorial");
+  // Easy teacher-mode access: sticky per-device toggle + Alt+Shift+T + badge.
+  initTeacherAccess();
   // Browser tab / SEO title (the engine shell ships a generic <title>).
   if (config.title) {
     const bits = [config.title];
@@ -310,6 +318,7 @@ function showIdentityScreen(root, config) {
           <input id="id-period" type="text" placeholder="${t("periodPlaceholder")}" autocomplete="off" />
           <button id="id-start" class="identity-btn" disabled>${stackHtml(t("startActivity", "en"), t("startActivity", "es"))}</button>
         </div>
+        <div id="identity-teacher-slot"></div>
         <p id="welcome-resource-links" style="margin:var(--sp-4) 0 0; font-size:0.82rem; text-align:center;">
           <a href="${homeworkHtmlHref}" style="color:var(--teal); font-weight:700;">🏠 ${stackHtml(t("familyHomework", "en"), t("familyHomework", "es"))}</a>
           · <a href="/lessons/${encodeURIComponent(config.lessonId)}/notes.html" style="color:var(--navy); font-weight:700;">📝 ${stackHtml(t("guidedNotes", "en"), t("guidedNotes", "es"))}</a>
@@ -328,10 +337,15 @@ function showIdentityScreen(root, config) {
     screen.querySelector("#welcome-google-slides-slot"),
   );
 
+  // Teacher pacing notes are teacher-only: shown on the cover when ?teacher=1,
+  // never to students. (Students previously saw this panel — removed.)
   const teacherSlot = screen.querySelector("#welcome-teacher-slot");
-  if (teacherSlot && !isTeacherMode()) {
+  if (teacherSlot && isTeacherMode()) {
     teacherSlot.append(buildWelcomeTeacherNotes(config));
   }
+
+  // Password-gated Teacher entry, right under the Start button.
+  mountIdentityTeacherButton(screen.querySelector("#identity-teacher-slot"));
 
   const coverExtras = screen.querySelector("#cover-extras");
   if (coverExtras) {
@@ -352,8 +366,7 @@ function showIdentityScreen(root, config) {
           panel.className = "standards-explainer-panel";
           panel.innerHTML = `
             <p><strong>${escHtml(config.standard)}</strong> — This lesson aligns to Grade 6 Reveal Math standards.</p>
-            <p>${escHtml(resolveContentObjective(config))}</p>
-            <p style="color:var(--muted); font-size:0.88rem;">Use <code>?teacher=1</code> in the URL for pacing guide, answer keys, and listen-fors.</p>`;
+            <p>${escHtml(resolveContentObjective(config))}</p>`;
           stdBtn.after(panel);
         } else if (panel) {
           panel.hidden = open;
@@ -704,7 +717,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
           accent: "card-teal",
           color: "--teal",
           icon: "📘",
-          label: "What I will learn",
+          label: "Content Objective — What I will learn",
           text: content,
           key: "content",
           prompt:
@@ -715,7 +728,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
           accent: "card-coral",
           color: "--coral",
           icon: "🗣️",
-          label: "Words I will use",
+          label: "Language Objective — Words I will use",
           text: language,
           key: "language",
           prompt:

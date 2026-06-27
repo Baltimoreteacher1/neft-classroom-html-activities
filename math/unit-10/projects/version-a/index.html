@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Package Design Challenge — Unit 10 Culminating Project</title>
     <meta
       name="description"
@@ -434,11 +434,13 @@
     <!-- nsr-injected:end -->
     <link rel="stylesheet" href="/shared/projects/projects-premium.css" />
     <link rel="stylesheet" href="/shared/projects/projects-tabs.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-tplus.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-interactive.css" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
-  <body class="pk">
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
+  <body class="pk" data-pk-theme="u10">
     <header class="phero">
       <div class="deco">📦</div>
       <h1>Package Design Challenge</h1>
@@ -461,6 +463,15 @@
           <button data-level-btn="level-1" type="button">🟢 Level 1</button>
           <button data-level-btn="level-2" type="button">🔵 Level 2</button>
         </span>
+        <button
+          class="pk-tts-toggle"
+          data-tts-toggle
+          type="button"
+          aria-pressed="false"
+          title="Read text aloud"
+        >
+          🔊 Read aloud
+        </button>
         <button onclick="PK.save('u10ProjectA')">💾 Save</button>
         <button
           onclick="PK.load('u10ProjectA', { show: true, after: recalcAll })"
@@ -515,14 +526,14 @@
         <div class="pk-vocab">
           <div class="pk-term">
             <span class="pk-icon">🧊</span><b>Volume</b>
-            <p>The amount of space inside a 3-D shape, in cubic units.</p>
+            <p>How much fits inside a solid shape. We measure it in cubes.</p>
             <p class="pk-es">
               Volumen: el espacio dentro de una figura 3-D, en unidades cúbicas.
             </p>
           </div>
           <div class="pk-term">
             <span class="pk-icon">📐</span><b>Surface Area</b>
-            <p>The total area of all the outside faces, in square units.</p>
+            <p>How much paper it takes to cover the whole outside.</p>
             <p class="pk-es">
               Área de superficie: el área total de todas las caras exteriores,
               en unidades cuadradas.
@@ -530,7 +541,7 @@
           </div>
           <div class="pk-term">
             <span class="pk-icon">🗺️</span><b>Net</b>
-            <p>A flat pattern that folds up into a 3-D solid.</p>
+            <p>A flat shape you fold up to make a box.</p>
             <p class="pk-es">
               Plantilla (net): un patrón plano que se dobla para formar un
               sólido 3-D.
@@ -538,21 +549,21 @@
           </div>
           <div class="pk-term">
             <span class="pk-icon">📦</span><b>Rectangular Prism</b>
-            <p>A box shape with 6 rectangular faces.</p>
+            <p>A box shape with 6 flat faces.</p>
             <p class="pk-es">
               Prisma rectangular: una caja con 6 caras rectangulares.
             </p>
           </div>
           <div class="pk-term">
             <span class="pk-icon">📏</span><b>Edge Length</b>
-            <p>How long one side of the box is (l, w, or h).</p>
+            <p>How long one side of the box is.</p>
             <p class="pk-es">
               Longitud de arista: lo que mide un lado de la caja (l, w o h).
             </p>
           </div>
           <div class="pk-term">
             <span class="pk-icon">⬜</span><b>Unit Cube</b>
-            <p>A cube 1 unit on every side; volume = 1 cubic unit.</p>
+            <p>A cube that is 1 on every side. Its volume is 1.</p>
             <p class="pk-es">
               Cubo unitario: un cubo de 1 unidad por lado; volumen = 1 unidad
               cúbica.
@@ -562,13 +573,54 @@
         <div class="grid2" style="margin-top: 18px">
           <div class="pk-callout">
             <h3>Formula Bank</h3>
-            <p><b>Volume:</b> V = l × w × h</p>
-            <p><b>Surface Area (closed box):</b> SA = 2(lw + lh + wh)</p>
-            <p><b>Open-top SA (no lid):</b> SA = lw + 2lh + 2wh</p>
-            <p><b>Material cost:</b> cost = SA × cost per square unit</p>
-            <p class="pk-lvl2">
-              <b>Efficiency:</b> material per cube = SA ÷ V (smaller is better)
-            </p>
+            <ul class="pk-formula">
+              <li>
+                <span class="pk-f-name">Volume</span>
+                <span class="pk-f-mean"
+                  >How much space fits <b>inside</b> the box. Multiply length ×
+                  width × height.</span
+                >
+                <span class="pk-eg">Example: 8 × 5 × 3 = 120 cubic units</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Surface area (closed box)</span>
+                <span class="pk-f-mean"
+                  >The cardboard needed to cover all <b>6 faces</b>. Add the
+                  three face pairs, then double them: 2(lw + lh + wh).</span
+                >
+                <span class="pk-eg"
+                  >Example: 2(40 + 24 + 15) = 158 square units</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Open-top surface area (no lid)</span>
+                <span class="pk-f-mean"
+                  >Same as a closed box, but leave off one top face: lw + 2lh +
+                  2wh.</span
+                >
+                <span class="pk-eg"
+                  >Example: 40 + 2(24) + 2(15) = 118 square units</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Material cost</span>
+                <span class="pk-f-mean"
+                  >What the cardboard costs. Multiply surface area by the price
+                  for one square unit.</span
+                >
+                <span class="pk-eg">Example: 158 × $0.05 = $7.90</span>
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">Material per cube (efficiency)</span>
+                <span class="pk-f-mean"
+                  >How much cardboard each unit of space costs. Divide surface
+                  area by volume — a smaller number is better.</span
+                >
+                <span class="pk-eg"
+                  >Example: 158 ÷ 120 ≈ 1.32 sq units per cube</span
+                >
+              </li>
+            </ul>
           </div>
           <div class="pk-callout">
             <h3>Sentence Frames</h3>
@@ -716,7 +768,30 @@
             >
               <span>📋</span> Scenario &amp; Level Options
             </h3>
-            <h2>Spec Out YOUR Real Box</h2>
+            <p style="font-size: 14px; line-height: 1.6; margin: 0 0 10px">
+              You are a <strong>package designer</strong>. A company needs a
+              custom cardboard box built around one real object, and they want
+              to know how much material it takes and what it costs.
+            </p>
+            <ul
+              style="
+                font-size: 14px;
+                line-height: 1.6;
+                margin: 0;
+                padding-left: 18px;
+              "
+            >
+              <li>
+                <strong>Level 1 (support):</strong> design a box with
+                whole-number sides (like 8 × 5 × 3 in) and find its volume and
+                surface area.
+              </li>
+              <li>
+                <strong>Level 2 (challenge):</strong> use decimal measurements
+                from your real object and compare cardboard cost per cubic inch
+                against a partner's box.
+              </li>
+            </ul>
           </div>
         </div>
         <p>
@@ -732,7 +807,7 @@
           type="text"
           id="objName"
           data-save
-          placeholder="example: my cereal box"
+          placeholder=""
           oninput="recalcAll()"
         />
 
@@ -889,7 +964,7 @@
                       type="text"
                       id="worldCountry"
                       data-save
-                      placeholder="e.g. Medium Flat Rate Box"
+                      placeholder=""
                       oninput="recalcAll()"
                     />
                   </div>
@@ -901,8 +976,8 @@
                       data-save
                       min="0.01"
                       step="0.01"
-                      placeholder="example: 8"
-                      oninput="calcVolume()"
+                      placeholder=""
+                      oninput="recalcAll()"
                     />
                   </div>
                 </div>
@@ -916,8 +991,8 @@
                   data-save
                   min="0.01"
                   step="0.01"
-                  placeholder="example: 5"
-                  oninput="calcVolume()"
+                  placeholder=""
+                  oninput="recalcAll()"
                 />
               </div>
               <div>
@@ -928,8 +1003,8 @@
                   data-save
                   min="0.01"
                   step="0.01"
-                  placeholder="example: 3"
-                  oninput="calcVolume()"
+                  placeholder=""
+                  oninput="recalcAll()"
                 />
               </div>
             </div>
@@ -937,18 +1012,33 @@
               Calculate volume
             </button>
             <div class="readout" id="vol-out"></div>
+            <div
+              class="pki-manip"
+              data-manip="cube-builder"
+              data-unit="in"
+              data-mode="box"
+            ></div>
+            <svg
+              id="phase-svg-1a"
+              class="pk-phase-svg no-print"
+              width="100%"
+              height="220"
+              viewBox="0 0 500 220"
+              style="
+                background: white;
+                border: 1px solid #e2e8f0;
+                border-radius: 12px;
+                margin-top: 14px;
+              "
+              xmlns="http://www.w3.org/2000/svg"
+            ></svg>
 
             <div class="task" style="margin-top: 16px">
               <strong>Check my work:</strong> Compute the volume of your box
               yourself, then type it in.
             </div>
             <label class="fld" for="check-vol">My volume (cubic units)</label>
-            <input
-              type="number"
-              id="check-vol"
-              data-save
-              placeholder="Type your answer"
-            />
+            <input type="number" id="check-vol" data-save placeholder="" />
             <button class="btn alt" type="button" onclick="checkVol()">
               Check my work
             </button>
@@ -963,6 +1053,15 @@
                 units.
               </p>
             </details>
+
+            <div class="pk-lvl2" style="margin-top: 16px">
+              <div class="task">
+                <strong>Level 2 extension:</strong> Re-measure one edge to the
+                nearest quarter-inch (a decimal like 5.25 in) and recompute the
+                volume. By how many cubic inches did your volume change, and
+                why?
+              </div>
+            </div>
 
             <!-- 1b Surface area -->
           </div>
@@ -1012,20 +1111,20 @@
               "
             >
               <li>
-                <b>Volume ($V$) of a rectangular prism</b>: $V = l \times w
-                \times h$. Multiply length, width, and height. If fractional,
-                convert to improper fractions first.
+                <b>Volume (V) of a rectangular prism</b>: V = l × w × h.
+                Multiply length, width, and height. If fractional, convert to
+                improper fractions first.
               </li>
               <li>
-                <b>Surface Area ($SA$)</b>: Sum of the areas of all 6
-                rectangular faces in the unfolded net:
+                <b>Surface Area (SA)</b>: Sum of the areas of all 6 rectangular
+                faces in the unfolded net:
                 <ul>
-                  <li>Calculate Area = $2(lw + lh + wh)$.</li>
+                  <li>Calculate Area = 2(lw + lh + wh).</li>
                 </ul>
               </li>
               <li>
-                Be sure to match the units: volume is cubic units ($u^3$) and
-                surface area is square units ($u^2$).
+                Be sure to match the units: volume is cubic units (u³) and
+                surface area is square units (u²).
               </li>
             </ol>
             <div
@@ -1037,9 +1136,9 @@
                 font-size: 12px;
               "
             >
-              💡 <b>Example:</b> Prism with $l=5, w=3, h=2$. Volume = $5 \times
-              3 \times 2 = \mathbf{30}$ cubic units. Surface Area = $2(15 + 10 +
-              6) = 2(31) = \mathbf{62}$ sq units.
+              💡 <b>Example:</b> Prism with l=5, w=3, h=2. Volume = 5 × 3 × 2 =
+              30 cubic units. Surface Area = 2(15 + 10 + 6) = 2(31) = 62 sq
+              units.
             </div>
           </div>
         </div>
@@ -1139,10 +1238,28 @@
             <p style="font-size: 14px; color: var(--muted)">
               Uses the same length, width, and height you measured above.
             </p>
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: find one face pair at a time — top &amp; bottom,
+              front &amp; back, then the two sides — and add the three results.
+            </p>
             <button class="btn" type="button" onclick="calcSA()">
               Calculate surface area
             </button>
             <div class="readout" id="sa-out"></div>
+            <svg
+              id="phase-svg-1b"
+              class="pk-phase-svg no-print"
+              width="100%"
+              height="220"
+              viewBox="0 0 500 220"
+              style="
+                background: white;
+                border: 1px solid #e2e8f0;
+                border-radius: 12px;
+                margin-top: 14px;
+              "
+              xmlns="http://www.w3.org/2000/svg"
+            ></svg>
 
             <div class="task" style="margin-top: 16px">
               <strong>Check my work:</strong> Compute the surface area yourself,
@@ -1151,12 +1268,7 @@
             <label class="fld" for="check-sa"
               >My surface area (square units)</label
             >
-            <input
-              type="number"
-              id="check-sa"
-              data-save
-              placeholder="Type your answer"
-            />
+            <input type="number" id="check-sa" data-save placeholder="" />
             <button class="btn alt" type="button" onclick="checkSA()">
               Check my work
             </button>
@@ -1170,6 +1282,15 @@
                 2(24) + 2(15) = 80 + 48 + 30 = 158 square units.
               </p>
             </details>
+
+            <div class="pk-lvl2" style="margin-top: 16px">
+              <div class="task">
+                <strong>Level 2 extension:</strong> Your box ships
+                <em>without a lid</em>. Find the open-top surface area (leave
+                off one l × w face): lw + 2lh + 2wh. How many square units of
+                cardboard does removing the lid save?
+              </div>
+            </div>
 
             <!-- 1c cost -->
           </div>
@@ -1219,20 +1340,20 @@
               "
             >
               <li>
-                <b>Volume ($V$) of a rectangular prism</b>: $V = l \times w
-                \times h$. Multiply length, width, and height. If fractional,
-                convert to improper fractions first.
+                <b>Volume (V) of a rectangular prism</b>: V = l × w × h.
+                Multiply length, width, and height. If fractional, convert to
+                improper fractions first.
               </li>
               <li>
-                <b>Surface Area ($SA$)</b>: Sum of the areas of all 6
-                rectangular faces in the unfolded net:
+                <b>Surface Area (SA)</b>: Sum of the areas of all 6 rectangular
+                faces in the unfolded net:
                 <ul>
-                  <li>Calculate Area = $2(lw + lh + wh)$.</li>
+                  <li>Calculate Area = 2(lw + lh + wh).</li>
                 </ul>
               </li>
               <li>
-                Be sure to match the units: volume is cubic units ($u^3$) and
-                surface area is square units ($u^2$).
+                Be sure to match the units: volume is cubic units (u³) and
+                surface area is square units (u²).
               </li>
             </ol>
             <div
@@ -1244,9 +1365,9 @@
                 font-size: 12px;
               "
             >
-              💡 <b>Example:</b> Prism with $l=5, w=3, h=2$. Volume = $5 \times
-              3 \times 2 = \mathbf{30}$ cubic units. Surface Area = $2(15 + 10 +
-              6) = 2(31) = \mathbf{62}$ sq units.
+              💡 <b>Example:</b> Prism with l=5, w=3, h=2. Volume = 5 × 3 × 2 =
+              30 cubic units. Surface Area = 2(15 + 10 + 6) = 2(31) = 62 sq
+              units.
             </div>
           </div>
         </div>
@@ -1354,15 +1475,33 @@
                   data-save
                   min="0.001"
                   step="0.001"
-                  placeholder="example: 0.05"
+                  placeholder=""
                   oninput="calcCost()"
                 />
               </div>
             </div>
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: try a friendly rate like $0.05 per square unit, then
+              multiply it by your surface area to get the cost.
+            </p>
             <button class="btn" type="button" onclick="calcCost()">
               Calculate material cost
             </button>
             <div class="readout" id="cost-out"></div>
+            <svg
+              id="phase-svg-1c"
+              class="pk-phase-svg no-print"
+              width="100%"
+              height="220"
+              viewBox="0 0 500 220"
+              style="
+                background: white;
+                border: 1px solid #e2e8f0;
+                border-radius: 12px;
+                margin-top: 14px;
+              "
+              xmlns="http://www.w3.org/2000/svg"
+            ></svg>
 
             <div class="task" style="margin-top: 16px">
               <strong>Check my work:</strong> Multiply your surface area by the
@@ -1374,7 +1513,7 @@
               id="check-cost"
               data-save
               step="0.01"
-              placeholder="Type your answer"
+              placeholder=""
             />
             <button class="btn alt" type="button" onclick="checkCost()">
               Check my work
@@ -1399,7 +1538,7 @@
                     data-save
                     min="0.01"
                     step="0.01"
-                    placeholder="try a cube-like shape"
+                    placeholder=""
                     oninput="calcOpt()"
                   />
                 </div>
@@ -1478,20 +1617,20 @@
               "
             >
               <li>
-                <b>Volume ($V$) of a rectangular prism</b>: $V = l \times w
-                \times h$. Multiply length, width, and height. If fractional,
-                convert to improper fractions first.
+                <b>Volume (V) of a rectangular prism</b>: V = l × w × h.
+                Multiply length, width, and height. If fractional, convert to
+                improper fractions first.
               </li>
               <li>
-                <b>Surface Area ($SA$)</b>: Sum of the areas of all 6
-                rectangular faces in the unfolded net:
+                <b>Surface Area (SA)</b>: Sum of the areas of all 6 rectangular
+                faces in the unfolded net:
                 <ul>
-                  <li>Calculate Area = $2(lw + lh + wh)$.</li>
+                  <li>Calculate Area = 2(lw + lh + wh).</li>
                 </ul>
               </li>
               <li>
-                Be sure to match the units: volume is cubic units ($u^3$) and
-                surface area is square units ($u^2$).
+                Be sure to match the units: volume is cubic units (u³) and
+                surface area is square units (u²).
               </li>
             </ol>
             <div
@@ -1503,9 +1642,9 @@
                 font-size: 12px;
               "
             >
-              💡 <b>Example:</b> Prism with $l=5, w=3, h=2$. Volume = $5 \times
-              3 \times 2 = \mathbf{30}$ cubic units. Surface Area = $2(15 + 10 +
-              6) = 2(31) = \mathbf{62}$ sq units.
+              💡 <b>Example:</b> Prism with l=5, w=3, h=2. Volume = 5 × 3 × 2 =
+              30 cubic units. Surface Area = 2(15 + 10 + 6) = 2(31) = 62 sq
+              units.
             </div>
           </div>
         </div>
@@ -1555,21 +1694,11 @@
             <label class="fld" for="partnerName"
               >Partner name or initials</label
             >
-            <input
-              type="text"
-              id="partnerName"
-              data-save
-              placeholder="example: A.J."
-            />
+            <input type="text" id="partnerName" data-save placeholder="" />
           </div>
           <div>
             <label class="fld" for="p-obj">Partner: object measured</label>
-            <input
-              type="text"
-              id="p-obj"
-              data-save
-              placeholder="example: shoebox"
-            />
+            <input type="text" id="p-obj" data-save placeholder="" />
           </div>
           <div>
             <label class="fld" for="p-l">Partner: length (in)</label>
@@ -1617,11 +1746,18 @@
         <label class="fld" for="peerReflect"
           >Who used less material per cubic unit, and why?</label
         >
-        <textarea
-          id="peerReflect"
-          data-save
-          placeholder="My box uses ___ square units per cube while my partner's uses ___, so ___ is more efficient because ___."
-        ></textarea>
+        <textarea id="peerReflect" data-save placeholder=""></textarea>
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 tip: the box with the <em>smaller</em> SA ÷ V number used less
+          cardboard for each cubic unit of space inside.
+        </p>
+        <div class="pk-lvl2">
+          <div class="task">
+            <strong>Level 2 extension:</strong> If you and your partner each
+            shipped 100 boxes at your own cost rates, how much would each of you
+            spend on cardboard? Show the multiplication and find the difference.
+          </div>
+        </div>
       </section>
 
       <!-- ===================== PART 3 — WORLD ===================== -->
@@ -1657,7 +1793,7 @@
               data-save
               step="0.01"
               oninput="worldGo()"
-              placeholder="type your value"
+              placeholder=""
             />
             <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
               Tip: type your box's volume (or surface area) from Part 1.
@@ -1718,20 +1854,24 @@
           isn't always better" — when would a smaller box be the smarter
           choice?</label
         >
-        <textarea
-          id="worldReflect"
-          data-save
-          placeholder="My box's volume is ___ the flat-rate boxes. A smaller box can be better because ___ (less material, lower cost, less wasted space)."
-        ></textarea>
+        <textarea id="worldReflect" data-save placeholder=""></textarea>
         <label class="fld" for="careful"
           >Careful thinking: two boxes can hold the same volume but cost
           different amounts to build. Why?</label
         >
-        <textarea
-          id="careful"
-          data-save
-          placeholder="Same volume can cost different amounts because surface area depends on the shape, and a cube-like box has the least surface area, so ___."
-        ></textarea>
+        <textarea id="careful" data-save placeholder=""></textarea>
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 tip: read your volume from the table — a bigger number of
+          cubic inches means more space fits inside the box.
+        </p>
+        <div class="pk-lvl2">
+          <label class="fld" for="worldHard"
+            >Level 2 question: A Medium Flat Rate box is 11 × 8.5 × 5.5 in.
+            About how many of your boxes would fit inside its volume? Show the
+            division you used.</label
+          >
+          <textarea id="worldHard" data-save placeholder=""></textarea>
+        </div>
       </section>
 
       <!-- ===================== DELIVERABLE ===================== -->
@@ -1747,11 +1887,7 @@
           Write a short spec sheet (3–5 sentences) that uses your real numbers
           from above.
         </p>
-        <textarea
-          id="pitch"
-          data-save
-          placeholder="My box (a ___) measures ___ × ___ × ___ inches. Its volume is ___ cubic units, meaning it holds ___ unit cubes. The surface area is ___ square units (top/bottom + front/back + sides). At $___ per square unit, the cardboard costs $___. This design is a good choice because ___."
-        ></textarea>
+        <textarea id="pitch" data-save placeholder=""></textarea>
 
         <h3 style="margin: 22px 0 6px">Design Checklist</h3>
         <ul class="checklist" id="checklist">
@@ -1879,7 +2015,10 @@
       const yrEl = document.getElementById("yr");
       if (yrEl) yrEl.textContent = new Date().getFullYear();
       const $ = (id) => document.getElementById(id);
-      const num = (id) => { const e = $(id); return e ? parseFloat(e.value) : NaN; };
+      const num = (id) => {
+        const e = $(id);
+        return e ? parseFloat(e.value) : NaN;
+      };
       function round2(n) {
         return Math.round(n * 100) / 100;
       }
@@ -2222,7 +2361,7 @@
           ($("worldCat") || {}).value === "costPerGuest" ||
           ($("worldCat") || {}).value === "price"
             ? { mean: "City avg $", me: "Me $" }
-            : { mean: "City avg", me: "Me" };
+            : { mean: "Sample avg", me: "Me" };
 
         PK.worldMeter("worldMeter", sample, my, labels);
 
@@ -2232,13 +2371,13 @@
           const pct = Math.round((my / customSize) * 100);
           const diff = Math.abs(my - customSize).toFixed(2);
 
-          let myValStr = false ? "$" + my.toFixed(2) : my + " cubits";
+          let myValStr = false ? "$" + my.toFixed(2) : my + " units";
           let custValStr = false
             ? "$" + customSize.toFixed(2)
-            : customSize + " cubits";
+            : customSize + " units";
           let diffStr = false
             ? "$" + Number(diff).toFixed(2)
-            : Number(diff).toFixed(2) + " cubits";
+            : Number(diff).toFixed(2) + " units";
 
           const rel =
             my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
@@ -2296,8 +2435,8 @@
       /* ---- Use example numbers ---- */
       function useExamples() {
         const ex = {
-          worldCountry: "Giza Great Pyramid",
-          "v-length": 440,
+          worldCountry: "Medium Flat Rate Box",
+          "v-length": 8,
           objName: "my cereal box (example)",
           "v-width": 5,
           "v-height": 3,
@@ -2311,9 +2450,18 @@
       }
 
       function drawVisualizer() {
-        const l = num("v-length") || 0;
-        const w = num("v-width") || 0;
-        const h = num("v-height") || 0;
+        let l = num("v-length") || 0;
+        let w = num("v-width") || 0;
+        let h = num("v-height") || 0;
+
+        // Default to a worked EXAMPLE (8 × 5 × 3) so the dashboard always shows
+        // a reference; switches to the student's real box once they enter it.
+        const isExample = !(l > 0 && w > 0 && h > 0);
+        if (isExample) {
+          l = 8;
+          w = 5;
+          h = 3;
+        }
 
         let html = "";
         if (l > 0 && w > 0 && h > 0) {
@@ -2347,6 +2495,7 @@
             ny = 120;
 
           html = `
+            ${isExample ? `<rect x="206" y="4" width="88" height="18" rx="9" fill="#eef4ff" stroke="#1763c7" /><text x="250" y="17" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example box</text>` : ""}
             <polygon points="${p0.x},${p0.y} ${p1.x},${p1.y} ${p2.x},${p2.y} ${p3.x},${p3.y}" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5" />
             <polygon points="${p0.x},${p0.y} ${p1.x},${p1.y} ${p5.x},${p5.y} ${p4.x},${p4.y}" fill="rgba(26, 111, 181, 0.15)" stroke="#1a6fb5" stroke-width="2" />
             <polygon points="${p1.x},${p1.y} ${p2.x},${p2.y} ${p6.x},${p6.y} ${p5.x},${p5.y}" fill="rgba(14, 138, 125, 0.15)" stroke="#0e8a7d" stroke-width="2" />
@@ -2372,10 +2521,6 @@
               Volume = ${(l * w * h).toFixed(0)} cu in | Surface Area = ${(2 * (l * w + w * h + l * h)).toFixed(0)} sq in
             </text>
           `;
-        } else {
-          html = `
-            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Dimensions to draw 3D net folder</text>
-          `;
         }
 
         const svgString = `
@@ -2396,8 +2541,13 @@
         worldGo();
         calcOpt();
         updateProgress();
-      
-        if(typeof drawPrismSVG === "function"){drawPrismSVG(); drawNetSVG(); drawCostSVG();}}
+
+        if (typeof drawPrismSVG === "function") {
+          drawPrismSVG();
+          drawNetSVG();
+          drawCostSVG();
+        }
+      }
 
       /* ---- Report ---- */
       function reportText() {
@@ -2527,57 +2677,71 @@
       document.addEventListener("DOMContentLoaded", function () {
         renderWorld();
         PK.initLevel({ storageKey: "u10ProjectA", default: "level-1" });
+        PK.initTts({ storageKey: "u10ProjectA" });
         PK.load("u10ProjectA", { after: recalcAll });
         updateProgress();
       });
-    
+
       function drawPrismSVG() {
-        const l = num("v-length");
-        const w = num("v-width");
-        const h = num("v-height");
+        let l = num("v-length");
+        let w = num("v-width");
+        let h = num("v-height");
         const svg = $("phase-svg-1a");
         if (!svg) return;
-        
-        if (isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0) {
-          svg.innerHTML = '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter dimensions to draw 3D prism box</text>';
-          return;
+
+        // Default to a worked EXAMPLE (8 × 5 × 3) so the blueprint always shows
+        // a reference; switches to the student's box once they enter it.
+        const isExample =
+          isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0;
+        if (isExample) {
+          l = 8;
+          w = 5;
+          h = 3;
         }
-        
-        const originX = 200, originY = 140;
+
+        const originX = 200,
+          originY = 140;
         const scale = Math.min(100 / l, 100 / w, 100 / h);
         const sw = l * scale;
         const sh = h * scale;
         const sd = w * scale;
-        
+
         const dx = sd * 0.866;
         const dy = -sd * 0.5;
-        
+
         svg.innerHTML = `
           <text x="250" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">3D Isometric Prism Blueprint</text>
-          <polygon points="${originX},${originY} ${originX+sw},${originY} ${originX+sw},${originY-sh} ${originX},${originY-sh}" fill="rgba(26,111,181,0.15)" stroke="#1a6fb5" stroke-width="1.5" />
-          <polygon points="${originX},${originY-sh} ${originX+sw},${originY-sh} ${originX+sw+dx},${originY-sh+dy} ${originX+dx},${originY-sh+dy}" fill="rgba(26,111,181,0.08)" stroke="#1a6fb5" stroke-width="1.5" />
-          <polygon points="${originX+sw},${originY} ${originX+sw},${originY-sh} ${originX+sw+dx},${originY-sh+dy} ${originX+sw+dx},${originY+dy}" fill="rgba(26,111,181,0.22)" stroke="#1a6fb5" stroke-width="1.5" />
+          ${isExample ? `<rect x="372" y="14" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="28" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · 8×5×3</text>` : ""}
+          <polygon points="${originX},${originY} ${originX + sw},${originY} ${originX + sw},${originY - sh} ${originX},${originY - sh}" fill="rgba(26,111,181,0.15)" stroke="#1a6fb5" stroke-width="1.5" />
+          <polygon points="${originX},${originY - sh} ${originX + sw},${originY - sh} ${originX + sw + dx},${originY - sh + dy} ${originX + dx},${originY - sh + dy}" fill="rgba(26,111,181,0.08)" stroke="#1a6fb5" stroke-width="1.5" />
+          <polygon points="${originX + sw},${originY} ${originX + sw},${originY - sh} ${originX + sw + dx},${originY - sh + dy} ${originX + sw + dx},${originY + dy}" fill="rgba(26,111,181,0.22)" stroke="#1a6fb5" stroke-width="1.5" />
           
-          <text x="${originX + sw/2}" y="${originY + 15}" text-anchor="middle" font-size="10" font-weight="bold" fill="#1a6fb5">Length: ${l} in</text>
-          <text x="${originX + sw + dx/2 + 10}" y="${originY + dy/2 + 5}" font-size="10" font-weight="bold" fill="#1a6fb5">Width: ${w} in</text>
-          <text x="${originX - 10}" y="${originY - sh/2}" text-anchor="end" font-size="10" font-weight="bold" fill="#1a6fb5">Height: ${h} in</text>
+          <text x="${originX + sw / 2}" y="${originY + 15}" text-anchor="middle" font-size="10" font-weight="bold" fill="#1a6fb5">Length: ${l} in</text>
+          <text x="${originX + sw + dx / 2 + 10}" y="${originY + dy / 2 + 5}" font-size="10" font-weight="bold" fill="#1a6fb5">Width: ${w} in</text>
+          <text x="${originX - 10}" y="${originY - sh / 2}" text-anchor="end" font-size="10" font-weight="bold" fill="#1a6fb5">Height: ${h} in</text>
         `;
       }
-      
+
       function drawNetSVG() {
-        const l = num("v-length");
-        const w = num("v-width");
-        const h = num("v-height");
+        let l = num("v-length");
+        let w = num("v-width");
+        let h = num("v-height");
         const svg = $("phase-svg-1b");
         if (!svg) return;
-        
-        if (isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0) {
-          svg.innerHTML = '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter dimensions to draw flat net blueprint</text>';
-          return;
+
+        // Default to a worked EXAMPLE net so the blueprint always shows a
+        // reference; switches to the student's box once they enter dimensions.
+        const isExample =
+          isNaN(l) || isNaN(w) || isNaN(h) || l <= 0 || w <= 0 || h <= 0;
+        if (isExample) {
+          l = 8;
+          w = 5;
+          h = 3;
         }
-        
+
         svg.innerHTML = `
           <text x="250" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Flat Unfolded Net Blueprint</text>
+          ${isExample ? `<rect x="372" y="14" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="28" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · 8×5×3</text>` : ""}
           
           <g transform="translate(140, 50)" stroke="#0e8a7d" stroke-width="1.5" fill="rgba(14, 138, 125, 0.1)">
             <rect x="40" y="0" width="80" height="30" />
@@ -2600,7 +2764,7 @@
           </g>
         `;
       }
-      
+
       function drawCostSVG() {
         const svg = $("phase-svg-1c");
         if (!svg) return;
@@ -2611,15 +2775,114 @@
           <text x="250" y="130" text-anchor="middle" font-size="10" fill="#64748b">Calculates automatically when dimensions are populated</text>
         `;
       }
-    
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
+    <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
+    <script type="application/json" id="pk-research">
+      {
+        "icon": "🔎",
+        "title": "Research Lab — Engineer the Box",
+        "intro": "Packaging and tank designers compute volume and surface area before they build. Look up the formulas, then size your design with real numbers.",
+        "brief": {
+          "theme": "field",
+          "title": "🐟 Your Research Mission",
+          "hook": "Find the <b>volume and surface-area formulas</b>, then size your design with real measurements.",
+          "steps": [
+            "Open a link (new tab — you keep your project).",
+            "Record formulas and real sizes in Field Notes.",
+            "Compute volume and surface area in the math problems.",
+            "Check off the Investigation Checklist."
+          ]
+        },
+        "fieldNotes": {
+          "title": "Field Notes — Record What You Find",
+          "intro": "Jot the exact number or rule you find. You'll reuse these in the math below.",
+          "fields": [
+            {
+              "label": "Volume formula for a rectangular prism",
+              "source": "Math is Fun",
+              "placeholder": "V = l × w × h",
+              "hint": "Three dimensions multiplied."
+            },
+            {
+              "label": "How surface area is found",
+              "source": "Math is Fun",
+              "placeholder": "add the areas of all 6 faces",
+              "hint": "Use a net to see every face."
+            },
+            {
+              "label": "A real length and width (inches)",
+              "source": "Any product / ruler",
+              "placeholder": "10 in × 6 in",
+              "hint": "Measure or read a real box/tank."
+            },
+            {
+              "label": "A real height (inches)",
+              "source": "Any product / ruler",
+              "placeholder": "8 in",
+              "hint": "The third dimension."
+            }
+          ]
+        },
+        "mathTasks": [
+          {
+            "title": "1 · Volume",
+            "prompt": "Use <b>V = l × w × h</b> with Field Notes 3 and 4 to find your design's volume. Show the multiplication and units (cubic inches).",
+            "level2": "If one dimension is a fraction (e.g., 6½ in), recompute the volume."
+          },
+          {
+            "title": "2 · Surface area",
+            "prompt": "Find the area of each of the 6 faces and add them for the total <b>surface area</b>. Show each face.",
+            "level2": "Which faces are equal, and how does that shortcut the work?"
+          },
+          {
+            "title": "3 · Material vs. space",
+            "prompt": "Explain which number (volume or surface area) tells you the space inside and which tells you the material to cover it.",
+            "level2": "If you double the height, what happens to the volume? Test with numbers."
+          }
+        ],
+        "investigationChecklist": [
+          "I recorded the volume formula.",
+          "I recorded how to find surface area.",
+          "I measured a real length, width, and height.",
+          "I computed volume with units.",
+          "I added all 6 faces for surface area.",
+          "I explained volume vs. surface area."
+        ],
+        "links": [
+          {
+            "icon": "📦",
+            "name": "Math is Fun — Rectangular Prisms",
+            "url": "https://www.mathsisfun.com/geometry/cuboids-rectangular-prisms.html",
+            "find": "Volume and surface area of a box.",
+            "look": "V = l × w × h and the 6 faces"
+          },
+          {
+            "icon": "🟦",
+            "name": "Math is Fun — Area of Shapes",
+            "url": "https://www.mathsisfun.com/geometry/area.html",
+            "find": "The area formulas you add up for each face.",
+            "look": "area = length × width for a face"
+          },
+          {
+            "icon": "🧊",
+            "name": "Math is Fun — Cuboid (worked example)",
+            "url": "https://www.mathsisfun.com/cuboid.html",
+            "find": "A box with its volume and surface area worked out.",
+            "look": "the volume and surface-area numbers"
+          }
+        ],
+        "note": "These sites were picked for class. They open in a new tab so you keep your project. If a page asks you to sign in or buy something, just close it and come back."
+      }
+    </script>
     <script src="/shared/projects/projects-tabs.js" defer></script>
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <script src="/shared/projects/projects-interactive.js" defer></script>
+    <script src="/shared/projects/manip-cube-builder.js" defer></script>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+  </body>
 </html>

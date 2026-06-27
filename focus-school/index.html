@@ -24,13 +24,10 @@
     <link rel="icon" href="icons/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
     <link rel="stylesheet" href="styles.css" />
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
   <body>
     <!-- Ambient Backdrop Glows -->
     <div class="ambient-glow bg-blob-1" aria-hidden="true"></div>
@@ -46,13 +43,24 @@
           </div>
         </div>
         <div class="top-actions">
-          <button class="btn sm" data-act="open-command-bar" id="searchBtn" aria-label="Search and commands" title="Search and commands (Cmd+K)">
+          <button
+            class="btn sm"
+            data-act="open-command-bar"
+            id="searchBtn"
+            aria-label="Search and commands"
+            title="Search and commands (Cmd+K)"
+          >
             🔍 Search
           </button>
-          <button class="chip online" data-act="view-sync" id="connChip" title="Connection status"
-            ><span class="dot" aria-hidden="true"></span
-            ><span id="connText">Online</span></button
+          <button
+            class="chip online"
+            data-act="view-sync"
+            id="connChip"
+            title="Connection status"
           >
+            <span class="dot" aria-hidden="true"></span
+            ><span id="connText">Online</span>
+          </button>
           <button class="btn sm" data-act="install" id="installBtn" hidden>
             ⬇️ Install
           </button>
@@ -74,6 +82,14 @@
     </button>
 
     <nav class="tabbar" id="tabbar" aria-label="Sections"></nav>
+    <button
+      class="sync-fab"
+      id="syncFab"
+      data-act="sync-fab"
+      aria-label="Sync — enter your code to load your planner"
+    >
+      ☁️ Sync
+    </button>
 
     <div
       class="modal-back"
@@ -86,11 +102,7 @@
       <div class="modal">
         <div class="head">
           <h2 id="modalTitle">Edit</h2>
-          <button
-            class="btn sm"
-            data-act="close-modal"
-            aria-label="Close"
-          >
+          <button class="btn sm" data-act="close-modal" aria-label="Close">
             ✕
           </button>
         </div>
@@ -150,26 +162,57 @@
       </div>
       <div class="fsteps" id="fSteps"></div>
       <!-- Focus Timer Presets -->
-      <div class="fambient-controls" id="fPresetsControls" style="margin-bottom: 12px;">
+      <div
+        class="fambient-controls"
+        id="fPresetsControls"
+        style="margin-bottom: 12px"
+      >
         <span class="fambient-label">⏱️ Focus Timer Preset</span>
         <div class="fambient-buttons">
-          <button class="btn sm" data-act="set-focus-preset" data-arg="15">Quick Burst (15m)</button>
-          <button class="btn sm" data-act="set-focus-preset" data-arg="25">Pomodoro (25m)</button>
-          <button class="btn sm" data-act="set-focus-preset" data-arg="45">Deep Work (45m)</button>
+          <button class="btn sm" data-act="set-focus-preset" data-arg="15">
+            Quick Burst (15m)
+          </button>
+          <button class="btn sm" data-act="set-focus-preset" data-arg="25">
+            Pomodoro (25m)
+          </button>
+          <button class="btn sm" data-act="set-focus-preset" data-arg="45">
+            Deep Work (45m)
+          </button>
         </div>
       </div>
       <!-- Procedural Focus Sound Engine Controls -->
       <div class="fambient-controls" id="fAmbientControls">
         <span class="fambient-label">🧠 Background Focus Sound</span>
         <div class="fambient-buttons">
-          <button class="btn sm" data-act="focus-sound" data-arg="none" aria-pressed="true">Silence</button>
-          <button class="btn sm" data-act="focus-sound" data-arg="rain">Gentle Rain</button>
-          <button class="btn sm" data-act="focus-sound" data-arg="rumble">Cozy Rumble</button>
-          <button class="btn sm" data-act="focus-sound" data-arg="ocean">Ocean Waves</button>
-          <button class="btn sm" data-act="focus-sound" data-arg="wind">Forest Wind</button>
-          <button class="btn sm" data-act="focus-sound" data-arg="binaural">Space Hum</button>
-          <button class="btn sm" data-act="focus-sound" data-arg="ticks">Focus Ticks</button>
-          <button class="btn sm" data-act="focus-sound" data-arg="synth">🎹 Cozy Synth</button>
+          <button
+            class="btn sm"
+            data-act="focus-sound"
+            data-arg="none"
+            aria-pressed="true"
+          >
+            Silence
+          </button>
+          <button class="btn sm" data-act="focus-sound" data-arg="rain">
+            Gentle Rain
+          </button>
+          <button class="btn sm" data-act="focus-sound" data-arg="rumble">
+            Cozy Rumble
+          </button>
+          <button class="btn sm" data-act="focus-sound" data-arg="ocean">
+            Ocean Waves
+          </button>
+          <button class="btn sm" data-act="focus-sound" data-arg="wind">
+            Forest Wind
+          </button>
+          <button class="btn sm" data-act="focus-sound" data-arg="binaural">
+            Space Hum
+          </button>
+          <button class="btn sm" data-act="focus-sound" data-arg="ticks">
+            Focus Ticks
+          </button>
+          <button class="btn sm" data-act="focus-sound" data-arg="synth">
+            🎹 Cozy Synth
+          </button>
         </div>
       </div>
       <div class="factions">
@@ -222,7 +265,13 @@
             placeholder="Search tasks, switch views, or type commands... (try /focus, /theme)"
             autocomplete="off"
           />
-          <button class="btn sm danger" data-act="close-command-bar" aria-label="Close">✕</button>
+          <button
+            class="btn sm danger"
+            data-act="close-command-bar"
+            aria-label="Close"
+          >
+            ✕
+          </button>
         </div>
         <div class="cmd-results" id="cmdResults"></div>
       </div>
@@ -235,11 +284,8 @@
          "Save as PDF/DOC" bar (position:fixed; bottom:0; max z-index) overlays
          this PWA's own bottom tab nav + quick-add button and blocks taps. This
          app is a self-contained planner and needs none of the hub enhancer. -->
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+  </body>
 </html>

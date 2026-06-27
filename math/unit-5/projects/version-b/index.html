@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>
       Community Mural &amp; Garden Planner — Unit 5 Culminating Project
     </title>
@@ -466,11 +466,13 @@
     <!-- nsr-injected:end -->
     <link rel="stylesheet" href="/shared/projects/projects-premium.css" />
     <link rel="stylesheet" href="/shared/projects/projects-tabs.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-tplus.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-interactive.css" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
-  <body class="pk">
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
+  <body class="pk" data-pk-theme="u5">
     <header class="phero">
       <div class="deco">🎨</div>
       <h1>Community Mural &amp; Garden Planner</h1>
@@ -495,6 +497,15 @@
             🔵 Level 2 (challenge)
           </button>
         </span>
+        <button
+          class="pk-tts-toggle"
+          data-tts-toggle
+          type="button"
+          aria-pressed="false"
+          title="Read text aloud"
+        >
+          🔊 Read aloud
+        </button>
         <button onclick="PK.save('u5ProjectB')">💾 Save</button>
         <button
           onclick="PK.load('u5ProjectB', { show: true, after: recalcAll })"
@@ -549,14 +560,14 @@
         <div class="pk-vocab">
           <div class="pk-term">
             <span class="pk-icon">📏</span><b>Base (b)</b>
-            <p>One full side of a shape that you measure along.</p>
+            <p>The flat bottom side of a shape that you measure.</p>
             <p class="pk-es">Base: un lado completo de la figura que mides.</p>
           </div>
           <div class="pk-term">
             <span class="pk-icon">📐</span><b>Height (h) — perpendicular!</b>
             <p>
-              The straight-up distance from the base, making a right angle — NOT
-              the slanted side.
+              How tall a shape is, straight up from the base — not the slanted
+              side.
             </p>
             <p class="pk-es">
               Altura: la distancia recta (perpendicular) desde la base, no el
@@ -566,7 +577,8 @@
           <div class="pk-term">
             <span class="pk-icon">▱</span><b>Parallelogram</b>
             <p>
-              A 4-sided shape with both pairs of sides parallel. Area = b × h.
+              A pushed-over rectangle. Both pairs of sides are parallel. Area =
+              b × h.
             </p>
             <p class="pk-es">
               Paralelogramo: figura de 4 lados con lados paralelos. Área = b ×
@@ -575,7 +587,9 @@
           </div>
           <div class="pk-term">
             <span class="pk-icon">🔺</span><b>Triangle</b>
-            <p>Exactly half a parallelogram. Area = ½ × b × h.</p>
+            <p>
+              A 3-sided shape. It is half of a parallelogram. Area = ½ × b × h.
+            </p>
             <p class="pk-es">
               Triángulo: la mitad de un paralelogramo. Área = ½ × b × h.
             </p>
@@ -583,8 +597,8 @@
           <div class="pk-term">
             <span class="pk-icon">⏢</span><b>Trapezoid</b>
             <p>
-              A 4-sided shape with two parallel bases (b₁, b₂). Area =
-              ½(b₁+b₂)h.
+              A 4-sided shape with a top and bottom that are parallel (b₁, b₂).
+              Area = ½(b₁+b₂)h.
             </p>
             <p class="pk-es">
               Trapecio: figura con dos bases paralelas. Área = ½(b₁+b₂)h.
@@ -593,7 +607,8 @@
           <div class="pk-term">
             <span class="pk-icon">🧩</span><b>Composite figure</b>
             <p>
-              A shape made of simpler shapes. Decompose, find each, then add.
+              A big shape made of smaller shapes. Find each part, then add them
+              up.
             </p>
             <p class="pk-es">
               Figura compuesta: hecha de figuras simples. Descompón y suma.
@@ -601,7 +616,7 @@
           </div>
           <div class="pk-term">
             <span class="pk-icon">🟦</span><b>Square unit</b>
-            <p>How area is measured — like square feet (sq ft).</p>
+            <p>How we measure area, like square feet.</p>
             <p class="pk-es">
               Unidad cuadrada: cómo se mide el área, como pies cuadrados.
             </p>
@@ -610,14 +625,55 @@
         <div class="grid2" style="margin-top: 18px">
           <div class="pk-callout">
             <h3>Formula Bank</h3>
-            <p><b>Parallelogram:</b> Area = b × h</p>
-            <p><b>Triangle:</b> Area = ½ × b × h</p>
-            <p><b>Trapezoid:</b> Area = ½ × (b₁ + b₂) × h</p>
-            <p><b>Paint cans:</b> ⌈ Area ÷ coverage ⌉ (always round UP)</p>
-            <p class="pk-lvl2">
-              <b>Missing dimension:</b> h = Area ÷ b &nbsp;|&nbsp; b₂ = (2·Area
-              ÷ h) − b₁
-            </p>
+            <ul class="pk-formula">
+              <li>
+                <span class="pk-f-name">Parallelogram / rectangle area</span>
+                <span class="pk-f-mean"
+                  >Multiply one full side (the base) by the straight-up height.
+                  Use the perpendicular height, not the slanted side.</span
+                >
+                <span class="pk-eg"
+                  >Example: base 9 ft × height 4 ft = 36 sq ft</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Triangle area</span>
+                <span class="pk-f-mean"
+                  >A triangle is half a parallelogram, so multiply base ×
+                  height, then take half.</span
+                >
+                <span class="pk-eg">Example: ½ × 14 ft × 10 ft = 70 sq ft</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Trapezoid area</span>
+                <span class="pk-f-mean"
+                  >Add the two parallel bases, multiply by the height, then take
+                  half.</span
+                >
+                <span class="pk-eg"
+                  >Example: ½ × (8 + 12) ft × 6 ft = 60 sq ft</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Paint cans (round UP)</span>
+                <span class="pk-f-mean"
+                  >Divide the area by what one can covers, then round up — you
+                  cannot buy part of a can.</span
+                >
+                <span class="pk-eg"
+                  >Example: 70 ÷ 50 = 1.4 → round up to 2 cans</span
+                >
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">Find a missing side</span>
+                <span class="pk-f-mean"
+                  >If you already know the area, work backward: for a rectangle,
+                  height = Area ÷ base; for a trapezoid, second base = (2 × Area
+                  ÷ height) − first base.</span
+                >
+                <span class="pk-eg">Example: 36 sq ft ÷ 9 ft = 4 ft</span>
+              </li>
+            </ul>
           </div>
           <div class="pk-callout">
             <h3>Sentence Frames</h3>
@@ -744,7 +800,31 @@
             >
               <span>📋</span> Scenario &amp; Level Options
             </h3>
-            <h2>Measure &amp; Calculate Your Spaces</h2>
+            <p style="font-size: 14px; line-height: 1.6; margin: 0 0 10px">
+              You are a <strong>community planner</strong>. Your school gave you
+              a $600 budget to build a garden and paint a mural, so you measure
+              each real space, find its area, and make sure your plan fits the
+              budget.
+            </p>
+            <ul
+              style="
+                font-size: 14px;
+                line-height: 1.6;
+                margin: 0;
+                padding-left: 18px;
+              "
+            >
+              <li>
+                <strong>Level 1 (support):</strong> find the area of one
+                rectangular garden plot and check that the soil cost stays under
+                budget.
+              </li>
+              <li>
+                <strong>Level 2 (challenge):</strong> add a trapezoid garden
+                plot, a triangular mural wall, and a banner, total every area,
+                and compare your plot to real community-garden sizes.
+              </li>
+            </ul>
           </div>
         </div>
         <p>
@@ -945,7 +1025,7 @@
                   data-save
                   min="0.1"
                   step="0.1"
-                  placeholder="example: 8"
+                  placeholder=""
                   oninput="calcTrapezoid()"
                 />
               </div>
@@ -957,7 +1037,7 @@
                   data-save
                   min="0.1"
                   step="0.1"
-                  placeholder="example: 12"
+                  placeholder=""
                   oninput="calcTrapezoid()"
                 />
               </div>
@@ -967,10 +1047,11 @@
                 <div class="pk-research-inline-header">
                   <span class="pk-research-badge">🔍 Research Required</span>
                   <a
-                    href="https://www.almanac.com/raised-garden-bed-dimensions-layout"
+                    href="https://www.almanac.com/vegetable-gardening-for-beginners"
                     target="_blank"
                     class="pk-research-inline-link"
-                    >🔗 Wikipedia: Raised-Bed Gardening Standards ↗</a
+                    >🔗 Old Farmer's Almanac: Raised-Bed Gardening Standards
+                    ↗</a
                   >
                 </div>
                 <p class="pk-research-inline-instructions">
@@ -987,7 +1068,7 @@
                       type="text"
                       id="worldCountry"
                       data-save
-                      placeholder="e.g. 4x8 ft raised bed"
+                      placeholder=""
                       oninput="recalcAll()"
                     />
                   </div>
@@ -1001,7 +1082,7 @@
                       data-save
                       step="any"
                       min="0"
-                      placeholder="e.g. 4"
+                      placeholder=""
                       oninput="recalcAll()"
                     />
                   </div>
@@ -1036,6 +1117,14 @@
               Calculate garden plot area
             </button>
             <div class="readout" id="p1-out"></div>
+            <div
+              class="pki-manip"
+              data-manip="area-tiler"
+              data-unit="ft"
+              data-theme="garden"
+              data-accent="#283593"
+              data-accent2="#388e3c"
+            ></div>
             <details class="hintbox">
               <summary>Need a hint?</summary>
               <p>
@@ -1044,6 +1133,14 @@
                 = 60 sq ft.
               </p>
             </details>
+            <div class="pk-lvl2" style="margin-top: 16px">
+              <div class="task">
+                <strong>Level 2 extension:</strong> split your trapezoid into
+                one rectangle plus one triangle. Find each area and add them.
+                Show that your two-shape total matches the ½ × (b₁ + b₂) × h
+                answer, and explain why both methods give the same area.
+              </div>
+            </div>
 
             <!-- 1b Triangle mural + paint cans -->
           </div>
@@ -1092,19 +1189,14 @@
                 color: var(--ink);
               "
             >
+              <li><b>Parallelogram/Rectangle</b>: Area = base × height.</li>
               <li>
-                <b>Parallelogram/Rectangle</b>: $\text{Area} = \text{base}
-                \times \text{height}$.
+                <b>Triangle</b>: Area = 1/2 × base × height (multiply base and
+                height, then divide by 2).
               </li>
               <li>
-                <b>Triangle</b>: $\text{Area} = \frac{1}{2} \times \text{base}
-                \times \text{height}$ (multiply base and height, then divide by
-                2).
-              </li>
-              <li>
-                <b>Trapezoid</b>: $\text{Area} = \frac{1}{2} \times (b_1 + b_2)
-                \times h$ (add both parallel bases, multiply by the height, and
-                divide by 2).
+                <b>Trapezoid</b>: Area = 1/2 × (b_1 + b_2) × h (add both
+                parallel bases, multiply by the height, and divide by 2).
               </li>
               <li>
                 <b>Composite Shapes</b>: Split the irregular layout into
@@ -1121,8 +1213,7 @@
               "
             >
               💡 <b>Formula Check:</b> Trapezoid bases of 6ft and 10ft, height
-              of 4ft. Area = $\frac{1}{2} \times (6 + 10) \times 4 = 8 \times 4
-              = \mathbf{32}$ sq ft.
+              of 4ft. Area = 1/2 × (6 + 10) × 4 = 8 × 4 = 32 sq ft.
             </div>
           </div>
         </div>
@@ -1266,6 +1357,10 @@
               You <strong>always round up</strong> cans — you can't buy a
               fraction of a can.
             </p>
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: find the area first (½ × b × h), then divide by the
+              coverage. Try b = 10, h = 8 → ½ × 80 = 40 sq ft.
+            </p>
             <div class="grid3">
               <div>
                 <label class="fld" for="p2-base">Wall base (b) in feet</label>
@@ -1275,7 +1370,7 @@
                   data-save
                   min="0.1"
                   step="0.1"
-                  placeholder="example: 14"
+                  placeholder=""
                   oninput="calcMural()"
                 />
               </div>
@@ -1289,7 +1384,7 @@
                   data-save
                   min="0.1"
                   step="0.1"
-                  placeholder="example: 10"
+                  placeholder=""
                   oninput="calcMural()"
                 />
               </div>
@@ -1303,7 +1398,7 @@
                   data-save
                   min="1"
                   step="1"
-                  placeholder="example: 50"
+                  placeholder=""
                   oninput="calcMural()"
                 />
               </div>
@@ -1320,6 +1415,14 @@
                 ÷ 50 = 1.4 → 2 cans.
               </p>
             </details>
+            <div class="pk-lvl2" style="margin-top: 16px">
+              <div class="task">
+                <strong>Level 2 extension:</strong> if one can of paint costs
+                $28, how much will the paint for your mural cost? Multiply your
+                rounded-up can count by $28. Then explain why rounding the cans
+                up (not down) keeps you from running out of paint.
+              </div>
+            </div>
 
             <!-- 1c Parallelogram banner -->
           </div>
@@ -1368,19 +1471,14 @@
                 color: var(--ink);
               "
             >
+              <li><b>Parallelogram/Rectangle</b>: Area = base × height.</li>
               <li>
-                <b>Parallelogram/Rectangle</b>: $\text{Area} = \text{base}
-                \times \text{height}$.
+                <b>Triangle</b>: Area = 1/2 × base × height (multiply base and
+                height, then divide by 2).
               </li>
               <li>
-                <b>Triangle</b>: $\text{Area} = \frac{1}{2} \times \text{base}
-                \times \text{height}$ (multiply base and height, then divide by
-                2).
-              </li>
-              <li>
-                <b>Trapezoid</b>: $\text{Area} = \frac{1}{2} \times (b_1 + b_2)
-                \times h$ (add both parallel bases, multiply by the height, and
-                divide by 2).
+                <b>Trapezoid</b>: Area = 1/2 × (b_1 + b_2) × h (add both
+                parallel bases, multiply by the height, and divide by 2).
               </li>
               <li>
                 <b>Composite Shapes</b>: Split the irregular layout into
@@ -1397,8 +1495,7 @@
               "
             >
               💡 <b>Formula Check:</b> Trapezoid bases of 6ft and 10ft, height
-              of 4ft. Area = $\frac{1}{2} \times (6 + 10) \times 4 = 8 \times 4
-              = \mathbf{32}$ sq ft.
+              of 4ft. Area = 1/2 × (6 + 10) × 4 = 8 × 4 = 32 sq ft.
             </div>
           </div>
         </div>
@@ -1536,6 +1633,10 @@
               </text>
             </svg>
             <div class="formula-box">Area = b × h</div>
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: a parallelogram uses the same Area = b × h as a
+              rectangle. Try b = 9 and h = 4 → 36 sq ft.
+            </p>
             <div class="grid2">
               <div>
                 <label class="fld" for="p3-base">Banner base (b) in feet</label>
@@ -1545,7 +1646,7 @@
                   data-save
                   min="0.1"
                   step="0.1"
-                  placeholder="example: 9"
+                  placeholder=""
                   oninput="calcBanner()"
                 />
               </div>
@@ -1559,7 +1660,7 @@
                   data-save
                   min="0.1"
                   step="0.1"
-                  placeholder="example: 4"
+                  placeholder=""
                   oninput="calcBanner()"
                 />
               </div>
@@ -1575,6 +1676,16 @@
                 Example: b = 9, h = 4 → Area = 36 sq ft.
               </p>
             </details>
+            <div class="pk-lvl2" style="margin-top: 16px">
+              <div class="task">
+                <strong>Level 2 extension:</strong> your banner is a slanted
+                parallelogram, but it has the same area as a rectangle with the
+                same base and perpendicular height. Explain why sliding the
+                slanted top across does not change the area, and which
+                measurement you must NOT use by mistake — the slant side or the
+                perpendicular height.
+              </div>
+            </div>
 
             <!-- Running total -->
             <div class="total-banner" id="totalBanner">
@@ -1637,19 +1748,14 @@
                 color: var(--ink);
               "
             >
+              <li><b>Parallelogram/Rectangle</b>: Area = base × height.</li>
               <li>
-                <b>Parallelogram/Rectangle</b>: $\text{Area} = \text{base}
-                \times \text{height}$.
+                <b>Triangle</b>: Area = 1/2 × base × height (multiply base and
+                height, then divide by 2).
               </li>
               <li>
-                <b>Triangle</b>: $\text{Area} = \frac{1}{2} \times \text{base}
-                \times \text{height}$ (multiply base and height, then divide by
-                2).
-              </li>
-              <li>
-                <b>Trapezoid</b>: $\text{Area} = \frac{1}{2} \times (b_1 + b_2)
-                \times h$ (add both parallel bases, multiply by the height, and
-                divide by 2).
+                <b>Trapezoid</b>: Area = 1/2 × (b_1 + b_2) × h (add both
+                parallel bases, multiply by the height, and divide by 2).
               </li>
               <li>
                 <b>Composite Shapes</b>: Split the irregular layout into
@@ -1666,8 +1772,7 @@
               "
             >
               💡 <b>Formula Check:</b> Trapezoid bases of 6ft and 10ft, height
-              of 4ft. Area = $\frac{1}{2} \times (6 + 10) \times 4 = 8 \times 4
-              = \mathbf{32}$ sq ft.
+              of 4ft. Area = 1/2 × (6 + 10) × 4 = 8 × 4 = 32 sq ft.
             </div>
           </div>
         </div>
@@ -1710,12 +1815,7 @@
             <label class="fld" for="partnerName"
               >Partner name or initials</label
             >
-            <input
-              type="text"
-              id="partnerName"
-              data-save
-              placeholder="example: A.J."
-            />
+            <input type="text" id="partnerName" data-save placeholder="" />
           </div>
           <div>
             <label class="fld" for="p-b1">Partner: plot base 1 (ft)</label>
@@ -1759,11 +1859,7 @@
         <label class="fld" for="peerReflect"
           >Whose garden plot is larger, and by how much? How do you know?</label
         >
-        <textarea
-          id="peerReflect"
-          data-save
-          placeholder="My plot is ___ sq ft and my partner's is ___ sq ft, so mine is larger / smaller by ___ sq ft."
-        ></textarea>
+        <textarea id="peerReflect" data-save placeholder=""></textarea>
       </section>
 
       <!-- ===================== PART 3 — WORLD ===================== -->
@@ -1800,7 +1896,7 @@
               data-save
               step="0.1"
               oninput="worldGo()"
-              placeholder="auto-fills from your trapezoid plot"
+              placeholder=""
             />
             <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
               Tip: your trapezoid plot area from Part 1 auto-fills here.
@@ -1841,12 +1937,7 @@
               <label class="fld" for="whatIfAdd"
                 >Feet to add to base 1 (b₁)</label
               >
-              <input
-                type="number"
-                id="whatIfAdd"
-                step="0.5"
-                placeholder="example: 3"
-              />
+              <input type="number" id="whatIfAdd" step="0.5" placeholder="" />
             </div>
           </div>
           <button class="btn" type="button" onclick="runWhatIf()">
@@ -1861,19 +1952,11 @@
           >Is your plot bigger or smaller than the typical community plot? Why
           might plot sizes differ between cities?</label
         >
-        <textarea
-          id="worldReflect"
-          data-save
-          placeholder="My plot is ___ the typical plot because ___."
-        ></textarea>
+        <textarea id="worldReflect" data-save placeholder=""></textarea>
         <label class="fld" for="ethics"
           >Ethics check: is a bigger garden plot always better? Explain.</label
         >
-        <textarea
-          id="ethics"
-          data-save
-          placeholder="A bigger plot is / is not always better because ___."
-        ></textarea>
+        <textarea id="ethics" data-save placeholder=""></textarea>
 
         <!-- Level 2 reverse problem + minimize cost -->
         <div class="pk-lvl2">
@@ -1890,7 +1973,7 @@
                 id="revB2"
                 data-save
                 step="0.1"
-                placeholder="(2·Area ÷ h) − b1"
+                placeholder=""
               />
               <button class="btn alt" type="button" onclick="checkReverse()">
                 Check b₂
@@ -1903,11 +1986,7 @@
             one trapezoid, one rectangle. Which is cheaper to fill, and
             why?</label
           >
-          <textarea
-            id="optReason"
-            data-save
-            placeholder="Both cost the same because cost depends only on area (60 × $4.50 = $270), not shape — unless ___."
-          ></textarea>
+          <textarea id="optReason" data-save placeholder=""></textarea>
         </div>
       </section>
 
@@ -1936,7 +2015,7 @@
               data-save
               min="0.1"
               step="0.1"
-              placeholder="auto-fills from your plot"
+              placeholder=""
               oninput="calcBudget()"
             />
           </div>
@@ -1948,7 +2027,7 @@
               data-save
               min="0.01"
               step="0.01"
-              placeholder="example: 4.50"
+              placeholder=""
               oninput="calcBudget()"
             />
           </div>
@@ -1960,7 +2039,7 @@
               data-save
               min="0.1"
               step="0.1"
-              placeholder="example: 45"
+              placeholder=""
               oninput="calcBudget()"
             />
           </div>
@@ -1972,7 +2051,7 @@
               data-save
               min="0.01"
               step="0.01"
-              placeholder="example: 5.20"
+              placeholder=""
               oninput="calcBudget()"
             />
           </div>
@@ -1987,12 +2066,7 @@
           b₂ = 6 ft, and h = 3 ft. What is its area in square feet?
         </div>
         <label class="fld" for="check-trap">Your answer (sq ft)</label>
-        <input
-          type="number"
-          id="check-trap"
-          data-save
-          placeholder="Type a number"
-        />
+        <input type="number" id="check-trap" data-save placeholder="" />
         <button class="btn alt" type="button" onclick="checkTrap()">
           Check answer
         </button>
@@ -2000,6 +2074,14 @@
         <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
           Level 1 worked step: ½ × (4 + 6) × 3 → ½ × 10 × 3 → ½ × 30 = 15.
         </p>
+        <div class="pk-lvl2" style="margin-top: 16px">
+          <div class="task">
+            <strong>Level 2 extension:</strong> find the most garden you can
+            afford. With the $600 budget and your Plot 1 cost per square foot,
+            what is the largest plot area (in sq ft) you could fill? Divide the
+            budget by the cost per square foot to find out.
+          </div>
+        </div>
       </section>
 
       <!-- ===================== DELIVERABLE ===================== -->
@@ -2016,11 +2098,7 @@
           numbers: the size of each space, paint cans needed, and which plot you
           recommend.
         </p>
-        <textarea
-          id="pitch"
-          data-save
-          placeholder="The trapezoid garden plot is ___ sq ft (½ × (___ + ___) × ___). The triangular mural panel is ___ sq ft, needing ___ cans of paint (round up because ___). The banner covers ___ sq ft. I recommend Plot ___ because its cost of $___ fits the $600 budget."
-        ></textarea>
+        <textarea id="pitch" data-save placeholder=""></textarea>
 
         <h3 style="margin: 22px 0 6px">Planning Checklist</h3>
         <ul class="checklist" id="checklist">
@@ -2543,7 +2621,13 @@
           "whatIfBox",
           { "b₁": b1 + " ft", area: r(area(b1)) + " sq ft" },
           { "b₁": r(b1 + add) + " ft", area: r(area(b1 + add)) + " sq ft" },
-          "Add " + add + " ft to base 1 (b₂=" + b2 + " ft, height=" + h + " ft):",
+          "Add " +
+            add +
+            " ft to base 1 (b₂=" +
+            b2 +
+            " ft, height=" +
+            h +
+            " ft):",
         );
       }
 
@@ -2585,63 +2669,88 @@
       }
 
       function drawVisualizer() {
-        const p1w = num("p1w") || 0;
-        const p1h = num("p1h") || 0;
-        const p2b = num("p2b") || 0;
-        const p2h = num("p2h") || 0;
-        const p3w = num("p3w") || 0;
-        const p3h = num("p3h") || 0;
+        let b1 = num("p1-b1") || 0;
+        let b2 = num("p1-b2") || 0;
+        let ph = num("p1-h") || 0;
+        let mb = num("p2-base") || 0;
+        let mh = num("p2-height") || 0;
+        let bb = num("p3-base") || 0;
+        let bh = num("p3-height") || 0;
+
+        // Show a worked EXAMPLE blueprint (8/12×6 trapezoid plot, 14×10 mural,
+        // 9×4 banner) as the default so the canvas always has something to look
+        // at; switch to the student's real spaces as soon as they enter a plot.
+        const isExample = !((b1 > 0 || b2 > 0) && ph > 0);
+        if (isExample) {
+          b1 = 8;
+          b2 = 12;
+          ph = 6;
+          mb = 14;
+          mh = 10;
+          bb = 9;
+          bh = 4;
+        }
 
         let html = "";
-        if (p1w > 0 && p1h > 0) {
-          const maxDim = Math.max(p1w, p1h + p2h, p1w + p3w, 1);
-          const scale = 120 / maxDim;
+        {
+          const maxDim = Math.max(b1, b2, ph, mb, mh, bb, bh, 1);
+          const scale = 90 / maxDim;
+          const baseY = 175;
+          let x = 40;
+          const place = (w) => {
+            const sx = x;
+            x += w + 22;
+            return sx;
+          };
+          const shapes = [];
 
-          const w1 = p1w * scale;
-          const h1 = p1h * scale;
-          const w2 = p2b * scale;
-          const h2 = p2h * scale;
-          const w3 = p3w * scale;
-          const h3 = p3h * scale;
+          // Garden plot (trapezoid: b1 bottom, b2 top)
+          {
+            const wb = b1 * scale,
+              wt = b2 * scale,
+              h = ph * scale,
+              footprint = Math.max(wb, wt),
+              sx = place(footprint),
+              cx = sx + footprint / 2;
+            shapes.push(`
+              <polygon points="${cx - wb / 2},${baseY} ${cx + wb / 2},${baseY} ${cx + wt / 2},${baseY - h} ${cx - wt / 2},${baseY - h}" fill="rgba(40,53,147,0.18)" stroke="#283593" stroke-width="2" />
+              <text x="${cx}" y="${baseY + 14}" text-anchor="middle" font-size="10" font-weight="bold" fill="#283593">Plot ½(${b1}+${b2})·${ph}</text>
+            `);
+          }
 
-          const cX1 = 40 + w1;
-          const cY1 = 40 + h1 - h3;
+          // Mural panel (triangle)
+          if (mb > 0 && mh > 0) {
+            const w = mb * scale,
+              h = mh * scale,
+              sx = place(w);
+            shapes.push(`
+              <polygon points="${sx},${baseY} ${sx + w},${baseY} ${sx + w / 2},${baseY - h}" fill="rgba(0,121,107,0.18)" stroke="#00796b" stroke-width="2" />
+              <text x="${sx + w / 2}" y="${baseY + 14}" text-anchor="middle" font-size="10" font-weight="bold" fill="#00796b">Mural ½·${mb}×${mh}</text>
+            `);
+          }
+
+          // School banner (parallelogram)
+          if (bb > 0 && bh > 0) {
+            const w = bb * scale,
+              h = bh * scale,
+              skew = Math.min(h * 0.35, 18),
+              sx = place(w + skew);
+            shapes.push(`
+              <polygon points="${sx + skew},${baseY - h} ${sx + skew + w},${baseY - h} ${sx + w},${baseY} ${sx},${baseY}" fill="rgba(245,124,0,0.18)" stroke="#f57c00" stroke-width="2" />
+              <text x="${sx + skew / 2 + w / 2}" y="${baseY + 14}" text-anchor="middle" font-size="10" font-weight="bold" fill="#f57c00">Banner ${bb}×${bh}</text>
+            `);
+          }
 
           html = `
-            <!-- Main Plot (Blue) -->
-            <polygon points="40,40 40,${40 + h1} ${40 + w1},	h ${40 + h1} ${40 + w1},40" fill="rgba(26, 111, 181, 0.2)" stroke="#1a6fb5" stroke-width="2" />
-            <text x="${40 + w1 / 2}" y="${40 + h1 / 2}" text-anchor="middle" font-size="9" font-weight="bold" fill="#1a6fb5">Bed: ${p1w}×${p1h}</text>
-            
-            <!-- Triangular Crop Patch -->
-            ${
-              w2 > 0 && h2 > 0
-                ? `
-              <polygon points="40,${40 + h1} ${40 + w2},${40 + h1} 40,	h ${40 + h1 + h2}" fill="rgba(212, 149, 42, 0.2)" stroke="#d4952a" stroke-width="2" />
-              <text x="${40 + w2 / 3}" y="${40 + h1 + h2 / 3}" text-anchor="middle" font-size="9" font-weight="bold" fill="#d4952a">Nook: ½×${p2b}×${p2h}</text>
-            `
-                : ""
-            }
-            
-            <!-- Tool Shed Closet -->
-            ${
-              w3 > 0 && h3 > 0
-                ? `
-              <rect x="${cX1}" y="${cY1}" width="${w3}" height="${h3}" fill="rgba(14, 138, 125, 0.2)" stroke="#0e8a7d" stroke-width="2" />
-              <text x="${cX1 + w3 / 2}" y="${cY1 + h3 / 2}" text-anchor="middle" font-size="9" font-weight="bold" fill="#0e8a7d">Closet: ${p3w}×${p3h}</text>
-            `
-                : ""
-            }
-            
-            <text x="250" y="220" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">Scale Garden Blueprint Map View</text>
-          `;
-        } else {
-          html = `
-            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Plot Dimensions to draw garden blueprint</text>
+            <line x1="30" y1="${baseY}" x2="470" y2="${baseY}" stroke="#cbd5e1" stroke-width="1.5" />
+            ${shapes.join("")}
+            <text x="250" y="215" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">Scale Garden Blueprint Map View</text>
           `;
         }
 
         const svgString = `
           <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            ${isExample ? `<rect x="400" y="16" width="80" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="440" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example</text>` : ""}
             ${html}
           </svg>
         `;
@@ -2762,6 +2871,7 @@
       document.addEventListener("DOMContentLoaded", function () {
         renderWorld();
         PK.initLevel({ storageKey: "u5ProjectB", default: "level-1" });
+        PK.initTts({ storageKey: "u5ProjectB" });
         PK.load("u5ProjectB", { after: recalcAll });
         updateTotal();
         updateProgress();
@@ -2771,9 +2881,127 @@
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
+    <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
+    <script type="application/json" id="pk-research">
+      {
+        "icon": "🔎",
+        "title": "Research Lab — Plan Like a Real Designer",
+        "intro": "Real landscape architects and muralists never guess — they look up the standards, then run the numbers. Use these trusted sites to gather facts, then bring those real numbers into your project.",
+        "brief": {
+          "theme": "field",
+          "title": "🌱 Your Research Mission",
+          "hook": "Before you finalize your garden and mural, gather <b>real facts</b> the pros use. Easy to find, quick to record — then your math is built on real data.",
+          "steps": [
+            "Open a link below (it opens in a new tab, so you keep your project).",
+            "Find the fact and type it into Field Notes.",
+            "Use your real numbers in the math problems.",
+            "Check off each box in the Investigation Checklist."
+          ]
+        },
+        "fieldNotes": {
+          "title": "Field Notes — Record What You Find",
+          "intro": "Jot the exact number or formula you find. You'll reuse these in the math below.",
+          "fields": [
+            {
+              "id": "fn-tri",
+              "label": "Area formula for a triangle",
+              "source": "Math is Fun",
+              "placeholder": "Area = ½ × b × h",
+              "hint": "Look for the formula in the colored box."
+            },
+            {
+              "id": "fn-trap",
+              "label": "Area formula for a trapezoid",
+              "source": "Math is Fun",
+              "placeholder": "Area = ½ × (a + b) × h",
+              "hint": "a and b are the two parallel sides (bases)."
+            },
+            {
+              "id": "fn-bedw",
+              "label": "Standard width of a raised garden bed (feet)",
+              "source": "Old Farmer's Almanac",
+              "placeholder": "about 4 ft",
+              "hint": "4 ft lets you reach the middle from both sides."
+            },
+            {
+              "id": "fn-bedl",
+              "label": "A common length of a raised garden bed (feet)",
+              "source": "Old Farmer's Almanac",
+              "placeholder": "6–8 ft",
+              "hint": "Pick one real length they list."
+            },
+            {
+              "id": "fn-paint",
+              "label": "Square feet one gallon of paint covers",
+              "source": "Any paint can label or store site",
+              "placeholder": "about 350–400 sq ft",
+              "hint": "Most wall paint covers ~350–400 sq ft per gallon."
+            }
+          ]
+        },
+        "mathTasks": [
+          {
+            "title": "1 · Garden bed area",
+            "prompt": "Use the bed width and length from Field Notes 3 and 4. Find the rectangular bed area with <b>A = length × width</b>.",
+            "level2": "Your real plot is a trapezoid. Using your two bases and height, find its area with A = ½ × (b₁ + b₂) × h."
+          },
+          {
+            "title": "2 · Mural paint needed",
+            "prompt": "Your mural panel is a triangle with the base and height from your plan. Find its area with <b>A = ½ × b × h</b>. Then, using Field Note 5, decide how many gallons of paint you need (round up to a whole gallon).",
+            "level2": "If one gallon costs $32, what is the total paint cost? Show the multiplication."
+          },
+          {
+            "title": "3 · Compare to the standard",
+            "prompt": "Is your community garden plot <b>bigger or smaller</b> than the standard raised bed from Field Notes 3 and 4? By how many square feet? Show the subtraction.",
+            "level2": "Express the difference as a fraction of the standard bed area."
+          }
+        ],
+        "investigationChecklist": [
+          "I found and recorded the triangle area formula.",
+          "I found and recorded the trapezoid area formula.",
+          "I looked up a real raised-bed size.",
+          "I found how many square feet one gallon of paint covers.",
+          "I used my real numbers (not made-up ones) in at least one math problem.",
+          "I compared my plot to the standard bed."
+        ],
+        "links": [
+          {
+            "icon": "🔺",
+            "name": "Math is Fun — Triangle (area)",
+            "url": "https://www.mathsisfun.com/triangle.html",
+            "find": "The triangle area formula with an example.",
+            "look": "Area = ½ × base × height"
+          },
+          {
+            "icon": "⏢",
+            "name": "Math is Fun — Trapezoid (area)",
+            "url": "https://www.mathsisfun.com/geometry/trapezoid.html",
+            "find": "The trapezoid area formula with the two bases.",
+            "look": "Area = ½ × (a + b) × height"
+          },
+          {
+            "icon": "▱",
+            "name": "Math is Fun — Parallelogram (area)",
+            "url": "https://www.mathsisfun.com/geometry/parallelogram.html",
+            "find": "How a parallelogram's area relates to a rectangle.",
+            "look": "Area = base × height"
+          },
+          {
+            "icon": "🌱",
+            "name": "Old Farmer's Almanac — Raised bed sizes",
+            "url": "https://www.almanac.com/vegetable-gardening-for-beginners",
+            "find": "Recommended widths and lengths for garden beds.",
+            "look": "the 4-foot width and common bed lengths"
+          }
+        ],
+        "note": "These sites were picked for class. They open in a new tab so you keep your project. If a page asks you to sign in or buy something, just close it and come back."
+      }
+    </script>
     <script src="/shared/projects/projects-tabs.js" defer></script>
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <script src="/shared/projects/projects-interactive.js" defer></script>
+    <script src="/shared/projects/manip-area-tiler.js" defer></script>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+  </body>
 </html>

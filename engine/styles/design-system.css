@@ -1293,8 +1293,12 @@ body.obj-popup-open {
   outline-offset: 2px;
 }
 
-/* ── Responsive (Chromebook min 1024px) ── */
-@media (max-width: 1100px) {
+/* ── Responsive (Chromebook min 1024px) ──
+   Narrow the sidebar for tablet / small-laptop ONLY. This MUST be a min-width
+   range: without the 769px floor it also matches phone widths and, because it
+   is declared after the max-width:768px stack rule above, would override it —
+   pinning a 220px sidebar on phones and squeezing content to a sliver. */
+@media (min-width: 769px) and (max-width: 1100px) {
   .app {
     grid-template-columns: 220px minmax(0, 1fr);
   }
@@ -1561,6 +1565,34 @@ body.obj-popup-open {
   -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--line);
   box-shadow: 0 1px 4px rgba(18, 53, 91, 0.06);
+}
+
+/* Ready-to-export / required-section readiness chip (sits before the buttons) */
+.export-readiness {
+  margin-right: auto;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  line-height: 1.3;
+}
+.export-readiness:empty {
+  display: none;
+}
+.export-readiness.is-ready {
+  color: var(--success, #0f7c4a);
+  background: var(--success-bg, #e6f7ef);
+}
+.export-readiness.is-incomplete {
+  color: var(--hint, #875f00);
+  background: var(--hint-bg, #fef7e0);
+}
+@media (max-width: 768px) {
+  .export-readiness {
+    flex: 1 1 100%;
+    margin-right: 0;
+    order: -1;
+  }
 }
 
 .export-btn {
@@ -3444,6 +3476,161 @@ body:has(.identity-screen) .export-toolbar {
   color: var(--teal);
 }
 
+/* ── Exit-to-Student pill (shown ONLY while in Teacher Mode) ──
+   Students never see this; entry to Teacher Mode is the password-gated
+   button on the lesson login screen (.identity-teacher). */
+.mode-toggle-pill {
+  position: fixed;
+  bottom: 14px;
+  left: 14px;
+  z-index: 9600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--teal, #128a87);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.82rem;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(18, 53, 91, 0.3);
+}
+.mode-toggle-pill:hover {
+  filter: brightness(1.08);
+}
+@media print {
+  .mode-toggle-pill {
+    display: none;
+  }
+}
+
+/* Teacher-only "Skip" on interactive items (advance without doing the work). */
+.teacher-skip {
+  display: inline-flex;
+  margin-top: var(--sp-3, 12px);
+  border: 1px dashed var(--teal, #128a87);
+  color: var(--teal, #128a87);
+  background: rgba(18, 138, 135, 0.06);
+}
+.teacher-pager {
+  margin-top: var(--sp-2, 8px);
+}
+
+/* ── Password-gated Teacher entry on the lesson login screen ── */
+.identity-teacher {
+  margin-top: var(--sp-3, 12px);
+  text-align: center;
+}
+.identity-teacher-btn {
+  background: none;
+  border: 1px solid var(--navy, #12355b);
+  color: var(--navy, #12355b);
+  font-weight: 700;
+  font-size: 0.82rem;
+  padding: 7px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.identity-teacher-btn:hover {
+  background: rgba(18, 53, 91, 0.06);
+}
+.identity-teacher-unlock {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.identity-teacher-pin {
+  flex: 1 1 160px;
+  max-width: 220px;
+  padding: 8px 12px;
+  border: 1px solid var(--gray-300, #cbd5e1);
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+.identity-teacher-go {
+  background: var(--navy, #12355b);
+  color: #fff;
+  border: 0;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.identity-teacher-go:hover {
+  filter: brightness(1.08);
+}
+.identity-teacher-err {
+  flex-basis: 100%;
+  margin: 2px 0 0;
+  color: var(--amber, #c85a3a);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.identity-teacher.is-on {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.identity-teacher-label {
+  font-weight: 800;
+  font-size: 0.82rem;
+  color: var(--teal, #128a87);
+}
+.identity-teacher-exit {
+  background: none;
+  border: 1px solid var(--gray-300, #cbd5e1);
+  color: var(--navy, #12355b);
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 6px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.identity-teacher-exit:hover {
+  background: rgba(18, 53, 91, 0.06);
+}
+
+/* ── Teacher projection tools ── */
+.teacher-proj-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-2);
+}
+.teacher-timer {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.teacher-timer-display {
+  font-family: var(--font-display, system-ui);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  font-size: 1.1rem;
+  color: var(--navy);
+  min-width: 3.6em;
+}
+/* Hide the answer key on screen when projecting (toggle). */
+.teacher-panel.answers-hidden [data-bind="answer-key"] {
+  display: none;
+}
+/* Projector view — enlarge the lesson body for whole-class display. Uses zoom
+   (well-supported on the Chromebooks/Chrome used in class) so layout reflows. */
+html.projector .main {
+  zoom: 1.22;
+}
+@media print {
+  html.projector .main {
+    zoom: 1;
+  }
+}
+
 .teacher-pacing-list {
   list-style: none;
   margin: 0;
@@ -3784,6 +3971,102 @@ body:has(.identity-screen) .export-toolbar {
   flex-direction: column;
   gap: var(--sp-2);
 }
+/* Minimum-word goal counter (writing scaffold) */
+.syw-wordcount {
+  align-self: flex-end;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+.syw-wordcount.is-ready {
+  color: var(--success, #0f7c4a);
+}
+.syw-wordcount.is-ready::before {
+  content: "✓ ";
+}
+
+/* ── "I'm stuck" student support bar (engine/core/stuck-support.js) ────────── */
+.stuck-support {
+  margin: var(--sp-4) 0;
+  border: 1px dashed var(--teal);
+  border-radius: var(--radius-md, 12px);
+  background: var(--teal-light, #dff2ee);
+  overflow: hidden;
+}
+.stuck-toggle {
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  padding: var(--sp-3) var(--sp-4);
+  font-family: var(--font-display, system-ui);
+  font-weight: 800;
+  font-size: 0.98rem;
+  color: var(--navy);
+  cursor: pointer;
+}
+.stuck-body {
+  padding: 0 var(--sp-4) var(--sp-4);
+}
+.stuck-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+}
+.stuck-chip {
+  border: 1.5px solid var(--teal);
+  background: #fff;
+  color: var(--navy);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  min-height: 40px;
+}
+.stuck-chip:hover {
+  background: var(--teal-light);
+}
+.stuck-chip.is-active {
+  background: var(--teal);
+  color: #fff;
+}
+.stuck-panel {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm, 8px);
+  padding: var(--sp-4);
+  line-height: 1.6;
+}
+.stuck-panel p {
+  margin: 0 0 var(--sp-2);
+}
+.stuck-vocab,
+.stuck-frames {
+  margin: 0;
+  padding-left: 1.1em;
+  line-height: 1.8;
+}
+.stuck-es {
+  color: var(--muted);
+  font-style: italic;
+}
+.stuck-blank {
+  display: inline-block;
+  min-width: 90px;
+  border-bottom: 2px solid var(--navy);
+  margin: 0 4px;
+}
+.stuck-frame {
+  font-weight: 600;
+  color: var(--navy);
+}
+@media (max-width: 768px) {
+  .stuck-chip {
+    flex: 1 1 calc(50% - var(--sp-2));
+  }
+}
 .syw-label {
   font-family: var(--font-display);
   font-weight: 800;
@@ -3926,6 +4209,7 @@ textarea.syw-input {
 }
 .sp-stem {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--sp-2);
   align-items: baseline;
   font-size: 1.1rem;
@@ -3933,6 +4217,13 @@ textarea.syw-input {
   font-weight: 600;
   color: var(--navy, #264653);
   margin: 0 0 var(--sp-3);
+}
+/* The annotation toolbar (annotate.js) is injected as a child of this flex
+   row. Force it onto its own full-width line ABOVE the number + question so it
+   never wedges between them and pushes the problem text off to the side. */
+.sp-stem .annot-bar {
+  flex: 0 0 100%;
+  order: -1;
 }
 .sp-num {
   flex: 0 0 auto;

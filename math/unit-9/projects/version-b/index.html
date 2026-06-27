@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Phone Plan Showdown — Unit 9 Culminating Project</title>
     <meta
       name="description"
@@ -500,11 +500,13 @@
     <!-- nsr-injected:end -->
     <link rel="stylesheet" href="/shared/projects/projects-premium.css" />
     <link rel="stylesheet" href="/shared/projects/projects-tabs.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-tplus.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-interactive.css" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
-  <body class="pk">
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
+  <body class="pk" data-pk-theme="u9">
     <header class="phero">
       <div class="deco">📱</div>
       <h1>Phone Plan Showdown</h1>
@@ -525,6 +527,15 @@
           <button data-level-btn="level-1" type="button">🟢 Level 1</button>
           <button data-level-btn="level-2" type="button">🔵 Level 2</button>
         </span>
+        <button
+          class="pk-tts-toggle"
+          data-tts-toggle
+          type="button"
+          aria-pressed="false"
+          title="Read text aloud"
+        >
+          🔊 Read aloud
+        </button>
         <button onclick="PK.save('u9ProjectB')">💾 Save</button>
         <button
           onclick="PK.load('u9ProjectB', { show: true, after: recalcAll })"
@@ -578,7 +589,7 @@
         <div class="pk-vocab">
           <div class="pk-term">
             <span class="pk-icon">📅</span><b>Independent variable (x)</b>
-            <p>The input you control. Here it is the number of months.</p>
+            <p>The number you pick. Here it is the number of months.</p>
             <p class="pk-es">
               Variable independiente (x): la entrada que controlas. Aquí es el
               número de meses.
@@ -586,7 +597,7 @@
           </div>
           <div class="pk-term">
             <span class="pk-icon">💵</span><b>Dependent variable (y)</b>
-            <p>The output that depends on x. Here it is total cost.</p>
+            <p>The number you get from x. Here it is total cost.</p>
             <p class="pk-es">
               Variable dependiente (y): el resultado que depende de x. Aquí es
               el costo total.
@@ -595,7 +606,7 @@
           <div class="pk-term">
             <span class="pk-icon">⚡</span
             ><b>Constant of proportionality (k)</b>
-            <p>The fixed number you multiply x by. The monthly price.</p>
+            <p>The number you multiply x by every time. The monthly price.</p>
             <p class="pk-es">
               Constante de proporcionalidad (k): el número fijo por el que
               multiplicas x. El precio mensual.
@@ -603,7 +614,7 @@
           </div>
           <div class="pk-term">
             <span class="pk-icon">📐</span><b>Rate of change</b>
-            <p>How much y goes up each time x goes up by 1. It equals k.</p>
+            <p>How much y goes up when x goes up by 1. It equals k.</p>
             <p class="pk-es">
               Tasa de cambio: cuánto sube y cada vez que x sube en 1. Es igual a
               k.
@@ -611,7 +622,9 @@
           </div>
           <div class="pk-term">
             <span class="pk-icon">🎯</span><b>Origin (0, 0)</b>
-            <p>Where a proportional line starts. At month 0, cost = $0.</p>
+            <p>
+              The point (0, 0) where the line starts. At month 0, cost = $0.
+            </p>
             <p class="pk-es">
               Origen (0, 0): donde empieza una recta proporcional. En el mes 0,
               costo = $0.
@@ -621,14 +634,52 @@
         <div class="grid2" style="margin-top: 18px">
           <div class="pk-callout">
             <h3>Formula Bank</h3>
-            <p><b>The equation:</b> y = kx</p>
-            <p><b>Find y when you know x:</b> y = k × x</p>
-            <p><b>Find x when you know y:</b> x = y ÷ k</p>
-            <p><b>Steepness of the line:</b> = k (bigger k → steeper)</p>
-            <p class="pk-lvl2">
-              <b>Level 2 — with an activation fee:</b> y = kx + b (no longer
-              proportional)
-            </p>
+            <ul class="pk-formula">
+              <li>
+                <span class="pk-f-name">y = kx (the rule)</span>
+                <span class="pk-f-mean"
+                  >Multiply the monthly price <b>k</b> by the number of months
+                  <b>x</b> to get the total cost <b>y</b>.</span
+                >
+                <span class="pk-eg"
+                  >Example: k = $30, 4 months → 30 × 4 = $120</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Find the cost after some months</span>
+                <span class="pk-f-mean"
+                  >Put the number of months in for x, then multiply by k.</span
+                >
+                <span class="pk-eg"
+                  >Example: $30 × 6 = $180 after 6 months</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Find the months from a budget</span>
+                <span class="pk-f-mean"
+                  >Divide the total budget y by the monthly price k: x = y ÷
+                  k.</span
+                >
+                <span class="pk-eg">Example: $240 ÷ $30 = 8 months</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Monthly price k (steepness)</span>
+                <span class="pk-f-mean"
+                  >The cost added each month: k = y ÷ x. A bigger k makes a
+                  steeper, pricier line.</span
+                >
+                <span class="pk-eg">Example: $180 ÷ 6 = $30 per month</span>
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">With an activation fee (Level 2)</span>
+                <span class="pk-f-mean"
+                  >If the plan charges a one-time fee b at the start, the rule
+                  becomes y = kx + b. The line no longer starts at (0, 0), so it
+                  is not proportional.</span
+                >
+                <span class="pk-eg">Example: y = 30x + 25</span>
+              </li>
+            </ul>
           </div>
           <div class="pk-callout">
             <h3>Sentence Frames</h3>
@@ -655,7 +706,7 @@
       </section>
 
       <!-- ===================== PART 1 — SELF ===================== -->
-      
+
       <!-- ===================== PROJECT SETUP ===================== -->
       <section class="phase" id="phase-setup" data-phase>
         <div class="phase-head">
@@ -665,38 +716,133 @@
             <h2>Model YOUR Two Plans</h2>
           </div>
         </div>
-        
+
         <div class="grid2">
           <div>
-            <p style="font-size: 15px; color: var(--muted); line-height: 1.6; margin-bottom: 20px;">
-              Welcome! Read the scenario below and select your level to begin your design plan.
+            <p
+              style="
+                font-size: 15px;
+                color: var(--muted);
+                line-height: 1.6;
+                margin-bottom: 20px;
+              "
+            >
+              Welcome! Read the scenario below and select your level to begin
+              your design plan.
             </p>
-            <div style="margin-top: 16px;">
-              
-    <svg width="100%" height="220" viewBox="0 0 500 220" style="background:white; border-radius:12px; border: 1px solid #e2e8f0; max-width: 480px; margin: 0 auto; display: block;" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="setup-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#ffffff" />
-          <stop offset="100%" stop-color="#f8fafc" />
-        </linearGradient>
-      </defs>
-      
-      <rect x="20" y="20" width="460" height="200" rx="15" fill="url(#setup-grad)" stroke="#d4952a" stroke-width="2"/>
-      <text x="250" y="60" text-anchor="middle" font-size="20" font-weight="bold" fill="#0f2b3c">COORDINATE PLANE MAP</text>
-      <line x1="100" y1="130" x2="400" y2="130" stroke="#1a2633" stroke-width="2"/>
-      <line x1="250" y1="80" x2="250" y2="180" stroke="#1a2633" stroke-width="2"/>
-      <circle cx="320" cy="100" r="6" fill="#d4952a"/>
-    
-    </svg>
-  
+            <div style="margin-top: 16px">
+              <svg
+                width="100%"
+                height="220"
+                viewBox="0 0 500 220"
+                style="
+                  background: white;
+                  border-radius: 12px;
+                  border: 1px solid #e2e8f0;
+                  max-width: 480px;
+                  margin: 0 auto;
+                  display: block;
+                "
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <defs>
+                  <linearGradient
+                    id="setup-grad"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop offset="0%" stop-color="#ffffff" />
+                    <stop offset="100%" stop-color="#f8fafc" />
+                  </linearGradient>
+                </defs>
+
+                <rect
+                  x="20"
+                  y="20"
+                  width="460"
+                  height="200"
+                  rx="15"
+                  fill="url(#setup-grad)"
+                  stroke="#d4952a"
+                  stroke-width="2"
+                />
+                <text
+                  x="250"
+                  y="60"
+                  text-anchor="middle"
+                  font-size="20"
+                  font-weight="bold"
+                  fill="#0f2b3c"
+                >
+                  COORDINATE PLANE MAP
+                </text>
+                <line
+                  x1="100"
+                  y1="130"
+                  x2="400"
+                  y2="130"
+                  stroke="#1a2633"
+                  stroke-width="2"
+                />
+                <line
+                  x1="250"
+                  y1="80"
+                  x2="250"
+                  y2="180"
+                  stroke="#1a2633"
+                  stroke-width="2"
+                />
+                <circle cx="320" cy="100" r="6" fill="#d4952a" />
+              </svg>
             </div>
           </div>
-          
-          <div style="background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 20px; box-shadow: var(--shadow);">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px;">
+
+          <div
+            style="
+              background: var(--bg);
+              border: 1px solid var(--line);
+              border-radius: 12px;
+              padding: 20px;
+              box-shadow: var(--shadow);
+            "
+          >
+            <h3
+              style="
+                margin-top: 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+              "
+            >
               <span>📋</span> Scenario &amp; Level Options
             </h3>
-            <h2>Model YOUR Two Plans</h2>
+            <p style="font-size: 14px; line-height: 1.6; margin: 0 0 10px">
+              You are a <strong>smart-shopping budget analyst</strong>. Compare
+              two real phone plans by writing an equation for each monthly cost,
+              building a table, and graphing both lines to see which plan saves
+              your family money over time.
+            </p>
+            <ul
+              style="
+                font-size: 14px;
+                line-height: 1.6;
+                margin: 0;
+                padding-left: 18px;
+              "
+            >
+              <li>
+                <strong>Level 1 (support):</strong> use the example prices
+                ($40/month vs. $30/month) and read the total cost for 6 months
+                from the table.
+              </li>
+              <li>
+                <strong>Level 2 (challenge):</strong> enter your family's real
+                price and a competitor's, then use the equations to find the
+                month where the cheaper plan pulls ahead.
+              </li>
+            </ul>
           </div>
         </div>
         <p>
@@ -705,58 +851,66 @@
           B. Not sure yet? Click <em>Use example numbers</em>, then change them
           to your real prices.
         </p>
-        
 
         <div class="grid2">
           <div>
             <label class="fld" for="planAname"
               >Plan A name (your family's carrier)</label
             >
-            <input
-              type="text"
-              id="planAname"
-              data-save
-              placeholder="example: our T-Mobile plan"
-            />
+            <input type="text" id="planAname" data-save placeholder="" />
           </div>
-          
-        <!-- ===================== INLINE RESEARCH LAB ===================== -->
-        <div class="pk-research-inline-card">
-          <div class="pk-research-inline-header">
-            <span class="pk-research-badge">🔍 Research Required</span>
-            <a href="https://en.wikipedia.org/wiki/Mobile_phone_operator#Plan_types" target="_blank" class="pk-research-inline-link">🔗 Wikipedia: Mobile Network Plan Pricing ↗</a>
-          </div>
-          <p class="pk-research-inline-instructions">Open the database or look up standard prepaid rates. Find the average monthly cost of a basic talk & text data plan (often around $30). Enter the monthly plan cost below:</p>
-          <div class="grid2">
-            <div>
-              <label class="fld" for="worldCountry">Prepaid Carrier Researched</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. Mint Mobile" oninput="recalcAll()">
+
+          <!-- ===================== INLINE RESEARCH LAB ===================== -->
+          <div class="pk-research-inline-card">
+            <div class="pk-research-inline-header">
+              <span class="pk-research-badge">🔍 Research Required</span>
+              <a
+                href="https://en.wikipedia.org/wiki/Mobile_phone_operator#Plan_types"
+                target="_blank"
+                class="pk-research-inline-link"
+                >🔗 Wikipedia: Mobile Network Plan Pricing ↗</a
+              >
             </div>
-            <div>
-              <label class="fld" for="k-plan">Prepaid Plan Monthly Fee ($)</label>
-              <input
-              type="number"
-              id="k-plan"
-              data-save
-              min="1"
-              max="500"
-              placeholder="example: 25"
-              oninput="calcEquation()"
-            />
+            <p class="pk-research-inline-instructions">
+              Open the database or look up standard prepaid rates. Find the
+              average monthly cost of a basic talk & text data plan (often
+              around $30). Enter the monthly plan cost below:
+            </p>
+            <div class="grid2">
+              <div>
+                <label class="fld" for="worldCountry"
+                  >Prepaid Carrier Researched</label
+                >
+                <input
+                  type="text"
+                  id="worldCountry"
+                  data-save
+                  placeholder=""
+                  oninput="recalcAll()"
+                />
+              </div>
+              <div>
+                <label class="fld" for="k-plan"
+                  >Prepaid Plan Monthly Fee ($)</label
+                >
+                <input
+                  type="number"
+                  id="k-plan"
+                  data-save
+                  min="1"
+                  max="500"
+                  placeholder=""
+                  oninput="calcEquation()"
+                />
+              </div>
             </div>
           </div>
-        </div>
-    
+
           <div>
             <label class="fld" for="planBname"
               >Plan B name (real competitor)</label
             >
-            <input
-              type="text"
-              id="planBname"
-              data-save
-              placeholder="example: Mint Mobile"
-            />
+            <input type="text" id="planBname" data-save placeholder="" />
           </div>
           <div>
             <label class="fld" for="k-plan-b"
@@ -768,7 +922,7 @@
               data-save
               min="1"
               max="500"
-              placeholder="example: 18"
+              placeholder=""
               oninput="calcEquation()"
             />
           </div>
@@ -776,28 +930,42 @@
         <label class="fld" for="kwhy"
           >Where did these prices come from? Name your real sources.</label
         >
-        <textarea
-          id="kwhy"
-          data-save
-          placeholder="Plan A is our family's actual bill of $___ a month. I looked up Plan B at ___ (website/store) and it costs $___ a month."
-        ></textarea>
+        <textarea id="kwhy" data-save placeholder=""></textarea>
         <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
           Level 1 tip: round to friendly prices like $20 and $15 to keep the
           table easy.
         </p>
 
         <!-- 1a equation -->
-            
-            <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line);">
-              <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px;">
-                You can type your own numbers as you go, or click below to start with our example numbers:
-              </p>
-              <button class="btn ghost" type="button" onclick="useExamples()" style="width: 100%; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                ✨ Use Example Numbers
-              </button>
-            </div>
+
+        <div
+          style="
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--line);
+          "
+        >
+          <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px">
+            You can type your own numbers as you go, or click below to start
+            with our example numbers:
+          </p>
+          <button
+            class="btn ghost"
+            type="button"
+            onclick="useExamples()"
+            style="
+              width: 100%;
+              font-weight: bold;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 8px;
+            "
+          >
+            ✨ Use Example Numbers
+          </button>
+        </div>
       </section>
-  
 
       <!-- ===================== PART 1A — SELF ===================== -->
       <section class="phase" id="phase-1a" data-phase>
@@ -808,62 +976,152 @@
             <h2>✍️ Write your equations (y = kx)</h2>
           </div>
         </div>
-        
+
         <div class="grid2">
           <div>
-            
-    <div class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
-      <svg id="phase-svg-1a" width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px" xmlns="http://www.w3.org/2000/svg"></svg>
-    </div>
-  
-            <button class="btn" type="button" onclick="calcEquation()">
-          Write both equations
-        </button>
-        <div class="readout" id="eq-out"></div>
-        <details class="hintbox">
-          <summary>Need a hint?</summary>
-          <p>
-            The independent variable x = months. The dependent variable y =
-            total cost in dollars. If the monthly charge is constant, that
-            amount is k. y = kx means total cost = monthly rate × number of
-            months. At month 0, you have paid $0 (the origin).
-          </p>
-        </details>
+            <div
+              class="pk-math-scaffold-card no-print"
+              style="
+                margin: 20px 0;
+                padding: 12px;
+                background: #fff;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+                max-width: 480px;
+                margin-left: auto;
+                margin-right: auto;
+              "
+            >
+              <svg
+                id="phase-svg-1a"
+                width="100%"
+                height="200"
+                viewBox="0 0 500 200"
+                style="background: #fff; border-radius: 8px"
+                xmlns="http://www.w3.org/2000/svg"
+              ></svg>
+            </div>
 
-        <!-- 1b table -->
+            <button class="btn" type="button" onclick="calcEquation()">
+              Write both equations
+            </button>
+            <div class="readout" id="eq-out"></div>
+            <div
+              class="pki-manip"
+              data-manip="line-grapher"
+              data-x-name="months"
+              data-y-name="total cost ($)"
+              data-k-name="dollars per month"
+              data-y-prefix="$"
+            ></div>
+            <details class="hintbox">
+              <summary>Need a hint?</summary>
+              <p>
+                The independent variable x = months. The dependent variable y =
+                total cost in dollars. If the monthly charge is constant, that
+                amount is k. y = kx means total cost = monthly rate × number of
+                months. At month 0, you have paid $0 (the origin).
+              </p>
+            </details>
+
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: your k is just the price you pay for ONE month. Write
+              that dollar amount, then your equation is y = (that price) × x.
+            </p>
+            <div class="pk-lvl2">
+              <div class="task">
+                <strong>Level 2 extension:</strong> Suppose Plan A also charges
+                a $25 activation fee at the start. Write the new rule y = kx +
+                25 and explain why it is <em>not</em> proportional anymore —
+                what happens at month 0?
+              </div>
+            </div>
+
+            <!-- 1b table -->
           </div>
-          
-          <div style="background: var(--bg); border: 2.5px solid var(--line); border-radius: 18px; padding: 20px; box-shadow: var(--shadow); height: fit-content;" class="pk-no-print">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px; color: var(--navy); font-size: 16px;">
+
+          <div
+            style="
+              background: var(--bg);
+              border: 2.5px solid var(--line);
+              border-radius: 18px;
+              padding: 20px;
+              box-shadow: var(--shadow);
+              height: fit-content;
+            "
+            class="pk-no-print"
+          >
+            <h3
+              style="
+                margin-top: 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: var(--navy);
+                font-size: 16px;
+              "
+            >
               <span>💡</span> Guided Steps &amp; Help
             </h3>
-            
-      <p style="font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-bottom: 12px;">
-        <strong>Plotting Coordinates & Finding Grid Distance:</strong>
-      </p>
-      <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>Ordered pairs are written as <b>$(x, y)$</b>:
-          <ul>
-            <li>$x$-coordinate: Move horizontally (right if positive, left if negative).</li>
-            <li>$y$-coordinate: Move vertically (up if positive, down if negative).</li>
-          </ul>
-        </li>
-        <li>Identify which <b>Quadrant</b> the point lies in (I, II, III, or IV).</li>
-        <li><b>Finding distance between points</b> in the same line:
-          <ul>
-            <li>If the coordinates have the same sign, <b>subtract</b> their absolute values.</li>
-            <li>If signs are opposite (across an axis), <b>add</b> their absolute values.</li>
-          </ul>
-        </li>
-      </ol>
-      <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
-        💡 <b>Distance Check:</b> Distance between $(2, 3)$ and $(2, -4)$ is $|3| + |-4| = 3 + 4 = \mathbf{7}$ units.
-      </div>
-    
+
+            <p
+              style="
+                font-size: 13.5px;
+                line-height: 1.5;
+                color: var(--muted);
+                margin-bottom: 12px;
+              "
+            >
+              <strong>Using y = kx (Equation, Table, Graph):</strong>
+            </p>
+            <ol
+              style="
+                margin-left: 18px;
+                font-size: 13px;
+                line-height: 1.5;
+                display: grid;
+                gap: 8px;
+                color: var(--ink);
+              "
+            >
+              <li>
+                <b>Find the constant k</b> — the cost added for each
+                <b>1 month</b> of the plan (how much y changes for every 1 step
+                of x).
+              </li>
+              <li>
+                <b>Write the equation y = kx</b>, where <b>x</b> is the
+                independent variable (months) and <b>y</b> is the dependent
+                variable (total cost).
+              </li>
+              <li>
+                <b>Make a table</b>: pick x values (0, 1, 2, 5, 10…) and compute
+                <b>y = kx</b> for each one.
+              </li>
+              <li>
+                <b>Graph</b>: plot each <b>(x, y)</b> pair and draw one straight
+                line through the <b>origin (0, 0)</b>.
+              </li>
+              <li>
+                <b>Predict</b>: read a future total cost off the equation or the
+                line.
+              </li>
+            </ol>
+            <div
+              style="
+                margin-top: 14px;
+                padding: 10px;
+                background: var(--sky);
+                border-radius: 8px;
+                font-size: 12px;
+              "
+            >
+              💡 <b>Equation Check:</b> If a plan costs $35 per month, then y =
+              35x, so after 10 months y = 35 × 10 = $350 total.
+            </div>
           </div>
         </div>
       </section>
-    
 
       <!-- ===================== PART 1B — SELF ===================== -->
       <section class="phase" id="phase-1b" data-phase>
@@ -874,66 +1132,148 @@
             <h2>📊 Build a cost table (months 1–6)</h2>
           </div>
         </div>
-        
+
         <div class="grid2">
           <div>
-            
-    <div class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
-      <svg id="phase-svg-1b" width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px" xmlns="http://www/w3.org/2000/svg"></svg>
-    </div>
-  
-            <div class="task">
-          <strong>Remember:</strong> For y = kx, substitute each month number
-          for x and multiply. The total cost grows by k every month — that
-          constant increase is what makes it proportional.
-        </div>
-        <button class="btn alt" type="button" onclick="calcTable()">
-          Generate cost table
-        </button>
-        <div class="readout" id="table-out"></div>
-        <details class="hintbox">
-          <summary>Need a hint?</summary>
-          <p>
-            If Plan A k = 25: month 1 → 25 × 1 = $25; month 2 → 25 × 2 = $50;
-            and so on. Each row increases by $25 because k = 25. Each row is an
-            ordered pair (x, y) you can plot.
-          </p>
-        </details>
+            <div
+              class="pk-math-scaffold-card no-print"
+              style="
+                margin: 20px 0;
+                padding: 12px;
+                background: #fff;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+                max-width: 480px;
+                margin-left: auto;
+                margin-right: auto;
+              "
+            >
+              <svg
+                id="phase-svg-1b"
+                width="100%"
+                height="200"
+                viewBox="0 0 500 200"
+                style="background: #fff; border-radius: 8px"
+                xmlns="http://www/w3.org/2000/svg"
+              ></svg>
+            </div>
 
-        <!-- 1c two-line graph + readings -->
+            <div class="task">
+              <strong>Remember:</strong> For y = kx, substitute each month
+              number for x and multiply. The total cost grows by k every month —
+              that constant increase is what makes it proportional.
+            </div>
+            <button class="btn alt" type="button" onclick="calcTable()">
+              Generate cost table
+            </button>
+            <div class="readout" id="table-out"></div>
+            <details class="hintbox">
+              <summary>Need a hint?</summary>
+              <p>
+                If Plan A k = 25: month 1 → 25 × 1 = $25; month 2 → 25 × 2 =
+                $50; and so on. Each row increases by $25 because k = 25. Each
+                row is an ordered pair (x, y) you can plot.
+              </p>
+            </details>
+
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: build your cost table one row at a time. Start at x =
+              0 (always $0), then add your monthly price k for each new month —
+              the same as multiplying k × x.
+            </p>
+            <div class="pk-lvl2">
+              <div class="task">
+                <strong>Level 2 extension:</strong> Pick two rows, like (2, y₂)
+                and (6, y₆). Show that (y₆ − y₂) ÷ (6 − 2) equals your monthly
+                price k. Why does this prove the cost grows at a constant rate?
+              </div>
+            </div>
+
+            <!-- 1c two-line graph + readings -->
           </div>
-          
-          <div style="background: var(--bg); border: 2.5px solid var(--line); border-radius: 18px; padding: 20px; box-shadow: var(--shadow); height: fit-content;" class="pk-no-print">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px; color: var(--navy); font-size: 16px;">
+
+          <div
+            style="
+              background: var(--bg);
+              border: 2.5px solid var(--line);
+              border-radius: 18px;
+              padding: 20px;
+              box-shadow: var(--shadow);
+              height: fit-content;
+            "
+            class="pk-no-print"
+          >
+            <h3
+              style="
+                margin-top: 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: var(--navy);
+                font-size: 16px;
+              "
+            >
               <span>💡</span> Guided Steps &amp; Help
             </h3>
-            
-      <p style="font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-bottom: 12px;">
-        <strong>Plotting Coordinates & Finding Grid Distance:</strong>
-      </p>
-      <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>Ordered pairs are written as <b>$(x, y)$</b>:
-          <ul>
-            <li>$x$-coordinate: Move horizontally (right if positive, left if negative).</li>
-            <li>$y$-coordinate: Move vertically (up if positive, down if negative).</li>
-          </ul>
-        </li>
-        <li>Identify which <b>Quadrant</b> the point lies in (I, II, III, or IV).</li>
-        <li><b>Finding distance between points</b> in the same line:
-          <ul>
-            <li>If the coordinates have the same sign, <b>subtract</b> their absolute values.</li>
-            <li>If signs are opposite (across an axis), <b>add</b> their absolute values.</li>
-          </ul>
-        </li>
-      </ol>
-      <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
-        💡 <b>Distance Check:</b> Distance between $(2, 3)$ and $(2, -4)$ is $|3| + |-4| = 3 + 4 = \mathbf{7}$ units.
-      </div>
-    
+
+            <p
+              style="
+                font-size: 13.5px;
+                line-height: 1.5;
+                color: var(--muted);
+                margin-bottom: 12px;
+              "
+            >
+              <strong>Using y = kx (Equation, Table, Graph):</strong>
+            </p>
+            <ol
+              style="
+                margin-left: 18px;
+                font-size: 13px;
+                line-height: 1.5;
+                display: grid;
+                gap: 8px;
+                color: var(--ink);
+              "
+            >
+              <li>
+                <b>Find the constant k</b> — the cost added for each
+                <b>1 month</b> of the plan (how much y changes for every 1 step
+                of x).
+              </li>
+              <li>
+                <b>Write the equation y = kx</b>, where <b>x</b> is the
+                independent variable (months) and <b>y</b> is the dependent
+                variable (total cost).
+              </li>
+              <li>
+                <b>Make a table</b>: pick x values (0, 1, 2, 5, 10…) and compute
+                <b>y = kx</b> for each one.
+              </li>
+              <li>
+                <b>Graph</b>: plot each <b>(x, y)</b> pair and draw one straight
+                line through the <b>origin (0, 0)</b>.
+              </li>
+              <li>
+                <b>Predict</b>: read a future total cost off the equation or the
+                line.
+              </li>
+            </ol>
+            <div
+              style="
+                margin-top: 14px;
+                padding: 10px;
+                background: var(--sky);
+                border-radius: 8px;
+                font-size: 12px;
+              "
+            >
+              💡 <b>Equation Check:</b> If a plan costs $35 per month, then y =
+              35x, so after 10 months y = 35 × 10 = $350 total.
+            </div>
           </div>
         </div>
       </section>
-    
 
       <!-- ===================== PART 1C — SELF ===================== -->
       <section class="phase" id="phase-1c" data-phase>
@@ -944,99 +1284,205 @@
             <h2>📈 Graph both plans on one grid</h2>
           </div>
         </div>
-        
-        <div class="grid2">
-          <div>
-            
-    <div class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
-      <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px;" xmlns="http://www.w3.org/2000/svg">
-        
-      <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Math Diagram Guide</text>
-      <rect x="150" y="60" width="200" height="90" rx="10" fill="rgba(14,138,125,0.1)" stroke="#0e8a7d" stroke-width="1.5"/>
-      <text x="250" y="110" text-anchor="middle" font-size="11" font-weight="bold" fill="#0e8a7d">Interactive Calculation Visual</text>
-    
-      </svg>
-    </div>
-  
-            <p style="color: var(--muted)">
-          Find the total cost for either plan at a month you choose, and work
-          backwards to find how many months reach a target cost.
-        </p>
-        <div class="grid2">
-          <div>
-            <label class="fld" for="find-x"
-              >Find total cost at month (enter x)</label
-            >
-            <input
-              type="number"
-              id="find-x"
-              data-save
-              min="0"
-              placeholder="example: 8"
-              oninput="calcGraph()"
-            />
-          </div>
-          <div>
-            <label class="fld" for="find-y"
-              >Find the month when Plan A cost = $ (enter y)</label
-            >
-            <input
-              type="number"
-              id="find-y"
-              data-save
-              min="0"
-              placeholder="example: 200"
-              oninput="calcGraph()"
-            />
-          </div>
-        </div>
-        <button class="btn" type="button" onclick="calcGraph()">
-          Calculate &amp; show graph
-        </button>
-        <div class="readout" id="graph-out"></div>
-        <details class="hintbox">
-          <summary>Need a hint?</summary>
-          <p>
-            To find y: substitute x into y = kx and multiply. To find x: divide
-            y by k (x = y ÷ k). Both lines start at the origin (0, 0); the plan
-            with the bigger k (higher monthly price) is the steeper line.
-          </p>
-        </details>
 
-        <!-- 1d show-your-work grid -->
+        <div class="grid2">
+          <div>
+            <div
+              class="pk-math-scaffold-card no-print"
+              style="
+                margin: 20px 0;
+                padding: 12px;
+                background: #fff;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+                max-width: 480px;
+                margin-left: auto;
+                margin-right: auto;
+              "
+            >
+              <svg
+                width="100%"
+                height="200"
+                viewBox="0 0 500 200"
+                style="background: #fff; border-radius: 8px"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <text
+                  x="250"
+                  y="30"
+                  text-anchor="middle"
+                  font-size="14"
+                  font-weight="bold"
+                  fill="#0f2b3c"
+                >
+                  Math Diagram Guide
+                </text>
+                <rect
+                  x="150"
+                  y="60"
+                  width="200"
+                  height="90"
+                  rx="10"
+                  fill="rgba(14,138,125,0.1)"
+                  stroke="#0e8a7d"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="250"
+                  y="110"
+                  text-anchor="middle"
+                  font-size="11"
+                  font-weight="bold"
+                  fill="#0e8a7d"
+                >
+                  Interactive Calculation Visual
+                </text>
+              </svg>
+            </div>
+
+            <p style="color: var(--muted)">
+              Find the total cost for either plan at a month you choose, and
+              work backwards to find how many months reach a target cost.
+            </p>
+            <div class="grid2">
+              <div>
+                <label class="fld" for="find-x"
+                  >Find total cost at month (enter x)</label
+                >
+                <input
+                  type="number"
+                  id="find-x"
+                  data-save
+                  min="0"
+                  placeholder=""
+                  oninput="calcGraph()"
+                />
+              </div>
+              <div>
+                <label class="fld" for="find-y"
+                  >Find the month when Plan A cost = $ (enter y)</label
+                >
+                <input
+                  type="number"
+                  id="find-y"
+                  data-save
+                  min="0"
+                  placeholder=""
+                  oninput="calcGraph()"
+                />
+              </div>
+            </div>
+            <button class="btn" type="button" onclick="calcGraph()">
+              Calculate &amp; show graph
+            </button>
+            <div class="readout" id="graph-out"></div>
+            <details class="hintbox">
+              <summary>Need a hint?</summary>
+              <p>
+                To find y: substitute x into y = kx and multiply. To find x:
+                divide y by k (x = y ÷ k). Both lines start at the origin (0,
+                0); the plan with the bigger k (higher monthly price) is the
+                steeper line.
+              </p>
+            </details>
+
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: to find a total cost, multiply (y = k × x). To find
+              how many months your budget buys, divide (x = y ÷ k).
+            </p>
+            <div class="pk-lvl2">
+              <div class="task">
+                <strong>Level 2 extension:</strong> Both plan lines start at (0,
+                0), and the steeper line has the bigger k. Explain how the point
+                (1, k) on each line lets you compare the two plans at a glance.
+              </div>
+            </div>
+
+            <!-- 1d show-your-work grid -->
           </div>
-          
-          <div style="background: var(--bg); border: 2.5px solid var(--line); border-radius: 18px; padding: 20px; box-shadow: var(--shadow); height: fit-content;" class="pk-no-print">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px; color: var(--navy); font-size: 16px;">
+
+          <div
+            style="
+              background: var(--bg);
+              border: 2.5px solid var(--line);
+              border-radius: 18px;
+              padding: 20px;
+              box-shadow: var(--shadow);
+              height: fit-content;
+            "
+            class="pk-no-print"
+          >
+            <h3
+              style="
+                margin-top: 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: var(--navy);
+                font-size: 16px;
+              "
+            >
               <span>💡</span> Guided Steps &amp; Help
             </h3>
-            
-      <p style="font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-bottom: 12px;">
-        <strong>Plotting Coordinates & Finding Grid Distance:</strong>
-      </p>
-      <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>Ordered pairs are written as <b>$(x, y)$</b>:
-          <ul>
-            <li>$x$-coordinate: Move horizontally (right if positive, left if negative).</li>
-            <li>$y$-coordinate: Move vertically (up if positive, down if negative).</li>
-          </ul>
-        </li>
-        <li>Identify which <b>Quadrant</b> the point lies in (I, II, III, or IV).</li>
-        <li><b>Finding distance between points</b> in the same line:
-          <ul>
-            <li>If the coordinates have the same sign, <b>subtract</b> their absolute values.</li>
-            <li>If signs are opposite (across an axis), <b>add</b> their absolute values.</li>
-          </ul>
-        </li>
-      </ol>
-      <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
-        💡 <b>Distance Check:</b> Distance between $(2, 3)$ and $(2, -4)$ is $|3| + |-4| = 3 + 4 = \mathbf{7}$ units.
-      </div>
-    
+
+            <p
+              style="
+                font-size: 13.5px;
+                line-height: 1.5;
+                color: var(--muted);
+                margin-bottom: 12px;
+              "
+            >
+              <strong>Using y = kx (Equation, Table, Graph):</strong>
+            </p>
+            <ol
+              style="
+                margin-left: 18px;
+                font-size: 13px;
+                line-height: 1.5;
+                display: grid;
+                gap: 8px;
+                color: var(--ink);
+              "
+            >
+              <li>
+                <b>Find the constant k</b> — the cost added for each
+                <b>1 month</b> of the plan (how much y changes for every 1 step
+                of x).
+              </li>
+              <li>
+                <b>Write the equation y = kx</b>, where <b>x</b> is the
+                independent variable (months) and <b>y</b> is the dependent
+                variable (total cost).
+              </li>
+              <li>
+                <b>Make a table</b>: pick x values (0, 1, 2, 5, 10…) and compute
+                <b>y = kx</b> for each one.
+              </li>
+              <li>
+                <b>Graph</b>: plot each <b>(x, y)</b> pair and draw one straight
+                line through the <b>origin (0, 0)</b>.
+              </li>
+              <li>
+                <b>Predict</b>: read a future total cost off the equation or the
+                line.
+              </li>
+            </ol>
+            <div
+              style="
+                margin-top: 14px;
+                padding: 10px;
+                background: var(--sky);
+                border-radius: 8px;
+                font-size: 12px;
+              "
+            >
+              💡 <b>Equation Check:</b> If a plan costs $35 per month, then y =
+              35x, so after 10 months y = 35 × 10 = $350 total.
+            </div>
           </div>
         </div>
       </section>
-    
 
       <!-- ===================== PART 1D — SELF ===================== -->
       <section class="phase" id="phase-1d" data-phase>
@@ -1047,130 +1493,229 @@
             <h2>🧮 Show Your Work</h2>
           </div>
         </div>
-        
+
         <div class="grid2">
           <div>
-            
-    <div class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
-      <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px;" xmlns="http://www.w3.org/2000/svg">
-        
-      <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Math Diagram Guide</text>
-      <rect x="150" y="60" width="200" height="90" rx="10" fill="rgba(14,138,125,0.1)" stroke="#0e8a7d" stroke-width="1.5"/>
-      <text x="250" y="110" text-anchor="middle" font-size="11" font-weight="bold" fill="#0e8a7d">Interactive Calculation Visual</text>
-    
-      </svg>
-    </div>
-  
-            <p style="color: var(--muted)">
-          Use <em>your own</em> Plan A k. Each box is checked against your
-          equation.
-        </p>
-        <div class="showwork-grid">
-          <div class="showwork-cell">
-            <div class="q">1. Plan A cost when x = 3 &nbsp;(y = k × 3)</div>
-            <label class="fld" for="sw-y3">Total cost at month 3 ($)</label>
-            <input
-              type="number"
-              id="sw-y3"
-              data-save
-              placeholder="type y"
-              step="0.01"
-            />
-            <button class="btn alt" type="button" onclick="checkSwY3()">
-              Check
-            </button>
-            <div class="pk-fb" id="sw-y3Fb"></div>
-          </div>
-          <div class="showwork-cell">
-            <div class="q" id="sw-xq">
-              2. Find x when Plan A cost = (your target)
+            <div
+              class="pk-math-scaffold-card no-print"
+              style="
+                margin: 20px 0;
+                padding: 12px;
+                background: #fff;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+                max-width: 480px;
+                margin-left: auto;
+                margin-right: auto;
+              "
+            >
+              <svg
+                width="100%"
+                height="200"
+                viewBox="0 0 500 200"
+                style="background: #fff; border-radius: 8px"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <text
+                  x="250"
+                  y="30"
+                  text-anchor="middle"
+                  font-size="14"
+                  font-weight="bold"
+                  fill="#0f2b3c"
+                >
+                  Math Diagram Guide
+                </text>
+                <rect
+                  x="150"
+                  y="60"
+                  width="200"
+                  height="90"
+                  rx="10"
+                  fill="rgba(14,138,125,0.1)"
+                  stroke="#0e8a7d"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="250"
+                  y="110"
+                  text-anchor="middle"
+                  font-size="11"
+                  font-weight="bold"
+                  fill="#0e8a7d"
+                >
+                  Interactive Calculation Visual
+                </text>
+              </svg>
             </div>
-            <label class="fld" for="sw-target">Target cost (y, $)</label>
-            <input
-              type="number"
-              id="sw-target"
-              data-save
-              step="0.01"
-              placeholder="example: 150"
-              oninput="updateSwTargetLabel()"
-            />
-            <label class="fld" for="sw-x">Months to reach it (x = y ÷ k)</label>
-            <input
-              type="number"
-              id="sw-x"
-              data-save
-              placeholder="type x"
-              step="0.01"
-            />
-            <button class="btn alt" type="button" onclick="checkSwX()">
-              Check
-            </button>
-            <div class="pk-fb" id="sw-xFb"></div>
+
+            <p style="color: var(--muted)">
+              Use <em>your own</em> Plan A k. Each box is checked against your
+              equation.
+            </p>
+            <div class="showwork-grid">
+              <div class="showwork-cell">
+                <div class="q">1. Plan A cost when x = 3 &nbsp;(y = k × 3)</div>
+                <label class="fld" for="sw-y3">Total cost at month 3 ($)</label>
+                <input
+                  type="number"
+                  id="sw-y3"
+                  data-save
+                  placeholder=""
+                  step="0.01"
+                />
+                <button class="btn alt" type="button" onclick="checkSwY3()">
+                  Check
+                </button>
+                <div class="pk-fb" id="sw-y3Fb"></div>
+              </div>
+              <div class="showwork-cell">
+                <div class="q" id="sw-xq">
+                  2. Find x when Plan A cost = (your target)
+                </div>
+                <label class="fld" for="sw-target">Target cost (y, $)</label>
+                <input
+                  type="number"
+                  id="sw-target"
+                  data-save
+                  step="0.01"
+                  placeholder=""
+                  oninput="updateSwTargetLabel()"
+                />
+                <label class="fld" for="sw-x"
+                  >Months to reach it (x = y ÷ k)</label
+                >
+                <input
+                  type="number"
+                  id="sw-x"
+                  data-save
+                  placeholder=""
+                  step="0.01"
+                />
+                <button class="btn alt" type="button" onclick="checkSwX()">
+                  Check
+                </button>
+                <div class="pk-fb" id="sw-xFb"></div>
+              </div>
+              <div class="showwork-cell">
+                <div class="q">
+                  3. 12-month total for Plan A &nbsp;(y = k × 12)
+                </div>
+                <label class="fld" for="sw-year"
+                  >Cost after 12 months ($)</label
+                >
+                <input
+                  type="number"
+                  id="sw-year"
+                  data-save
+                  placeholder=""
+                  step="0.01"
+                />
+                <button class="btn alt" type="button" onclick="checkSwYear()">
+                  Check
+                </button>
+                <div class="pk-fb" id="sw-yearFb"></div>
+              </div>
+            </div>
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 worked step for box 1: if k = 25 → 25 × 3 = $75. Each box
+              uses your own Plan A k, so check your equation first.
+            </p>
           </div>
-          <div class="showwork-cell">
-            <div class="q">3. 12-month total for Plan A &nbsp;(y = k × 12)</div>
-            <label class="fld" for="sw-year">Cost after 12 months ($)</label>
-            <input
-              type="number"
-              id="sw-year"
-              data-save
-              placeholder="type total"
-              step="0.01"
-            />
-            <button class="btn alt" type="button" onclick="checkSwYear()">
-              Check
-            </button>
-            <div class="pk-fb" id="sw-yearFb"></div>
-          </div>
-        </div>
-        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-          Level 1 worked step for box 1: if k = 25 → 25 × 3 = $75. Each box uses
-          your own Plan A k, so check your equation first.
-        </p>
-          </div>
-          
-          <div style="background: var(--bg); border: 2.5px solid var(--line); border-radius: 18px; padding: 20px; box-shadow: var(--shadow); height: fit-content;" class="pk-no-print">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px; color: var(--navy); font-size: 16px;">
+
+          <div
+            style="
+              background: var(--bg);
+              border: 2.5px solid var(--line);
+              border-radius: 18px;
+              padding: 20px;
+              box-shadow: var(--shadow);
+              height: fit-content;
+            "
+            class="pk-no-print"
+          >
+            <h3
+              style="
+                margin-top: 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: var(--navy);
+                font-size: 16px;
+              "
+            >
               <span>💡</span> Guided Steps &amp; Help
             </h3>
-            
-      <p style="font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-bottom: 12px;">
-        <strong>Plotting Coordinates & Finding Grid Distance:</strong>
-      </p>
-      <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>Ordered pairs are written as <b>$(x, y)$</b>:
-          <ul>
-            <li>$x$-coordinate: Move horizontally (right if positive, left if negative).</li>
-            <li>$y$-coordinate: Move vertically (up if positive, down if negative).</li>
-          </ul>
-        </li>
-        <li>Identify which <b>Quadrant</b> the point lies in (I, II, III, or IV).</li>
-        <li><b>Finding distance between points</b> in the same line:
-          <ul>
-            <li>If the coordinates have the same sign, <b>subtract</b> their absolute values.</li>
-            <li>If signs are opposite (across an axis), <b>add</b> their absolute values.</li>
-          </ul>
-        </li>
-      </ol>
-      <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
-        💡 <b>Distance Check:</b> Distance between $(2, 3)$ and $(2, -4)$ is $|3| + |-4| = 3 + 4 = \mathbf{7}$ units.
-      </div>
-    
+
+            <p
+              style="
+                font-size: 13.5px;
+                line-height: 1.5;
+                color: var(--muted);
+                margin-bottom: 12px;
+              "
+            >
+              <strong>Using y = kx (Equation, Table, Graph):</strong>
+            </p>
+            <ol
+              style="
+                margin-left: 18px;
+                font-size: 13px;
+                line-height: 1.5;
+                display: grid;
+                gap: 8px;
+                color: var(--ink);
+              "
+            >
+              <li>
+                <b>Find the constant k</b> — the cost added for each
+                <b>1 month</b> of the plan (how much y changes for every 1 step
+                of x).
+              </li>
+              <li>
+                <b>Write the equation y = kx</b>, where <b>x</b> is the
+                independent variable (months) and <b>y</b> is the dependent
+                variable (total cost).
+              </li>
+              <li>
+                <b>Make a table</b>: pick x values (0, 1, 2, 5, 10…) and compute
+                <b>y = kx</b> for each one.
+              </li>
+              <li>
+                <b>Graph</b>: plot each <b>(x, y)</b> pair and draw one straight
+                line through the <b>origin (0, 0)</b>.
+              </li>
+              <li>
+                <b>Predict</b>: read a future total cost off the equation or the
+                line.
+              </li>
+            </ol>
+            <div
+              style="
+                margin-top: 14px;
+                padding: 10px;
+                background: var(--sky);
+                border-radius: 8px;
+                font-size: 12px;
+              "
+            >
+              💡 <b>Equation Check:</b> If a plan costs $35 per month, then y =
+              35x, so after 10 months y = 35 × 10 = $350 total.
+            </div>
           </div>
         </div>
       </section>
-    
 
-      
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
       <section class="pk-visualizer-card no-print">
         <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
-        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
-          This visual interactive canvas updates in real-time as you complete your math calculations.
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px">
+          This visual interactive canvas updates in real-time as you complete
+          your math calculations.
         </p>
         <div id="projectVisualizer"></div>
       </section>
-  
+
       <!-- ===================== PART 2 — PEER ===================== -->
       <section class="phase">
         <div class="phase-head">
@@ -1208,7 +1753,7 @@
               id="ch-a"
               data-save
               min="1"
-              placeholder="example: 25"
+              placeholder=""
               oninput="calcCompare()"
             />
           </div>
@@ -1216,12 +1761,7 @@
             <label class="fld" for="partnerName"
               >Classmate name or initials</label
             >
-            <input
-              type="text"
-              id="partnerName"
-              data-save
-              placeholder="example: A.J."
-            />
+            <input type="text" id="partnerName" data-save placeholder="" />
           </div>
           <div>
             <label class="fld" for="ch-b"
@@ -1232,7 +1772,7 @@
               id="ch-b"
               data-save
               min="1"
-              placeholder="example: 30"
+              placeholder=""
               oninput="calcCompare()"
             />
           </div>
@@ -1243,7 +1783,7 @@
               id="ch-weeks"
               data-save
               min="1"
-              placeholder="example: 12"
+              placeholder=""
               oninput="calcCompare()"
             />
           </div>
@@ -1257,11 +1797,7 @@
           >Whose line is steeper, and who pays more at that month? How do you
           know?</label
         >
-        <textarea
-          id="peerReflect"
-          data-save
-          placeholder="My k is $___ and my classmate's k is $___, so my line is steeper / flatter. At month ___ I pay $___ and they pay $___, because ___."
-        ></textarea>
+        <textarea id="peerReflect" data-save placeholder=""></textarea>
       </section>
 
       <!-- ===================== PART 3 — WORLD ===================== -->
@@ -1298,7 +1834,7 @@
               data-save
               step="0.01"
               oninput="worldGo()"
-              placeholder="type your k"
+              placeholder=""
             />
             <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
               Tip: use the same Plan A price from Part 1.
@@ -1338,12 +1874,7 @@
               <label class="fld" for="whatIfVal"
                 >One-time sign-up fee ($)</label
               >
-              <input
-                type="number"
-                id="whatIfVal"
-                step="0.01"
-                placeholder="example: 35"
-              />
+              <input type="number" id="whatIfVal" step="0.01" placeholder="" />
             </div>
             <div>
               <label class="fld" for="whatIfMo">Predict at month</label>
@@ -1362,11 +1893,7 @@
           >Is your plan above or below the average carrier price? Why might that
           be?</label
         >
-        <textarea
-          id="worldReflect"
-          data-save
-          placeholder="My plan's k is ___ the average carrier price because ___."
-        ></textarea>
+        <textarea id="worldReflect" data-save placeholder=""></textarea>
         <div class="pk-lvl2">
           <label class="fld" for="worldHard"
             >Level 2 — find when the two lines are equal &amp; add a fee: Plan A
@@ -1375,21 +1902,13 @@
             proportional? At what month do the two plans cost the same? Show
             your thinking.</label
           >
-          <textarea
-            id="worldHard"
-            data-save
-            placeholder="y = kx + 40 is NOT proportional because it does not pass through (0,0). Set the two equations equal to find the month where total cost is the same: ___ ."
-          ></textarea>
+          <textarea id="worldHard" data-save placeholder=""></textarea>
         </div>
         <label class="fld" for="careful"
           >Careful thinking: why is it tricky to compare phone plans between
           families?</label
         >
-        <textarea
-          id="careful"
-          data-save
-          placeholder="It can be unfair to compare because ___."
-        ></textarea>
+        <textarea id="careful" data-save placeholder=""></textarea>
       </section>
 
       <!-- ===================== DELIVERABLE ===================== -->
@@ -1405,11 +1924,7 @@
           Write a short recommendation memo (3–5 sentences) to your family using
           your real numbers from above.
         </p>
-        <textarea
-          id="pitch"
-          data-save
-          placeholder="The independent variable is months (x) and the dependent variable is total cost (y). Plan A (our ___) is y = ___x and Plan B (___) is y = ___x. After ___ months, Plan A costs $___ and Plan B costs $___. I recommend Plan ___ because ___."
-        ></textarea>
+        <textarea id="pitch" data-save placeholder=""></textarea>
 
         <h3 style="margin: 22px 0 6px">Investigation Checklist</h3>
         <ul class="checklist" id="checklist">
@@ -1546,7 +2061,10 @@
       const yrEl = document.getElementById("yr");
       if (yrEl) yrEl.textContent = new Date().getFullYear();
       const $ = (id) => document.getElementById(id);
-      const num = (id) => { const e = $(id); return e ? parseFloat(e.value) : NaN; };
+      const num = (id) => {
+        const e = $(id);
+        return e ? parseFloat(e.value) : NaN;
+      };
 
       function show(id, html) {
         const el = $(id);
@@ -1979,50 +2497,56 @@
       function worldSample() {
         return world.map((r) => r[1]);
       }
-      
+
       function worldGo() {
         const my = num("myWorld");
-        const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
+        const customName = $("worldCountry")
+          ? $("worldCountry").value.trim()
+          : "";
         const customSize = $("k-plan") ? num("k-plan") : NaN;
-        
+
         let sample = worldSample();
         if (!isNaN(customSize) && customSize > 0) {
           sample = [...sample, customSize];
         }
-        
+
         const labels =
-          ($("worldCat") || {}).value === "costPerGuest" || ($("worldCat") || {}).value === "price"
+          ($("worldCat") || {}).value === "costPerGuest" ||
+          ($("worldCat") || {}).value === "price"
             ? { mean: "City avg $", me: "Me $" }
             : { mean: "City avg", me: "Me" };
-            
+
         PK.worldMeter("worldMeter", sample, my, labels);
-        
+
         const fb = $("worldMeter");
         if (!isNaN(customSize) && customSize > 0 && customName) {
           const ratio = (my / customSize).toFixed(2);
           const pct = Math.round((my / customSize) * 100);
           const diff = Math.abs(my - customSize).toFixed(2);
-          
+
           let myValStr = true ? "$" + my.toFixed(2) : my + "";
           let custValStr = true ? "$" + customSize.toFixed(2) : customSize + "";
-          let diffStr = true ? "$" + Number(diff).toFixed(2) : Number(diff).toFixed(2) + "";
+          let diffStr = true
+            ? "$" + Number(diff).toFixed(2)
+            : Number(diff).toFixed(2) + "";
 
-          const rel = my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
-          const desc = `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
+          const rel =
+            my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
+          const desc =
+            `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
             `📊 Research Comparison: Your value (${myValStr}) is <strong>${rel}</strong> than <strong>${customName}</strong> (${custValStr}) ` +
             `by <strong>${diffStr}</strong>. Your value is <strong>${pct}%</strong> (${ratio}x) of the size of the researched benchmark.` +
             `</div>`;
           fb.innerHTML += desc;
         }
-        
-        if (typeof drawVisualizer === 'function') {
+
+        if (typeof drawVisualizer === "function") {
           drawVisualizer();
         }
-        
+
         updateProgress();
       }
-  
-      
+
       function runWhatIf() {
         const v = parseFloat($("whatIfVal").value);
         let sample = worldSample();
@@ -2036,7 +2560,7 @@
         }
         const before = PK.mean(sample);
         const after = PK.mean(sample.concat([v]));
-        
+
         let beforeStr = true ? "$" + before.toFixed(2) : before.toFixed(2) + "";
         let afterStr = true ? "$" + after.toFixed(2) : after.toFixed(2) + "";
         let vStr = true ? "$" + v.toFixed(2) : v + "";
@@ -2045,16 +2569,14 @@
           "whatIfBox",
           { average: beforeStr },
           { average: afterStr },
-          "Adding a value of " + vStr + " to the sample:"
+          "Adding a value of " + vStr + " to the sample:",
         );
       }
-  
 
       /* ---- Use example numbers ---- */
       function useExamples() {
         const ex = {
-          
-          "worldCountry": "Basic Carrier Plan",
+          worldCountry: "Basic Carrier Plan",
           "k-plan": 30,
           planAname: "our T-Mobile plan",
           planBname: "Mint Mobile",
@@ -2066,7 +2588,6 @@
           "ch-b": 30,
           "ch-weeks": 12,
           myWorld: 25,
-          
         };
         Object.entries(ex).forEach(([key, v]) => {
           if ($(key)) $(key).value = v;
@@ -2075,54 +2596,46 @@
         recalcAll();
       }
 
-      
-
-      
       function drawVisualizer() {
-        const base = num("exp-left") || 15;
-        const perGb = num("exp-coeff") || 2.50;
-        
-        let html = "";
-        if (base > 0) {
-          const maxGb = 15;
-          const maxCost = base + perGb * maxGb;
-          
-          let points = "";
-          for (let g = 0; g <= maxGb; g += 3) {
-            const px = 100 + (g / maxGb) * 320;
-            const py = 180 - (((base + perGb * g)) / maxCost) * 120;
-            points += `${px},${py} `;
-          }
-          
-          html = `
+        const kRaw = getKA();
+        // Default to a worked EXAMPLE (k = $30/month) so the dashboard always
+        // shows a line; switches to the student's own Plan A price on input.
+        const isExample = kRaw == null || kRaw <= 0;
+        const k = isExample ? 30 : kRaw;
+
+        const maxMonths = 12;
+        const maxCost = k * maxMonths;
+
+        let points = "";
+        for (let m = 0; m <= maxMonths; m += 3) {
+          const px = 100 + (m / maxMonths) * 320;
+          const py = 180 - ((k * m) / maxCost) * 120;
+          points += `${px},${py} `;
+        }
+
+        const html = `
             <polyline points="${points.trim()}" fill="none" stroke="#0e8a7d" stroke-width="3" />
             <circle cx="420" cy="60" r="5" fill="#0e8a7d" />
-            <text x="410" y="55" text-anchor="end" font-size="10" font-weight="bold" fill="#0e8a7d">${maxGb}GB: $${maxCost.toFixed(2)}</text>
-            
-            <text x="250" y="220" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Phone Plan Cost Curve (y = ${perGb}g + ${base})</text>
+            <text x="410" y="55" text-anchor="end" font-size="10" font-weight="bold" fill="#0e8a7d">Month ${maxMonths}: $${maxCost.toFixed(2)}</text>
+
+            <text x="250" y="220" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Plan A Cost Line (y = ${k}x)</text>
           `;
-        } else {
-          html = `
-            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Base fee & Data rate to draw graph</text>
-          `;
-        }
-        
+
         const svgString = `
           <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
             <!-- Axes -->
             <line x1="80" y1="60" x2="80" y2="180" stroke="#cbd5e1" stroke-width="2" />
             <line x1="80" y1="180" x2="450" y2="180" stroke="#cbd5e1" stroke-width="2" />
-            <text x="70" y="65" text-anchor="end" font-size="9" fill="#94a3b8">Plan Cost ($)</text>
-            <text x="440" y="195" text-anchor="end" font-size="9" fill="#94a3b8">Data (GB)</text>
-            
+            <text x="70" y="65" text-anchor="end" font-size="9" fill="#94a3b8">Total cost ($)</text>
+            <text x="440" y="195" text-anchor="end" font-size="9" fill="#94a3b8">Months (x)</text>
+            ${isExample ? `<rect x="360" y="8" width="128" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="424" y="22" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · k = $30</text>` : ""}
             ${html}
           </svg>
         `;
         $("projectVisualizer").innerHTML = svgString;
       }
-    
-  
-function recalcAll() {
+
+      function recalcAll() {
         calcEquation();
         calcTable();
         calcGraph();
@@ -2131,8 +2644,12 @@ function recalcAll() {
         worldGo();
         updateSwTargetLabel();
         updateProgress();
-      
-        if(typeof drawFunctionMachine === "function"){drawFunctionMachine(); drawSequenceBars();}}
+
+        if (typeof drawFunctionMachine === "function") {
+          drawFunctionMachine();
+          drawSequenceBars();
+        }
+      }
 
       /* ---- Report ---- */
       function reportText() {
@@ -2248,23 +2765,28 @@ function recalcAll() {
         renderWorld();
         updateSwTargetLabel();
         PK.initLevel({ storageKey: "u9ProjectB", default: "level-1" });
+        PK.initTts({ storageKey: "u9ProjectB" });
         PK.load("u9ProjectB", { after: recalcAll });
         updateProgress();
       });
-    
+
       function drawFunctionMachine() {
-        const k = getKA();
+        let k = getKA();
         const svg = $("phase-svg-1a");
         if (!svg) return;
-        
-        if (k == null) {
-          svg.innerHTML = '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter prepaid rate to draw function machine</text>';
-          return;
+
+        // Show a worked EXAMPLE (k = $30/month) by default so the machine
+        // always has something to read; switches to the student's own rate as
+        // soon as they enter it.
+        const isExample = k == null;
+        if (isExample) {
+          k = 30;
         }
-        
+
         svg.innerHTML = `
           <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Phone Cost Function (y = ${k}x)</text>
-          
+          ${isExample ? `<rect x="360" y="16" width="128" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="424" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · k = $30</text>` : ""}
+
           <g transform="translate(60, 70)">
             <rect x="0" y="15" width="80" height="40" rx="8" fill="#e8f2fc" stroke="#1a6fb5" stroke-width="1.5" />
             <text x="40" y="35" text-anchor="middle" font-size="11" font-weight="bold" fill="#1a6fb5">Input x (months)</text>
@@ -2287,18 +2809,20 @@ function recalcAll() {
           </defs>
         `;
       }
-      
+
       function drawSequenceBars() {
-        const k = getKA();
+        let k = getKA();
         const svg = $("phase-svg-1b");
         if (!svg) return;
-        
-        if (k == null) {
-          svg.innerHTML = '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter prepaid rate to draw cost sequence bars</text>';
-          return;
+
+        // Default to a worked EXAMPLE (k = $30) so the bars always show a
+        // reference; switches to the student's own rate on input.
+        const isExample = k == null;
+        if (isExample) {
+          k = 30;
         }
-        
-        let bars = '';
+
+        let bars = "";
         for (let x = 1; x <= 4; x++) {
           const val = k * x;
           const bh = 100 * (val / (k * 4));
@@ -2309,21 +2833,128 @@ function recalcAll() {
             <text x="${bx + 20}" y="${135 - bh}" text-anchor="middle" font-size="9" font-weight="bold" fill="#1e88e5">$${val.toFixed(2)}</text>
           `;
         }
-        
+
         svg.innerHTML = `
           <text x="250" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Phone Cost Growth by Month (k = $${k})</text>
+          ${isExample ? `<rect x="360" y="11" width="128" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="424" y="25" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · k = $30</text>` : ""}
           ${bars}
         `;
       }
-    
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
+    <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
+    <script type="application/json" id="pk-research">
+      {
+        "icon": "🔎",
+        "title": "Research Lab — Model the Two Plans",
+        "intro": "Analysts model choices with tables, equations, and graphs. Look up how y = kx works, then compare two real plans.",
+        "brief": {
+          "theme": "field",
+          "title": "📋 Your Research Mission",
+          "hook": "Find how <b>tables, equations, and graphs</b> connect, then model two plans.",
+          "steps": [
+            "Open a link (new tab — you keep your project).",
+            "Record the rules in Field Notes.",
+            "Build tables and equations in the math problems.",
+            "Check off the Investigation Checklist."
+          ]
+        },
+        "fieldNotes": {
+          "title": "Field Notes — Record What You Find",
+          "intro": "Jot the exact number or rule you find. You'll reuse these in the math below.",
+          "fields": [
+            {
+              "label": "What a coordinate (x, y) means",
+              "source": "Math is Fun",
+              "placeholder": "across then up",
+              "hint": "x first (horizontal), y second (vertical)."
+            },
+            {
+              "label": "What 'directly proportional' means",
+              "source": "Math is Fun",
+              "placeholder": "y = kx, doubles together",
+              "hint": "Constant rate k; passes through (0,0)."
+            },
+            {
+              "label": "Plan A's rate (a real per-unit number)",
+              "source": "Your plan / a real price page",
+              "placeholder": "$3 per item",
+              "hint": "This is k for plan A."
+            },
+            {
+              "label": "Plan B's rate",
+              "source": "Your plan / a real price page",
+              "placeholder": "$5 per item",
+              "hint": "This is k for plan B."
+            }
+          ]
+        },
+        "mathTasks": [
+          {
+            "title": "1 · Equations",
+            "prompt": "Write <b>y = kx</b> for each plan using your two rates (Field Notes 3 and 4). State what x and y stand for.",
+            "level2": "Which plan grows faster, and how does the equation show it?"
+          },
+          {
+            "title": "2 · Tables",
+            "prompt": "Make a table for each plan with x = 0, 1, 2, 5. Fill in y using your equations.",
+            "level2": "Plot the points for both plans on the same grid (describe or sketch)."
+          },
+          {
+            "title": "3 · Compare",
+            "prompt": "For x = 10, which plan costs more and by how much? Use your equations.",
+            "level2": "Is there any x where the plans are equal? Explain using the rates."
+          }
+        ],
+        "investigationChecklist": [
+          "I recorded what a coordinate means.",
+          "I recorded what directly proportional means.",
+          "I chose two real rates.",
+          "I wrote y = kx for both plans.",
+          "I built a table for each plan.",
+          "I compared the two plans at x = 10."
+        ],
+        "links": [
+          {
+            "icon": "📈",
+            "name": "Math is Fun — Directly Proportional",
+            "url": "https://www.mathsisfun.com/algebra/directly-inversely-proportional.html",
+            "find": "How y = kx works and what k is.",
+            "look": "the constant of proportionality k"
+          },
+          {
+            "icon": "🧭",
+            "name": "Math is Fun — Cartesian Coordinates",
+            "url": "https://www.mathsisfun.com/data/cartesian-coordinates.html",
+            "find": "How to plot (x, y) points.",
+            "look": "x across, y up"
+          },
+          {
+            "icon": "📐",
+            "name": "Math is Fun — Linear Equations",
+            "url": "https://www.mathsisfun.com/algebra/linear-equations.html",
+            "find": "How an equation makes a straight-line pattern.",
+            "look": "the y = mx + b form"
+          },
+          {
+            "icon": "🎛️",
+            "name": "Math is Fun — Function Grapher (interactive)",
+            "url": "https://www.mathsisfun.com/data/function-grapher.html",
+            "find": "Type your equation and watch the line draw.",
+            "look": "enter y = 3x and see the graph"
+          }
+        ],
+        "note": "These sites were picked for class. They open in a new tab so you keep your project. If a page asks you to sign in or buy something, just close it and come back."
+      }
+    </script>
     <script src="/shared/projects/projects-tabs.js" defer></script>
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <script src="/shared/projects/projects-interactive.js" defer></script>
+    <script src="/shared/projects/manip-line-grapher.js" defer></script>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+  </body>
 </html>

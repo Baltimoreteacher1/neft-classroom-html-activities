@@ -1,0 +1,122 @@
+/* ==========================================================================
+   Neft Teacher — Level Switcher
+   A small, self-contained "choose your level" bar that links a review /
+   project page to its differentiated siblings:
+     <stem>.html            → Standard
+     <stem>-level-0.html    → Extra Support (IEP tier)
+     <stem>-level-1.html    → Support
+     <stem>-level-2.html    → Challenge / Enrichment
+
+   Additive + non-destructive: injected before </body>, scoped under
+   .nlsw-bar, system fonts only, respects prefers-reduced-motion. Hidden on
+   print so it never shows up on a printed packet.
+   Reference as /shared/level-switch/level-switch.css
+   ========================================================================== */
+.nlsw-bar {
+  --nlsw-ink: #0c1b2a;
+  --nlsw-line: #d8e2ee;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  max-width: 1100px;
+  margin: 14px auto 0;
+  padding: 12px 16px;
+  background: #ffffff;
+  border: 1px solid var(--nlsw-line);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(12, 27, 42, 0.08);
+}
+.nlsw-label {
+  font-weight: 800;
+  font-size: 0.98rem;
+  color: var(--nlsw-ink);
+  margin-right: 4px;
+}
+.nlsw-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.nlsw-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 2px solid var(--nlsw-line);
+  background: #f3f7fc;
+  color: var(--nlsw-ink);
+  font-size: 0.98rem;
+  font-weight: 700;
+  text-decoration: none;
+  line-height: 1.2;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+.nlsw-pill .nlsw-emoji {
+  font-size: 1.15rem;
+}
+.nlsw-pill:hover,
+.nlsw-pill:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(12, 27, 42, 0.14);
+  outline: none;
+}
+.nlsw-pill:focus-visible {
+  box-shadow: 0 0 0 3px rgba(23, 99, 199, 0.45);
+}
+.nlsw-pill[aria-current="page"] {
+  cursor: default;
+  pointer-events: none;
+  color: #fff;
+  border-color: transparent;
+  background: linear-gradient(135deg, #1763c7, #0c3f86);
+  box-shadow: 0 6px 16px rgba(12, 63, 134, 0.3);
+}
+/* level accent tints (non-current state) */
+.nlsw-pill[data-lvl="0"] {
+  background: #eafaf1;
+  border-color: #bce8cf;
+}
+.nlsw-pill[data-lvl="1"] {
+  background: #eaf3fe;
+  border-color: #bcd9f6;
+}
+.nlsw-pill[data-lvl="2"] {
+  background: #f1ecfd;
+  border-color: #d6c8f5;
+}
+
+@media (max-width: 540px) {
+  .nlsw-bar {
+    border-radius: 0;
+    margin-top: 0;
+  }
+  .nlsw-label {
+    width: 100%;
+  }
+}
+@media print {
+  .nlsw-bar {
+    display: none !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nlsw-pill {
+    transition: none;
+  }
+  .nlsw-pill:hover,
+  .nlsw-pill:focus-visible {
+    transform: none;
+  }
+}

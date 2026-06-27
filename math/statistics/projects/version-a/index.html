@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Class Data Detective — Statistics Culminating Project A</title>
     <meta
       name="description"
@@ -566,11 +566,13 @@
     <!-- nsr-injected:end -->
     <link rel="stylesheet" href="/shared/projects/projects-premium.css" />
     <link rel="stylesheet" href="/shared/projects/projects-tabs.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-tplus.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-interactive.css" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
-  <body class="pk">
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
+  <body class="pk" data-pk-theme="stats">
     <header class="phero">
       <div class="deco">📊</div>
       <h1>Class Data Detective</h1>
@@ -595,6 +597,15 @@
           <button data-level-btn="level-1" type="button">🟢 Level 1</button>
           <button data-level-btn="level-2" type="button">🔵 Level 2</button>
         </span>
+        <button
+          class="pk-tts-toggle"
+          data-tts-toggle
+          type="button"
+          aria-pressed="false"
+          title="Read text aloud"
+        >
+          🔊 Read aloud
+        </button>
         <button type="button" onclick="PK.save('statProjectA')">💾 Save</button>
         <button
           type="button"
@@ -650,7 +661,7 @@
         <div class="pk-vocab">
           <div class="pk-term">
             <span class="pk-icon">⚖️</span><b>Mean (average)</b>
-            <p>Add all the values, then divide by how many there are.</p>
+            <p>Add all the numbers, then share them equally.</p>
             <p class="pk-es">
               Media (promedio): suma todos los valores y divide entre cuántos
               hay.
@@ -658,27 +669,24 @@
           </div>
           <div class="pk-term">
             <span class="pk-icon">🎯</span><b>Median</b>
-            <p>Put the numbers in order; the middle value is the median.</p>
+            <p>The middle number when you put them in order.</p>
             <p class="pk-es">
               Mediana: ordena los números; el valor del medio es la mediana.
             </p>
           </div>
           <div class="pk-term">
             <span class="pk-icon">🔁</span><b>Mode</b>
-            <p>The value that appears most often.</p>
+            <p>The number that shows up the most.</p>
             <p class="pk-es">Moda: el valor que aparece más veces.</p>
           </div>
           <div class="pk-term">
             <span class="pk-icon">📏</span><b>Range</b>
-            <p>How spread out the data is: largest − smallest.</p>
+            <p>The biggest number minus the smallest.</p>
             <p class="pk-es">Rango: qué tan disperso está: mayor − menor.</p>
           </div>
           <div class="pk-term">
             <span class="pk-icon">📐</span><b>MAD</b>
-            <p>
-              Mean Absolute Deviation: the average distance each value is from
-              the mean.
-            </p>
+            <p>How far the numbers usually sit from the average.</p>
             <p class="pk-es">
               DAM (desviación absoluta media): la distancia promedio de cada
               valor a la media.
@@ -686,10 +694,7 @@
           </div>
           <div class="pk-term">
             <span class="pk-icon">📈</span><b>Distribution shape</b>
-            <p>
-              The overall pattern: symmetric, skewed left/right, or has
-              outliers.
-            </p>
+            <p>The way the data sits: even, leaning, or with a few far out.</p>
             <p class="pk-es">
               Forma de la distribución: el patrón general: simétrica, sesgada o
               con valores atípicos.
@@ -699,10 +704,63 @@
         <div class="grid2" style="margin-top: 18px">
           <div class="pk-callout">
             <h3>Formula Bank</h3>
-            <p><b>Mean</b> = sum of values ÷ count</p>
-            <p><b>Median</b> = order the data → middle value</p>
-            <p><b>MAD</b> = average of |value − mean|</p>
-            <p><b>Range</b> = maximum − minimum</p>
+            <ul class="pk-formula">
+              <li>
+                <span class="pk-f-name">Mean (average)</span>
+                <span class="pk-f-mean"
+                  >Add up every value, then split the total evenly across how
+                  many values you have.</span
+                >
+                <span class="pk-eg"
+                  >Example: 4 + 6 + 8 = 18, then 18 ÷ 3 = 6</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Median (the middle)</span>
+                <span class="pk-f-mean"
+                  >Put the values in order from least to greatest, then point to
+                  the one in the middle.</span
+                >
+                <span class="pk-eg">Example: 3, 5, 9 → the median is 5</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Mode (most common)</span>
+                <span class="pk-f-mean"
+                  >The value that shows up the most times. A data set can have
+                  one mode, more than one, or none.</span
+                >
+                <span class="pk-eg">Example: 4, 5, 5, 8 → the mode is 5</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Range (the spread)</span>
+                <span class="pk-f-mean"
+                  >How far apart your data is: the biggest value minus the
+                  smallest value.</span
+                >
+                <span class="pk-eg">Example: 12 − 4 = 8</span>
+              </li>
+              <li class="pk-lvl1">
+                <span class="pk-f-name">Reading a dot plot</span>
+                <span class="pk-f-mean"
+                  >Each dot is one piece of data. A taller stack of dots means
+                  that value happened more often.</span
+                >
+                <span class="pk-eg"
+                  >Example: three dots above 5 means 5 showed up 3 times.</span
+                >
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">MAD — mean absolute deviation</span>
+                <span class="pk-f-mean"
+                  >How far each value sits from the mean, on average. A bigger
+                  MAD means the data is more spread out.</span
+                >
+                <span class="pk-eg"
+                  >Example: 4, 6, 8 has mean 6, so MAD = (2 + 0 + 2) ÷ 3 ≈
+                  1.3</span
+                >
+              </li>
+            </ul>
             <p class="pk-es">
               Media = suma ÷ cantidad · Mediana = ordenar → medio · DAM =
               promedio de |valor − media| · Rango = máximo − mínimo
@@ -758,7 +816,7 @@
               id="d-mon"
               data-save
               min="0"
-              placeholder="e.g. 15"
+              placeholder=""
               oninput="collectData()"
             />
           </div>
@@ -769,7 +827,7 @@
               id="d-tue"
               data-save
               min="0"
-              placeholder="e.g. 20"
+              placeholder=""
               oninput="collectData()"
             />
           </div>
@@ -780,7 +838,7 @@
               id="d-wed"
               data-save
               min="0"
-              placeholder="e.g. 20"
+              placeholder=""
               oninput="collectData()"
             />
           </div>
@@ -791,7 +849,7 @@
               id="d-thu"
               data-save
               min="0"
-              placeholder="e.g. 25"
+              placeholder=""
               oninput="collectData()"
             />
           </div>
@@ -802,7 +860,7 @@
               id="d-fri"
               data-save
               min="0"
-              placeholder="e.g. 30"
+              placeholder=""
               oninput="collectData()"
             />
           </div>
@@ -813,7 +871,7 @@
               id="d-sat"
               data-save
               min="0"
-              placeholder="e.g. 18"
+              placeholder=""
               oninput="collectData()"
             />
           </div>
@@ -824,12 +882,13 @@
               id="d-sun"
               data-save
               min="0"
-              placeholder="e.g. 22"
+              placeholder=""
               oninput="collectData()"
             />
           </div>
         </div>
         <div class="readout" id="collect-out"></div>
+        <div class="pki-manip" data-manip="dot-plot" data-max="20"></div>
       </section>
 
       <!-- PHASE 1: STATISTICAL QUESTIONS -->
@@ -968,7 +1027,7 @@
           id="dataset"
           data-save
           value="15, 20, 20, 25, 30, 18, 22, 20, 28"
-          placeholder="e.g. 15, 20, 20, 25, 30"
+          placeholder=""
           oninput="calcCenter()"
         />
         <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
@@ -991,7 +1050,7 @@
           type="number"
           id="check-median-self"
           data-save
-          placeholder="Type your median"
+          placeholder=""
           style="max-width: 200px"
         />
         <button class="btn" type="button" onclick="checkOwnMedian()">
@@ -1012,6 +1071,19 @@
           </p>
         </details>
 
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 tip: start with just 5 numbers. Add them and divide for the
+          mean, then cross them off in order from least to greatest to land on
+          the median.
+        </p>
+        <div class="pk-lvl2">
+          <div class="task">
+            <strong>Level 2 extension:</strong> Add one value that is far larger
+            than the rest, recalculate, and explain in writing whether the
+            <em>mean</em> or the <em>median</em> changed more — and why.
+          </div>
+        </div>
+
         <div
           class="phase"
           style="margin: 18px 0 0; box-shadow: none; border-style: dashed"
@@ -1025,7 +1097,7 @@
           <input
             type="number"
             id="whatIfVal"
-            placeholder="e.g. 45"
+            placeholder=""
             style="max-width: 200px"
           />
           <button class="btn" type="button" onclick="runWhatIf()">
@@ -1067,7 +1139,7 @@
           type="number"
           id="check-range"
           data-save
-          placeholder="Type a number"
+          placeholder=""
           style="max-width: 200px"
         />
         <button
@@ -1089,6 +1161,18 @@
             is the MAD.
           </p>
         </details>
+
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 tip: range is just the biggest number minus the smallest. Find
+          those two values first, then subtract.
+        </p>
+        <div class="pk-lvl2">
+          <div class="task">
+            <strong>Level 2 extension:</strong> Compare two data sets that have
+            the same mean but different MADs. Which one is more consistent, and
+            how does the MAD prove it?
+          </div>
+        </div>
       </section>
 
       <!-- PHASE 4: DISPLAY + SHAPE -->
@@ -1160,7 +1244,7 @@
           type="number"
           id="check-med"
           data-save
-          placeholder="Type a number"
+          placeholder=""
           style="max-width: 200px"
         />
         <button
@@ -1183,6 +1267,18 @@
             Outliers are values much higher or lower than the rest.
           </p>
         </details>
+
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 tip: build the dot plot one value at a time — stack a dot
+          above each number every time it appears in your data.
+        </p>
+        <div class="pk-lvl2">
+          <div class="task">
+            <strong>Level 2 extension:</strong> Sketch how the dot plot would
+            change if you removed the outlier, and describe what happens to the
+            shape, the median, and the range.
+          </div>
+        </div>
       </section>
 
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
@@ -1222,12 +1318,7 @@
             <label class="fld" for="partnerName"
               >Partner name or initials</label
             >
-            <input
-              type="text"
-              id="partnerName"
-              data-save
-              placeholder="e.g. A.J."
-            />
+            <input type="text" id="partnerName" data-save placeholder="" />
           </div>
           <div>
             <label class="fld" for="partnerData"
@@ -1237,7 +1328,7 @@
               type="text"
               id="partnerData"
               data-save
-              placeholder="e.g. 12, 18, 18, 24, 30"
+              placeholder=""
               oninput="comparePeer()"
             />
           </div>
@@ -1249,11 +1340,7 @@
         <label class="fld" for="peerReflect"
           >Whose data is more spread out, and how do you know?</label
         >
-        <textarea
-          id="peerReflect"
-          data-save
-          placeholder="My range/MAD is ___ while my partner's is ___, so ___ is more spread out because ___."
-        ></textarea>
+        <textarea id="peerReflect" data-save placeholder=""></textarea>
       </section>
 
       <!-- ===================== PART 3 — WORLD ===================== -->
@@ -1287,7 +1374,7 @@
               data-save
               step="0.01"
               oninput="worldGo()"
-              placeholder="type your value"
+              placeholder=""
             />
             <div id="worldMeter"></div>
           </div>
@@ -1314,20 +1401,12 @@
           >Is your number higher or lower than the world average? Why might that
           be?</label
         >
-        <textarea
-          id="worldReflect"
-          data-save
-          placeholder="My number is ___ the world average of ___ because ___."
-        ></textarea>
+        <textarea id="worldReflect" data-save placeholder=""></textarea>
         <label class="fld" for="careful"
           >Careful thinking: why might it be unfair to compare reading minutes
           between students in different countries or schools?</label
         >
-        <textarea
-          id="careful"
-          data-save
-          placeholder="It can be unfair to compare because ___ (different languages, access to books, free time, how the data was collected...)."
-        ></textarea>
+        <textarea id="careful" data-save placeholder=""></textarea>
       </section>
 
       <!-- DELIVERABLE -->
@@ -1352,22 +1431,14 @@
           data and your partner's data — compare the shape and spread of the two
           distributions.
         </p>
-        <textarea
-          id="story"
-          data-save
-          placeholder="The data set shows the number of minutes students read each day. The mean is ___, the median is ___, and the mode is ___. This tells me ___ about the center of the data. The range is ___ and the MAD is ___, which means ___. The distribution is ___ because ___. Compared with my partner, ___. Overall, ___..."
-        ></textarea>
+        <textarea id="story" data-save placeholder=""></textarea>
 
         <div class="pk-lvl2">
           <label class="fld" for="distCompare"
             >Level 2 — Compare the two distributions (yours vs your partner's
             shape &amp; spread)</label
           >
-          <textarea
-            id="distCompare"
-            data-save
-            placeholder="My distribution is ___ (shape) with a MAD of ___, while my partner's is ___ with a MAD of ___. This means ___ has more variability because ___."
-          ></textarea>
+          <textarea id="distCompare" data-save placeholder=""></textarea>
         </div>
 
         <h3 style="margin: 22px 0 6px">Project Checklist</h3>
@@ -1564,6 +1635,7 @@
       var lastParsed = [];
       var lastMean = null;
       var chosenShape = null;
+      var dotPlotReal = false;
 
       // ── Utilities ──
       function parseDataset() {
@@ -1791,6 +1863,7 @@
             modeObj.label +
             "</div>",
         );
+        if (typeof drawVisualizer === "function") drawVisualizer();
       }
 
       // ── Phase 3: Variability ──
@@ -1882,11 +1955,13 @@
       // ── Phase 4: Dot Plot + Shape ──
       function drawDotPlot() {
         var nums = lastParsed.length ? lastParsed : parseDataset();
-        if (!nums) {
-          document.getElementById("dot-plot-container").innerHTML =
-            "<p style='color:var(--coral);font-weight:700;'>⚠️ Please enter your data set in Phase 2 first.</p>";
-          return;
+        // Show a worked EXAMPLE data set by default so the card always renders a
+        // real dot plot; swaps to the student's own data as soon as they enter it.
+        var isExample = !nums || nums.length === 0;
+        if (isExample) {
+          nums = [4, 5, 5, 6, 8, 9, 12];
         }
+        dotPlotReal = !isExample;
         var sorted = sortNums(nums);
         var minVal = sorted[0];
         var maxVal = sorted[sorted.length - 1];
@@ -1970,6 +2045,13 @@
           '<text x="' +
           W / 2 +
           '" y="20" text-anchor="middle" font-size="14" font-weight="700" fill="#0f2b3c">Dot Plot of Your Data</text>' +
+          (isExample
+            ? '<rect x="' +
+              (W - 150) +
+              '" y="6" width="120" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="' +
+              (W - 90) +
+              '" y="20" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example data</text>'
+            : "") +
           axis +
           dots +
           labels +
@@ -2037,11 +2119,7 @@
           ? 1
           : 0;
         var shapeOk = chosenShape ? 1 : 0;
-        var dotOk =
-          document.getElementById("dot-plot-container").innerHTML.trim()
-            .length > 10
-            ? 1
-            : 0;
+        var dotOk = dotPlotReal ? 1 : 0;
         var checks = document.querySelectorAll(
           "#checklist input:checked",
         ).length;
@@ -2159,9 +2237,9 @@
         const before = PK.mean(sample);
         const after = PK.mean(sample.concat([v]));
 
-        let beforeStr = before.toFixed(2) + "%";
-        let afterStr = after.toFixed(2) + "%";
-        let vStr = v + "%";
+        let beforeStr = before.toFixed(2);
+        let afterStr = after.toFixed(2);
+        let vStr = v;
 
         PK.whatIf(
           "whatIfBox",
@@ -2364,12 +2442,13 @@
       }
 
       function drawVisualizer() {
-        const nums =
+        let nums =
           lastParsed && lastParsed.length ? lastParsed : parseDataset();
-        if (!nums || nums.length === 0) {
-          $("projectVisualizer").innerHTML =
-            '<text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter data set in Phase 1 to draw plots</text>';
-          return;
+        // Default to a worked EXAMPLE so the box plot always renders a real plot;
+        // switches to the student's own data the moment they enter it.
+        const isExample = !nums || nums.length === 0;
+        if (isExample) {
+          nums = [4, 5, 5, 6, 8, 9, 12];
         }
 
         const min = Math.min(...nums),
@@ -2396,7 +2475,8 @@
         const svgString = `
           <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
             <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Dataset Statistical Summary Box Plot</text>
-            
+            ${isExample ? `<rect x="360" y="16" width="120" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="420" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example data</text>` : ""}
+
             <!-- Box -->
             <rect x="${q1Px}" y="100" width="${q3Px - q1Px}" height="40" fill="rgba(14, 138, 125, 0.2)" stroke="#0e8a7d" stroke-width="2" />
             
@@ -2465,6 +2545,7 @@
       document.addEventListener("DOMContentLoaded", function () {
         renderWorld();
         PK.initLevel({ storageKey: "statProjectA", default: "level-1" });
+        PK.initTts({ storageKey: "statProjectA" });
         PK.load("statProjectA", { after: recalcAll });
         updateProgress();
       });
@@ -2473,9 +2554,116 @@
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
+    <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
+    <script type="application/json" id="pk-research">
+      {
+        "icon": "🔎",
+        "title": "Research Lab — Investigate Real Data",
+        "intro": "Statisticians collect real data, then summarize its center and spread. Look up the measures, then run them on real numbers.",
+        "brief": {
+          "theme": "field",
+          "title": "🔬 Your Research Mission",
+          "hook": "Find how to measure <b>center and spread</b>, then summarize a real data set.",
+          "steps": [
+            "Open a link (new tab — you keep your project).",
+            "Record the rules in Field Notes.",
+            "Compute center and spread in the math problems.",
+            "Check off the Investigation Checklist."
+          ]
+        },
+        "fieldNotes": {
+          "title": "Field Notes — Record What You Find",
+          "intro": "Jot the exact number or rule you find. You'll reuse these in the math below.",
+          "fields": [
+            {
+              "label": "How to find the mean",
+              "source": "Math is Fun",
+              "placeholder": "add all, divide by how many",
+              "hint": "The balance point of the data."
+            },
+            {
+              "label": "How to find the range",
+              "source": "Math is Fun",
+              "placeholder": "max − min",
+              "hint": "How spread out the data is."
+            },
+            {
+              "label": "What MAD measures",
+              "source": "Math is Fun",
+              "placeholder": "average distance from the mean",
+              "hint": "Mean Absolute Deviation."
+            },
+            {
+              "label": "A real data set you collect (5+ numbers)",
+              "source": "A class survey you run",
+              "placeholder": "7, 9, 6, 10, 8",
+              "hint": "Ask classmates one number question."
+            }
+          ]
+        },
+        "mathTasks": [
+          {
+            "title": "1 · Center",
+            "prompt": "Using your data (Field Note 4), find the <b>mean</b> and the <b>median</b>. Show the work for both.",
+            "level2": "Are the mean and median close? What does that tell you about the data?"
+          },
+          {
+            "title": "2 · Spread",
+            "prompt": "Find the <b>range</b> of your data. Then find the <b>MAD</b> (average distance of each value from the mean). Show the steps.",
+            "level2": "Add one outlier to your data. How do the range and MAD change?"
+          },
+          {
+            "title": "3 · Display & describe",
+            "prompt": "Choose the best display (dot plot, histogram, or box plot) for your data and explain why. Describe the data in one sentence using center and spread.",
+            "level2": "Which measure of center best represents your data, and why?"
+          }
+        ],
+        "investigationChecklist": [
+          "I recorded how to find the mean.",
+          "I recorded how to find the range.",
+          "I recorded what MAD measures.",
+          "I collected a real data set.",
+          "I computed center (mean and median).",
+          "I computed spread (range and MAD)."
+        ],
+        "links": [
+          {
+            "icon": "⚖️",
+            "name": "Math is Fun — Mean",
+            "url": "https://www.mathsisfun.com/mean.html",
+            "find": "How to compute the average.",
+            "look": "add up, then divide by the count"
+          },
+          {
+            "icon": "↔️",
+            "name": "Math is Fun — Range",
+            "url": "https://www.mathsisfun.com/data/range.html",
+            "find": "Spread as max minus min.",
+            "look": "highest − lowest"
+          },
+          {
+            "icon": "📐",
+            "name": "Math is Fun — Mean Deviation (MAD)",
+            "url": "https://www.mathsisfun.com/data/mean-deviation.html",
+            "find": "Average distance from the mean.",
+            "look": "the step-by-step MAD example"
+          },
+          {
+            "icon": "🎯",
+            "name": "Math is Fun — Median",
+            "url": "https://www.mathsisfun.com/median.html",
+            "find": "The exact middle value.",
+            "look": "sort, then take the middle"
+          }
+        ],
+        "note": "These sites were picked for class. They open in a new tab so you keep your project. If a page asks you to sign in or buy something, just close it and come back."
+      }
+    </script>
     <script src="/shared/projects/projects-tabs.js" defer></script>
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <script src="/shared/projects/projects-interactive.js" defer></script>
+    <script src="/shared/projects/manip-dot-plot.js" defer></script>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+  </body>
 </html>

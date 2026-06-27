@@ -45,6 +45,8 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
 .ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
 .ws-correct{font-weight:700;color:var(--teal);}
 .ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-watch{margin:4px 0 0;color:#9a4a12;font-size:12px;background:#fff3e6;border-left:3px solid #e08a3c;padding:5px 10px;border-radius:0 8px 8px 0;}
+.ws-scaffold-note{margin:0 0 14px;background:var(--soft);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:600;color:var(--navy);font-size:12.5px;}
 .ws-match{display:flex;gap:24px;flex-wrap:wrap;}
 .ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
 .ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
@@ -75,15 +77,49 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
   @page{margin:1.5cm;}
   a{color:#000;}
 }
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
 </style>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
 </head>
 <body>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.G.1</span>
+      <span class="ws-ver">Level 0</span>
+    </div>
+    <h1 class="ws-title">Area of Parallelograms</h1>
+    <p class="ws-sub">Practice — Level 0</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h3 class="ws-bank-h">📕 Word Bank</h3>
+    <div class="ws-bankwords"><span class="ws-bankword">Parallelogram</span><span class="ws-bankword">Base</span><span class="ws-bankword">Height</span><span class="ws-bankword">Area</span><span class="ws-bankword">Composite figure</span><span class="ws-bankword">Formula</span></div>
+  </section><section class="ws-example">
+    <h3 class="ws-example-h">✏️ Worked Example</h3>
+    <ol class="ws-example-steps"><li><b>Identify base and height:</b> b = 11 m, slant side = 8 m, h = 6 m</li><li><b>Write the formula:</b> A = b × h</li><li><b>Substitute values:</b> A = 11 × 8</li><li><b>Calculate:</b> A = 88 sq m</li></ol>
+  </section>
+    <p class="ws-scaffold-note">🧩 Extra support: use the word bank and the worked example. A sentence starter is given under each problem.</p>
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">What is the area of a parallelogram with base 10 cm and height 7 cm?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>70 sq cm</li><li class="ws-opt"><span class="ws-bub">B</span>34 sq cm</li><li class="ws-opt"><span class="ws-bub">C</span>17 sq cm</li><li class="ws-opt"><span class="ws-bub">D</span>70 cm</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A parallelogram has an area of 54 sq ft and a base of 9 ft. What is the height?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>6 ft</li><li class="ws-opt"><span class="ws-bub">B</span>45 ft</li><li class="ws-opt"><span class="ws-bub">C</span>63 ft</li><li class="ws-opt"><span class="ws-bub">D</span>27 ft</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is the area of a parallelogram with base 9 cm and height 5 cm?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>45 sq cm</li><li class="ws-opt"><span class="ws-bub">B</span>14 sq cm</li><li class="ws-opt"><span class="ws-bub">C</span>22.5 sq cm</li><li class="ws-opt"><span class="ws-bub">D</span>90 sq cm</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Which measurement is the height of a parallelogram?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>The perpendicular distance between the base and the opposite side</li><li class="ws-opt"><span class="ws-bub">B</span>The length of the slanted side</li><li class="ws-opt"><span class="ws-bub">C</span>The perimeter divided by 4</li><li class="ws-opt"><span class="ws-bub">D</span>The longest side</li></ol></div></li></ol>
+  </section>
 <section class="ws-page">
     <header class="ws-head">
     <div class="ws-head-top">
@@ -101,9 +137,10 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <h3 class="ws-example-h">✏️ Worked Example</h3>
     <ol class="ws-example-steps"><li><b>Identify base and height:</b> b = 11 m, slant side = 8 m, h = 6 m</li><li><b>Write the formula:</b> A = b × h</li><li><b>Substitute values:</b> A = 11 × 8</li><li><b>Calculate:</b> A = 88 sq m</li></ol>
   </section>
+    
     <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">What is the area of a parallelogram with base 10 cm and height 7 cm?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>70 sq cm</li><li class="ws-opt"><span class="ws-bub">B</span>34 sq cm</li><li class="ws-opt"><span class="ws-bub">C</span>17 sq cm</li><li class="ws-opt"><span class="ws-bub">D</span>70 cm</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A parallelogram has an area of 54 sq ft and a base of 9 ft. What is the height?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>6 ft</li><li class="ws-opt"><span class="ws-bub">B</span>45 ft</li><li class="ws-opt"><span class="ws-bub">C</span>63 ft</li><li class="ws-opt"><span class="ws-bub">D</span>27 ft</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is the area of a parallelogram with base 9 cm and height 5 cm?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>45 sq cm</li><li class="ws-opt"><span class="ws-bub">B</span>14 sq cm</li><li class="ws-opt"><span class="ws-bub">C</span>22.5 sq cm</li><li class="ws-opt"><span class="ws-bub">D</span>90 sq cm</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Which measurement is the height of a parallelogram?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>The perpendicular distance between the base and the opposite side</li><li class="ws-opt"><span class="ws-bub">B</span>The length of the slanted side</li><li class="ws-opt"><span class="ws-bub">C</span>The perimeter divided by 4</li><li class="ws-opt"><span class="ws-bub">D</span>The longest side</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
   <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>Patio X</td><td></td><td></td><td></td></tr><tr><td>Patio Y</td><td></td><td></td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Area of Parallelograms.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Area of a parallelogram = base × height, where the height is the straight-up (perpendicular) distance, NOT the slanted side.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the parallelogram</span><span class="ws-step-w">base = 7 ft, height = 4 ft</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Write the formula</span><span class="ws-step-w">A = base × height</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Substitute the values</span><span class="ws-step-w">A = 7 + 4</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Calculate the area</span><span class="ws-step-w">A = 11 sq ft</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
   <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
   </section>
@@ -118,14 +155,46 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     
+    
     <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
   <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>Patio A</td><td></td><td></td><td></td></tr><tr><td>Patio B</td><td></td><td></td><td></td></tr><tr><td>Patio C</td><td></td><td></td><td></td></tr><tr><td>Patio D</td><td></td><td></td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Write the letter of the matching answer next to each.</p>
   <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>Triangle 8×6</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>Parallelogram 5×4</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>Rectangle 7×3</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>Triangle 10×8</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>Square side 6</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm"></span>Parallelogram 9×2</li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span>36 sq units</li><li><span class="ws-bub ws-bub-sm">B</span>40 sq units</li><li><span class="ws-bub ws-bub-sm">C</span>18 sq units</li><li><span class="ws-bub ws-bub-sm">D</span>24 sq units</li><li><span class="ws-bub ws-bub-sm">E</span>20 sq units</li><li><span class="ws-bub ws-bub-sm">F</span>21 sq units</li></ul></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Sort each parallelogram by whether its area is greater than 50 sq units or 50 or less.</p>
   <p class="ws-prompt">Categories: <b>greater · notgreater</b></p>
   <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm"></span>b = 12, h = 5 → A = 60</li><li><span class="ws-blank ws-blank-sm"></span>b = 7, h = 6 → A = 42</li><li><span class="ws-blank ws-blank-sm"></span>b = 10, h = 8 → A = 80</li><li><span class="ws-blank ws-blank-sm"></span>b = 9, h = 4 → A = 36</li><li><span class="ws-blank ws-blank-sm"></span>b = 11, h = 7 → A = 77</li><li><span class="ws-blank ws-blank-sm"></span>b = 5, h = 10 → A = 50</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Find the missing height: b = 8, A = 48</p><div class="ws-work"><span class="ws-work-label">Show your work</span></div></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Area of Parallelograms.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Area of a parallelogram = base × height, where the height is the straight-up (perpendicular) distance, NOT the slanted side.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the parallelogram</span><span class="ws-step-w">base = 9 cm, slanted side = 10 cm, height = 6 cm</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Write the formula</span><span class="ws-step-w">A = base × height</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Substitute the values</span><span class="ws-step-w">A = 9 × 10</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Calculate the area</span><span class="ws-step-w">A = 90 sq cm</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
   <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.G.1</span>
+      <span class="ws-ver">Challenge</span>
+    </div>
+    <h1 class="ws-title">Area of Parallelograms</h1>
+    <p class="ws-sub">Practice — Challenge</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Find the Area Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Identify base and height</span><span class="ws-step-w">b = 11 m, slant side = 8 m, h = 6 m</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Write the formula</span><span class="ws-step-w">A = b × h</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Substitute values</span><span class="ws-step-w">A = 11 × 8</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Calculate</span><span class="ws-step-w">A = 88 sq m</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A parallelogram has a base of 12 cm. If you double the height, the area doubles too. Explain why this happens using the formula, and give a specific example with numbers.</p><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Plot the parallelogram and find its area.</p><div class="ws-work"><span class="ws-work-label">Show your work</span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.G.1</span>
+      <span class="ws-ver">Level 0 — Answer Key</span>
+    </div>
+    <h1 class="ws-title">Area of Parallelograms</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">What is the area of a parallelogram with base 10 cm and height 7 cm?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>70 sq cm</li><li class="ws-opt"><span class="ws-bub">B</span>34 sq cm</li><li class="ws-opt"><span class="ws-bub">C</span>17 sq cm</li><li class="ws-opt"><span class="ws-bub">D</span>70 cm</li></ol><p class="ws-keynote">A = b × h = 10 × 7 = 70 square centimeters.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Area of Parallelograms is skipping the key idea: &quot;Area of a parallelogram = base × height, where the height is the straight-up (perpendicular) distance, NOT the slanted side.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A parallelogram has an area of 54 sq ft and a base of 9 ft. What is the height?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>6 ft</li><li class="ws-opt"><span class="ws-bub">B</span>45 ft</li><li class="ws-opt"><span class="ws-bub">C</span>63 ft</li><li class="ws-opt"><span class="ws-bub">D</span>27 ft</li></ol><p class="ws-keynote">A = b × h → 54 = 9 × h → h = 54 ÷ 9 = 6 ft.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Area of Parallelograms is skipping the key idea: &quot;Area of a parallelogram = base × height, where the height is the straight-up (perpendicular) distance, NOT the slanted side.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is the area of a parallelogram with base 9 cm and height 5 cm?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>45 sq cm</li><li class="ws-opt"><span class="ws-bub">B</span>14 sq cm</li><li class="ws-opt"><span class="ws-bub">C</span>22.5 sq cm</li><li class="ws-opt"><span class="ws-bub">D</span>90 sq cm</li></ol><p class="ws-keynote">A = b × h = 9 × 5 = 45 square centimeters.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Area of Parallelograms is skipping the key idea: &quot;Area of a parallelogram = base × height, where the height is the straight-up (perpendicular) distance, NOT the slanted side.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Which measurement is the height of a parallelogram?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>The perpendicular distance between the base and the opposite side</li><li class="ws-opt"><span class="ws-bub">B</span>The length of the slanted side</li><li class="ws-opt"><span class="ws-bub">C</span>The perimeter divided by 4</li><li class="ws-opt"><span class="ws-bub">D</span>The longest side</li></ol><p class="ws-keynote">The height is always the perpendicular (straight up-and-down) distance between the base and the opposite side, not the slanted side.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Area of Parallelograms is skipping the key idea: &quot;Area of a parallelogram = base × height, where the height is the straight-up (perpendicular) distance, NOT the slanted side.&quot; — always check your work against this rule before you submit.</p></div></li></ol>
   </section>
 <section class="ws-page">
     <header class="ws-head">
@@ -138,11 +207,12 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     
-    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">What is the area of a parallelogram with base 10 cm and height 7 cm?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>70 sq cm</li><li class="ws-opt"><span class="ws-bub">B</span>34 sq cm</li><li class="ws-opt"><span class="ws-bub">C</span>17 sq cm</li><li class="ws-opt"><span class="ws-bub">D</span>70 cm</li></ol><p class="ws-keynote">A = b × h = 10 × 7 = 70 square centimeters.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A parallelogram has an area of 54 sq ft and a base of 9 ft. What is the height?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>6 ft</li><li class="ws-opt"><span class="ws-bub">B</span>45 ft</li><li class="ws-opt"><span class="ws-bub">C</span>63 ft</li><li class="ws-opt"><span class="ws-bub">D</span>27 ft</li></ol><p class="ws-keynote">A = b × h → 54 = 9 × h → h = 54 ÷ 9 = 6 ft.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is the area of a parallelogram with base 9 cm and height 5 cm?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>45 sq cm</li><li class="ws-opt"><span class="ws-bub">B</span>14 sq cm</li><li class="ws-opt"><span class="ws-bub">C</span>22.5 sq cm</li><li class="ws-opt"><span class="ws-bub">D</span>90 sq cm</li></ol><p class="ws-keynote">A = b × h = 9 × 5 = 45 square centimeters.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Which measurement is the height of a parallelogram?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>The perpendicular distance between the base and the opposite side</li><li class="ws-opt"><span class="ws-bub">B</span>The length of the slanted side</li><li class="ws-opt"><span class="ws-bub">C</span>The perimeter divided by 4</li><li class="ws-opt"><span class="ws-bub">D</span>The longest side</li></ol><p class="ws-keynote">The height is always the perpendicular (straight up-and-down) distance between the base and the opposite side, not the slanted side.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">What is the area of a parallelogram with base 10 cm and height 7 cm?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>70 sq cm</li><li class="ws-opt"><span class="ws-bub">B</span>34 sq cm</li><li class="ws-opt"><span class="ws-bub">C</span>17 sq cm</li><li class="ws-opt"><span class="ws-bub">D</span>70 cm</li></ol><p class="ws-keynote">A = b × h = 10 × 7 = 70 square centimeters.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Area of Parallelograms is skipping the key idea: &quot;Area of a parallelogram = base × height, where the height is the straight-up (perpendicular) distance, NOT the slanted side.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A parallelogram has an area of 54 sq ft and a base of 9 ft. What is the height?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>6 ft</li><li class="ws-opt"><span class="ws-bub">B</span>45 ft</li><li class="ws-opt"><span class="ws-bub">C</span>63 ft</li><li class="ws-opt"><span class="ws-bub">D</span>27 ft</li></ol><p class="ws-keynote">A = b × h → 54 = 9 × h → h = 54 ÷ 9 = 6 ft.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Area of Parallelograms is skipping the key idea: &quot;Area of a parallelogram = base × height, where the height is the straight-up (perpendicular) distance, NOT the slanted side.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is the area of a parallelogram with base 9 cm and height 5 cm?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>45 sq cm</li><li class="ws-opt"><span class="ws-bub">B</span>14 sq cm</li><li class="ws-opt"><span class="ws-bub">C</span>22.5 sq cm</li><li class="ws-opt"><span class="ws-bub">D</span>90 sq cm</li></ol><p class="ws-keynote">A = b × h = 9 × 5 = 45 square centimeters.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Area of Parallelograms is skipping the key idea: &quot;Area of a parallelogram = base × height, where the height is the straight-up (perpendicular) distance, NOT the slanted side.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Which measurement is the height of a parallelogram?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>The perpendicular distance between the base and the opposite side</li><li class="ws-opt"><span class="ws-bub">B</span>The length of the slanted side</li><li class="ws-opt"><span class="ws-bub">C</span>The perimeter divided by 4</li><li class="ws-opt"><span class="ws-bub">D</span>The longest side</li></ol><p class="ws-keynote">The height is always the perpendicular (straight up-and-down) distance between the base and the opposite side, not the slanted side.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Area of Parallelograms is skipping the key idea: &quot;Area of a parallelogram = base × height, where the height is the straight-up (perpendicular) distance, NOT the slanted side.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
   <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>Patio X</td><td>6 ft</td><td>4 ft</td><td></td></tr><tr><td>Patio Y</td><td>11 ft</td><td>3 ft</td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Area of Parallelograms.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Area of a parallelogram = base × height, where the height is the straight-up (perpendicular) distance, NOT the slanted side.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the parallelogram</span><span class="ws-step-w">base = 7 ft, height = 4 ft</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Write the formula</span><span class="ws-step-w">A = base × height</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Substitute the values</span><span class="ws-step-w">A = 7 + 4</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Calculate the area</span><span class="ws-step-w">A = 11 sq ft</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
-  <p class="ws-keynote">See worked solution.</p></div></li></ol>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: Area uses multiplication, not addition. The formula is A = base × height, so A = 7 × 4 = 28 sq ft.</p></div></li></ol>
   </section>
 <section class="ws-page">
     <header class="ws-head">
@@ -155,20 +225,32 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     
+    
     <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
   <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>Patio A</td><td>14 ft</td><td>9 ft</td><td></td></tr><tr><td>Patio B</td><td>8 ft</td><td></td><td>56 sq ft</td></tr><tr><td>Patio C</td><td></td><td>12 ft</td><td>96 sq ft</td></tr><tr><td>Patio D</td><td>15 ft</td><td>6 ft</td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Write the letter of the matching answer next to each.</p>
   <div class="ws-match"><ol class="ws-match-terms"><li class="ws-match-term"><span class="ws-blank ws-blank-sm">D</span>Triangle 8×6</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">E</span>Parallelogram 5×4</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">F</span>Rectangle 7×3</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">B</span>Triangle 10×8</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">A</span>Square side 6</li><li class="ws-match-term"><span class="ws-blank ws-blank-sm">C</span>Parallelogram 9×2</li></ol><ul class="ws-match-bank"><li><span class="ws-bub ws-bub-sm">A</span>36 sq units</li><li><span class="ws-bub ws-bub-sm">B</span>40 sq units</li><li><span class="ws-bub ws-bub-sm">C</span>18 sq units</li><li><span class="ws-bub ws-bub-sm">D</span>24 sq units</li><li><span class="ws-bub ws-bub-sm">E</span>20 sq units</li><li><span class="ws-bub ws-bub-sm">F</span>21 sq units</li></ul></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Sort each parallelogram by whether its area is greater than 50 sq units or 50 or less.</p>
   <p class="ws-prompt">Categories: <b>greater · notgreater</b></p>
   <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm">greater</span>b = 12, h = 5 → A = 60</li><li><span class="ws-blank ws-blank-sm">notgreater</span>b = 7, h = 6 → A = 42</li><li><span class="ws-blank ws-blank-sm">greater</span>b = 10, h = 8 → A = 80</li><li><span class="ws-blank ws-blank-sm">notgreater</span>b = 9, h = 4 → A = 36</li><li><span class="ws-blank ws-blank-sm">greater</span>b = 11, h = 7 → A = 77</li><li><span class="ws-blank ws-blank-sm">notgreater</span>b = 5, h = 10 → A = 50</li></ul></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Find the missing height: b = 8, A = 48</p></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Area of Parallelograms.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Area of a parallelogram = base × height, where the height is the straight-up (perpendicular) distance, NOT the slanted side.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read the parallelogram</span><span class="ws-step-w">base = 9 cm, slanted side = 10 cm, height = 6 cm</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Write the formula</span><span class="ws-step-w">A = base × height</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Substitute the values</span><span class="ws-step-w">A = 9 × 10</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Calculate the area</span><span class="ws-step-w">A = 90 sq cm</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
-  <p class="ws-keynote">See worked solution.</p></div></li></ol>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: The height is 6 cm, not the slanted side of 10 cm. Substitute the perpendicular height: A = 9 × 6 = 54 sq cm. Only the straight-up height belongs in A = base × height.</p></div></li></ol>
   </section>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.G.1</span>
+      <span class="ws-ver">Challenge — Answer Key</span>
+    </div>
+    <h1 class="ws-title">Area of Parallelograms</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Find the Area Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Identify base and height</span><span class="ws-step-w">b = 11 m, slant side = 8 m, h = 6 m</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Write the formula</span><span class="ws-step-w">A = b × h</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Substitute values</span><span class="ws-step-w">A = 11 × 8</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Calculate</span><span class="ws-step-w">A = 88 sq m</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: The height is 6 m, not the slant side of 8 m. A = 11 × 6 = 66 sq m. Always use the perpendicular height, not the slanted side.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A parallelogram has a base of 12 cm. If you double the height, the area doubles too. Explain why this happens using the formula, and give a specific example with numbers.</p><p class="ws-keynote">Look for: formula, base, height, double, multiply, proportional.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Plot the parallelogram and find its area.</p></div></li></ol>
+  </section>
 </body>
 </html>

@@ -412,11 +412,13 @@
     <!-- nsr-injected:end -->
     <link rel="stylesheet" href="/shared/projects/projects-premium.css" />
     <link rel="stylesheet" href="/shared/projects/projects-tabs.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-tplus.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-interactive.css" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
   <link rel="stylesheet" href="/assets/mobile-access.css">
   <!-- mobile-access-injected:end -->
 </head>
-  <body class="pk">
+  <body class="pk" data-pk-theme="u1">
     <header class="phero">
       <div class="deco">🤖</div>
       <h1>Build-a-Bot Budget Lab</h1>
@@ -442,6 +444,7 @@
             🔵 Level 2 (challenge)
           </button>
         </span>
+        <button class="pk-tts-toggle" data-tts-toggle type="button" aria-pressed="false" title="Read text aloud">🔊 Read aloud</button>
         <button onclick="PK.save('u1ProjectB')">💾 Save</button>
         <button
           onclick="PK.load('u1ProjectB', { show: true, after: recalcAll })"
@@ -494,7 +497,7 @@
         <div class="pk-vocab">
           <div class="pk-term">
             <span class="pk-icon">✖️</span><b>Decimal Multiplication</b>
-            <p>Price × quantity, keeping the decimal places.</p>
+            <p>Multiply the price by how many you buy. Keep the dot.</p>
             <p class="pk-es">
               Multiplicación de decimales: precio × cantidad, manteniendo los
               decimales.
@@ -502,14 +505,14 @@
           </div>
           <div class="pk-term">
             <span class="pk-icon">➗</span><b>Multi-Digit Division</b>
-            <p>Splitting a cost into equal shares.</p>
+            <p>Sharing a cost into equal parts.</p>
             <p class="pk-es">
               División de varios dígitos: dividir un costo en partes iguales.
             </p>
           </div>
           <div class="pk-term">
             <span class="pk-icon">🧰</span><b>GCF — Greatest Common Factor</b>
-            <p>The biggest number that divides two counts evenly.</p>
+            <p>The biggest number that goes into both counts with none left over.</p>
             <p class="pk-es">
               MCD — Máximo Común Divisor: el número más grande que divide a
               ambos sin sobrar.
@@ -517,7 +520,7 @@
           </div>
           <div class="pk-term">
             <span class="pk-icon">⏱️</span><b>LCM — Least Common Multiple</b>
-            <p>The first number two cycles share.</p>
+            <p>The first number that two repeating cycles both land on.</p>
             <p class="pk-es">
               mcm — mínimo común múltiplo: el primer número que comparten dos
               ciclos.
@@ -527,15 +530,46 @@
         <div class="grid2" style="margin-top: 18px">
           <div class="pk-callout">
             <h3>Formula Bank</h3>
-            <p><b>Line total:</b> unit price × quantity</p>
-            <p><b>Fair share:</b> total cost ÷ team members</p>
-            <p>
-              <b>GCF(a, b):</b> biggest shared factor → number of equal kits
-            </p>
-            <p><b>Budget left:</b> budget − total spent</p>
-            <p class="pk-lvl2">
-              <b>Distributive (6.NS.4):</b> a + b = GCF × (a÷GCF + b÷GCF)
-            </p>
+            <ul class="pk-formula">
+              <li>
+                <span class="pk-f-name">Line total</span>
+                <span class="pk-f-mean"
+                  >The price of one item × how many you buy.</span
+                >
+                <span class="pk-eg">Example: $12.50 × 4 = $50.00</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Fair share</span>
+                <span class="pk-f-mean"
+                  >Total cost ÷ number of teammates, so everyone pays the
+                  same.</span
+                >
+                <span class="pk-eg">Example: $240 ÷ 8 = $30 each</span>
+              </li>
+              <li>
+                <span class="pk-f-name">GCF — Greatest Common Factor</span>
+                <span class="pk-f-mean"
+                  >The biggest number that divides <b>both</b> amounts evenly. It
+                  tells you how many equal kits you can build.</span
+                >
+                <span class="pk-eg">Example: GCF of 24 and 36 = 12</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Money left over</span>
+                <span class="pk-f-mean"
+                  >Money you start with − money you spend.</span
+                >
+                <span class="pk-eg">Example: $200 − $175 = $25 left</span>
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">Break-apart trick (6.NS.4)</span>
+                <span class="pk-f-mean"
+                  >Pull out the GCF, add what's left inside, then multiply
+                  back.</span
+                >
+                <span class="pk-eg">Example: 24 + 36 = 12 × (2 + 3)</span>
+              </li>
+            </ul>
           </div>
           <div class="pk-callout">
             <h3>Sentence Frames</h3>
@@ -606,7 +640,13 @@
             <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px;">
               <span>📋</span> Scenario &amp; Level Options
             </h3>
-            <h2>Outfit YOUR Team</h2>
+            <p style="font-size: 14px; line-height: 1.6; margin: 0 0 10px">
+              You are your <strong>robotics team's purchasing engineer</strong>. You will price a parts order, split the cost fairly among teammates, pack equal toolkits, and check whether you stayed under budget, then compare your order with a partner and with real robotics kit prices.
+            </p>
+            <ul style="font-size: 14px; line-height: 1.6; margin: 0; padding-left: 18px">
+              <li><strong>Level 1 (support):</strong> use friendly, round numbers (for example, a $18.75 motor, 8 teammates, and a $500 budget).</li>
+              <li><strong>Level 2 (challenge):</strong> use real, uneven numbers (for example, a $12.25 sensor, 7 teammates, and part counts that do not split evenly).</li>
+            </ul>
           </div>
         </div>
         <p>
@@ -660,7 +700,7 @@
                 id="p1"
                 data-save
                 step="0.01"
-                placeholder="18.75"
+                placeholder=""
                 oninput="calcParts()"
                 style="width: 110px; padding: 6px"
               />
@@ -670,7 +710,7 @@
                 type="number"
                 id="q1"
                 data-save
-                placeholder="4"
+                placeholder=""
                 oninput="calcParts()"
                 style="width: 80px; padding: 6px"
               />
@@ -684,7 +724,7 @@
                 id="p2"
                 data-save
                 step="0.01"
-                placeholder="6.40"
+                placeholder=""
                 oninput="calcParts()"
                 style="width: 110px; padding: 6px"
               />
@@ -694,7 +734,7 @@
                 type="number"
                 id="q2"
                 data-save
-                placeholder="6"
+                placeholder=""
                 oninput="calcParts()"
                 style="width: 80px; padding: 6px"
               />
@@ -708,7 +748,7 @@
                 id="p3"
                 data-save
                 step="0.01"
-                placeholder="12.25"
+                placeholder=""
                 oninput="calcParts()"
                 style="width: 110px; padding: 6px"
               />
@@ -718,7 +758,7 @@
                 type="number"
                 id="q3"
                 data-save
-                placeholder="3"
+                placeholder=""
                 oninput="calcParts()"
                 style="width: 80px; padding: 6px"
               />
@@ -795,7 +835,7 @@
           <div class="grid2">
             <div>
               <label class="fld" for="worldCountry">Researched Kit Name</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+              <input type="text" id="worldCountry" data-save placeholder="" oninput="recalcAll()">
             </div>
             <div>
               <label class="fld" for="s-total">Kit Price ($)</label>
@@ -804,7 +844,7 @@
               id="s-total"
               data-save
               step="0.01"
-              placeholder="example: 384.00"
+              placeholder=""
               oninput="calcSplit()"
             />
             </div>
@@ -818,7 +858,7 @@
               id="s-members"
               data-save
               min="1"
-              placeholder="example: 8"
+              placeholder=""
               oninput="calcSplit()"
             />
           </div>
@@ -830,7 +870,7 @@
         <details class="hintbox">
           <summary>Need a hint?</summary>
           <p>
-            Divide the total by the number of members. $384.00 ÷ 8 = $48.00
+            Divide the total by the number of members. 384.00 ÷ 8 =48.00
             each.
           </p>
         </details>
@@ -888,7 +928,7 @@
               id="f-screws"
               data-save
               min="1"
-              placeholder="example: 72"
+              placeholder=""
               oninput="calcKits()"
             />
           </div>
@@ -899,7 +939,7 @@
               id="f-bolts"
               data-save
               min="1"
-              placeholder="example: 54"
+              placeholder=""
               oninput="calcKits()"
             />
           </div>
@@ -908,6 +948,7 @@
           Make the most kits
         </button>
         <div class="readout" id="kits-out"></div>
+        <div class="pki-manip" data-manip="gcf-bags" data-item-a="🔩" data-label-a="screws" data-item-b="⚙️" data-label-b="bolts" data-default-a="72" data-default-b="54" data-group="toolkit"></div>
         <div class="pk-lvl2" style="margin-top: 16px">
           <div class="task">
             <strong>Level 2 extension (Distributive Property · 6.NS.4):</strong>
@@ -921,7 +962,7 @@
             type="text"
             id="distrib"
             data-save
-            placeholder="example: 72 + 54 = 18 × (4 + 3)"
+            placeholder=""
           />
         </div>
         <details class="hintbox">
@@ -979,7 +1020,7 @@
               id="b-budget"
               data-save
               step="0.01"
-              placeholder="example: 500.00"
+              placeholder=""
               oninput="calcBudget()"
             />
           </div>
@@ -990,7 +1031,7 @@
               id="b-parts"
               data-save
               step="0.01"
-              placeholder="example: 150.15"
+              placeholder=""
               oninput="calcBudget()"
             />
           </div>
@@ -1001,7 +1042,7 @@
               id="b-travel"
               data-save
               step="0.01"
-              placeholder="example: 210.50"
+              placeholder=""
               oninput="calcBudget()"
             />
           </div>
@@ -1012,7 +1053,7 @@
               id="b-snacks"
               data-save
               step="0.01"
-              placeholder="example: 64.80"
+              placeholder=""
               oninput="calcBudget()"
             />
           </div>
@@ -1031,7 +1072,7 @@
           type="number"
           id="check-ties"
           data-save
-          placeholder="Type a number"
+          placeholder=""
         />
         <button class="btn" type="button" onclick="checkTies()">
           Check answer
@@ -1103,7 +1144,7 @@
               type="text"
               id="partnerName"
               data-save
-              placeholder="example: R.K."
+              placeholder=""
             />
           </div>
           <div>
@@ -1149,7 +1190,7 @@
         <textarea
           id="peerReflect"
           data-save
-          placeholder="My order has ___ while my partner's has ___, so ___."
+          placeholder=""
         ></textarea>
       </section>
 
@@ -1187,7 +1228,7 @@
               data-save
               step="0.01"
               oninput="worldGo()"
-              placeholder="type your value"
+              placeholder=""
             />
             <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
               Tip: try your parts subtotal or your cost per teammate.
@@ -1231,7 +1272,7 @@
                 type="number"
                 id="whatIfVal"
                 step="0.01"
-                placeholder="example: 300.00"
+                placeholder=""
               />
             </div>
           </div>
@@ -1250,7 +1291,7 @@
         <textarea
           id="worldReflect"
           data-save
-          placeholder="My value is ___ the sample average because ___."
+          placeholder=""
         ></textarea>
         <div class="pk-lvl2">
           <label class="fld" for="worldHard"
@@ -1260,7 +1301,7 @@
           <textarea
             id="worldHard"
             data-save
-            placeholder="$279.00 ÷ 6 = ___ because ___"
+            placeholder=""
           ></textarea>
         </div>
         <label class="fld" for="careful"
@@ -1270,7 +1311,7 @@
         <textarea
           id="careful"
           data-save
-          placeholder="It can be unfair to compare because ___."
+          placeholder=""
         ></textarea>
       </section>
 
@@ -1290,7 +1331,7 @@
         <textarea
           id="pitch"
           data-save
-          placeholder="Coach, our parts subtotal is $___. Split among ___ members, each owes $___. We can build ___ identical toolkits. Our full trip total is $___, which is under/over our budget. I recommend ___."
+          placeholder=""
         ></textarea>
         <h3 style="margin: 22px 0 6px">Engineering Checklist</h3>
         <ul class="checklist" id="checklist">
@@ -1455,23 +1496,24 @@
         const container = $("invoice-svg-container");
         if (!container) return;
         
-        const p1 = num("p1"), q1 = num("q1");
-        const p2 = num("p2"), q2 = num("q2");
-        const p3 = num("p3"), q3 = num("q3");
-        
-        const p1Valid = !isNaN(p1) && p1 >= 0 && !isNaN(q1) && q1 >= 0;
-        const p2Valid = !isNaN(p2) && p2 >= 0 && !isNaN(q2) && q2 >= 0;
-        const p3Valid = !isNaN(p3) && p3 >= 0 && !isNaN(q3) && q3 >= 0;
-        
-        if (!p1Valid && !p2Valid && !p3Valid) {
-          container.innerHTML = `
-            <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px; border: 1px solid var(--line);" xmlns="http://www.w3.org/2000/svg">
-              <text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e" font-style="italic">Enter prices & quantities to generate your Parts Order Ledger</text>
-            </svg>
-          `;
-          return;
+        let p1 = num("p1"), q1 = num("q1");
+        let p2 = num("p2"), q2 = num("q2");
+        let p3 = num("p3"), q3 = num("q3");
+
+        let p1Valid = !isNaN(p1) && p1 >= 0 && !isNaN(q1) && q1 >= 0;
+        let p2Valid = !isNaN(p2) && p2 >= 0 && !isNaN(q2) && q2 >= 0;
+        let p3Valid = !isNaN(p3) && p3 >= 0 && !isNaN(q3) && q3 >= 0;
+
+        // Show a worked EXAMPLE ledger by default so the card always has a
+        // reference; switches to the student's real order as they type.
+        const isExample = !p1Valid && !p2Valid && !p3Valid;
+        if (isExample) {
+          p1 = 12.5; q1 = 4;
+          p2 = 3.25; q2 = 8;
+          p3 = 8.0; q3 = 2;
+          p1Valid = p2Valid = p3Valid = true;
         }
-        
+
         const motorTotal = p1Valid ? p1 * q1 : 0;
         const wheelTotal = p2Valid ? p2 * q2 : 0;
         const sensorTotal = p3Valid ? p3 * q3 : 0;
@@ -1480,7 +1522,12 @@
         container.innerHTML = `
           <svg width="100%" height="220" viewBox="0 0 500 220" style="background:#fff; border-radius:8px; border: 1px solid var(--line);" xmlns="http://www.w3.org/2000/svg">
             <text x="250" y="30" text-anchor="middle" font-size="16" font-weight="bold" fill="#0f2b3c">Robotics Parts Order Ledger</text>
-            
+            ${
+              isExample
+                ? `<rect x="372" y="14" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" />
+                   <text x="430" y="28" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example order</text>`
+                : ""
+            }
             <!-- Table Headers -->
             <text x="30" y="60" font-size="13" font-weight="bold" fill="#5e6e7e">Item</text>
             <text x="220" y="60" font-size="13" font-weight="bold" fill="#5e6e7e" text-anchor="end">Unit Price</text>
@@ -1517,17 +1564,14 @@
       }
 
       function drawDivisionSvg() {
-        const t = num("s-total"),
+        let t = num("s-total"),
           m = num("s-members");
         const container = $("division-svg-container");
         if (!container) return;
-        if (isNaN(t) || t < 0 || isNaN(m) || m <= 0) {
-          container.innerHTML = `
-            <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px; border: 1px solid var(--line);" xmlns="http://www.w3.org/2000/svg">
-              <text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e" font-style="italic">Enter Kit Price & Teammates to visualize division</text>
-            </svg>
-          `;
-          return;
+        const isExample = isNaN(t) || t < 0 || isNaN(m) || m <= 0;
+        if (isExample) {
+          t = 240;
+          m = 8;
         }
         const quotient = t / m;
         const quotientStr = quotient.toFixed(2);
@@ -1566,6 +1610,12 @@
         container.innerHTML = `
           <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px; border: 1px solid var(--line);" xmlns="http://www.w3.org/2000/svg">
             <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Place-Value Division Alignment</text>
+            ${
+              isExample
+                ? `<rect x="360" y="16" width="128" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" />
+                   <text x="424" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · $240 ÷ 8</text>`
+                : ""
+            }
             ${decimalLine}
             <path d="${bracketPath}" fill="none" stroke="#0f2b3c" stroke-width="2" />
             <text x="${divisorX}" y="120" font-family="'Courier New', Courier, monospace" font-size="18" fill="#0f2b3c" text-anchor="end">${divisorStr}</text>
@@ -1577,19 +1627,16 @@
       }
 
       function drawGCFSvg() {
-        const s = num("f-screws");
-        const b = num("f-bolts");
+        let s = num("f-screws");
+        let b = num("f-bolts");
         const container = $("gcf-svg-container");
         if (!container) return;
-        if (isNaN(s) || s <= 0 || isNaN(b) || b <= 0) {
-          container.innerHTML = `
-            <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px; border: 1px solid var(--line);" xmlns="http://www.w3.org/2000/svg">
-              <text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e" font-style="italic">Enter Screws & Bolts amounts to visualize GCF</text>
-            </svg>
-          `;
-          return;
+        const isExample = isNaN(s) || s <= 0 || isNaN(b) || b <= 0;
+        if (isExample) {
+          s = 24;
+          b = 36;
         }
-        
+
         const g = gcd(s, b);
         const sFactors = getFactors(s);
         const bFactors = getFactors(b);
@@ -1612,6 +1659,12 @@
         container.innerHTML = `
           <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px; border: 1px solid var(--line);" xmlns="http://www.w3.org/2000/svg">
             <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">GCF Venn Diagram Guide</text>
+            ${
+              isExample
+                ? `<rect x="360" y="16" width="128" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" />
+                   <text x="424" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · 24 and 36</text>`
+                : ""
+            }
             ${leftCircle}
             ${rightCircle}
             
@@ -1633,19 +1686,17 @@
       }
 
       function drawBudgetSvg() {
-        const budget = num("b-budget");
-        const rawVals = ["b-parts", "b-travel", "b-snacks"].map(num);
+        let budget = num("b-budget");
+        let rawVals = ["b-parts", "b-travel", "b-snacks"].map(num);
         const container = $("budget-svg-container");
         if (!container) return;
-        if (rawVals.some(v => isNaN(v) || v < 0) || isNaN(budget) || budget <= 0) {
-          container.innerHTML = `
-            <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px; border: 1px solid var(--line);" xmlns="http://www.w3.org/2000/svg">
-              <text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e" font-style="italic">Enter Budget & Expenses to visualize breakdown</text>
-            </svg>
-          `;
-          return;
+        const isExample =
+          rawVals.some((v) => isNaN(v) || v < 0) || isNaN(budget) || budget <= 0;
+        if (isExample) {
+          budget = 200;
+          rawVals = [120, 30, 20];
         }
-        
+
         const total = rawVals.reduce((a, c) => a + c, 0);
         const left = budget - total;
         
@@ -1691,7 +1742,13 @@
         container.innerHTML = `
           <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px; border: 1px solid var(--line);" xmlns="http://www.w3.org/2000/svg">
             <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Budget Ledger Breakdown</text>
-            
+            ${
+              isExample
+                ? `<rect x="372" y="16" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" />
+                   <text x="430" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example ledger</text>`
+                : ""
+            }
+
             <rect x="${startX}" y="${barY}" width="${barWidth}" height="${barHeight}" rx="4" fill="#f1f5f9" />
             
             ${rects}
@@ -1790,6 +1847,7 @@
           $("kits-out").classList.remove("show");
           proj.kits = null;
           drawGCFSvg();
+          if (typeof drawVisualizer === "function") drawVisualizer();
           return;
         }
         const g = gcd(s, b);
@@ -1811,6 +1869,7 @@
             (g === 1 ? " ⚠️ try counts that share a bigger factor." : "."),
         );
         drawGCFSvg();
+        if (typeof drawVisualizer === "function") drawVisualizer();
       }
 
       function calcBudget() {
@@ -1920,11 +1979,8 @@
           sample = [...sample, customSize];
         }
         
-        const labels =
-          $("worldCat").value === "costPerGuest" || $("worldCat").value === "price"
-            ? { mean: "City avg $", me: "Me $" }
-            : { mean: "City avg", me: "Me" };
-            
+        const labels = { mean: "Sample avg $", me: "Me $" };
+
         PK.worldMeter("worldMeter", sample, my, labels);
         
         const fb = $("worldMeter");
@@ -2010,9 +2066,16 @@
 
       
       function drawVisualizer() {
-        const s = num("f-screws");
-        const b = num("f-bolts");
-        
+        let s = num("f-screws");
+        let b = num("f-bolts");
+        // Default to a worked EXAMPLE build so the visualizer always shows
+        // something to look at; switches to the student's numbers on input.
+        const isExample = !(!isNaN(s) && s > 0 && !isNaN(b) && b > 0);
+        if (isExample) {
+          s = 24;
+          b = 36;
+        }
+
         let html = "";
         if (!isNaN(s) && s > 0 && !isNaN(b) && b > 0) {
           const g = gcd(s, b);
@@ -2047,6 +2110,11 @@
           }
           
           html = `
+            ${
+              isExample
+                ? `<rect x="360" y="8" width="130" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="425" y="22" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · 24 and 36</text>`
+                : ""
+            }
             ${boxesHtml}
             <text x="250" y="215" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">
               GCF = ${g} Toolkits | Each gets ${screwsPer} Screws (🔵) & ${boltsPer} Bolts (🟧)
@@ -2178,6 +2246,7 @@ function recalcAll() {
       document.addEventListener("DOMContentLoaded", function () {
         renderWorld();
         PK.initLevel({ storageKey: "u1ProjectB", default: "level-1" });
+        PK.initTts({ storageKey: "u1ProjectB" });
         PK.load("u1ProjectB", { after: recalcAll });
         updateProgress();
       });
@@ -2186,7 +2255,113 @@ function recalcAll() {
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
+        <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
+    <script type="application/json" id="pk-research">
+      {
+        "icon": "🔎",
+        "title": "Research Lab — Price It Like a Pro",
+        "intro": "Real buyers and budgeters never guess — they look up prices and do the decimal math. Gather real numbers, then use them.",
+        "brief": {
+          "theme": "field",
+          "title": "🧰 Your Research Mission",
+          "hook": "Find <b>real prices</b> and run the decimal math the way a real budget planner does.",
+          "steps": [
+            "Open a link (new tab — you keep your project).",
+            "Find the fact and type it into Field Notes.",
+            "Use your real numbers in the math problems.",
+            "Check off the Investigation Checklist."
+          ]
+        },
+        "fieldNotes": {
+          "title": "Field Notes — Record What You Find",
+          "intro": "Jot the exact number or rule you find. You'll reuse these in the math below.",
+          "fields": [
+            {
+              "label": "How to multiply decimals (the rule)",
+              "source": "Math is Fun",
+              "placeholder": "multiply, then count decimal places",
+              "hint": "Count total decimal places in BOTH factors."
+            },
+            {
+              "label": "How to divide decimals (the rule)",
+              "source": "Math is Fun",
+              "placeholder": "move the decimal point, then divide",
+              "hint": "Make the divisor a whole number first."
+            },
+            {
+              "label": "A real price of one item you want (from a store site or receipt)",
+              "source": "Any store site / receipt",
+              "placeholder": "$12.49",
+              "hint": "Use the exact price, cents included."
+            },
+            {
+              "label": "A real price of a second item",
+              "source": "Any store site / receipt",
+              "placeholder": "$3.75",
+              "hint": "Cents matter for decimal practice."
+            },
+            {
+              "label": "Your total budget",
+              "source": "Your plan",
+              "placeholder": "$50.00",
+              "hint": "Pick a realistic class budget."
+            }
+          ]
+        },
+        "mathTasks": [
+          {
+            "title": "1 · Order cost",
+            "prompt": "Pick a quantity of your first item (Field Note 3). Multiply price × quantity with <b>decimal multiplication</b>. Show your work.",
+            "level2": "Add the cost of your second item order. What is the combined total?"
+          },
+          {
+            "title": "2 · How many can you afford?",
+            "prompt": "Using your budget (Field Note 5) and the price of an item, use <b>decimal division</b> to find how many whole items you can buy.",
+            "level2": "How much money is left over after buying that many? Show the subtraction."
+          },
+          {
+            "title": "3 · Stay on budget",
+            "prompt": "Total your full order. Is it under your budget? By how much? Show the math.",
+            "level2": "If you went over, what is one item you could cut to get back under budget?"
+          }
+        ],
+        "investigationChecklist": [
+          "I recorded the decimal-multiplication rule.",
+          "I recorded the decimal-division rule.",
+          "I found two real prices.",
+          "I used real prices in a multiplication problem.",
+          "I used division to check what I can afford.",
+          "I confirmed my order fits the budget."
+        ],
+        "links": [
+          {
+            "icon": "✖️",
+            "name": "Math is Fun — Multiplying Decimals",
+            "url": "https://www.mathsisfun.com/multiplying-decimals.html",
+            "find": "The step-by-step rule with a worked example.",
+            "look": "count the decimal places in both numbers"
+          },
+          {
+            "icon": "➗",
+            "name": "Math is Fun — Dividing Decimals",
+            "url": "https://www.mathsisfun.com/dividing-decimals.html",
+            "find": "How to move the decimal point before dividing.",
+            "look": "make the divisor a whole number"
+          },
+          {
+            "icon": "🔢",
+            "name": "Math is Fun — Decimals",
+            "url": "https://www.mathsisfun.com/decimals.html",
+            "find": "What each decimal place is worth.",
+            "look": "tenths, hundredths, thousandths"
+          }
+        ],
+        "note": "These sites were picked for class. They open in a new tab so you keep your project. If a page asks you to sign in or buy something, just close it and come back."
+      }
+    </script>
     <script src="/shared/projects/projects-tabs.js" defer></script>
+    <script src="/shared/projects/projects-interactive.js" defer></script>
+    <script src="/shared/projects/manip-gcf-bags.js" defer></script>
   <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <!-- mwb-injected:end -->

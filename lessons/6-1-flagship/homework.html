@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Hanken+Grotesk:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap");
 :root {
   --navy: #12355b;
   --navy-light: #18466f;
@@ -594,6 +595,41 @@ header.homework-header h1 {
 }
 .hw-draw-clear:hover { border-color: var(--teal); }
 @media print { .hw-draw-clear { display: none; } }
+
+/* Interactive tap-to-graph widgets (number line, coordinate plane, grid) */
+.hw-visual-frame.hw-interactive { position: relative; }
+.hw-interactive .hw-visual-svg { touch-action: manipulation; -webkit-user-select: none; user-select: none; }
+.hw-interactive .ng-hit { cursor: pointer; fill: transparent; }
+.hw-interactive .ng-tick-lbl, .hw-interactive .ng-axis-lbl { font-family: "Outfit", sans-serif; font-size: 11px; font-weight: 700; fill: var(--navy); }
+.hw-interactive .ng-point { fill: var(--teal); stroke: var(--navy); stroke-width: 2; cursor: pointer; }
+.hw-interactive .ng-point.is-open { fill: #ffffff; }
+.hw-interactive .ng-ray { stroke: var(--teal); stroke-width: 5; stroke-linecap: round; }
+.hw-interactive .ng-plot { fill: var(--teal); stroke: var(--navy); stroke-width: 1.5; cursor: pointer; }
+.hw-interactive .ng-plot-lbl { font-family: "Outfit", sans-serif; font-size: 10px; font-weight: 700; fill: var(--navy); }
+.hw-interactive .ng-cell { fill: transparent; cursor: pointer; }
+.hw-interactive .ng-cell.is-on { fill: rgba(31,166,162,0.45); }
+.hw-graph-controls { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 8px; }
+.hw-graph-controls:empty { display: none; }
+.hw-graph-controls button {
+  font-family: var(--font-display); font-size: 12.5px; font-weight: 700;
+  background: #ffffff; color: var(--navy);
+  border: 1.5px solid var(--line); border-radius: 8px; padding: 6px 11px; min-height: 36px; cursor: pointer;
+}
+.hw-graph-controls button:hover { border-color: var(--teal); }
+.hw-graph-controls button[aria-pressed="true"] { background: var(--teal); color: #ffffff; border-color: var(--teal); }
+.hw-graph-reset {
+  position: absolute; top: 6px; right: 6px; z-index: 2;
+  font-family: var(--font-display); font-size: 12px; font-weight: 700;
+  background: #ffffff; color: var(--navy);
+  border: 1px solid var(--line); border-radius: 8px; padding: 3px 9px; cursor: pointer;
+}
+.hw-graph-reset:hover { border-color: var(--teal); }
+.hw-graph-readout {
+  margin-top: 8px; font-family: "Outfit", sans-serif; font-weight: 800;
+  font-size: 14px; color: var(--navy); min-height: 18px;
+}
+.hw-graph-readout:empty { display: none; }
+@media print { .hw-graph-reset, .hw-graph-controls { display: none; } }
 .hw-work-input {
   width: 100%;
   min-height: 96px;
@@ -2302,6 +2338,26 @@ body { font-size: 15px; line-height: 1.58; }
   .worked-step { break-inside: avoid; box-shadow: none; }
   .card { box-shadow: none; }
 }
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
 </style>
 </head>
 <body>
@@ -5715,6 +5771,221 @@ function resetWorksheet() {
   }
 }
 
+// ---- Interactive tap-to-graph widgets (number line / coordinate plane / grid) ----
+// Progressive enhancement: hydrates the static .hw-visual-svg fallbacks into
+// structured manipulatives. State persists via the hidden [data-graph-state] input,
+// which rides the existing saveState()/loadState() pipeline.
+var NeftGraph = (function () {
+  var SVGNS = "http://www.w3.org/2000/svg";
+  function el(name, attrs) {
+    var e = document.createElementNS(SVGNS, name);
+    if (attrs) { for (var k in attrs) e.setAttribute(k, attrs[k]); }
+    return e;
+  }
+  function bi(en, es) {
+    return '<span class="lang-en">' + en + '</span><span class="lang-es" lang="es">' + es + '</span>';
+  }
+  function readState(frame) {
+    var inp = frame.querySelector("[data-graph-state]");
+    if (!inp || !inp.value) return null;
+    try { return JSON.parse(inp.value); } catch (e) { return null; }
+  }
+  function writeState(frame, state) {
+    var inp = frame.querySelector("[data-graph-state]");
+    if (inp) inp.value = state ? JSON.stringify(state) : "";
+    if (typeof saveState === "function") saveState();
+  }
+  function setReadout(frame, html) {
+    var r = frame.querySelector("[data-graph-readout]");
+    if (r) r.innerHTML = html || "";
+  }
+  function makeBtn(html, onClick) {
+    var b = document.createElement("button");
+    b.type = "button";
+    b.innerHTML = html;
+    b.addEventListener("click", onClick);
+    return b;
+  }
+
+  // ----- Number line: tap a tick to set the boundary, toggle open/closed, shade a ray -----
+  function initNumberLine(frame) {
+    var MIN = -5, MAX = 5, x0 = 24, x1 = 320, y = 46;
+    var stepX = (x1 - x0) / (MAX - MIN);
+    var state = readState(frame) || { v: null, closed: true, dir: null };
+    var oldSvg = frame.querySelector(".hw-visual-svg");
+    var svg = el("svg", { viewBox: "0 0 344 96", "class": "hw-visual-svg", role: "img", "aria-label": "Interactive number line" });
+    var rayLayer = el("g"), pointLayer = el("g");
+    svg.appendChild(el("line", { x1: 14, y1: y, x2: 330, y2: y, stroke: "#12355b", "stroke-width": 2 }));
+    svg.appendChild(el("polygon", { points: "330," + y + " 320," + (y - 5) + " 320," + (y + 5), fill: "#12355b" }));
+    svg.appendChild(el("polygon", { points: "14," + y + " 24," + (y - 5) + " 24," + (y + 5), fill: "#12355b" }));
+    function xFor(v) { return x0 + (v - MIN) * stepX; }
+    for (var v = MIN; v <= MAX; v++) {
+      var x = xFor(v);
+      svg.appendChild(el("line", { x1: x, y1: y - 6, x2: x, y2: y + 6, stroke: "#12355b", "stroke-width": 1.5 }));
+      var lbl = el("text", { x: x, y: y + 22, "text-anchor": "middle", "class": "ng-tick-lbl" });
+      lbl.textContent = String(v);
+      svg.appendChild(lbl);
+      (function (val, cx) {
+        var hit = el("rect", { x: cx - stepX / 2, y: 6, width: stepX, height: 60, "class": "ng-hit" });
+        hit.addEventListener("click", function () { state.v = val; render(); });
+        svg.appendChild(hit);
+      })(v, x);
+    }
+    svg.appendChild(rayLayer);
+    svg.appendChild(pointLayer);
+    oldSvg.parentNode.replaceChild(svg, oldSvg);
+
+    var controls = frame.querySelector("[data-graph-controls]");
+    controls.innerHTML = "";
+    var bCircle = makeBtn("", function () { state.closed = !state.closed; render(); });
+    var bLeft = makeBtn(bi("◀ Shade left", "◀ Sombrear izq."), function () { state.dir = state.dir === "left" ? null : "left"; render(); });
+    var bRight = makeBtn(bi("Shade right ▶", "Sombrear der. ▶"), function () { state.dir = state.dir === "right" ? null : "right"; render(); });
+    controls.appendChild(bCircle); controls.appendChild(bLeft); controls.appendChild(bRight);
+
+    function render() {
+      while (rayLayer.firstChild) rayLayer.removeChild(rayLayer.firstChild);
+      while (pointLayer.firstChild) pointLayer.removeChild(pointLayer.firstChild);
+      bCircle.innerHTML = state.closed ? bi("● Closed", "● Cerrado") : bi("○ Open", "○ Abierto");
+      bLeft.setAttribute("aria-pressed", state.dir === "left" ? "true" : "false");
+      bRight.setAttribute("aria-pressed", state.dir === "right" ? "true" : "false");
+      if (state.v != null) {
+        var px = xFor(state.v);
+        if (state.dir === "left") rayLayer.appendChild(el("line", { x1: 14, y1: y, x2: px, y2: y, "class": "ng-ray" }));
+        if (state.dir === "right") rayLayer.appendChild(el("line", { x1: px, y1: y, x2: 330, y2: y, "class": "ng-ray" }));
+        var pt = el("circle", { cx: px, cy: y, r: 7, "class": "ng-point" + (state.closed ? "" : " is-open") });
+        pt.addEventListener("click", function () { state.closed = !state.closed; render(); });
+        pointLayer.appendChild(pt);
+      }
+      if (state.v == null) {
+        setReadout(frame, "");
+      } else if (!state.dir) {
+        setReadout(frame, bi("Point at " + state.v, "Punto en " + state.v));
+      } else {
+        var op = state.dir === "right" ? (state.closed ? "≥" : ">") : (state.closed ? "≤" : "<");
+        setReadout(frame, bi("Your graph: x " + op + " " + state.v, "Tu gráfica: x " + op + " " + state.v));
+      }
+      writeState(frame, (state.v == null && state.dir == null) ? null : state);
+    }
+    frame.querySelector("[data-graph-reset]").addEventListener("click", function () {
+      state = { v: null, closed: true, dir: null }; render();
+    });
+    render();
+  }
+
+  // ----- Coordinate plane: tap a lattice point to plot/remove an ordered pair -----
+  function initCoordinatePlane(frame) {
+    var MIN = -5, MAX = 5, O = 120, STEP = 20; // origin at (120,120); 5*20=100 -> 20..220
+    var state = readState(frame) || { pts: [] };
+    var oldSvg = frame.querySelector(".hw-visual-svg");
+    var svg = el("svg", { viewBox: "0 0 240 240", "class": "hw-visual-svg", role: "img", "aria-label": "Interactive coordinate plane" });
+    function sx(x) { return O + x * STEP; }
+    function sy(yv) { return O - yv * STEP; }
+    for (var i = MIN; i <= MAX; i++) {
+      svg.appendChild(el("line", { x1: sx(i), y1: sy(MAX), x2: sx(i), y2: sy(MIN), stroke: "#d6e2ee", "stroke-width": 1 }));
+      svg.appendChild(el("line", { x1: sx(MIN), y1: sy(i), x2: sx(MAX), y2: sy(i), stroke: "#d6e2ee", "stroke-width": 1 }));
+    }
+    svg.appendChild(el("line", { x1: O, y1: sy(MAX) - 6, x2: O, y2: sy(MIN) + 6, stroke: "#12355b", "stroke-width": 2 }));
+    svg.appendChild(el("line", { x1: sx(MIN) - 6, y1: O, x2: sx(MAX) + 6, y2: O, stroke: "#12355b", "stroke-width": 2 }));
+    var xlbl = el("text", { x: sx(MAX) + 2, y: O + 14, "class": "ng-axis-lbl" }); xlbl.textContent = "x"; svg.appendChild(xlbl);
+    var ylbl = el("text", { x: O + 4, y: sy(MAX) + 2, "class": "ng-axis-lbl" }); ylbl.textContent = "y"; svg.appendChild(ylbl);
+    var plotLayer = el("g");
+    for (var gx = MIN; gx <= MAX; gx++) {
+      for (var gy = MIN; gy <= MAX; gy++) {
+        (function (px, py) {
+          var hit = el("circle", { cx: sx(px), cy: sy(py), r: 9, "class": "ng-hit" });
+          hit.addEventListener("click", function () { toggle(px, py); });
+          svg.appendChild(hit);
+        })(gx, gy);
+      }
+    }
+    svg.appendChild(plotLayer);
+    oldSvg.parentNode.replaceChild(svg, oldSvg);
+
+    function toggle(x, y) {
+      var idx = -1;
+      for (var i = 0; i < state.pts.length; i++) { if (state.pts[i][0] === x && state.pts[i][1] === y) { idx = i; break; } }
+      if (idx >= 0) state.pts.splice(idx, 1); else state.pts.push([x, y]);
+      render();
+    }
+    function render() {
+      while (plotLayer.firstChild) plotLayer.removeChild(plotLayer.firstChild);
+      var parts = [];
+      for (var i = 0; i < state.pts.length; i++) {
+        var p = state.pts[i];
+        plotLayer.appendChild(el("circle", { cx: sx(p[0]), cy: sy(p[1]), r: 4.5, "class": "ng-plot" }));
+        var t = el("text", { x: sx(p[0]) + 6, y: sy(p[1]) - 5, "class": "ng-plot-lbl" });
+        t.textContent = "(" + p[0] + ", " + p[1] + ")";
+        plotLayer.appendChild(t);
+        parts.push("(" + p[0] + ", " + p[1] + ")");
+      }
+      if (!parts.length) setReadout(frame, "");
+      else setReadout(frame, bi("Points: " + parts.join("  "), "Puntos: " + parts.join("  ")));
+      writeState(frame, state.pts.length ? state : null);
+    }
+    frame.querySelector("[data-graph-reset]").addEventListener("click", function () { state = { pts: [] }; render(); });
+    render();
+  }
+
+  // ----- Grid: tap cells to shade a model / count square units -----
+  function initGrid(frame) {
+    var COLS = 12, ROWS = 6, CELL = 24, PAD = 6;
+    var W = COLS * CELL + PAD * 2, H = ROWS * CELL + PAD * 2;
+    var state = readState(frame) || { cells: [] };
+    var on = {}; for (var i = 0; i < state.cells.length; i++) on[state.cells[i]] = true;
+    var oldSvg = frame.querySelector(".hw-visual-svg");
+    var svg = el("svg", { viewBox: "0 0 " + W + " " + H, "class": "hw-visual-svg", role: "img", "aria-label": "Interactive grid" });
+    svg.appendChild(el("rect", { x: PAD, y: PAD, width: COLS * CELL, height: ROWS * CELL, fill: "#ffffff", stroke: "#12355b", "stroke-width": 1.5 }));
+    var cellLayer = el("g");
+    svg.appendChild(cellLayer);
+    for (var c = 0; c <= COLS; c++) svg.appendChild(el("line", { x1: PAD + c * CELL, y1: PAD, x2: PAD + c * CELL, y2: PAD + ROWS * CELL, stroke: "#d6e2ee", "stroke-width": 1 }));
+    for (var r = 0; r <= ROWS; r++) svg.appendChild(el("line", { x1: PAD, y1: PAD + r * CELL, x2: PAD + COLS * CELL, y2: PAD + r * CELL, stroke: "#d6e2ee", "stroke-width": 1 }));
+    for (var rr = 0; rr < ROWS; rr++) {
+      for (var cc = 0; cc < COLS; cc++) {
+        (function (row, col) {
+          var key = row + "," + col;
+          var rect = el("rect", { x: PAD + col * CELL, y: PAD + row * CELL, width: CELL, height: CELL, "class": "ng-cell" + (on[key] ? " is-on" : "") });
+          rect.addEventListener("click", function () {
+            if (on[key]) { delete on[key]; rect.setAttribute("class", "ng-cell"); }
+            else { on[key] = true; rect.setAttribute("class", "ng-cell is-on"); }
+            commit();
+          });
+          cellLayer.appendChild(rect);
+        })(rr, cc);
+      }
+    }
+    oldSvg.parentNode.replaceChild(svg, oldSvg);
+    function commit() {
+      var keys = Object.keys(on);
+      if (!keys.length) setReadout(frame, "");
+      else setReadout(frame, bi("Shaded: " + keys.length + " square units", "Sombreado: " + keys.length + " unidades cuadradas"));
+      writeState(frame, keys.length ? { cells: keys } : null);
+    }
+    frame.querySelector("[data-graph-reset]").addEventListener("click", function () {
+      on = {};
+      var rects = cellLayer.querySelectorAll(".ng-cell");
+      for (var i = 0; i < rects.length; i++) rects[i].setAttribute("class", "ng-cell");
+      commit();
+    });
+    commit();
+  }
+
+  function initAll() {
+    var frames = document.querySelectorAll(".hw-visual-frame.hw-interactive");
+    for (var i = 0; i < frames.length; i++) {
+      var f = frames[i];
+      if (f.getAttribute("data-ng-ready")) continue;
+      f.setAttribute("data-ng-ready", "1");
+      var type = f.getAttribute("data-interactive");
+      try {
+        if (type === "number-line") initNumberLine(f);
+        else if (type === "coordinate-plane") initCoordinatePlane(f);
+        else if (type === "grid") initGrid(f);
+      } catch (e) { /* fail safe: keep static fallback */ }
+    }
+  }
+  return { initAll: initAll };
+})();
+
 // Initial configuration
 window.onload = function() {
   const hadSavedState = !!localStorage.getItem(STORAGE_KEY);
@@ -5726,6 +5997,7 @@ window.onload = function() {
     });
   }
   updateProgress();
+  NeftGraph.initAll();
 
   document.addEventListener("dragend", function() {
     document.querySelectorAll(".drag-card.dragging, .drag-order-row.dragging")

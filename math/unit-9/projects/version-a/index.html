@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Streaming Channel Growth Lab — Unit 9 Culminating Project</title>
     <meta
       name="description"
@@ -484,11 +484,13 @@
     <!-- nsr-injected:end -->
     <link rel="stylesheet" href="/shared/projects/projects-premium.css" />
     <link rel="stylesheet" href="/shared/projects/projects-tabs.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-tplus.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-interactive.css" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
-  <body class="pk">
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
+  <body class="pk" data-pk-theme="u9">
     <header class="phero">
       <div class="deco">📈</div>
       <h1>Streaming Channel Growth Lab</h1>
@@ -509,6 +511,15 @@
           <button data-level-btn="level-1" type="button">🟢 Level 1</button>
           <button data-level-btn="level-2" type="button">🔵 Level 2</button>
         </span>
+        <button
+          class="pk-tts-toggle"
+          data-tts-toggle
+          type="button"
+          aria-pressed="false"
+          title="Read text aloud"
+        >
+          🔊 Read aloud
+        </button>
         <button onclick="PK.save('u9ProjectA')">💾 Save</button>
         <button
           onclick="PK.load('u9ProjectA', { show: true, after: recalcAll })"
@@ -564,7 +575,7 @@
         <div class="pk-vocab">
           <div class="pk-term">
             <span class="pk-icon">🎮</span><b>Independent variable (x)</b>
-            <p>The input you control. Here it is the number of weeks.</p>
+            <p>The number you pick. Here it is the week number.</p>
             <p class="pk-es">
               Variable independiente (x): la entrada que tú controlas. Aquí es
               el número de semanas.
@@ -572,7 +583,7 @@
           </div>
           <div class="pk-term">
             <span class="pk-icon">📊</span><b>Dependent variable (y)</b>
-            <p>The output that depends on x. Here it is total subscribers.</p>
+            <p>The number you get from x. Here it is total subscribers.</p>
             <p class="pk-es">
               Variable dependiente (y): el resultado que depende de x. Aquí es
               el total de suscriptores.
@@ -582,7 +593,8 @@
             <span class="pk-icon">⚡</span
             ><b>Constant of proportionality (k)</b>
             <p>
-              The fixed number you multiply x by. New subscribers each week.
+              The number you multiply x by every time. New subscribers each
+              week.
             </p>
             <p class="pk-es">
               Constante de proporcionalidad (k): el número fijo por el que
@@ -591,7 +603,7 @@
           </div>
           <div class="pk-term">
             <span class="pk-icon">📐</span><b>Rate of change</b>
-            <p>How much y goes up each time x goes up by 1. It equals k.</p>
+            <p>How much y goes up when x goes up by 1. It equals k.</p>
             <p class="pk-es">
               Tasa de cambio: cuánto sube y cada vez que x sube en 1. Es igual a
               k.
@@ -599,7 +611,10 @@
           </div>
           <div class="pk-term">
             <span class="pk-icon">🎯</span><b>Origin (0, 0)</b>
-            <p>Where a proportional line starts. At week 0, subscribers = 0.</p>
+            <p>
+              The point (0, 0) where the line starts. At week 0, subscribers =
+              0.
+            </p>
             <p class="pk-es">
               Origen (0, 0): donde empieza una recta proporcional. En la semana
               0, suscriptores = 0.
@@ -609,14 +624,55 @@
         <div class="grid2" style="margin-top: 18px">
           <div class="pk-callout">
             <h3>Formula Bank</h3>
-            <p><b>The equation:</b> y = kx</p>
-            <p><b>Find y when you know x:</b> y = k × x</p>
-            <p><b>Find x when you know y:</b> x = y ÷ k</p>
-            <p><b>Steepness of the line:</b> = k (bigger k → steeper)</p>
-            <p class="pk-lvl2">
-              <b>Level 2 — with a one-time fee:</b> y = kx + b (no longer
-              proportional)
-            </p>
+            <ul class="pk-formula">
+              <li>
+                <span class="pk-f-name">y = kx (the rule)</span>
+                <span class="pk-f-mean"
+                  >Multiply your growth rate <b>k</b> by the week number
+                  <b>x</b> to get the total <b>y</b>.</span
+                >
+                <span class="pk-eg"
+                  >Example: k = 25, week 4 → 25 × 4 = 100 subscribers</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Find y from a week</span>
+                <span class="pk-f-mean"
+                  >Put the week number in for x, then multiply by k.</span
+                >
+                <span class="pk-eg"
+                  >Example: 25 × 6 = 150 subscribers by week 6</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Find the week from a goal</span>
+                <span class="pk-f-mean"
+                  >Divide your goal y by your rate k: x = y ÷ k.</span
+                >
+                <span class="pk-eg"
+                  >Example: 200 ÷ 25 = week 8 to reach 200</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Growth rate k (steepness)</span>
+                <span class="pk-f-mean"
+                  >How many subscribers you gain each week: k = y ÷ x. A bigger
+                  k makes a steeper line.</span
+                >
+                <span class="pk-eg"
+                  >Example: 150 ÷ 6 = 25 subscribers per week</span
+                >
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">With a head start (Level 2)</span>
+                <span class="pk-f-mean"
+                  >If you already have some subscribers before week 1, add that
+                  amount b: y = kx + b. The line no longer starts at (0, 0), so
+                  it is not proportional.</span
+                >
+                <span class="pk-eg">Example: y = 25x + 50</span>
+              </li>
+            </ul>
           </div>
           <div class="pk-callout">
             <h3>Sentence Frames</h3>
@@ -643,7 +699,7 @@
       </section>
 
       <!-- ===================== PART 1 — SELF ===================== -->
-      
+
       <!-- ===================== PROJECT SETUP ===================== -->
       <section class="phase" id="phase-setup" data-phase>
         <div class="phase-head">
@@ -653,38 +709,133 @@
             <h2>Design YOUR Channel</h2>
           </div>
         </div>
-        
+
         <div class="grid2">
           <div>
-            <p style="font-size: 15px; color: var(--muted); line-height: 1.6; margin-bottom: 20px;">
-              Welcome! Read the scenario below and select your level to begin your design plan.
+            <p
+              style="
+                font-size: 15px;
+                color: var(--muted);
+                line-height: 1.6;
+                margin-bottom: 20px;
+              "
+            >
+              Welcome! Read the scenario below and select your level to begin
+              your design plan.
             </p>
-            <div style="margin-top: 16px;">
-              
-    <svg width="100%" height="220" viewBox="0 0 500 220" style="background:white; border-radius:12px; border: 1px solid #e2e8f0; max-width: 480px; margin: 0 auto; display: block;" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="setup-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#ffffff" />
-          <stop offset="100%" stop-color="#f8fafc" />
-        </linearGradient>
-      </defs>
-      
-      <rect x="20" y="20" width="460" height="200" rx="15" fill="url(#setup-grad)" stroke="#d4952a" stroke-width="2"/>
-      <text x="250" y="60" text-anchor="middle" font-size="20" font-weight="bold" fill="#0f2b3c">COORDINATE PLANE MAP</text>
-      <line x1="100" y1="130" x2="400" y2="130" stroke="#1a2633" stroke-width="2"/>
-      <line x1="250" y1="80" x2="250" y2="180" stroke="#1a2633" stroke-width="2"/>
-      <circle cx="320" cy="100" r="6" fill="#d4952a"/>
-    
-    </svg>
-  
+            <div style="margin-top: 16px">
+              <svg
+                width="100%"
+                height="220"
+                viewBox="0 0 500 220"
+                style="
+                  background: white;
+                  border-radius: 12px;
+                  border: 1px solid #e2e8f0;
+                  max-width: 480px;
+                  margin: 0 auto;
+                  display: block;
+                "
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <defs>
+                  <linearGradient
+                    id="setup-grad"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop offset="0%" stop-color="#ffffff" />
+                    <stop offset="100%" stop-color="#f8fafc" />
+                  </linearGradient>
+                </defs>
+
+                <rect
+                  x="20"
+                  y="20"
+                  width="460"
+                  height="200"
+                  rx="15"
+                  fill="url(#setup-grad)"
+                  stroke="#d4952a"
+                  stroke-width="2"
+                />
+                <text
+                  x="250"
+                  y="60"
+                  text-anchor="middle"
+                  font-size="20"
+                  font-weight="bold"
+                  fill="#0f2b3c"
+                >
+                  COORDINATE PLANE MAP
+                </text>
+                <line
+                  x1="100"
+                  y1="130"
+                  x2="400"
+                  y2="130"
+                  stroke="#1a2633"
+                  stroke-width="2"
+                />
+                <line
+                  x1="250"
+                  y1="80"
+                  x2="250"
+                  y2="180"
+                  stroke="#1a2633"
+                  stroke-width="2"
+                />
+                <circle cx="320" cy="100" r="6" fill="#d4952a" />
+              </svg>
             </div>
           </div>
-          
-          <div style="background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 20px; box-shadow: var(--shadow);">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px;">
+
+          <div
+            style="
+              background: var(--bg);
+              border: 1px solid var(--line);
+              border-radius: 12px;
+              padding: 20px;
+              box-shadow: var(--shadow);
+            "
+          >
+            <h3
+              style="
+                margin-top: 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+              "
+            >
               <span>📋</span> Scenario &amp; Level Options
             </h3>
-            <h2>Design YOUR Channel</h2>
+            <p style="font-size: 14px; line-height: 1.6; margin: 0 0 10px">
+              You are a <strong>channel growth analyst</strong>. Pick a
+              streaming channel you would actually run, find a realistic weekly
+              growth rate <em>k</em>, and use an equation, a table, and a graph
+              to predict how your subscriber count will climb week after week.
+            </p>
+            <ul
+              style="
+                font-size: 14px;
+                line-height: 1.6;
+                margin: 0;
+                padding-left: 18px;
+              "
+            >
+              <li>
+                <strong>Level 1 (support):</strong> use the example numbers
+                (start at 100 subscribers, gain 50 each week) and read your
+                total straight off the table.
+              </li>
+              <li>
+                <strong>Level 2 (challenge):</strong> choose your own start and
+                growth rate, then predict week 12 from the equation alone and
+                check it against your graph.
+              </li>
+            </ul>
           </div>
         </div>
         <p>
@@ -692,72 +843,98 @@
           growth rate. Not sure yet? Click <em>Use example numbers</em> to model
           the math, then change them to fit your channel.
         </p>
-        
 
         <div class="grid2">
           <div>
             <label class="fld" for="topic">Your channel topic</label>
-            <input
-              type="text"
-              id="topic"
-              data-save
-              placeholder="example: skateboarding tricks"
-            />
+            <input type="text" id="topic" data-save placeholder="" />
           </div>
-          
-        <!-- ===================== INLINE RESEARCH LAB ===================== -->
-        <div class="pk-research-inline-card">
-          <div class="pk-research-inline-header">
-            <span class="pk-research-badge">🔍 Research Required</span>
-            <a href="https://www.youtube.com/creators/" target="_blank" class="pk-research-inline-link">🔗 YouTube Creator Hub: Analytics Guidelines ↗</a>
-          </div>
-          <p class="pk-research-inline-instructions">Research typical revenue per 1,000 views (RPM) for educational channels (often around $4.50). Enter the researched RPM below to model your earnings:</p>
-          <div class="grid2">
-            <div>
-              <label class="fld" for="worldCountry">Creator Niche Researched</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. Gaming channel" oninput="recalcAll()">
+
+          <!-- ===================== INLINE RESEARCH LAB ===================== -->
+          <div class="pk-research-inline-card">
+            <div class="pk-research-inline-header">
+              <span class="pk-research-badge">🔍 Research Required</span>
+              <a
+                href="https://www.youtube.com/creators/"
+                target="_blank"
+                class="pk-research-inline-link"
+                >🔗 YouTube Creator Hub: Analytics Guidelines ↗</a
+              >
             </div>
-            <div>
-              <label class="fld" for="k-rate">Typical Revenue per 1,000 views ($)</label>
-              <input
-              type="number"
-              id="k-rate"
-              data-save
-              min="1"
-              max="100000"
-              placeholder="example: 12"
-              oninput="calcEquation()"
-            />
+            <p class="pk-research-inline-instructions">
+              Research a realistic weekly growth rate for a channel like yours —
+              how many new subscribers it gains per week (a small channel often
+              gains around 25–50). Enter your researched growth rate k below:
+            </p>
+            <div class="grid2">
+              <div>
+                <label class="fld" for="worldCountry"
+                  >Creator Niche Researched</label
+                >
+                <input
+                  type="text"
+                  id="worldCountry"
+                  data-save
+                  placeholder=""
+                  oninput="recalcAll()"
+                />
+              </div>
+              <div>
+                <label class="fld" for="k-rate"
+                  >Typical weekly growth rate k (new subscribers/week)</label
+                >
+                <input
+                  type="number"
+                  id="k-rate"
+                  data-save
+                  min="1"
+                  max="100000"
+                  placeholder=""
+                  oninput="calcEquation()"
+                />
+              </div>
             </div>
           </div>
-        </div>
-    
         </div>
         <label class="fld" for="kwhy"
           >Why this k? Justify it with your research.</label
         >
-        <textarea
-          id="kwhy"
-          data-save
-          placeholder="I chose k = ___ because real channels about ___ gain about ___ subscribers a week when they post ___ times..."
-        ></textarea>
+        <textarea id="kwhy" data-save placeholder=""></textarea>
         <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
           Level 1 tip: pick a friendly k like 10, 20, or 25 to keep the table
           easy.
         </p>
 
         <!-- 1a equation -->
-            
-            <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line);">
-              <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px;">
-                You can type your own numbers as you go, or click below to start with our example numbers:
-              </p>
-              <button class="btn ghost" type="button" onclick="useExamples()" style="width: 100%; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                ✨ Use Example Numbers
-              </button>
-            </div>
+
+        <div
+          style="
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--line);
+          "
+        >
+          <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px">
+            You can type your own numbers as you go, or click below to start
+            with our example numbers:
+          </p>
+          <button
+            class="btn ghost"
+            type="button"
+            onclick="useExamples()"
+            style="
+              width: 100%;
+              font-weight: bold;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 8px;
+            "
+          >
+            ✨ Use Example Numbers
+          </button>
+        </div>
       </section>
-  
 
       <!-- ===================== PART 1A — SELF ===================== -->
       <section class="phase" id="phase-1a" data-phase>
@@ -768,62 +945,153 @@
             <h2>✍️ Write your equation (y = kx)</h2>
           </div>
         </div>
-        
+
         <div class="grid2">
           <div>
-            
-    <div class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
-      <svg id="phase-svg-1a" width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px" xmlns="http://www.w3.org/2000/svg"></svg>
-    </div>
-  
-            <button class="btn" type="button" onclick="calcEquation()">
-          Write my equation
-        </button>
-        <div class="readout" id="eq-out"></div>
-        <details class="hintbox">
-          <summary>Need a hint?</summary>
-          <p>
-            The independent variable x = weeks. The dependent variable y = total
-            subscribers. If you gain the same amount every week, that constant
-            rate is k. The equation is y = kx — multiply k times the number of
-            weeks to get the total subscribers.
-          </p>
-        </details>
+            <div
+              class="pk-math-scaffold-card no-print"
+              style="
+                margin: 20px 0;
+                padding: 12px;
+                background: #fff;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+                max-width: 480px;
+                margin-left: auto;
+                margin-right: auto;
+              "
+            >
+              <svg
+                id="phase-svg-1a"
+                width="100%"
+                height="200"
+                viewBox="0 0 500 200"
+                style="background: #fff; border-radius: 8px"
+                xmlns="http://www.w3.org/2000/svg"
+              ></svg>
+            </div>
 
-        <!-- 1b table -->
+            <button class="btn" type="button" onclick="calcEquation()">
+              Write my equation
+            </button>
+            <div class="readout" id="eq-out"></div>
+            <div
+              class="pki-manip"
+              data-manip="line-grapher"
+              data-x-name="weeks"
+              data-y-name="subscribers"
+              data-k-name="new subscribers per week"
+            ></div>
+            <details class="hintbox">
+              <summary>Need a hint?</summary>
+              <p>
+                The independent variable x = weeks. The dependent variable y =
+                total subscribers. If you gain the same amount every week, that
+                constant rate is k. The equation is y = kx — multiply k times
+                the number of weeks to get the total subscribers.
+              </p>
+            </details>
+
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: your k is just how many new subscribers you gain in
+              ONE week. Write that number, then your equation is y = (that
+              number) × x.
+            </p>
+            <div class="pk-lvl2">
+              <div class="task">
+                <strong>Level 2 extension:</strong> Imagine you ran a contest
+                and already had 200 subscribers at week 0. Write the new rule y
+                = kx + 200 and explain why it is <em>not</em> proportional
+                anymore — what happens to the point (0, 0)?
+              </div>
+            </div>
+
+            <!-- 1b table -->
           </div>
-          
-          <div style="background: var(--bg); border: 2.5px solid var(--line); border-radius: 18px; padding: 20px; box-shadow: var(--shadow); height: fit-content;" class="pk-no-print">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px; color: var(--navy); font-size: 16px;">
+
+          <div
+            style="
+              background: var(--bg);
+              border: 2.5px solid var(--line);
+              border-radius: 18px;
+              padding: 20px;
+              box-shadow: var(--shadow);
+              height: fit-content;
+            "
+            class="pk-no-print"
+          >
+            <h3
+              style="
+                margin-top: 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: var(--navy);
+                font-size: 16px;
+              "
+            >
               <span>💡</span> Guided Steps &amp; Help
             </h3>
-            
-      <p style="font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-bottom: 12px;">
-        <strong>Plotting Coordinates & Finding Grid Distance:</strong>
-      </p>
-      <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>Ordered pairs are written as <b>$(x, y)$</b>:
-          <ul>
-            <li>$x$-coordinate: Move horizontally (right if positive, left if negative).</li>
-            <li>$y$-coordinate: Move vertically (up if positive, down if negative).</li>
-          </ul>
-        </li>
-        <li>Identify which <b>Quadrant</b> the point lies in (I, II, III, or IV).</li>
-        <li><b>Finding distance between points</b> in the same line:
-          <ul>
-            <li>If the coordinates have the same sign, <b>subtract</b> their absolute values.</li>
-            <li>If signs are opposite (across an axis), <b>add</b> their absolute values.</li>
-          </ul>
-        </li>
-      </ol>
-      <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
-        💡 <b>Distance Check:</b> Distance between $(2, 3)$ and $(2, -4)$ is $|3| + |-4| = 3 + 4 = \mathbf{7}$ units.
-      </div>
-    
+
+            <p
+              style="
+                font-size: 13.5px;
+                line-height: 1.5;
+                color: var(--muted);
+                margin-bottom: 12px;
+              "
+            >
+              <strong>Using y = kx (Equation, Table, Graph):</strong>
+            </p>
+            <ol
+              style="
+                margin-left: 18px;
+                font-size: 13px;
+                line-height: 1.5;
+                display: grid;
+                gap: 8px;
+                color: var(--ink);
+              "
+            >
+              <li>
+                <b>Find the constant k</b> — the new subscribers the channel
+                gains for each <b>1 week</b> (how much y changes for every 1
+                step of x).
+              </li>
+              <li>
+                <b>Write the equation y = kx</b>, where <b>x</b> is the
+                independent variable (weeks) and <b>y</b> is the dependent
+                variable (total subscribers).
+              </li>
+              <li>
+                <b>Make a table</b>: pick x values (0, 1, 2, 5, 10…) and compute
+                <b>y = kx</b> for each one.
+              </li>
+              <li>
+                <b>Graph</b>: plot each <b>(x, y)</b> pair and draw one straight
+                line through the <b>origin (0, 0)</b>.
+              </li>
+              <li>
+                <b>Predict</b>: read a future subscriber count off the equation
+                or the line.
+              </li>
+            </ol>
+            <div
+              style="
+                margin-top: 14px;
+                padding: 10px;
+                background: var(--sky);
+                border-radius: 8px;
+                font-size: 12px;
+              "
+            >
+              💡 <b>Equation Check:</b> If the channel gains 150 subscribers per
+              week, then y = 150x, so after 10 weeks y = 150 × 10 = 1,500
+              subscribers.
+            </div>
           </div>
         </div>
       </section>
-    
 
       <!-- ===================== PART 1B — SELF ===================== -->
       <section class="phase" id="phase-1b" data-phase>
@@ -834,67 +1102,151 @@
             <h2>📊 Build your data table (weeks 0–5)</h2>
           </div>
         </div>
-        
+
         <div class="grid2">
           <div>
-            
-    <div class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
-      <svg id="phase-svg-1b" width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px" xmlns="http://www/w3.org/2000/svg"></svg>
-    </div>
-  
-            <div class="task">
-          <strong>Remember:</strong> y = kx means you multiply your growth rate
-          by each x value. At x = 0, y is always 0 (no weeks, no growth yet) —
-          that is the origin.
-        </div>
-        <button class="btn alt" type="button" onclick="calcTable()">
-          Generate my table
-        </button>
-        <div class="readout" id="table-out"></div>
-        <details class="hintbox">
-          <summary>Need a hint?</summary>
-          <p>
-            Fill in the equation for each row. If k = 12: week 0 → 12×0 = 0;
-            week 1 → 12×1 = 12; week 2 → 12×2 = 24, and so on. The y values
-            increase by k each time — that is what makes it proportional. Each
-            row is an ordered pair (x, y) you can plot.
-          </p>
-        </details>
+            <div
+              class="pk-math-scaffold-card no-print"
+              style="
+                margin: 20px 0;
+                padding: 12px;
+                background: #fff;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+                max-width: 480px;
+                margin-left: auto;
+                margin-right: auto;
+              "
+            >
+              <svg
+                id="phase-svg-1b"
+                width="100%"
+                height="200"
+                viewBox="0 0 500 200"
+                style="background: #fff; border-radius: 8px"
+                xmlns="http://www/w3.org/2000/svg"
+              ></svg>
+            </div>
 
-        <!-- 1c graph + readings -->
+            <div class="task">
+              <strong>Remember:</strong> y = kx means you multiply your growth
+              rate by each x value. At x = 0, y is always 0 (no weeks, no growth
+              yet) — that is the origin.
+            </div>
+            <button class="btn alt" type="button" onclick="calcTable()">
+              Generate my table
+            </button>
+            <div class="readout" id="table-out"></div>
+            <details class="hintbox">
+              <summary>Need a hint?</summary>
+              <p>
+                Fill in the equation for each row. If k = 12: week 0 → 12×0 = 0;
+                week 1 → 12×1 = 12; week 2 → 12×2 = 24, and so on. The y values
+                increase by k each time — that is what makes it proportional.
+                Each row is an ordered pair (x, y) you can plot.
+              </p>
+            </details>
+
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: build your table one row at a time. Start at x = 0
+              (always y = 0), then add your k for each new week — that is the
+              same as multiplying k × x.
+            </p>
+            <div class="pk-lvl2">
+              <div class="task">
+                <strong>Level 2 extension:</strong> Pick two rows from your
+                table, like (2, y₂) and (5, y₅). Show that (y₅ − y₂) ÷ (5 − 2)
+                equals your k. Why does this prove the rate of change stays
+                constant?
+              </div>
+            </div>
+
+            <!-- 1c graph + readings -->
           </div>
-          
-          <div style="background: var(--bg); border: 2.5px solid var(--line); border-radius: 18px; padding: 20px; box-shadow: var(--shadow); height: fit-content;" class="pk-no-print">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px; color: var(--navy); font-size: 16px;">
+
+          <div
+            style="
+              background: var(--bg);
+              border: 2.5px solid var(--line);
+              border-radius: 18px;
+              padding: 20px;
+              box-shadow: var(--shadow);
+              height: fit-content;
+            "
+            class="pk-no-print"
+          >
+            <h3
+              style="
+                margin-top: 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: var(--navy);
+                font-size: 16px;
+              "
+            >
               <span>💡</span> Guided Steps &amp; Help
             </h3>
-            
-      <p style="font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-bottom: 12px;">
-        <strong>Plotting Coordinates & Finding Grid Distance:</strong>
-      </p>
-      <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>Ordered pairs are written as <b>$(x, y)$</b>:
-          <ul>
-            <li>$x$-coordinate: Move horizontally (right if positive, left if negative).</li>
-            <li>$y$-coordinate: Move vertically (up if positive, down if negative).</li>
-          </ul>
-        </li>
-        <li>Identify which <b>Quadrant</b> the point lies in (I, II, III, or IV).</li>
-        <li><b>Finding distance between points</b> in the same line:
-          <ul>
-            <li>If the coordinates have the same sign, <b>subtract</b> their absolute values.</li>
-            <li>If signs are opposite (across an axis), <b>add</b> their absolute values.</li>
-          </ul>
-        </li>
-      </ol>
-      <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
-        💡 <b>Distance Check:</b> Distance between $(2, 3)$ and $(2, -4)$ is $|3| + |-4| = 3 + 4 = \mathbf{7}$ units.
-      </div>
-    
+
+            <p
+              style="
+                font-size: 13.5px;
+                line-height: 1.5;
+                color: var(--muted);
+                margin-bottom: 12px;
+              "
+            >
+              <strong>Using y = kx (Equation, Table, Graph):</strong>
+            </p>
+            <ol
+              style="
+                margin-left: 18px;
+                font-size: 13px;
+                line-height: 1.5;
+                display: grid;
+                gap: 8px;
+                color: var(--ink);
+              "
+            >
+              <li>
+                <b>Find the constant k</b> — the new subscribers the channel
+                gains for each <b>1 week</b> (how much y changes for every 1
+                step of x).
+              </li>
+              <li>
+                <b>Write the equation y = kx</b>, where <b>x</b> is the
+                independent variable (weeks) and <b>y</b> is the dependent
+                variable (total subscribers).
+              </li>
+              <li>
+                <b>Make a table</b>: pick x values (0, 1, 2, 5, 10…) and compute
+                <b>y = kx</b> for each one.
+              </li>
+              <li>
+                <b>Graph</b>: plot each <b>(x, y)</b> pair and draw one straight
+                line through the <b>origin (0, 0)</b>.
+              </li>
+              <li>
+                <b>Predict</b>: read a future subscriber count off the equation
+                or the line.
+              </li>
+            </ol>
+            <div
+              style="
+                margin-top: 14px;
+                padding: 10px;
+                background: var(--sky);
+                border-radius: 8px;
+                font-size: 12px;
+              "
+            >
+              💡 <b>Equation Check:</b> If the channel gains 150 subscribers per
+              week, then y = 150x, so after 10 weeks y = 150 × 10 = 1,500
+              subscribers.
+            </div>
           </div>
         </div>
       </section>
-    
 
       <!-- ===================== PART 1C — SELF ===================== -->
       <section class="phase" id="phase-1c" data-phase>
@@ -905,93 +1257,175 @@
             <h2>📈 Read your graph</h2>
           </div>
         </div>
-        
-        <div class="grid2">
-          <div>
-            
-    <div class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
-      <svg id="phase-svg-1c" width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px" xmlns="http://www/w3.org/2000/svg"></svg>
-    </div>
-  
-            <p style="color: var(--muted)">
-          Use your equation to find y when you know x, and to work backwards to
-          find x when you know y.
-        </p>
-        <div class="grid2">
-          <div>
-            <label class="fld" for="find-x"
-              >Find subscribers at week (enter x)</label
-            >
-            <input
-              type="number"
-              id="find-x"
-              data-save
-              min="0"
-              placeholder="example: 7"
-              oninput="calcGraph()"
-            />
-          </div>
-          <div>
-            <label class="fld" for="find-y"
-              >Find the week when subscribers = (enter y)</label
-            >
-            <input
-              type="number"
-              id="find-y"
-              data-save
-              min="0"
-              placeholder="example: 300"
-              oninput="calcGraph()"
-            />
-          </div>
-        </div>
-        <button class="btn" type="button" onclick="calcGraph()">
-          Calculate &amp; show graph
-        </button>
-        <div class="readout" id="graph-out"></div>
-        <details class="hintbox">
-          <summary>Need a hint?</summary>
-          <p>
-            To find y: substitute x into y = kx and multiply. To find x: divide
-            y by k (x = y ÷ k). On the graph, the line passes through the origin
-            (0, 0) and goes up steeply if k is large.
-          </p>
-        </details>
 
-        <!-- 1d show-your-work grid -->
+        <div class="grid2">
+          <div>
+            <div
+              class="pk-math-scaffold-card no-print"
+              style="
+                margin: 20px 0;
+                padding: 12px;
+                background: #fff;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+                max-width: 480px;
+                margin-left: auto;
+                margin-right: auto;
+              "
+            >
+              <svg
+                id="phase-svg-1c"
+                width="100%"
+                height="200"
+                viewBox="0 0 500 200"
+                style="background: #fff; border-radius: 8px"
+                xmlns="http://www/w3.org/2000/svg"
+              ></svg>
+            </div>
+
+            <p style="color: var(--muted)">
+              Use your equation to find y when you know x, and to work backwards
+              to find x when you know y.
+            </p>
+            <div class="grid2">
+              <div>
+                <label class="fld" for="find-x"
+                  >Find subscribers at week (enter x)</label
+                >
+                <input
+                  type="number"
+                  id="find-x"
+                  data-save
+                  min="0"
+                  placeholder=""
+                  oninput="calcGraph()"
+                />
+              </div>
+              <div>
+                <label class="fld" for="find-y"
+                  >Find the week when subscribers = (enter y)</label
+                >
+                <input
+                  type="number"
+                  id="find-y"
+                  data-save
+                  min="0"
+                  placeholder=""
+                  oninput="calcGraph()"
+                />
+              </div>
+            </div>
+            <button class="btn" type="button" onclick="calcGraph()">
+              Calculate &amp; show graph
+            </button>
+            <div class="readout" id="graph-out"></div>
+            <details class="hintbox">
+              <summary>Need a hint?</summary>
+              <p>
+                To find y: substitute x into y = kx and multiply. To find x:
+                divide y by k (x = y ÷ k). On the graph, the line passes through
+                the origin (0, 0) and goes up steeply if k is large.
+              </p>
+            </details>
+
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: to find subscribers, multiply (y = k × x). To find
+              the week, undo it by dividing (x = y ÷ k).
+            </p>
+            <div class="pk-lvl2">
+              <div class="task">
+                <strong>Level 2 extension:</strong> Your line passes through (0,
+                0) and (1, k). Explain what the point (1, k) tells you, and why
+                it controls how steep <em>every</em> proportional line is.
+              </div>
+            </div>
+
+            <!-- 1d show-your-work grid -->
           </div>
-          
-          <div style="background: var(--bg); border: 2.5px solid var(--line); border-radius: 18px; padding: 20px; box-shadow: var(--shadow); height: fit-content;" class="pk-no-print">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px; color: var(--navy); font-size: 16px;">
+
+          <div
+            style="
+              background: var(--bg);
+              border: 2.5px solid var(--line);
+              border-radius: 18px;
+              padding: 20px;
+              box-shadow: var(--shadow);
+              height: fit-content;
+            "
+            class="pk-no-print"
+          >
+            <h3
+              style="
+                margin-top: 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: var(--navy);
+                font-size: 16px;
+              "
+            >
               <span>💡</span> Guided Steps &amp; Help
             </h3>
-            
-      <p style="font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-bottom: 12px;">
-        <strong>Plotting Coordinates & Finding Grid Distance:</strong>
-      </p>
-      <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>Ordered pairs are written as <b>$(x, y)$</b>:
-          <ul>
-            <li>$x$-coordinate: Move horizontally (right if positive, left if negative).</li>
-            <li>$y$-coordinate: Move vertically (up if positive, down if negative).</li>
-          </ul>
-        </li>
-        <li>Identify which <b>Quadrant</b> the point lies in (I, II, III, or IV).</li>
-        <li><b>Finding distance between points</b> in the same line:
-          <ul>
-            <li>If the coordinates have the same sign, <b>subtract</b> their absolute values.</li>
-            <li>If signs are opposite (across an axis), <b>add</b> their absolute values.</li>
-          </ul>
-        </li>
-      </ol>
-      <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
-        💡 <b>Distance Check:</b> Distance between $(2, 3)$ and $(2, -4)$ is $|3| + |-4| = 3 + 4 = \mathbf{7}$ units.
-      </div>
-    
+
+            <p
+              style="
+                font-size: 13.5px;
+                line-height: 1.5;
+                color: var(--muted);
+                margin-bottom: 12px;
+              "
+            >
+              <strong>Using y = kx (Equation, Table, Graph):</strong>
+            </p>
+            <ol
+              style="
+                margin-left: 18px;
+                font-size: 13px;
+                line-height: 1.5;
+                display: grid;
+                gap: 8px;
+                color: var(--ink);
+              "
+            >
+              <li>
+                <b>Find the constant k</b> — the new subscribers the channel
+                gains for each <b>1 week</b> (how much y changes for every 1
+                step of x).
+              </li>
+              <li>
+                <b>Write the equation y = kx</b>, where <b>x</b> is the
+                independent variable (weeks) and <b>y</b> is the dependent
+                variable (total subscribers).
+              </li>
+              <li>
+                <b>Make a table</b>: pick x values (0, 1, 2, 5, 10…) and compute
+                <b>y = kx</b> for each one.
+              </li>
+              <li>
+                <b>Graph</b>: plot each <b>(x, y)</b> pair and draw one straight
+                line through the <b>origin (0, 0)</b>.
+              </li>
+              <li>
+                <b>Predict</b>: read a future subscriber count off the equation
+                or the line.
+              </li>
+            </ol>
+            <div
+              style="
+                margin-top: 14px;
+                padding: 10px;
+                background: var(--sky);
+                border-radius: 8px;
+                font-size: 12px;
+              "
+            >
+              💡 <b>Equation Check:</b> If the channel gains 150 subscribers per
+              week, then y = 150x, so after 10 weeks y = 150 × 10 = 1,500
+              subscribers.
+            </div>
           </div>
         </div>
       </section>
-    
 
       <!-- ===================== PART 1D — SELF ===================== -->
       <section class="phase" id="phase-1d" data-phase>
@@ -1002,120 +1436,215 @@
             <h2>🧮 Show Your Work</h2>
           </div>
         </div>
-        
+
         <div class="grid2">
           <div>
-            
-    <div class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
-      <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px;" xmlns="http://www.w3.org/2000/svg">
-        
-      <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Math Diagram Guide</text>
-      <rect x="150" y="60" width="200" height="90" rx="10" fill="rgba(14,138,125,0.1)" stroke="#0e8a7d" stroke-width="1.5"/>
-      <text x="250" y="110" text-anchor="middle" font-size="11" font-weight="bold" fill="#0e8a7d">Interactive Calculation Visual</text>
-    
-      </svg>
-    </div>
-  
+            <div
+              class="pk-math-scaffold-card no-print"
+              style="
+                margin: 20px 0;
+                padding: 12px;
+                background: #fff;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+                max-width: 480px;
+                margin-left: auto;
+                margin-right: auto;
+              "
+            >
+              <svg
+                width="100%"
+                height="200"
+                viewBox="0 0 500 200"
+                style="background: #fff; border-radius: 8px"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <text
+                  x="250"
+                  y="30"
+                  text-anchor="middle"
+                  font-size="14"
+                  font-weight="bold"
+                  fill="#0f2b3c"
+                >
+                  Math Diagram Guide
+                </text>
+                <rect
+                  x="150"
+                  y="60"
+                  width="200"
+                  height="90"
+                  rx="10"
+                  fill="rgba(14,138,125,0.1)"
+                  stroke="#0e8a7d"
+                  stroke-width="1.5"
+                />
+                <text
+                  x="250"
+                  y="110"
+                  text-anchor="middle"
+                  font-size="11"
+                  font-weight="bold"
+                  fill="#0e8a7d"
+                >
+                  Interactive Calculation Visual
+                </text>
+              </svg>
+            </div>
+
             <p style="color: var(--muted)">
-          Use <em>your own</em> k to answer all three. Each box is checked
-          against your equation.
-        </p>
-        <div class="showwork-grid">
-          <div class="showwork-cell">
-            <div class="q">1. Find y when x = 3 &nbsp;(y = k × 3)</div>
-            <label class="fld" for="sw-y3">Subscribers at week 3</label>
-            <input type="number" id="sw-y3" data-save placeholder="type y" />
-            <button class="btn alt" type="button" onclick="checkSwY3()">
-              Check
-            </button>
-            <div class="pk-fb" id="sw-y3Fb"></div>
+              Use <em>your own</em> k to answer all three. Each box is checked
+              against your equation.
+            </p>
+            <div class="showwork-grid">
+              <div class="showwork-cell">
+                <div class="q">1. Find y when x = 3 &nbsp;(y = k × 3)</div>
+                <label class="fld" for="sw-y3">Subscribers at week 3</label>
+                <input type="number" id="sw-y3" data-save placeholder="" />
+                <button class="btn alt" type="button" onclick="checkSwY3()">
+                  Check
+                </button>
+                <div class="pk-fb" id="sw-y3Fb"></div>
+              </div>
+              <div class="showwork-cell">
+                <div class="q" id="sw-xq">2. Find x when y = (your target)</div>
+                <label class="fld" for="sw-target"
+                  >Target subscribers (y)</label
+                >
+                <input
+                  type="number"
+                  id="sw-target"
+                  data-save
+                  placeholder=""
+                  oninput="updateSwTargetLabel()"
+                />
+                <label class="fld" for="sw-x"
+                  >Weeks to reach it (x = y ÷ k)</label
+                >
+                <input
+                  type="number"
+                  id="sw-x"
+                  data-save
+                  placeholder=""
+                  step="0.01"
+                />
+                <button class="btn alt" type="button" onclick="checkSwX()">
+                  Check
+                </button>
+                <div class="pk-fb" id="sw-xFb"></div>
+              </div>
+              <div class="showwork-cell">
+                <div class="q">3. 12-month total &nbsp;(y = k × 52 weeks)</div>
+                <label class="fld" for="sw-year"
+                  >Subscribers after 52 weeks</label
+                >
+                <input type="number" id="sw-year" data-save placeholder="" />
+                <button class="btn alt" type="button" onclick="checkSwYear()">
+                  Check
+                </button>
+                <div class="pk-fb" id="sw-yearFb"></div>
+              </div>
+            </div>
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 worked step for box 1: if k = 12 → 12 × 3 = 36. Each box
+              uses your own k, so check your equation first.
+            </p>
           </div>
-          <div class="showwork-cell">
-            <div class="q" id="sw-xq">2. Find x when y = (your target)</div>
-            <label class="fld" for="sw-target">Target subscribers (y)</label>
-            <input
-              type="number"
-              id="sw-target"
-              data-save
-              placeholder="example: 240"
-              oninput="updateSwTargetLabel()"
-            />
-            <label class="fld" for="sw-x">Weeks to reach it (x = y ÷ k)</label>
-            <input
-              type="number"
-              id="sw-x"
-              data-save
-              placeholder="type x"
-              step="0.01"
-            />
-            <button class="btn alt" type="button" onclick="checkSwX()">
-              Check
-            </button>
-            <div class="pk-fb" id="sw-xFb"></div>
-          </div>
-          <div class="showwork-cell">
-            <div class="q">3. 12-month total &nbsp;(y = k × 52 weeks)</div>
-            <label class="fld" for="sw-year">Subscribers after 52 weeks</label>
-            <input
-              type="number"
-              id="sw-year"
-              data-save
-              placeholder="type total"
-            />
-            <button class="btn alt" type="button" onclick="checkSwYear()">
-              Check
-            </button>
-            <div class="pk-fb" id="sw-yearFb"></div>
-          </div>
-        </div>
-        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-          Level 1 worked step for box 1: if k = 12 → 12 × 3 = 36. Each box uses
-          your own k, so check your equation first.
-        </p>
-          </div>
-          
-          <div style="background: var(--bg); border: 2.5px solid var(--line); border-radius: 18px; padding: 20px; box-shadow: var(--shadow); height: fit-content;" class="pk-no-print">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px; color: var(--navy); font-size: 16px;">
+
+          <div
+            style="
+              background: var(--bg);
+              border: 2.5px solid var(--line);
+              border-radius: 18px;
+              padding: 20px;
+              box-shadow: var(--shadow);
+              height: fit-content;
+            "
+            class="pk-no-print"
+          >
+            <h3
+              style="
+                margin-top: 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: var(--navy);
+                font-size: 16px;
+              "
+            >
               <span>💡</span> Guided Steps &amp; Help
             </h3>
-            
-      <p style="font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-bottom: 12px;">
-        <strong>Plotting Coordinates & Finding Grid Distance:</strong>
-      </p>
-      <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>Ordered pairs are written as <b>$(x, y)$</b>:
-          <ul>
-            <li>$x$-coordinate: Move horizontally (right if positive, left if negative).</li>
-            <li>$y$-coordinate: Move vertically (up if positive, down if negative).</li>
-          </ul>
-        </li>
-        <li>Identify which <b>Quadrant</b> the point lies in (I, II, III, or IV).</li>
-        <li><b>Finding distance between points</b> in the same line:
-          <ul>
-            <li>If the coordinates have the same sign, <b>subtract</b> their absolute values.</li>
-            <li>If signs are opposite (across an axis), <b>add</b> their absolute values.</li>
-          </ul>
-        </li>
-      </ol>
-      <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
-        💡 <b>Distance Check:</b> Distance between $(2, 3)$ and $(2, -4)$ is $|3| + |-4| = 3 + 4 = \mathbf{7}$ units.
-      </div>
-    
+
+            <p
+              style="
+                font-size: 13.5px;
+                line-height: 1.5;
+                color: var(--muted);
+                margin-bottom: 12px;
+              "
+            >
+              <strong>Using y = kx (Equation, Table, Graph):</strong>
+            </p>
+            <ol
+              style="
+                margin-left: 18px;
+                font-size: 13px;
+                line-height: 1.5;
+                display: grid;
+                gap: 8px;
+                color: var(--ink);
+              "
+            >
+              <li>
+                <b>Find the constant k</b> — the new subscribers the channel
+                gains for each <b>1 week</b> (how much y changes for every 1
+                step of x).
+              </li>
+              <li>
+                <b>Write the equation y = kx</b>, where <b>x</b> is the
+                independent variable (weeks) and <b>y</b> is the dependent
+                variable (total subscribers).
+              </li>
+              <li>
+                <b>Make a table</b>: pick x values (0, 1, 2, 5, 10…) and compute
+                <b>y = kx</b> for each one.
+              </li>
+              <li>
+                <b>Graph</b>: plot each <b>(x, y)</b> pair and draw one straight
+                line through the <b>origin (0, 0)</b>.
+              </li>
+              <li>
+                <b>Predict</b>: read a future subscriber count off the equation
+                or the line.
+              </li>
+            </ol>
+            <div
+              style="
+                margin-top: 14px;
+                padding: 10px;
+                background: var(--sky);
+                border-radius: 8px;
+                font-size: 12px;
+              "
+            >
+              💡 <b>Equation Check:</b> If the channel gains 150 subscribers per
+              week, then y = 150x, so after 10 weeks y = 150 × 10 = 1,500
+              subscribers.
+            </div>
           </div>
         </div>
       </section>
-    
 
-      
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
       <section class="pk-visualizer-card no-print">
         <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
-        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
-          This visual interactive canvas updates in real-time as you complete your math calculations.
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px">
+          This visual interactive canvas updates in real-time as you complete
+          your math calculations.
         </p>
         <div id="projectVisualizer"></div>
       </section>
-  
+
       <!-- ===================== PART 2 — PEER ===================== -->
       <section class="phase">
         <div class="phase-head">
@@ -1152,7 +1681,7 @@
               id="ch-a"
               data-save
               min="1"
-              placeholder="example: 12"
+              placeholder=""
               oninput="calcCompare()"
             />
           </div>
@@ -1160,12 +1689,7 @@
             <label class="fld" for="partnerName"
               >Classmate name or initials</label
             >
-            <input
-              type="text"
-              id="partnerName"
-              data-save
-              placeholder="example: A.J."
-            />
+            <input type="text" id="partnerName" data-save placeholder="" />
           </div>
           <div>
             <label class="fld" for="ch-b"
@@ -1176,7 +1700,7 @@
               id="ch-b"
               data-save
               min="1"
-              placeholder="example: 8"
+              placeholder=""
               oninput="calcCompare()"
             />
           </div>
@@ -1187,7 +1711,7 @@
               id="ch-weeks"
               data-save
               min="1"
-              placeholder="example: 10"
+              placeholder=""
               oninput="calcCompare()"
             />
           </div>
@@ -1201,11 +1725,7 @@
           >Whose line is steeper, and who has more subscribers at that week? How
           do you know?</label
         >
-        <textarea
-          id="peerReflect"
-          data-save
-          placeholder="My k is ___ and my classmate's k is ___, so my line is steeper / flatter. At week ___ I have ___ and they have ___, because ___."
-        ></textarea>
+        <textarea id="peerReflect" data-save placeholder=""></textarea>
       </section>
 
       <!-- ===================== PART 3 — WORLD ===================== -->
@@ -1242,7 +1762,7 @@
               data-save
               step="0.01"
               oninput="worldGo()"
-              placeholder="type your k"
+              placeholder=""
             />
             <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
               Tip: use the same k you researched in Part 1.
@@ -1283,7 +1803,7 @@
               <label class="fld" for="whatIfVal"
                 >Viral week bonus subscribers (one-time)</label
               >
-              <input type="number" id="whatIfVal" placeholder="example: 500" />
+              <input type="number" id="whatIfVal" placeholder="" />
             </div>
             <div>
               <label class="fld" for="whatIfWk">Predict at week</label>
@@ -1302,11 +1822,7 @@
           >Is your k above or below the benchmark for your tier? Why might that
           be?</label
         >
-        <textarea
-          id="worldReflect"
-          data-save
-          placeholder="My k is ___ the benchmark average because ___."
-        ></textarea>
+        <textarea id="worldReflect" data-save placeholder=""></textarea>
         <div class="pk-lvl2">
           <label class="fld" for="worldHard"
             >Level 2 — find when two lines are equal: Your channel is y = kx
@@ -1314,21 +1830,13 @@
             boost, so their equation is y = kx + 200 (the same k). Are these
             still proportional? Will your lines ever be equal? Explain.</label
           >
-          <textarea
-            id="worldHard"
-            data-save
-            placeholder="y = kx + 200 is NOT proportional because it does not pass through (0,0). The two lines are parallel (same k), so they ___."
-          ></textarea>
+          <textarea id="worldHard" data-save placeholder=""></textarea>
         </div>
         <label class="fld" for="careful"
           >Careful thinking: why is it tricky to compare growth rates between
           different kinds of channels?</label
         >
-        <textarea
-          id="careful"
-          data-save
-          placeholder="It can be unfair to compare because ___."
-        ></textarea>
+        <textarea id="careful" data-save placeholder=""></textarea>
       </section>
 
       <!-- ===================== DELIVERABLE ===================== -->
@@ -1344,11 +1852,7 @@
           Write a short growth report (3–5 sentences) that uses your real
           numbers from above.
         </p>
-        <textarea
-          id="pitch"
-          data-save
-          placeholder="My channel is about ___. My independent variable is weeks (x) and my dependent variable is subscribers (y). My equation is y = ___x, which means I gain ___ subscribers every week. After ___ weeks I will have ___ subscribers. My channel grows faster / slower than my classmate's because ___."
-        ></textarea>
+        <textarea id="pitch" data-save placeholder=""></textarea>
 
         <h3 style="margin: 22px 0 6px">Growth Report Checklist</h3>
         <ul class="checklist" id="checklist">
@@ -1485,7 +1989,10 @@
       const yrEl = document.getElementById("yr");
       if (yrEl) yrEl.textContent = new Date().getFullYear();
       const $ = (id) => document.getElementById(id);
-      const num = (id) => { const e = $(id); return e ? parseFloat(e.value) : NaN; };
+      const num = (id) => {
+        const e = $(id);
+        return e ? parseFloat(e.value) : NaN;
+      };
 
       function show(id, html) {
         const el = $(id);
@@ -1822,50 +2329,54 @@
       function worldSample() {
         return world.map((r) => r[1]);
       }
-      
+
       function worldGo() {
         const my = num("myWorld");
-        const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
+        const customName = $("worldCountry")
+          ? $("worldCountry").value.trim()
+          : "";
         const customSize = $("k-rate") ? num("k-rate") : NaN;
-        
+
         let sample = worldSample();
         if (!isNaN(customSize) && customSize > 0) {
           sample = [...sample, customSize];
         }
-        
+
         const labels =
-          ($("worldCat") || {}).value === "costPerGuest" || ($("worldCat") || {}).value === "price"
+          ($("worldCat") || {}).value === "costPerGuest" ||
+          ($("worldCat") || {}).value === "price"
             ? { mean: "City avg $", me: "Me $" }
             : { mean: "City avg", me: "Me" };
-            
+
         PK.worldMeter("worldMeter", sample, my, labels);
-        
+
         const fb = $("worldMeter");
         if (!isNaN(customSize) && customSize > 0 && customName) {
           const ratio = (my / customSize).toFixed(2);
           const pct = Math.round((my / customSize) * 100);
           const diff = Math.abs(my - customSize).toFixed(2);
-          
-          let myValStr = true ? "$" + my.toFixed(2) : my + "";
-          let custValStr = true ? "$" + customSize.toFixed(2) : customSize + "";
-          let diffStr = true ? "$" + Number(diff).toFixed(2) : Number(diff).toFixed(2) + "";
 
-          const rel = my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
-          const desc = `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
+          let myValStr = my + "";
+          let custValStr = customSize + "";
+          let diffStr = Number(diff).toFixed(2) + "";
+
+          const rel =
+            my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
+          const desc =
+            `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
             `📊 Research Comparison: Your value (${myValStr}) is <strong>${rel}</strong> than <strong>${customName}</strong> (${custValStr}) ` +
             `by <strong>${diffStr}</strong>. Your value is <strong>${pct}%</strong> (${ratio}x) of the size of the researched benchmark.` +
             `</div>`;
           fb.innerHTML += desc;
         }
-        
-        if (typeof drawVisualizer === 'function') {
+
+        if (typeof drawVisualizer === "function") {
           drawVisualizer();
         }
-        
+
         updateProgress();
       }
-  
-      
+
       function runWhatIf() {
         const v = parseFloat($("whatIfVal").value);
         let sample = worldSample();
@@ -1879,25 +2390,23 @@
         }
         const before = PK.mean(sample);
         const after = PK.mean(sample.concat([v]));
-        
-        let beforeStr = true ? "$" + before.toFixed(2) : before.toFixed(2) + "";
-        let afterStr = true ? "$" + after.toFixed(2) : after.toFixed(2) + "";
-        let vStr = true ? "$" + v.toFixed(2) : v + "";
+
+        let beforeStr = before.toFixed(2) + "";
+        let afterStr = after.toFixed(2) + "";
+        let vStr = v + "";
 
         PK.whatIf(
           "whatIfBox",
           { average: beforeStr },
           { average: afterStr },
-          "Adding a value of " + vStr + " to the sample:"
+          "Adding a value of " + vStr + " to the sample:",
         );
       }
-  
 
       /* ---- Use example numbers ---- */
       function useExamples() {
         const ex = {
-          
-          "worldCountry": "Gaming Channel",
+          worldCountry: "Gaming Channel",
           "k-rate": 4.5,
           topic: "skateboarding tricks",
           "find-x": 7,
@@ -1907,7 +2416,6 @@
           "ch-b": 8,
           "ch-weeks": 10,
           myWorld: 12,
-          
         };
         Object.entries(ex).forEach(([key, v]) => {
           if ($(key)) $(key).value = v;
@@ -1916,53 +2424,46 @@
         recalcAll();
       }
 
-      
-
-      
       function drawVisualizer() {
-        const rpm = getK() || 4.5;
-        
-        let html = "";
-        if (rpm > 0) {
-          const maxViews = 100;
-          const maxEarnings = rpm * maxViews;
-          
-          let points = "";
-          for (let v = 0; v <= maxViews; v += 10) {
-            const px = 100 + (v / maxViews) * 320;
-            const py = 180 - ((v * rpm) / maxEarnings) * 120;
-            points += `${px},${py} `;
-          }
-          
-          html = `
+        const kRaw = getK();
+        // Default to a worked EXAMPLE (k = 25 subscribers/week) so the dashboard
+        // always shows a line; switches to the student's own k on input.
+        const isExample = kRaw == null || kRaw <= 0;
+        const rpm = isExample ? 25 : kRaw;
+
+        const maxViews = 100;
+        const maxEarnings = rpm * maxViews;
+
+        let points = "";
+        for (let v = 0; v <= maxViews; v += 10) {
+          const px = 100 + (v / maxViews) * 320;
+          const py = 180 - ((v * rpm) / maxEarnings) * 120;
+          points += `${px},${py} `;
+        }
+
+        const html = `
             <polyline points="${points.trim()}" fill="none" stroke="#1a6fb5" stroke-width="3" />
             <circle cx="420" cy="60" r="5" fill="#1a6fb5" />
-            <text x="410" y="55" text-anchor="end" font-size="10" font-weight="bold" fill="#1a6fb5">${maxViews}k views: $${maxEarnings.toFixed(2)}</text>
-            
-            <text x="250" y="220" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Earnings Linear Growth Line (y = ${rpm.toFixed(1)}x)</text>
+            <text x="410" y="55" text-anchor="end" font-size="10" font-weight="bold" fill="#1a6fb5">Week ${maxViews}: ${maxEarnings.toFixed(0)} subscribers</text>
+
+            <text x="250" y="220" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Subscriber Growth Line (y = ${rpm.toFixed(1)}x)</text>
           `;
-        } else {
-          html = `
-            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter RPM to draw linear growth graph</text>
-          `;
-        }
-        
+
         const svgString = `
           <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
             <!-- Axes -->
             <line x1="80" y1="60" x2="80" y2="180" stroke="#cbd5e1" stroke-width="2" />
             <line x1="80" y1="180" x2="450" y2="180" stroke="#cbd5e1" stroke-width="2" />
-            <text x="70" y="65" text-anchor="end" font-size="9" fill="#94a3b8">Earnings ($)</text>
-            <text x="440" y="195" text-anchor="end" font-size="9" fill="#94a3b8">Views (k)</text>
-            
+            <text x="70" y="65" text-anchor="end" font-size="9" fill="#94a3b8">Subscribers (y)</text>
+            <text x="440" y="195" text-anchor="end" font-size="9" fill="#94a3b8">Weeks (x)</text>
+            ${isExample ? `<rect x="360" y="8" width="128" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="424" y="22" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · k = 25</text>` : ""}
             ${html}
           </svg>
         `;
         $("projectVisualizer").innerHTML = svgString;
       }
-    
-  
-function recalcAll() {
+
+      function recalcAll() {
         calcEquation();
         calcTable();
         calcGraph();
@@ -1971,8 +2472,12 @@ function recalcAll() {
         worldGo();
         updateSwTargetLabel();
         updateProgress();
-      
-        if(typeof drawFunctionMachine === "function"){drawFunctionMachine(); drawSequenceBars();}}
+
+        if (typeof drawFunctionMachine === "function") {
+          drawFunctionMachine();
+          drawSequenceBars();
+        }
+      }
 
       /* ---- Report ---- */
       function reportText() {
@@ -2084,23 +2589,28 @@ function recalcAll() {
         renderWorld();
         updateSwTargetLabel();
         PK.initLevel({ storageKey: "u9ProjectA", default: "level-1" });
+        PK.initTts({ storageKey: "u9ProjectA" });
         PK.load("u9ProjectA", { after: recalcAll });
         updateProgress();
       });
-    
+
       function drawFunctionMachine() {
-        const k = getK();
+        let k = getK();
         const svg = $("phase-svg-1a");
         if (!svg) return;
-        
-        if (k == null) {
-          svg.innerHTML = '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter growth rate k to draw function machine</text>';
-          return;
+
+        // Show a worked EXAMPLE (k = 25 subscribers/week) by default so the
+        // machine always has something to read; switches to the student's own
+        // k as soon as they enter it.
+        const isExample = k == null;
+        if (isExample) {
+          k = 25;
         }
-        
+
         svg.innerHTML = `
           <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Function Forge (y = ${k}x)</text>
-          
+          ${isExample ? `<rect x="360" y="16" width="128" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="424" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · k = 25</text>` : ""}
+
           <g transform="translate(60, 70)">
             <rect x="0" y="15" width="80" height="40" rx="8" fill="#e8f2fc" stroke="#1a6fb5" stroke-width="1.5" />
             <text x="40" y="35" text-anchor="middle" font-size="11" font-weight="bold" fill="#1a6fb5">Input x (weeks)</text>
@@ -2123,18 +2633,20 @@ function recalcAll() {
           </defs>
         `;
       }
-      
+
       function drawSequenceBars() {
-        const k = getK();
+        let k = getK();
         const svg = $("phase-svg-1b");
         if (!svg) return;
-        
-        if (k == null) {
-          svg.innerHTML = '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter growth rate k to draw growth sequence bars</text>';
-          return;
+
+        // Default to a worked EXAMPLE (k = 25) so the bars always show a
+        // reference; switches to the student's own k on input.
+        const isExample = k == null;
+        if (isExample) {
+          k = 25;
         }
-        
-        let bars = '';
+
+        let bars = "";
         for (let x = 1; x <= 4; x++) {
           const val = k * x;
           const bh = 100 * (val / (k * 4));
@@ -2145,21 +2657,128 @@ function recalcAll() {
             <text x="${bx + 20}" y="${135 - bh}" text-anchor="middle" font-size="9" font-weight="bold" fill="#0e8a7d">${val}</text>
           `;
         }
-        
+
         svg.innerHTML = `
           <text x="250" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Subscribers Growth by Week (k = ${k})</text>
+          ${isExample ? `<rect x="360" y="11" width="128" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="424" y="25" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · k = 25</text>` : ""}
           ${bars}
         `;
       }
-    
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
+    <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
+    <script type="application/json" id="pk-research">
+      {
+        "icon": "🔎",
+        "title": "Research Lab — Model the Two Plans",
+        "intro": "Analysts model choices with tables, equations, and graphs. Look up how y = kx works, then compare two real plans.",
+        "brief": {
+          "theme": "field",
+          "title": "📋 Your Research Mission",
+          "hook": "Find how <b>tables, equations, and graphs</b> connect, then model two plans.",
+          "steps": [
+            "Open a link (new tab — you keep your project).",
+            "Record the rules in Field Notes.",
+            "Build tables and equations in the math problems.",
+            "Check off the Investigation Checklist."
+          ]
+        },
+        "fieldNotes": {
+          "title": "Field Notes — Record What You Find",
+          "intro": "Jot the exact number or rule you find. You'll reuse these in the math below.",
+          "fields": [
+            {
+              "label": "What a coordinate (x, y) means",
+              "source": "Math is Fun",
+              "placeholder": "across then up",
+              "hint": "x first (horizontal), y second (vertical)."
+            },
+            {
+              "label": "What 'directly proportional' means",
+              "source": "Math is Fun",
+              "placeholder": "y = kx, doubles together",
+              "hint": "Constant rate k; passes through (0,0)."
+            },
+            {
+              "label": "Plan A's rate (a real per-unit number)",
+              "source": "Your plan / a real price page",
+              "placeholder": "$3 per item",
+              "hint": "This is k for plan A."
+            },
+            {
+              "label": "Plan B's rate",
+              "source": "Your plan / a real price page",
+              "placeholder": "$5 per item",
+              "hint": "This is k for plan B."
+            }
+          ]
+        },
+        "mathTasks": [
+          {
+            "title": "1 · Equations",
+            "prompt": "Write <b>y = kx</b> for each plan using your two rates (Field Notes 3 and 4). State what x and y stand for.",
+            "level2": "Which plan grows faster, and how does the equation show it?"
+          },
+          {
+            "title": "2 · Tables",
+            "prompt": "Make a table for each plan with x = 0, 1, 2, 5. Fill in y using your equations.",
+            "level2": "Plot the points for both plans on the same grid (describe or sketch)."
+          },
+          {
+            "title": "3 · Compare",
+            "prompt": "For x = 10, which plan costs more and by how much? Use your equations.",
+            "level2": "Is there any x where the plans are equal? Explain using the rates."
+          }
+        ],
+        "investigationChecklist": [
+          "I recorded what a coordinate means.",
+          "I recorded what directly proportional means.",
+          "I chose two real rates.",
+          "I wrote y = kx for both plans.",
+          "I built a table for each plan.",
+          "I compared the two plans at x = 10."
+        ],
+        "links": [
+          {
+            "icon": "📈",
+            "name": "Math is Fun — Directly Proportional",
+            "url": "https://www.mathsisfun.com/algebra/directly-inversely-proportional.html",
+            "find": "How y = kx works and what k is.",
+            "look": "the constant of proportionality k"
+          },
+          {
+            "icon": "🧭",
+            "name": "Math is Fun — Cartesian Coordinates",
+            "url": "https://www.mathsisfun.com/data/cartesian-coordinates.html",
+            "find": "How to plot (x, y) points.",
+            "look": "x across, y up"
+          },
+          {
+            "icon": "📐",
+            "name": "Math is Fun — Linear Equations",
+            "url": "https://www.mathsisfun.com/algebra/linear-equations.html",
+            "find": "How an equation makes a straight-line pattern.",
+            "look": "the y = mx + b form"
+          },
+          {
+            "icon": "🎛️",
+            "name": "Math is Fun — Function Grapher (interactive)",
+            "url": "https://www.mathsisfun.com/data/function-grapher.html",
+            "find": "Type your equation and watch the line draw.",
+            "look": "enter y = 3x and see the graph"
+          }
+        ],
+        "note": "These sites were picked for class. They open in a new tab so you keep your project. If a page asks you to sign in or buy something, just close it and come back."
+      }
+    </script>
     <script src="/shared/projects/projects-tabs.js" defer></script>
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <script src="/shared/projects/projects-interactive.js" defer></script>
+    <script src="/shared/projects/manip-line-grapher.js" defer></script>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+  </body>
 </html>

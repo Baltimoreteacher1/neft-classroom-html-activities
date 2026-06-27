@@ -422,11 +422,13 @@
     <!-- nsr-injected:end -->
     <link rel="stylesheet" href="/shared/projects/projects-premium.css" />
     <link rel="stylesheet" href="/shared/projects/projects-tabs.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-tplus.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-interactive.css" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
   <link rel="stylesheet" href="/assets/mobile-access.css">
   <!-- mobile-access-injected:end -->
 </head>
-  <body class="pk">
+  <body class="pk" data-pk-theme="u1">
     <header class="phero">
       <div class="deco">🎉</div>
       <h1>Block Party Planner</h1>
@@ -452,6 +454,7 @@
             🔵 Level 2 (challenge)
           </button>
         </span>
+        <button class="pk-tts-toggle" data-tts-toggle type="button" aria-pressed="false" title="Read text aloud">🔊 Read aloud</button>
         <button onclick="PK.save('u1ProjectA')">💾 Save</button>
         <button
           onclick="PK.load('u1ProjectA', { show: true, after: recalcAll })"
@@ -504,7 +507,7 @@
         <div class="pk-vocab">
           <div class="pk-term">
             <span class="pk-icon">🎁</span><b>GCF — Greatest Common Factor</b>
-            <p>The biggest number that divides two numbers evenly.</p>
+            <p>The biggest number that goes into two numbers with none left over.</p>
             <p class="pk-es">
               MCD — Máximo Común Divisor: el número más grande que divide a dos
               números sin sobrar.
@@ -512,7 +515,7 @@
           </div>
           <div class="pk-term">
             <span class="pk-icon">⏱️</span><b>LCM — Least Common Multiple</b>
-            <p>The smallest number that two numbers both divide into.</p>
+            <p>The smallest number that both numbers fit into evenly.</p>
             <p class="pk-es">
               mcm — mínimo común múltiplo: el número más pequeño en el que caben
               ambos.
@@ -520,7 +523,7 @@
           </div>
           <div class="pk-term">
             <span class="pk-icon">💵</span><b>Decimal Operations</b>
-            <p>Add or subtract money by lining up the decimal points.</p>
+            <p>Line up the dots, then add or subtract the money.</p>
             <p class="pk-es">
               Operaciones con decimales: suma o resta alineando el punto
               decimal.
@@ -528,7 +531,7 @@
           </div>
           <div class="pk-term">
             <span class="pk-icon">➗</span><b>Multi-Digit Division</b>
-            <p>Sharing a big number into equal groups.</p>
+            <p>Splitting a big number into equal groups.</p>
             <p class="pk-es">
               División de varios dígitos: repartir un número grande en partes
               iguales.
@@ -538,15 +541,47 @@
         <div class="grid2" style="margin-top: 18px">
           <div class="pk-callout">
             <h3>Formula Bank</h3>
-            <p>
-              <b>GCF(a, b):</b> biggest shared factor → number of equal groups
-            </p>
-            <p><b>LCM(a, b):</b> first shared multiple → when cycles line up</p>
-            <p><b>Budget left:</b> budget − total spent</p>
-            <p><b>Cost per guest:</b> total cost ÷ number of guests</p>
-            <p class="pk-lvl2">
-              <b>Distributive (6.NS.4):</b> a + b = GCF × (a÷GCF + b÷GCF)
-            </p>
+            <ul class="pk-formula">
+              <li>
+                <span class="pk-f-name">GCF — Greatest Common Factor</span>
+                <span class="pk-f-mean"
+                  >The biggest number that divides <b>both</b> of your numbers
+                  with nothing left over. It tells you how many equal groups you
+                  can make.</span
+                >
+                <span class="pk-eg">Example: GCF of 24 and 36 = 12</span>
+              </li>
+              <li>
+                <span class="pk-f-name">LCM — Least Common Multiple</span>
+                <span class="pk-f-mean"
+                  >The first number that <b>both</b> of your numbers fit into. It
+                  tells you when two cycles line up.</span
+                >
+                <span class="pk-eg">Example: LCM of 6 and 8 = 24</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Money left over</span>
+                <span class="pk-f-mean"
+                  >Money you start with − money you spend.</span
+                >
+                <span class="pk-eg">Example: $200 − $175 = $25 left</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Cost per guest</span>
+                <span class="pk-f-mean"
+                  >Total cost ÷ number of guests.</span
+                >
+                <span class="pk-eg">Example: $240 ÷ 8 = $30 each</span>
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">Break-apart trick (6.NS.4)</span>
+                <span class="pk-f-mean"
+                  >Pull out the GCF, add what's left inside, then multiply
+                  back.</span
+                >
+                <span class="pk-eg">Example: 24 + 36 = 12 × (2 + 3)</span>
+              </li>
+            </ul>
           </div>
           <div class="pk-callout">
             <h3>Sentence Frames</h3>
@@ -610,7 +645,13 @@
             <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px;">
               <span>📋</span> Scenario &amp; Level Options
             </h3>
-            <h2>Plan YOUR Block Party</h2>
+            <p style="font-size: 14px; line-height: 1.6; margin: 0 0 10px">
+              You are the <strong>lead organizer of your own block party</strong>. You will pack equal goodie bags, sync the music and activities, track your spending, and find a fair cost per guest, then compare your plan with a partner and with real cookout costs.
+            </p>
+            <ul style="font-size: 14px; line-height: 1.6; margin: 0; padding-left: 18px">
+              <li><strong>Level 1 (support):</strong> use friendly, round numbers (for example, 48 stickers and 36 granola bars, a $300 budget, and 30 guests).</li>
+              <li><strong>Level 2 (challenge):</strong> use real, uneven numbers (for example, $124.50 for food, 47 guests, and supply counts that do not divide evenly).</li>
+            </ul>
           </div>
         </div>
         <p>
@@ -664,7 +705,7 @@
               id="g-stickers"
               data-save
               min="1"
-              placeholder="example: 48"
+              placeholder=""
               oninput="calcGCF()"
             />
           </div>
@@ -677,7 +718,7 @@
               id="g-bars"
               data-save
               min="1"
-              placeholder="example: 36"
+              placeholder=""
               oninput="calcGCF()"
             />
           </div>
@@ -686,6 +727,7 @@
           Calculate the most bags
         </button>
         <div class="readout" id="gcf-out"></div>
+        <div class="pki-manip" data-manip="gcf-bags" data-item-a="🔖" data-label-a="stickers" data-item-b="🍫" data-label-b="granola bars" data-default-a="48" data-default-b="36" data-group="goodie bag"></div>
         <div class="pk-lvl2" style="margin-top: 16px">
           <div class="task">
             <strong>Level 2 extension (Distributive Property · 6.NS.4):</strong>
@@ -699,7 +741,7 @@
             type="text"
             id="distrib"
             data-save
-            placeholder="example: 48 + 36 = 12 × (4 + 3)"
+            placeholder=""
           />
         </div>
         <details class="hintbox">
@@ -763,7 +805,7 @@
               id="l-dj"
               data-save
               min="1"
-              placeholder="example: 6"
+              placeholder=""
               oninput="calcLCM()"
             />
           </div>
@@ -776,7 +818,7 @@
               id="l-bubble"
               data-save
               min="1"
-              placeholder="example: 8"
+              placeholder=""
               oninput="calcLCM()"
             />
           </div>
@@ -844,7 +886,7 @@
               data-save
               step="0.01"
               min="0"
-              placeholder="example: 300.00"
+              placeholder=""
               oninput="calcBudget()"
             />
           </div>
@@ -859,7 +901,7 @@
           <div class="grid2">
             <div>
               <label class="fld" for="worldCountry">Food Plan Category Researched</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. My research name" oninput="recalcAll()">
+              <input type="text" id="worldCountry" data-save placeholder="" oninput="recalcAll()">
             </div>
             <div>
               <label class="fld" for="c-food">Food &amp; drinks ($)</label>
@@ -869,7 +911,7 @@
               data-save
               step="0.01"
               min="0"
-              placeholder="example: 124.50"
+              placeholder=""
               oninput="calcBudget()"
             />
             </div>
@@ -884,7 +926,7 @@
               data-save
               step="0.01"
               min="0"
-              placeholder="example: 38.75"
+              placeholder=""
               oninput="calcBudget()"
             />
           </div>
@@ -896,7 +938,7 @@
               data-save
               step="0.01"
               min="0"
-              placeholder="example: 67.20"
+              placeholder=""
               oninput="calcBudget()"
             />
           </div>
@@ -908,7 +950,7 @@
               data-save
               step="0.01"
               min="0"
-              placeholder="example: 45.00"
+              placeholder=""
               oninput="calcBudget()"
             />
           </div>
@@ -976,7 +1018,7 @@
               data-save
               step="0.01"
               min="0"
-              placeholder="example: 275.40"
+              placeholder=""
               oninput="calcPer()"
             />
           </div>
@@ -989,7 +1031,7 @@
               id="d-guests"
               data-save
               min="1"
-              placeholder="example: 36"
+              placeholder=""
               oninput="calcPer()"
             />
           </div>
@@ -1008,7 +1050,7 @@
           type="number"
           id="check-cups"
           data-save
-          placeholder="Type a number"
+          placeholder=""
         />
         <button class="btn alt" type="button" onclick="checkCups()">
           Check answer
@@ -1083,7 +1125,7 @@
               type="text"
               id="partnerName"
               data-save
-              placeholder="example: A.J."
+              placeholder=""
             />
           </div>
           <div>
@@ -1130,7 +1172,7 @@
         <textarea
           id="peerReflect"
           data-save
-          placeholder="My plan has ___ while my partner's has ___, so ___."
+          placeholder=""
         ></textarea>
       </section>
 
@@ -1168,7 +1210,7 @@
               data-save
               step="0.01"
               oninput="worldGo()"
-              placeholder="type your value"
+              placeholder=""
             />
             <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
               Tip: your cost per guest from Part 1 is a great value to type
@@ -1215,7 +1257,7 @@
                 type="number"
                 id="whatIfVal"
                 step="0.01"
-                placeholder="example: 22.00"
+                placeholder=""
               />
             </div>
           </div>
@@ -1234,7 +1276,7 @@
         <textarea
           id="worldReflect"
           data-save
-          placeholder="My cost per guest is ___ the sample average because ___."
+          placeholder=""
         ></textarea>
         <div class="pk-lvl2">
           <label class="fld" for="worldHard"
@@ -1244,7 +1286,7 @@
           <textarea
             id="worldHard"
             data-save
-            placeholder="$18.50 × 40 = ___ because ___"
+            placeholder=""
           ></textarea>
         </div>
         <label class="fld" for="careful"
@@ -1254,7 +1296,7 @@
         <textarea
           id="careful"
           data-save
-          placeholder="It can be unfair to compare because ___."
+          placeholder=""
         ></textarea>
       </section>
 
@@ -1274,7 +1316,7 @@
         <textarea
           id="pitch"
           data-save
-          placeholder="In our block party plan, we will make ___ goodie bags because the GCF of our supplies is ___. The music and activity sync every ___ minutes. Our total cost is $___, which leaves $___ in the budget, and each guest's fair share is $___."
+          placeholder=""
         ></textarea>
 
         <h3 style="margin: 22px 0 6px">Planning Checklist</h3>
@@ -1466,19 +1508,20 @@
       }
 
       function drawLCMSvg() {
-        const dj = num("l-dj");
-        const bub = num("l-bubble");
+        let dj = num("l-dj");
+        let bub = num("l-bubble");
         const container = $("lcm-svg-container");
         if (!container) return;
-        if (isNaN(dj) || dj <= 0 || isNaN(bub) || bub <= 0) {
-          container.innerHTML = `
-            <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px; border: 1px solid var(--line);" xmlns="http://www.w3.org/2000/svg">
-              <text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e" font-style="italic">Enter DJ & Bubble intervals to visualize LCM</text>
-            </svg>
-          `;
-          return;
+        // Show a worked EXAMPLE (6 & 8 → 24, the hint's numbers) as the default
+        // reference so the card always has something to "look at first"; switch
+        // to the student's own numbers as soon as they enter them.
+        const isExample =
+          isNaN(dj) || dj <= 0 || isNaN(bub) || bub <= 0;
+        if (isExample) {
+          dj = 6;
+          bub = 8;
         }
-        
+
         const l = lcm(dj, bub);
         const maxVal = l * 1.5;
         
@@ -1515,7 +1558,13 @@
         container.innerHTML = `
           <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px; border: 1px solid var(--line);" xmlns="http://www.w3.org/2000/svg">
             <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">LCM Interval Timeline</text>
-            
+            ${
+              isExample
+                ? `<rect x="360" y="16" width="128" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" />
+                   <text x="424" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · 6 and 8</text>`
+                : ""
+            }
+
             <line x1="${startX}" y1="95" x2="${endX}" y2="95" stroke="#1763c7" stroke-width="2" />
             <line x1="${startX}" y1="135" x2="${endX}" y2="135" stroke="#f4a924" stroke-width="2" />
             
@@ -1535,23 +1584,28 @@
       }
 
       function drawBudgetSvg() {
-        const budget = num("c-budget");
-        const food = num("c-food");
-        const decor = num("c-decor");
-        const games = num("c-games");
-        const music = num("c-music");
+        let budget = num("c-budget");
+        let food = num("c-food");
+        let decor = num("c-decor");
+        let games = num("c-games");
+        let music = num("c-music");
         const container = $("budget-svg-container");
         if (!container) return;
-        
-        if (isNaN(budget) || budget <= 0 || isNaN(food) || food < 0 || isNaN(decor) || decor < 0 || isNaN(games) || games < 0 || isNaN(music) || music < 0) {
-          container.innerHTML = `
-            <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px; border: 1px solid var(--line);" xmlns="http://www.w3.org/2000/svg">
-              <text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e" font-style="italic">Enter Budget & Expenses to visualize spending</text>
-            </svg>
-          `;
-          return;
+
+        // Default to a worked EXAMPLE so the card always shows a reference;
+        // switches to the student's real ledger as soon as they enter it.
+        const isExample =
+          isNaN(budget) || budget <= 0 || isNaN(food) || food < 0 ||
+          isNaN(decor) || decor < 0 || isNaN(games) || games < 0 ||
+          isNaN(music) || music < 0;
+        if (isExample) {
+          budget = 200;
+          food = 80;
+          decor = 40;
+          games = 30;
+          music = 25;
         }
-        
+
         const total = food + decor + games + music;
         const left = budget - total;
         
@@ -1596,7 +1650,13 @@
         container.innerHTML = `
           <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px; border: 1px solid var(--line);" xmlns="http://www.w3.org/2000/svg">
             <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Budget Ledger Breakdown</text>
-            
+            ${
+              isExample
+                ? `<rect x="372" y="16" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" />
+                   <text x="430" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example ledger</text>`
+                : ""
+            }
+
             <rect x="${startX}" y="${barY}" width="${barWidth}" height="${barHeight}" rx="4" fill="#f1f5f9" />
             
             ${rects}
@@ -1624,17 +1684,16 @@
       }
 
       function drawDivisionSvg() {
-        const t = num("d-total"),
+        let t = num("d-total"),
           g = num("d-guests");
         const container = $("division-svg-container");
         if (!container) return;
-        if (isNaN(t) || t < 0 || isNaN(g) || g <= 0) {
-          container.innerHTML = `
-            <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px; border: 1px solid var(--line);" xmlns="http://www.w3.org/2000/svg">
-              <text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e" font-style="italic">Enter Total Cost & Guests to visualize division</text>
-            </svg>
-          `;
-          return;
+        // Default to a worked EXAMPLE ($240 ÷ 8 = $30.00) so the card always
+        // shows a reference; switches to the student's numbers on input.
+        const isExample = isNaN(t) || t < 0 || isNaN(g) || g <= 0;
+        if (isExample) {
+          t = 240;
+          g = 8;
         }
         const quotient = t / g;
         const quotientStr = quotient.toFixed(2);
@@ -1673,6 +1732,12 @@
         container.innerHTML = `
           <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px; border: 1px solid var(--line);" xmlns="http://www.w3.org/2000/svg">
             <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Place-Value Division Alignment</text>
+            ${
+              isExample
+                ? `<rect x="360" y="16" width="128" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" />
+                   <text x="424" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · $240 ÷ 8</text>`
+                : ""
+            }
             ${decimalLine}
             <path d="${bracketPath}" fill="none" stroke="#0f2b3c" stroke-width="2" />
             <text x="${divisorX}" y="120" font-family="'Courier New', Courier, monospace" font-size="18" fill="#0f2b3c" text-anchor="end">${divisorStr}</text>
@@ -1718,6 +1783,7 @@
           $("gcf-out").classList.remove("show");
           proj.bags = null;
           drawGCFSvg();
+          if (typeof drawVisualizer === "function") drawVisualizer();
           return;
         }
         const g = gcd(s, b);
@@ -1737,6 +1803,7 @@
               : "✅ GCF(" + s + ", " + b + ") = " + g + "."),
         );
         drawGCFSvg();
+        if (typeof drawVisualizer === "function") drawVisualizer();
       }
 
       function calcLCM() {
@@ -1746,6 +1813,7 @@
           $("lcm-out").classList.remove("show");
           proj.lcm = null;
           drawLCMSvg();
+          if (typeof drawVisualizer === "function") drawVisualizer();
           return;
         }
         const l = lcm(d, b);
@@ -1766,6 +1834,7 @@
             ".",
         );
         drawLCMSvg();
+        if (typeof drawVisualizer === "function") drawVisualizer();
       }
 
       function calcBudget() {
@@ -2194,6 +2263,7 @@ function recalcAll() {
       document.addEventListener("DOMContentLoaded", function () {
         renderWorld();
         PK.initLevel({ storageKey: "u1ProjectA", default: "level-1" });
+        PK.initTts({ storageKey: "u1ProjectA" });
         PK.load("u1ProjectA", { after: recalcAll });
         updateProgress();
       });
@@ -2202,7 +2272,113 @@ function recalcAll() {
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
+        <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
+    <script type="application/json" id="pk-research">
+      {
+        "icon": "🔎",
+        "title": "Research Lab — Price It Like a Pro",
+        "intro": "Real buyers and budgeters never guess — they look up prices and do the decimal math. Gather real numbers, then use them.",
+        "brief": {
+          "theme": "field",
+          "title": "🧰 Your Research Mission",
+          "hook": "Find <b>real prices</b> and run the decimal math the way a real budget planner does.",
+          "steps": [
+            "Open a link (new tab — you keep your project).",
+            "Find the fact and type it into Field Notes.",
+            "Use your real numbers in the math problems.",
+            "Check off the Investigation Checklist."
+          ]
+        },
+        "fieldNotes": {
+          "title": "Field Notes — Record What You Find",
+          "intro": "Jot the exact number or rule you find. You'll reuse these in the math below.",
+          "fields": [
+            {
+              "label": "How to multiply decimals (the rule)",
+              "source": "Math is Fun",
+              "placeholder": "multiply, then count decimal places",
+              "hint": "Count total decimal places in BOTH factors."
+            },
+            {
+              "label": "How to divide decimals (the rule)",
+              "source": "Math is Fun",
+              "placeholder": "move the decimal point, then divide",
+              "hint": "Make the divisor a whole number first."
+            },
+            {
+              "label": "A real price of one item you want (from a store site or receipt)",
+              "source": "Any store site / receipt",
+              "placeholder": "$12.49",
+              "hint": "Use the exact price, cents included."
+            },
+            {
+              "label": "A real price of a second item",
+              "source": "Any store site / receipt",
+              "placeholder": "$3.75",
+              "hint": "Cents matter for decimal practice."
+            },
+            {
+              "label": "Your total budget",
+              "source": "Your plan",
+              "placeholder": "$50.00",
+              "hint": "Pick a realistic class budget."
+            }
+          ]
+        },
+        "mathTasks": [
+          {
+            "title": "1 · Order cost",
+            "prompt": "Pick a quantity of your first item (Field Note 3). Multiply price × quantity with <b>decimal multiplication</b>. Show your work.",
+            "level2": "Add the cost of your second item order. What is the combined total?"
+          },
+          {
+            "title": "2 · How many can you afford?",
+            "prompt": "Using your budget (Field Note 5) and the price of an item, use <b>decimal division</b> to find how many whole items you can buy.",
+            "level2": "How much money is left over after buying that many? Show the subtraction."
+          },
+          {
+            "title": "3 · Stay on budget",
+            "prompt": "Total your full order. Is it under your budget? By how much? Show the math.",
+            "level2": "If you went over, what is one item you could cut to get back under budget?"
+          }
+        ],
+        "investigationChecklist": [
+          "I recorded the decimal-multiplication rule.",
+          "I recorded the decimal-division rule.",
+          "I found two real prices.",
+          "I used real prices in a multiplication problem.",
+          "I used division to check what I can afford.",
+          "I confirmed my order fits the budget."
+        ],
+        "links": [
+          {
+            "icon": "✖️",
+            "name": "Math is Fun — Multiplying Decimals",
+            "url": "https://www.mathsisfun.com/multiplying-decimals.html",
+            "find": "The step-by-step rule with a worked example.",
+            "look": "count the decimal places in both numbers"
+          },
+          {
+            "icon": "➗",
+            "name": "Math is Fun — Dividing Decimals",
+            "url": "https://www.mathsisfun.com/dividing-decimals.html",
+            "find": "How to move the decimal point before dividing.",
+            "look": "make the divisor a whole number"
+          },
+          {
+            "icon": "🔢",
+            "name": "Math is Fun — Decimals",
+            "url": "https://www.mathsisfun.com/decimals.html",
+            "find": "What each decimal place is worth.",
+            "look": "tenths, hundredths, thousandths"
+          }
+        ],
+        "note": "These sites were picked for class. They open in a new tab so you keep your project. If a page asks you to sign in or buy something, just close it and come back."
+      }
+    </script>
     <script src="/shared/projects/projects-tabs.js" defer></script>
+    <script src="/shared/projects/projects-interactive.js" defer></script>
+    <script src="/shared/projects/manip-gcf-bags.js" defer></script>
   <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <!-- mwb-injected:end -->

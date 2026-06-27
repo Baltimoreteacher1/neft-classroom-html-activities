@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Maker Workshop Cut List — Unit 2 Culminating Project</title>
     <meta
       name="description"
@@ -466,11 +466,13 @@
     <!-- nsr-injected:end -->
     <link rel="stylesheet" href="/shared/projects/projects-premium.css" />
     <link rel="stylesheet" href="/shared/projects/projects-tabs.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-tplus.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-interactive.css" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
-  <body class="pk">
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
+  <body class="pk" data-pk-theme="u2">
     <header class="phero">
       <div class="deco">🪚</div>
       <h1>Maker Workshop Cut List</h1>
@@ -495,6 +497,15 @@
             🔵 Level 2 (challenge)
           </button>
         </span>
+        <button
+          class="pk-tts-toggle"
+          data-tts-toggle
+          type="button"
+          aria-pressed="false"
+          title="Read text aloud"
+        >
+          🔊 Read aloud
+        </button>
         <button onclick="PK.save('u2ProjectB')">💾 Save</button>
         <button
           onclick="PK.load('u2ProjectB', { show: true, after: recalcAll })"
@@ -549,33 +560,33 @@
         <div class="pk-vocab">
           <div class="pk-term">
             <span class="pk-icon">📏</span><b>Dividend</b>
-            <p>The amount you start with and cut up (the whole board).</p>
+            <p>The big amount you start with and cut up.</p>
             <p class="pk-es">
               Dividendo: la cantidad con la que empiezas y cortas.
             </p>
           </div>
           <div class="pk-term">
             <span class="pk-icon">🪚</span><b>Divisor</b>
-            <p>The size of each piece you cut.</p>
+            <p>The size of each piece you cut off.</p>
             <p class="pk-es">Divisor: el tamaño de cada pieza que cortas.</p>
           </div>
           <div class="pk-term">
             <span class="pk-icon">🧱</span><b>Quotient</b>
-            <p>The answer — how many pieces you get.</p>
+            <p>The answer: how many pieces you get.</p>
             <p class="pk-es">
               Cociente: la respuesta — cuántas piezas obtienes.
             </p>
           </div>
           <div class="pk-term">
             <span class="pk-icon">🔄</span><b>Reciprocal</b>
-            <p>A fraction flipped upside down. 1/4 becomes 4/1.</p>
+            <p>A fraction flipped over. 1/4 turns into 4/1.</p>
             <p class="pk-es">
               Recíproco: una fracción volteada. 1/4 se vuelve 4/1.
             </p>
           </div>
           <div class="pk-term">
             <span class="pk-icon">📈</span><b>Improper Fraction</b>
-            <p>Top number bigger than bottom, like 7/2.</p>
+            <p>The top number is bigger than the bottom, like 7/2.</p>
             <p class="pk-es">
               Fracción impropia: el numerador es mayor que el denominador, como
               7/2.
@@ -583,7 +594,7 @@
           </div>
           <div class="pk-term">
             <span class="pk-icon">🔢</span><b>Mixed Number</b>
-            <p>A whole number with a fraction, like 3 1/2.</p>
+            <p>A whole number plus a fraction, like 3 1/2.</p>
             <p class="pk-es">
               Número mixto: un entero con una fracción, como 3 1/2.
             </p>
@@ -592,16 +603,52 @@
         <div class="grid2" style="margin-top: 18px">
           <div class="pk-callout">
             <h3>Formula Bank</h3>
-            <p><b>÷ a fraction = × the reciprocal:</b> L ÷ (p/q) = L × (q/p)</p>
-            <p><b>Change mixed → improper first:</b> 3 1/2 = (3×2+1)/2 = 7/2</p>
-            <p>
-              <b>Smaller pieces → more pieces.</b> Cutting smaller pieces gives
-              a bigger answer.
-            </p>
-            <p class="pk-lvl2">
-              <b>Leftover:</b> full pieces = whole part of the quotient; scrap =
-              remainder × piece size.
-            </p>
+            <ul class="pk-formula">
+              <li>
+                <span class="pk-f-name"
+                  >Divide by a fraction = multiply by its flip</span
+                >
+                <span class="pk-f-mean"
+                  >To divide by a fraction, flip the second fraction upside down
+                  (its reciprocal) and multiply instead.</span
+                >
+                <span class="pk-eg"
+                  >Example: 6 ÷ 2/3 = 6 × 3/2 = 18/2 = 9 pieces</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name"
+                  >Turn a mixed number into a fraction first</span
+                >
+                <span class="pk-f-mean"
+                  >Multiply the whole number by the bottom, add the top, and
+                  keep the same bottom number.</span
+                >
+                <span class="pk-eg">Example: 3 1/2 = (3×2 + 1)/2 = 7/2</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Smaller pieces make more pieces</span>
+                <span class="pk-f-mean"
+                  >Cutting into a smaller fraction gives a bigger answer,
+                  because tiny pieces fit into the material more times.</span
+                >
+                <span class="pk-eg"
+                  >Example: 6 ÷ 1/4 = 24, but 6 ÷ 1/2 = 12</span
+                >
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">Full pieces and scrap</span>
+                <span class="pk-f-mean"
+                  >The whole-number part of your answer is the number of full
+                  pieces. Multiply the leftover part by the piece size to find
+                  the scrap.</span
+                >
+                <span class="pk-eg"
+                  >Example: 7 ÷ 2 = 3.5 → 3 full pieces, with 0.5 × 2 = 1 ft of
+                  scrap</span
+                >
+              </li>
+            </ul>
           </div>
           <div class="pk-callout">
             <h3>Sentence Frames</h3>
@@ -689,7 +736,7 @@
                   font-weight="bold"
                   fill="#0f2b3c"
                 >
-                  KITCHEN PREP STATION
+                  WORKSHOP PREP STATION
                 </text>
                 <rect
                   x="100"
@@ -745,7 +792,29 @@
             >
               <span>📋</span> Scenario &amp; Level Options
             </h3>
-            <h2>Cut YOUR Materials</h2>
+            <p style="font-size: 14px; line-height: 1.6; margin: 0 0 10px">
+              You are a <strong>maker in a workshop</strong>. Pick a board or
+              pipe you want to use, then divide its length into equal fractional
+              pieces so every cut comes out the same size.
+            </p>
+            <ul
+              style="
+                font-size: 14px;
+                line-height: 1.6;
+                margin: 0;
+                padding-left: 18px;
+              "
+            >
+              <li>
+                <strong>Level 1 (support):</strong> use friendly, round lengths
+                (cut a 6-foot board into 1/2-foot pieces).
+              </li>
+              <li>
+                <strong>Level 2 (challenge):</strong> use real, uneven lengths
+                (cut a 4 1/3-foot board into 3/4-foot pieces and read the
+                leftover).
+              </li>
+            </ul>
           </div>
         </div>
         <p>
@@ -756,12 +825,7 @@
         </p>
 
         <label class="fld" for="projectName">What are you building?</label>
-        <input
-          type="text"
-          id="projectName"
-          data-save
-          placeholder="example: bookshelf for my room"
-        />
+        <input type="text" id="projectName" data-save placeholder="" />
 
         <!-- 1a Whole ÷ fraction -->
 
@@ -846,7 +910,6 @@
                   stroke-width="1"
                 />
                 <rect
-                 
                   x="100"
                   y="80"
                   width="200"
@@ -865,7 +928,6 @@
                   stroke-width="1"
                 />
                 <rect
-                 
                   x="100"
                   y="130"
                   width="50"
@@ -875,7 +937,6 @@
                   stroke-width="1"
                 />
                 <text
-                 
                   x="250"
                   y="180"
                   text-anchor="middle"
@@ -904,7 +965,7 @@
                   id="p1-board"
                   data-save
                   min="1"
-                  placeholder="ex: 8"
+                  placeholder=""
                   oninput="calcPhase1()"
                 />
               </div>
@@ -921,7 +982,7 @@
                     id="p1-denom"
                     data-save
                     min="1"
-                    placeholder="ex: 3"
+                    placeholder=""
                     oninput="calcPhase1()"
                   />
                 </div>
@@ -931,6 +992,17 @@
               Calculate shelves
             </button>
             <div class="readout" id="p1-out"></div>
+            <div
+              class="pki-manip"
+              data-manip="frac-divide"
+              data-whole-label="feet of board"
+              data-piece-label="foot per piece"
+              data-default-whole-n="3"
+              data-default-whole-d="1"
+              data-default-piece-n="3"
+              data-default-piece-d="4"
+              data-unit="ft"
+            ></div>
             <details class="hintbox">
               <summary>Need a hint?</summary>
               <div>
@@ -943,6 +1015,15 @@
                 >
               </div>
             </details>
+
+            <div class="pk-lvl2" style="margin-top: 16px">
+              <div class="task">
+                <strong>Level 2 extension (6.NS.1):</strong> A board is 7 ft
+                long and each shelf needs 5/6 ft. How many full shelves can you
+                cut, and how much board is left over? Show the reciprocal (flip)
+                step, then explain the leftover as a fraction of one shelf.
+              </div>
+            </div>
 
             <!-- 1b Fraction ÷ fraction -->
           </div>
@@ -996,8 +1077,8 @@
                 <b>Total Amount ÷ Serving Size</b>.
               </li>
               <li>
-                Convert any mixed numbers to <b>improper fractions</b> (e.g.,
-                $1\frac{1}{2}$ becomes $\frac{3}{2}$).
+                Convert any mixed numbers to <b>improper fractions</b> (e.g., 1
+                1/2 becomes 3/2).
               </li>
               <li>
                 Apply the <b>Keep-Change-Flip</b> rule:
@@ -1021,9 +1102,8 @@
                 font-size: 12px;
               "
             >
-              💡 <b>Example:</b> $\frac{3}{4}$ cup total ÷ $\frac{1}{8}$ cup
-              serving = $\frac{3}{4} \times \frac{8}{1} = \frac{24}{4} =
-              \mathbf{6}$ servings.
+              💡 <b>Example:</b> 3/4 cup total ÷ 1/8 cup serving = 3/4 × 8/1 =
+              24/4 = 6 servings.
             </div>
           </div>
         </div>
@@ -1081,7 +1161,6 @@
                   stroke-width="1"
                 />
                 <rect
-                 
                   x="100"
                   y="80"
                   width="200"
@@ -1100,7 +1179,6 @@
                   stroke-width="1"
                 />
                 <rect
-                 
                   x="100"
                   y="130"
                   width="50"
@@ -1110,7 +1188,6 @@
                   stroke-width="1"
                 />
                 <text
-                 
                   x="250"
                   y="180"
                   text-anchor="middle"
@@ -1136,7 +1213,7 @@
                   id="p2a"
                   data-save
                   min="1"
-                  placeholder="ex: 5"
+                  placeholder=""
                   oninput="calcPhase2()"
                 />
               </div>
@@ -1147,7 +1224,7 @@
                   id="p2b"
                   data-save
                   min="1"
-                  placeholder="ex: 6"
+                  placeholder=""
                   oninput="calcPhase2()"
                 />
               </div>
@@ -1158,7 +1235,7 @@
                   id="p2c"
                   data-save
                   min="1"
-                  placeholder="ex: 1"
+                  placeholder=""
                   oninput="calcPhase2()"
                 />
               </div>
@@ -1169,7 +1246,7 @@
                   id="p2d"
                   data-save
                   min="1"
-                  placeholder="ex: 4"
+                  placeholder=""
                   oninput="calcPhase2()"
                 />
               </div>
@@ -1187,6 +1264,20 @@
                 left over (1/12 of a yard of ribbon).
               </p>
             </details>
+
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: try friendly pieces like 3/4 of a yard cut into
+              1/8-yard pieces, then flip and multiply.
+            </p>
+            <div class="pk-lvl2" style="margin-top: 16px">
+              <div class="task">
+                <strong>Level 2 extension (6.NS.1):</strong> You have 11/12 yard
+                of ribbon and each bow needs 1/3 yard. How many full bows can
+                you tie, and what fraction of a bow is left over? Show the
+                reciprocal (flip) step, then explain the leftover in terms of
+                one bow.
+              </div>
+            </div>
 
             <!-- 1c Mixed ÷ fraction -->
           </div>
@@ -1240,8 +1331,8 @@
                 <b>Total Amount ÷ Serving Size</b>.
               </li>
               <li>
-                Convert any mixed numbers to <b>improper fractions</b> (e.g.,
-                $1\frac{1}{2}$ becomes $\frac{3}{2}$).
+                Convert any mixed numbers to <b>improper fractions</b> (e.g., 1
+                1/2 becomes 3/2).
               </li>
               <li>
                 Apply the <b>Keep-Change-Flip</b> rule:
@@ -1265,9 +1356,8 @@
                 font-size: 12px;
               "
             >
-              💡 <b>Example:</b> $\frac{3}{4}$ cup total ÷ $\frac{1}{8}$ cup
-              serving = $\frac{3}{4} \times \frac{8}{1} = \frac{24}{4} =
-              \mathbf{6}$ servings.
+              💡 <b>Example:</b> 3/4 cup total ÷ 1/8 cup serving = 3/4 × 8/1 =
+              24/4 = 6 servings.
             </div>
           </div>
         </div>
@@ -1325,7 +1415,6 @@
                   stroke-width="1"
                 />
                 <rect
-                 
                   x="100"
                   y="80"
                   width="200"
@@ -1344,7 +1433,6 @@
                   stroke-width="1"
                 />
                 <rect
-                 
                   x="100"
                   y="130"
                   width="50"
@@ -1354,7 +1442,6 @@
                   stroke-width="1"
                 />
                 <text
-                 
                   x="250"
                   y="180"
                   text-anchor="middle"
@@ -1381,7 +1468,7 @@
                     href="https://en.wikipedia.org/wiki/Lumber#Dimensional_lumber"
                     target="_blank"
                     class="pk-research-inline-link"
-                    >🔗 The Home Depot Lumber Lumber Dimensions Guide ↗</a
+                    >🔗 The Home Depot Lumber Dimensions Guide ↗</a
                   >
                 </div>
                 <p class="pk-research-inline-instructions">
@@ -1399,7 +1486,7 @@
                       type="text"
                       id="worldCountry"
                       data-save
-                      placeholder="e.g. 2x4 pine board"
+                      placeholder=""
                       oninput="recalcAll()"
                     />
                   </div>
@@ -1413,7 +1500,7 @@
                       data-save
                       step="any"
                       min="0"
-                      placeholder="e.g. 3.5"
+                      placeholder=""
                       oninput="recalcAll()"
                     />
                   </div>
@@ -1497,12 +1584,7 @@
             <label class="fld" for="check-rope"
               >Your answer (number of pieces)</label
             >
-            <input
-              type="number"
-              id="check-rope"
-              data-save
-              placeholder="Type a number"
-            />
+            <input type="number" id="check-rope" data-save placeholder="" />
             <button class="btn alt" type="button" onclick="checkRope()">
               Check answer
             </button>
@@ -1510,6 +1592,15 @@
             <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
               Level 1 worked step: 5 ÷ (1/2) → flip → 5 × 2 = 10.
             </p>
+            <div class="pk-lvl2" style="margin-top: 16px">
+              <div class="task">
+                <strong>Level 2 extension (6.NS.1):</strong> A 4 1/2-ft pipe is
+                cut into 2/3-ft sections. How many full sections do you get, and
+                what fraction of one section is left over? Convert the mixed
+                number to an improper fraction first, then explain the remainder
+                in terms of a single section.
+              </div>
+            </div>
           </div>
 
           <div
@@ -1561,8 +1652,8 @@
                 <b>Total Amount ÷ Serving Size</b>.
               </li>
               <li>
-                Convert any mixed numbers to <b>improper fractions</b> (e.g.,
-                $1\frac{1}{2}$ becomes $\frac{3}{2}$).
+                Convert any mixed numbers to <b>improper fractions</b> (e.g., 1
+                1/2 becomes 3/2).
               </li>
               <li>
                 Apply the <b>Keep-Change-Flip</b> rule:
@@ -1586,9 +1677,8 @@
                 font-size: 12px;
               "
             >
-              💡 <b>Example:</b> $\frac{3}{4}$ cup total ÷ $\frac{1}{8}$ cup
-              serving = $\frac{3}{4} \times \frac{8}{1} = \frac{24}{4} =
-              \mathbf{6}$ servings.
+              💡 <b>Example:</b> 3/4 cup total ÷ 1/8 cup serving = 3/4 × 8/1 =
+              24/4 = 6 servings.
             </div>
           </div>
         </div>
@@ -1632,12 +1722,7 @@
             <label class="fld" for="partnerName"
               >Partner name or initials</label
             >
-            <input
-              type="text"
-              id="partnerName"
-              data-save
-              placeholder="example: A.J."
-            />
+            <input type="text" id="partnerName" data-save placeholder="" />
           </div>
           <div>
             <label class="fld" for="p-shelves"
@@ -1683,11 +1768,7 @@
         <label class="fld" for="peerReflect"
           >Who gets more pieces, and how do you know?</label
         >
-        <textarea
-          id="peerReflect"
-          data-save
-          placeholder="My cut list yields ___ while my partner's yields ___, so ___."
-        ></textarea>
+        <textarea id="peerReflect" data-save placeholder=""></textarea>
       </section>
 
       <!-- ===================== PART 3 — WORLD ===================== -->
@@ -1725,7 +1806,7 @@
               data-save
               step="0.01"
               oninput="worldGo()"
-              placeholder="type your value"
+              placeholder=""
             />
             <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
               Tip: your shelves or pieces from Part 1 are a great value to type
@@ -1767,23 +1848,13 @@
           <div class="grid2">
             <div>
               <label class="fld" for="wi-length">Material length (ft)</label>
-              <input
-                type="number"
-                id="wi-length"
-                step="0.01"
-                placeholder="ex: 8"
-              />
+              <input type="number" id="wi-length" step="0.01" placeholder="" />
             </div>
             <div>
               <label class="fld" for="wi-cut"
                 >New cut size (ft, like 0.5 for 1/2)</label
               >
-              <input
-                type="number"
-                id="wi-cut"
-                step="0.01"
-                placeholder="ex: 0.5"
-              />
+              <input type="number" id="wi-cut" step="0.01" placeholder="" />
             </div>
           </div>
           <button class="btn" type="button" onclick="runWhatIf()">
@@ -1798,11 +1869,7 @@
           >Does your material make more or fewer pieces than the standard
           lengths? Why might that be?</label
         >
-        <textarea
-          id="worldReflect"
-          data-save
-          placeholder="My material makes ___ pieces, which is ___ the average of ___ because ___."
-        ></textarea>
+        <textarea id="worldReflect" data-save placeholder=""></textarea>
         <div class="pk-lvl2">
           <label class="fld" for="worldHard"
             >Level 2 question: A 7-foot board is cut into 3/4-ft pieces. How
@@ -1810,21 +1877,13 @@
             whether 3/4-ft cuts or 2/3-ft cuts waste less. Show your
             thinking.</label
           >
-          <textarea
-            id="worldHard"
-            data-save
-            placeholder="7 ÷ (3/4) = 7 × (4/3) = 28/3 = ___ R ___; leftover = ___ ft because ___"
-          ></textarea>
+          <textarea id="worldHard" data-save placeholder=""></textarea>
         </div>
         <label class="fld" for="careful"
           >Careful thinking: why is it tricky to compare "pieces" between two
           different materials?</label
         >
-        <textarea
-          id="careful"
-          data-save
-          placeholder="It can be unfair to compare because ___."
-        ></textarea>
+        <textarea id="careful" data-save placeholder=""></textarea>
       </section>
 
       <!-- ===================== DELIVERABLE ===================== -->
@@ -1839,11 +1898,7 @@
         <p>
           Write a 3–5 sentence cut-list memo using your real numbers from above.
         </p>
-        <textarea
-          id="pitch"
-          data-save
-          placeholder="Workshop team: The ___ ft board yields ___ shelves at 2/3 ft each (L ÷ 2/3 = ___). The ___ yd ribbon yields ___ pieces (a/b ÷ c/d = ___) with ___ left over. The ___ m pipe gives ___ quarter-meter pieces. A 5 ft rope cut into 1/2-ft pieces gives ___ pieces because 5 ÷ 1/2 = ___."
-        ></textarea>
+        <textarea id="pitch" data-save placeholder=""></textarea>
 
         <h3 style="margin: 22px 0 6px">Cut-List Checklist</h3>
         <ul class="checklist" id="checklist">
@@ -1982,7 +2037,10 @@
       const yrEl = document.getElementById("yr");
       if (yrEl) yrEl.textContent = new Date().getFullYear();
       const $ = (id) => document.getElementById(id);
-      const num = (id) => { const e = $(id); return e ? parseFloat(e.value) : NaN; };
+      const num = (id) => {
+        const e = $(id);
+        return e ? parseFloat(e.value) : NaN;
+      };
 
       /* ---- fraction helpers (kept in page) ---- */
       function gcd(a, b) {
@@ -2422,9 +2480,38 @@
       }
 
       function drawVisualizer() {
-        const board = num("p1-board");
-        const ribbon = num("p2-ribbon");
-        const box = num("p3-box");
+        // Draw real piece counts from the page's actual inputs.
+        const clampCount = (v) => {
+          v = Math.floor(v);
+          return isFinite(v) && v > 0 ? Math.min(v, 24) : 0;
+        };
+        // Phase 1a — shelves: L ÷ (2/denom) = L × denom / 2
+        let board = clampCount((num("p1-board") * num("p1-denom")) / 2);
+        // Phase 1b — ribbon: (a/b) ÷ (c/d) = (a×d)/(b×c)
+        let ribbon = clampCount(
+          (num("p2a") * num("p2d")) / (num("p2b") * num("p2c")),
+        );
+        // Phase 1c — pipe: (w + n/d) ÷ (1/4) = (w + n/d) × 4
+        let box = clampCount((num("p3w") + num("p3n") / num("p3d")) * 4);
+
+        // Show a worked EXAMPLE rip-cut blueprint by default so the canvas
+        // always has cuts to read; switch to the real cut-list once any
+        // material input is entered.
+        const isExample =
+          isNaN(num("p1-board")) &&
+          isNaN(num("p1-denom")) &&
+          isNaN(num("p2a")) &&
+          isNaN(num("p2b")) &&
+          isNaN(num("p2c")) &&
+          isNaN(num("p2d")) &&
+          isNaN(num("p3w")) &&
+          isNaN(num("p3n")) &&
+          isNaN(num("p3d"));
+        if (isExample) {
+          board = 8;
+          ribbon = 4;
+          box = 6;
+        }
 
         let p1Html = "";
         if (board > 0) {
@@ -2460,7 +2547,7 @@
           p2Html = `
             <rect x="180" y="95" width="140" height="20" fill="none" stroke="#0f2b3c" stroke-width="2" />
             ${pieces}
-            <text x="250" y="80" text-anchor="middle" font-size="10" font-weight="bold" fill="#0f2b3c">Ribbon Ribbon</text>
+            <text x="250" y="80" text-anchor="middle" font-size="10" font-weight="bold" fill="#0f2b3c">Ribbon Cuts</text>
           `;
         }
 
@@ -2479,13 +2566,14 @@
           p3Html = `
             <rect x="330" y="95" width="140" height="20" fill="none" stroke="#0f2b3c" stroke-width="2" />
             ${pieces}
-            <text x="400" y="80" text-anchor="middle" font-size="10" font-weight="bold" fill="#0f2b3c">Box Batches</text>
+            <text x="400" y="80" text-anchor="middle" font-size="10" font-weight="bold" fill="#0f2b3c">Pipe Cuts</text>
           `;
         }
 
         const svgString = `
           <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
-            <text x="250" y="35" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Bakery Blueprint Material Rip-Cuts</text>
+            <text x="250" y="35" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Workshop Blueprint Material Rip-Cuts</text>
+            ${isExample ? `<rect x="372" y="18" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="32" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example cut-list</text>` : ""}
             ${p1Html}
             ${p2Html}
             ${p3Html}
@@ -2613,6 +2701,7 @@
       document.addEventListener("DOMContentLoaded", function () {
         renderWorld();
         PK.initLevel({ storageKey: "u2ProjectB", default: "level-1" });
+        PK.initTts({ storageKey: "u2ProjectB" });
         PK.load("u2ProjectB", { after: recalcAll });
         updateProgress();
       });
@@ -2621,9 +2710,109 @@
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
+    <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
+    <script type="application/json" id="pk-research">
+      {
+        "icon": "🔎",
+        "title": "Research Lab — Measure Like a Maker",
+        "intro": "Carpenters and bakers divide by fractions all day. Look up the rules and real measurements, then cut the math down to size.",
+        "brief": {
+          "theme": "field",
+          "title": "🔧 Your Research Mission",
+          "hook": "Find the <b>fraction-division rule</b> and real measurements, then use them like a real maker.",
+          "steps": [
+            "Open a link (new tab — you keep your project).",
+            "Record the rule and real sizes in Field Notes.",
+            "Use them in the math problems.",
+            "Check off the Investigation Checklist."
+          ]
+        },
+        "fieldNotes": {
+          "title": "Field Notes — Record What You Find",
+          "intro": "Jot the exact number or rule you find. You'll reuse these in the math below.",
+          "fields": [
+            {
+              "label": "Rule for dividing by a fraction",
+              "source": "Math is Fun",
+              "placeholder": "multiply by the reciprocal",
+              "hint": "'Keep, change, flip.'"
+            },
+            {
+              "label": "What a reciprocal is",
+              "source": "Math is Fun",
+              "placeholder": "flip the fraction (3/4 → 4/3)",
+              "hint": "Numerator and denominator swap."
+            },
+            {
+              "label": "A real length you will cut (inches or feet)",
+              "source": "Your project / ruler",
+              "placeholder": "12 in",
+              "hint": "Measure or pick a real board/strip length."
+            },
+            {
+              "label": "The fraction-size of each piece",
+              "source": "Your plan",
+              "placeholder": "3/4 in pieces",
+              "hint": "How big is one cut piece?"
+            }
+          ]
+        },
+        "mathTasks": [
+          {
+            "title": "1 · How many pieces?",
+            "prompt": "Take your full length (Field Note 3) and divide by your piece size (Field Note 4) using <b>division by a fraction</b>. How many pieces do you get?",
+            "level2": "If some length is left over, what fraction of a piece is it?"
+          },
+          {
+            "title": "2 · Reverse it",
+            "prompt": "If you need 8 pieces that are each 1/2 ft long, how many feet of material do you need? Show the multiplication.",
+            "level2": "Write the matching division equation that undoes your multiplication."
+          },
+          {
+            "title": "3 · Check with a model",
+            "prompt": "Draw or describe a number-line or area model that shows your Problem 1 answer is correct.",
+            "level2": "Explain in one sentence why dividing by a fraction gives a bigger number."
+          }
+        ],
+        "investigationChecklist": [
+          "I recorded the divide-by-a-fraction rule.",
+          "I recorded what a reciprocal is.",
+          "I found a real length to cut.",
+          "I used fraction division to count pieces.",
+          "I wrote a multiplication equation that reverses it.",
+          "I modeled or explained why my answer makes sense."
+        ],
+        "links": [
+          {
+            "icon": "📏",
+            "name": "Math is Fun — Dividing Fractions",
+            "url": "https://www.mathsisfun.com/fractions_division.html",
+            "find": "The 'keep, change, flip' method with examples.",
+            "look": "multiply by the reciprocal"
+          },
+          {
+            "icon": "🔁",
+            "name": "Math is Fun — Reciprocal",
+            "url": "https://www.mathsisfun.com/reciprocal.html",
+            "find": "What a reciprocal is and how to make one.",
+            "look": "flip the top and bottom"
+          },
+          {
+            "icon": "🍰",
+            "name": "Math is Fun — Mixed Fractions",
+            "url": "https://www.mathsisfun.com/mixed-fractions.html",
+            "find": "How to turn mixed numbers into improper fractions before dividing.",
+            "look": "the convert-to-improper steps"
+          }
+        ],
+        "note": "These sites were picked for class. They open in a new tab so you keep your project. If a page asks you to sign in or buy something, just close it and come back."
+      }
+    </script>
     <script src="/shared/projects/projects-tabs.js" defer></script>
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <script src="/shared/projects/projects-interactive.js" defer></script>
+    <script src="/shared/projects/manip-frac-divide.js" defer></script>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+  </body>
 </html>

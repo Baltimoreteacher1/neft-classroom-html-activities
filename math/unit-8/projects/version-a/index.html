@@ -457,11 +457,13 @@
     <!-- nsr-injected:end -->
     <link rel="stylesheet" href="/shared/projects/projects-premium.css" />
     <link rel="stylesheet" href="/shared/projects/projects-tabs.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-tplus.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-interactive.css" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
   <link rel="stylesheet" href="/assets/mobile-access.css">
   <!-- mobile-access-injected:end -->
 </head>
-  <body class="pk">
+  <body class="pk" data-pk-theme="u8">
     <header class="phero">
       <div class="deco">🔐</div>
       <h1>Escape Room Architect</h1>
@@ -484,6 +486,7 @@
           <button data-level-btn="level-1" type="button">🟢 Level 1</button>
           <button data-level-btn="level-2" type="button">🔵 Level 2</button>
         </span>
+        <button class="pk-tts-toggle" data-tts-toggle type="button" aria-pressed="false" title="Read text aloud">🔊 Read aloud</button>
         <button onclick="PK.save('u8ProjectA')">💾 Save</button>
         <button
           onclick="PK.load('u8ProjectA', { show: true, after: recalcAll })"
@@ -537,21 +540,21 @@
         <div class="pk-vocab">
           <div class="pk-term">
             <span class="pk-icon">🔤</span><b>Variable</b>
-            <p>A letter (like x) that stands for an unknown number.</p>
+            <p>A letter, like x, that stands for a number we do not know.</p>
             <p class="pk-es">
               Variable: una letra (como x) que representa un número desconocido.
             </p>
           </div>
           <div class="pk-term">
             <span class="pk-icon">🔁</span><b>Inverse Operation</b>
-            <p>The operation that undoes another: + undoes −, × undoes ÷.</p>
+            <p>A math step that undoes another one, like + and −.</p>
             <p class="pk-es">
               Operación inversa: la que deshace otra: + deshace −, × deshace ÷.
             </p>
           </div>
           <div class="pk-term">
             <span class="pk-icon">✖️</span><b>Coefficient</b>
-            <p>The number multiplied by the variable, like the 4 in 4x.</p>
+            <p>The number in front of the letter, like the 4 in 4x.</p>
             <p class="pk-es">
               Coeficiente: el número que multiplica a la variable, como el 4 en
               4x.
@@ -559,14 +562,14 @@
           </div>
           <div class="pk-term">
             <span class="pk-icon">🎯</span><b>Solution</b>
-            <p>The value of the variable that makes the equation true.</p>
+            <p>The number for x that makes the equation true.</p>
             <p class="pk-es">
               Solución: el valor de la variable que hace verdadera la ecuación.
             </p>
           </div>
           <div class="pk-term">
             <span class="pk-icon">⚖️</span><b>Equation</b>
-            <p>A math sentence saying two amounts are equal, with an = sign.</p>
+            <p>A number sentence that says two sides are equal (=).</p>
             <p class="pk-es">
               Ecuación: una oración matemática que dice que dos cantidades son
               iguales (=).
@@ -574,24 +577,21 @@
           </div>
           <div class="pk-term">
             <span class="pk-icon">🔎</span><b>Substitution</b>
-            <p>Putting your answer back into the equation to check it.</p>
+            <p>Putting your answer back in to make sure it works.</p>
             <p class="pk-es">
               Sustitución: poner tu respuesta en la ecuación para comprobarla.
             </p>
           </div>
           <div class="pk-term">
             <span class="pk-icon">↔️</span><b>Inequality</b>
-            <p>Compares amounts with &gt;, &lt;, ≥, or ≤ instead of =.</p>
+            <p>Compares two numbers with &gt; or &lt; instead of =.</p>
             <p class="pk-es">
               Desigualdad: compara cantidades con &gt;, &lt;, ≥ o ≤ en vez de =.
             </p>
           </div>
           <div class="pk-term">
             <span class="pk-icon">⚪</span><b>Open / Closed Circle</b>
-            <p>
-              Open circle = not included (&gt; or &lt;); closed = included (≥ or
-              ≤).
-            </p>
+            <p>Open circle leaves the number out. Closed circle keeps it in.</p>
             <p class="pk-es">
               Círculo abierto = no incluido (&gt; o &lt;); cerrado = incluido (≥
               o ≤).
@@ -599,7 +599,7 @@
           </div>
           <div class="pk-term">
             <span class="pk-icon">⬆️</span><b>At Least / At Most</b>
-            <p>"At least" means ≥ (or more). "At most" means ≤ (or fewer).</p>
+            <p>"At least" means that much or more. "At most" means that much or less.</p>
             <p class="pk-es">
               "Al menos" = ≥ (o más). "Como máximo" = ≤ (o menos).
             </p>
@@ -608,18 +608,64 @@
         <div class="grid2" style="margin-top: 18px">
           <div class="pk-callout">
             <h3>Formula Bank</h3>
-            <p><b>Add/Subtract:</b> x + p = q → x = q − p</p>
-            <p><b>Multiply/Divide:</b> p·x = q → x = q ÷ p</p>
-            <p>
-              <b>Substitution check:</b> put x back in; both sides must match.
-            </p>
-            <p class="pk-lvl2">
-              <b>Two-step lock:</b> p·x + r = q → x = (q − r) ÷ p
-            </p>
-            <p class="pk-lvl2">
-              <b>Inequality direction:</b> "at least" → x ≥ value (closed
-              circle, shade right).
-            </p>
+            <ul class="pk-formula">
+              <li>
+                <span class="pk-f-name">Undo addition</span>
+                <span class="pk-f-mean"
+                  >If a number is added to x, subtract that number from
+                  <b>both sides</b> to get x by itself.</span
+                >
+                <span class="pk-eg">Example: x + 8 = 15 → x = 15 − 8 = 7</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Undo subtraction</span>
+                <span class="pk-f-mean"
+                  >If a number is taken away from x, add it back to
+                  <b>both sides</b>.</span
+                >
+                <span class="pk-eg">Example: x − 6 = 10 → x = 10 + 6 = 16</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Undo multiplication</span>
+                <span class="pk-f-mean"
+                  >If x is multiplied by a number, divide <b>both sides</b> by
+                  that number.</span
+                >
+                <span class="pk-eg">Example: 4x = 28 → x = 28 ÷ 4 = 7</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Undo division</span>
+                <span class="pk-f-mean"
+                  >If x is divided by a number, multiply <b>both sides</b> by
+                  that number.</span
+                >
+                <span class="pk-eg">Example: x ÷ 3 = 6 → x = 6 × 3 = 18</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Check by substitution</span>
+                <span class="pk-f-mean"
+                  >Put your answer back in for x. Both sides must be
+                  equal.</span
+                >
+                <span class="pk-eg">Example: 7 + 8 = 15 ✓</span>
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">Two-step lock</span>
+                <span class="pk-f-mean"
+                  >Undo in reverse: first subtract the number added, then divide
+                  by the coefficient.</span
+                >
+                <span class="pk-eg">Example: 3x + 7 = 220 → 3x = 213 → x = 71</span>
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">Inequality direction</span>
+                <span class="pk-f-mean"
+                  >"At least" means x ≥ the number: closed (filled) circle, shade
+                  to the right.</span
+                >
+                <span class="pk-eg">Example: "at least 50" → x ≥ 50</span>
+              </li>
+            </ul>
           </div>
           <div class="pk-callout">
             <h3>Sentence Frames</h3>
@@ -664,9 +710,9 @@
       </defs>
       
       <rect x="20" y="20" width="460" height="200" rx="15" fill="url(#setup-grad)" stroke="#c45a3c" stroke-width="2"/>
-      <text x="250" y="60" text-anchor="middle" font-size="20" font-weight="bold" fill="#0f2b3c">INEQUALITY GATEWAY</text>
+      <text x="250" y="60" text-anchor="middle" font-size="20" font-weight="bold" fill="#0f2b3c">EQUATION LOCK</text>
       <rect x="180" y="90" width="140" height="80" rx="8" fill="none" stroke="#c45a3c" stroke-width="4" stroke-dasharray="5,5"/>
-      <text x="250" y="145" text-anchor="middle" font-size="36" font-weight="bold" fill="#c45a3c">&gt;=</text>
+      <text x="250" y="147" text-anchor="middle" font-size="34" font-weight="bold" fill="#c45a3c">x = ?</text>
     
     </svg>
   
@@ -677,6 +723,20 @@
             <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px;">
               <span>📋</span> Scenario &amp; Level Options
             </h3>
+            <p style="font-size: 14px; line-height: 1.6; margin: 0 0 10px">
+              You are an <strong>escape room architect</strong>. Players are
+              locked in your themed room and must solve four equation locks to
+              get out, so every clue you write has to have exactly one
+              whole-number answer.
+            </p>
+            <ul style="font-size: 14px; line-height: 1.6; margin: 0; padding-left: 18px">
+              <li><strong>Level 1 (support):</strong> build the four one-step
+                locks (x + p = q, x − p = q, p·x = q, x ÷ p = q) using small
+                whole numbers.</li>
+              <li><strong>Level 2 (challenge):</strong> swap Lock D for a
+                two-step combo lock (p·x + r = q) and make at least one answer
+                larger than 20.</li>
+            </ul>
           </div>
         </div>
         <p>
@@ -694,7 +754,7 @@
               type="text"
               id="roomName"
               data-save
-              placeholder="example: The Vault of Numbers"
+              placeholder=""
               oninput="updateProgress()"
             />
           </div>
@@ -750,6 +810,14 @@
           combination, you get <em>q</em>." The combination is the solution x.
           Use q &gt; p so x is positive.
         </div>
+        <div class="pk-lvl2">
+          <div class="task">
+            <strong>Level 2 extension:</strong> Predict x in your head before you
+            press Solve, then check. Prove your code is correct two ways: show
+            x = q − p AND substitute it back so x + p = q. Can you choose p and q
+            so the code is a two-digit number?
+          </div>
+        </div>
         <div class="grid2">
           <div>
             <label class="fld" for="a-p">p — amount added to x</label>
@@ -759,7 +827,7 @@
               data-save
               min="1"
               max="99"
-              placeholder="example: 8"
+              placeholder=""
               oninput="solveLockA()"
             />
           </div>
@@ -774,7 +842,7 @@
           <div class="grid2">
             <div>
               <label class="fld" for="worldCountry">Escape Room Fact Researched</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. 60-minute time limit" oninput="recalcAll()">
+              <input type="text" id="worldCountry" data-save placeholder="" oninput="recalcAll()">
             </div>
             <div>
               <label class="fld" for="a-q">q — what the clue totals</label>
@@ -784,7 +852,7 @@
               data-save
               min="2"
               max="199"
-              placeholder="example: 15"
+              placeholder=""
               oninput="solveLockA()"
             />
             </div>
@@ -796,6 +864,7 @@
           Solve &amp; Verify Lock A
         </button>
         <div class="readout" id="a-out"></div>
+        <div class="pki-manip" data-manip="balance" data-theme="lock"></div>
         <details class="hintbox">
           <summary>Need a hint?</summary>
           <p>
@@ -813,26 +882,22 @@
             </h3>
             
       <p style="font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-bottom: 12px;">
-        <strong>Writing and Graphing Inequalities:</strong>
+        <strong>Solving One-Variable Equations:</strong>
       </p>
       <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>Understand the inequality symbols:
+        <li>Decide what is unknown — call it <b>x</b>.</li>
+        <li>Write the equation from the situation (for example, x + p = q or p · x = q).</li>
+        <li>Undo with the <b>inverse operation</b> to isolate x:
           <ul>
-            <li>$&lt;$ is <i>less than</i>, $&gt;$ is <i>greater than</i>.</li>
-            <li>$\le$ is <i>less than or equal to</i> (maximum, at most).</li>
-            <li>$\ge$ is <i>greater than or equal to</i> (minimum, at least).</li>
+            <li>Subtract to undo addition; add to undo subtraction.</li>
+            <li>Divide to undo multiplication; multiply to undo division.</li>
           </ul>
         </li>
-        <li><b>Graphing on a number line</b>:
-          <ul>
-            <li>Use an <b>open circle</b> for $&lt;$ and $&gt;$ (boundary value not included).</li>
-            <li>Use a <b>closed (solid) circle</b> for $\le$ and $\ge$ (boundary value is included).</li>
-            <li>Draw an arrow pointing <b>right</b> for greater than, or <b>left</b> for less than.</li>
-          </ul>
-        </li>
+        <li>Do the same operation to <b>both sides</b> of the equation.</li>
+        <li><b>Check:</b> substitute your x back in and confirm both sides are equal.</li>
       </ol>
       <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
-        💡 <b>Example:</b> $x \ge 15$. Draw a solid circle at 15 and shade everything to the right.
+        💡 <b>Example:</b> To solve x + 8 = 15, subtract 8 from both sides to get x = 7. Check: 7 + 8 = 15. ✓
       </div>
     
           </div>
@@ -861,6 +926,17 @@
           <strong>Your clue:</strong> "When you take away <em>p</em> from the
           combination, you get <em>q</em>." So x − p = q, which means x = q + p.
         </div>
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 tip: subtraction is undone by adding. Start with q, then add p
+          back. Try p = 4 and q = 10 so x = 14.
+        </p>
+        <div class="pk-lvl2">
+          <div class="task">
+            <strong>Level 2 extension:</strong> Pick p and q so the code x is
+            greater than 100. Explain in words why x is always q + p for this
+            lock, then write your own take-away clue as a sentence.
+          </div>
+        </div>
         <div class="grid2">
           <div>
             <label class="fld" for="b-p">p — amount taken away</label>
@@ -870,7 +946,7 @@
               data-save
               min="1"
               max="99"
-              placeholder="example: 6"
+              placeholder=""
               oninput="solveLockB()"
             />
           </div>
@@ -882,7 +958,7 @@
               data-save
               min="1"
               max="199"
-              placeholder="example: 10"
+              placeholder=""
               oninput="solveLockB()"
             />
           </div>
@@ -908,26 +984,22 @@
             </h3>
             
       <p style="font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-bottom: 12px;">
-        <strong>Writing and Graphing Inequalities:</strong>
+        <strong>Solving One-Variable Equations:</strong>
       </p>
       <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>Understand the inequality symbols:
+        <li>Decide what is unknown — call it <b>x</b>.</li>
+        <li>Write the equation from the situation (for example, x + p = q or p · x = q).</li>
+        <li>Undo with the <b>inverse operation</b> to isolate x:
           <ul>
-            <li>$&lt;$ is <i>less than</i>, $&gt;$ is <i>greater than</i>.</li>
-            <li>$\le$ is <i>less than or equal to</i> (maximum, at most).</li>
-            <li>$\ge$ is <i>greater than or equal to</i> (minimum, at least).</li>
+            <li>Subtract to undo addition; add to undo subtraction.</li>
+            <li>Divide to undo multiplication; multiply to undo division.</li>
           </ul>
         </li>
-        <li><b>Graphing on a number line</b>:
-          <ul>
-            <li>Use an <b>open circle</b> for $&lt;$ and $&gt;$ (boundary value not included).</li>
-            <li>Use a <b>closed (solid) circle</b> for $\le$ and $\ge$ (boundary value is included).</li>
-            <li>Draw an arrow pointing <b>right</b> for greater than, or <b>left</b> for less than.</li>
-          </ul>
-        </li>
+        <li>Do the same operation to <b>both sides</b> of the equation.</li>
+        <li><b>Check:</b> substitute your x back in and confirm both sides are equal.</li>
       </ol>
       <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
-        💡 <b>Example:</b> $x \ge 15$. Draw a solid circle at 15 and shade everything to the right.
+        💡 <b>Example:</b> To solve x + 8 = 15, subtract 8 from both sides to get x = 7. Check: 7 + 8 = 15. ✓
       </div>
     
           </div>
@@ -957,6 +1029,17 @@
           <em>q</em>." Pick values so q ÷ p has no remainder (whole-number
           combination). Example: p = 4, q = 28 → x = 7.
         </div>
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 tip: pick q from the times table of p so it divides evenly.
+          Try p = 4 and q = 28 so x = 7.
+        </p>
+        <div class="pk-lvl2">
+          <div class="task">
+            <strong>Level 2 extension:</strong> Choose p and q so the code is a
+            two-digit number, then rewrite the same lock as a division clue
+            (x = q ÷ p) and show both clues give the same x.
+          </div>
+        </div>
         <div class="grid2">
           <div>
             <label class="fld" for="c-p"
@@ -968,7 +1051,7 @@
               data-save
               min="2"
               max="20"
-              placeholder="example: 4"
+              placeholder=""
               oninput="solveLockC()"
             />
           </div>
@@ -982,7 +1065,7 @@
               data-save
               min="2"
               max="400"
-              placeholder="example: 28"
+              placeholder=""
               oninput="solveLockC()"
             />
           </div>
@@ -1010,26 +1093,22 @@
             </h3>
             
       <p style="font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-bottom: 12px;">
-        <strong>Writing and Graphing Inequalities:</strong>
+        <strong>Solving One-Variable Equations:</strong>
       </p>
       <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>Understand the inequality symbols:
+        <li>Decide what is unknown — call it <b>x</b>.</li>
+        <li>Write the equation from the situation (for example, x + p = q or p · x = q).</li>
+        <li>Undo with the <b>inverse operation</b> to isolate x:
           <ul>
-            <li>$&lt;$ is <i>less than</i>, $&gt;$ is <i>greater than</i>.</li>
-            <li>$\le$ is <i>less than or equal to</i> (maximum, at most).</li>
-            <li>$\ge$ is <i>greater than or equal to</i> (minimum, at least).</li>
+            <li>Subtract to undo addition; add to undo subtraction.</li>
+            <li>Divide to undo multiplication; multiply to undo division.</li>
           </ul>
         </li>
-        <li><b>Graphing on a number line</b>:
-          <ul>
-            <li>Use an <b>open circle</b> for $&lt;$ and $&gt;$ (boundary value not included).</li>
-            <li>Use a <b>closed (solid) circle</b> for $\le$ and $\ge$ (boundary value is included).</li>
-            <li>Draw an arrow pointing <b>right</b> for greater than, or <b>left</b> for less than.</li>
-          </ul>
-        </li>
+        <li>Do the same operation to <b>both sides</b> of the equation.</li>
+        <li><b>Check:</b> substitute your x back in and confirm both sides are equal.</li>
       </ol>
       <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
-        💡 <b>Example:</b> $x \ge 15$. Draw a solid circle at 15 and shade everything to the right.
+        💡 <b>Example:</b> To solve x + 8 = 15, subtract 8 from both sides to get x = 7. Check: 7 + 8 = 15. ✓
       </div>
     
           </div>
@@ -1058,6 +1137,17 @@
             <strong>Your clue:</strong> "The combination divided by
             <em>p</em> equals <em>q</em>." So x ÷ p = q, which means x = q × p.
           </div>
+          <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+            Level 1 tip: multiplication undoes division, so x = q × p. Try p = 3
+            and q = 6 so x = 18.
+          </p>
+          <div class="pk-lvl2">
+            <div class="task">
+              <strong>Level 2 extension:</strong> Make the code land above 100 by
+              choosing a larger q. Then write the matching multiplication lock
+              (p·x = ?) that has the same answer x.
+            </div>
+          </div>
           <div class="grid2">
             <div>
               <label class="fld" for="d1-p">p — divisor</label>
@@ -1067,7 +1157,7 @@
                 data-save
                 min="2"
                 max="12"
-                placeholder="example: 3"
+                placeholder=""
                 oninput="solveLockD1()"
               />
             </div>
@@ -1079,7 +1169,7 @@
                 data-save
                 min="1"
                 max="50"
-                placeholder="example: 5"
+                placeholder=""
                 oninput="solveLockD1()"
               />
             </div>
@@ -1099,26 +1189,22 @@
             </h3>
             
       <p style="font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-bottom: 12px;">
-        <strong>Writing and Graphing Inequalities:</strong>
+        <strong>Solving One-Variable Equations:</strong>
       </p>
       <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>Understand the inequality symbols:
+        <li>Decide what is unknown — call it <b>x</b>.</li>
+        <li>Write the equation from the situation (for example, x + p = q or p · x = q).</li>
+        <li>Undo with the <b>inverse operation</b> to isolate x:
           <ul>
-            <li>$&lt;$ is <i>less than</i>, $&gt;$ is <i>greater than</i>.</li>
-            <li>$\le$ is <i>less than or equal to</i> (maximum, at most).</li>
-            <li>$\ge$ is <i>greater than or equal to</i> (minimum, at least).</li>
+            <li>Subtract to undo addition; add to undo subtraction.</li>
+            <li>Divide to undo multiplication; multiply to undo division.</li>
           </ul>
         </li>
-        <li><b>Graphing on a number line</b>:
-          <ul>
-            <li>Use an <b>open circle</b> for $&lt;$ and $&gt;$ (boundary value not included).</li>
-            <li>Use a <b>closed (solid) circle</b> for $\le$ and $\ge$ (boundary value is included).</li>
-            <li>Draw an arrow pointing <b>right</b> for greater than, or <b>left</b> for less than.</li>
-          </ul>
-        </li>
+        <li>Do the same operation to <b>both sides</b> of the equation.</li>
+        <li><b>Check:</b> substitute your x back in and confirm both sides are equal.</li>
       </ol>
       <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
-        💡 <b>Example:</b> $x \ge 15$. Draw a solid circle at 15 and shade everything to the right.
+        💡 <b>Example:</b> To solve x + 8 = 15, subtract 8 from both sides to get x = 7. Check: 7 + 8 = 15. ✓
       </div>
     
           </div>
@@ -1149,6 +1235,10 @@
             combination is a whole number <strong>greater than 50</strong> to
             make a tough final lock.
           </div>
+          <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+            Level 1 tip: do it in two steps — first subtract r, then divide by p.
+            Try p = 3, r = 7, q = 220 so x = 71.
+          </p>
           <div class="grid2">
             <div>
               <label class="fld" for="d2-p">p — coefficient</label>
@@ -1158,7 +1248,7 @@
                 data-save
                 min="2"
                 max="9"
-                placeholder="example: 3"
+                placeholder=""
                 oninput="solveLockD2()"
               />
             </div>
@@ -1170,7 +1260,7 @@
                 data-save
                 min="1"
                 max="99"
-                placeholder="example: 7"
+                placeholder=""
                 oninput="solveLockD2()"
               />
             </div>
@@ -1182,7 +1272,7 @@
                 data-save
                 min="2"
                 max="999"
-                placeholder="example: 220"
+                placeholder=""
                 oninput="solveLockD2()"
               />
             </div>
@@ -1208,26 +1298,22 @@
             </h3>
             
       <p style="font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-bottom: 12px;">
-        <strong>Writing and Graphing Inequalities:</strong>
+        <strong>Solving One-Variable Equations:</strong>
       </p>
       <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>Understand the inequality symbols:
+        <li>Decide what is unknown — call it <b>x</b>.</li>
+        <li>Write the equation from the situation (for example, x + p = q or p · x = q).</li>
+        <li>Undo with the <b>inverse operation</b> to isolate x:
           <ul>
-            <li>$&lt;$ is <i>less than</i>, $&gt;$ is <i>greater than</i>.</li>
-            <li>$\le$ is <i>less than or equal to</i> (maximum, at most).</li>
-            <li>$\ge$ is <i>greater than or equal to</i> (minimum, at least).</li>
+            <li>Subtract to undo addition; add to undo subtraction.</li>
+            <li>Divide to undo multiplication; multiply to undo division.</li>
           </ul>
         </li>
-        <li><b>Graphing on a number line</b>:
-          <ul>
-            <li>Use an <b>open circle</b> for $&lt;$ and $&gt;$ (boundary value not included).</li>
-            <li>Use a <b>closed (solid) circle</b> for $\le$ and $\ge$ (boundary value is included).</li>
-            <li>Draw an arrow pointing <b>right</b> for greater than, or <b>left</b> for less than.</li>
-          </ul>
-        </li>
+        <li>Do the same operation to <b>both sides</b> of the equation.</li>
+        <li><b>Check:</b> substitute your x back in and confirm both sides are equal.</li>
       </ol>
       <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
-        💡 <b>Example:</b> $x \ge 15$. Draw a solid circle at 15 and shade everything to the right.
+        💡 <b>Example:</b> To solve x + 8 = 15, subtract 8 from both sides to get x = 7. Check: 7 + 8 = 15. ✓
       </div>
     
           </div>
@@ -1275,7 +1361,7 @@
           type="text"
           id="partnerName"
           data-save
-          placeholder="example: A.J."
+          placeholder=""
           oninput="updateProgress()"
         />
 
@@ -1289,7 +1375,7 @@
           type="number"
           id="peerA"
           data-save
-          placeholder="x = ?"
+          placeholder=""
           oninput="checkPeer()"
         />
         <div class="feedback" id="peerAFb"></div>
@@ -1304,7 +1390,7 @@
           type="number"
           id="peerC"
           data-save
-          placeholder="x = ?"
+          placeholder=""
           oninput="checkPeer()"
         />
         <div class="feedback" id="peerCFb"></div>
@@ -1319,7 +1405,7 @@
         <textarea
           id="peerReflect"
           data-save
-          placeholder="My partner found Lock ___ hardest because ___."
+          placeholder=""
         ></textarea>
       </section>
 
@@ -1360,7 +1446,7 @@
               data-save
               step="0.01"
               oninput="worldGo()"
-              placeholder="type your value"
+              placeholder=""
             />
             <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
               Tip: for "hardest lock," type your biggest combination (Lock D is
@@ -1412,7 +1498,7 @@
                 id="ineqTarget"
                 data-save
                 min="1"
-                placeholder="example: 50"
+                placeholder=""
                 oninput="runIneq()"
               />
             </div>
@@ -1424,7 +1510,7 @@
                 type="number"
                 id="ineqTest"
                 data-save
-                placeholder="example: 71"
+                placeholder=""
                 oninput="runIneq()"
               />
             </div>
@@ -1450,7 +1536,7 @@
         <textarea
           id="worldReflect"
           data-save
-          placeholder="My hardest combination is ___, which is higher / lower than the sample average of ___, so my room is ___."
+          placeholder=""
         ></textarea>
         <div class="pk-lvl2">
           <label class="fld" for="worldHard"
@@ -1460,7 +1546,7 @@
           <textarea
             id="worldHard"
             data-save
-            placeholder="Add 3 to both sides → 5x = 100, divide by 5 → x = 20 because ___"
+            placeholder=""
           ></textarea>
         </div>
       </section>
@@ -1481,7 +1567,7 @@
         <textarea
           id="pitch"
           data-save
-          placeholder="My escape room is called ___ (theme: ___). Lock A: x + ___ = ___, combination = ___. Lock B: x − ___ = ___, combination = ___. Lock C: ___x = ___, combination = ___. Lock D: ___, combination = ___. Every combination was verified by substitution."
+          placeholder=""
         ></textarea>
 
         <h3 style="margin: 22px 0 6px">Blueprint Checklist</h3>
@@ -2294,11 +2380,13 @@
 
       
       function drawVisualizer() {
-        const lockA = num("code-a");
-        const lockB = num("code-b");
-        const lockC = num("code-c");
-        const lockD = num("worldHard");
-        
+        const aP = num("a-p"), aQ = num("a-q");
+        const bP = num("b-p"), bQ = num("b-q");
+        const cP = num("c-p"), cQ = num("c-q");
+        const lockA = (!isNaN(aP) && !isNaN(aQ)) ? aQ - aP : NaN;
+        const lockB = (!isNaN(bP) && !isNaN(bQ)) ? bQ + bP : NaN;
+        const lockC = (!isNaN(cP) && !isNaN(cQ) && cP !== 0) ? cQ / cP : NaN;
+
         const isUnlocked = (!isNaN(lockA) && !isNaN(lockB) && !isNaN(lockC));
         let angle = 0;
         if (isUnlocked) {
@@ -2488,27 +2576,30 @@ function recalcAll() {
       document.addEventListener("DOMContentLoaded", function () {
         renderWorld();
         PK.initLevel({ storageKey: "u8ProjectA", default: "level-1" });
+        PK.initTts({ storageKey: "u8ProjectA" });
         PK.load("u8ProjectA", { after: recalcAll });
         refreshPeerEqs();
         updateProgress();
       });
     
       function drawLockASVG() {
-        const p = num("a-p");
-        const q = num("a-q");
+        let p = num("a-p");
+        let q = num("a-q");
         const svg = $("phase-svg-1a");
         if (!svg) return;
-        
-        if (isNaN(p) || isNaN(q) || q <= p) {
-          svg.innerHTML = '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter p & q to draw equation balance scale</text>';
-          return;
+
+        const isExample = isNaN(p) || isNaN(q) || q <= p;
+        if (isExample) {
+          p = 5;
+          q = 12;
         }
-        
+
         const x = q - p;
-        
+
         svg.innerHTML = `
           <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Lock A: x + ${p} = ${q} (x = ${x})</text>
-          
+          ${isExample ? `<rect x="372" y="16" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example</text>` : ""}
+
           <line x1="250" y1="170" x2="250" y2="70" stroke="#475569" stroke-width="6" />
           <polygon points="220,180 280,180 250,165" fill="#475569" />
           <line x1="140" y1="70" x2="360" y2="70" stroke="#475569" stroke-width="4" />
@@ -2534,21 +2625,23 @@ function recalcAll() {
       }
       
       function drawLockBSVG() {
-        const p = num("b-p");
-        const q = num("b-q");
+        let p = num("b-p");
+        let q = num("b-q");
         const svg = $("phase-svg-1b");
         if (!svg) return;
-        
-        if (isNaN(p) || isNaN(q)) {
-          svg.innerHTML = '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter p & q to draw equation balance scale</text>';
-          return;
+
+        const isExample = isNaN(p) || isNaN(q);
+        if (isExample) {
+          p = 4;
+          q = 10;
         }
-        
+
         const x = q + p;
-        
+
         svg.innerHTML = `
           <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Lock B: x - ${p} = ${q} (x = ${x})</text>
-          
+          ${isExample ? `<rect x="372" y="16" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example</text>` : ""}
+
           <line x1="250" y1="170" x2="250" y2="70" stroke="#475569" stroke-width="6" />
           <polygon points="220,180 280,180 250,165" fill="#475569" />
           <line x1="140" y1="70" x2="360" y2="70" stroke="#475569" stroke-width="4" />
@@ -2574,21 +2667,23 @@ function recalcAll() {
       }
       
       function drawLockCSVG() {
-        const p = num("c-p");
-        const q = num("c-q");
+        let p = num("c-p");
+        let q = num("c-q");
         const svg = $("phase-svg-1c");
         if (!svg) return;
-        
-        if (isNaN(p) || isNaN(q) || p <= 0) {
-          svg.innerHTML = '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter p & q to draw equation balance scale</text>';
-          return;
+
+        const isExample = isNaN(p) || isNaN(q) || p <= 0;
+        if (isExample) {
+          p = 4;
+          q = 28;
         }
-        
+
         const x = q / p;
-        
+
         svg.innerHTML = `
           <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Lock C: ${p}x = ${q} (x = ${x.toFixed(1)})</text>
-          
+          ${isExample ? `<rect x="372" y="16" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example</text>` : ""}
+
           <line x1="250" y1="170" x2="250" y2="70" stroke="#475569" stroke-width="6" />
           <polygon points="220,180 280,180 250,165" fill="#475569" />
           <line x1="140" y1="70" x2="360" y2="70" stroke="#475569" stroke-width="4" />
@@ -2612,21 +2707,23 @@ function recalcAll() {
       }
       
       function drawLockDSVG() {
-        const p = num("d-p");
-        const q = num("d-q");
+        let p = num("d1-p");
+        let q = num("d1-q");
         const svg = $("phase-svg-1d");
         if (!svg) return;
-        
-        if (isNaN(p) || isNaN(q) || p <= 0) {
-          svg.innerHTML = '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter p & q to draw equation balance scale</text>';
-          return;
+
+        const isExample = isNaN(p) || isNaN(q) || p <= 0;
+        if (isExample) {
+          p = 3;
+          q = 6;
         }
-        
+
         const x = q * p;
-        
+
         svg.innerHTML = `
           <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Lock D: x / ${p} = ${q} (x = ${x})</text>
-          
+          ${isExample ? `<rect x="372" y="16" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example</text>` : ""}
+
           <line x1="250" y1="170" x2="250" y2="70" stroke="#475569" stroke-width="6" />
           <polygon points="220,180 280,180 250,165" fill="#475569" />
           <line x1="140" y1="70" x2="360" y2="70" stroke="#475569" stroke-width="4" />
@@ -2650,44 +2747,47 @@ function recalcAll() {
       }
       
       function drawLockESVG() {
-        const symbol = $("e-symbol") ? $("e-symbol").value : ">";
-        const val = num("e-val");
+        let p = num("d2-p");
+        let r = num("d2-r");
+        let q = num("d2-q");
         const svg = $("phase-svg-1e");
         if (!svg) return;
-        
-        if (isNaN(val)) {
-          svg.innerHTML = '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter inequality value to draw graph</text>';
-          return;
+
+        const isExample = isNaN(p) || isNaN(r) || isNaN(q) || p <= 0;
+        if (isExample) {
+          p = 3;
+          r = 7;
+          q = 220;
         }
-        
-        const isClosed = symbol === "le" || symbol === "ge";
-        const isLeft = symbol === "<" || symbol === "le";
-        
+
+        const x = (q - r) / p;
+        const xLabel = Number.isInteger(x) ? x : x.toFixed(1);
+
         svg.innerHTML = `
-          <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Inequality lock graph: x ${symbol.replace('le','&le;').replace('ge','&ge;')} ${val}</text>
-          
-          <line x1="50" y1="110" x2="450" y2="110" stroke="#cbd5e1" stroke-width="2" />
-          
-          ${[-2, -1, 0, 1, 2].map((i) => {
-            const tx = 250 + i * 80;
-            return `
-              <line x1="${tx}" y1="105" x2="${tx}" y2="115" stroke="#cbd5e1" />
-              <text x="${tx}" y="135" text-anchor="middle" font-size="11" fill="#5e6e7e">${val + i}</text>
-            `;
-          }).join('')}
-          
-          ${isLeft ? `<path d="M 50 110 L 250 110" stroke="#c45a3c" stroke-width="4.5" marker-start="url(#arr-arrow-left)" />` : `<path d="M 250 110 L 450 110" stroke="#c45a3c" stroke-width="4.5" marker-end="url(#arr-arrow-right)" />`}
-          
-          <circle cx="250" cy="110" r="6" fill="${isClosed ? '#c45a3c' : '#fff'}" stroke="#c45a3c" stroke-width="3" />
-          
-          <defs>
-            <marker id="arr-arrow-left" markerWidth="6" markerHeight="6" refX="0" refY="3" orient="auto">
-              <polygon points="6 0, 0 3, 6 6" fill="#c45a3c" />
-            </marker>
-            <marker id="arr-arrow-right" markerWidth="6" markerHeight="6" refX="6" refY="3" orient="auto">
-              <polygon points="0 0, 6 3, 0 6" fill="#c45a3c" />
-            </marker>
-          </defs>
+          <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Lock D: ${p}x + ${r} = ${q} (x = ${xLabel})</text>
+          ${isExample ? `<rect x="372" y="16" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example</text>` : ""}
+
+          <line x1="250" y1="170" x2="250" y2="70" stroke="#475569" stroke-width="6" />
+          <polygon points="220,180 280,180 250,165" fill="#475569" />
+          <line x1="140" y1="70" x2="360" y2="70" stroke="#475569" stroke-width="4" />
+
+          <g transform="translate(140, 70)">
+            <line x1="0" y1="0" x2="-40" y2="60" stroke="#94a3b8" stroke-width="1.5" />
+            <line x1="0" y1="0" x2="40" y2="60" stroke="#94a3b8" stroke-width="1.5" />
+            <rect x="-50" y="60" width="100" height="8" fill="#475569" rx="2" />
+            <rect x="-45" y="35" width="40" height="25" fill="#6366F1" rx="4" />
+            <text x="-25" y="52" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">${p}&times;x</text>
+            <rect x="5" y="35" width="35" height="25" fill="#ffb74d" rx="4" />
+            <text x="22" y="52" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">+${r}</text>
+          </g>
+
+          <g transform="translate(360, 70)">
+            <line x1="0" y1="0" x2="-40" y2="60" stroke="#94a3b8" stroke-width="1.5" />
+            <line x1="0" y1="0" x2="40" y2="60" stroke="#94a3b8" stroke-width="1.5" />
+            <rect x="-50" y="60" width="100" height="8" fill="#475569" rx="2" />
+            <rect x="-25" y="30" width="50" height="30" fill="#0e8a7d" rx="4" />
+            <text x="0" y="50" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">${q}</text>
+          </g>
         `;
       }
     
@@ -2696,7 +2796,107 @@ function recalcAll() {
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
+        <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
+    <script type="application/json" id="pk-research">
+      {
+        "icon": "🔎",
+        "title": "Research Lab — Solve to the Goal",
+        "intro": "Escape room designers use one-step equations to set each lock's secret code. Look up how to solve them, then build a real lock.",
+        "brief": {
+          "theme": "field",
+          "title": "🔐 Your Research Mission",
+          "hook": "Find how to <b>solve a one-step equation</b>, then use it to set a real lock code.",
+          "steps": [
+            "Open a link (new tab — you keep your project).",
+            "Record the rules in Field Notes.",
+            "Solve for the unknown in the math problems.",
+            "Check off the Investigation Checklist."
+          ]
+        },
+        "fieldNotes": {
+          "title": "Field Notes — Record What You Find",
+          "intro": "Jot the exact number or rule you find. You'll reuse these in the math below.",
+          "fields": [
+            {
+              "label": "How to solve x + p = q",
+              "source": "Math is Fun",
+              "placeholder": "subtract p from both sides",
+              "hint": "Do the inverse operation to both sides."
+            },
+            {
+              "label": "What 'inverse operation' means",
+              "source": "Math is Fun",
+              "placeholder": "the operation that undoes it",
+              "hint": "Add undoes subtract; multiply undoes divide."
+            },
+            {
+              "label": "Your lock's total q (what the clue equals)",
+              "source": "Your plan",
+              "placeholder": "15",
+              "hint": "The number your clue adds up to."
+            },
+            {
+              "label": "The number p added in your clue",
+              "source": "Your plan",
+              "placeholder": "8",
+              "hint": "Amount added to the secret code x."
+            }
+          ]
+        },
+        "mathTasks": [
+          {
+            "title": "1 · Build Lock A",
+            "prompt": "Write your Lock A equation <b>x + p = q</b> using Field Notes 3 and 4. Solve for x (the secret code) by using the inverse operation. Show both sides.",
+            "level2": "Check your answer by substituting it back in."
+          },
+          {
+            "title": "2 · Division lock",
+            "prompt": "Pick a divisor p and a quotient q, then write a division lock <b>x ÷ p = q</b> and solve for the secret code x.",
+            "level2": "Change your divisor p and recompute the new secret code."
+          },
+          {
+            "title": "3 · Verify",
+            "prompt": "Explain in one sentence why you do the SAME operation to both sides of an equation.",
+            "level2": "Write a one-step equation a classmate could solve, with the answer hidden."
+          }
+        ],
+        "investigationChecklist": [
+          "I recorded how to solve x + p = q.",
+          "I recorded what an inverse operation is.",
+          "I set a real lock total and clue number.",
+          "I wrote and solved a one-step equation.",
+          "I checked my solution by substituting.",
+          "I explained the 'same to both sides' rule."
+        ],
+        "links": [
+          {
+            "icon": "⚖️",
+            "name": "Math is Fun — Solving Equations",
+            "url": "https://www.mathsisfun.com/algebra/equations-solving.html",
+            "find": "How to undo an operation on both sides.",
+            "look": "do the same thing to both sides"
+          },
+          {
+            "icon": "🔰",
+            "name": "Math is Fun — Introduction to Algebra",
+            "url": "https://www.mathsisfun.com/algebra/introduction.html",
+            "find": "What a variable and equation are.",
+            "look": "the unknown and the equals sign"
+          },
+          {
+            "icon": "🧩",
+            "name": "Math is Fun — Mathematical Models",
+            "url": "https://www.mathsisfun.com/algebra/mathematical-models.html",
+            "find": "How to turn a real situation into an equation.",
+            "look": "the worked word-problem-to-equation example"
+          }
+        ],
+        "note": "These sites were picked for class. They open in a new tab so you keep your project. If a page asks you to sign in or buy something, just close it and come back."
+      }
+    </script>
     <script src="/shared/projects/projects-tabs.js" defer></script>
+    <script src="/shared/projects/projects-interactive.js" defer></script>
+<script src="/shared/projects/manip-balance.js" defer></script>
   <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <!-- mwb-injected:end -->

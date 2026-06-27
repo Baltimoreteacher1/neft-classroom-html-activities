@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Solve One-Step Addition and Subtraction Equations — Learn It</title>
 <style>
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap");
 :root{
   --navy:#12355b;--teal:#1fa6a2;--teal-light:#dff2ee;--amber:#f2c15b;
   --cream:#f7f4ec;--ink:#21313f;--muted:#5f6f80;--line:#d7e2ed;--card:#fff;
@@ -328,6 +329,8 @@ input.writeline:focus,input.gn-blank:focus{outline:none;background-color:#fff7e6
 .ak-list li{margin:8px 0;}
 .ak-twr-head{font-family:Outfit,system-ui,sans-serif;color:var(--navy);font-size:16px;margin:14px 0 6px;}
 .ak-why{color:var(--muted);font-style:italic;}
+.ak-distractors{margin:4px 0 0;padding-left:18px;list-style:none;}
+.ak-distractors li{margin:3px 0;font-size:13.5px;color:var(--muted);}
 footer.packet{margin-top:18px;border-top:1px solid var(--line);padding-top:8px;
   color:var(--muted);font-size:12px;text-align:center;}
 .level-tag{display:inline-block;font-family:Calibri,system-ui,sans-serif;font-size:11.5px;
@@ -710,6 +713,26 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
     border: 1px dashed #000 !important;
   }
 }
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
 </style>
 </style>
 <style>html.nt-embed .topbar{display:none!important;}html.nt-embed .sheet{margin-top:12px!important;}
@@ -720,6 +743,11 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   .learn-listen{margin:0 0 18px;}
   .li-listen-btn{background:var(--teal);color:#fff;border:0;border-radius:999px;padding:11px 20px;font-weight:800;font-size:15px;cursor:pointer;}
   .li-listen-btn:hover{background:var(--navy);}
+  .learn-actions{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 18px;}
+  .li-workbench-btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;
+    background:linear-gradient(135deg,#4f46e5,#0e8a7d);color:#fff;border:0;border-radius:999px;
+    padding:11px 20px;font-weight:800;font-size:15px;cursor:pointer;}
+  .li-workbench-btn:hover{filter:brightness(1.08);}
   .li-reading{background:#fff3cd;box-shadow:0 0 0 3px #fff3cd, 0 0 0 5px var(--amber);border-radius:6px;}
 </style>
 <script>
@@ -876,12 +904,6 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
     });
   })();
 </script>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
 </head>
 <body>
 <div class="topbar no-print">
@@ -902,7 +924,10 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
     <span class="lin-icon" aria-hidden="true">🧭</span>
     <p>Read this first. It explains what we are learning and shows you exactly how to solve it — step by step. Then head to the lesson activities and practice.</p>
   </div>
-  <div class="learn-listen no-print"><button type="button" id="li-listen" class="li-listen-btn">🔊 Listen to this page</button></div>
+  <div class="learn-actions no-print">
+    <button type="button" id="li-listen" class="li-listen-btn">🔊 Listen to this page</button>
+    <a class="li-workbench-btn" href="/curriculum/math-workbench/" target="_blank" rel="noopener" title="Open the Math Workbench scratch space in a new tab">✱ Math Workbench</a>
+  </div>
   <article class="li" aria-label="Learn It — how the math works">
     <p class="li-kicker">Learn It</p>
     <h2 class="li-title">How do I solve an addition or subtraction equation?</h2>
@@ -928,7 +953,7 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
       </section>
     <section class="li-block">
         <p class="li-eyebrow">On your own</p>
-        <ul class="li-list"><li>Use the <button type="button" class="li-pop" data-popover data-term="Balance" data-term-es="Equilibrio" data-def="Keeping both sides of an equation equal by doing the same thing to each side." data-def-es="Mantener ambos lados de una ecuación iguales haciendo lo mismo a cada lado." data-img="../../assets/vocab-images/cat-number.svg" aria-label="What does Balance mean?">balance<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> scale to solve n + 23 = 58 by keeping both sides equal.</li><li>Then solve the practice <button type="button" class="li-pop" data-popover data-term="Equation" data-term-es="Ecuación" data-def="A math sentence with an equal sign showing both sides are the same." data-def-es="Una oración matemática con un signo igual que muestra que ambos lados son iguales." data-img="../../assets/vocab-images/equation.svg" aria-label="What does Equation mean?">equations<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> and check each answer.</li></ul>
+        <ul class="li-list"><li>Use the <button type="button" class="li-pop" data-popover data-term="Balance" data-term-es="Equilibrio" data-def="Keeping both sides of an equation equal by doing the same thing to each side." data-def-es="Mantener ambos lados de una ecuación iguales haciendo lo mismo a cada lado." data-img="../../assets/vocab-images/equation.svg" aria-label="What does Balance mean?">balance<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> scale to solve n + 23 = 58 by keeping both sides equal.</li><li>Then solve the practice <button type="button" class="li-pop" data-popover data-term="Equation" data-term-es="Ecuación" data-def="A math sentence with an equal sign showing both sides are the same." data-def-es="Una oración matemática con un signo igual que muestra que ambos lados son iguales." data-img="../../assets/vocab-images/equation.svg" aria-label="What does Equation mean?">equations<span class="li-pop-i" aria-hidden="true">ⓘ</span></button> and check each answer.</li></ul>
         <p class="li-problem-q"><strong>Solve:</strong> A shirt costs $d. After a $15 discount, it costs $38. What is d?</p>
         <div class="li-work"><span class="li-work-label">Show your work</span></div>
         <p class="li-answer"><span class="li-answer-label">My answer</span><input class="li-input li-input-answer" type="text" data-nt-field placeholder="Type your answer" /></p>
@@ -938,11 +963,5 @@ html.level-l3 .notes-step-body-l1, html.level-l3 .notes-step-body-l2 { display: 
   </article>
   <footer class="packet">Neft Teacher · Grade 6 Math · Lesson 7-2 · Standard 6.EE.7</footer>
 </main>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
 </body>
 </html>

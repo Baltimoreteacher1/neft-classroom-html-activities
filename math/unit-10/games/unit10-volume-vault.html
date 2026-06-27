@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Volume Vault — Crate Packer</title>
     <style>
       * {
@@ -46,9 +46,9 @@
     <link rel="stylesheet" href="/assets/game-fx.css" />
     <!-- gfx-injected:end -->
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
   <body>
     <div id="game"></div>
     <script>
@@ -266,7 +266,7 @@
             .text(
               W / 2,
               330,
-              "Catch falling cubes and pack the crate to its EXACT volume.\nV = length × width × height. Fill every layer — no more, no less!",
+              "Slide the crate to catch the slow-falling cubes and pack the prism to its EXACT volume.\nV = length × width × height. No timer, no rush — take your time!",
               {
                 fontFamily: "Segoe UI",
                 fontSize: "20px",
@@ -343,7 +343,7 @@
           this.placed = 0; // current packed volume (cubes placed so far)
           this.fallingCubes = [];
           this.spawnTimer = 0;
-          this.spawnEvery = 1100;
+          this.spawnEvery = 2200; // calmer cadence — one slow cube at a time
           this.gameOver = false;
 
           // crate footprint geometry (in screen space)
@@ -692,12 +692,14 @@
         spawnCube() {
           // a cube falls down one of the columns' screen x-positions
           const x = randInt(120, W - 120);
-          const bad = Math.random() < 0.18 && this.floor > 2; // hazard "lead" cube
+          // Calm tuning (teacher preference): NO hazard cubes — every cube is good.
+          const bad = false;
           const spr = this.add
             .image(x, -30, bad ? "cubeBad" : "cube")
             .setDepth(8)
             .setData("bad", bad);
-          spr.vy = Phaser.Math.FloatBetween(2.4, 3.4) + this.floor * 0.15;
+          // Slow, steady fall with no floor speed-up — gentle, not a reflex test.
+          spr.vy = 0.95;
           this.fallingCubes.push(spr);
         }
 
@@ -957,9 +959,11 @@
             this.spawnCube();
           }
 
-          // move falling cubes + collision with crate mouth
-          const mouthL = this.crate.x - this.halfCrate;
-          const mouthR = this.crate.x + this.halfCrate;
+          // move falling cubes + collision with crate mouth.
+          // Generous catch margin (calm tuning) so near-misses still pack.
+          const CATCH_MARGIN = 55;
+          const mouthL = this.crate.x - this.halfCrate - CATCH_MARGIN;
+          const mouthR = this.crate.x + this.halfCrate + CATCH_MARGIN;
           for (let i = this.fallingCubes.length - 1; i >= 0; i--) {
             const c = this.fallingCubes[i];
             c.y += c.vy;
@@ -1010,11 +1014,16 @@
             })
             .setOrigin(0.5);
           this.add
-            .text(W / 2, 370, "Best: " + (localStorage.getItem(LS_KEY) || "0"), {
-              fontFamily: "Segoe UI",
-              fontSize: "22px",
-              color: "#74c0fc",
-            })
+            .text(
+              W / 2,
+              370,
+              "Best: " + (localStorage.getItem(LS_KEY) || "0"),
+              {
+                fontFamily: "Segoe UI",
+                fontSize: "22px",
+                color: "#74c0fc",
+              },
+            )
             .setOrigin(0.5);
           this.add
             .text(
@@ -1086,8 +1095,8 @@
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <script src="/assets/game-fx.js" defer></script>
     <!-- gfx-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+  </body>
 </html>

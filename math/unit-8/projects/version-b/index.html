@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Fundraiser Goal Tracker — Unit 8 Culminating Project</title>
     <meta
       name="description"
@@ -457,11 +457,13 @@
     <!-- nsr-injected:end -->
     <link rel="stylesheet" href="/shared/projects/projects-premium.css" />
     <link rel="stylesheet" href="/shared/projects/projects-tabs.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-tplus.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-interactive.css" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
-  <body class="pk">
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
+  <body class="pk" data-pk-theme="u8">
     <header class="phero">
       <div class="deco">🎯</div>
       <h1>Fundraiser Goal Tracker</h1>
@@ -484,6 +486,15 @@
           <button data-level-btn="level-1" type="button">🟢 Level 1</button>
           <button data-level-btn="level-2" type="button">🔵 Level 2</button>
         </span>
+        <button
+          class="pk-tts-toggle"
+          data-tts-toggle
+          type="button"
+          aria-pressed="false"
+          title="Read text aloud"
+        >
+          🔊 Read aloud
+        </button>
         <button onclick="PK.save('u8ProjectB')">💾 Save</button>
         <button
           onclick="PK.load('u8ProjectB', { show: true, after: recalcAll })"
@@ -538,21 +549,21 @@
         <div class="pk-vocab">
           <div class="pk-term">
             <span class="pk-icon">🔤</span><b>Variable</b>
-            <p>A letter (like x) that stands for an unknown number.</p>
+            <p>A letter, like x, that stands for a number we do not know.</p>
             <p class="pk-es">
               Variable: una letra (como x) que representa un número desconocido.
             </p>
           </div>
           <div class="pk-term">
             <span class="pk-icon">🔁</span><b>Inverse Operation</b>
-            <p>The operation that undoes another: + undoes −, × undoes ÷.</p>
+            <p>A math step that undoes another one, like + and −.</p>
             <p class="pk-es">
               Operación inversa: la que deshace otra: + deshace −, × deshace ÷.
             </p>
           </div>
           <div class="pk-term">
             <span class="pk-icon">✖️</span><b>Coefficient</b>
-            <p>The number multiplied by the variable, like price in price·n.</p>
+            <p>The number in front of the letter, like price in price·n.</p>
             <p class="pk-es">
               Coeficiente: el número que multiplica a la variable, como el
               precio en precio·n.
@@ -560,35 +571,35 @@
           </div>
           <div class="pk-term">
             <span class="pk-icon">🎯</span><b>Solution</b>
-            <p>The value that makes the equation true.</p>
+            <p>The number that makes the equation true.</p>
             <p class="pk-es">
               Solución: el valor que hace verdadera la ecuación.
             </p>
           </div>
           <div class="pk-term">
             <span class="pk-icon">⚖️</span><b>Equation</b>
-            <p>A math sentence saying two amounts are equal (=).</p>
+            <p>A number sentence that says two sides are equal (=).</p>
             <p class="pk-es">
               Ecuación: dice que dos cantidades son iguales (=).
             </p>
           </div>
           <div class="pk-term">
             <span class="pk-icon">🔎</span><b>Substitution</b>
-            <p>Putting your answer back in to check it.</p>
+            <p>Putting your answer back in to make sure it works.</p>
             <p class="pk-es">
               Sustitución: poner tu respuesta en la ecuación para comprobarla.
             </p>
           </div>
           <div class="pk-term">
             <span class="pk-icon">↔️</span><b>Inequality</b>
-            <p>Compares amounts with &gt;, &lt;, ≥, or ≤ instead of =.</p>
+            <p>Compares two numbers with &gt; or &lt; instead of =.</p>
             <p class="pk-es">
               Desigualdad: compara con &gt;, &lt;, ≥ o ≤ en vez de =.
             </p>
           </div>
           <div class="pk-term">
             <span class="pk-icon">🌒</span><b>Solution Set</b>
-            <p>All the values that make an inequality true.</p>
+            <p>All the numbers that make an inequality true.</p>
             <p class="pk-es">
               Conjunto solución: todos los valores que hacen verdadera la
               desigualdad.
@@ -596,16 +607,17 @@
           </div>
           <div class="pk-term">
             <span class="pk-icon">⚪</span><b>Open / Closed Circle</b>
-            <p>
-              Open = not included (&gt; or &lt;); closed = included (≥ or ≤).
-            </p>
+            <p>Open circle leaves the number out. Closed circle keeps it in.</p>
             <p class="pk-es">
               Abierto = no incluido (&gt; o &lt;); cerrado = incluido (≥ o ≤).
             </p>
           </div>
           <div class="pk-term">
             <span class="pk-icon">⬆️</span><b>At Least / At Most</b>
-            <p>"At least" means ≥ (or more). "At most" means ≤ (or fewer).</p>
+            <p>
+              "At least" means that much or more. "At most" means that much or
+              less.
+            </p>
             <p class="pk-es">
               "Al menos" = ≥ (o más). "Como máximo" = ≤ (o menos).
             </p>
@@ -614,20 +626,60 @@
         <div class="grid2" style="margin-top: 18px">
           <div class="pk-callout">
             <h3>Formula Bank</h3>
-            <p><b>How much more:</b> raised + x = goal → x = goal − raised</p>
-            <p><b>Items to sell:</b> price · n = target → n = target ÷ price</p>
-            <p>
-              <b>Goal condition:</b> "at least the goal" → x ≥ goal (closed
-              circle, shade right)
-            </p>
-            <p class="pk-lvl2">
-              <b>Compound inequality:</b> goal ≤ x ≤ stretch goal (between two
-              amounts)
-            </p>
-            <p class="pk-lvl2">
-              <b>Minimize items:</b> fewest n with price · n ≥ amount needed → n
-              = ⌈needed ÷ price⌉
-            </p>
+            <ul class="pk-formula">
+              <li>
+                <span class="pk-f-name">How much more to raise</span>
+                <span class="pk-f-mean"
+                  >Subtract what you have raised from your goal to find what is
+                  still needed.</span
+                >
+                <span class="pk-eg"
+                  >Example: $320 raised, $400 goal → $400 − $320 = $80
+                  more</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">How many items to sell</span>
+                <span class="pk-f-mean"
+                  >Divide the money you need by the price of one item.</span
+                >
+                <span class="pk-eg">Example: $400 ÷ $5 each = 80 items</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Reaching the goal (inequality)</span>
+                <span class="pk-f-mean"
+                  >"At least the goal" means x ≥ goal: closed (filled) circle,
+                  shade to the right.</span
+                >
+                <span class="pk-eg">Example: "at least $400" → x ≥ 400</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Check by substitution</span>
+                <span class="pk-f-mean"
+                  >Put your answer back in. Both sides must be equal, or the
+                  inequality must be true.</span
+                >
+                <span class="pk-eg">Example: $320 + $80 = $400 ✓</span>
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">In-between goal (compound)</span>
+                <span class="pk-f-mean"
+                  >Two limits at once: x must be at least the goal but no more
+                  than the stretch goal.</span
+                >
+                <span class="pk-eg">Example: 400 ≤ x ≤ 600</span>
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">Fewest items to reach a goal</span>
+                <span class="pk-f-mean"
+                  >Divide the amount needed by the price, then round up to a
+                  whole item.</span
+                >
+                <span class="pk-eg"
+                  >Example: $410 ÷ $5 = 82 → sell 82 items</span
+                >
+              </li>
+            </ul>
           </div>
           <div class="pk-callout">
             <h3>Sentence Frames</h3>
@@ -716,7 +768,7 @@
                   font-weight="bold"
                   fill="#0f2b3c"
                 >
-                  INEQUALITY GATEWAY
+                  GOAL EQUATION
                 </text>
                 <rect
                   x="180"
@@ -737,7 +789,7 @@
                   font-weight="bold"
                   fill="#c45a3c"
                 >
-                  &gt;=
+                  x = ?
                 </text>
               </svg>
             </div>
@@ -762,7 +814,30 @@
             >
               <span>📋</span> Scenario &amp; Level Options
             </h3>
-            <h2>Plan YOUR Class Fundraiser</h2>
+            <p style="font-size: 14px; line-height: 1.6; margin: 0 0 10px">
+              You are a <strong>fundraiser organizer</strong>. Your class is
+              raising money for a cause, and you track progress by writing
+              equations that show how much is raised, how much is left, and how
+              many items you still need to sell.
+            </p>
+            <ul
+              style="
+                font-size: 14px;
+                line-height: 1.6;
+                margin: 0;
+                padding-left: 18px;
+              "
+            >
+              <li>
+                <strong>Level 1 (support):</strong> use a round goal like $200
+                with a $5 item and find how many more items reach the goal.
+              </li>
+              <li>
+                <strong>Level 2 (challenge):</strong> use an uneven goal and
+                price (like $325 at $8 each), solve for the items left, and
+                round up to a whole number.
+              </li>
+            </ul>
           </div>
         </div>
         <p>
@@ -778,7 +853,7 @@
               type="text"
               id="cause"
               data-save
-              placeholder="example: 6th grade field trip"
+              placeholder=""
               oninput="updateProgress()"
             />
           </div>
@@ -788,7 +863,7 @@
               type="text"
               id="item"
               data-save
-              placeholder="example: cupcakes"
+              placeholder=""
               oninput="updateProgress()"
             />
           </div>
@@ -851,55 +926,13 @@
               "
             >
               <svg
+                id="phase-svg-1a"
                 width="100%"
                 height="200"
                 viewBox="0 0 500 200"
                 style="background: #fff; border-radius: 8px"
                 xmlns="http://www.w3.org/2000/svg"
-              >
-                <text
-                  x="250"
-                  y="30"
-                  text-anchor="middle"
-                  font-size="14"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  Inequality Graph Number Line
-                </text>
-                <line
-                  x1="80"
-                  y1="110"
-                  x2="420"
-                  y2="110"
-                  stroke="#1a2633"
-                  stroke-width="1.5"
-                />
-                <circle
-                  cx="200"
-                  cy="110"
-                  r="6"
-                  fill="#fff"
-                  stroke="#c45a3c"
-                  stroke-width="2"
-                />
-                <path
-                  d="M206,110 L400,110 M400,110 L390,105 M400,110 L390,115"
-                  stroke="#c45a3c"
-                  stroke-width="2.5"
-                  fill="none"
-                />
-                <text
-                  x="200"
-                  y="135"
-                  text-anchor="middle"
-                  font-size="11"
-                  font-weight="bold"
-                  fill="#c45a3c"
-                >
-                  x &gt; v
-                </text>
-              </svg>
+              ></svg>
             </div>
 
             <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
@@ -916,7 +949,7 @@
                   id="f1-raised"
                   data-save
                   min="0"
-                  placeholder="example: 85"
+                  placeholder=""
                   oninput="solvePhase1()"
                 />
               </div>
@@ -947,7 +980,7 @@
                       type="text"
                       id="worldCountry"
                       data-save
-                      placeholder="e.g. Classroom library books"
+                      placeholder=""
                       oninput="recalcAll()"
                     />
                   </div>
@@ -960,7 +993,7 @@
                       id="f1-goal"
                       data-save
                       min="1"
-                      placeholder="example: 300"
+                      placeholder=""
                       oninput="solvePhase1()"
                     />
                   </div>
@@ -971,6 +1004,11 @@
               Solve &amp; Verify
             </button>
             <div class="readout" id="p1-out"></div>
+            <div
+              class="pki-manip"
+              data-manip="balance"
+              data-theme="fundraiser"
+            ></div>
             <details class="hintbox">
               <summary>Need a hint?</summary>
               <p>
@@ -979,6 +1017,15 @@
                 300 ✓
               </p>
             </details>
+
+            <div class="pk-lvl2">
+              <div class="task">
+                <strong>Level 2 extension:</strong> Write the amount still
+                needed as an inequality the fundraiser must meet (raised + x ≥
+                goal). Then pick a real item price and find the fewest items you
+                must sell to cover x.
+              </div>
+            </div>
 
             <!-- 1b: sales plan (multiplication equation) -->
           </div>
@@ -1015,7 +1062,7 @@
                 margin-bottom: 12px;
               "
             >
-              <strong>Writing and Graphing Inequalities:</strong>
+              <strong>Solving One-Variable Equations:</strong>
             </p>
             <ol
               style="
@@ -1027,37 +1074,26 @@
                 color: var(--ink);
               "
             >
+              <li>Decide what is unknown — call it <b>x</b>.</li>
               <li>
-                Understand the inequality symbols:
+                Write the equation from the situation (for example, x + p = q or
+                p · x = q).
+              </li>
+              <li>
+                Undo with the <b>inverse operation</b> to isolate x:
                 <ul>
+                  <li>Subtract to undo addition; add to undo subtraction.</li>
                   <li>
-                    $&lt;$ is <i>less than</i>, $&gt;$ is <i>greater than</i>.
-                  </li>
-                  <li>
-                    $\le$ is <i>less than or equal to</i> (maximum, at most).
-                  </li>
-                  <li>
-                    $\ge$ is <i>greater than or equal to</i> (minimum, at
-                    least).
+                    Divide to undo multiplication; multiply to undo division.
                   </li>
                 </ul>
               </li>
               <li>
-                <b>Graphing on a number line</b>:
-                <ul>
-                  <li>
-                    Use an <b>open circle</b> for $&lt;$ and $&gt;$ (boundary
-                    value not included).
-                  </li>
-                  <li>
-                    Use a <b>closed (solid) circle</b> for $\le$ and $\ge$
-                    (boundary value is included).
-                  </li>
-                  <li>
-                    Draw an arrow pointing <b>right</b> for greater than, or
-                    <b>left</b> for less than.
-                  </li>
-                </ul>
+                Do the same operation to <b>both sides</b> of the equation.
+              </li>
+              <li>
+                <b>Check:</b> substitute your x back in and confirm both sides
+                are equal.
               </li>
             </ol>
             <div
@@ -1069,8 +1105,8 @@
                 font-size: 12px;
               "
             >
-              💡 <b>Example:</b> $x \ge 15$. Draw a solid circle at 15 and shade
-              everything to the right.
+              💡 <b>Example:</b> To solve x + 8 = 15, subtract 8 from both sides
+              to get x = 7. Check: 7 + 8 = 15. ✓
             </div>
           </div>
         </div>
@@ -1102,55 +1138,13 @@
               "
             >
               <svg
+                id="phase-svg-1b"
                 width="100%"
                 height="200"
                 viewBox="0 0 500 200"
                 style="background: #fff; border-radius: 8px"
                 xmlns="http://www.w3.org/2000/svg"
-              >
-                <text
-                  x="250"
-                  y="30"
-                  text-anchor="middle"
-                  font-size="14"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  Inequality Graph Number Line
-                </text>
-                <line
-                  x1="80"
-                  y1="110"
-                  x2="420"
-                  y2="110"
-                  stroke="#1a2633"
-                  stroke-width="1.5"
-                />
-                <circle
-                  cx="200"
-                  cy="110"
-                  r="6"
-                  fill="#fff"
-                  stroke="#c45a3c"
-                  stroke-width="2"
-                />
-                <path
-                  d="M206,110 L400,110 M400,110 L390,105 M400,110 L390,115"
-                  stroke="#c45a3c"
-                  stroke-width="2.5"
-                  fill="none"
-                />
-                <text
-                  x="200"
-                  y="135"
-                  text-anchor="middle"
-                  font-size="11"
-                  font-weight="bold"
-                  fill="#c45a3c"
-                >
-                  x &gt; v
-                </text>
-              </svg>
+              ></svg>
             </div>
 
             <div class="task">
@@ -1158,6 +1152,10 @@
               sales target. The target must be divisible by the price so the
               number of items is a whole number.
             </div>
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: multiplication is undone by division, so n = target ÷
+              price. Try $5 each and a $400 target so n = 80.
+            </p>
             <div class="grid2">
               <div>
                 <label class="fld" for="f2-price"
@@ -1169,7 +1167,7 @@
                   data-save
                   min="1"
                   max="50"
-                  placeholder="example: 5"
+                  placeholder=""
                   oninput="solvePhase2()"
                 />
               </div>
@@ -1182,7 +1180,7 @@
                   id="f2-target"
                   data-save
                   min="1"
-                  placeholder="example: 150"
+                  placeholder=""
                   oninput="solvePhase2()"
                 />
               </div>
@@ -1198,6 +1196,15 @@
                 For 5n = 150 → n = 150 ÷ 5 = 30 items. Verify: 5 × 30 = 150 ✓.
               </p>
             </details>
+
+            <div class="pk-lvl2">
+              <div class="task">
+                <strong>Level 2 extension:</strong> Choose a price that does not
+                divide the target evenly, then round up to find the fewest whole
+                items needed to reach the goal. Explain why selling one fewer
+                item would fall short.
+              </div>
+            </div>
 
             <!-- 1c: goal condition (inequality) -->
           </div>
@@ -1234,7 +1241,7 @@
                 margin-bottom: 12px;
               "
             >
-              <strong>Writing and Graphing Inequalities:</strong>
+              <strong>Solving One-Variable Equations:</strong>
             </p>
             <ol
               style="
@@ -1246,37 +1253,26 @@
                 color: var(--ink);
               "
             >
+              <li>Decide what is unknown — call it <b>x</b>.</li>
               <li>
-                Understand the inequality symbols:
+                Write the equation from the situation (for example, x + p = q or
+                p · x = q).
+              </li>
+              <li>
+                Undo with the <b>inverse operation</b> to isolate x:
                 <ul>
+                  <li>Subtract to undo addition; add to undo subtraction.</li>
                   <li>
-                    $&lt;$ is <i>less than</i>, $&gt;$ is <i>greater than</i>.
-                  </li>
-                  <li>
-                    $\le$ is <i>less than or equal to</i> (maximum, at most).
-                  </li>
-                  <li>
-                    $\ge$ is <i>greater than or equal to</i> (minimum, at
-                    least).
+                    Divide to undo multiplication; multiply to undo division.
                   </li>
                 </ul>
               </li>
               <li>
-                <b>Graphing on a number line</b>:
-                <ul>
-                  <li>
-                    Use an <b>open circle</b> for $&lt;$ and $&gt;$ (boundary
-                    value not included).
-                  </li>
-                  <li>
-                    Use a <b>closed (solid) circle</b> for $\le$ and $\ge$
-                    (boundary value is included).
-                  </li>
-                  <li>
-                    Draw an arrow pointing <b>right</b> for greater than, or
-                    <b>left</b> for less than.
-                  </li>
-                </ul>
+                Do the same operation to <b>both sides</b> of the equation.
+              </li>
+              <li>
+                <b>Check:</b> substitute your x back in and confirm both sides
+                are equal.
               </li>
             </ol>
             <div
@@ -1288,8 +1284,8 @@
                 font-size: 12px;
               "
             >
-              💡 <b>Example:</b> $x \ge 15$. Draw a solid circle at 15 and shade
-              everything to the right.
+              💡 <b>Example:</b> To solve x + 8 = 15, subtract 8 from both sides
+              to get x = 7. Check: 7 + 8 = 15. ✓
             </div>
           </div>
         </div>
@@ -1321,55 +1317,13 @@
               "
             >
               <svg
+                id="phase-svg-1c"
                 width="100%"
                 height="200"
                 viewBox="0 0 500 200"
                 style="background: #fff; border-radius: 8px"
                 xmlns="http://www.w3.org/2000/svg"
-              >
-                <text
-                  x="250"
-                  y="30"
-                  text-anchor="middle"
-                  font-size="14"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  Inequality Graph Number Line
-                </text>
-                <line
-                  x1="80"
-                  y1="110"
-                  x2="420"
-                  y2="110"
-                  stroke="#1a2633"
-                  stroke-width="1.5"
-                />
-                <circle
-                  cx="200"
-                  cy="110"
-                  r="6"
-                  fill="#fff"
-                  stroke="#c45a3c"
-                  stroke-width="2"
-                />
-                <path
-                  d="M206,110 L400,110 M400,110 L390,105 M400,110 L390,115"
-                  stroke="#c45a3c"
-                  stroke-width="2.5"
-                  fill="none"
-                />
-                <text
-                  x="200"
-                  y="135"
-                  text-anchor="middle"
-                  font-size="11"
-                  font-weight="bold"
-                  fill="#c45a3c"
-                >
-                  x &gt; v
-                </text>
-              </svg>
+              ></svg>
             </div>
 
             <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
@@ -1389,7 +1343,7 @@
                   id="f3-goal"
                   data-save
                   min="1"
-                  placeholder="example: 300"
+                  placeholder=""
                   oninput="solvePhase3()"
                 />
               </div>
@@ -1435,7 +1389,7 @@
                     id="f3b-stretch"
                     data-save
                     min="1"
-                    placeholder="example: 500"
+                    placeholder=""
                     oninput="solveCompound()"
                   />
                 </div>
@@ -1495,14 +1449,11 @@
                 Understand the inequality symbols:
                 <ul>
                   <li>
-                    $&lt;$ is <i>less than</i>, $&gt;$ is <i>greater than</i>.
+                    &lt; is <i>less than</i>, &gt; is <i>greater than</i>.
                   </li>
+                  <li>≤ is <i>less than or equal to</i> (maximum, at most).</li>
                   <li>
-                    $\le$ is <i>less than or equal to</i> (maximum, at most).
-                  </li>
-                  <li>
-                    $\ge$ is <i>greater than or equal to</i> (minimum, at
-                    least).
+                    ≥ is <i>greater than or equal to</i> (minimum, at least).
                   </li>
                 </ul>
               </li>
@@ -1510,12 +1461,12 @@
                 <b>Graphing on a number line</b>:
                 <ul>
                   <li>
-                    Use an <b>open circle</b> for $&lt;$ and $&gt;$ (boundary
-                    value not included).
+                    Use an <b>open circle</b> for &lt; and &gt; (boundary value
+                    not included).
                   </li>
                   <li>
-                    Use a <b>closed (solid) circle</b> for $\le$ and $\ge$
-                    (boundary value is included).
+                    Use a <b>closed (solid) circle</b> for ≤ and ≥ (boundary
+                    value is included).
                   </li>
                   <li>
                     Draw an arrow pointing <b>right</b> for greater than, or
@@ -1533,7 +1484,7 @@
                 font-size: 12px;
               "
             >
-              💡 <b>Example:</b> $x \ge 15$. Draw a solid circle at 15 and shade
+              💡 <b>Example:</b> x ≥ 15. Draw a solid circle at 15 and shade
               everything to the right.
             </div>
           </div>
@@ -1583,7 +1534,7 @@
               type="text"
               id="partnerName"
               data-save
-              placeholder="example: A.J."
+              placeholder=""
               oninput="comparePeer()"
             />
           </div>
@@ -1618,11 +1569,7 @@
           >Who is closer to their goal, and what would you advise the other
           person to do?</label
         >
-        <textarea
-          id="peerReflect"
-          data-save
-          placeholder="___ is closer to the goal by $___. I would tell the other person to ___."
-        ></textarea>
+        <textarea id="peerReflect" data-save placeholder=""></textarea>
       </section>
 
       <!-- ===================== PART 3 — WORLD ===================== -->
@@ -1661,7 +1608,7 @@
               data-save
               step="0.01"
               oninput="worldGo()"
-              placeholder="type your value"
+              placeholder=""
             />
             <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
               Tip: your percent to goal is raised ÷ goal × 100.
@@ -1710,7 +1657,7 @@
                 data-save
                 min="0"
                 step="0.25"
-                placeholder="example: 6"
+                placeholder=""
                 oninput="runWhatIf()"
               />
             </div>
@@ -1723,7 +1670,7 @@
                 id="wi-items"
                 data-save
                 min="0"
-                placeholder="example: 40"
+                placeholder=""
                 oninput="runWhatIf()"
               />
             </div>
@@ -1738,32 +1685,20 @@
           >Is your fundraiser ahead of or behind the samples? Use a percent to
           explain.</label
         >
-        <textarea
-          id="worldReflect"
-          data-save
-          placeholder="My percent to goal is ___%, which is higher / lower than the sample average of ___%, so we are ___."
-        ></textarea>
+        <textarea id="worldReflect" data-save placeholder=""></textarea>
         <div class="pk-lvl2">
           <label class="fld" for="worldHard"
             >Level 2 question: A school needs at least $480 and sells items at
             $8. What is the fewest number of items they must sell? Show your
             reasoning.</label
           >
-          <textarea
-            id="worldHard"
-            data-save
-            placeholder="8n ≥ 480 → n ≥ 480 ÷ 8 = 60, so at least 60 items because ___"
-          ></textarea>
+          <textarea id="worldHard" data-save placeholder=""></textarea>
         </div>
         <label class="fld" for="careful"
           >Careful thinking: why is comparing two fundraisers by raw dollars
           alone sometimes unfair?</label
         >
-        <textarea
-          id="careful"
-          data-save
-          placeholder="It can be unfair to compare by dollars because ___ (think about different goal sizes)."
-        ></textarea>
+        <textarea id="careful" data-save placeholder=""></textarea>
       </section>
 
       <!-- ===================== DELIVERABLE ===================== -->
@@ -1780,11 +1715,7 @@
           much more is needed, the sales equation and item count, the inequality
           condition, and your conclusion.
         </p>
-        <textarea
-          id="pitch"
-          data-save
-          placeholder="Our fundraiser is for ___. Our goal is $___ and we have raised $___, so $___ + x = $___ gives x = $___ more needed. Selling ___ at $___ each, we must sell ___ items (___n = ___). The success condition is x ≥ $___. Based on our plan we [will / will not] meet the goal because ___."
-        ></textarea>
+        <textarea id="pitch" data-save placeholder=""></textarea>
 
         <h3 style="margin: 22px 0 6px">Planning Checklist</h3>
         <ul class="checklist" id="checklist">
@@ -2543,8 +2474,8 @@
       }
 
       function drawVisualizer() {
-        const raised = num("c-raised") || 0;
-        const target = num("worldSize") || 400;
+        const raised = num("f1-raised") || 0;
+        const target = num("f1-goal") || 400;
 
         const maxH = 140;
         const fillPct = Math.min(Math.max((raised / target) * 100, 0), 100);
@@ -2581,8 +2512,13 @@
         worldGo();
         runWhatIf();
         updateProgress();
-      
-        if(typeof drawPhase1SVG === "function"){drawPhase1SVG(); drawPhase2SVG(); drawPhase3SVG();}}
+
+        if (typeof drawPhase1SVG === "function") {
+          drawPhase1SVG();
+          drawPhase2SVG();
+          drawPhase3SVG();
+        }
+      }
 
       /* ---- Report ---- */
       function reportText() {
@@ -2709,27 +2645,33 @@
       document.addEventListener("DOMContentLoaded", function () {
         renderWorld();
         PK.initLevel({ storageKey: "u8ProjectB", default: "level-1" });
+        PK.initTts({ storageKey: "u8ProjectB" });
         PK.load("u8ProjectB", { after: recalcAll });
         updateProgress();
       });
-    
+
       function drawPhase1SVG() {
-        const raised = num("f1-raised");
-        const goal = num("f1-goal");
+        let raised = num("f1-raised");
+        let goal = num("f1-goal");
         const svg = $("phase-svg-1a");
         if (!svg) return;
-        
-        if (isNaN(raised) || isNaN(goal) || goal <= 0) {
-          svg.innerHTML = '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter raised amount & goal to draw thermometer</text>';
-          return;
+
+        const isExample = isNaN(raised) || isNaN(goal) || goal <= 0;
+        if (isExample) {
+          raised = 320;
+          goal = 400;
         }
-        
-        const pct = Math.min(100, Math.max(0, Math.round((raised / goal) * 100)));
+
+        const pct = Math.min(
+          100,
+          Math.max(0, Math.round((raised / goal) * 100)),
+        );
         const fillHeight = 120 * (pct / 100);
-        
+
         svg.innerHTML = `
           <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Fundraiser Goal Progress: ${pct}%</text>
-          
+          ${isExample ? `<rect x="372" y="16" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example</text>` : ""}
+
           <rect x="235" y="50" width="30" height="120" rx="15" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2" />
           <circle cx="250" cy="170" r="22" fill="#e11d48" stroke="#cbd5e1" stroke-width="2" />
           
@@ -2739,23 +2681,25 @@
           <text x="280" y="120" font-size="10" font-weight="bold" fill="#e11d48">Raised: $${raised}</text>
         `;
       }
-      
+
       function drawPhase2SVG() {
-        const price = num("f2-price");
-        const target = num("f2-target");
+        let price = num("f2-price");
+        let target = num("f2-target");
         const svg = $("phase-svg-1b");
         if (!svg) return;
-        
-        if (isNaN(price) || isNaN(target) || price <= 0) {
-          svg.innerHTML = '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter price & target to draw equation balance scale</text>';
-          return;
+
+        const isExample = isNaN(price) || isNaN(target) || price <= 0;
+        if (isExample) {
+          price = 5;
+          target = 400;
         }
-        
+
         const n = Math.round(target / price);
-        
+
         svg.innerHTML = `
           <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Sales equation: ${price}n = ${target} (n = ${n})</text>
-          
+          ${isExample ? `<rect x="372" y="16" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example</text>` : ""}
+
           <line x1="250" y1="170" x2="250" y2="70" stroke="#475569" stroke-width="6" />
           <polygon points="220,180 280,180 250,165" fill="#475569" />
           <line x1="140" y1="70" x2="360" y2="70" stroke="#475569" stroke-width="4" />
@@ -2777,37 +2721,45 @@
           </g>
         `;
       }
-      
+
       function drawPhase3SVG() {
         const symbol = $("f3-symbol") ? $("f3-symbol").value : ">=";
-        const goal = num("f3-goal");
+        let goal = num("f3-goal");
         const svg = $("phase-svg-1c");
         if (!svg) return;
-        
-        if (isNaN(goal)) {
-          svg.innerHTML = '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter goal value to draw inequality graph</text>';
-          return;
+
+        const isExample = isNaN(goal);
+        if (isExample) {
+          goal = 400;
         }
-        
-        const isClosed = symbol === "le" || symbol === "ge" || symbol === "||" || symbol === ">=" || symbol === "<=";
+
+        const isClosed =
+          symbol === "le" ||
+          symbol === "ge" ||
+          symbol === "||" ||
+          symbol === ">=" ||
+          symbol === "<=";
         const isLeft = symbol === "<" || symbol === "le" || symbol === "<=";
-        
+
         svg.innerHTML = `
-          <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Target Inequality: x ${symbol.replace('le','&le;').replace('ge','&ge;').replace('<=','&le;').replace('>=','&ge;')} ${goal}</text>
-          
+          <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Target Inequality: x ${symbol.replace("le", "&le;").replace("ge", "&ge;").replace("<=", "&le;").replace(">=", "&ge;")} ${goal}</text>
+          ${isExample ? `<rect x="372" y="16" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example</text>` : ""}
+
           <line x1="50" y1="110" x2="450" y2="110" stroke="#cbd5e1" stroke-width="2" />
           
-          ${[-2, -1, 0, 1, 2].map((i) => {
-            const tx = 250 + i * 80;
-            return `
+          ${[-2, -1, 0, 1, 2]
+            .map((i) => {
+              const tx = 250 + i * 80;
+              return `
               <line x1="${tx}" y1="105" x2="${tx}" y2="115" stroke="#cbd5e1" />
               <text x="${tx}" y="135" text-anchor="middle" font-size="11" fill="#5e6e7e">${goal + i * 10}</text>
             `;
-          }).join('')}
+            })
+            .join("")}
           
           ${isLeft ? `<path d="M 50 110 L 250 110" stroke="#0e8a7d" stroke-width="4.5" marker-start="url(#arr-arrow-left)" />` : `<path d="M 250 110 L 450 110" stroke="#0e8a7d" stroke-width="4.5" marker-end="url(#arr-arrow-right)" />`}
           
-          <circle cx="250" cy="110" r="6" fill="${isClosed ? '#0e8a7d' : '#fff'}" stroke="#0e8a7d" stroke-width="3" />
+          <circle cx="250" cy="110" r="6" fill="${isClosed ? "#0e8a7d" : "#fff"}" stroke="#0e8a7d" stroke-width="3" />
           
           <defs>
             <marker id="arr-arrow-left" markerWidth="6" markerHeight="6" refX="0" refY="3" orient="auto">
@@ -2819,15 +2771,114 @@
           </defs>
         `;
       }
-    
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
+    <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
+    <script type="application/json" id="pk-research">
+      {
+        "icon": "🔎",
+        "title": "Research Lab — Solve to the Goal",
+        "intro": "Fundraiser leaders use one-step equations to find what's left to raise. Look up how to solve them, then track a real goal.",
+        "brief": {
+          "theme": "field",
+          "title": "💰 Your Research Mission",
+          "hook": "Find how to <b>solve a one-step equation</b>, then use it to track a real goal.",
+          "steps": [
+            "Open a link (new tab — you keep your project).",
+            "Record the rules in Field Notes.",
+            "Solve for the unknown in the math problems.",
+            "Check off the Investigation Checklist."
+          ]
+        },
+        "fieldNotes": {
+          "title": "Field Notes — Record What You Find",
+          "intro": "Jot the exact number or rule you find. You'll reuse these in the math below.",
+          "fields": [
+            {
+              "label": "How to solve x + p = q",
+              "source": "Math is Fun",
+              "placeholder": "subtract p from both sides",
+              "hint": "Do the inverse operation to both sides."
+            },
+            {
+              "label": "What 'inverse operation' means",
+              "source": "Math is Fun",
+              "placeholder": "the operation that undoes it",
+              "hint": "Add undoes subtract; multiply undoes divide."
+            },
+            {
+              "label": "Your goal amount (a real number you set)",
+              "source": "Your plan",
+              "placeholder": "$300",
+              "hint": "Total you want to raise."
+            },
+            {
+              "label": "Amount already raised",
+              "source": "Your plan",
+              "placeholder": "$185",
+              "hint": "Progress so far."
+            }
+          ]
+        },
+        "mathTasks": [
+          {
+            "title": "1 · How much more?",
+            "prompt": "Write an equation <b>raised + x = goal</b> using Field Notes 3 and 4. Solve for x by using the inverse operation. Show both sides.",
+            "level2": "Check your answer by substituting it back in."
+          },
+          {
+            "title": "2 · Per-person share",
+            "prompt": "If your remaining amount x must be split among a number of students you choose, write and solve a division equation for each person's share.",
+            "level2": "If 3 people drop out, recompute the new per-person share."
+          },
+          {
+            "title": "3 · Verify",
+            "prompt": "Explain in one sentence why you do the SAME operation to both sides of an equation.",
+            "level2": "Write a one-step equation a classmate could solve, with the answer hidden."
+          }
+        ],
+        "investigationChecklist": [
+          "I recorded how to solve x + p = q.",
+          "I recorded what an inverse operation is.",
+          "I set a real goal and progress amount.",
+          "I wrote and solved a one-step equation.",
+          "I checked my solution by substituting.",
+          "I explained the 'same to both sides' rule."
+        ],
+        "links": [
+          {
+            "icon": "⚖️",
+            "name": "Math is Fun — Solving Equations",
+            "url": "https://www.mathsisfun.com/algebra/equations-solving.html",
+            "find": "How to undo an operation on both sides.",
+            "look": "do the same thing to both sides"
+          },
+          {
+            "icon": "🔰",
+            "name": "Math is Fun — Introduction to Algebra",
+            "url": "https://www.mathsisfun.com/algebra/introduction.html",
+            "find": "What a variable and equation are.",
+            "look": "the unknown and the equals sign"
+          },
+          {
+            "icon": "🧩",
+            "name": "Math is Fun — Mathematical Models",
+            "url": "https://www.mathsisfun.com/algebra/mathematical-models.html",
+            "find": "How to turn a real situation into an equation.",
+            "look": "the worked word-problem-to-equation example"
+          }
+        ],
+        "note": "These sites were picked for class. They open in a new tab so you keep your project. If a page asks you to sign in or buy something, just close it and come back."
+      }
+    </script>
     <script src="/shared/projects/projects-tabs.js" defer></script>
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <script src="/shared/projects/projects-interactive.js" defer></script>
+    <script src="/shared/projects/manip-balance.js" defer></script>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+  </body>
 </html>

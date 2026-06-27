@@ -45,6 +45,8 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
 .ws-correct .ws-bub{background:var(--teal);border-color:var(--teal);color:#fff;}
 .ws-correct{font-weight:700;color:var(--teal);}
 .ws-keynote{margin:6px 0 0;color:var(--teal);font-size:12px;font-style:italic;}
+.ws-watch{margin:4px 0 0;color:#9a4a12;font-size:12px;background:#fff3e6;border-left:3px solid #e08a3c;padding:5px 10px;border-radius:0 8px 8px 0;}
+.ws-scaffold-note{margin:0 0 14px;background:var(--soft);border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:600;color:var(--navy);font-size:12.5px;}
 .ws-match{display:flex;gap:24px;flex-wrap:wrap;}
 .ws-match-terms{list-style:none;margin:0;padding:0;flex:1;min-width:180px;}
 .ws-match-term{display:flex;align-items:center;gap:8px;margin:5px 0;font-weight:600;}
@@ -75,15 +77,50 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
   @page{margin:1.5cm;}
   a{color:#000;}
 }
+
+/* ── Editorial publisher-grade finish (shared: scripts/lib/editorial-print.mjs) ──
+   Appended last so it overrides each generator's base CSS. Finish-only:
+   serif headings + paper ground + AA-safe ink. No layout/size changes. */
+:root{ --ink:#19262f; --muted:#475663; }
+body{ background:#f5f0e6; color:#19262f; }
+h1,h2,h3,h4,h5,h6,
+header.packet h1,.section>h2,.li-title,.learnit-head,.learnit-stage-title,
+.mission-title,.answer-key h2,.think-block h3,.topbar .brand{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
+/* A thin editorial accent rule under the document's main title. */
+header.packet h1{ position:relative; }
+header.packet h1::after{
+  content:""; display:block; width:56px; height:2px; margin-top:8px;
+  background:linear-gradient(90deg,#1fa6a2,#f2c15b); border-radius:2px;
+}
+@media print{ body{ background:#fff !important; } }
+
 </style>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
 </head>
 <body>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.G.4</span>
+      <span class="ws-ver">Level 0</span>
+    </div>
+    <h1 class="ws-title">Surface Area of Pyramids</h1>
+    <p class="ws-sub">Practice — Level 0</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    <section class="ws-bank">
+    <h3 class="ws-bank-h">📕 Word Bank</h3>
+    <div class="ws-bankwords"><span class="ws-bankword">Pyramid</span><span class="ws-bankword">Slant height</span><span class="ws-bankword">Lateral face</span><span class="ws-bankword">Base</span><span class="ws-bankword">Apex</span><span class="ws-bankword">Lateral area</span></div>
+  </section><section class="ws-example">
+    <h3 class="ws-example-h">✏️ Worked Example</h3>
+    <ol class="ws-example-steps"><li><b>Dimensions:</b> Square pyramid: base edge = 10 in, slant height = 8 in</li><li><b>Base Area:</b> 10 × 10 = 100 in²</li><li><b>Lateral Area:</b> ½ × 10 × 8 = 40 in² (one face). Total lateral = 40 × 3 = 120 in²</li><li><b>Answer:</b> SA = 100 + 120 = 220 in²</li></ol>
+  </section>
+    <p class="ws-scaffold-note">🧩 Extra support: use the word bank and the worked example. A sentence starter is given under each problem.</p>
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A square pyramid has a base edge of 5 in and a slant height of 7 in. What is the surface area?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>95 in²</li><li class="ws-opt"><span class="ws-bub">B</span>70 in²</li><li class="ws-opt"><span class="ws-bub">C</span>95 in³</li><li class="ws-opt"><span class="ws-bub">D</span>120 in²</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">How many lateral (triangular) faces does a square pyramid have?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>4</li><li class="ws-opt"><span class="ws-bub">B</span>3</li><li class="ws-opt"><span class="ws-bub">C</span>5</li><li class="ws-opt"><span class="ws-bub">D</span>6</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is the area of one triangular face with base 8 in and slant height 6 in?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>24 in²</li><li class="ws-opt"><span class="ws-bub">B</span>48 in²</li><li class="ws-opt"><span class="ws-bub">C</span>14 in²</li><li class="ws-opt"><span class="ws-bub">D</span>24 in³</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
+  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>Pyramid 1</td><td></td><td></td><td></td></tr><tr><td>Pyramid 2</td><td></td><td></td><td></td></tr><tr><td>Pyramid 3</td><td></td><td></td><td></td></tr></tbody></table></div></li></ol>
+  </section>
 <section class="ws-page">
     <header class="ws-head">
     <div class="ws-head-top">
@@ -101,11 +138,12 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <h3 class="ws-example-h">✏️ Worked Example</h3>
     <ol class="ws-example-steps"><li><b>Dimensions:</b> Square pyramid: base edge = 10 in, slant height = 8 in</li><li><b>Base Area:</b> 10 × 10 = 100 in²</li><li><b>Lateral Area:</b> ½ × 10 × 8 = 40 in² (one face). Total lateral = 40 × 3 = 120 in²</li><li><b>Answer:</b> SA = 100 + 120 = 220 in²</li></ol>
   </section>
+    
     <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A square pyramid has a base edge of 5 in and a slant height of 7 in. What is the surface area?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>95 in²</li><li class="ws-opt"><span class="ws-bub">B</span>70 in²</li><li class="ws-opt"><span class="ws-bub">C</span>95 in³</li><li class="ws-opt"><span class="ws-bub">D</span>120 in²</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">How many lateral (triangular) faces does a square pyramid have?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>4</li><li class="ws-opt"><span class="ws-bub">B</span>3</li><li class="ws-opt"><span class="ws-bub">C</span>5</li><li class="ws-opt"><span class="ws-bub">D</span>6</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is the area of one triangular face with base 8 in and slant height 6 in?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>24 in²</li><li class="ws-opt"><span class="ws-bub">B</span>48 in²</li><li class="ws-opt"><span class="ws-bub">C</span>14 in²</li><li class="ws-opt"><span class="ws-bub">D</span>24 in³</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
   <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>Pyramid 1</td><td></td><td></td><td></td></tr><tr><td>Pyramid 2</td><td></td><td></td><td></td></tr><tr><td>Pyramid 3</td><td></td><td></td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Sort each item into the correct group.</p>
   <p class="ws-prompt">Categories: <b></b></p>
-  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm"></span></li><li><span class="ws-blank ws-blank-sm"></span></li><li><span class="ws-blank ws-blank-sm"></span></li><li><span class="ws-blank ws-blank-sm"></span></li><li><span class="ws-blank ws-blank-sm"></span></li></ul></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Surface Area of Pyramids.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Surface area of a pyramid = base area + the area of all the triangular lateral faces.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm"></span></li><li><span class="ws-blank ws-blank-sm"></span></li><li><span class="ws-blank ws-blank-sm"></span></li><li><span class="ws-blank ws-blank-sm"></span></li><li><span class="ws-blank ws-blank-sm"></span></li></ul></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Don't Forget the Base</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Box</span><span class="ws-step-w">Square pyramid: base edge = 5 in, slant height = 6 in</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">One Triangular Face</span><span class="ws-step-w">½ × 5 × 6 = 15 in²</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Four Faces</span><span class="ws-step-w">4 × 15 = 60 in²</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer</span><span class="ws-step-w">SA = 60 in² (stopped after the four triangular faces)</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
   <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
   </section>
@@ -120,13 +158,47 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     
+    
     <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
-  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>Pyramid X</td><td></td><td></td><td></td><td></td></tr><tr><td>Pyramid Y</td><td></td><td></td><td></td><td></td></tr><tr><td>Pyramid Z</td><td></td><td></td><td></td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A square pyramid has a base area of 49 cm² and a total lateral area of 84 cm². What is the surface area?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>133 cm²</li><li class="ws-opt"><span class="ws-bub">B</span>84 cm²</li><li class="ws-opt"><span class="ws-bub">C</span>49 cm²</li><li class="ws-opt"><span class="ws-bub">D</span>133 cm³</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A square pyramid has SA = 260 in². The base area is 100 in². What is the total lateral area? If there are 4 identical lateral faces, what is the area of one face?</p><div class="ws-work"><span class="ws-work-label">Show your work</span></div></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Sort each item into the correct group.</p>
+  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>Pyramid X</td><td></td><td></td><td></td><td></td></tr><tr><td>Pyramid Y</td><td></td><td></td><td></td><td></td></tr><tr><td>Pyramid Z</td><td></td><td></td><td></td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A square pyramid has a base area of 49 cm² and a total lateral area of 84 cm². What is the surface area?</p><ol class="ws-opts"><li class="ws-opt"><span class="ws-bub">A</span>133 cm²</li><li class="ws-opt"><span class="ws-bub">B</span>84 cm²</li><li class="ws-opt"><span class="ws-bub">C</span>49 cm²</li><li class="ws-opt"><span class="ws-bub">D</span>133 cm³</li></ol></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A square pyramid has SA = 260 in². The base area is 100 in². What is the total lateral area of the four triangular faces?</p><div class="ws-work"><span class="ws-work-label">Show your work</span></div></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Sort each item into the correct group.</p>
   <p class="ws-prompt">Categories: <b></b></p>
-  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm"></span></li><li><span class="ws-blank ws-blank-sm"></span></li><li><span class="ws-blank ws-blank-sm"></span></li><li><span class="ws-blank ws-blank-sm"></span></li></ul></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Surface Area of Pyramids.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Surface area of a pyramid = base area + the area of all the triangular lateral faces.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm"></span></li><li><span class="ws-blank ws-blank-sm"></span></li><li><span class="ws-blank ws-blank-sm"></span></li><li><span class="ws-blank ws-blank-sm"></span></li></ul></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Did You Halve the Triangle?</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Box</span><span class="ws-step-w">Square pyramid: base edge = 8 in, slant height = 10 in</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Base Area</span><span class="ws-step-w">8 × 8 = 64 in²</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">One Triangular Face</span><span class="ws-step-w">8 × 10 = 80 in² (forgot the ½)</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer</span><span class="ws-step-w">SA = 64 + 4 × 80 = 64 + 320 = 384 in²</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
   <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.G.4</span>
+      <span class="ws-ver">Challenge</span>
+    </div>
+    <h1 class="ws-title">Surface Area of Pyramids</h1>
+    <p class="ws-sub">Practice — Challenge</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Find the Surface Area Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Dimensions</span><span class="ws-step-w">Square pyramid: base edge = 10 in, slant height = 8 in</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Base Area</span><span class="ws-step-w">10 × 10 = 100 in²</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Lateral Area</span><span class="ws-step-w">½ × 10 × 8 = 40 in² (one face). Total lateral = 40 × 3 = 120 in²</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer</span><span class="ws-step-w">SA = 100 + 120 = 220 in²</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Two pyramids have the same base area (64 in²) but different slant heights. Pyramid A has slant height 6 in and Pyramid B has slant height 10 in. How much more surface area does Pyramid B have? Why does slant height affect surface area but NOT base area?</p><div class="ws-lines"><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span><span class="ws-line"></span></div></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
+  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>Square pyramid (slant h = 8)</td><td></td><td></td><td></td></tr><tr><td>Rectangular prism (h = 8)</td><td></td><td></td><td></td></tr></tbody></table></div></li></ol>
+  </section>
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.G.4</span>
+      <span class="ws-ver">Level 0 — Answer Key</span>
+    </div>
+    <h1 class="ws-title">Surface Area of Pyramids</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A square pyramid has a base edge of 5 in and a slant height of 7 in. What is the surface area?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>95 in²</li><li class="ws-opt"><span class="ws-bub">B</span>70 in²</li><li class="ws-opt"><span class="ws-bub">C</span>95 in³</li><li class="ws-opt"><span class="ws-bub">D</span>120 in²</li></ol><p class="ws-keynote">Base: 5 × 5 = 25 in². Each lateral face: ½ × 5 × 7 = 17.5 in². Four faces: 4 × 17.5 = 70 in². SA = 25 + 70 = 95 in².</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Surface Area of Pyramids is skipping the key idea: &quot;Surface area of a pyramid = base area + the area of all the triangular lateral faces.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">How many lateral (triangular) faces does a square pyramid have?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>4</li><li class="ws-opt"><span class="ws-bub">B</span>3</li><li class="ws-opt"><span class="ws-bub">C</span>5</li><li class="ws-opt"><span class="ws-bub">D</span>6</li></ol><p class="ws-keynote">A square pyramid has a square base and 4 triangular lateral faces — one for each side of the square.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Surface Area of Pyramids is skipping the key idea: &quot;Surface area of a pyramid = base area + the area of all the triangular lateral faces.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is the area of one triangular face with base 8 in and slant height 6 in?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>24 in²</li><li class="ws-opt"><span class="ws-bub">B</span>48 in²</li><li class="ws-opt"><span class="ws-bub">C</span>14 in²</li><li class="ws-opt"><span class="ws-bub">D</span>24 in³</li></ol><p class="ws-keynote">Area of a triangle = ½ × base × height = ½ × 8 × 6 = 24 in².</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Surface Area of Pyramids is skipping the key idea: &quot;Surface area of a pyramid = base area + the area of all the triangular lateral faces.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
+  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>Pyramid 1</td><td>4 in</td><td>9 in</td><td></td></tr><tr><td>Pyramid 2</td><td>6 cm</td><td>5 cm</td><td></td></tr><tr><td>Pyramid 3</td><td>10 ft</td><td>8 ft</td><td></td></tr></tbody></table></div></li></ol>
   </section>
 <section class="ws-page">
     <header class="ws-head">
@@ -139,13 +211,14 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     
-    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A square pyramid has a base edge of 5 in and a slant height of 7 in. What is the surface area?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>95 in²</li><li class="ws-opt"><span class="ws-bub">B</span>70 in²</li><li class="ws-opt"><span class="ws-bub">C</span>95 in³</li><li class="ws-opt"><span class="ws-bub">D</span>120 in²</li></ol><p class="ws-keynote">Base: 5 × 5 = 25 in². Each lateral face: ½ × 5 × 7 = 17.5 in². Four faces: 4 × 17.5 = 70 in². SA = 25 + 70 = 95 in².</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">How many lateral (triangular) faces does a square pyramid have?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>4</li><li class="ws-opt"><span class="ws-bub">B</span>3</li><li class="ws-opt"><span class="ws-bub">C</span>5</li><li class="ws-opt"><span class="ws-bub">D</span>6</li></ol><p class="ws-keynote">A square pyramid has a square base and 4 triangular lateral faces — one for each side of the square.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is the area of one triangular face with base 8 in and slant height 6 in?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>24 in²</li><li class="ws-opt"><span class="ws-bub">B</span>48 in²</li><li class="ws-opt"><span class="ws-bub">C</span>14 in²</li><li class="ws-opt"><span class="ws-bub">D</span>24 in³</li></ol><p class="ws-keynote">Area of a triangle = ½ × base × height = ½ × 8 × 6 = 24 in².</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">A square pyramid has a base edge of 5 in and a slant height of 7 in. What is the surface area?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>95 in²</li><li class="ws-opt"><span class="ws-bub">B</span>70 in²</li><li class="ws-opt"><span class="ws-bub">C</span>95 in³</li><li class="ws-opt"><span class="ws-bub">D</span>120 in²</li></ol><p class="ws-keynote">Base: 5 × 5 = 25 in². Each lateral face: ½ × 5 × 7 = 17.5 in². Four faces: 4 × 17.5 = 70 in². SA = 25 + 70 = 95 in².</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Surface Area of Pyramids is skipping the key idea: &quot;Surface area of a pyramid = base area + the area of all the triangular lateral faces.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">How many lateral (triangular) faces does a square pyramid have?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>4</li><li class="ws-opt"><span class="ws-bub">B</span>3</li><li class="ws-opt"><span class="ws-bub">C</span>5</li><li class="ws-opt"><span class="ws-bub">D</span>6</li></ol><p class="ws-keynote">A square pyramid has a square base and 4 triangular lateral faces — one for each side of the square.</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Surface Area of Pyramids is skipping the key idea: &quot;Surface area of a pyramid = base area + the area of all the triangular lateral faces.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">What is the area of one triangular face with base 8 in and slant height 6 in?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>24 in²</li><li class="ws-opt"><span class="ws-bub">B</span>48 in²</li><li class="ws-opt"><span class="ws-bub">C</span>14 in²</li><li class="ws-opt"><span class="ws-bub">D</span>24 in³</li></ol><p class="ws-keynote">Area of a triangle = ½ × base × height = ½ × 8 × 6 = 24 in².</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Surface Area of Pyramids is skipping the key idea: &quot;Surface area of a pyramid = base area + the area of all the triangular lateral faces.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
   <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>Pyramid 1</td><td>4 in</td><td>9 in</td><td></td></tr><tr><td>Pyramid 2</td><td>6 cm</td><td>5 cm</td><td></td></tr><tr><td>Pyramid 3</td><td>10 ft</td><td>8 ft</td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">Sort each item into the correct group.</p>
   <p class="ws-prompt">Categories: <b></b></p>
-  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm"></span></li><li><span class="ws-blank ws-blank-sm"></span></li><li><span class="ws-blank ws-blank-sm"></span></li><li><span class="ws-blank ws-blank-sm"></span></li><li><span class="ws-blank ws-blank-sm"></span></li></ul></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Surface Area of Pyramids.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Surface area of a pyramid = base area + the area of all the triangular lateral faces.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm"></span></li><li><span class="ws-blank ws-blank-sm"></span></li><li><span class="ws-blank ws-blank-sm"></span></li><li><span class="ws-blank ws-blank-sm"></span></li><li><span class="ws-blank ws-blank-sm"></span></li></ul></div></li><li class="ws-problem"><span class="ws-pnum">6</span><div class="ws-pbody"><p class="ws-stem">approaching — Don't Forget the Base</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Box</span><span class="ws-step-w">Square pyramid: base edge = 5 in, slant height = 6 in</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">One Triangular Face</span><span class="ws-step-w">½ × 5 × 6 = 15 in²</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Four Faces</span><span class="ws-step-w">4 × 15 = 60 in²</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer</span><span class="ws-step-w">SA = 60 in² (stopped after the four triangular faces)</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
-  <p class="ws-keynote">See worked solution.</p></div></li></ol>
+  <p class="ws-keynote">The mistake is in Step 4. Correct work: The student found the lateral area (60 in²) but forgot to add the base. Base area = 5 × 5 = 25 in². Correct SA = base + lateral = 25 + 60 = 85 in².</p></div></li></ol>
   </section>
 <section class="ws-page">
     <header class="ws-head">
@@ -158,19 +231,32 @@ body{margin:0;background:#e9eef5;color:var(--ink);font-family:"Hanken Grotesk",s
     <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
   </header>
     
+    
     <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
-  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>Pyramid X</td><td>12 in</td><td>10 in</td><td></td><td></td></tr><tr><td>Pyramid Y</td><td>8 cm</td><td>6 cm</td><td></td><td></td></tr><tr><td>Pyramid Z</td><td>14 ft</td><td>11 ft</td><td></td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A square pyramid has a base area of 49 cm² and a total lateral area of 84 cm². What is the surface area?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>133 cm²</li><li class="ws-opt"><span class="ws-bub">B</span>84 cm²</li><li class="ws-opt"><span class="ws-bub">C</span>49 cm²</li><li class="ws-opt"><span class="ws-bub">D</span>133 cm³</li></ol><p class="ws-keynote">SA = Base Area + Lateral Area = 49 + 84 = 133 cm².</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A square pyramid has SA = 260 in². The base area is 100 in². What is the total lateral area? If there are 4 identical lateral faces, what is the area of one face?</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Sort each item into the correct group.</p>
+  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>Pyramid X</td><td>12 in</td><td>10 in</td><td></td><td></td></tr><tr><td>Pyramid Y</td><td>8 cm</td><td>6 cm</td><td></td><td></td></tr><tr><td>Pyramid Z</td><td>14 ft</td><td>11 ft</td><td></td><td></td></tr></tbody></table></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">A square pyramid has a base area of 49 cm² and a total lateral area of 84 cm². What is the surface area?</p><ol class="ws-opts"><li class="ws-opt ws-correct"><span class="ws-bub">A</span>133 cm²</li><li class="ws-opt"><span class="ws-bub">B</span>84 cm²</li><li class="ws-opt"><span class="ws-bub">C</span>49 cm²</li><li class="ws-opt"><span class="ws-bub">D</span>133 cm³</li></ol><p class="ws-keynote">SA = Base Area + Lateral Area = 49 + 84 = 133 cm².</p><p class="ws-watch"><b>Watch for:</b> A common mistake in Surface Area of Pyramids is skipping the key idea: &quot;Surface area of a pyramid = base area + the area of all the triangular lateral faces.&quot; — always check your work against this rule before you submit.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">A square pyramid has SA = 260 in². The base area is 100 in². What is the total lateral area of the four triangular faces?</p></div></li><li class="ws-problem"><span class="ws-pnum">4</span><div class="ws-pbody"><p class="ws-stem">Sort each item into the correct group.</p>
   <p class="ws-prompt">Categories: <b></b></p>
-  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm"></span></li><li><span class="ws-blank ws-blank-sm"></span></li><li><span class="ws-blank ws-blank-sm"></span></li><li><span class="ws-blank ws-blank-sm"></span></li></ul></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Spot the Common Mistake</p>
-  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Read</span><span class="ws-step-w">A student is working on Surface Area of Pyramids.</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Attempt</span><span class="ws-step-w">They ignored the rule: Surface area of a pyramid = base area + the area of all the triangular lateral faces.</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Check</span><span class="ws-step-w">The answer does not match the math rule from class.</span></li></ol>
+  <ul class="ws-sort"><li><span class="ws-blank ws-blank-sm"></span></li><li><span class="ws-blank ws-blank-sm"></span></li><li><span class="ws-blank ws-blank-sm"></span></li><li><span class="ws-blank ws-blank-sm"></span></li></ul></div></li><li class="ws-problem"><span class="ws-pnum">5</span><div class="ws-pbody"><p class="ws-stem">onLevel — Did You Halve the Triangle?</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Box</span><span class="ws-step-w">Square pyramid: base edge = 8 in, slant height = 10 in</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Base Area</span><span class="ws-step-w">8 × 8 = 64 in²</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">One Triangular Face</span><span class="ws-step-w">8 × 10 = 80 in² (forgot the ½)</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer</span><span class="ws-step-w">SA = 64 + 4 × 80 = 64 + 320 = 384 in²</span></li></ol>
   <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
-  <p class="ws-keynote">See worked solution.</p></div></li></ol>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: A triangle's area is ½ × base × height, so each face is ½ × 8 × 10 = 40 in², not 80 in². The student left out the ½. Four faces: 4 × 40 = 160 in². Correct SA = 64 + 160 = 224 in².</p></div></li></ol>
   </section>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
+<section class="ws-page">
+    <header class="ws-head">
+    <div class="ws-head-top">
+      <span class="ws-std">6.G.4</span>
+      <span class="ws-ver">Challenge — Answer Key</span>
+    </div>
+    <h1 class="ws-title">Surface Area of Pyramids</h1>
+    <p class="ws-sub">Answer Key</p>
+    <div class="ws-meta"><span>Name: <span class="ws-fill"></span></span><span>Date: <span class="ws-fill ws-fill-sm"></span></span></div>
+  </header>
+    
+    
+    <ol class="ws-problems"><li class="ws-problem"><span class="ws-pnum">1</span><div class="ws-pbody"><p class="ws-stem">Find the Surface Area Error</p>
+  <ol class="ws-steps"><li><span class="ws-step-n">1</span><span class="ws-step-l">Dimensions</span><span class="ws-step-w">Square pyramid: base edge = 10 in, slant height = 8 in</span></li><li><span class="ws-step-n">2</span><span class="ws-step-l">Base Area</span><span class="ws-step-w">10 × 10 = 100 in²</span></li><li><span class="ws-step-n">3</span><span class="ws-step-l">Lateral Area</span><span class="ws-step-w">½ × 10 × 8 = 40 in² (one face). Total lateral = 40 × 3 = 120 in²</span></li><li><span class="ws-step-n">4</span><span class="ws-step-l">Answer</span><span class="ws-step-w">SA = 100 + 120 = 220 in²</span></li></ol>
+  <p class="ws-prompt">Which step has the mistake? Explain it and write the correct work.</p>
+  <p class="ws-keynote">The mistake is in Step 3. Correct work: A square pyramid has 4 lateral faces, not 3. Total lateral = 40 × 4 = 160 in². Correct: SA = 100 + 160 = 260 in².</p></div></li><li class="ws-problem"><span class="ws-pnum">2</span><div class="ws-pbody"><p class="ws-stem">Two pyramids have the same base area (64 in²) but different slant heights. Pyramid A has slant height 6 in and Pyramid B has slant height 10 in. How much more surface area does Pyramid B have? Why does slant height affect surface area but NOT base area?</p><p class="ws-keynote">Look for: surface area, lateral, base, slant height, triangle, area, bigger, taller.</p></div></li><li class="ws-problem"><span class="ws-pnum">3</span><div class="ws-pbody"><p class="ws-stem">Complete the table.</p>
+  <table class="ws-table"><thead><tr></tr></thead><tbody><tr><td>Square pyramid (slant h = 8)</td><td>36</td><td></td><td></td></tr><tr><td>Rectangular prism (h = 8)</td><td>36 (× 2 bases)</td><td></td><td></td></tr></tbody></table></div></li></ol>
+  </section>
 </body>
 </html>

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Theme Park Map Designer — Unit 7 Culminating Project</title>
     <meta
       name="description"
@@ -454,11 +454,13 @@
     <!-- nsr-injected:end -->
     <link rel="stylesheet" href="/shared/projects/projects-premium.css" />
     <link rel="stylesheet" href="/shared/projects/projects-tabs.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-tplus.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-interactive.css" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
-  <body class="pk">
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
+  <body class="pk" data-pk-theme="u7">
     <header class="phero">
       <div class="deco">🎢</div>
       <h1>Theme Park Map Designer</h1>
@@ -480,6 +482,15 @@
           <button data-level-btn="level-1" type="button">🟢 Level 1</button>
           <button data-level-btn="level-2" type="button">🔵 Level 2</button>
         </span>
+        <button
+          class="pk-tts-toggle"
+          data-tts-toggle
+          type="button"
+          aria-pressed="false"
+          title="Read text aloud"
+        >
+          🔊 Read aloud
+        </button>
         <button onclick="PK.save('u7ProjectA')">💾 Save</button>
         <button
           onclick="PK.load('u7ProjectA', { show: true, after: recalcAll })"
@@ -589,8 +600,7 @@
             </svg>
             <b>Quadrant</b>
             <p>
-              One of the four regions the x- and y-axes split the plane into.
-              Signs: I (+,+), II (−,+), III (−,−), IV (+,−).
+              One of the four parts of the grid, split by the two number lines.
             </p>
             <p class="pk-es">
               Cuadrante: una de las cuatro regiones del plano. Signos: I (+,+),
@@ -620,10 +630,7 @@
               />
             </svg>
             <b>Reflection</b>
-            <p>
-              A flip over an axis like a mirror. Over the x-axis: (x, y) → (x,
-              −y). Over the y-axis: (x, y) → (−x, y).
-            </p>
+            <p>A flip over a line, like looking in a mirror.</p>
             <p class="pk-es">
               Reflexión: un giro de espejo sobre un eje. Sobre el eje x: (x, y)
               → (x, −y).
@@ -652,10 +659,7 @@
               <text x="6" y="14" font-size="9" fill="#d4952a">|−3|=3</text>
             </svg>
             <b>Absolute Value</b>
-            <p>
-              |n| is the distance from 0 on a number line — never negative. |−3|
-              = 3 and |3| = 3.
-            </p>
+            <p>How far a number is from 0. It is never negative.</p>
             <p class="pk-es">
               Valor absoluto: |n| es la distancia desde 0 — nunca es negativo.
               |−3| = 3.
@@ -684,8 +688,8 @@
             </svg>
             <b>Coordinate / Integer</b>
             <p>
-              An ordered pair (x, y): x is left/right, y is up/down. Integers
-              are whole numbers including negatives: …−2, −1, 0, 1, 2…
+              A point (x, y): x is across, y is up. Integers are whole numbers
+              like −2, 0, 5.
             </p>
             <p class="pk-es">
               Par ordenado (x, y); enteros incluyen negativos: …−2, −1, 0, 1, 2…
@@ -714,10 +718,7 @@
               </text>
             </svg>
             <b>Sea Level = 0 (reference)</b>
-            <p>
-              Zero is the reference point. Above zero is positive, below zero is
-              negative. Like the origin on the plane.
-            </p>
+            <p>Zero is the starting point. Up is positive, down is negative.</p>
             <p class="pk-es">
               El nivel del mar = 0 es el punto de referencia: arriba es
               positivo, abajo es negativo.
@@ -727,18 +728,68 @@
         <div class="grid2" style="margin-top: 18px">
           <div class="pk-callout">
             <h3>Formula Bank</h3>
-            <p><b>Distance, shared x:</b> |y₂ − y₁| (vertical line)</p>
-            <p><b>Distance, shared y:</b> |x₂ − x₁| (horizontal line)</p>
-            <p><b>Reflect over x-axis:</b> (x, y) → (x, −y)</p>
-            <p><b>Reflect over y-axis:</b> (x, y) → (−x, y)</p>
-            <p><b>Absolute value:</b> |n| = distance from 0</p>
-            <p>
-              <b>Quadrant signs:</b> I (+,+) · II (−,+) · III (−,−) · IV (+,−)
-            </p>
-            <p class="pk-lvl2">
-              <b>Diagonal (Level 2 preview):</b> right triangle legs |Δx| and
-              |Δy|; diagonal² = |Δx|² + |Δy|² (Pythagoras)
-            </p>
+            <ul class="pk-formula">
+              <li>
+                <span class="pk-f-name">Distance on a straight line</span>
+                <span class="pk-f-mean"
+                  >If two places share an x or a y, the distance is the
+                  <b>absolute difference</b> of the other coordinate. Count the
+                  squares between them.</span
+                >
+                <span class="pk-eg"
+                  >Example: (2, 3) and (2, 9) share x = 2, so |9 − 3| = 6
+                  units.</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Reflect over the x-axis</span>
+                <span class="pk-f-mean"
+                  >Flip up and down across the side-to-side line. Keep x the
+                  same and change the sign of y.</span
+                >
+                <span class="pk-eg">Example: (3, 4) → (3, −4).</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Reflect over the y-axis</span>
+                <span class="pk-f-mean"
+                  >Flip left and right across the up-and-down line. Keep y the
+                  same and change the sign of x.</span
+                >
+                <span class="pk-eg">Example: (3, 4) → (−3, 4).</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Absolute value</span>
+                <span class="pk-f-mean"
+                  >How far a number is from 0 on the number line. It is never
+                  negative.</span
+                >
+                <span class="pk-eg">Example: |−3| = 3 and |3| = 3.</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Which quadrant?</span>
+                <span class="pk-f-mean"
+                  >The signs of x and y tell you the region: I (+,+), II (−,+),
+                  III (−,−), IV (+,−).</span
+                >
+                <span class="pk-eg"
+                  >Example: (5, −2) is in Quadrant IV because x is + and y is
+                  −.</span
+                >
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name"
+                  >Diagonal distance (Level 2 preview)</span
+                >
+                <span class="pk-f-mean"
+                  >For places that do not share a row or column, the legs are
+                  |Δx| and |Δy|; the diagonal² = |Δx|² + |Δy|²
+                  (Pythagoras).</span
+                >
+                <span class="pk-eg"
+                  >Example: legs 3 and 4 → diagonal = √(9 + 16) = √25 = 5.</span
+                >
+              </li>
+            </ul>
           </div>
           <div class="pk-callout">
             <h3>Sentence Frames</h3>
@@ -833,7 +884,7 @@
                   font-weight="bold"
                   fill="#0f2b3c"
                 >
-                  SPEED RATE TRACKER
+                  THEME PARK MAP
                 </text>
                 <path
                   d="M180,150 A70,70 0 0,1 320,150"
@@ -878,7 +929,30 @@
             >
               <span>📋</span> Scenario &amp; Level Options
             </h3>
-            <h2>Map the Places You Care About</h2>
+            <p style="font-size: 14px; line-height: 1.6; margin: 0 0 10px">
+              You are a <strong>theme-park map designer</strong>. You place the
+              real spots you care about on a coordinate-plane map, name their
+              integer coordinates, and measure how far apart the rides and
+              landmarks are.
+            </p>
+            <ul
+              style="
+                font-size: 14px;
+                line-height: 1.6;
+                margin: 0;
+                padding-left: 18px;
+              "
+            >
+              <li>
+                <strong>Level 1 (support):</strong> plot 2 places like Home (0,
+                0) and School (5, -3), then name the quadrant each one is in.
+              </li>
+              <li>
+                <strong>Level 2 (challenge):</strong> plot 3 places, reflect one
+                across an axis, and find the distance between two that share a
+                row, such as (2, 3) and (2, 9).
+              </li>
+            </ul>
           </div>
         </div>
         <p>
@@ -904,7 +978,7 @@
             type="text"
             id="p1name"
             data-save
-            placeholder="example: Home"
+            placeholder=""
             oninput="plotPlaces()"
           />
           <div class="grid4" style="margin-top: 8px">
@@ -916,7 +990,7 @@
                 data-save
                 min="-10"
                 max="10"
-                placeholder="example: 0"
+                placeholder=""
                 oninput="plotPlaces()"
               />
             </div>
@@ -946,7 +1020,7 @@
                     type="text"
                     id="worldCountry"
                     data-save
-                    placeholder="e.g. Kingda Ka"
+                    placeholder=""
                     oninput="recalcAll()"
                   />
                 </div>
@@ -958,7 +1032,7 @@
                     data-save
                     min="-10"
                     max="10"
-                    placeholder="example: 0"
+                    placeholder=""
                     oninput="plotPlaces()"
                   />
                 </div>
@@ -972,7 +1046,7 @@
             type="text"
             id="p2name"
             data-save
-            placeholder="example: School"
+            placeholder=""
             oninput="plotPlaces()"
           />
           <div class="grid4" style="margin-top: 8px">
@@ -984,7 +1058,7 @@
                 data-save
                 min="-10"
                 max="10"
-                placeholder="example: 5"
+                placeholder=""
                 oninput="plotPlaces()"
               />
             </div>
@@ -996,7 +1070,7 @@
                 data-save
                 min="-10"
                 max="10"
-                placeholder="example: -3"
+                placeholder=""
                 oninput="plotPlaces()"
               />
             </div>
@@ -1010,7 +1084,7 @@
             type="text"
             id="p3name"
             data-save
-            placeholder="example: Park"
+            placeholder=""
             oninput="plotPlaces()"
           />
           <div class="grid4" style="margin-top: 8px">
@@ -1022,7 +1096,7 @@
                 data-save
                 min="-10"
                 max="10"
-                placeholder="example: -7"
+                placeholder=""
                 oninput="plotPlaces()"
               />
             </div>
@@ -1034,7 +1108,7 @@
                 data-save
                 min="-10"
                 max="10"
-                placeholder="example: 4"
+                placeholder=""
                 oninput="plotPlaces()"
               />
             </div>
@@ -1045,6 +1119,7 @@
           Plot &amp; Identify Quadrants
         </button>
         <div class="readout" id="plot-out"></div>
+        <div class="pki-manip" data-manip="coord-plot" data-range="10"></div>
         <div class="grid-wrap">
           <svg
             id="park-svg"
@@ -1166,6 +1241,11 @@
               Reflect a place across an axis to plan a "mirrored" section of
               your map.
             </p>
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: start with a point in Quadrant I like (3, 4) and
+              reflect across the x-axis. Only the y-sign flips, so (3, 4)
+              becomes (3, −4).
+            </p>
             <div class="grid2">
               <div>
                 <label class="fld" for="rx">Original x</label
@@ -1175,7 +1255,7 @@
                   data-save
                   min="-10"
                   max="10"
-                  placeholder="example: 3"
+                  placeholder=""
                   oninput="calcReflection()"
                 />
               </div>
@@ -1187,7 +1267,7 @@
                   data-save
                   min="-10"
                   max="10"
-                  placeholder="example: 4"
+                  placeholder=""
                   oninput="calcReflection()"
                 />
               </div>
@@ -1210,6 +1290,35 @@
                 (3, 4) → (−3, 4). Both: negate both → (−3, −4).
               </p>
             </details>
+
+            <div class="pk-lvl2">
+              <div class="task">
+                <strong>Level 2 extension:</strong> Reflect the same point over
+                <em>both</em> axes (choose "Both axes"). Then explain why that
+                lands in the same spot as one 180° turn about the origin, and
+                name the quadrant the reflected point ends up in.
+              </div>
+            </div>
+
+            <div
+              class="pk-no-print"
+              style="
+                margin-top: 16px;
+                padding: 12px;
+                background: #fff;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+              "
+            >
+              <svg
+                id="phase-svg-1a"
+                width="100%"
+                height="200"
+                viewBox="0 0 500 200"
+                style="background: #fff; border-radius: 8px"
+                xmlns="http://www.w3.org/2000/svg"
+              ></svg>
+            </div>
 
             <!-- 1c Distance -->
           </div>
@@ -1372,7 +1481,7 @@
                   data-save
                   min="-10"
                   max="10"
-                  placeholder="example: 2"
+                  placeholder=""
                   oninput="calcDistance()"
                 />
               </div>
@@ -1384,7 +1493,7 @@
                   data-save
                   min="-10"
                   max="10"
-                  placeholder="example: 3"
+                  placeholder=""
                   oninput="calcDistance()"
                 />
               </div>
@@ -1396,7 +1505,7 @@
                   data-save
                   min="-10"
                   max="10"
-                  placeholder="example: 2"
+                  placeholder=""
                   oninput="calcDistance()"
                 />
               </div>
@@ -1408,7 +1517,7 @@
                   data-save
                   min="-10"
                   max="10"
-                  placeholder="example: -5"
+                  placeholder=""
                   oninput="calcDistance()"
                 />
               </div>
@@ -1425,6 +1534,26 @@
                 2.
               </p>
             </details>
+
+            <div
+              class="pk-no-print"
+              style="
+                margin-top: 16px;
+                padding: 12px;
+                background: #fff;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+              "
+            >
+              <svg
+                id="phase-svg-1b"
+                width="100%"
+                height="200"
+                viewBox="0 0 500 200"
+                style="background: #fff; border-radius: 8px"
+                xmlns="http://www.w3.org/2000/svg"
+              ></svg>
+            </div>
 
             <div class="pk-lvl2" style="margin-top: 18px">
               <div class="task">
@@ -1444,7 +1573,7 @@
                     id="diagDx"
                     data-save
                     min="0"
-                    placeholder="example: 3"
+                    placeholder=""
                     oninput="calcDiag()"
                   />
                 </div>
@@ -1455,7 +1584,7 @@
                     id="diagDy"
                     data-save
                     min="0"
-                    placeholder="example: 4"
+                    placeholder=""
                     oninput="calcDiag()"
                   />
                 </div>
@@ -1472,12 +1601,7 @@
               and (2, 9)?
             </div>
             <label class="fld" for="check-dist">Your answer (in units)</label>
-            <input
-              type="number"
-              id="check-dist"
-              data-save
-              placeholder="Type a number"
-            />
+            <input type="number" id="check-dist" data-save placeholder="" />
             <button class="btn alt" type="button" onclick="checkDist()">
               Check answer
             </button>
@@ -1609,12 +1733,7 @@
             <label class="fld" for="partnerName"
               >Partner name or initials</label
             >
-            <input
-              type="text"
-              id="partnerName"
-              data-save
-              placeholder="example: A.J."
-            />
+            <input type="text" id="partnerName" data-save placeholder="" />
           </div>
           <div>
             <label class="fld" for="p-quad"
@@ -1699,11 +1818,7 @@
         <label class="fld" for="peerReflect"
           >Whose map covers more of the plane, and how do you know?</label
         >
-        <textarea
-          id="peerReflect"
-          data-save
-          placeholder="My map reaches ___ quadrants while my partner's reaches ___, so ___."
-        ></textarea>
+        <textarea id="peerReflect" data-save placeholder=""></textarea>
       </section>
 
       <!-- ===================== PART 3 — WORLD ===================== -->
@@ -1746,7 +1861,7 @@
               data-save
               step="1"
               oninput="worldGo()"
-              placeholder="type your value"
+              placeholder=""
             />
             <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
               Tip: a walking distance from Part 1 is a great value to type here.
@@ -1790,12 +1905,7 @@
               <label class="fld" for="whatIfVal"
                 >New value to add to the sample</label
               >
-              <input
-                type="number"
-                id="whatIfVal"
-                step="1"
-                placeholder="example: 12"
-              />
+              <input type="number" id="whatIfVal" step="1" placeholder="" />
             </div>
           </div>
           <button class="btn" type="button" onclick="runWhatIf()">
@@ -1810,32 +1920,20 @@
           >Is your number bigger or smaller than the world sample average? Why
           might that be?</label
         >
-        <textarea
-          id="worldReflect"
-          data-save
-          placeholder="My number is ___ the sample average because ___."
-        ></textarea>
+        <textarea id="worldReflect" data-save placeholder=""></textarea>
         <div class="pk-lvl2">
           <label class="fld" for="worldHard"
             >Level 2 question: A coaster drops from +52 m to −13 m below the
             loading dock (0). How tall is the total drop? Show your thinking
             with absolute value.</label
           >
-          <textarea
-            id="worldHard"
-            data-save
-            placeholder="|52| + |−13| = ___ because ___"
-          ></textarea>
+          <textarea id="worldHard" data-save placeholder=""></textarea>
         </div>
         <label class="fld" for="careful"
           >Careful thinking: why can two maps look very different but both be
           "correct"?</label
         >
-        <textarea
-          id="careful"
-          data-save
-          placeholder="Two maps can differ because ___ (origin choice, scale, real places)."
-        ></textarea>
+        <textarea id="careful" data-save placeholder=""></textarea>
       </section>
 
       <!-- ===================== DELIVERABLE ===================== -->
@@ -1851,11 +1949,7 @@
           Write a short blueprint summary (3–5 sentences) using your real
           coordinates and numbers from above.
         </p>
-        <textarea
-          id="pitch"
-          data-save
-          placeholder="My map's origin is ___. My ___ is at (__, __) in Quadrant __, and my ___ is at (__, __) in Quadrant __. I reflected (__, __) across the __-axis to get (__, __). The walking distance from (__, __) to (__, __) is __ units because they share the same __ and |__ − __| = __."
-        ></textarea>
+        <textarea id="pitch" data-save placeholder=""></textarea>
 
         <h3 style="margin: 22px 0 6px">Blueprint Checklist</h3>
         <ul class="checklist" id="checklist">
@@ -1989,7 +2083,10 @@
       const yrEl = document.getElementById("yr");
       if (yrEl) yrEl.textContent = new Date().getFullYear();
       const $ = (id) => document.getElementById(id);
-      const num = (id) => { const e = $(id); return e ? parseFloat(e.value) : NaN; };
+      const num = (id) => {
+        const e = $(id);
+        return e ? parseFloat(e.value) : NaN;
+      };
 
       function show(id, html) {
         const el = $(id);
@@ -2550,14 +2647,29 @@
       }
 
       function drawVisualizer() {
-        const eX = num("p-ent-x"),
-          eY = num("p-ent-y");
-        const cX = num("p-cst-x"),
-          cY = num("p-cst-y");
-        const fX = num("p-fer-x"),
-          fY = num("p-fer-y");
-        const sX = num("p-shp-x"),
-          sY = num("p-shp-y");
+        const places = [
+          {
+            x: num("a1x"),
+            y: num("a1y"),
+            color: "#6d3fc0",
+            label:
+              $("p1name") && $("p1name").value ? $("p1name").value : "Place 1",
+          },
+          {
+            x: num("a2x"),
+            y: num("a2y"),
+            color: "#0e8a7d",
+            label:
+              $("p2name") && $("p2name").value ? $("p2name").value : "Place 2",
+          },
+          {
+            x: num("a3x"),
+            y: num("a3y"),
+            color: "#c45a3c",
+            label:
+              $("p3name") && $("p3name").value ? $("p3name").value : "Place 3",
+          },
+        ];
 
         let points = "";
         const scale = 10;
@@ -2574,10 +2686,9 @@
           `;
         };
 
-        points += drawDot(eX, eY, "#1a6fb5", "Entrance");
-        points += drawDot(cX, cY, "#d4952a", "Coaster");
-        points += drawDot(fX, fY, "#0e8a7d", "Ferris Wheel");
-        points += drawDot(sX, sY, "#c45a3c", "Shop");
+        places.forEach((p) => {
+          points += drawDot(p.x, p.y, p.color, p.label);
+        });
 
         const svgString = `
           <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
@@ -2604,8 +2715,12 @@
         renderWorld();
         worldGo();
         updateProgress();
-      
-        if(typeof drawReflectionSVG === "function"){drawReflectionSVG(); drawDistanceSVG();}}
+
+        if (typeof drawReflectionSVG === "function") {
+          drawReflectionSVG();
+          drawDistanceSVG();
+        }
+      }
 
       /* ---- Report ---- */
       function reportText() {
@@ -2747,34 +2862,40 @@
         );
         renderWorld();
         PK.initLevel({ storageKey: "u7ProjectA", default: "level-1" });
+        PK.initTts({ storageKey: "u7ProjectA" });
         PK.load("u7ProjectA", { after: recalcAll });
         updateProgress();
       });
-    
+
       function drawReflectionSVG() {
-        const x = num("rx");
-        const y = num("ry");
-        const axis = $("refAxis") ? $("refAxis").value : "x-axis";
+        let x = num("rx");
+        let y = num("ry");
+        const axis = $("raxis") ? $("raxis").value : "x";
         const svg = $("phase-svg-1a");
         if (!svg) return;
-        
-        if (isNaN(x) || isNaN(y)) {
-          svg.innerHTML = '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter coordinates to draw reflection</text>';
-          return;
+
+        // Show a worked EXAMPLE — (3, 4) reflected — as the default reference so
+        // the card always has something to look at; switches to the student's
+        // own point as soon as they enter coordinates.
+        const isExample = isNaN(x) || isNaN(y);
+        if (isExample) {
+          x = 3;
+          y = 4;
         }
-        
-        const rx = axis === "x-axis" ? x : -x;
-        const ry = axis === "x-axis" ? -y : y;
-        
+
+        const rx = axis === "y" ? -x : x;
+        const ry = axis === "y" ? y : -y;
+
         const toX = (val) => 250 + val * 8;
         const toY = (val) => 100 - val * 8;
-        
+
         svg.innerHTML = `
-          <text x="250" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">Reflection Across ${axis === 'x-axis' ? 'X-Axis' : 'Y-Axis'}</text>
+          <text x="250" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">Reflection Across ${axis === "y" ? "Y-Axis" : "X-Axis"}</text>
+          ${isExample ? `<rect x="372" y="14" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="28" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · (3, 4)</text>` : ""}
           <line x1="170" y1="100" x2="330" y2="100" stroke="#cbd5e1" stroke-width="1.5" />
           <line x1="250" y1="20" x2="250" y2="180" stroke="#cbd5e1" stroke-width="1.5" />
-          
-          ${axis === "x-axis" ? `<line x1="170" y1="100" x2="330" y2="100" stroke="#0e8a7d" stroke-width="3" />` : `<line x1="250" y1="20" x2="250" y2="180" stroke="#0e8a7d" stroke-width="3" />`}
+
+          ${axis === "y" ? `<line x1="250" y1="20" x2="250" y2="180" stroke="#0e8a7d" stroke-width="3" />` : `<line x1="170" y1="100" x2="330" y2="100" stroke="#0e8a7d" stroke-width="3" />`}
           
           <circle cx="${toX(x)}" cy="${toY(y)}" r="5" fill="#1e88e5" />
           <text x="${toX(x) + 8}" y="${toY(y) - 4}" font-size="9" fill="#1e88e5" font-weight="bold">(${x}, ${y})</text>
@@ -2785,29 +2906,36 @@
           <line x1="${toX(x)}" y1="${toY(y)}" x2="${toX(rx)}" y2="${toY(ry)}" stroke="#c45a3c" stroke-width="1" stroke-dasharray="3" />
         `;
       }
-      
+
       function drawDistanceSVG() {
-        const x1 = num("d1x");
-        const y1 = num("d1y");
-        const x2 = num("d2x");
-        const y2 = num("d2y");
+        let x1 = num("d1x");
+        let y1 = num("d1y");
+        let x2 = num("d2x");
+        let y2 = num("d2y");
         const svg = $("phase-svg-1b");
         if (!svg) return;
-        
-        if (isNaN(x1) || isNaN(y1) || isNaN(x2) || isNaN(y2)) {
-          svg.innerHTML = '<text x="250" y="100" text-anchor="middle" font-size="14" fill="#5e6e7e">Enter points A and B to draw distance path</text>';
-          return;
+
+        // Default to a worked EXAMPLE — (2, 3) to (2, 9), which share x = 2 and
+        // are 6 units apart — so the card always shows a reference; switches to
+        // the student's points as soon as both are entered.
+        const isExample = isNaN(x1) || isNaN(y1) || isNaN(x2) || isNaN(y2);
+        if (isExample) {
+          x1 = 2;
+          y1 = 3;
+          x2 = 2;
+          y2 = 9;
         }
-        
+
         const toX = (val) => 250 + val * 8;
         const toY = (val) => 100 - val * 8;
-        
+
         const sameX = x1 === x2;
         const sameY = y1 === y2;
         const dist = sameX ? Math.abs(y1 - y2) : sameY ? Math.abs(x1 - x2) : 0;
-        
+
         svg.innerHTML = `
           <text x="250" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">Distance between coordinates: |p - q|</text>
+          ${isExample ? `<rect x="372" y="14" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="28" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · (2,3)-(2,9)</text>` : ""}
           <line x1="170" y1="100" x2="330" y2="100" stroke="#cbd5e1" stroke-width="1" />
           <line x1="250" y1="20" x2="250" y2="180" stroke="#cbd5e1" stroke-width="1" />
           
@@ -2817,22 +2945,128 @@
           <circle cx="${toX(x2)}" cy="${toY(y2)}" r="5" fill="#ffb74d" />
           <text x="${toX(x2) + 8}" y="${toY(y2) - 4}" font-size="9" fill="#f57c00" font-weight="bold">B (${x2}, ${y2})</text>
           
-          <line x1="${toX(x1)}" y1="${toY(y1)}" x2="${toX(x2)}" y2="${toY(y2)}" stroke="${sameX || sameY ? '#0e8a7d' : '#f44336'}" stroke-width="2.5" />
+          <line x1="${toX(x1)}" y1="${toY(y1)}" x2="${toX(x2)}" y2="${toY(y2)}" stroke="${sameX || sameY ? "#0e8a7d" : "#f44336"}" stroke-width="2.5" />
           
           <text x="250" y="192" text-anchor="middle" font-size="11" fill="#0f2b3c" font-weight="bold">
-            ${sameX || sameY ? `Distance = ${dist} units` : '⚠️ Points must share the same x or same y coordinate!'}
+            ${sameX || sameY ? `Distance = ${dist} units` : "⚠️ Points must share the same x or same y coordinate!"}
           </text>
         `;
       }
-    
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
+    <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
+    <script type="application/json" id="pk-research">
+      {
+        "icon": "🔎",
+        "title": "Research Lab — Map the Real Extremes",
+        "intro": "Pilots and explorers use positive and negative numbers for depth, altitude, and temperature. Look up real values, then compare them.",
+        "brief": {
+          "theme": "field",
+          "title": "🔭 Your Research Mission",
+          "hook": "Find <b>real highs and lows</b> (temperatures, elevations, depths) and compare them with integers.",
+          "steps": [
+            "Open a link (new tab — you keep your project).",
+            "Record real values in Field Notes.",
+            "Compare them in the math problems.",
+            "Check off the Investigation Checklist."
+          ]
+        },
+        "fieldNotes": {
+          "title": "Field Notes — Record What You Find",
+          "intro": "Jot the exact number or rule you find. You'll reuse these in the math below.",
+          "fields": [
+            {
+              "label": "What absolute value means",
+              "source": "Math is Fun",
+              "placeholder": "distance from 0",
+              "hint": "Always zero or positive."
+            },
+            {
+              "label": "A real LOW value (below zero)",
+              "source": "a temperature/elevation table",
+              "placeholder": "-12 °F",
+              "hint": "A cold temp or a depth below sea level."
+            },
+            {
+              "label": "A real HIGH value (above zero)",
+              "source": "a temperature/elevation table",
+              "placeholder": "+88 °F",
+              "hint": "A warm temp or an elevation."
+            },
+            {
+              "label": "A sea-level reference",
+              "source": "Atlas",
+              "placeholder": "0 ft = sea level",
+              "hint": "The zero point you compare to."
+            }
+          ]
+        },
+        "mathTasks": [
+          {
+            "title": "1 · Order them",
+            "prompt": "Place your low and high values (Field Notes 2 and 3) on a number line and order them with < or >. Which is greater?",
+            "level2": "Add a third real value and order all three."
+          },
+          {
+            "title": "2 · Distance",
+            "prompt": "Use <b>absolute value</b> to find how far each value is from 0. Which is farther from zero?",
+            "level2": "How far apart are the two values from each other? Show the math."
+          },
+          {
+            "title": "3 · Real meaning",
+            "prompt": "Write one sentence explaining what a negative value means in your context (colder than, below sea level, etc.).",
+            "level2": "Give a real example where a smaller (more negative) number is actually 'deeper' or 'colder'."
+          }
+        ],
+        "investigationChecklist": [
+          "I recorded what absolute value means.",
+          "I found a real value below zero.",
+          "I found a real value above zero.",
+          "I ordered values with < or >.",
+          "I used absolute value for distance from 0.",
+          "I explained what negative means in context."
+        ],
+        "links": [
+          {
+            "icon": "➖",
+            "name": "Math is Fun — Integers",
+            "url": "https://www.mathsisfun.com/positive-negative-integers.html",
+            "find": "How positive and negative numbers compare.",
+            "look": "left is less, right is greater"
+          },
+          {
+            "icon": "📏",
+            "name": "Math is Fun — Absolute Value",
+            "url": "https://www.mathsisfun.com/numbers/absolute-value.html",
+            "find": "Distance from zero, always positive.",
+            "look": "the | | bars"
+          },
+          {
+            "icon": "🧭",
+            "name": "Math is Fun — Number Line",
+            "url": "https://www.mathsisfun.com/number-line.html",
+            "find": "How to place positive and negative numbers in order.",
+            "look": "values left and right of 0"
+          },
+          {
+            "icon": "🌡️",
+            "name": "Wikipedia — US temperature extremes (table)",
+            "url": "https://en.wikipedia.org/wiki/U.S._state_and_territory_temperature_extremes",
+            "find": "Real record high and low temps in a table.",
+            "look": "a state's record low (a negative number)"
+          }
+        ],
+        "note": "These sites were picked for class. They open in a new tab so you keep your project. If a page asks you to sign in or buy something, just close it and come back."
+      }
+    </script>
     <script src="/shared/projects/projects-tabs.js" defer></script>
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <script src="/shared/projects/projects-interactive.js" defer></script>
+    <script src="/shared/projects/manip-coord-plot.js" defer></script>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+  </body>
 </html>

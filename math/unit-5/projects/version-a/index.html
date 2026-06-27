@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Dream Room Designer — Unit 5 Culminating Project</title>
     <meta
       name="description"
@@ -464,11 +464,13 @@
     <!-- nsr-injected:end -->
     <link rel="stylesheet" href="/shared/projects/projects-premium.css" />
     <link rel="stylesheet" href="/shared/projects/projects-tabs.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-tplus.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-interactive.css" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
-  <body class="pk">
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
+  <body class="pk" data-pk-theme="u5">
     <header class="phero">
       <div class="deco">🏠</div>
       <h1>Dream Room Designer</h1>
@@ -493,6 +495,15 @@
             🔵 Level 2 (challenge)
           </button>
         </span>
+        <button
+          class="pk-tts-toggle"
+          data-tts-toggle
+          type="button"
+          aria-pressed="false"
+          title="Read text aloud"
+        >
+          🔊 Read aloud
+        </button>
         <button onclick="PK.save('u5ProjectA')">💾 Save</button>
         <button
           onclick="PK.load('u5ProjectA', { show: true, after: recalcAll })"
@@ -547,14 +558,14 @@
         <div class="pk-vocab">
           <div class="pk-term">
             <span class="pk-icon">📏</span><b>Base (b)</b>
-            <p>One full side of a shape that you measure along.</p>
+            <p>The flat bottom side of a shape that you measure.</p>
             <p class="pk-es">Base: un lado completo de la figura que mides.</p>
           </div>
           <div class="pk-term">
             <span class="pk-icon">📐</span><b>Height (h) — perpendicular!</b>
             <p>
-              The straight-up distance from the base, making a right angle — NOT
-              the slanted side.
+              How tall a shape is, straight up from the base — not the slanted
+              side.
             </p>
             <p class="pk-es">
               Altura: la distancia recta (perpendicular) desde la base, no el
@@ -564,7 +575,8 @@
           <div class="pk-term">
             <span class="pk-icon">▱</span><b>Parallelogram</b>
             <p>
-              A 4-sided shape with both pairs of sides parallel. Area = b × h.
+              A pushed-over rectangle. Both pairs of sides are parallel. Area =
+              b × h.
             </p>
             <p class="pk-es">
               Paralelogramo: figura de 4 lados con lados paralelos. Área = b ×
@@ -573,14 +585,19 @@
           </div>
           <div class="pk-term">
             <span class="pk-icon">🔺</span><b>Triangle</b>
-            <p>Exactly half a parallelogram. Area = ½ × b × h.</p>
+            <p>
+              A 3-sided shape. It is half of a parallelogram. Area = ½ × b × h.
+            </p>
             <p class="pk-es">
               Triángulo: la mitad de un paralelogramo. Área = ½ × b × h.
             </p>
           </div>
           <div class="pk-term">
             <span class="pk-icon">⏢</span><b>Trapezoid</b>
-            <p>A 4-sided shape with two parallel bases. Area = ½(b₁+b₂)h.</p>
+            <p>
+              A 4-sided shape with a top and bottom that are parallel. Area =
+              ½(b₁+b₂)h.
+            </p>
             <p class="pk-es">
               Trapecio: figura con dos bases paralelas. Área = ½(b₁+b₂)h.
             </p>
@@ -588,7 +605,8 @@
           <div class="pk-term">
             <span class="pk-icon">🧩</span><b>Composite figure</b>
             <p>
-              A shape made of simpler shapes. Decompose, find each, then add.
+              A big shape made of smaller shapes. Find each part, then add them
+              up.
             </p>
             <p class="pk-es">
               Figura compuesta: hecha de figuras simples. Descompón, halla cada
@@ -597,9 +615,7 @@
           </div>
           <div class="pk-term">
             <span class="pk-icon">🟦</span><b>Square unit</b>
-            <p>
-              How area is measured — like square feet (sq ft) or square tiles.
-            </p>
+            <p>How we measure area, like square feet or square tiles.</p>
             <p class="pk-es">
               Unidad cuadrada: cómo se mide el área, como pies cuadrados.
             </p>
@@ -608,16 +624,65 @@
         <div class="grid2" style="margin-top: 18px">
           <div class="pk-callout">
             <h3>Formula Bank</h3>
-            <p><b>Parallelogram / rectangle:</b> Area = b × h</p>
-            <p><b>Triangle:</b> Area = ½ × b × h</p>
-            <p><b>Trapezoid:</b> Area = ½ × (b₁ + b₂) × h</p>
-            <p><b>Composite:</b> decompose into parts, find each, then add</p>
-            <p class="pk-lvl2">
-              <b>With a hole:</b> Area = (whole rectangle) − (cut-out shape)
-            </p>
-            <p class="pk-lvl2">
-              <b>Missing dimension:</b> b = Area ÷ h &nbsp;|&nbsp; h = Area ÷ b
-            </p>
+            <ul class="pk-formula">
+              <li>
+                <span class="pk-f-name">Parallelogram / rectangle area</span>
+                <span class="pk-f-mean"
+                  >Multiply one full side (the base) by the straight-up height.
+                  The height must make a square corner with the base — not the
+                  slanted side.</span
+                >
+                <span class="pk-eg"
+                  >Example: base 12 ft × height 10 ft = 120 sq ft</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Triangle area</span>
+                <span class="pk-f-mean"
+                  >A triangle is half a parallelogram, so multiply base ×
+                  height, then take half.</span
+                >
+                <span class="pk-eg">Example: ½ × 6 ft × 5 ft = 15 sq ft</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Trapezoid area</span>
+                <span class="pk-f-mean"
+                  >Add the two parallel sides, multiply by the height, then take
+                  half.</span
+                >
+                <span class="pk-eg"
+                  >Example: ½ × (6 + 10) ft × 4 ft = 32 sq ft</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Composite area (add the parts)</span>
+                <span class="pk-f-mean"
+                  >Break a tricky shape into simple shapes, find each area, then
+                  add them together.</span
+                >
+                <span class="pk-eg"
+                  >Example: 80 sq ft + 30 sq ft = 110 sq ft</span
+                >
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">Area with a hole (subtract)</span>
+                <span class="pk-f-mean"
+                  >Find the whole shape's area, then subtract the piece that is
+                  cut out.</span
+                >
+                <span class="pk-eg"
+                  >Example: 120 sq ft − 18 sq ft = 102 sq ft</span
+                >
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">Find a missing side</span>
+                <span class="pk-f-mean"
+                  >If you already know the area, divide it by the side you have
+                  to get the side you need.</span
+                >
+                <span class="pk-eg">Example: 84 sq ft ÷ 12 ft = 7 ft</span>
+              </li>
+            </ul>
           </div>
           <div class="pk-callout">
             <h3>Sentence Frames</h3>
@@ -742,7 +807,30 @@
             >
               <span>📋</span> Scenario &amp; Level Options
             </h3>
-            <h2>Measure &amp; Calculate YOUR Room</h2>
+            <p style="font-size: 14px; line-height: 1.6; margin: 0 0 10px">
+              You are an <strong>interior designer</strong>. A client wants a
+              floor plan of their bedroom, so you measure the room, find the
+              area of each part, and calculate the cost to put new flooring
+              across the whole space.
+            </p>
+            <ul
+              style="
+                font-size: 14px;
+                line-height: 1.6;
+                margin: 0;
+                padding-left: 18px;
+              "
+            >
+              <li>
+                <strong>Level 1 (support):</strong> find the area of one simple
+                rectangular room, then multiply by the price per square foot.
+              </li>
+              <li>
+                <strong>Level 2 (challenge):</strong> add a triangular nook and
+                an L-shaped composite area, total all the parts, and compare
+                your room to average bedroom sizes around the world.
+              </li>
+            </ul>
           </div>
         </div>
         <p>
@@ -952,7 +1040,7 @@
                       type="text"
                       id="worldCountry"
                       data-save
-                      placeholder="e.g. Standard bedroom"
+                      placeholder=""
                       oninput="recalcAll()"
                     />
                   </div>
@@ -966,7 +1054,7 @@
                       data-save
                       step="any"
                       min="0"
-                      placeholder="e.g. 220"
+                      placeholder=""
                       oninput="recalcAll()"
                     />
                   </div>
@@ -1011,6 +1099,14 @@
               Calculate main floor area
             </button>
             <div class="readout" id="p1-out"></div>
+            <div
+              class="pki-manip"
+              data-manip="area-tiler"
+              data-unit="ft"
+              data-theme="room"
+              data-accent="#2e7d32"
+              data-accent2="#00796b"
+            ></div>
             <details class="hintbox">
               <summary>Need a hint?</summary>
               <p>
@@ -1019,6 +1115,15 @@
                 Example: b = 12, h = 10 → Area = 12 × 10 = 120 sq ft.
               </p>
             </details>
+            <div class="pk-lvl2" style="margin-top: 16px">
+              <div class="task">
+                <strong>Level 2 extension:</strong> a parallelogram floor has a
+                slanted side that is longer than its height. Explain why you
+                must use the perpendicular height (straight up, a right angle)
+                in Area = b × h, not the slanted side. What would happen to your
+                area if you used the slant by mistake — too big or too small?
+              </div>
+            </div>
 
             <!-- 1b Triangle nook -->
           </div>
@@ -1067,19 +1172,14 @@
                 color: var(--ink);
               "
             >
+              <li><b>Parallelogram/Rectangle</b>: Area = base × height.</li>
               <li>
-                <b>Parallelogram/Rectangle</b>: $\text{Area} = \text{base}
-                \times \text{height}$.
+                <b>Triangle</b>: Area = 1/2 × base × height (multiply base and
+                height, then divide by 2).
               </li>
               <li>
-                <b>Triangle</b>: $\text{Area} = \frac{1}{2} \times \text{base}
-                \times \text{height}$ (multiply base and height, then divide by
-                2).
-              </li>
-              <li>
-                <b>Trapezoid</b>: $\text{Area} = \frac{1}{2} \times (b_1 + b_2)
-                \times h$ (add both parallel bases, multiply by the height, and
-                divide by 2).
+                <b>Trapezoid</b>: Area = 1/2 × (b_1 + b_2) × h (add both
+                parallel bases, multiply by the height, and divide by 2).
               </li>
               <li>
                 <b>Composite Shapes</b>: Split the irregular layout into
@@ -1096,8 +1196,7 @@
               "
             >
               💡 <b>Formula Check:</b> Trapezoid bases of 6ft and 10ft, height
-              of 4ft. Area = $\frac{1}{2} \times (6 + 10) \times 4 = 8 \times 4
-              = \mathbf{32}$ sq ft.
+              of 4ft. Area = 1/2 × (6 + 10) × 4 = 8 × 4 = 32 sq ft.
             </div>
           </div>
         </div>
@@ -1235,6 +1334,10 @@
               </text>
             </svg>
             <div class="formula-box">Area = ½ × b × h</div>
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: find base × height first, then take half. Try b = 6
+              and h = 4 → 6 × 4 = 24, half of 24 = 12 sq ft.
+            </p>
             <div class="grid2">
               <div>
                 <label class="fld" for="p2-base">Nook base (b) in feet</label>
@@ -1244,7 +1347,7 @@
                   data-save
                   min="0.1"
                   step="0.1"
-                  placeholder="example: 6"
+                  placeholder=""
                   oninput="calcTriangle()"
                 />
               </div>
@@ -1258,7 +1361,7 @@
                   data-save
                   min="0.1"
                   step="0.1"
-                  placeholder="example: 5"
+                  placeholder=""
                   oninput="calcTriangle()"
                 />
               </div>
@@ -1274,6 +1377,15 @@
                 = 6, h = 5 → Area = ½ × 6 × 5 = 15 sq ft. Don't forget the ½!
               </p>
             </details>
+            <div class="pk-lvl2" style="margin-top: 16px">
+              <div class="task">
+                <strong>Level 2 extension:</strong> two different triangles can
+                have the same area. Design a second nook with a different base
+                and height that has the same area as yours (for example, double
+                the base and halve the height). Show that both areas match, and
+                explain why.
+              </div>
+            </div>
 
             <!-- 1c Composite -->
           </div>
@@ -1322,19 +1434,14 @@
                 color: var(--ink);
               "
             >
+              <li><b>Parallelogram/Rectangle</b>: Area = base × height.</li>
               <li>
-                <b>Parallelogram/Rectangle</b>: $\text{Area} = \text{base}
-                \times \text{height}$.
+                <b>Triangle</b>: Area = 1/2 × base × height (multiply base and
+                height, then divide by 2).
               </li>
               <li>
-                <b>Triangle</b>: $\text{Area} = \frac{1}{2} \times \text{base}
-                \times \text{height}$ (multiply base and height, then divide by
-                2).
-              </li>
-              <li>
-                <b>Trapezoid</b>: $\text{Area} = \frac{1}{2} \times (b_1 + b_2)
-                \times h$ (add both parallel bases, multiply by the height, and
-                divide by 2).
+                <b>Trapezoid</b>: Area = 1/2 × (b_1 + b_2) × h (add both
+                parallel bases, multiply by the height, and divide by 2).
               </li>
               <li>
                 <b>Composite Shapes</b>: Split the irregular layout into
@@ -1351,8 +1458,7 @@
               "
             >
               💡 <b>Formula Check:</b> Trapezoid bases of 6ft and 10ft, height
-              of 4ft. Area = $\frac{1}{2} \times (6 + 10) \times 4 = 8 \times 4
-              = \mathbf{32}$ sq ft.
+              of 4ft. Area = 1/2 × (6 + 10) × 4 = 8 × 4 = 32 sq ft.
             </div>
           </div>
         </div>
@@ -1511,7 +1617,7 @@
                   data-save
                   min="0.1"
                   step="0.1"
-                  placeholder="example: 10"
+                  placeholder=""
                   oninput="calcComposite()"
                 />
               </div>
@@ -1525,7 +1631,7 @@
                   data-save
                   min="0.1"
                   step="0.1"
-                  placeholder="example: 8"
+                  placeholder=""
                   oninput="calcComposite()"
                 />
               </div>
@@ -1539,7 +1645,7 @@
                   data-save
                   min="0.1"
                   step="0.1"
-                  placeholder="example: 6"
+                  placeholder=""
                   oninput="calcComposite()"
                 />
               </div>
@@ -1553,7 +1659,7 @@
                   data-save
                   min="0.1"
                   step="0.1"
-                  placeholder="example: 5"
+                  placeholder=""
                   oninput="calcComposite()"
                 />
               </div>
@@ -1587,7 +1693,7 @@
                     data-save
                     min="0.1"
                     step="0.1"
-                    placeholder="example: 13.5"
+                    placeholder=""
                     oninput="calcCompositeHole()"
                   />
                 </div>
@@ -1599,7 +1705,7 @@
                     data-save
                     min="0.1"
                     step="0.1"
-                    placeholder="example: 11"
+                    placeholder=""
                     oninput="calcCompositeHole()"
                   />
                 </div>
@@ -1611,7 +1717,7 @@
                     data-save
                     min="0.1"
                     step="0.1"
-                    placeholder="example: 4"
+                    placeholder=""
                     oninput="calcCompositeHole()"
                   />
                 </div>
@@ -1625,7 +1731,7 @@
                     data-save
                     min="0.1"
                     step="0.1"
-                    placeholder="example: 3.5"
+                    placeholder=""
                     oninput="calcCompositeHole()"
                   />
                 </div>
@@ -1705,19 +1811,14 @@
                 color: var(--ink);
               "
             >
+              <li><b>Parallelogram/Rectangle</b>: Area = base × height.</li>
               <li>
-                <b>Parallelogram/Rectangle</b>: $\text{Area} = \text{base}
-                \times \text{height}$.
+                <b>Triangle</b>: Area = 1/2 × base × height (multiply base and
+                height, then divide by 2).
               </li>
               <li>
-                <b>Triangle</b>: $\text{Area} = \frac{1}{2} \times \text{base}
-                \times \text{height}$ (multiply base and height, then divide by
-                2).
-              </li>
-              <li>
-                <b>Trapezoid</b>: $\text{Area} = \frac{1}{2} \times (b_1 + b_2)
-                \times h$ (add both parallel bases, multiply by the height, and
-                divide by 2).
+                <b>Trapezoid</b>: Area = 1/2 × (b_1 + b_2) × h (add both
+                parallel bases, multiply by the height, and divide by 2).
               </li>
               <li>
                 <b>Composite Shapes</b>: Split the irregular layout into
@@ -1734,8 +1835,7 @@
               "
             >
               💡 <b>Formula Check:</b> Trapezoid bases of 6ft and 10ft, height
-              of 4ft. Area = $\frac{1}{2} \times (6 + 10) \times 4 = 8 \times 4
-              = \mathbf{32}$ sq ft.
+              of 4ft. Area = 1/2 × (6 + 10) × 4 = 8 × 4 = 32 sq ft.
             </div>
           </div>
         </div>
@@ -1778,12 +1878,7 @@
             <label class="fld" for="partnerName"
               >Partner name or initials</label
             >
-            <input
-              type="text"
-              id="partnerName"
-              data-save
-              placeholder="example: A.J."
-            />
+            <input type="text" id="partnerName" data-save placeholder="" />
           </div>
           <div>
             <label class="fld" for="p-base"
@@ -1833,11 +1928,7 @@
         <label class="fld" for="peerReflect"
           >Whose room is larger, and by how much? How do you know?</label
         >
-        <textarea
-          id="peerReflect"
-          data-save
-          placeholder="My room is ___ sq ft and my partner's is ___ sq ft, so mine is larger / smaller by ___ sq ft."
-        ></textarea>
+        <textarea id="peerReflect" data-save placeholder=""></textarea>
       </section>
 
       <!-- ===================== PART 3 — WORLD ===================== -->
@@ -1874,7 +1965,7 @@
               data-save
               step="0.1"
               oninput="worldGo()"
-              placeholder="auto-fills from your total"
+              placeholder=""
             />
             <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
               Tip: your running total from Part 1 auto-fills here.
@@ -1915,12 +2006,7 @@
               <label class="fld" for="whatIfAdd"
                 >Feet to add to your main floor base</label
               >
-              <input
-                type="number"
-                id="whatIfAdd"
-                step="0.5"
-                placeholder="example: 3"
-              />
+              <input type="number" id="whatIfAdd" step="0.5" placeholder="" />
             </div>
           </div>
           <button class="btn" type="button" onclick="runWhatIf()">
@@ -1935,19 +2021,11 @@
           >Is your room bigger or smaller than the world average? Why might room
           sizes differ between countries?</label
         >
-        <textarea
-          id="worldReflect"
-          data-save
-          placeholder="My room is ___ the average because ___."
-        ></textarea>
+        <textarea id="worldReflect" data-save placeholder=""></textarea>
         <label class="fld" for="ethics"
           >Ethics check: is a bigger room always better? Explain.</label
         >
-        <textarea
-          id="ethics"
-          data-save
-          placeholder="A bigger room is / is not always better because ___."
-        ></textarea>
+        <textarea id="ethics" data-save placeholder=""></textarea>
 
         <!-- Level 2 reverse problem -->
         <div class="pk-lvl2">
@@ -1967,7 +2045,7 @@
                 id="revH"
                 data-save
                 step="0.1"
-                placeholder="Area ÷ base"
+                placeholder=""
               />
               <button class="btn alt" type="button" onclick="checkReverse()">
                 Check height
@@ -1979,11 +2057,7 @@
             >Explain: can you make the rug cost less than 84 × $2.75 and still
             cover 84 sq ft? Why or why not?</label
           >
-          <textarea
-            id="optReason"
-            data-save
-            placeholder="The cheapest cost is fixed because area is fixed at 84 sq ft, so cost = 84 × $2.75 = $231 no matter the shape — unless ___."
-          ></textarea>
+          <textarea id="optReason" data-save placeholder=""></textarea>
         </div>
       </section>
 
@@ -2011,7 +2085,7 @@
               data-save
               min="0.1"
               step="0.1"
-              placeholder="auto-fills from your total"
+              placeholder=""
               oninput="calcFlooring()"
             />
           </div>
@@ -2034,12 +2108,7 @@
           ft and height = 4 ft. What is its area in square feet?
         </div>
         <label class="fld" for="check-tri">Your answer (sq ft)</label>
-        <input
-          type="number"
-          id="check-tri"
-          data-save
-          placeholder="Type a number"
-        />
+        <input type="number" id="check-tri" data-save placeholder="" />
         <button class="btn alt" type="button" onclick="checkTriangle()">
           Check answer
         </button>
@@ -2047,6 +2116,14 @@
         <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
           Level 1 worked step: ½ × 6 × 4 → ½ × 24 = 12.
         </p>
+        <div class="pk-lvl2" style="margin-top: 16px">
+          <div class="task">
+            <strong>Level 2 extension:</strong> compare two flooring choices for
+            your real area. How much money do you save by choosing vinyl
+            ($1.80/sq ft) instead of hardwood ($3.50/sq ft)? Find each total
+            cost, then show the subtraction to prove your savings.
+          </div>
+        </div>
       </section>
 
       <!-- ===================== DELIVERABLE ===================== -->
@@ -2062,11 +2139,7 @@
           Write a 3–5 sentence summary using your real numbers. Name the formula
           for each section and justify your flooring choice.
         </p>
-        <textarea
-          id="pitch"
-          data-save
-          placeholder="My room's main floor is a parallelogram with base ___ ft and height ___ ft, giving ___ sq ft (Area = b × h). The triangular nook adds ___ sq ft (½ × ___ × ___). The composite area adds ___ sq ft, for a total of ___ sq ft. At $___ per sq ft, flooring costs $___, and I chose ___ because ___."
-        ></textarea>
+        <textarea id="pitch" data-save placeholder=""></textarea>
 
         <h3 style="margin: 22px 0 6px">Planning Checklist</h3>
         <ul class="checklist" id="checklist">
@@ -2591,18 +2664,23 @@
           return;
         }
         if (isNaN(add)) {
-          $("whatIfBox").textContent = "Enter how many feet to add to the base.";
+          $("whatIfBox").textContent =
+            "Enter how many feet to add to the base.";
           return;
         }
         if (base + add <= 0) {
-          $("whatIfBox").textContent = "The new base must be greater than 0 ft.";
+          $("whatIfBox").textContent =
+            "The new base must be greater than 0 ft.";
           return;
         }
         const r = (x) => Math.round(x * 100) / 100;
         PK.whatIf(
           "whatIfBox",
           { base: base + " ft", area: r(base * height) + " sq ft" },
-          { base: r(base + add) + " ft", area: r((base + add) * height) + " sq ft" },
+          {
+            base: r(base + add) + " ft",
+            area: r((base + add) * height) + " sq ft",
+          },
           "Add " + add + " ft to the base (height stays " + height + " ft):",
         );
       }
@@ -2641,63 +2719,108 @@
       }
 
       function drawVisualizer() {
-        const p1w = num("p1w") || 0;
-        const p1h = num("p1h") || 0;
-        const p2b = num("p2b") || 0;
-        const p2h = num("p2h") || 0;
-        const p3w = num("p3w") || 0;
-        const p3h = num("p3h") || 0;
+        let p1b = num("p1-base") || 0;
+        let p1h = num("p1-height") || 0;
+        let p2b = num("p2-base") || 0;
+        let p2h = num("p2-height") || 0;
+        let p3ab = num("p3-a-base") || 0;
+        let p3ah = num("p3-a-height") || 0;
+        let p3bb = num("p3-b-base") || 0;
+        let p3bh = num("p3-b-height") || 0;
+
+        // Show a worked EXAMPLE floor plan (12×10 main floor, 6×5 nook, two
+        // composite rectangles) as the default so the blueprint always has
+        // something to look at; switch to the student's real dimensions as soon
+        // as they enter a main floor base and height.
+        const isExample = !(p1b > 0 && p1h > 0);
+        if (isExample) {
+          p1b = 12;
+          p1h = 10;
+          p2b = 6;
+          p2h = 5;
+          p3ab = 10;
+          p3ah = 8;
+          p3bb = 6;
+          p3bh = 5;
+        }
 
         let html = "";
-        if (p1w > 0 && p1h > 0) {
-          const maxDim = Math.max(p1w, p1h + p2h, p1w + p3w, 1);
-          const scale = 120 / maxDim;
+        {
+          const maxDim = Math.max(
+            p1b,
+            p1h,
+            p2b,
+            p2h,
+            p3ab,
+            p3ah,
+            p3bb,
+            p3bh,
+            1,
+          );
+          const scale = 90 / maxDim;
+          const baseY = 175;
+          let x = 40;
+          const place = (w) => {
+            const sx = x;
+            x += w + 22;
+            return sx;
+          };
+          const shapes = [];
 
-          const w1 = p1w * scale;
-          const h1 = p1h * scale;
-          const w2 = p2b * scale;
-          const h2 = p2h * scale;
-          const w3 = p3w * scale;
-          const h3 = p3h * scale;
+          // Main floor (rectangle / parallelogram)
+          {
+            const w = p1b * scale,
+              h = p1h * scale,
+              sx = place(w);
+            shapes.push(`
+              <rect x="${sx}" y="${baseY - h}" width="${w}" height="${h}" fill="rgba(46,125,50,0.18)" stroke="#2e7d32" stroke-width="2" />
+              <text x="${sx + w / 2}" y="${baseY + 14}" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">Floor ${p1b}×${p1h}</text>
+            `);
+          }
 
-          const cX1 = 40 + w1;
-          const cY1 = 40 + h1 - h3;
+          // Reading nook (triangle)
+          if (p2b > 0 && p2h > 0) {
+            const w = p2b * scale,
+              h = p2h * scale,
+              sx = place(w);
+            shapes.push(`
+              <polygon points="${sx},${baseY} ${sx + w},${baseY} ${sx},${baseY - h}" fill="rgba(0,121,107,0.18)" stroke="#00796b" stroke-width="2" />
+              <text x="${sx + w / 2}" y="${baseY + 14}" text-anchor="middle" font-size="10" font-weight="bold" fill="#00796b">Nook ½·${p2b}×${p2h}</text>
+            `);
+          }
+
+          // Composite rectangle A
+          if (p3ab > 0 && p3ah > 0) {
+            const w = p3ab * scale,
+              h = p3ah * scale,
+              sx = place(w);
+            shapes.push(`
+              <rect x="${sx}" y="${baseY - h}" width="${w}" height="${h}" fill="rgba(245,124,0,0.18)" stroke="#f57c00" stroke-width="2" />
+              <text x="${sx + w / 2}" y="${baseY + 14}" text-anchor="middle" font-size="10" font-weight="bold" fill="#f57c00">Rect A ${p3ab}×${p3ah}</text>
+            `);
+          }
+
+          // Composite rectangle B
+          if (p3bb > 0 && p3bh > 0) {
+            const w = p3bb * scale,
+              h = p3bh * scale,
+              sx = place(w);
+            shapes.push(`
+              <rect x="${sx}" y="${baseY - h}" width="${w}" height="${h}" fill="rgba(198,40,40,0.15)" stroke="#c62828" stroke-width="2" />
+              <text x="${sx + w / 2}" y="${baseY + 14}" text-anchor="middle" font-size="10" font-weight="bold" fill="#c62828">Rect B ${p3bb}×${p3bh}</text>
+            `);
+          }
 
           html = `
-            <!-- Parallelogram Bed Area -->
-            <polygon points="40,40 40,${40 + h1} ${40 + w1},${40 + h1} ${40 + w1},40" fill="rgba(26, 111, 181, 0.2)" stroke="#1a6fb5" stroke-width="2" />
-            <text x="${40 + w1 / 2}" y="${40 + h1 / 2}" text-anchor="middle" font-size="9" font-weight="bold" fill="#1a6fb5">Bed: ${p1w}×${p1h}</text>
-            
-            <!-- Triangular Nook -->
-            ${
-              w2 > 0 && h2 > 0
-                ? `
-              <polygon points="40,${40 + h1} ${40 + w2},${40 + h1} 40,	h ${40 + h1 + h2}" fill="rgba(212, 149, 42, 0.2)" stroke="#d4952a" stroke-width="2" />
-              <text x="${40 + w2 / 3}" y="${40 + h1 + h2 / 3}" text-anchor="middle" font-size="9" font-weight="bold" fill="#d4952a">Nook: ½×${p2b}×${p2h}</text>
-            `
-                : ""
-            }
-            
-            <!-- Composite Closet -->
-            ${
-              w3 > 0 && h3 > 0
-                ? `
-              <rect x="${cX1}" y="${cY1}" width="${w3}" height="${h3}" fill="rgba(14, 138, 125, 0.2)" stroke="#0e8a7d" stroke-width="2" />
-              <text x="${cX1 + w3 / 2}" y="${cY1 + h3 / 2}" text-anchor="middle" font-size="9" font-weight="bold" fill="#0e8a7d">Closet: ${p3w}×${p3h}</text>
-            `
-                : ""
-            }
-            
-            <text x="250" y="220" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">Scale Blueprint Map View</text>
-          `;
-        } else {
-          html = `
-            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Room Dimensions to draw floor blueprint</text>
+            <line x1="30" y1="${baseY}" x2="470" y2="${baseY}" stroke="#cbd5e1" stroke-width="1.5" />
+            ${shapes.join("")}
+            <text x="250" y="215" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">Scale Blueprint Map View</text>
           `;
         }
 
         const svgString = `
           <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            ${isExample ? `<rect x="400" y="16" width="80" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="440" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example</text>` : ""}
             ${html}
           </svg>
         `;
@@ -2825,6 +2948,7 @@
       document.addEventListener("DOMContentLoaded", function () {
         renderWorld();
         PK.initLevel({ storageKey: "u5ProjectA", default: "level-1" });
+        PK.initTts({ storageKey: "u5ProjectA" });
         PK.load("u5ProjectA", { after: recalcAll });
         updateTotal();
         updateProgress();
@@ -2834,9 +2958,113 @@
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
+    <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
+    <script type="application/json" id="pk-research">
+      {
+        "icon": "🔎",
+        "title": "Research Lab — Plan the Space Like a Designer",
+        "intro": "Designers and builders look up the area formulas, then measure real spaces. Gather the formulas and real sizes, then do the area math.",
+        "brief": {
+          "theme": "field",
+          "title": "📐 Your Research Mission",
+          "hook": "Find the <b>area formulas</b> and a real space's measurements, then plan it with real numbers.",
+          "steps": [
+            "Open a link (new tab — you keep your project).",
+            "Record formulas and real sizes in Field Notes.",
+            "Use them in the math problems.",
+            "Check off the Investigation Checklist."
+          ]
+        },
+        "fieldNotes": {
+          "title": "Field Notes — Record What You Find",
+          "intro": "Jot the exact formula or number you find. You'll reuse these below.",
+          "fields": [
+            {
+              "id": "fn-tri",
+              "label": "Area formula for a triangle",
+              "source": "Math is Fun",
+              "placeholder": "Area = ½ × b × h",
+              "hint": "Look for the formula box."
+            },
+            {
+              "id": "fn-trap",
+              "label": "Area formula for a trapezoid",
+              "source": "Math is Fun",
+              "placeholder": "Area = ½ × (a + b) × h",
+              "hint": "a and b are the two parallel sides."
+            },
+            {
+              "id": "fn-para",
+              "label": "Area formula for a parallelogram",
+              "source": "Math is Fun",
+              "placeholder": "Area = base × height",
+              "hint": "Same as a rectangle of equal base/height."
+            },
+            {
+              "id": "fn-len",
+              "label": "A real length and width of a space (feet)",
+              "source": "A ruler / room / floor plan",
+              "placeholder": "10 ft × 12 ft",
+              "hint": "Measure a real room, rug, or wall."
+            }
+          ]
+        },
+        "mathTasks": [
+          {
+            "title": "1 · Rectangle area",
+            "prompt": "Use your real length and width (Field Note 4) to find the area with <b>A = length × width</b>. Show the multiplication and units (sq ft).",
+            "level2": "If part of the space is a triangle with base and height you choose, find its area too."
+          },
+          {
+            "title": "2 · Triangle & trapezoid",
+            "prompt": "Design one triangular region and one trapezoidal region with measurements you pick. Use the formulas from Field Notes 1 and 2 to find each area.",
+            "level2": "Add all your regions for a total area. Show the addition."
+          },
+          {
+            "title": "3 · Compare",
+            "prompt": "Which of your shapes has the largest area? By how many square feet is it bigger than the smallest? Show the subtraction.",
+            "level2": "Express the largest area as a fraction of your total area."
+          }
+        ],
+        "investigationChecklist": [
+          "I recorded the triangle area formula.",
+          "I recorded the trapezoid area formula.",
+          "I recorded the parallelogram area formula.",
+          "I measured a real space.",
+          "I used real numbers in an area calculation.",
+          "I compared the areas of two shapes."
+        ],
+        "links": [
+          {
+            "icon": "🔺",
+            "name": "Math is Fun — Triangle (area)",
+            "url": "https://www.mathsisfun.com/triangle.html",
+            "find": "The triangle area formula with an example.",
+            "look": "Area = ½ × base × height"
+          },
+          {
+            "icon": "⏢",
+            "name": "Math is Fun — Trapezoid (area)",
+            "url": "https://www.mathsisfun.com/geometry/trapezoid.html",
+            "find": "The trapezoid area formula with the two bases.",
+            "look": "Area = ½ × (a + b) × height"
+          },
+          {
+            "icon": "▱",
+            "name": "Math is Fun — Parallelogram (area)",
+            "url": "https://www.mathsisfun.com/geometry/parallelogram.html",
+            "find": "How a parallelogram's area relates to a rectangle.",
+            "look": "Area = base × height"
+          }
+        ],
+        "note": "These sites were picked for class. They open in a new tab so you keep your project. If a page asks you to sign in or buy something, just close it and come back."
+      }
+    </script>
     <script src="/shared/projects/projects-tabs.js" defer></script>
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <script src="/shared/projects/projects-interactive.js" defer></script>
+    <script src="/shared/projects/manip-area-tiler.js" defer></script>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+  </body>
 </html>

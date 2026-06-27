@@ -71,7 +71,8 @@
     if (cfg.brief) {
       var brief = document.createElement("div");
       brief.className =
-        "pk-mission-brief" + (cfg.brief.theme ? " pk-mission-" + cfg.brief.theme : "");
+        "pk-mission-brief" +
+        (cfg.brief.theme ? " pk-mission-" + cfg.brief.theme : "");
       if (cfg.brief.title) {
         var bt = document.createElement("h3");
         bt.textContent = cfg.brief.title;
@@ -96,11 +97,63 @@
       section.appendChild(brief);
     }
 
-    if (cfg.fieldNotes && Array.isArray(cfg.fieldNotes.fields) && cfg.fieldNotes.fields.length) {
+    // Curated research links — shown WITH the questions (top of the phase),
+    // not buried at the bottom, so students open their sources before recording.
+    var listTitle = document.createElement("h3");
+    listTitle.className = "pk-research-links-title";
+    listTitle.textContent =
+      "Curated Research Links — open these to find your data";
+    section.appendChild(listTitle);
+    var list = document.createElement("div");
+    list.className = "pk-research-list";
+    cfg.links.forEach(function (lnk) {
+      if (!lnk || !lnk.url) return;
+      var a = document.createElement("a");
+      a.className = "pk-research-card";
+      a.href = lnk.url;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      var top = document.createElement("div");
+      top.className = "pk-rc-top";
+      var ic = document.createElement("span");
+      ic.className = "pk-rc-icon";
+      ic.textContent = lnk.icon || "🔗";
+      var tt = document.createElement("span");
+      tt.className = "pk-rc-title";
+      tt.textContent = lnk.name || lnk.url;
+      var ext = document.createElement("span");
+      ext.className = "pk-rc-ext";
+      ext.textContent = "opens in new tab ↗";
+      top.appendChild(ic);
+      top.appendChild(tt);
+      top.appendChild(ext);
+      a.appendChild(top);
+      if (lnk.find) {
+        var find = document.createElement("p");
+        find.className = "pk-rc-find";
+        find.textContent = lnk.find;
+        a.appendChild(find);
+      }
+      if (lnk.look) {
+        var look = document.createElement("p");
+        look.className = "pk-rc-look";
+        look.innerHTML = "<b>Look for:</b> " + escapeHtml(lnk.look);
+        a.appendChild(look);
+      }
+      list.appendChild(a);
+    });
+    section.appendChild(list);
+
+    if (
+      cfg.fieldNotes &&
+      Array.isArray(cfg.fieldNotes.fields) &&
+      cfg.fieldNotes.fields.length
+    ) {
       var fnWrap = document.createElement("div");
       fnWrap.className = "pk-field-notes";
       var fnTitle = document.createElement("h3");
-      fnTitle.textContent = cfg.fieldNotes.title || "Field Notes — Record What You Find";
+      fnTitle.textContent =
+        cfg.fieldNotes.title || "Field Notes — Record What You Find";
       fnWrap.appendChild(fnTitle);
       if (cfg.fieldNotes.intro) {
         var fnIntro = document.createElement("p");
@@ -119,7 +172,10 @@
         var fid = f.id || "fn-" + idx;
         lbl.setAttribute("for", fid);
         lbl.innerHTML =
-          '<span class="pk-fn-num">' + (idx + 1) + "</span> " + escapeHtml(f.label || "Data point");
+          '<span class="pk-fn-num">' +
+          (idx + 1) +
+          "</span> " +
+          escapeHtml(f.label || "Data point");
         meta.appendChild(lbl);
         if (f.source) {
           var src = document.createElement("span");
@@ -175,7 +231,8 @@
         ta.id = workId;
         ta.setAttribute("data-save", "");
         ta.rows = 3;
-        ta.placeholder = "Show your work. Cite the Field Note # you used and write the math.";
+        ta.placeholder =
+          "Show your work. Cite the Field Note # you used and write the math.";
         card.appendChild(ta);
         if (t.level2) {
           var l2 = document.createElement("div");
@@ -196,7 +253,10 @@
       section.appendChild(mtWrap);
     }
 
-    if (Array.isArray(cfg.investigationChecklist) && cfg.investigationChecklist.length) {
+    if (
+      Array.isArray(cfg.investigationChecklist) &&
+      cfg.investigationChecklist.length
+    ) {
       var ckWrap = document.createElement("div");
       ckWrap.className = "pk-inv-checklist";
       var ckTitle = document.createElement("h3");
@@ -221,53 +281,6 @@
       section.appendChild(ckWrap);
     }
 
-    var listTitle = document.createElement("h3");
-    listTitle.className = "pk-research-links-title";
-    listTitle.textContent = "Curated Research Links";
-    section.appendChild(listTitle);
-
-    var list = document.createElement("div");
-    list.className = "pk-research-list";
-    cfg.links.forEach(function (lnk) {
-      if (!lnk || !lnk.url) return;
-      var a = document.createElement("a");
-      a.className = "pk-research-card";
-      a.href = lnk.url;
-      a.target = "_blank";
-      a.rel = "noopener noreferrer";
-
-      var top = document.createElement("div");
-      top.className = "pk-rc-top";
-      var ic = document.createElement("span");
-      ic.className = "pk-rc-icon";
-      ic.textContent = lnk.icon || "🔗";
-      var tt = document.createElement("span");
-      tt.className = "pk-rc-title";
-      tt.textContent = lnk.name || lnk.url;
-      var ext = document.createElement("span");
-      ext.className = "pk-rc-ext";
-      ext.textContent = "opens in new tab ↗";
-      top.appendChild(ic);
-      top.appendChild(tt);
-      top.appendChild(ext);
-      a.appendChild(top);
-
-      if (lnk.find) {
-        var find = document.createElement("p");
-        find.className = "pk-rc-find";
-        find.textContent = lnk.find;
-        a.appendChild(find);
-      }
-      if (lnk.look) {
-        var look = document.createElement("p");
-        look.className = "pk-rc-look";
-        look.innerHTML = "<b>Look for:</b> " + escapeHtml(lnk.look);
-        a.appendChild(look);
-      }
-      list.appendChild(a);
-    });
-    section.appendChild(list);
-
     var safe = document.createElement("p");
     safe.className = "pk-research-safe";
     safe.textContent =
@@ -281,7 +294,8 @@
   function injectResearchPhase() {
     if (document.querySelector(".pk-research-phase")) return;
     var wrap =
-      document.querySelector(".pk .wrap, body.pk .wrap") || document.querySelector(".wrap");
+      document.querySelector(".pk .wrap, body.pk .wrap") ||
+      document.querySelector(".wrap");
     if (!wrap) return;
 
     var research = buildResearchPhase();
@@ -290,7 +304,9 @@
     var phases =
       window.PK && typeof window.PK.collectWrapPhases === "function"
         ? window.PK.collectWrapPhases(wrap)
-        : Array.prototype.slice.call(wrap.querySelectorAll(":scope > section.phase"));
+        : Array.prototype.slice.call(
+            wrap.querySelectorAll(":scope > section.phase"),
+          );
     if (!phases.length) return;
 
     var vocabPhase = phases[0];
@@ -303,7 +319,9 @@
     }
 
     var last = phases[phases.length - 1];
-    var isRubric = /rubric|how you are scored|scored/i.test(last.textContent.slice(0, 120));
+    var isRubric = /rubric|how you are scored|scored/i.test(
+      last.textContent.slice(0, 120),
+    );
     if (isRubric) {
       wrap.insertBefore(research, last);
     } else {
@@ -335,7 +353,10 @@
         osc.type = type || "sine";
         osc.frequency.setValueAtTime(freq, ctx.currentTime);
         gain.gain.setValueAtTime(0.06, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+        gain.gain.exponentialRampToValueAtTime(
+          0.0001,
+          ctx.currentTime + duration,
+        );
         osc.connect(gain);
         gain.connect(ctx.destination);
         osc.start();
@@ -357,10 +378,19 @@
 
   function fireConfetti() {
     var reduce = !!(
-      window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
     );
     if (reduce) return;
-    var colors = ["#ff595e", "#ffca3a", "#8ac926", "#1982c4", "#ff6b6b", "#4ecdc4", "#9b5de5"];
+    var colors = [
+      "#ff595e",
+      "#ffca3a",
+      "#8ac926",
+      "#1982c4",
+      "#ff6b6b",
+      "#4ecdc4",
+      "#9b5de5",
+    ];
     var count = 50;
     var w = window.innerWidth;
     var h = window.innerHeight;
@@ -396,7 +426,10 @@
       try {
         var anim = s.animate(
           [
-            { transform: "translate(-50%,-50%) scale(1) rotate(0deg)", opacity: 1 },
+            {
+              transform: "translate(-50%,-50%) scale(1) rotate(0deg)",
+              opacity: 1,
+            },
             {
               transform:
                 "translate(calc(-50% + " +
@@ -442,13 +475,19 @@
             progressFired = false;
           }
         });
-        obs.observe(pctEl, { childList: true, characterData: true, subtree: true });
+        obs.observe(pctEl, {
+          childList: true,
+          characterData: true,
+          subtree: true,
+        });
       }
     } catch (e) {}
   }
 
   function injectSoundToggle() {
-    var parent = document.querySelector(".pk-tabbar-top") || document.querySelector(".pk-step-bar");
+    var parent =
+      document.querySelector(".pk-tabbar-top") ||
+      document.querySelector(".pk-step-bar");
     if (!parent || document.getElementById("pk-sound-btn")) return;
     var btn = document.createElement("button");
     btn.type = "button";
@@ -474,7 +513,10 @@
 
   function wireInteractiveSounds() {
     document.addEventListener("change", function (e) {
-      if (e.target && (e.target.type === "checkbox" || e.target.type === "radio")) {
+      if (
+        e.target &&
+        (e.target.type === "checkbox" || e.target.type === "radio")
+      ) {
         playClickSound();
       }
     });
@@ -486,29 +528,43 @@
   }
 
   var VOCAB_MAP = {
-    "dependent variable": "The output variable (y) that changes in response to the input.",
-    "independent variable": "The input variable (x) that you control or choose.",
-    origin: "The point (0, 0) where the x and y axes cross on a coordinate plane.",
+    "dependent variable":
+      "The output variable (y) that changes in response to the input.",
+    "independent variable":
+      "The input variable (x) that you control or choose.",
+    origin:
+      "The point (0, 0) where the x and y axes cross on a coordinate plane.",
     proportional: "A relationship with a constant rate, starting at (0, 0).",
     "unit rate": "A rate comparing a value to exactly 1 unit of another value.",
-    "ordered pair": "A pair of coordinates (x, y) giving a exact point on a grid.",
-    "greatest common factor": "GCF: The largest number that divides evenly into two numbers.",
-    "least common multiple": "LCM: The smallest multiple shared by two numbers.",
+    "ordered pair":
+      "A pair of coordinates (x, y) giving a exact point on a grid.",
+    "greatest common factor":
+      "GCF: The largest number that divides evenly into two numbers.",
+    "least common multiple":
+      "LCM: The smallest multiple shared by two numbers.",
     net: "A flat 2D pattern that folds to form a 3D solid shape.",
     volume: "The amount of 3D space inside a solid shape, in cubic units.",
     mean: "The average value, found by adding values and dividing by the count.",
-    median: "The middle value when data points are sorted from least to greatest.",
+    median:
+      "The middle value when data points are sorted from least to greatest.",
     quadrant: "One of the 4 sections of the coordinate plane divided by axes.",
   };
 
   function injectVocabTooltips() {
-    var targets = document.querySelectorAll(".phase p, .phase li, .phase .task, .phase td");
+    var targets = document.querySelectorAll(
+      ".phase p, .phase li, .phase .task, .phase td",
+    );
     var keys = Object.keys(VOCAB_MAP);
     keys.sort(function (a, b) {
       return b.length - a.length;
     });
     targets.forEach(function (el) {
       if (el.querySelector("svg, input, textarea, a, button")) return;
+      // Skip the student-friendly Formula Bank: its class names (e.g.
+      // "pk-f-mean") contain vocab words like "mean", and this string-based
+      // innerHTML replace would wrap them INSIDE the tag and corrupt markup.
+      // Formula rows are already self-explanatory and need no auto-tooltips.
+      if (el.closest(".pk-formula")) return;
       var html = el.innerHTML;
       var modified = false;
       for (var i = 0; i < keys.length; i++) {
@@ -517,7 +573,10 @@
           "\\b(" + key.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&") + ")\\b",
           "gi",
         );
-        if (regex.test(html) && !html.includes('data-tooltip="' + VOCAB_MAP[key])) {
+        if (
+          regex.test(html) &&
+          !html.includes('data-tooltip="' + VOCAB_MAP[key])
+        ) {
           html = html.replace(regex, function (match) {
             modified = true;
             return (
@@ -560,7 +619,10 @@
     }
 
     document.addEventListener("input", function (e) {
-      if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) {
+      if (
+        e.target &&
+        (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")
+      ) {
         triggerSaving();
       }
     });
@@ -595,7 +657,8 @@
     parent.appendChild(div);
 
     var select = document.getElementById("pk-theme-select");
-    var activeTheme = localStorage.getItem("pk-active-theme") || "theme-default";
+    var activeTheme =
+      localStorage.getItem("pk-active-theme") || "theme-default";
     select.value = activeTheme;
 
     function applyTheme(theme) {
@@ -652,10 +715,12 @@
       playClickSound();
     });
 
-    document.getElementById("pk-scratch-close").addEventListener("click", function () {
-      panel.classList.remove("open");
-      playClickSound();
-    });
+    document
+      .getElementById("pk-scratch-close")
+      .addEventListener("click", function () {
+        panel.classList.remove("open");
+        playClickSound();
+      });
 
     initScratchpadCanvas(document.getElementById("pk-scratch-canvas"), panel);
   }
@@ -735,7 +800,8 @@
           playClickSound();
         } else {
           tools.forEach(function (t) {
-            if (t.getAttribute("data-action") !== "clear") t.classList.remove("active");
+            if (t.getAttribute("data-action") !== "clear")
+              t.classList.remove("active");
           });
           tool.classList.add("active");
           playClickSound();
@@ -763,19 +829,36 @@
     var svg =
       '<svg class="pk-cert-qr-svg" viewBox="0 0 15 15" width="50" height="50" shape-rendering="crispEdges">';
     function drawAnchor(x, y) {
-      svg += '<rect x="' + x + '" y="' + y + '" width="5" height="5" fill="black"/>';
-      svg += '<rect x="' + (x + 1) + '" y="' + (y + 1) + '" width="3" height="3" fill="white"/>';
-      svg += '<rect x="' + (x + 2) + '" y="' + (y + 2) + '" width="1" height="1" fill="black"/>';
+      svg +=
+        '<rect x="' + x + '" y="' + y + '" width="5" height="5" fill="black"/>';
+      svg +=
+        '<rect x="' +
+        (x + 1) +
+        '" y="' +
+        (y + 1) +
+        '" width="3" height="3" fill="white"/>';
+      svg +=
+        '<rect x="' +
+        (x + 2) +
+        '" y="' +
+        (y + 2) +
+        '" width="1" height="1" fill="black"/>';
     }
     drawAnchor(0, 0);
     drawAnchor(10, 0);
     drawAnchor(0, 10);
     for (var r = 0; r < size; r++) {
       for (var c = 0; c < size; c++) {
-        var isAnchor = (r < 5 && c < 5) || (r < 5 && c >= 10) || (r >= 10 && c < 5);
+        var isAnchor =
+          (r < 5 && c < 5) || (r < 5 && c >= 10) || (r >= 10 && c < 5);
         if (!isAnchor) {
           if (Math.random() > 0.55) {
-            svg += '<rect x="' + c + '" y="' + r + '" width="1" height="1" fill="black"/>';
+            svg +=
+              '<rect x="' +
+              c +
+              '" y="' +
+              r +
+              '" width="1" height="1" fill="black"/>';
           }
         }
       }
@@ -859,7 +942,10 @@
       );
       if (sName && sName.value.trim()) {
         studentName = sName.value.trim();
-      } else if (window.NeftIdentity && typeof window.NeftIdentity.getName === "function") {
+      } else if (
+        window.NeftIdentity &&
+        typeof window.NeftIdentity.getName === "function"
+      ) {
         studentName = window.NeftIdentity.getName() || studentName;
       }
 

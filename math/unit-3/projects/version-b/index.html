@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Sports Stats Scout — Unit 3 Culminating Project</title>
     <meta
       name="description"
@@ -446,11 +446,13 @@
     <!-- nsr-injected:end -->
     <link rel="stylesheet" href="/shared/projects/projects-premium.css" />
     <link rel="stylesheet" href="/shared/projects/projects-tabs.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-tplus.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-interactive.css" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
-  <body class="pk">
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
+  <body class="pk" data-pk-theme="u3">
     <header class="phero">
       <div class="deco">🏆</div>
       <h1>Sports Stats Scout</h1>
@@ -473,6 +475,15 @@
           <button data-level-btn="level-1" type="button">🟢 Level 1</button>
           <button data-level-btn="level-2" type="button">🔵 Level 2</button>
         </span>
+        <button
+          class="pk-tts-toggle"
+          data-tts-toggle
+          type="button"
+          aria-pressed="false"
+          title="Read text aloud"
+        >
+          🔊 Read aloud
+        </button>
         <button onclick="PK.save('u3ProjectB')">💾 Save</button>
         <button
           onclick="PK.load('u3ProjectB', { show: true, after: recalcAll })"
@@ -527,7 +538,7 @@
         <div class="pk-vocab">
           <div class="pk-term">
             <span class="pk-icon">⚖️</span><b>Ratio</b>
-            <p>A compare of two amounts, like 84 points to 12 games (84:12).</p>
+            <p>Two amounts compared, like 84 points to 12 games (84:12).</p>
             <p class="pk-es">
               Razón: una comparación de dos cantidades, como 84 puntos por 12
               juegos (84:12).
@@ -536,8 +547,7 @@
           <div class="pk-term">
             <span class="pk-icon">🟰</span><b>Equivalent Ratio</b>
             <p>
-              The same ratio made bigger or smaller by × the same number. 84:12
-              = 420:60.
+              The same ratio in bigger or smaller numbers. 84:12 is like 420:60.
             </p>
             <p class="pk-es">
               Razón equivalente: la misma razón al multiplicar ambas partes por
@@ -546,9 +556,7 @@
           </div>
           <div class="pk-term">
             <span class="pk-icon">1️⃣</span><b>Unit Rate</b>
-            <p>
-              How much for just ONE: total ÷ quantity, like points per 1 game.
-            </p>
+            <p>How much you get for just one, like points in 1 game.</p>
             <p class="pk-es">
               Tasa unitaria: cuánto por UNO solo: total ÷ cantidad, como puntos
               por 1 juego.
@@ -556,10 +564,7 @@
           </div>
           <div class="pk-term">
             <span class="pk-icon">🛒</span><b>Better Buy / Better Rate</b>
-            <p>
-              Comparing rates fairly: a higher points-per-game is the stronger
-              scorer.
-            </p>
+            <p>The player with more points per game is the better scorer.</p>
             <p class="pk-es">
               Comparar tasas de forma justa: más puntos por juego = mejor
               anotador.
@@ -569,19 +574,55 @@
         <div class="grid2" style="margin-top: 18px">
           <div class="pk-callout">
             <h3>Formula Bank</h3>
-            <p><b>Ratio:</b> a : b (points : games)</p>
-            <p>
-              <b>Equivalent ratio:</b> multiply both parts by the same factor
-            </p>
-            <p><b>Unit rate:</b> total ÷ quantity (points ÷ games)</p>
-            <p>
-              <b>Compare fairly:</b> scale both to the same games, then compare
-              points
-            </p>
-            <p class="pk-lvl2">
-              <b>Rate as data (preview):</b> mean ppg = (sum of player rates) ÷
-              (how many)
-            </p>
+            <ul class="pk-formula">
+              <li>
+                <span class="pk-f-name">Ratio</span>
+                <span class="pk-f-mean"
+                  >A way to compare two amounts, like points to games. Write it
+                  as <b>points : games</b>.</span
+                >
+                <span class="pk-eg">Example: 48 points : 6 games = 48 : 6</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Equivalent ratio</span>
+                <span class="pk-f-mean"
+                  >The same scoring pace shown with bigger or smaller numbers.
+                  Multiply (or divide) <b>both</b> parts by the same
+                  number.</span
+                >
+                <span class="pk-eg"
+                  >Example: 48 : 6 = 16 : 2 (both parts ÷ 3)</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Unit rate (points per game)</span>
+                <span class="pk-f-mean"
+                  >How many points for just <b>one</b> game. Divide total points
+                  by number of games.</span
+                >
+                <span class="pk-eg"
+                  >Example: 48 points ÷ 6 games = 8 points per game</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Compare fairly</span>
+                <span class="pk-f-mean"
+                  >Find each athlete's points per game, then compare. The
+                  <b>bigger</b> rate is the stronger scorer.</span
+                >
+                <span class="pk-eg">Example: 8 per game beats 6 per game</span>
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">Average rate (preview)</span>
+                <span class="pk-f-mean"
+                  >Add up each player's points-per-game, then divide by how many
+                  players you added.</span
+                >
+                <span class="pk-eg"
+                  >Example: (8 + 6 + 10) ÷ 3 = 8 points per game</span
+                >
+              </li>
+            </ul>
           </div>
           <div class="pk-callout">
             <h3>Sentence Frames</h3>
@@ -602,7 +643,7 @@
       </section>
 
       <!-- ===================== PART 1 — SELF ===================== -->
-      
+
       <!-- ===================== PROJECT SETUP ===================== -->
       <section class="phase" id="phase-setup" data-phase>
         <div class="phase-head">
@@ -612,39 +653,203 @@
             <h2>Scout YOUR Athlete</h2>
           </div>
         </div>
-        
+
         <div class="grid2">
           <div>
-            <p style="font-size: 15px; color: var(--muted); line-height: 1.6; margin-bottom: 20px;">
-              Welcome! Read the scenario below and select your level to begin your design plan.
+            <p
+              style="
+                font-size: 15px;
+                color: var(--muted);
+                line-height: 1.6;
+                margin-bottom: 20px;
+              "
+            >
+              Welcome! Read the scenario below and select your level to begin
+              your design plan.
             </p>
-            <div style="margin-top: 16px;">
-              
-    <svg width="100%" height="220" viewBox="0 0 500 220" style="background:white; border-radius:12px; border: 1px solid #e2e8f0; max-width: 480px; margin: 0 auto; display: block;" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="setup-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#ffffff" />
-          <stop offset="100%" stop-color="#f8fafc" />
-        </linearGradient>
-      </defs>
-      
-      <rect x="20" y="20" width="460" height="200" rx="15" fill="url(#setup-grad)" stroke="#0e8a7d" stroke-width="2"/>
-      <text x="250" y="60" text-anchor="middle" font-size="20" font-weight="bold" fill="#0f2b3c">SOLAR ENERGY GRID</text>
-      <circle cx="100" cy="110" r="30" fill="#ffb74d" stroke="#f57c00" stroke-width="2"/>
-      <polygon points="300,150 380,150 360,100 280,100" fill="#37474f" stroke="#0e8a7d" stroke-width="2"/>
-      <line x1="330" y1="100" x2="330" y2="150" stroke="#e2e8f0" stroke-width="1"/>
-      <line x1="290" y1="125" x2="370" y2="125" stroke="#e2e8f0" stroke-width="1"/>
-    
-    </svg>
-  
+            <div style="margin-top: 16px">
+              <svg
+                width="100%"
+                height="220"
+                viewBox="0 0 500 220"
+                style="
+                  background: white;
+                  border-radius: 12px;
+                  border: 1px solid #e2e8f0;
+                  max-width: 480px;
+                  margin: 0 auto;
+                  display: block;
+                "
+                xmlns="http://www.w3.org/2000/svg"
+                role="img"
+                aria-label="Scouting stat card: 84 points over 12 games equals 7 points per game"
+              >
+                <defs>
+                  <linearGradient
+                    id="setup-grad"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop offset="0%" stop-color="#0f2b3c" />
+                    <stop offset="100%" stop-color="#0e8a7d" />
+                  </linearGradient>
+                </defs>
+                <rect
+                  x="20"
+                  y="20"
+                  width="460"
+                  height="200"
+                  rx="15"
+                  fill="url(#setup-grad)"
+                />
+                <text
+                  x="250"
+                  y="56"
+                  text-anchor="middle"
+                  font-size="20"
+                  font-weight="bold"
+                  fill="#ffffff"
+                >
+                  SCOUTING REPORT
+                </text>
+                <text
+                  x="250"
+                  y="78"
+                  text-anchor="middle"
+                  font-size="12"
+                  fill="#9fe7dd"
+                >
+                  points ÷ games = points per game
+                </text>
+                <rect
+                  x="45"
+                  y="100"
+                  width="120"
+                  height="92"
+                  rx="10"
+                  fill="#ffffff"
+                />
+                <text
+                  x="105"
+                  y="138"
+                  text-anchor="middle"
+                  font-size="26"
+                  font-weight="bold"
+                  fill="#0f2b3c"
+                >
+                  84
+                </text>
+                <text
+                  x="105"
+                  y="172"
+                  text-anchor="middle"
+                  font-size="12"
+                  fill="#5b7a8a"
+                >
+                  POINTS
+                </text>
+                <rect
+                  x="190"
+                  y="100"
+                  width="120"
+                  height="92"
+                  rx="10"
+                  fill="#ffffff"
+                />
+                <text
+                  x="250"
+                  y="138"
+                  text-anchor="middle"
+                  font-size="26"
+                  font-weight="bold"
+                  fill="#0f2b3c"
+                >
+                  12
+                </text>
+                <text
+                  x="250"
+                  y="172"
+                  text-anchor="middle"
+                  font-size="12"
+                  fill="#5b7a8a"
+                >
+                  GAMES
+                </text>
+                <rect
+                  x="335"
+                  y="100"
+                  width="120"
+                  height="92"
+                  rx="10"
+                  fill="#fdb022"
+                />
+                <text
+                  x="395"
+                  y="138"
+                  text-anchor="middle"
+                  font-size="26"
+                  font-weight="bold"
+                  fill="#0f2b3c"
+                >
+                  7.0
+                </text>
+                <text
+                  x="395"
+                  y="172"
+                  text-anchor="middle"
+                  font-size="12"
+                  fill="#7a5b14"
+                >
+                  PER GAME
+                </text>
+              </svg>
             </div>
           </div>
-          
-          <div style="background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 20px; box-shadow: var(--shadow);">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px;">
+
+          <div
+            style="
+              background: var(--bg);
+              border: 1px solid var(--line);
+              border-radius: 12px;
+              padding: 20px;
+              box-shadow: var(--shadow);
+            "
+          >
+            <h3
+              style="
+                margin-top: 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+              "
+            >
               <span>📋</span> Scenario &amp; Level Options
             </h3>
-            <h2>Scout YOUR Athlete</h2>
+            <p style="font-size: 14px; line-height: 1.6; margin: 0 0 10px">
+              You are a <strong>sports scout</strong>. Pick a real athlete from
+              <strong>any sport you love</strong> — basketball, soccer,
+              football, hockey, baseball — and turn their season stats into a
+              unit rate to compare players fairly.
+            </p>
+            <ul
+              style="
+                font-size: 14px;
+                line-height: 1.6;
+                margin: 0;
+                padding-left: 18px;
+              "
+            >
+              <li>
+                <strong>Level 1 (support):</strong> use stats that divide evenly
+                (like 84 points in 12 games).
+              </li>
+              <li>
+                <strong>Level 2 (challenge):</strong> use real uneven stats and
+                round your rate.
+              </li>
+            </ul>
           </div>
         </div>
         <p>
@@ -653,45 +858,52 @@
           numbers. Not sure yet? Click <em>Use example numbers</em> to model the
           math, then change them.
         </p>
-        
 
         <div class="grid2">
           <div>
             <label class="fld" for="ath-name"
               >Athlete name (real player or you)</label
             >
-            <input
-              type="text"
-              id="ath-name"
-              data-save
-              placeholder="example: A. Wilson"
-            />
+            <input type="text" id="ath-name" data-save placeholder="" />
           </div>
           <div>
             <label class="fld" for="ath-source"
               >Where did you find the stats? (source)</label
             >
-            <input
-              type="text"
-              id="ath-source"
-              data-save
-              placeholder="example: ESPN.com, team website, my coach"
-            />
+            <input type="text" id="ath-source" data-save placeholder="" />
           </div>
         </div>
 
         <!-- 1a Unit rate -->
-            
-            <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line);">
-              <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px;">
-                You can type your own numbers as you go, or click below to start with our example numbers:
-              </p>
-              <button class="btn ghost" type="button" onclick="useExamples()" style="width: 100%; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                ✨ Use Example Numbers
-              </button>
-            </div>
+
+        <div
+          style="
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--line);
+          "
+        >
+          <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px">
+            You can type your own numbers as you go, or click below to start
+            with our example numbers:
+          </p>
+          <button
+            class="btn ghost"
+            type="button"
+            onclick="useExamples()"
+            style="
+              width: 100%;
+              font-weight: bold;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 8px;
+            "
+          >
+            ✨ Use Example Numbers
+          </button>
+        </div>
       </section>
-  
 
       <!-- ===================== PART 1A — SELF ===================== -->
       <section class="phase" id="phase-1a" data-phase>
@@ -702,111 +914,293 @@
             <h2>1️⃣ Scoring unit rate (6.RP.2)</h2>
           </div>
         </div>
-        
-        <div class="grid2">
-          <div>
-            
-    <div class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
-      <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px;" xmlns="http://www.w3.org/2000/svg">
-        
-      <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Ratio Tape Diagram</text>
-      <g transform="translate(100, 70)">
-        <text x="-10" y="16" text-anchor="end" font-size="10" font-weight="bold" fill="#1a6fb5">Part A</text>
-        <rect x="0" y="0" width="50" height="24" fill="rgba(26,111,181,0.2)" stroke="#1a6fb5"/>
-        <rect x="50" y="0" width="50" height="24" fill="rgba(26,111,181,0.2)" stroke="#1a6fb5"/>
-      </g>
-      <g transform="translate(100, 110)">
-        <text x="-10" y="16" text-anchor="end" font-size="10" font-weight="bold" fill="#d4952a">Part B</text>
-        <rect x="0" y="0" width="50" height="24" fill="rgba(212,149,42,0.2)" stroke="#d4952a"/>
-        <rect x="50" y="0" width="50" height="24" fill="rgba(212,149,42,0.2)" stroke="#d4952a"/>
-        <rect x="100" y="0" width="50" height="24" fill="rgba(212,149,42,0.2)" stroke="#d4952a"/>
-      </g>
-    
-      </svg>
-    </div>
-  
-            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-          Level 1 tip: try numbers that divide evenly, like 84 points in 12
-          games. The points box is pre-filled to get you started.
-        </p>
-        <div class="grid2">
-          
-        <!-- ===================== INLINE RESEARCH LAB ===================== -->
-        <div class="pk-research-inline-card">
-          <div class="pk-research-inline-header">
-            <span class="pk-research-badge">🔍 Research Required</span>
-            <a href="https://www.nba.com/stats/players/traditional" target="_blank" class="pk-research-inline-link">🔗 NBA Official Player Statistics Database ↗</a>
-          </div>
-          <p class="pk-research-inline-instructions">Open the NBA stats portal. Look up the average points per game (PPG) of a professional player of your choice. Enter the details below to compare against your athlete:</p>
-          <div class="grid2">
-            <div>
-              <label class="fld" for="worldCountry">Professional Player Researched</label>
-              <input type="text" id="worldCountry" data-save placeholder="e.g. Stephen Curry" oninput="recalcAll()">
-            </div>
-            <div>
-              <label class="fld" for="r-pts">Total points (season)</label>
-              <input
-              type="number"
-              id="r-pts"
-              data-save
-              min="0"
-              placeholder="example: 84"
-              oninput="calcRate()"
-            />
-            </div>
-          </div>
-        </div>
-    
-          <div>
-            <label class="fld" for="r-games">Games played</label>
-            <input
-              type="number"
-              id="r-games"
-              data-save
-              min="1"
-              placeholder="example: 12"
-              oninput="calcRate()"
-            />
-          </div>
-        </div>
-        <button class="btn" type="button" onclick="calcRate()">
-          Calculate points per game
-        </button>
-        <div class="readout" id="rate-out"></div>
-        <details class="hintbox">
-          <summary>Need a hint?</summary>
-          <p>
-            Unit rate = total ÷ number of games. 84 points in 12 games is 84 ÷
-            12 = <strong>7 points per game</strong>. The ratio 84:12 can also be
-            written 7:1 — that is the unit rate.
-          </p>
-        </details>
 
-        <!-- 1b Ratio table / projection -->
+        <div class="grid2">
+          <div>
+            <div
+              class="pk-math-scaffold-card no-print"
+              style="
+                margin: 20px 0;
+                padding: 12px;
+                background: #fff;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+                max-width: 480px;
+                margin-left: auto;
+                margin-right: auto;
+              "
+            >
+              <svg
+                width="100%"
+                height="200"
+                viewBox="0 0 500 200"
+                style="background: #fff; border-radius: 8px"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <text
+                  x="250"
+                  y="30"
+                  text-anchor="middle"
+                  font-size="14"
+                  font-weight="bold"
+                  fill="#0f2b3c"
+                >
+                  Ratio Tape Diagram
+                </text>
+                <g transform="translate(100, 70)">
+                  <text
+                    x="-10"
+                    y="16"
+                    text-anchor="end"
+                    font-size="10"
+                    font-weight="bold"
+                    fill="#1a6fb5"
+                  >
+                    Part A
+                  </text>
+                  <rect
+                    x="0"
+                    y="0"
+                    width="50"
+                    height="24"
+                    fill="rgba(26,111,181,0.2)"
+                    stroke="#1a6fb5"
+                  />
+                  <rect
+                    x="50"
+                    y="0"
+                    width="50"
+                    height="24"
+                    fill="rgba(26,111,181,0.2)"
+                    stroke="#1a6fb5"
+                  />
+                </g>
+                <g transform="translate(100, 110)">
+                  <text
+                    x="-10"
+                    y="16"
+                    text-anchor="end"
+                    font-size="10"
+                    font-weight="bold"
+                    fill="#d4952a"
+                  >
+                    Part B
+                  </text>
+                  <rect
+                    x="0"
+                    y="0"
+                    width="50"
+                    height="24"
+                    fill="rgba(212,149,42,0.2)"
+                    stroke="#d4952a"
+                  />
+                  <rect
+                    x="50"
+                    y="0"
+                    width="50"
+                    height="24"
+                    fill="rgba(212,149,42,0.2)"
+                    stroke="#d4952a"
+                  />
+                  <rect
+                    x="100"
+                    y="0"
+                    width="50"
+                    height="24"
+                    fill="rgba(212,149,42,0.2)"
+                    stroke="#d4952a"
+                  />
+                </g>
+              </svg>
+            </div>
+
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: try numbers that divide evenly, like 84 points in 12
+              games. The points box is pre-filled to get you started.
+            </p>
+            <div class="grid2">
+              <!-- ===================== INLINE RESEARCH LAB ===================== -->
+              <div class="pk-research-inline-card">
+                <div class="pk-research-inline-header">
+                  <span class="pk-research-badge">🔍 Research Required</span>
+                  <a
+                    href="https://www.espn.com/nba/stats"
+                    target="_blank"
+                    class="pk-research-inline-link"
+                    >🏀 Basketball ↗</a
+                  >
+                  <a
+                    href="https://www.espn.com/soccer/"
+                    target="_blank"
+                    class="pk-research-inline-link"
+                    >⚽ Soccer ↗</a
+                  >
+                  <a
+                    href="https://www.espn.com/nfl/stats"
+                    target="_blank"
+                    class="pk-research-inline-link"
+                    >🏈 Football ↗</a
+                  >
+                </div>
+                <p class="pk-research-inline-instructions">
+                  Pick <strong>any sport you love</strong>. Look up one real pro
+                  player's season total (points, goals, or yards) and how many
+                  games they played, then enter it below to compare against your
+                  athlete:
+                </p>
+                <div class="grid2">
+                  <div>
+                    <label class="fld" for="worldCountry"
+                      >Professional Player Researched</label
+                    >
+                    <input
+                      type="text"
+                      id="worldCountry"
+                      data-save
+                      placeholder=""
+                      oninput="recalcAll()"
+                    />
+                  </div>
+                  <div>
+                    <label class="fld" for="r-pts">Total points (season)</label>
+                    <input
+                      type="number"
+                      id="r-pts"
+                      data-save
+                      min="0"
+                      placeholder=""
+                      oninput="calcRate()"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label class="fld" for="r-games">Games played</label>
+                <input
+                  type="number"
+                  id="r-games"
+                  data-save
+                  min="1"
+                  placeholder=""
+                  oninput="calcRate()"
+                />
+              </div>
+            </div>
+            <button class="btn" type="button" onclick="calcRate()">
+              Calculate points per game
+            </button>
+            <div class="readout" id="rate-out"></div>
+            <div
+              class="pki-manip"
+              data-manip="ratio-build"
+              data-label-a="points"
+              data-label-b="games"
+              data-rate-name="points per game"
+              data-tile-a="🏀"
+              data-tile-b="📅"
+              data-default-a="84"
+              data-default-b="12"
+            ></div>
+            <details class="hintbox">
+              <summary>Need a hint?</summary>
+              <p>
+                Unit rate = total ÷ number of games. 84 points in 12 games is 84
+                ÷ 12 = <strong>7 points per game</strong>. The ratio 84:12 can
+                also be written 7:1 — that is the unit rate.
+              </p>
+            </details>
+
+            <div class="pk-lvl2">
+              <div class="task">
+                <strong>Level 2 extension (6.RP.2):</strong> Your athlete keeps
+                the same points-per-game rate for a full
+                <strong>30-game</strong>
+                season. Predict their season total, then explain how the unit
+                rate let you scale up.
+              </div>
+            </div>
+
+            <!-- 1b Ratio table / projection -->
           </div>
-          
-          <div style="background: var(--bg); border: 2.5px solid var(--line); border-radius: 18px; padding: 20px; box-shadow: var(--shadow); height: fit-content;" class="pk-no-print">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px; color: var(--navy); font-size: 16px;">
+
+          <div
+            style="
+              background: var(--bg);
+              border: 2.5px solid var(--line);
+              border-radius: 18px;
+              padding: 20px;
+              box-shadow: var(--shadow);
+              height: fit-content;
+            "
+            class="pk-no-print"
+          >
+            <h3
+              style="
+                margin-top: 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: var(--navy);
+                font-size: 16px;
+              "
+            >
               <span>💡</span> Guided Steps &amp; Help
             </h3>
-            
-      <p style="font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-bottom: 12px;">
-        <strong>Working with Ratios, Rates, & Tape Diagrams:</strong>
-      </p>
-      <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>Identify the parts in your ratio: <b>Part A : Part B</b> (e.g. 2 cups blue paint to 3 cups yellow paint).</li>
-        <li>Add the parts to find the <b>Total Parts</b> in the whole mixture ($2 + 3 = 5$ parts).</li>
-        <li>Divide the total mixture volume by the total parts to find the <b>Value of One Box</b> in your tape diagram.</li>
-        <li>Multiply the value of one box by the parts of each ingredient to find the target amounts.</li>
-      </ol>
-      <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
-        💡 <b>Example:</b> Ratio 2:3 (Total parts = 5). For 15 gallons total, each part is $15 ÷ 5 = 3$ gallons. Blue = $2 \times 3 = 6$ gallons, Yellow = $3 \times 3 = 9$ gallons.
-      </div>
-    
+
+            <p
+              style="
+                font-size: 13.5px;
+                line-height: 1.5;
+                color: var(--muted);
+                margin-bottom: 12px;
+              "
+            >
+              <strong>Working with Ratios, Rates, & Tape Diagrams:</strong>
+            </p>
+            <ol
+              style="
+                margin-left: 18px;
+                font-size: 13px;
+                line-height: 1.5;
+                display: grid;
+                gap: 8px;
+                color: var(--ink);
+              "
+            >
+              <li>
+                Identify the parts in your ratio: <b>Part A : Part B</b> (e.g. 2
+                cups blue paint to 3 cups yellow paint).
+              </li>
+              <li>
+                Add the parts to find the <b>Total Parts</b> in the whole
+                mixture (2 + 3 = 5 parts).
+              </li>
+              <li>
+                Divide the total mixture volume by the total parts to find the
+                <b>Value of One Box</b> in your tape diagram.
+              </li>
+              <li>
+                Multiply the value of one box by the parts of each ingredient to
+                find the target amounts.
+              </li>
+            </ol>
+            <div
+              style="
+                margin-top: 14px;
+                padding: 10px;
+                background: var(--sky);
+                border-radius: 8px;
+                font-size: 12px;
+              "
+            >
+              💡 <b>Example:</b> Ratio 2:3 (Total parts = 5). For 15 gallons
+              total, each part is 15 ÷ 5 = 3 gallons. Blue = 2 × 3 = 6 gallons,
+              Yellow = 3 × 3 = 9 gallons.
+            </div>
           </div>
         </div>
       </section>
-    
 
       <!-- ===================== PART 1B — SELF ===================== -->
       <section class="phase" id="phase-1b" data-phase>
@@ -817,101 +1211,243 @@
             <h2>🟰 Project the season — ratio table (6.RP.3)</h2>
           </div>
         </div>
-        
+
         <div class="grid2">
           <div>
-            
-    <div class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
-      <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px;" xmlns="http://www.w3.org/2000/svg">
-        
-      <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Ratio Tape Diagram</text>
-      <g transform="translate(100, 70)">
-        <text x="-10" y="16" text-anchor="end" font-size="10" font-weight="bold" fill="#1a6fb5">Part A</text>
-        <rect x="0" y="0" width="50" height="24" fill="rgba(26,111,181,0.2)" stroke="#1a6fb5"/>
-        <rect x="50" y="0" width="50" height="24" fill="rgba(26,111,181,0.2)" stroke="#1a6fb5"/>
-      </g>
-      <g transform="translate(100, 110)">
-        <text x="-10" y="16" text-anchor="end" font-size="10" font-weight="bold" fill="#d4952a">Part B</text>
-        <rect x="0" y="0" width="50" height="24" fill="rgba(212,149,42,0.2)" stroke="#d4952a"/>
-        <rect x="50" y="0" width="50" height="24" fill="rgba(212,149,42,0.2)" stroke="#d4952a"/>
-        <rect x="100" y="0" width="50" height="24" fill="rgba(212,149,42,0.2)" stroke="#d4952a"/>
-      </g>
-    
-      </svg>
-    </div>
-  
-            <p style="font-size: 14px; color: var(--muted)">
-          Use your athlete's unit rate to project points at 10, 20, and 30
-          games. All rows are equivalent ratios — the rate stays constant.
-        </p>
-        <button class="btn alt" type="button" onclick="calcTable()">
-          Build season projection table
-        </button>
-        <div class="readout" id="table-out"></div>
-        <details class="hintbox">
-          <summary>Need a hint?</summary>
-          <p>
-            At 7 points per game: 10 games → 70 pts, 20 games → 140 pts, 30
-            games → 210 pts. Each row multiplies the unit rate by the number of
-            games.
-          </p>
-        </details>
+            <div
+              class="pk-math-scaffold-card no-print"
+              style="
+                margin: 20px 0;
+                padding: 12px;
+                background: #fff;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+                max-width: 480px;
+                margin-left: auto;
+                margin-right: auto;
+              "
+            >
+              <svg
+                width="100%"
+                height="200"
+                viewBox="0 0 500 200"
+                style="background: #fff; border-radius: 8px"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <text
+                  x="250"
+                  y="30"
+                  text-anchor="middle"
+                  font-size="14"
+                  font-weight="bold"
+                  fill="#0f2b3c"
+                >
+                  Ratio Tape Diagram
+                </text>
+                <g transform="translate(100, 70)">
+                  <text
+                    x="-10"
+                    y="16"
+                    text-anchor="end"
+                    font-size="10"
+                    font-weight="bold"
+                    fill="#1a6fb5"
+                  >
+                    Part A
+                  </text>
+                  <rect
+                    x="0"
+                    y="0"
+                    width="50"
+                    height="24"
+                    fill="rgba(26,111,181,0.2)"
+                    stroke="#1a6fb5"
+                  />
+                  <rect
+                    x="50"
+                    y="0"
+                    width="50"
+                    height="24"
+                    fill="rgba(26,111,181,0.2)"
+                    stroke="#1a6fb5"
+                  />
+                </g>
+                <g transform="translate(100, 110)">
+                  <text
+                    x="-10"
+                    y="16"
+                    text-anchor="end"
+                    font-size="10"
+                    font-weight="bold"
+                    fill="#d4952a"
+                  >
+                    Part B
+                  </text>
+                  <rect
+                    x="0"
+                    y="0"
+                    width="50"
+                    height="24"
+                    fill="rgba(212,149,42,0.2)"
+                    stroke="#d4952a"
+                  />
+                  <rect
+                    x="50"
+                    y="0"
+                    width="50"
+                    height="24"
+                    fill="rgba(212,149,42,0.2)"
+                    stroke="#d4952a"
+                  />
+                  <rect
+                    x="100"
+                    y="0"
+                    width="50"
+                    height="24"
+                    fill="rgba(212,149,42,0.2)"
+                    stroke="#d4952a"
+                  />
+                </g>
+              </svg>
+            </div>
 
-        <!-- 1c quick self-check -->
-        <div class="task" style="margin-top: 18px">
-          <strong>Quick rate check:</strong> A player scores 20 points in 5
-          games. What is the unit rate (points per game)?
-        </div>
-        <label class="fld" for="check-ppg">Your answer (points per game)</label>
-        <input
-          type="number"
-          id="check-ppg"
-          data-save
-          step="0.01"
-          placeholder="Type a number"
-        />
-        <button class="btn alt" type="button" onclick="checkPPGFn()">
-          Check answer
-        </button>
-        <div class="feedback" id="check-ppgFb"></div>
-        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-          Level 1 worked step: 20 ÷ 5 = 4 points per game.
-        </p>
+            <p style="font-size: 14px; color: var(--muted)">
+              Use your athlete's unit rate to project points at 10, 20, and 30
+              games. All rows are equivalent ratios — the rate stays constant.
+            </p>
+            <button class="btn alt" type="button" onclick="calcTable()">
+              Build season projection table
+            </button>
+            <div class="readout" id="table-out"></div>
+            <details class="hintbox">
+              <summary>Need a hint?</summary>
+              <p>
+                At 7 points per game: 10 games → 70 pts, 20 games → 140 pts, 30
+                games → 210 pts. Each row multiplies the unit rate by the number
+                of games.
+              </p>
+            </details>
+
+            <!-- 1c quick self-check -->
+            <div class="task" style="margin-top: 18px">
+              <strong>Quick rate check:</strong> A player scores 20 points in 5
+              games. What is the unit rate (points per game)?
+            </div>
+            <label class="fld" for="check-ppg"
+              >Your answer (points per game)</label
+            >
+            <input
+              type="number"
+              id="check-ppg"
+              data-save
+              step="0.01"
+              placeholder=""
+            />
+            <button class="btn alt" type="button" onclick="checkPPGFn()">
+              Check answer
+            </button>
+            <div class="feedback" id="check-ppgFb"></div>
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 worked step: 20 ÷ 5 = 4 points per game.
+            </p>
+            <div class="pk-lvl2">
+              <div class="task">
+                <strong>Level 2 extension (6.RP.3):</strong> Two players each
+                score 9 points per game. One plays 24 games, the other 31. Use a
+                ratio table to find each season total, then say how many more
+                points the busier player scores.
+              </div>
+            </div>
           </div>
-          
-          <div style="background: var(--bg); border: 2.5px solid var(--line); border-radius: 18px; padding: 20px; box-shadow: var(--shadow); height: fit-content;" class="pk-no-print">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px; color: var(--navy); font-size: 16px;">
+
+          <div
+            style="
+              background: var(--bg);
+              border: 2.5px solid var(--line);
+              border-radius: 18px;
+              padding: 20px;
+              box-shadow: var(--shadow);
+              height: fit-content;
+            "
+            class="pk-no-print"
+          >
+            <h3
+              style="
+                margin-top: 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: var(--navy);
+                font-size: 16px;
+              "
+            >
               <span>💡</span> Guided Steps &amp; Help
             </h3>
-            
-      <p style="font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-bottom: 12px;">
-        <strong>Working with Ratios, Rates, & Tape Diagrams:</strong>
-      </p>
-      <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-        <li>Identify the parts in your ratio: <b>Part A : Part B</b> (e.g. 2 cups blue paint to 3 cups yellow paint).</li>
-        <li>Add the parts to find the <b>Total Parts</b> in the whole mixture ($2 + 3 = 5$ parts).</li>
-        <li>Divide the total mixture volume by the total parts to find the <b>Value of One Box</b> in your tape diagram.</li>
-        <li>Multiply the value of one box by the parts of each ingredient to find the target amounts.</li>
-      </ol>
-      <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
-        💡 <b>Example:</b> Ratio 2:3 (Total parts = 5). For 15 gallons total, each part is $15 ÷ 5 = 3$ gallons. Blue = $2 \times 3 = 6$ gallons, Yellow = $3 \times 3 = 9$ gallons.
-      </div>
-    
+
+            <p
+              style="
+                font-size: 13.5px;
+                line-height: 1.5;
+                color: var(--muted);
+                margin-bottom: 12px;
+              "
+            >
+              <strong>Working with Ratios, Rates, & Tape Diagrams:</strong>
+            </p>
+            <ol
+              style="
+                margin-left: 18px;
+                font-size: 13px;
+                line-height: 1.5;
+                display: grid;
+                gap: 8px;
+                color: var(--ink);
+              "
+            >
+              <li>
+                Identify the parts in your ratio: <b>Part A : Part B</b> (e.g. 2
+                cups blue paint to 3 cups yellow paint).
+              </li>
+              <li>
+                Add the parts to find the <b>Total Parts</b> in the whole
+                mixture (2 + 3 = 5 parts).
+              </li>
+              <li>
+                Divide the total mixture volume by the total parts to find the
+                <b>Value of One Box</b> in your tape diagram.
+              </li>
+              <li>
+                Multiply the value of one box by the parts of each ingredient to
+                find the target amounts.
+              </li>
+            </ol>
+            <div
+              style="
+                margin-top: 14px;
+                padding: 10px;
+                background: var(--sky);
+                border-radius: 8px;
+                font-size: 12px;
+              "
+            >
+              💡 <b>Example:</b> Ratio 2:3 (Total parts = 5). For 15 gallons
+              total, each part is 15 ÷ 5 = 3 gallons. Blue = 2 × 3 = 6 gallons,
+              Yellow = 3 × 3 = 9 gallons.
+            </div>
           </div>
         </div>
       </section>
-    
 
-      
       <!-- ===================== DYNAMIC VISUALIZER ===================== -->
       <section class="pk-visualizer-card no-print">
         <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
-        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
-          This visual interactive canvas updates in real-time as you complete your math calculations.
+        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px">
+          This visual interactive canvas updates in real-time as you complete
+          your math calculations.
         </p>
         <div id="projectVisualizer"></div>
       </section>
-  
+
       <!-- ===================== PART 2 — PEER ===================== -->
       <section class="phase">
         <div class="phase-head">
@@ -943,12 +1479,7 @@
             <label class="fld" for="partnerName"
               >Partner name or initials</label
             >
-            <input
-              type="text"
-              id="partnerName"
-              data-save
-              placeholder="example: A.J."
-            />
+            <input type="text" id="partnerName" data-save placeholder="" />
           </div>
           <div>
             <label class="fld" for="p-common"
@@ -995,11 +1526,7 @@
           >Whose athlete scores more at the same number of games, and how do you
           know?</label
         >
-        <textarea
-          id="peerReflect"
-          data-save
-          placeholder="At ___ games, my athlete has ___ points and my partner's has ___, so ___."
-        ></textarea>
+        <textarea id="peerReflect" data-save placeholder=""></textarea>
       </section>
 
       <!-- ===================== PART 3 — WORLD ===================== -->
@@ -1033,7 +1560,7 @@
               data-save
               step="0.01"
               oninput="worldGo()"
-              placeholder="type your ppg"
+              placeholder=""
             />
             <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
               Tip: your unit rate from Part 1 is the value to type here.
@@ -1078,12 +1605,7 @@
               <label class="fld" for="wf-pts"
                 >Extra points in one hot-streak game</label
               >
-              <input
-                type="number"
-                id="wf-pts"
-                min="0"
-                placeholder="example: 30"
-              />
+              <input type="number" id="wf-pts" min="0" placeholder="" />
             </div>
           </div>
           <button class="btn" type="button" onclick="runWhatIf()">
@@ -1098,11 +1620,7 @@
           >Is your athlete's rate higher or lower than the world average? Why
           might that be?</label
         >
-        <textarea
-          id="worldReflect"
-          data-save
-          placeholder="My athlete's ppg is ___ the world average because ___."
-        ></textarea>
+        <textarea id="worldReflect" data-save placeholder=""></textarea>
 
         <div class="pk-lvl2">
           <div class="task" style="margin-top: 4px">
@@ -1119,28 +1637,20 @@
             id="worldMean"
             data-save
             step="0.01"
-            placeholder="sum of rates ÷ how many players"
+            placeholder=""
           />
           <label class="fld" for="worldOutlier"
             >Which player is the outlier, and how does it change the
             mean?</label
           >
-          <textarea
-            id="worldOutlier"
-            data-save
-            placeholder="The outlier is ___ at ___ ppg. It pulls the mean UP because ___."
-          ></textarea>
+          <textarea id="worldOutlier" data-save placeholder=""></textarea>
         </div>
 
         <label class="fld" for="careful"
           >Careful thinking: why can it be unfair to compare scoring rates
           between players?</label
         >
-        <textarea
-          id="careful"
-          data-save
-          placeholder="It can be unfair to compare because ___ (different sport, league level, minutes played, position...)."
-        ></textarea>
+        <textarea id="careful" data-save placeholder=""></textarea>
       </section>
 
       <!-- ===================== DELIVERABLE ===================== -->
@@ -1156,11 +1666,7 @@
           Write a short scouting report (3–5 sentences) using your real numbers
           from above.
         </p>
-        <textarea
-          id="pitch"
-          data-save
-          placeholder="I scouted ___ (source: ___). Their unit rate is ___ points per game (___ pts ÷ ___ games). Over a 30-game season they project to ___ points. Compared to my partner's athlete scaled to ___ games, mine scored ___ vs ___. My athlete's rate is higher / lower than the world average of ___ ppg because ___."
-        ></textarea>
+        <textarea id="pitch" data-save placeholder=""></textarea>
 
         <h3 style="margin: 22px 0 6px">Scouting Report Checklist</h3>
         <ul class="checklist" id="checklist">
@@ -1288,7 +1794,10 @@
       const yrEl = document.getElementById("yr");
       if (yrEl) yrEl.textContent = new Date().getFullYear();
       const $ = (id) => document.getElementById(id);
-      const num = (id) => { const e = $(id); return e ? parseFloat(e.value) : NaN; };
+      const num = (id) => {
+        const e = $(id);
+        return e ? parseFloat(e.value) : NaN;
+      };
 
       function show(id, html) {
         const el = $(id);
@@ -1467,50 +1976,58 @@
       function worldSample() {
         return world.map((r) => r[1]);
       }
-      
+
       function worldGo() {
         const my = num("myWorld");
-        const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
+        const customName = $("worldCountry")
+          ? $("worldCountry").value.trim()
+          : "";
         const customSize = $("r-pts") ? num("r-pts") : NaN;
-        
+
         let sample = worldSample();
         if (!isNaN(customSize) && customSize > 0) {
           sample = [...sample, customSize];
         }
-        
+
         const labels =
-          ($("worldCat") || {}).value === "costPerGuest" || ($("worldCat") || {}).value === "price"
+          ($("worldCat") || {}).value === "costPerGuest" ||
+          ($("worldCat") || {}).value === "price"
             ? { mean: "City avg $", me: "Me $" }
             : { mean: "City avg", me: "Me" };
-            
+
         PK.worldMeter("worldMeter", sample, my, labels);
-        
+
         const fb = $("worldMeter");
         if (!isNaN(customSize) && customSize > 0 && customName) {
           const ratio = (my / customSize).toFixed(2);
           const pct = Math.round((my / customSize) * 100);
           const diff = Math.abs(my - customSize).toFixed(2);
-          
-          let myValStr = false ? "$" + my.toFixed(2) : my + " PPG";
-          let custValStr = false ? "$" + customSize.toFixed(2) : customSize + " PPG";
-          let diffStr = false ? "$" + Number(diff).toFixed(2) : Number(diff).toFixed(2) + " PPG";
 
-          const rel = my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
-          const desc = `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
+          let myValStr = false ? "$" + my.toFixed(2) : my + " PPG";
+          let custValStr = false
+            ? "$" + customSize.toFixed(2)
+            : customSize + " PPG";
+          let diffStr = false
+            ? "$" + Number(diff).toFixed(2)
+            : Number(diff).toFixed(2) + " PPG";
+
+          const rel =
+            my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
+          const desc =
+            `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
             `📊 Research Comparison: Your value (${myValStr}) is <strong>${rel}</strong> than <strong>${customName}</strong> (${custValStr}) ` +
             `by <strong>${diffStr}</strong>. Your value is <strong>${pct}%</strong> (${ratio}x) of the size of the researched benchmark.` +
             `</div>`;
           fb.innerHTML += desc;
         }
-        
-        if (typeof drawVisualizer === 'function') {
+
+        if (typeof drawVisualizer === "function") {
           drawVisualizer();
         }
-        
+
         updateProgress();
       }
-  
-      
+
       function runWhatIf() {
         const pts = num("r-pts");
         const games = num("r-games");
@@ -1537,13 +2054,11 @@
             "-game season:",
         );
       }
-  
 
       /* ---- Use example numbers ---- */
       function useExamples() {
         const ex = {
-          
-          "worldCountry": "LeBron James",
+          worldCountry: "LeBron James",
           "r-pts": 27.2,
           "ath-name": "A. Wilson",
           "ath-source": "team website",
@@ -1552,7 +2067,6 @@
           "p-games": 10,
           "p-common": 60,
           myWorld: "",
-          
         };
         Object.entries(ex).forEach(([k, v]) => {
           if ($(k)) $(k).value = v;
@@ -1560,44 +2074,48 @@
         recalcAll();
       }
 
-      
-
-      
       function drawVisualizer() {
-        const pts = num("r-pts");
-        const games = num("r-games");
-        
-        let html = "";
-        if (!isNaN(pts) && pts > 0 && !isNaN(games) && games > 0) {
-          const rate = pts / games;
-          const maxRate = Math.max(rate, 35);
-          const barW = (rate / maxRate) * 320;
-          
-          html = `
+        let pts = num("r-pts");
+        let games = num("r-games");
+
+        // Show a worked EXAMPLE (48 points ÷ 6 games = 8 PPG) by default so the
+        // chart always has something to look at; switches to the student's own
+        // athlete stats as soon as they enter them.
+        const isExample = !(
+          !isNaN(pts) &&
+          pts > 0 &&
+          !isNaN(games) &&
+          games > 0
+        );
+        if (isExample) {
+          pts = 48;
+          games = 6;
+        }
+
+        const rate = pts / games;
+        const maxRate = Math.max(rate, 35);
+        const barW = (rate / maxRate) * 320;
+
+        const html = `
             <rect x="50" y="80" width="350" height="25" rx="5" fill="#f1f5f9" />
             <rect x="50" y="80" width="${barW}" height="25" rx="5" fill="#1a6fb5" />
             <text x="55" y="96" font-size="11" font-weight="bold" fill="white">Athlete: ${rate.toFixed(2)} PPG</text>
-            
+
             <line x1="50" y1="50" x2="400" y2="50" stroke="#cbd5e1" stroke-width="1" />
             <text x="225" y="40" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">Points per Game comparison</text>
             <text x="225" y="150" text-anchor="middle" font-size="12" font-weight="bold" fill="#2d874b">Scouting Rate: ${pts} pts / ${games} games</text>
           `;
-        } else {
-          html = `
-            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Points & Games to visualize rate</text>
-          `;
-        }
-        
+
         const svgString = `
           <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            ${isExample ? `<rect x="362" y="12" width="126" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="425" y="26" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · 48 ÷ 6</text>` : ""}
             ${html}
           </svg>
         `;
         $("projectVisualizer").innerHTML = svgString;
       }
-    
-  
-function recalcAll() {
+
+      function recalcAll() {
         calcRate();
         comparePeer();
         renderWorld();
@@ -1708,6 +2226,7 @@ function recalcAll() {
       document.addEventListener("DOMContentLoaded", function () {
         renderWorld();
         PK.initLevel({ storageKey: "u3ProjectB", default: "level-1" });
+        PK.initTts({ storageKey: "u3ProjectB" });
         PK.load("u3ProjectB", { after: recalcAll });
         updateProgress();
       });
@@ -1716,9 +2235,123 @@ function recalcAll() {
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
+    <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
+    <script type="application/json" id="pk-research">
+      {
+        "icon": "🔎",
+        "title": "Research Lab — Scout the Real Rates",
+        "intro": "Coaches and scouts compare players using ratios and unit rates. Pull real stats, then compute the rates yourself.",
+        "brief": {
+          "theme": "field",
+          "title": "📋 Your Research Mission",
+          "hook": "Find <b>real stats</b> and turn them into ratios and unit rates like a real analyst.",
+          "steps": [
+            "Open a link (new tab — you keep your project).",
+            "Record real numbers in Field Notes.",
+            "Compute the rates in the math problems.",
+            "Check off the Investigation Checklist."
+          ]
+        },
+        "fieldNotes": {
+          "title": "Field Notes — Record What You Find",
+          "intro": "Jot the exact number or rule you find. You'll reuse these in the math below.",
+          "fields": [
+            {
+              "label": "What a unit rate is",
+              "source": "Math is Fun",
+              "placeholder": "amount per 1 (per game, per hour)",
+              "hint": "Divide to get 'per one'."
+            },
+            {
+              "label": "A real stat total (points, miles, etc.)",
+              "source": "ESPN / box score",
+              "placeholder": "84 points",
+              "hint": "Pick any real player or team total."
+            },
+            {
+              "label": "The matching count (games, hours, items)",
+              "source": "ESPN / box score",
+              "placeholder": "6 games",
+              "hint": "What was that total spread across?"
+            },
+            {
+              "label": "A second total + count to compare",
+              "source": "ESPN / box score",
+              "placeholder": "150 pts / 10 games",
+              "hint": "Lets you compare two unit rates."
+            }
+          ]
+        },
+        "mathTasks": [
+          {
+            "title": "1 · Unit rate",
+            "prompt": "Using Field Notes 2 and 3, find the <b>unit rate</b> (amount per 1). Show the division.",
+            "level2": "Write the rate as a ratio in two ways (e.g., 14 : 1 and 14 per game)."
+          },
+          {
+            "title": "2 · Compare",
+            "prompt": "Find the unit rate for your second example (Field Note 4). Which is the better rate, and how do you know?",
+            "level2": "By how much does the better rate beat the other? Show the subtraction."
+          },
+          {
+            "title": "3 · Predict",
+            "prompt": "Using your best unit rate, predict the total for 12 of the unit (e.g., 12 games). Show the multiplication.",
+            "level2": "Build a ratio table with 1, 6, and 12 units."
+          }
+        ],
+        "investigationChecklist": [
+          "I recorded what a unit rate is.",
+          "I found real stats (total and count).",
+          "I computed a unit rate by dividing.",
+          "I compared two unit rates.",
+          "I used a rate to make a prediction.",
+          "I wrote a ratio at least two ways."
+        ],
+        "links": [
+          {
+            "icon": "1️⃣",
+            "name": "Math is Fun — Ratios",
+            "url": "https://www.mathsisfun.com/numbers/ratio.html",
+            "find": "What a ratio is and how to write it.",
+            "look": "ratios as 'a to b', a:b, and a/b"
+          },
+          {
+            "icon": "⚡",
+            "name": "Math is Fun — Unit Price (rates)",
+            "url": "https://www.mathsisfun.com/measure/unit-price.html",
+            "find": "How to find 'per one' by dividing.",
+            "look": "divide to get the rate per 1"
+          },
+          {
+            "icon": "🏀",
+            "name": "ESPN — Basketball stats",
+            "url": "https://www.espn.com/nba/stats",
+            "find": "A real player's points and games played, right in the table.",
+            "look": "the PTS column and games (GP)"
+          },
+          {
+            "icon": "⚽",
+            "name": "ESPN — Soccer stats",
+            "url": "https://www.espn.com/soccer/",
+            "find": "Goals and matches played for a real soccer player.",
+            "look": "the G (goals) and A (appearances) columns"
+          },
+          {
+            "icon": "🏈",
+            "name": "ESPN — Football stats",
+            "url": "https://www.espn.com/nfl/stats",
+            "find": "Yards and games played for a real football player.",
+            "look": "the YDS column and games played (GP)"
+          }
+        ],
+        "note": "These sites were picked for class. They open in a new tab so you keep your project. If a page asks you to sign in or buy something, just close it and come back."
+      }
+    </script>
     <script src="/shared/projects/projects-tabs.js" defer></script>
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <script src="/shared/projects/projects-interactive.js" defer></script>
+    <script src="/shared/projects/manip-ratio-build.js" defer></script>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+  </body>
 </html>

@@ -2,7 +2,12 @@ name = "focus-school"
 pages_build_output_dir = "."
 compatibility_date = "2026-05-25"
 
-# Cloud sync KV Namespace binding for the Focus School planner
+# Cloud sync KV binding for the Focus School planner.
+# WARNING: this block IS authoritative for the production Pages project — a
+# `wrangler pages deploy` applies it and will REMOVE the binding (→ 503, sync
+# down for every device) if it is deleted. Do NOT remove it. The id below
+# (noam-school-sync) is the live, populated production namespace that holds
+# every device's routines/data.
 [[kv_namespaces]]
 binding = "NOAM_SCHOOL_KV"
 id = "59075911253f400f807345430425946c"

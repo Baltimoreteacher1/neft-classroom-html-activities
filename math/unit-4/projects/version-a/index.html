@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css">
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Pop-Up Shop Owner — Unit 4 Culminating Project</title>
     <meta
       name="description"
@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="/assets/shared.css" />
     <link rel="stylesheet" href="/shared/projects/projects-kit.css" />
     <link rel="stylesheet" href="/shared/projects/projects-tabs.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-tplus.css" />
+    <link rel="stylesheet" href="/shared/projects/projects-interactive.css" />
     <script src="/shared/projects/projects-kit.js" defer></script>
     <style>
       :root {
@@ -427,10 +429,10 @@
     <!-- nsr-injected:end -->
     <link rel="stylesheet" href="/shared/projects/projects-premium.css" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
-  <body class="pk">
+    <link rel="stylesheet" href="/assets/mobile-access.css" />
+    <!-- mobile-access-injected:end -->
+  </head>
+  <body class="pk" data-pk-theme="u4">
     <header class="phero">
       <div class="deco">🛍️</div>
       <h1>Pop-Up Shop Owner</h1>
@@ -452,6 +454,15 @@
           <button data-level-btn="level-1" type="button">🟢 Level 1</button>
           <button data-level-btn="level-2" type="button">🔵 Level 2</button>
         </span>
+        <button
+          class="pk-tts-toggle"
+          data-tts-toggle
+          type="button"
+          aria-pressed="false"
+          title="Read text aloud"
+        >
+          🔊 Read aloud
+        </button>
         <button onclick="PK.save('u4ProjectA')">💾 Save</button>
         <button
           onclick="PK.load('u4ProjectA', { show: true, after: recalcAll })"
@@ -505,7 +516,7 @@
         <div class="pk-vocab">
           <div class="pk-term">
             <span class="pk-icon">💲</span><b>Percent of a Number</b>
-            <p>A part out of 100. Find it with: number × (percent ÷ 100).</p>
+            <p>A piece of a number, counted out of 100.</p>
             <p class="pk-es">
               Porcentaje de un número: una parte de 100. Multiplica número ×
               (porcentaje ÷ 100).
@@ -513,7 +524,7 @@
           </div>
           <div class="pk-term">
             <span class="pk-icon">📈</span><b>Markup</b>
-            <p>The amount you ADD to your cost to make a profit.</p>
+            <p>Money added on top of the cost to make a profit.</p>
             <p class="pk-es">
               Margen / recargo: la cantidad que SUMAS al costo para ganar
               dinero.
@@ -521,14 +532,14 @@
           </div>
           <div class="pk-term">
             <span class="pk-icon">🏷️</span><b>Discount</b>
-            <p>The amount you SUBTRACT from a price during a sale.</p>
+            <p>Money taken off the price during a sale.</p>
             <p class="pk-es">
               Descuento: la cantidad que RESTAS del precio en una oferta.
             </p>
           </div>
           <div class="pk-term">
             <span class="pk-icon">🧾</span><b>Sales Tax</b>
-            <p>Extra money the state adds at checkout, as a percent.</p>
+            <p>Extra money you pay at checkout, set by the state.</p>
             <p class="pk-es">
               Impuesto de venta: dinero extra que el estado agrega al pagar,
               como porcentaje.
@@ -536,7 +547,7 @@
           </div>
           <div class="pk-term">
             <span class="pk-icon">🔁</span><b>Conversion Factor</b>
-            <p>A rate written as a fraction used to change units.</p>
+            <p>A fraction you multiply by to change one unit to another.</p>
             <p class="pk-es">
               Factor de conversión: una tasa escrita como fracción para cambiar
               unidades.
@@ -544,7 +555,7 @@
           </div>
           <div class="pk-term">
             <span class="pk-icon">⚖️</span><b>Unit Rate</b>
-            <p>A rate for ONE — like miles per 1 hour or dollars per 1 item.</p>
+            <p>How much for just one, like miles in 1 hour.</p>
             <p class="pk-es">
               Tasa unitaria: una tasa para UNO — millas por 1 hora o dólares por
               1 artículo.
@@ -554,24 +565,66 @@
         <div class="grid2" style="margin-top: 18px">
           <div class="pk-callout">
             <h3>Formula Bank</h3>
-            <p><b>Percent of a number:</b> n × (p ÷ 100)</p>
-            <p>
-              <b>Markup amount:</b> cost × (markup% ÷ 100) ·
-              <b>Selling price:</b> cost + markup
-            </p>
-            <p>
-              <b>Discount amount:</b> price × (disc% ÷ 100) ·
-              <b>Sale price:</b> price − discount
-            </p>
-            <p>
-              <b>Sales tax:</b> price × (tax% ÷ 100) · <b>Total:</b> price + tax
-            </p>
-            <p class="pk-lvl2">
-              <b>Stacked promo:</b> ((price × (1 − disc%)) × (1 + tax%))
-            </p>
-            <p class="pk-lvl2">
-              <b>Break-even markup %:</b> at sale, sale price = cost
-            </p>
+            <ul class="pk-formula">
+              <li>
+                <span class="pk-f-name">Percent of a number</span>
+                <span class="pk-f-mean"
+                  >Move the percent to a decimal, then multiply. A percent is
+                  just "out of 100."</span
+                >
+                <span class="pk-eg">Example: 20% of $50 = 0.20 × 50 = $10</span>
+              </li>
+              <li>
+                <span class="pk-f-name">Markup (selling price)</span>
+                <span class="pk-f-mean"
+                  >Add the extra money on top of your cost. Selling price = cost
+                  + markup.</span
+                >
+                <span class="pk-eg"
+                  >Example: cost $40, 25% markup = $10, so sell for $50</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Discount (sale price)</span>
+                <span class="pk-f-mean"
+                  >Take the savings off the price. Sale price = price −
+                  discount.</span
+                >
+                <span class="pk-eg"
+                  >Example: $50, 10% off = $5 off, so sale = $45</span
+                >
+              </li>
+              <li>
+                <span class="pk-f-name">Sales tax (total)</span>
+                <span class="pk-f-mean"
+                  >Add the tax the store collects. Total = price + tax.</span
+                >
+                <span class="pk-eg"
+                  >Example: $45, 6% tax = $2.70, so total = $47.70</span
+                >
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">Stacked promo (challenge)</span>
+                <span class="pk-f-mean"
+                  >Take the discount first, then add tax on the lower
+                  price.</span
+                >
+                <span class="pk-eg"
+                  >Example: $50 → 10% off = $45 → 6% tax = $47.70</span
+                >
+              </li>
+              <li class="pk-lvl2">
+                <span class="pk-f-name">Break-even markup % (challenge)</span>
+                <span class="pk-f-mean"
+                  >The markup that makes the sale price land exactly on your
+                  cost, so you do not lose money.</span
+                >
+                <span class="pk-eg"
+                  >Example: cost $40, sell $50, on sale at 20% off → back to
+                  $40</span
+                >
+              </li>
+            </ul>
           </div>
           <div class="pk-callout">
             <h3>Sentence Frames</h3>
@@ -661,7 +714,7 @@
                   font-weight="bold"
                   fill="#0f2b3c"
                 >
-                  SUPERMARKET REGISTER
+                  POP-UP SHOP REGISTER
                 </text>
                 <circle cx="210" cy="145" r="8" fill="#1a2633" />
                 <circle cx="270" cy="145" r="8" fill="#1a2633" />
@@ -701,7 +754,29 @@
             >
               <span>📋</span> Scenario &amp; Level Options
             </h3>
-            <h2>Price YOUR Product</h2>
+            <p style="font-size: 14px; line-height: 1.6; margin: 0 0 10px">
+              You are a <strong>pop-up shop owner</strong>. You pick a real
+              product, set your price with a markup, run a weekend sale, then
+              add sales tax to find what a customer really pays.
+            </p>
+            <ul
+              style="
+                font-size: 14px;
+                line-height: 1.6;
+                margin: 0;
+                padding-left: 18px;
+              "
+            >
+              <li>
+                <strong>Level 1 (support):</strong> price one item — like a $40
+                candle with a 25% markup — then add tax to find the total.
+              </li>
+              <li>
+                <strong>Level 2 (challenge):</strong> stack a discount and tax
+                together, then find the markup % that makes your sale price land
+                right back at your cost (break-even).
+              </li>
+            </ul>
           </div>
         </div>
         <p>
@@ -717,7 +792,7 @@
               type="text"
               id="item"
               data-save
-              placeholder="example: hand-poured candle"
+              placeholder=""
               oninput="updateProgress()"
             />
           </div>
@@ -729,7 +804,7 @@
               data-save
               step="0.01"
               min="0.01"
-              placeholder="example: 40.00"
+              placeholder=""
               oninput="calcMarkup()"
             />
           </div>
@@ -843,18 +918,25 @@
               step="1"
               min="1"
               max="500"
-              placeholder="example: 25"
+              placeholder=""
               oninput="calcMarkup()"
             />
             <button class="btn" type="button" onclick="calcMarkup()">
               Calculate selling price
             </button>
             <div class="readout" id="markup-out"></div>
+            <div
+              class="pki-manip"
+              data-manip="percent-bar"
+              data-mode="tax"
+              data-base="40"
+              data-percent="10"
+            ></div>
             <details class="hintbox">
               <summary>Need a hint?</summary>
               <p>
-                Markup amount = cost × (markup ÷ 100). Example: $40.00 × (25 ÷
-                100) = $10.00. Selling price = $40.00 + $10.00 = $50.00.
+                Markup amount = cost × (markup ÷ 100). Example: 40.00 × (25 ÷
+                100) =10.00. Selling price = $40.00 + $10.00 = $50.00.
               </p>
             </details>
 
@@ -871,12 +953,20 @@
               id="check-sell"
               data-save
               step="0.01"
-              placeholder="Type your answer"
+              placeholder=""
             />
             <button class="btn alt" type="button" onclick="checkSell()">
               Check my answer
             </button>
             <div class="pk-fb feedback" id="check-sellFb"></div>
+            <div class="pk-lvl2" style="margin-top: 16px">
+              <div class="task">
+                <strong>Level 2 extension:</strong> Choose a markup that makes
+                your selling price a "clean" price tag like $49.99 or $60.00.
+                Work backward from the price you want to the markup percent, and
+                show the steps you used.
+              </div>
+            </div>
 
             <!-- 1b Discount -->
           </div>
@@ -927,8 +1017,8 @@
             >
               <li>
                 <b>Convert the percentage to a decimal</b>: Divide the percent
-                by 100 (move the decimal point 2 places left, e.g., $6.5\% =
-                0.065$).
+                by 100 (move the decimal point 2 places left, e.g., 6.5% =
+                0.065).
               </li>
               <li>
                 <b>Calculate tax or tip amount</b>: Multiply the original price
@@ -952,8 +1042,8 @@
                 font-size: 12px;
               "
             >
-              💡 <b>Example:</b> $20.00 shirt with 8% sales tax. Tax = $20
-              \times 0.08 = $1.60. Total = $21.60.
+              💡 <b>Example:</b> $20.00 shirt with 8% sales tax. Tax = $20 ×
+              0.08 = $1.60. Total = $21.60.
             </div>
           </div>
         </div>
@@ -1024,6 +1114,11 @@
               </svg>
             </div>
 
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: a 10% sale is the easiest. 10% off means you keep
+              90%. Find 10% by moving the decimal one place left (10% of $50 =
+              $5 off → $45 sale).
+            </p>
             <label class="fld" for="discount">Your sale discount (%)</label>
             <input
               type="number"
@@ -1032,7 +1127,7 @@
               step="1"
               min="1"
               max="100"
-              placeholder="example: 20"
+              placeholder=""
               oninput="calcDiscount()"
             />
             <button class="btn alt" type="button" onclick="calcDiscount()">
@@ -1043,10 +1138,18 @@
               <summary>Need a hint?</summary>
               <p>
                 Discount amount = selling price × (discount ÷ 100). Sale price =
-                selling price − discount amount. Example: $50 × 0.20 = $10 off →
+                selling price − discount amount. Example: 50 × 0.20 =10 off →
                 $40 sale price.
               </p>
             </details>
+            <div class="pk-lvl2" style="margin-top: 16px">
+              <div class="task">
+                <strong>Level 2 extension:</strong> Stack two deals — take your
+                discount, then take an extra 15% off the new sale price. Is "30%
+                off then 15% off" the same as "45% off"? Show the math and
+                explain why.
+              </div>
+            </div>
 
             <!-- 1c Tax -->
           </div>
@@ -1097,8 +1200,8 @@
             >
               <li>
                 <b>Convert the percentage to a decimal</b>: Divide the percent
-                by 100 (move the decimal point 2 places left, e.g., $6.5\% =
-                0.065$).
+                by 100 (move the decimal point 2 places left, e.g., 6.5% =
+                0.065).
               </li>
               <li>
                 <b>Calculate tax or tip amount</b>: Multiply the original price
@@ -1122,8 +1225,8 @@
                 font-size: 12px;
               "
             >
-              💡 <b>Example:</b> $20.00 shirt with 8% sales tax. Tax = $20
-              \times 0.08 = $1.60. Total = $21.60.
+              💡 <b>Example:</b> $20.00 shirt with 8% sales tax. Tax = $20 ×
+              0.08 = $1.60. Total = $21.60.
             </div>
           </div>
         </div>
@@ -1145,7 +1248,7 @@
             <div class="pk-research-inline-header">
               <span class="pk-research-badge">🔍 Research Required</span>
               <a
-                href="https://taxfoundation.org/data/all-state-sales-tax-rates-and-structure/"
+                href="https://taxfoundation.org/data/all/state/state-and-local-sales-tax-rates/"
                 target="_blank"
                 class="pk-research-inline-link"
                 >🔗 Tax Foundation: State Sales Tax Rates Table ↗</a
@@ -1165,7 +1268,7 @@
                   type="text"
                   id="worldCountry"
                   data-save
-                  placeholder="e.g. Maryland"
+                  placeholder=""
                   oninput="recalcAll()"
                 />
               </div>
@@ -1180,9 +1283,21 @@
                   step="0.1"
                   min="0"
                   max="20"
-                  placeholder="example: 8"
+                  placeholder=""
                   oninput="calcTax()"
                 />
+              </div>
+            </div>
+            <div class="readout" id="tax-out"></div>
+            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+              Level 1 tip: 7% sales tax on $50 is 0.07 × 50 = $3.50. Add it to
+              the price to get the total ($53.50).
+            </p>
+            <div class="pk-lvl2" style="margin-top: 16px">
+              <div class="task">
+                <strong>Level 2 extension:</strong> Two states charge 6% and 9%
+                tax. On your $50 item, how many more dollars does the 9% state
+                cost? Would that change where you'd want to sell? Explain.
               </div>
             </div>
           </div>
@@ -1233,8 +1348,8 @@
             >
               <li>
                 <b>Convert the percentage to a decimal</b>: Divide the percent
-                by 100 (move the decimal point 2 places left, e.g., $6.5\% =
-                0.065$).
+                by 100 (move the decimal point 2 places left, e.g., 6.5% =
+                0.065).
               </li>
               <li>
                 <b>Calculate tax or tip amount</b>: Multiply the original price
@@ -1258,8 +1373,8 @@
                 font-size: 12px;
               "
             >
-              💡 <b>Example:</b> $20.00 shirt with 8% sales tax. Tax = $20
-              \times 0.08 = $1.60. Total = $21.60.
+              💡 <b>Example:</b> $20.00 shirt with 8% sales tax. Tax = $20 ×
+              0.08 = $1.60. Total = $21.60.
             </div>
           </div>
         </div>
@@ -1344,7 +1459,7 @@
                   data-save
                   step="0.01"
                   min="0.01"
-                  placeholder="example: 5"
+                  placeholder=""
                   oninput="calcConvert()"
                 />
               </div>
@@ -1414,12 +1529,7 @@
                 >Break-even idea: at your discount, what markup % makes sale
                 price = cost?</label
               >
-              <input
-                type="text"
-                id="breakeven"
-                data-save
-                placeholder="example: a 25% markup with 20% off lands back at cost"
-              />
+              <input type="text" id="breakeven" data-save placeholder="" />
             </div>
           </div>
 
@@ -1469,8 +1579,8 @@
             >
               <li>
                 <b>Convert the percentage to a decimal</b>: Divide the percent
-                by 100 (move the decimal point 2 places left, e.g., $6.5\% =
-                0.065$).
+                by 100 (move the decimal point 2 places left, e.g., 6.5% =
+                0.065).
               </li>
               <li>
                 <b>Calculate tax or tip amount</b>: Multiply the original price
@@ -1494,8 +1604,8 @@
                 font-size: 12px;
               "
             >
-              💡 <b>Example:</b> $20.00 shirt with 8% sales tax. Tax = $20
-              \times 0.08 = $1.60. Total = $21.60.
+              💡 <b>Example:</b> $20.00 shirt with 8% sales tax. Tax = $20 ×
+              0.08 = $1.60. Total = $21.60.
             </div>
           </div>
         </div>
@@ -1540,21 +1650,11 @@
             <label class="fld" for="partnerName"
               >Partner name or initials</label
             >
-            <input
-              type="text"
-              id="partnerName"
-              data-save
-              placeholder="example: A.J."
-            />
+            <input type="text" id="partnerName" data-save placeholder="" />
           </div>
           <div>
             <label class="fld" for="p-item">Partner's item</label>
-            <input
-              type="text"
-              id="p-item"
-              data-save
-              placeholder="example: phone case"
-            />
+            <input type="text" id="p-item" data-save placeholder="" />
           </div>
           <div>
             <label class="fld" for="p-cost">Partner's cost ($)</label>
@@ -1588,11 +1688,12 @@
         <label class="fld" for="peerReflect"
           >Who is the smarter shopper / better buy, and how do you know?</label
         >
-        <textarea
-          id="peerReflect"
-          data-save
-          placeholder="My final price is ___ while my partner's is ___, so the better buy for a customer is ___ because ___."
-        ></textarea>
+        <textarea id="peerReflect" data-save placeholder=""></textarea>
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 tip: the "smarter shopper" is usually the one whose customer
+          pays the LOWER final price for a similar item. Compare the two final
+          prices side by side.
+        </p>
       </section>
 
       <!-- ===================== PART 3 — WORLD ===================== -->
@@ -1632,7 +1733,7 @@
               data-save
               step="0.01"
               oninput="worldGo()"
-              placeholder="type your sale price"
+              placeholder=""
             />
             <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
               Tip: use your sale price from Part 1 here.
@@ -1680,7 +1781,7 @@
                 step="1"
                 min="0"
                 max="100"
-                placeholder="example: 10"
+                placeholder=""
               />
             </div>
           </div>
@@ -1696,22 +1797,18 @@
           >Is the cheapest price always best for your shop? Why or why
           not?</label
         >
-        <textarea
-          id="worldReflect"
-          data-save
-          placeholder="A lower price brings more customers, but ___. Cheapest is not always best because ___."
-        ></textarea>
+        <textarea id="worldReflect" data-save placeholder=""></textarea>
+        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
+          Level 1 tip: to find tax in any state, multiply your price by the rate
+          as a decimal (8% → 0.08). A higher rate means a higher total.
+        </p>
         <div class="pk-lvl2">
           <label class="fld" for="worldHard"
             >Level 2: If your sale price is $40 and a state charges 9.5% tax,
             what is the percent increase from sale price to total? Show your
             thinking.</label
           >
-          <textarea
-            id="worldHard"
-            data-save
-            placeholder="Tax is $___; percent increase = tax ÷ sale price × 100 = ___% because ___"
-          ></textarea>
+          <textarea id="worldHard" data-save placeholder=""></textarea>
         </div>
       </section>
 
@@ -1728,11 +1825,7 @@
           Write a short storefront sign (3–5 sentences) using your real numbers
           from above.
         </p>
-        <textarea
-          id="pitch"
-          data-save
-          placeholder="Welcome to my pop-up shop! I sell ___, which cost me $___. I marked it up ___% to sell for $___. This weekend it is ___% off, so you pay $___, and after ___% tax your total is $___."
-        ></textarea>
+        <textarea id="pitch" data-save placeholder=""></textarea>
 
         <h3 style="margin: 22px 0 6px">Shop Owner Checklist</h3>
         <ul class="checklist" id="checklist">
@@ -1968,6 +2061,7 @@
           hide("tax-out");
           proj.tax = null;
           proj.total = null;
+          if (typeof drawVisualizer === "function") drawVisualizer();
           return;
         }
         const taxAmt = sale * (taxR / 100),
@@ -1991,6 +2085,7 @@
             total.toFixed(2) +
             "</strong> at checkout.",
         );
+        if (typeof drawVisualizer === "function") drawVisualizer();
       }
 
       function checkSell() {
@@ -2291,7 +2386,11 @@
           "whatIfBox",
           { "final price": money(sale) },
           { "final price": money(afterCoupon) },
-          "Take an extra " + coupon + "% off your sale price of " + money(sale) + ":",
+          "Take an extra " +
+            coupon +
+            "% off your sale price of " +
+            money(sale) +
+            ":",
         );
       }
 
@@ -2315,45 +2414,55 @@
       }
 
       function drawVisualizer() {
-        const sub = num("subtotal") || 0;
-        const tax = num("tax-rate") || 0;
-        const tip = num("tip-pct") || 0;
+        let cost = num("cost") || 0;
+        let markupPct = num("markup") || 0;
+        let discPct = num("discount") || 0;
+        let taxPct = num("tax-rate") || 0;
 
-        let html = "";
-        if (sub > 0) {
-          const taxAmt = sub * (tax / 100);
-          const tipAmt = sub * (tip / 100);
-          const total = sub + taxAmt + tipAmt;
+        // Show a worked EXAMPLE receipt by default so the card always has a
+        // reference; switches to the student's real numbers once they enter a
+        // cost and markup.
+        const isExample = !(cost > 0 && markupPct > 0);
+        if (isExample) {
+          cost = 40;
+          markupPct = 25;
+          discPct = 20;
+          taxPct = 7.25;
+        }
 
-          html = `
-            <g transform="translate(130, 20)">
+        const sell = cost * (1 + markupPct / 100);
+        const sale = sell * (1 - discPct / 100);
+        const taxAmt = sale * (taxPct / 100);
+        const total = sale + taxAmt;
+
+        const html = `
+            <g transform="translate(130, 15)">
               <!-- Receipt Background -->
-              <rect x="0" y="0" width="240" height="200" fill="#fcfcfc" stroke="#cbd5e1" stroke-width="2" filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.05))" />
+              <rect x="0" y="0" width="240" height="210" fill="#fcfcfc" stroke="#cbd5e1" stroke-width="2" filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.05))" />
               <line x1="10" y1="35" x2="230" y2="35" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="3,3" />
-              <text x="120" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">DINER BILL RECEIPT</text>
-              
-              <text x="20" y="60" font-size="13" fill="#5e6e7e">Subtotal:</text>
-              <text x="220" y="60" text-anchor="end" font-size="13" font-weight="bold" fill="#0f2b3c">$${sub.toFixed(2)}</text>
-              
-              <text x="20" y="90" font-size="13" fill="#5e6e7e">Sales Tax (${tax}%):</text>
-              <text x="220" y="90" text-anchor="end" font-size="13" fill="#0f2b3c">$${taxAmt.toFixed(2)}</text>
-              
-              <text x="20" y="120" font-size="13" fill="#5e6e7e">Tip (${tip}%):</text>
-              <text x="220" y="120" text-anchor="end" font-size="13" fill="#0f2b3c">$${tipAmt.toFixed(2)}</text>
-              
-              <line x1="10" y1="140" x2="230" y2="140" stroke="#cbd5e1" stroke-width="1.5" />
-              <text x="20" y="170" font-size="14" font-weight="bold" fill="#2d874b">GRAND TOTAL:</text>
-              <text x="220" y="170" text-anchor="end" font-size="14" font-weight="bold" fill="#2d874b">$${total.toFixed(2)}</text>
+              <text x="120" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">POP-UP SHOP RECEIPT</text>
+
+              <text x="20" y="58" font-size="13" fill="#5e6e7e">Selling Price (+${markupPct}%):</text>
+              <text x="220" y="58" text-anchor="end" font-size="13" font-weight="bold" fill="#0f2b3c">$${sell.toFixed(2)}</text>
+
+              <text x="20" y="85" font-size="13" fill="#5e6e7e">Discount (-${discPct}%):</text>
+              <text x="220" y="85" text-anchor="end" font-size="13" fill="#c45a3c">-$${(sell - sale).toFixed(2)}</text>
+
+              <text x="20" y="112" font-size="13" fill="#5e6e7e">Sale Price:</text>
+              <text x="220" y="112" text-anchor="end" font-size="13" fill="#0f2b3c">$${sale.toFixed(2)}</text>
+
+              <text x="20" y="139" font-size="13" fill="#5e6e7e">Sales Tax (${taxPct}%):</text>
+              <text x="220" y="139" text-anchor="end" font-size="13" fill="#0f2b3c">$${taxAmt.toFixed(2)}</text>
+
+              <line x1="10" y1="158" x2="230" y2="158" stroke="#cbd5e1" stroke-width="1.5" />
+              <text x="20" y="185" font-size="14" font-weight="bold" fill="#2d874b">GRAND TOTAL:</text>
+              <text x="220" y="185" text-anchor="end" font-size="14" font-weight="bold" fill="#2d874b">$${total.toFixed(2)}</text>
             </g>
           `;
-        } else {
-          html = `
-            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Diner Bill values to print receipt</text>
-          `;
-        }
 
         const svgString = `
           <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
+            ${isExample ? `<rect x="12" y="10" width="86" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="55" y="24" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example</text>` : ""}
             ${html}
           </svg>
         `;
@@ -2491,6 +2600,7 @@
       document.addEventListener("DOMContentLoaded", function () {
         renderWorld();
         PK.initLevel({ storageKey: "u4ProjectA", default: "level-1" });
+        PK.initTts({ storageKey: "u4ProjectA" });
         PK.load("u4ProjectA", { after: recalcAll });
         updateProgress();
       });
@@ -2499,9 +2609,109 @@
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
     <!-- nsr-injected:end -->
+    <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
+    <script type="application/json" id="pk-research">
+      {
+        "icon": "🔎",
+        "title": "Research Lab — Find the Real Better Buy",
+        "intro": "Smart shoppers compare unit prices, not sticker prices. Look up real prices and sizes, then compute who really wins.",
+        "brief": {
+          "theme": "field",
+          "title": "🧾 Your Research Mission",
+          "hook": "Find <b>real prices and sizes</b>, then use unit price to find the true better buy.",
+          "steps": [
+            "Open a link (new tab — you keep your project).",
+            "Record real prices and sizes in Field Notes.",
+            "Compute unit prices in the math problems.",
+            "Check off the Investigation Checklist."
+          ]
+        },
+        "fieldNotes": {
+          "title": "Field Notes — Record What You Find",
+          "intro": "Jot the exact number or rule you find. You'll reuse these in the math below.",
+          "fields": [
+            {
+              "label": "How to find a unit price",
+              "source": "Math is Fun",
+              "placeholder": "price ÷ amount",
+              "hint": "Cost per 1 ounce / item / gram."
+            },
+            {
+              "label": "Product A: price and size",
+              "source": "Any store site / label",
+              "placeholder": "$4.50 for 15 oz",
+              "hint": "Read it off a real label or listing."
+            },
+            {
+              "label": "Product B: price and size",
+              "source": "Any store site / label",
+              "placeholder": "$6.00 for 24 oz",
+              "hint": "Same kind of product, different size."
+            },
+            {
+              "label": "A unit conversion you need",
+              "source": "Math is Fun",
+              "placeholder": "16 oz = 1 lb",
+              "hint": "Match units before comparing."
+            }
+          ]
+        },
+        "mathTasks": [
+          {
+            "title": "1 · Unit price A",
+            "prompt": "Use Field Note 2 and <b>price ÷ size</b> to find Product A's price per unit. Show the division.",
+            "level2": "Round your unit price to the nearest cent."
+          },
+          {
+            "title": "2 · Better buy",
+            "prompt": "Find Product B's unit price, then say which is the better buy and by how much per unit.",
+            "level2": "If you buy enough to get 60 oz, how much do you save by choosing the better buy?"
+          },
+          {
+            "title": "3 · Convert and compare",
+            "prompt": "Use your conversion (Field Note 4) to rewrite one size in different units, then re-check the comparison.",
+            "level2": "Explain why comparing prices without matching units can trick a shopper."
+          }
+        ],
+        "investigationChecklist": [
+          "I recorded how to find a unit price.",
+          "I found two real products with price and size.",
+          "I computed unit price for both.",
+          "I named the better buy with a reason.",
+          "I used a unit conversion.",
+          "I explained why unit price beats sticker price."
+        ],
+        "links": [
+          {
+            "icon": "🏷️",
+            "name": "Math is Fun — Unit Price",
+            "url": "https://www.mathsisfun.com/measure/unit-price.html",
+            "find": "How to compute price per unit and compare.",
+            "look": "divide price by amount"
+          },
+          {
+            "icon": "🔁",
+            "name": "Math is Fun — Unit Conversion Charts",
+            "url": "https://www.mathsisfun.com/metric-imperial-conversion-charts.html",
+            "find": "Common conversions between units.",
+            "look": "ounces, pounds, grams, liters"
+          },
+          {
+            "icon": "📐",
+            "name": "Math is Fun — US Standard Units",
+            "url": "https://www.mathsisfun.com/measure/us-standard-units-introduction.html",
+            "find": "What each measurement unit means.",
+            "look": "ounces vs pounds, cups vs quarts"
+          }
+        ],
+        "note": "These sites were picked for class. They open in a new tab so you keep your project. If a page asks you to sign in or buy something, just close it and come back."
+      }
+    </script>
     <script src="/shared/projects/projects-tabs.js" defer></script>
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+    <script src="/shared/projects/projects-interactive.js" defer></script>
+    <script src="/shared/projects/manip-percent-bar.js" defer></script>
+    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
+    <script src="/assets/math-workbench-launcher.js" defer></script>
+    <!-- mwb-injected:end -->
+  </body>
 </html>

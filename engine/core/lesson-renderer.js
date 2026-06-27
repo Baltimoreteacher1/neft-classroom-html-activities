@@ -28,6 +28,8 @@ import { createProblemCard, problemTypeLabel } from "./problem-shell.js";
 import { enableWordProblemAnnotation } from "./annotate.js";
 import { renderThemeIllustration } from "./theme-illustrations.js";
 import { deriveWorkedSteps } from "./worked-steps.js";
+import { isTeacherMode } from "./teacher-mode.js";
+import { mountStuckSupport } from "./stuck-support.js";
 import {
   buildPhaseTransitionMeta,
   buildPrintableSummary,
@@ -926,6 +928,20 @@ export function renderComponent(container, problemDef, onAnswer, shellOpts) {
         body.append(continueBtn);
       }
   }
+
+  // Teacher Mode: let a teacher advance past any item WITHOUT doing the work,
+  // so they can walk/project the whole lesson freely. Students never see this.
+  // It runs the same completion path as a correct answer, so the practice
+  // sequence (and phase) advances normally.
+  if (isTeacherMode()) {
+    const skip = document.createElement("button");
+    skip.type = "button";
+    skip.className = "btn btn-secondary btn-sm teacher-skip no-print";
+    skip.textContent = "⏭ Next (teacher)";
+    skip.title = "Teacher Mode — advance without answering";
+    skip.addEventListener("click", () => wrappedOnAnswer(true));
+    body.append(skip);
+  }
 }
 
 // Readable, non-blank fallback for component types the renderer does not know.
@@ -1278,8 +1294,26 @@ function renderShowYourWork(host, config, state) {
     input.value = get(key);
     input.addEventListener("input", () => set(key, input.value));
     wrap.append(input);
+    // Optional minimum-word goal with a live counter (writing scaffold #4).
+    if (opts.minWords) {
+      const counter = document.createElement("div");
+      counter.className = "syw-wordcount";
+      const countWords = (v) => (v.trim() ? v.trim().split(/\s+/).length : 0);
+      const update = () => {
+        const n = countWords(input.value);
+        counter.textContent = `${n} / ${opts.minWords} words`;
+        counter.classList.toggle("is-ready", n >= opts.minWords);
+      };
+      input.addEventListener("input", update);
+      update();
+      wrap.append(counter);
+    }
     return wrap;
   };
+
+  // Shared "I'm stuck" support bar — hint / first step / example / vocab /
+  // sentence starter / simpler words, available on every lesson's solve.
+  mountStuckSupport(card, { config, state });
 
   const steps = document.createElement("div");
   steps.className = "syw-steps";
@@ -1292,6 +1326,7 @@ function renderShowYourWork(host, config, state) {
     }),
     field("work", "3 · My work", "show each step", {
       rows: 5,
+      minWords: 15,
       placeholder: "Step 1…\nStep 2…",
     }),
     field("answer", "4 · My answer", "label your units", {
@@ -1619,26 +1654,10 @@ function renderLaunchPhase(el, state, ctx, config) {
   // Notice & Wonder (Reveal data-context). No-op when absent.
   renderNoticeAndWonder(el, config, state);
 
-  // ── Launch ────────────────────────────────────────────────────────────────
-  // The next part down: the application scenario and the guided solve.
-  phaseHeader(
-    el,
-    "🚀",
-    "section-icon-amber",
-    "Launch",
-    "Read the problem, then show your work.",
-  );
-
-  const scenario = document.createElement("div");
-  scenario.className = "card launch-scenario-card";
-  scenario.innerHTML = `
-    <div class="badge badge-amber mb-4">${esc(cfg.badge || config.title)}</div>
-    <p class="launch-narrative" data-annotate="word-problem">${renderMathText(cfg.narrative)}</p>`;
-  if (cfg.contextImage || config.theme) {
-    renderThemeIllustration(scenario, config.theme, cfg.contextImage || null);
-  }
-  el.append(scenario);
-
+  // The observation visual + generic Notice/Wonder belong with the "Be Curious"
+  // image — the thing students observe — NOT the Launch word problem. They are
+  // rendered here, before Launch, so "I notice / I wonder" matches the Be Curious
+  // visual rather than the scenario.
   // Opt-in concrete data visual so "I notice / I wonder" has something to see.
   renderLaunchVisual(el, cfg.visual);
 
@@ -1682,6 +1701,27 @@ function renderLaunchPhase(el, state, ctx, config) {
     grid.append(noticeCard, wonderCard);
     el.append(grid);
   }
+
+  // ── Launch ────────────────────────────────────────────────────────────────
+  // Now the application scenario and the guided solve — the word problem lives
+  // here, after Be Curious / Notice & Wonder.
+  phaseHeader(
+    el,
+    "🚀",
+    "section-icon-amber",
+    "Launch",
+    "Read the problem, then show your work.",
+  );
+
+  const scenario = document.createElement("div");
+  scenario.className = "card launch-scenario-card";
+  scenario.innerHTML = `
+    <div class="badge badge-amber mb-4">${esc(cfg.badge || config.title)}</div>
+    <p class="launch-narrative" data-annotate="word-problem">${renderMathText(cfg.narrative)}</p>`;
+  if (cfg.contextImage || config.theme) {
+    renderThemeIllustration(scenario, config.theme, cfg.contextImage || null);
+  }
+  el.append(scenario);
 
   // Hand off to the full step-by-step Learn It page — the single place the
   // concept is taught. (Concept teaching no longer renders inside Launch; it

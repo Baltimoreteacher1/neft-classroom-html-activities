@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
+    @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap");
     :root {
       --ref-navy: #17324D;
       --ref-teal: #1FA6A2;
@@ -1112,10 +1113,32 @@
     .cfu-card { text-align:center; }
     .cfu-poll { display:flex; gap:8px; justify-content:center; margin:12px 0; }
     .cfu-btn { flex:none; min-width:100px; }
-    .diff-paths-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+    .diff-paths-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:8px; }
     .diff-path { border:2px solid var(--path-color, var(--teal)); border-radius:8px; padding:10px; }
     .diff-path-label { font-size:11px; font-weight:800; color:var(--navy); margin-bottom:6px; }
     .diff-path-stem { font-size:10px; line-height:1.4; margin:0; }
+    /* Read-aloud (TTS) button — additive, accessible, never shown in print */
+    .read-aloud-btn { display:inline-flex; align-items:center; justify-content:center; vertical-align:middle; margin-left:6px; padding:0; width:1.7em; height:1.7em; min-width:1.7em; border:1.5px solid var(--teal); border-radius:50%; background:var(--white,#fff); color:var(--navy); font-size:0.78em; line-height:1; cursor:pointer; transition:transform .12s ease, background .12s ease; }
+    .read-aloud-btn:hover { background:var(--teal-light); transform:scale(1.08); }
+    .read-aloud-btn:active { transform:scale(0.96); }
+    .read-aloud-btn:focus-visible { outline:3px solid var(--amber); outline-offset:2px; }
+    @media print { .read-aloud-btn { display:none !important; } }
+    /* Bilingual Spanish stem line under English — gated by .bilingual-on (default on) */
+    .stem-es { display:block; margin-top:2px; font-size:0.82em; font-style:italic; color:var(--navy); opacity:0.72; }
+    body:not(.bilingual-on) .stem-es,
+    body:not(.bilingual-on) .objective-text-es,
+    body:not(.bilingual-on) .vocab-term-es,
+    body:not(.bilingual-on) .vocab-definition-es { display:none; }
+    .tt-stems-extend { margin-top:8px; padding-top:8px; border-top:1px dashed var(--gray,#ccc); }
+    .tt-stem-extend { opacity:0.92; }
+    /* Header accessibility / language controls */
+    .a11y-controls { display:flex; align-items:center; gap:8px; }
+    .a11y-btn { font-size:12px; font-weight:700; color:var(--navy); background:var(--white,#fff); border:1.5px solid var(--teal); border-radius:16px; padding:5px 12px; cursor:pointer; }
+    .a11y-btn[aria-pressed="false"] { opacity:0.55; }
+    .a11y-btn:focus-visible, .a11y-rate select:focus-visible { outline:3px solid var(--amber); outline-offset:2px; }
+    .a11y-rate { display:inline-flex; align-items:center; gap:4px; font-size:12px; color:var(--navy); }
+    .a11y-rate select { font-size:12px; border:1.5px solid var(--teal); border-radius:14px; padding:4px 8px; background:var(--white,#fff); color:var(--navy); cursor:pointer; }
+    @media print { .a11y-controls { display:none !important; } }
     .workspace-table { width:100%; border-collapse:collapse; font-size:11px; }
     .workspace-table th, .workspace-table td { border:1px solid #dadce0; padding:6px 8px; text-align:center; }
     .workspace-table th { background:var(--teal-light); font-weight:800; }
@@ -2012,15 +2035,14 @@
       .presenter-hud { font-size: 10px; padding: 6px 10px; }
     }
     
+.slide-main-title,.title-heading,.g-doc-title,.section-divider-title,
+.post-it-title,.g-title-block h1,.g-title-block h2,h1,h2{
+  font-family:"Fraunces",Georgia,"Times New Roman",serif !important;
+  letter-spacing:-0.01em;
+}
   </style>
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css">
-  <!-- nsr-injected:end -->
-  <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
 </head>
-<body>
+<body class="bilingual-on">
 
   <!-- Google Slides Chrome Bar -->
   <header class="g-chrome">
@@ -2039,6 +2061,16 @@
       </div>
     </div>
     <div class="g-right">
+      <div class="a11y-controls" role="group" aria-label="Accessibility and language controls">
+        <button class="a11y-btn" id="bilingual-toggle" aria-pressed="true" onclick="toggleBilingual(this)" title="Show or hide Spanish support">🌐 Español</button>
+        <label class="a11y-rate" title="Read-aloud speed">🔊
+          <select id="tts-rate-select" aria-label="Read-aloud speed" onchange="setSlideTtsRate(this.value)">
+            <option value="0.7">Slow</option>
+            <option value="0.85" selected>Normal</option>
+            <option value="1">Fast</option>
+          </select>
+        </label>
+      </div>
       
       <button class="btn-present" onclick="enterFullscreen()">
         ▶ Present
@@ -2393,13 +2425,13 @@
     <div class="ref-two-col">
       <div class="ref-main-panel">
     <h2 class="card-title">🎯 Content Objective <span class="bilingual-tag">/ Objetivo de contenido</span></h2>
-    <p class="objective-text">I can choose the best measure of center for a data set based on its shape.</p>
+    <p class="objective-text">I can choose the best measure of center for a data set based on its shape.<button type="button" class="read-aloud-btn" aria-label="Read the content objective aloud" title="Read the content objective aloud" data-speak="I can choose the best measure of center for a data set based on its shape." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
   </div>
       <aside class="ref-side-panel">
         <div class="ref-side-header">Today&#039;s Objectives</div>
         <div class="ref-side-body">
     <h2 class="card-title">🗣️ Language Objective <span class="bilingual-tag">/ Objetivo de lenguaje</span></h2>
-    <p class="objective-text">I can explain my choice using the words mean, median, outlier, and skewed.</p>
+    <p class="objective-text">I can explain my choice using the words mean, median, outlier, and skewed.<button type="button" class="read-aloud-btn" aria-label="Read the language objective aloud" title="Read the language objective aloud" data-speak="I can explain my choice using the words mean, median, outlier, and skewed." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     
     <p class="ref-teacher-note ref-note-say"><span>👩‍🏫</span> Read objectives aloud. Ask: What will you be able to do by the end of class?</p>
     <p class="ref-teacher-note ref-note-ask"><span>❓</span> Which vocabulary words do you already know? Which are new?</p>
@@ -2556,7 +2588,7 @@
     <div class="ref-curious-layout">
       <div class="ref-visual-prompt">
         <span class="ref-prompt-badge">Visual Prompt</span>
-        <p class="ref-instruction">Stats Report Decision</p><p class="card-desc">The league is creating awards for the season. For the scoring title, they need to pick the best measure of a typical game. Here are the top scorer&#039;s points per game: 22, 24, 20, 25, 23, 21, 58. That 58-point game was a record-breaker! Should the league report the mean (27.6) or the median (23) as the player&#039;s typical scoring?</p><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 440 240" style="background:white; border-radius:8px;"><rect x="5" y="5" width="430" height="230" fill="#F9FBFC" stroke="#1FA6A2" stroke-width="2"/><line x1="20" y1="5" x2="20" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="50" y1="5" x2="50" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="80" y1="5" x2="80" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="110" y1="5" x2="110" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="140" y1="5" x2="140" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="170" y1="5" x2="170" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="200" y1="5" x2="200" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="230" y1="5" x2="230" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="260" y1="5" x2="260" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="290" y1="5" x2="290" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="320" y1="5" x2="320" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="350" y1="5" x2="350" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="380" y1="5" x2="380" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="410" y1="5" x2="410" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="20" x2="435" y2="20" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="50" x2="435" y2="50" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="80" x2="435" y2="80" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="110" x2="435" y2="110" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="140" x2="435" y2="140" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="170" x2="435" y2="170" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="200" x2="435" y2="200" stroke="#E1EAEF" stroke-width="1"/><text x="20" y="32" font-family="Outfit, sans-serif" font-size="12" fill="#17324D" font-weight="bold">Top scorer — points per game</text><line x1="40" y1="160" x2="400" y2="160" stroke="#17324D" stroke-width="2"/><line x1="50" y1="160" x2="50" y2="165" stroke="#17324D" stroke-width="1"/><text x="50" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">20</text><line x1="58.94736842105263" y1="160" x2="58.94736842105263" y2="165" stroke="#17324D" stroke-width="1"/><text x="58.94736842105263" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">21</text><line x1="67.89473684210526" y1="160" x2="67.89473684210526" y2="165" stroke="#17324D" stroke-width="1"/><text x="67.89473684210526" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">22</text><line x1="76.84210526315789" y1="160" x2="76.84210526315789" y2="165" stroke="#17324D" stroke-width="1"/><text x="76.84210526315789" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">23</text><line x1="85.78947368421052" y1="160" x2="85.78947368421052" y2="165" stroke="#17324D" stroke-width="1"/><text x="85.78947368421052" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">24</text><line x1="94.73684210526315" y1="160" x2="94.73684210526315" y2="165" stroke="#17324D" stroke-width="1"/><text x="94.73684210526315" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">25</text><line x1="103.6842105263158" y1="160" x2="103.6842105263158" y2="165" stroke="#17324D" stroke-width="1"/><text x="103.6842105263158" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">26</text><line x1="112.63157894736842" y1="160" x2="112.63157894736842" y2="165" stroke="#17324D" stroke-width="1"/><text x="112.63157894736842" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">27</text><line x1="121.57894736842105" y1="160" x2="121.57894736842105" y2="165" stroke="#17324D" stroke-width="1"/><text x="121.57894736842105" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">28</text><line x1="130.5263157894737" y1="160" x2="130.5263157894737" y2="165" stroke="#17324D" stroke-width="1"/><text x="130.5263157894737" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">29</text><line x1="139.4736842105263" y1="160" x2="139.4736842105263" y2="165" stroke="#17324D" stroke-width="1"/><text x="139.4736842105263" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">30</text><line x1="148.42105263157896" y1="160" x2="148.42105263157896" y2="165" stroke="#17324D" stroke-width="1"/><text x="148.42105263157896" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">31</text><line x1="157.3684210526316" y1="160" x2="157.3684210526316" y2="165" stroke="#17324D" stroke-width="1"/><text x="157.3684210526316" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">32</text><line x1="166.31578947368422" y1="160" x2="166.31578947368422" y2="165" stroke="#17324D" stroke-width="1"/><text x="166.31578947368422" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">33</text><line x1="175.26315789473685" y1="160" x2="175.26315789473685" y2="165" stroke="#17324D" stroke-width="1"/><text x="175.26315789473685" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">34</text><line x1="184.21052631578948" y1="160" x2="184.21052631578948" y2="165" stroke="#17324D" stroke-width="1"/><text x="184.21052631578948" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">35</text><line x1="193.1578947368421" y1="160" x2="193.1578947368421" y2="165" stroke="#17324D" stroke-width="1"/><text x="193.1578947368421" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">36</text><line x1="202.10526315789474" y1="160" x2="202.10526315789474" y2="165" stroke="#17324D" stroke-width="1"/><text x="202.10526315789474" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">37</text><line x1="211.05263157894737" y1="160" x2="211.05263157894737" y2="165" stroke="#17324D" stroke-width="1"/><text x="211.05263157894737" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">38</text><line x1="220" y1="160" x2="220" y2="165" stroke="#17324D" stroke-width="1"/><text x="220" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">39</text><line x1="228.94736842105263" y1="160" x2="228.94736842105263" y2="165" stroke="#17324D" stroke-width="1"/><text x="228.94736842105263" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">40</text><line x1="237.89473684210526" y1="160" x2="237.89473684210526" y2="165" stroke="#17324D" stroke-width="1"/><text x="237.89473684210526" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">41</text><line x1="246.8421052631579" y1="160" x2="246.8421052631579" y2="165" stroke="#17324D" stroke-width="1"/><text x="246.8421052631579" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">42</text><line x1="255.78947368421052" y1="160" x2="255.78947368421052" y2="165" stroke="#17324D" stroke-width="1"/><text x="255.78947368421052" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">43</text><line x1="264.7368421052632" y1="160" x2="264.7368421052632" y2="165" stroke="#17324D" stroke-width="1"/><text x="264.7368421052632" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">44</text><line x1="273.68421052631584" y1="160" x2="273.68421052631584" y2="165" stroke="#17324D" stroke-width="1"/><text x="273.68421052631584" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">45</text><line x1="282.63157894736844" y1="160" x2="282.63157894736844" y2="165" stroke="#17324D" stroke-width="1"/><text x="282.63157894736844" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">46</text><line x1="291.57894736842104" y1="160" x2="291.57894736842104" y2="165" stroke="#17324D" stroke-width="1"/><text x="291.57894736842104" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">47</text><line x1="300.5263157894737" y1="160" x2="300.5263157894737" y2="165" stroke="#17324D" stroke-width="1"/><text x="300.5263157894737" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">48</text><line x1="309.4736842105263" y1="160" x2="309.4736842105263" y2="165" stroke="#17324D" stroke-width="1"/><text x="309.4736842105263" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">49</text><line x1="318.42105263157896" y1="160" x2="318.42105263157896" y2="165" stroke="#17324D" stroke-width="1"/><text x="318.42105263157896" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">50</text><line x1="327.36842105263156" y1="160" x2="327.36842105263156" y2="165" stroke="#17324D" stroke-width="1"/><text x="327.36842105263156" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">51</text><line x1="336.3157894736842" y1="160" x2="336.3157894736842" y2="165" stroke="#17324D" stroke-width="1"/><text x="336.3157894736842" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">52</text><line x1="345.2631578947369" y1="160" x2="345.2631578947369" y2="165" stroke="#17324D" stroke-width="1"/><text x="345.2631578947369" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">53</text><line x1="354.2105263157895" y1="160" x2="354.2105263157895" y2="165" stroke="#17324D" stroke-width="1"/><text x="354.2105263157895" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">54</text><line x1="363.15789473684214" y1="160" x2="363.15789473684214" y2="165" stroke="#17324D" stroke-width="1"/><text x="363.15789473684214" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">55</text><line x1="372.10526315789474" y1="160" x2="372.10526315789474" y2="165" stroke="#17324D" stroke-width="1"/><text x="372.10526315789474" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">56</text><line x1="381.0526315789474" y1="160" x2="381.0526315789474" y2="165" stroke="#17324D" stroke-width="1"/><text x="381.0526315789474" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">57</text><line x1="390" y1="160" x2="390" y2="165" stroke="#17324D" stroke-width="1"/><text x="390" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">58</text><circle cx="67.89473684210526" cy="153" r="4" fill="#1FA6A2" stroke="#17324D" stroke-width="1"/><circle cx="85.78947368421052" cy="153" r="4" fill="#1FA6A2" stroke="#17324D" stroke-width="1"/><circle cx="50" cy="153" r="4" fill="#1FA6A2" stroke="#17324D" stroke-width="1"/><circle cx="94.73684210526315" cy="153" r="4" fill="#1FA6A2" stroke="#17324D" stroke-width="1"/><circle cx="76.84210526315789" cy="153" r="4" fill="#1FA6A2" stroke="#17324D" stroke-width="1"/><circle cx="58.94736842105263" cy="153" r="4" fill="#1FA6A2" stroke="#17324D" stroke-width="1"/><circle cx="390" cy="153" r="4" fill="#1FA6A2" stroke="#17324D" stroke-width="1"/><text x="220" y="188" font-family="Outfit, sans-serif" font-size="9" fill="#17324D" font-weight="bold" text-anchor="middle">Points per game</text><text x="20" y="210" font-family="Hanken Grotesk, sans-serif" font-size="10" fill="#24323F" font-style="italic">Notice the lone 58 (an outlier). It pulls the mean up to 27.6, while the median stays at 23.</text></svg>
+        <p class="ref-instruction">Stats Report Decision</p><p class="card-desc">The league is creating awards for the season. For the scoring title, they need to pick the best measure of a typical game. Here are the top scorer&#039;s points per game: 22, 24, 20, 25, 23, 21, 58. That 58-point game was a record-breaker! Should the league report the mean (27.6) or the median (23) as the player&#039;s typical scoring?<button type="button" class="read-aloud-btn" aria-label="Read the prompt aloud" title="Read the prompt aloud" data-speak="The league is creating awards for the season. For the scoring title, they need to pick the best measure of a typical game. Here are the top scorer&#039;s points per game: 22, 24, 20, 25, 23, 21, 58. That 58-point game was a record-breaker! Should the league report the mean (27.6) or the median (23) as the player&#039;s typical scoring?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 440 240" style="background:white; border-radius:8px;"><rect x="5" y="5" width="430" height="230" fill="#F9FBFC" stroke="#1FA6A2" stroke-width="2"/><line x1="20" y1="5" x2="20" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="50" y1="5" x2="50" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="80" y1="5" x2="80" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="110" y1="5" x2="110" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="140" y1="5" x2="140" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="170" y1="5" x2="170" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="200" y1="5" x2="200" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="230" y1="5" x2="230" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="260" y1="5" x2="260" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="290" y1="5" x2="290" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="320" y1="5" x2="320" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="350" y1="5" x2="350" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="380" y1="5" x2="380" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="410" y1="5" x2="410" y2="235" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="20" x2="435" y2="20" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="50" x2="435" y2="50" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="80" x2="435" y2="80" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="110" x2="435" y2="110" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="140" x2="435" y2="140" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="170" x2="435" y2="170" stroke="#E1EAEF" stroke-width="1"/><line x1="5" y1="200" x2="435" y2="200" stroke="#E1EAEF" stroke-width="1"/><text x="20" y="32" font-family="Outfit, sans-serif" font-size="12" fill="#17324D" font-weight="bold">Top scorer — points per game</text><line x1="40" y1="160" x2="400" y2="160" stroke="#17324D" stroke-width="2"/><line x1="50" y1="160" x2="50" y2="165" stroke="#17324D" stroke-width="1"/><text x="50" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">20</text><line x1="58.94736842105263" y1="160" x2="58.94736842105263" y2="165" stroke="#17324D" stroke-width="1"/><text x="58.94736842105263" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">21</text><line x1="67.89473684210526" y1="160" x2="67.89473684210526" y2="165" stroke="#17324D" stroke-width="1"/><text x="67.89473684210526" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">22</text><line x1="76.84210526315789" y1="160" x2="76.84210526315789" y2="165" stroke="#17324D" stroke-width="1"/><text x="76.84210526315789" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">23</text><line x1="85.78947368421052" y1="160" x2="85.78947368421052" y2="165" stroke="#17324D" stroke-width="1"/><text x="85.78947368421052" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">24</text><line x1="94.73684210526315" y1="160" x2="94.73684210526315" y2="165" stroke="#17324D" stroke-width="1"/><text x="94.73684210526315" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">25</text><line x1="103.6842105263158" y1="160" x2="103.6842105263158" y2="165" stroke="#17324D" stroke-width="1"/><text x="103.6842105263158" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">26</text><line x1="112.63157894736842" y1="160" x2="112.63157894736842" y2="165" stroke="#17324D" stroke-width="1"/><text x="112.63157894736842" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">27</text><line x1="121.57894736842105" y1="160" x2="121.57894736842105" y2="165" stroke="#17324D" stroke-width="1"/><text x="121.57894736842105" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">28</text><line x1="130.5263157894737" y1="160" x2="130.5263157894737" y2="165" stroke="#17324D" stroke-width="1"/><text x="130.5263157894737" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">29</text><line x1="139.4736842105263" y1="160" x2="139.4736842105263" y2="165" stroke="#17324D" stroke-width="1"/><text x="139.4736842105263" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">30</text><line x1="148.42105263157896" y1="160" x2="148.42105263157896" y2="165" stroke="#17324D" stroke-width="1"/><text x="148.42105263157896" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">31</text><line x1="157.3684210526316" y1="160" x2="157.3684210526316" y2="165" stroke="#17324D" stroke-width="1"/><text x="157.3684210526316" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">32</text><line x1="166.31578947368422" y1="160" x2="166.31578947368422" y2="165" stroke="#17324D" stroke-width="1"/><text x="166.31578947368422" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">33</text><line x1="175.26315789473685" y1="160" x2="175.26315789473685" y2="165" stroke="#17324D" stroke-width="1"/><text x="175.26315789473685" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">34</text><line x1="184.21052631578948" y1="160" x2="184.21052631578948" y2="165" stroke="#17324D" stroke-width="1"/><text x="184.21052631578948" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">35</text><line x1="193.1578947368421" y1="160" x2="193.1578947368421" y2="165" stroke="#17324D" stroke-width="1"/><text x="193.1578947368421" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">36</text><line x1="202.10526315789474" y1="160" x2="202.10526315789474" y2="165" stroke="#17324D" stroke-width="1"/><text x="202.10526315789474" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">37</text><line x1="211.05263157894737" y1="160" x2="211.05263157894737" y2="165" stroke="#17324D" stroke-width="1"/><text x="211.05263157894737" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">38</text><line x1="220" y1="160" x2="220" y2="165" stroke="#17324D" stroke-width="1"/><text x="220" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">39</text><line x1="228.94736842105263" y1="160" x2="228.94736842105263" y2="165" stroke="#17324D" stroke-width="1"/><text x="228.94736842105263" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">40</text><line x1="237.89473684210526" y1="160" x2="237.89473684210526" y2="165" stroke="#17324D" stroke-width="1"/><text x="237.89473684210526" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">41</text><line x1="246.8421052631579" y1="160" x2="246.8421052631579" y2="165" stroke="#17324D" stroke-width="1"/><text x="246.8421052631579" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">42</text><line x1="255.78947368421052" y1="160" x2="255.78947368421052" y2="165" stroke="#17324D" stroke-width="1"/><text x="255.78947368421052" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">43</text><line x1="264.7368421052632" y1="160" x2="264.7368421052632" y2="165" stroke="#17324D" stroke-width="1"/><text x="264.7368421052632" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">44</text><line x1="273.68421052631584" y1="160" x2="273.68421052631584" y2="165" stroke="#17324D" stroke-width="1"/><text x="273.68421052631584" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">45</text><line x1="282.63157894736844" y1="160" x2="282.63157894736844" y2="165" stroke="#17324D" stroke-width="1"/><text x="282.63157894736844" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">46</text><line x1="291.57894736842104" y1="160" x2="291.57894736842104" y2="165" stroke="#17324D" stroke-width="1"/><text x="291.57894736842104" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">47</text><line x1="300.5263157894737" y1="160" x2="300.5263157894737" y2="165" stroke="#17324D" stroke-width="1"/><text x="300.5263157894737" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">48</text><line x1="309.4736842105263" y1="160" x2="309.4736842105263" y2="165" stroke="#17324D" stroke-width="1"/><text x="309.4736842105263" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">49</text><line x1="318.42105263157896" y1="160" x2="318.42105263157896" y2="165" stroke="#17324D" stroke-width="1"/><text x="318.42105263157896" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">50</text><line x1="327.36842105263156" y1="160" x2="327.36842105263156" y2="165" stroke="#17324D" stroke-width="1"/><text x="327.36842105263156" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">51</text><line x1="336.3157894736842" y1="160" x2="336.3157894736842" y2="165" stroke="#17324D" stroke-width="1"/><text x="336.3157894736842" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">52</text><line x1="345.2631578947369" y1="160" x2="345.2631578947369" y2="165" stroke="#17324D" stroke-width="1"/><text x="345.2631578947369" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">53</text><line x1="354.2105263157895" y1="160" x2="354.2105263157895" y2="165" stroke="#17324D" stroke-width="1"/><text x="354.2105263157895" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">54</text><line x1="363.15789473684214" y1="160" x2="363.15789473684214" y2="165" stroke="#17324D" stroke-width="1"/><text x="363.15789473684214" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">55</text><line x1="372.10526315789474" y1="160" x2="372.10526315789474" y2="165" stroke="#17324D" stroke-width="1"/><text x="372.10526315789474" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">56</text><line x1="381.0526315789474" y1="160" x2="381.0526315789474" y2="165" stroke="#17324D" stroke-width="1"/><text x="381.0526315789474" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">57</text><line x1="390" y1="160" x2="390" y2="165" stroke="#17324D" stroke-width="1"/><text x="390" y="175" font-family="Outfit, sans-serif" font-size="8" fill="#17324D" font-weight="bold" text-anchor="middle">58</text><circle cx="67.89473684210526" cy="153" r="4" fill="#1FA6A2" stroke="#17324D" stroke-width="1"/><circle cx="85.78947368421052" cy="153" r="4" fill="#1FA6A2" stroke="#17324D" stroke-width="1"/><circle cx="50" cy="153" r="4" fill="#1FA6A2" stroke="#17324D" stroke-width="1"/><circle cx="94.73684210526315" cy="153" r="4" fill="#1FA6A2" stroke="#17324D" stroke-width="1"/><circle cx="76.84210526315789" cy="153" r="4" fill="#1FA6A2" stroke="#17324D" stroke-width="1"/><circle cx="58.94736842105263" cy="153" r="4" fill="#1FA6A2" stroke="#17324D" stroke-width="1"/><circle cx="390" cy="153" r="4" fill="#1FA6A2" stroke="#17324D" stroke-width="1"/><text x="220" y="188" font-family="Outfit, sans-serif" font-size="9" fill="#17324D" font-weight="bold" text-anchor="middle">Points per game</text><text x="20" y="210" font-family="Hanken Grotesk, sans-serif" font-size="10" fill="#24323F" font-style="italic">Notice the lone 58 (an outlier). It pulls the mean up to 27.6, while the median stays at 23.</text></svg>
       </div>
       <div class="ref-nw-stack">
         <div class="ref-nw-panel ref-nw-notice">
@@ -2858,37 +2890,37 @@
       </thead>
       <tbody>
     <tr>
-      <td class="ref-vocab-term">Mean<br/><em>Media</em></td>
+      <td class="ref-vocab-term">Mean<button type="button" class="read-aloud-btn" aria-label="Read Mean and its meaning aloud" title="Read Mean and its meaning aloud" data-speak="Mean. The average. Add all the numbers, then divide by how many there are." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Media</em><button type="button" class="read-aloud-btn" aria-label="Leer Media en español" title="Leer Media en español" data-speak="Media. El promedio. Suma todos los números y divide entre cuántos hay." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>The average. Add all the numbers, then divide by how many there are.<br/><em>El promedio. Suma todos los números y divide entre cuántos hay.</em></td>
       <td></td>
       <td class="ref-vocab-visual">Mean of 10, 20, 30 = (10+20+30) ÷ 3 = 20</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Median<br/><em>Mediana</em></td>
+      <td class="ref-vocab-term">Median<button type="button" class="read-aloud-btn" aria-label="Read Median and its meaning aloud" title="Read Median and its meaning aloud" data-speak="Median. The middle number when you put them in order." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Mediana</em><button type="button" class="read-aloud-btn" aria-label="Leer Mediana en español" title="Leer Mediana en español" data-speak="Mediana. El número del medio cuando los pones en orden." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>The middle number when you put them in order.<br/><em>El número del medio cuando los pones en orden.</em></td>
       <td></td>
       <td class="ref-vocab-visual">Data: 5, 8, 12, 15, 20 → median is 12 (the 3rd of 5 values)</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Outlier<br/><em>Valor atípico</em></td>
+      <td class="ref-vocab-term">Outlier<button type="button" class="read-aloud-btn" aria-label="Read Outlier and its meaning aloud" title="Read Outlier and its meaning aloud" data-speak="Outlier. A number that is much bigger or smaller than the rest." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Valor atípico</em><button type="button" class="read-aloud-btn" aria-label="Leer Valor atípico en español" title="Leer Valor atípico en español" data-speak="Valor atípico. Un número mucho mayor o menor que los demás." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>A number that is much bigger or smaller than the rest.<br/><em>Un número mucho mayor o menor que los demás.</em></td>
       <td></td>
       <td class="ref-vocab-visual">Data: 12, 14, 13, 15, 45 → 45 is far from the cluster, so it is an outlier</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Skewed<br/><em>Sesgado</em></td>
+      <td class="ref-vocab-term">Skewed<button type="button" class="read-aloud-btn" aria-label="Read Skewed and its meaning aloud" title="Read Skewed and its meaning aloud" data-speak="Skewed. When most data sits on one side with a tail on the other." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Sesgado</em><button type="button" class="read-aloud-btn" aria-label="Leer Sesgado en español" title="Leer Sesgado en español" data-speak="Sesgado. Cuando la mayoría de los datos está de un lado con una cola del otro." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>When most data sits on one side with a tail on the other.<br/><em>Cuando la mayoría de los datos está de un lado con una cola del otro.</em></td>
       <td></td>
       <td class="ref-vocab-visual">Scores: 5, 6, 7, 8, 8, 35 → most scores are low, but 35 creates a tail to the right (skewed right)</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Data distribution<br/><em>Distribución de datos</em></td>
+      <td class="ref-vocab-term">Data distribution<button type="button" class="read-aloud-btn" aria-label="Read Data distribution and its meaning aloud" title="Read Data distribution and its meaning aloud" data-speak="Data distribution. How the data looks: where it sits and how spread out it is." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Distribución de datos</em><button type="button" class="read-aloud-btn" aria-label="Leer Distribución de datos en español" title="Leer Distribución de datos en español" data-speak="Distribución de datos. Cómo se ven los datos: dónde están y qué tan separados están." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>How the data looks: where it sits and how spread out it is.<br/><em>Cómo se ven los datos: dónde están y qué tan separados están.</em></td>
       <td></td>
       <td class="ref-vocab-visual">Symmetric = even on both sides. Skewed = bunched on one side with a tail</td>
     </tr>
     <tr>
-      <td class="ref-vocab-term">Variability<br/><em>Variabilidad</em></td>
+      <td class="ref-vocab-term">Variability<button type="button" class="read-aloud-btn" aria-label="Read Variability and its meaning aloud" title="Read Variability and its meaning aloud" data-speak="Variability. How spread out the numbers are." data-lang="en-US" onclick="speakFromButton(this)">🔊</button><br/><em>Variabilidad</em><button type="button" class="read-aloud-btn" aria-label="Leer Variabilidad en español" title="Leer Variabilidad en español" data-speak="Variabilidad. Qué tan separados están los números." data-lang="es-ES" onclick="speakFromButton(this)">🔊</button></td>
       <td>How spread out the numbers are.<br/><em>Qué tan separados están los números.</em></td>
       <td></td>
       <td class="ref-vocab-visual">88, 90, 89, 91 (low variability) vs. 50, 70, 95, 100 (high variability)</td>
@@ -3024,10 +3056,11 @@
     <span class="teacher-cue-label">Time:</span>
     <span class="teacher-cue-text">90 sec</span>
   </div>
-        <p class="card-desc tt-question">A top scorer&#039;s points were 22, 24, 20, 25, 23, 21, 58. The mean is 27.6 but the median is 23. Which should the league report as the &#039;typical&#039; game, and why?</p>
+        <p class="card-desc tt-question">A top scorer&#039;s points were 22, 24, 20, 25, 23, 21, 58. The mean is 27.6 but the median is 23. Which should the league report as the &#039;typical&#039; game, and why?<button type="button" class="read-aloud-btn" aria-label="Read the question aloud" title="Read the question aloud" data-speak="A top scorer&#039;s points were 22, 24, 20, 25, 23, 21, 58. The mean is 27.6 but the median is 23. Which should the league report as the &#039;typical&#039; game, and why?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
         <div class="tt-stems-box">
           <strong>Sentence starters (tap to use):</strong>
-          <div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ The league should report the ___ because ___.</div><div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ The 58-point game is an ___ that affects the mean.</div>
+          <div class="tt-stem" onclick="insertAtCursor('The league should report the ___ because ___.')">✍️ The league should report the ___ because ___.<span class="stem-es">La liga debería reportar la ___ porque ___.</span></div><div class="tt-stem" onclick="insertAtCursor('The 58-point game is an ___ that affects the mean.')">✍️ The 58-point game is an ___ that affects the mean.<span class="stem-es">El juego de 58 puntos es un ___ que afecta la media.</span></div>
+          <div class="tt-stems-extend"><strong>Stretch further:</strong><div class="tt-stem tt-stem-extend">➕ Without the 58, the mean drops to about ___ because ___.</div><div class="tt-stem tt-stem-extend">➕ This shows the median is ___ to outliers while the mean is ___.</div></div>
         </div>
         <div class="tt-wordbank"><strong>WORD BANK:</strong><div><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">mean</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">median</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">outlier</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">skewed</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">measure of center</span></div></div>
         <div class="turn-talk-timer" id="tt-timer-launch">
@@ -3221,10 +3254,11 @@
     <span class="teacher-cue-label">Time:</span>
     <span class="teacher-cue-text">90 sec</span>
   </div>
-        <p class="card-desc tt-question">As you sort scenarios into &#039;Use Mean&#039; or &#039;Use Median,&#039; what clue tells you a data set needs the median instead of the mean?</p>
+        <p class="card-desc tt-question">As you sort scenarios into &#039;Use Mean&#039; or &#039;Use Median,&#039; what clue tells you a data set needs the median instead of the mean?<button type="button" class="read-aloud-btn" aria-label="Read the question aloud" title="Read the question aloud" data-speak="As you sort scenarios into &#039;Use Mean&#039; or &#039;Use Median,&#039; what clue tells you a data set needs the median instead of the mean?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
         <div class="tt-stems-box">
           <strong>Sentence starters (tap to use):</strong>
-          <div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ I use the median when the data has ___.</div><div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ I use the mean when the data is ___.</div>
+          <div class="tt-stem" onclick="insertAtCursor('I use the median when the data has ___.')">✍️ I use the median when the data has ___.<span class="stem-es">Uso la mediana cuando los datos tienen ___.</span></div><div class="tt-stem" onclick="insertAtCursor('I use the mean when the data is ___.')">✍️ I use the mean when the data is ___.<span class="stem-es">Uso la media cuando los datos son ___.</span></div>
+          <div class="tt-stems-extend"><strong>Stretch further:</strong><div class="tt-stem tt-stem-extend">➕ The mean is better for ___ because ___.</div><div class="tt-stem tt-stem-extend">➕ The median is better for ___ because ___.</div></div>
         </div>
         <div class="tt-wordbank"><strong>WORD BANK:</strong><div><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">mean</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">median</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">outlier</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">skewed</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">measure of center</span></div></div>
         <div class="turn-talk-timer" id="tt-timer-explore">
@@ -3461,7 +3495,7 @@
     <div class="ref-two-col">
       <div class="ref-main-panel">
     <span class="ref-error-badge">⚠ Find the Reasoning Error</span>
-    <p class="ref-instruction">A classmate turned in the work below. One step has a mistake. Read every step, find it, name it, and fix it.</p>
+    <p class="ref-instruction">A classmate turned in the work below. One step has a mistake. Read every step, find it, name it, and fix it.<button type="button" class="read-aloud-btn" aria-label="Read the directions aloud" title="Read the directions aloud" data-speak="A classmate turned in the work below. One step has a mistake. Read every step, find it, name it, and fix it." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     <div class="ref-student-work-box">
       <div class="ref-work-label">Student&apos;s work — read every step:</div>
       <div class="ea-steps">
@@ -3768,11 +3802,11 @@
     <div class="slide-badge-row"><span class="slide-badge" style="background:var(--theme-color); color:var(--white);">🏀 SPORTS ANALYTICS</span></div>
     <h3 class="slide-main-title">Differentiation Paths</h3>
     <div class="slide-card">
-      <span class="slide-badge badge-teal">🎯 THREE PATHS</span>
+      <span class="slide-badge badge-teal">🎯 CHOOSE YOUR LEVEL</span>
       <div class="teacher-cue teacher-cue-say">
     <span class="teacher-cue-icon">👩‍🏫</span>
     <span class="teacher-cue-label">Say:</span>
-    <span class="teacher-cue-text">All students work on math — choose the path that matches readiness.</span>
+    <span class="teacher-cue-text">Everyone works on the same math goal — pick the level of support that fits today.</span>
   </div>
       <div class="teacher-cue teacher-cue-time">
     <span class="teacher-cue-icon">⏱️</span>
@@ -3780,17 +3814,21 @@
     <span class="teacher-cue-text">8–10 min independent or partner</span>
   </div>
       <div class="diff-paths-grid">
+        <div class="diff-path" style="--path-color:var(--coral, #e07a5f)">
+      <div class="diff-path-label">🧩 Level 0 · Most support</div>
+      <p class="diff-path-stem">Step-by-step with a worked model and sentence frames.<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="Step-by-step with a worked model and sentence frames." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
+    </div>
         <div class="diff-path" style="--path-color:var(--amber)">
-      <div class="diff-path-label">🌱 Approaching</div>
-      <p class="diff-path-stem">A gymnast&#039;s scores are: 8.5, 8.8, 8.7, 8.6, 8.9. There are no outliers. Which measure best represents a typical score?</p>
+      <div class="diff-path-label">🌱 Level 1 · Support</div>
+      <p class="diff-path-stem">A gymnast&#039;s scores are: 8.5, 8.8, 8.7, 8.6, 8.9. There are no outliers. Which measure best represents a typical score?<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="A gymnast&#039;s scores are: 8.5, 8.8, 8.7, 8.6, 8.9. There are no outliers. Which measure best represents a typical score?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     </div>
         <div class="diff-path" style="--path-color:var(--teal)">
-      <div class="diff-path-label">🎯 On-Level</div>
-      <p class="diff-path-stem">A baseball player&#039;s batting averages over 6 seasons are: .280, .295, .290, .285, .300, .110. The .110 was an injury-shortened season. Which measure better represents the player&#039;s typical batting average?</p>
+      <div class="diff-path-label">🎯 Level 2 · Core</div>
+      <p class="diff-path-stem">A baseball player&#039;s batting averages over 6 seasons are: .280, .295, .290, .285, .300, .110. The .110 was an injury-shortened season. Which measure better represents the player&#039;s typical batting average?<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="A baseball player&#039;s batting averages over 6 seasons are: .280, .295, .290, .285, .300, .110. The .110 was an injury-shortened season. Which measure better represents the player&#039;s typical batting average?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     </div>
         <div class="diff-path" style="--path-color:var(--navy)">
-      <div class="diff-path-label">🚀 Challenge</div>
-      <p class="diff-path-stem">Extension with error analysis or multi-step reasoning.</p>
+      <div class="diff-path-label">🚀 Level 2+ · Enrichment</div>
+      <p class="diff-path-stem">Extension with error analysis or multi-step reasoning.<button type="button" class="read-aloud-btn" aria-label="Read this task aloud" title="Read this task aloud" data-speak="Extension with error analysis or multi-step reasoning." data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
     </div>
       </div>
     </div></div>
@@ -3902,7 +3940,7 @@
     <span class="teacher-cue-text">Read the scenario. Ask: where else have you seen this kind of math?</span>
   </div>
         <p class="card-desc">A sports reporter writes: &#039;The average ticket price for the playoffs is $85.&#039; The actual prices are: $45, $50, $48, $52, $55, $260. The $260 ticket is a courtside seat.</p>
-        <div class="connect-vocab"><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">mean</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">median</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">85</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">50</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">outlier</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">pulls</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">higher</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">misleading</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">typical</span></div>
+        <div class="connect-vocab"><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">mean</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">median</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">85</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">51</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">outlier</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">pulls</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">higher</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">misleading</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">typical</span></div>
       </div>
       <div class="slide-card card-teal-light">
         <h2 class="card-title">✍️ Connection Reasoning</h2>
@@ -3950,10 +3988,11 @@
     <span class="teacher-cue-label">Time:</span>
     <span class="teacher-cue-text">90 sec</span>
   </div>
-        <p class="card-desc tt-question">A reporter writes &#039;the average playoff ticket is $85,&#039; but prices are $45, $50, $48, $52, $55, $260. Is $85 a fair &#039;typical&#039; price? What measure should the reporter use?</p>
+        <p class="card-desc tt-question">A reporter writes &#039;the average playoff ticket is $85,&#039; but prices are $45, $50, $48, $52, $55, $260. Is $85 a fair &#039;typical&#039; price? What measure should the reporter use?<button type="button" class="read-aloud-btn" aria-label="Read the question aloud" title="Read the question aloud" data-speak="A reporter writes &#039;the average playoff ticket is $85,&#039; but prices are $45, $50, $48, $52, $55, $260. Is $85 a fair &#039;typical&#039; price? What measure should the reporter use?" data-lang="en-US" onclick="speakFromButton(this)">🔊</button></p>
         <div class="tt-stems-box">
           <strong>Sentence starters (tap to use):</strong>
-          <div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ $85 is / is not fair because the $260 ticket ___.</div><div class="tt-stem" onclick="insertAtCursor(this.textContent.replace(/^✍️\s*/,''))">✍️ The reporter should use the ___ because ___.</div>
+          <div class="tt-stem" onclick="insertAtCursor('$85 is / is not fair because the $260 ticket ___.')">✍️ $85 is / is not fair because the $260 ticket ___.<span class="stem-es">$85 es / no es justo porque el boleto de $260 ___.</span></div><div class="tt-stem" onclick="insertAtCursor('The reporter should use the ___ because ___.')">✍️ The reporter should use the ___ because ___.<span class="stem-es">El reportero debería usar la ___ porque ___.</span></div>
+          <div class="tt-stems-extend"><strong>Stretch further:</strong><div class="tt-stem tt-stem-extend">➕ Using the mean here could be misleading because ___.</div><div class="tt-stem tt-stem-extend">➕ An honest report would show ___ so readers understand ___.</div></div>
         </div>
         <div class="tt-wordbank"><strong>WORD BANK:</strong><div><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">mean</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">median</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">outlier</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">skewed</span><span class="vocab-pill" onclick="insertAtCursor(this.textContent)">measure of center</span></div></div>
         <div class="turn-talk-timer" id="tt-timer-connect">
@@ -4477,6 +4516,66 @@
         }
       }, 1000);
     }
+
+    // -----------------------------------------------------------------
+    // READ-ALOUD (Text-to-Speech) — accessibility + Level 1 language support
+    // Reads slide text via the browser Web Speech API. Rate is saved so a
+    // teacher/student preference persists across slides and lessons.
+    // -----------------------------------------------------------------
+    const SLIDE_TTS_RATE_KEY = 'neft-slide-tts-rate';
+    function getSlideTtsRate() {
+      const saved = parseFloat(localStorage.getItem(SLIDE_TTS_RATE_KEY));
+      return (saved && saved >= 0.5 && saved <= 1.5) ? saved : 0.85;
+    }
+    function setSlideTtsRate(rate) {
+      const r = parseFloat(rate);
+      if (r && r >= 0.5 && r <= 1.5) localStorage.setItem(SLIDE_TTS_RATE_KEY, String(r));
+    }
+    function speakText(text, lang) {
+      if (!('speechSynthesis' in window) || !text) return;
+      try {
+        // A second tap on a speaking button stops it (toggle behavior).
+        if (window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+          return;
+        }
+        const utter = new SpeechSynthesisUtterance(String(text).replace(/[✍️🎯🗣️👂✓✗⚠➡️•]/g, ' ').trim());
+        utter.rate = getSlideTtsRate();
+        utter.lang = lang || 'en-US';
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utter);
+      } catch (e) { /* speech not available */ }
+    }
+    // Read-aloud buttons carry their text in data-speak (and optional data-lang).
+    function speakFromButton(btn) {
+      if (!btn) return;
+      speakText(btn.getAttribute('data-speak') || '', btn.getAttribute('data-lang') || 'en-US');
+    }
+    window.speakText = speakText;
+    window.speakFromButton = speakFromButton;
+    window.setSlideTtsRate = setSlideTtsRate;
+    window.getSlideTtsRate = getSlideTtsRate;
+
+    // Bilingual (Spanish support) toggle — persists per browser.
+    const SLIDE_BILINGUAL_KEY = 'neft-slide-bilingual';
+    function applyBilingual(on) {
+      document.body.classList.toggle('bilingual-on', on);
+      const btn = document.getElementById('bilingual-toggle');
+      if (btn) btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+    function toggleBilingual(btn) {
+      const on = !document.body.classList.contains('bilingual-on');
+      localStorage.setItem(SLIDE_BILINGUAL_KEY, on ? '1' : '0');
+      applyBilingual(on);
+    }
+    window.toggleBilingual = toggleBilingual;
+    // Restore saved accessibility preferences on load.
+    (function initA11yPrefs() {
+      const savedBi = localStorage.getItem(SLIDE_BILINGUAL_KEY);
+      if (savedBi !== null) applyBilingual(savedBi === '1');
+      const rateSel = document.getElementById('tts-rate-select');
+      if (rateSel) rateSel.value = String(getSlideTtsRate());
+    })();
 
     // CFU thumb responses
     const cfuResponses = {};
@@ -5838,11 +5937,5 @@
     
   </script>
 
-  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-  <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-  <!-- nsr-injected:end -->
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
 </body>
 </html>
