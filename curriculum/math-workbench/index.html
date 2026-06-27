@@ -11,7 +11,7 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta
       name="description"
-      content="Math Workbench — an interactive whiteboard for Grade 6 math. Draggable numbers and symbols, freehand writing, separator and cross-out lines, 2D and 3D shapes, and a full formula reference for PreK–6 math."
+      content="Math Workbench — an interactive whiteboard for Grade 6 math. Draggable numbers and symbols, freehand writing, separator and cross-out lines, 2D and 3D shapes, and a full formula reference for PreK–Algebra math."
     />
     <title>Math Workbench — Mr. Neft's Math Class</title>
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
@@ -2347,8 +2347,8 @@
             ><span class="ic">📚</span> Formula &amp; Reference Bank</span
           >
           <span class="sub"
-            >PreK&nbsp;–&nbsp;Grade&nbsp;6 · open a category, then tap a card to
-            drop it on the board</span
+            >PreK&nbsp;–&nbsp;Algebra · open a category, then tap a card to drop
+            it on the board</span
           >
           <button class="dock-toggle" id="dockToggle">
             <span id="dockToggleIc">▴</span>
@@ -6155,7 +6155,7 @@
       ];
 
       /* ===================================================================
-         FORMULA & REFERENCE BANK  (PreK – Grade 6)
+         FORMULA & REFERENCE BANK  (PreK – Algebra)
          =================================================================== */
       const TOPICS = [
         {
@@ -6605,6 +6605,235 @@
               name: "Time",
               eq: "60 s = 1 min · 60 min = 1 hr",
               note: "24 hr = 1 day.",
+            },
+          ],
+        },
+        {
+          id: "eq2",
+          em: "🧮",
+          name: "Two-Step & Multi-Step Equations",
+          items: [
+            {
+              name: "Two-step equation",
+              eq: "ax + b = c",
+              note: "Undo + or − first, then undo × or ÷. Example: 2x + 3 = 11 → x = 4.",
+            },
+            {
+              name: "Variables on both sides",
+              eq: "ax + b = cx + d",
+              note: "Move the variable to one side and the numbers to the other.",
+            },
+            {
+              name: "Distribute, then solve",
+              eq: "a(x + b) = c",
+              note: "Multiply through the parentheses first, then solve.",
+            },
+            {
+              name: "Inverse operations",
+              eq: "do the opposite to both sides",
+              note: "+ undoes −, × undoes ÷. Keep both sides equal.",
+            },
+            {
+              name: "Check a solution",
+              eq: "substitute x back in",
+              note: "Put your answer in the original equation — both sides should match.",
+            },
+          ],
+        },
+        {
+          id: "exp",
+          em: "²",
+          name: "Exponents & Scientific Notation",
+          items: [
+            {
+              name: "Product rule",
+              eq: "a<sup>m</sup> · a<sup>n</sup> = a<sup>m+n</sup>",
+              note: "Same base: add the exponents.",
+            },
+            {
+              name: "Quotient rule",
+              eq: "a<sup>m</sup> ÷ a<sup>n</sup> = a<sup>m−n</sup>",
+              note: "Same base: subtract the exponents.",
+            },
+            {
+              name: "Power of a power",
+              eq: "(a<sup>m</sup>)<sup>n</sup> = a<sup>m·n</sup>",
+              note: "Multiply the exponents.",
+            },
+            {
+              name: "Zero exponent",
+              eq: "a<sup>0</sup> = 1",
+              note: "Any nonzero number to the 0 power is 1.",
+            },
+            {
+              name: "Negative exponent",
+              eq: 'a<sup>−n</sup> = <span class="ifr"><span>1</span><span>a<sup>n</sup></span></span>',
+              note: "Move it to make the exponent positive.",
+            },
+            {
+              name: "Scientific notation",
+              eq: "a × 10<sup>n</sup>,  1 ≤ a &lt; 10",
+              note: "For very big or small numbers. Example: 4.2 × 10³ = 4200.",
+            },
+          ],
+        },
+        {
+          id: "roots",
+          em: "√",
+          name: "Roots & Pythagorean Theorem",
+          items: [
+            {
+              name: "Square root",
+              eq: "√(a²) = a",
+              note: "Undoes squaring. √25 = 5 because 5² = 25.",
+            },
+            {
+              name: "Perfect squares",
+              eq: "1, 4, 9, 16, 25, 36, 49 …",
+              note: "The squares of whole numbers.",
+            },
+            {
+              name: "Pythagorean theorem",
+              eq: "a² + b² = c²",
+              note: "Right triangles: c is the hypotenuse (longest side).",
+            },
+            {
+              name: "Find the hypotenuse",
+              eq: "c = √(a² + b²)",
+              note: "Add the squares of the legs, then take the square root.",
+            },
+            {
+              name: "Distance between points",
+              eq: "d = √((x₂−x₁)² + (y₂−y₁)²)",
+              note: "The Pythagorean theorem on the coordinate plane.",
+            },
+          ],
+        },
+        {
+          id: "linear",
+          em: "📈",
+          name: "Linear Equations & Slope",
+          items: [
+            {
+              name: "Slope (rate of change)",
+              eq: 'm = <span class="ifr"><span>y₂ − y₁</span><span>x₂ − x₁</span></span>',
+              note: "Rise over run — how steep the line is.",
+            },
+            {
+              name: "Slope-intercept form",
+              eq: "y = mx + b",
+              note: "m = slope, b = y-intercept (where it crosses the y-axis).",
+            },
+            {
+              name: "Point-slope form",
+              eq: "y − y₁ = m(x − x₁)",
+              note: "Use a slope and one point to write the line.",
+            },
+            {
+              name: "Standard form",
+              eq: "Ax + By = C",
+              note: "Another way to write a linear equation.",
+            },
+            {
+              name: "x- and y-intercepts",
+              eq: "x-int: y = 0,  y-int: x = 0",
+              note: "Where the line crosses each axis.",
+            },
+          ],
+        },
+        {
+          id: "systems",
+          em: "⚖️",
+          name: "Systems & Inequalities",
+          items: [
+            {
+              name: "System of equations",
+              eq: "two lines → one (x, y)",
+              note: "The solution is the point where the lines cross.",
+            },
+            {
+              name: "Substitution",
+              eq: "solve one, plug into the other",
+              note: "Replace a variable with its expression.",
+            },
+            {
+              name: "Elimination",
+              eq: "add/subtract to cancel a variable",
+              note: "Make opposite coefficients, then add the equations.",
+            },
+            {
+              name: "Inequality symbols",
+              eq: "&lt; , &gt; , ≤ , ≥",
+              note: "Open dot for &lt; &gt;, closed dot for ≤ ≥.",
+            },
+            {
+              name: "Flip the sign",
+              eq: "−x &lt; a → x &gt; −a",
+              note: "Multiply or divide by a negative → flip the inequality.",
+            },
+          ],
+        },
+        {
+          id: "poly",
+          em: "✖️",
+          name: "Polynomials & Factoring",
+          items: [
+            {
+              name: "Add/subtract polynomials",
+              eq: "combine like terms",
+              note: "Only combine terms with the same variable and power.",
+            },
+            {
+              name: "Multiply binomials (FOIL)",
+              eq: "(a+b)(c+d) = ac+ad+bc+bd",
+              note: "First, Outer, Inner, Last.",
+            },
+            {
+              name: "Factor out the GCF",
+              eq: "ab + ac = a(b + c)",
+              note: "Pull out the greatest common factor.",
+            },
+            {
+              name: "Difference of squares",
+              eq: "a² − b² = (a+b)(a−b)",
+              note: "Two perfect squares with a minus between them.",
+            },
+            {
+              name: "Factor a trinomial",
+              eq: "x² + bx + c = (x+m)(x+n)",
+              note: "Find m, n with m+n = b and m·n = c.",
+            },
+          ],
+        },
+        {
+          id: "quad",
+          em: "ƒ",
+          name: "Quadratics & Functions",
+          items: [
+            {
+              name: "Quadratic equation",
+              eq: "ax² + bx + c = 0",
+              note: "An equation with a squared term.",
+            },
+            {
+              name: "Quadratic formula",
+              eq: 'x = <span class="ifr"><span>−b ± √(b² − 4ac)</span><span>2a</span></span>',
+              note: "Solves any quadratic ax² + bx + c = 0.",
+            },
+            {
+              name: "Discriminant",
+              eq: "b² − 4ac",
+              note: "Positive → 2 solutions · 0 → one · negative → none (real).",
+            },
+            {
+              name: "Function notation",
+              eq: "f(x) = output",
+              note: "f(2) means the output when x = 2.",
+            },
+            {
+              name: "Vertex form",
+              eq: "y = a(x − h)² + k",
+              note: "(h, k) is the vertex — the turning point.",
             },
           ],
         },
