@@ -348,7 +348,7 @@
       ],
       assignments: [],
       // [{ id, text, date, time, done, createdAt, repeat, lastShown, lastDone }]
-      // repeat: "none"|"daily"|"weekdays"|"weekly"; recurring "done" = done-for-today.
+      // repeat: "none"|"daily"|"weekdays"|"weekends"|"weekly"; recurring "done" = done-for-today.
       reminders: [],
       todos: [], // [{ id, text, done, date, createdAt }] quick daily to-dos
       // Cached Google Calendar events (read-only).
@@ -586,12 +586,13 @@
     };
   }
 
-  const REPEATS = ["none", "daily", "weekdays", "weekly"];
+  const REPEATS = ["none", "daily", "weekdays", "weekends", "weekly"];
   // To-dos support the same cadences plus monthly/yearly.
   const TODO_REPEATS = [
     "none",
     "daily",
     "weekdays",
+    "weekends",
     "weekly",
     "monthly",
     "yearly",
@@ -744,10 +745,15 @@
     const d = parseLocal(iso).getDay(); // 0=Sun..6=Sat
     return d >= 1 && d <= 5;
   };
+  const isWeekend = (iso) => {
+    const d = parseLocal(iso).getDay(); // 0=Sun, 6=Sat
+    return d === 0 || d === 6;
+  };
   // Does a recurring reminder's schedule include the given ISO day?
   function recurOccursOn(r, iso) {
     if (r.repeat === "daily") return true;
     if (r.repeat === "weekdays") return isWeekday(iso);
+    if (r.repeat === "weekends") return isWeekend(iso);
     if (r.repeat === "weekly") {
       // Weekly anchored on the reminder's date (or its creation day).
       const anchor = r.date || new Date(r.createdAt).toISOString().slice(0, 10);
@@ -777,6 +783,7 @@
     none: "",
     daily: "Every day",
     weekdays: "Weekdays",
+    weekends: "Weekends",
     weekly: "Weekly",
     monthly: "Monthly",
     yearly: "Yearly",
@@ -787,6 +794,7 @@
   function todoOccursOn(t, iso) {
     if (t.repeat === "daily") return true;
     if (t.repeat === "weekdays") return isWeekday(iso);
+    if (t.repeat === "weekends") return isWeekend(iso);
     const anchor = t.date || new Date(t.createdAt).toISOString().slice(0, 10);
     if (!DATE_RE.test(anchor)) return t.repeat === "weekly";
     const a = parseLocal(anchor),
@@ -2846,6 +2854,7 @@
     ["none", "Once"],
     ["daily", "Daily"],
     ["weekdays", "Weekdays"],
+    ["weekends", "Weekends"],
     ["weekly", "Weekly"],
     ["monthly", "Monthly"],
     ["yearly", "Yearly"],
@@ -3095,6 +3104,8 @@
     const wd = ["Mon", "Tue", "Wed", "Thu", "Fri"];
     if (r.days.length === 5 && wd.every((d) => r.days.includes(d)))
       return "Weekdays";
+    if (r.days.length === 2 && r.days.includes("Sat") && r.days.includes("Sun"))
+      return "Weekends";
     return r.days.join(", ");
   }
   function routineOccursToday(r) {
@@ -5125,7 +5136,7 @@ Due May 31"></textarea>
         <div class="field"><label>Date (optional)</label><input type="date" id="rmDate" value="${esc(r.date || "")}"></div>
         <div class="field"><label>Time (optional)</label><input type="time" id="rmTime" value="${esc(r.time || "")}"></div>
       </div>
-      <div class="field"><label>Repeat</label><select id="rmRepeat">${opt("none", "Just once")}${opt("daily", "Every day")}${opt("weekdays", "Weekdays (Mon–Fri)")}${opt("weekly", "Weekly (same weekday)")}</select></div>
+      <div class="field"><label>Repeat</label><select id="rmRepeat">${opt("none", "Just once")}${opt("daily", "Every day")}${opt("weekdays", "Weekdays (Mon–Fri)")}${opt("weekends", "Weekends (Sat–Sun)")}${opt("weekly", "Weekly (same weekday)")}</select></div>
       <p class="muted" style="font-size:.8rem;margin:-2px 0 8px">A repeating reminder comes back each day — checking it off just clears it for today.</p>
       <button class="btn primary block" data-act="save-reminder" data-id="${esc(r.id || "")}">${r.id ? "Save changes" : "Add reminder"}</button>`;
   }
