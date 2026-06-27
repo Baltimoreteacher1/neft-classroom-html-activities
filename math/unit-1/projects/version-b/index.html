@@ -4,2366 +4,784 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Build-a-Bot Budget Lab — Unit 1 Culminating Project</title>
-    <meta
-      name="description"
-      content="Unit 1 Number Sense culminating project. Outfit YOUR robotics team using decimal multiplication, multi-digit division, and factor reasoning, then compare with a partner and with real kit prices."
-    />
-    <link rel="stylesheet" href="/assets/shared.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-kit.css" />
-    <script src="/shared/projects/projects-kit.js" defer></script>
+    <meta name="description" content="Unit 1 Number Sense culminating project. Build a robotics team using GCF, LCM, decimal operations, and division. Simple step-by-step, tab-based guide." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <style>
       :root {
         --navy: #0f2b3c;
         --blue: #1a6fb5;
-        --blue-light: #e8f2fc;
+        --blue-lt: #e8f2fc;
         --teal: #0e8a7d;
-        --teal-light: #e4f5f3;
-        --gold: #d4952a;
-        --gold-light: #fdf3e0;
+        --teal-lt: #e4f5f3;
+        --gold: #c9820f;
+        --gold-lt: #fdf3e0;
+        --green: #1e7d40;
+        --green-lt: #e6f4eb;
         --coral: #c45a3c;
-        --green: #2d874b;
-        --green-light: #e6f4eb;
         --ink: #1a2633;
         --muted: #5e6e7e;
         --line: #e2e7ec;
-        --bg: #f7f9fb;
+        --bg: #f4f7fa;
         --card: #ffffff;
         --radius: 16px;
-        --shadow: 0 4px 18px rgba(15, 43, 60, 0.1);
-        --font: "Segoe UI", system-ui, sans-serif;
+        --shadow: 0 2px 16px rgba(15,43,60,.10);
       }
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        margin: 0;
-        font-family: var(--font);
-        color: var(--ink);
-        background: var(--bg);
-        line-height: 1.55;
-      }
-      .wrap {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 0 20px 60px;
-      }
-      .phero {
-        background: linear-gradient(135deg, #0e8a7d 0%, #0f2b3c 100%);
-        color: #fff;
-        padding: 40px 24px 34px;
-        text-align: center;
-      }
-      .phero .deco {
-        font-size: 56px;
-      }
-      .phero h1 {
-        font-size: clamp(26px, 5vw, 40px);
-        margin: 10px 0 8px;
-        letter-spacing: -0.02em;
-      }
-      .phero p {
-        max-width: 640px;
-        margin: 0 auto;
-        color: rgba(255, 255, 255, 0.85);
-        font-size: 17px;
-      }
-      .tags {
-        margin-top: 16px;
-        display: flex;
-        gap: 8px;
-        justify-content: center;
-        flex-wrap: wrap;
-      }
-      .tag {
-        background: rgba(255, 255, 255, 0.14);
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        border-radius: 50px;
-        padding: 5px 14px;
-        font-size: 13px;
-        font-weight: 700;
-      }
-      .tag.gold {
-        background: var(--gold);
-        border-color: var(--gold);
-        color: #2a1c00;
-      }
-      .toolbar {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        justify-content: center;
-        margin-top: 16px;
-      }
-      .toolbar button {
-        background: rgba(255, 255, 255, 0.12);
-        color: #fff;
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        border-radius: 50px;
-        padding: 8px 16px;
-        font-weight: 700;
-        font-size: 13px;
-        cursor: pointer;
-        font-family: inherit;
-      }
-      .toolbar button:hover {
-        background: rgba(255, 255, 255, 0.22);
-      }
-      .intro-card {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-left: 6px solid var(--teal);
-        border-radius: var(--radius);
-        padding: 22px 24px;
-        margin: 26px 0;
-        box-shadow: var(--shadow);
-      }
-      .intro-card h2 {
-        margin: 0 0 8px;
-        font-size: 20px;
-      }
-      .phase {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-radius: var(--radius);
-        padding: 24px;
-        margin: 22px 0;
-        box-shadow: var(--shadow);
-      }
-      .phase-head {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        margin-bottom: 6px;
-      }
-      .phase-num {
-        flex: 0 0 auto;
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
-        background: var(--teal);
-        color: #fff;
-        font-weight: 800;
-        font-size: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .phase h2 {
-        margin: 0;
-        font-size: 21px;
-      }
-      .phase .skill {
-        font-size: 12px;
-        font-weight: 700;
-        color: var(--muted);
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-      }
-      .phase > p {
-        color: var(--muted);
-      }
-      .arc-banner {
-        display: inline-block;
-        font-size: 12px;
-        font-weight: 800;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        color: var(--teal);
-        background: var(--teal-light);
-        border-radius: 50px;
-        padding: 4px 12px;
-        margin-bottom: 10px;
-      }
-      .task {
-        background: var(--blue-light);
-        border-radius: 12px;
-        padding: 16px 18px;
-        margin: 16px 0;
-      }
-      label.fld {
-        display: block;
-        font-weight: 700;
-        font-size: 14px;
-        margin: 14px 0 6px;
-      }
-      input[type="number"],
-      input[type="text"],
-      select,
-      textarea {
-        width: 100%;
-        padding: 11px 13px;
-        border: 2px solid var(--line);
-        border-radius: 10px;
-        font-family: inherit;
-        font-size: 15px;
-        background: #fff;
-      }
-      input:focus,
-      select:focus,
-      textarea:focus {
-        outline: none;
-        border-color: var(--blue);
-      }
-      textarea {
-        resize: vertical;
-        min-height: 80px;
-      }
-      .grid2 {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 14px;
-      }
-      @media (max-width: 560px) {
-        .grid2 {
-          grid-template-columns: 1fr;
-        }
-      }
-      .btn {
-        background: var(--teal);
-        color: #fff;
-        border: none;
-        border-radius: 10px;
-        padding: 11px 20px;
-        font-weight: 800;
-        font-size: 15px;
-        cursor: pointer;
-        font-family: inherit;
-        margin-top: 14px;
-      }
-      .btn:hover {
-        filter: brightness(1.08);
-      }
-      .btn.alt {
-        background: var(--blue);
-      }
-      .btn.ghost {
-        background: #fff;
-        color: var(--teal);
-        border: 2px solid var(--line);
-      }
-      .readout {
-        margin-top: 16px;
-        border-radius: 12px;
-        padding: 16px 18px;
-        font-size: 15px;
-        background: var(--teal-light);
-        border: 1px solid #bfe6e0;
-        display: none;
-      }
-      .readout.show {
-        display: block;
-      }
-      .readout .big {
-        font-size: 28px;
-        font-weight: 800;
-        color: var(--teal);
-      }
-      .feedback {
-        margin-top: 10px;
-        font-weight: 700;
-        min-height: 22px;
-      }
-      .feedback.ok {
-        color: var(--green);
-      }
-      .feedback.no {
-        color: var(--coral);
-      }
-      .hintbox {
-        margin-top: 12px;
-      }
-      .hintbox summary {
-        cursor: pointer;
-        font-weight: 700;
-        color: var(--blue);
-        font-size: 14px;
-      }
-      .hintbox p,
-      .hintbox div {
-        background: var(--gold-light);
-        border-radius: 10px;
-        padding: 12px 14px;
-        margin: 8px 0 0;
-        font-size: 14px;
-      }
-      .rubric {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 12px;
-        font-size: 14px;
-      }
-      .rubric th,
-      .rubric td {
-        border: 1px solid var(--line);
-        padding: 10px 12px;
-        text-align: left;
-        vertical-align: top;
-      }
-      .rubric th {
-        background: var(--navy);
-        color: #fff;
-        font-size: 13px;
-      }
-      .rubric td:first-child {
-        font-weight: 700;
-        width: 30%;
-      }
-      .checklist {
-        list-style: none;
-        padding: 0;
-        margin: 12px 0 0;
-      }
-      .checklist li {
-        display: flex;
-        gap: 10px;
-        align-items: flex-start;
-        padding: 8px 0;
-        border-bottom: 1px solid var(--line);
-      }
-      .checklist input {
-        width: 20px;
-        height: 20px;
-        margin-top: 2px;
-        flex: 0 0 auto;
-      }
-      .progress-wrap {
-        position: sticky;
-        top: 0;
-        z-index: 5;
-        background: var(--bg);
-        padding: 12px 0;
-      }
-      .progress-track {
-        height: 12px;
-        background: var(--line);
-        border-radius: 50px;
-        overflow: hidden;
-      }
-      .progress-fill {
-        height: 100%;
-        width: 0;
-        background: linear-gradient(90deg, var(--teal), var(--green));
-        transition: width 0.4s;
-      }
-      .progress-label {
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--muted);
-        margin-bottom: 6px;
-      }
-      .footer {
-        text-align: center;
-        color: var(--muted);
-        font-size: 14px;
-        margin-top: 40px;
-      }
-      table.parts {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 8px;
-        font-size: 14px;
-      }
-      table.parts th,
-      table.parts td {
-        border: 1px solid var(--line);
-        padding: 8px 10px;
-        text-align: left;
-      }
-      table.parts th {
-        background: var(--blue-light);
-      }
-      h3 {
-        font-size: 17px;
-      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: 'Inter', system-ui, sans-serif; color: var(--ink); background: var(--bg); line-height: 1.6; }
+      .hero { background: linear-gradient(135deg, #0f2b3c 0%, #1565a8 60%, #0e8a7d 100%); color: #fff; padding: 36px 24px 28px; text-align: center; }
+      .hero-emoji { font-size: 52px; line-height: 1; margin-bottom: 10px; }
+      .hero h1 { font-size: clamp(24px,5vw,38px); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; }
+      .hero-sub { color: rgba(255,255,255,.85); font-size: 16px; max-width: 580px; margin: 0 auto 16px; }
+      .hero-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; }
+      .tag { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.28); border-radius: 50px; padding: 4px 13px; font-size: 12px; font-weight: 700; letter-spacing: .04em; }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #fff; }
+      .level-bar { display: flex; gap: 10px; justify-content: center; background: rgba(255,255,255,.10); border-radius: 50px; padding: 6px 10px; max-width: 400px; margin: 0 auto; }
+      .level-btn { flex: 1; background: transparent; color: rgba(255,255,255,.75); border: 2px solid rgba(255,255,255,.30); border-radius: 50px; padding: 7px 16px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all .2s; }
+      .level-btn.active { background: #fff; color: var(--navy); border-color: #fff; }
+      .wizard { max-width: 860px; margin: 0 auto; padding: 0 16px 60px; }
+      .step-trail { display: flex; align-items: center; gap: 0; padding: 22px 0 0; overflow-x: auto; }
+      .step-trail-item { display: flex; align-items: center; gap: 6px; cursor: pointer; white-space: nowrap; padding: 8px 12px; border-radius: 10px; transition: background .15s; }
+      .step-trail-item:hover { background: var(--blue-lt); }
+      .step-trail-item.active .s-num { background: var(--blue); color: #fff; }
+      .step-trail-item.done .s-num { background: var(--green); color: #fff; }
+      .s-num { width: 30px; height: 30px; border-radius: 50%; background: var(--line); color: var(--muted); font-weight: 800; font-size: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all .2s; }
+      .s-label { font-size: 13px; font-weight: 600; color: var(--muted); }
+      .step-trail-item.active .s-label { color: var(--blue); }
+      .step-trail-item.done .s-label { color: var(--green); }
+      .step-arrow { color: var(--line); font-size: 16px; padding: 0 2px; }
+      .prog-wrap { margin: 14px 0 4px; }
+      .prog-bar { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; }
+      .prog-fill { height: 100%; background: linear-gradient(90deg,var(--blue),var(--teal)); border-radius: 99px; transition: width .4s ease; }
+      .prog-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+      .step-panel { display: none; animation: fadein .25s ease; }
+      .step-panel.active { display: block; }
+      @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+      .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px 26px; box-shadow: var(--shadow); margin-top: 16px; }
+      .card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+      .card-icon { width: 50px; height: 50px; border-radius: 14px; background: var(--blue-lt); display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+      .card-icon.gold { background: var(--gold-lt); }
+      .card-icon.teal { background: var(--teal-lt); }
+      .card-icon.green { background: var(--green-lt); }
+      .card-title { font-size: 20px; font-weight: 800; color: var(--navy); margin-bottom: 3px; }
+      .card-sub { font-size: 13px; color: var(--muted); font-weight: 500; }
+      .instruct { background: var(--blue-lt); border-left: 4px solid var(--blue); border-radius: 10px; padding: 14px 16px; margin-bottom: 20px; font-size: 15px; line-height: 1.6; }
+      .instruct.gold { background: var(--gold-lt); border-color: var(--gold); }
+      .instruct.teal { background: var(--teal-lt); border-color: var(--teal); }
+      .instruct.green { background: var(--green-lt); border-color: var(--green); }
+      .visual-svg { display: block; width: 100%; max-width: 520px; margin: 0 auto 20px; border-radius: 12px; }
+      label.lbl { display: block; font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 5px; margin-top: 14px; }
+      input[type="number"], input[type="text"], textarea, select { width: 100%; padding: 10px 14px; border: 1.5px solid var(--line); border-radius: 10px; font-size: 15px; font-family: inherit; background: var(--bg); color: var(--ink); transition: border-color .2s; }
+      input:focus, textarea:focus, select:focus { outline: none; border-color: var(--blue); }
+      textarea { min-height: 90px; resize: vertical; }
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
+      .calc-btn { background: var(--blue); color: #fff; border: none; border-radius: 10px; padding: 11px 20px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; margin-top: 12px; transition: background .2s; }
+      .calc-btn:hover { background: #155fa0; }
+      .calc-btn.gold { background: var(--gold); }
+      .calc-btn.gold:hover { background: #a36a0c; }
+      .calc-btn.teal { background: var(--teal); }
+      .calc-btn.teal:hover { background: #0a6b62; }
+      .calc-btn.green { background: var(--green); }
+      .calc-btn.green:hover { background: #185f31; }
+      .readout { background: var(--navy); color: #e8f4ff; border-radius: 10px; padding: 14px 18px; margin-top: 12px; font-size: 15px; line-height: 1.6; display: none; }
+      .readout.show { display: block; }
+      .readout strong { color: #7dd3fc; }
+      details.hint { margin-top: 14px; }
+      details.hint summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--blue); list-style: none; display: inline-flex; align-items: center; gap: 5px; }
+      details.hint summary::before { content: "💡"; }
+      details.hint p { font-size: 14px; color: var(--muted); margin-top: 8px; padding: 10px 12px; background: var(--blue-lt); border-radius: 8px; }
+      .lvl2-block { border: 2px dashed var(--blue); border-radius: 12px; padding: 14px 16px; margin-top: 18px; }
+      .lvl2-label { display: inline-block; background: var(--blue); color: #fff; font-size: 11px; font-weight: 800; letter-spacing: .05em; border-radius: 50px; padding: 3px 10px; margin-bottom: 8px; }
+      .data-table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14px; }
+      .data-table th { background: var(--navy); color: #fff; padding: 8px 12px; text-align: left; }
+      .data-table td { padding: 8px 12px; border-bottom: 1px solid var(--line); }
+      .data-table tr:last-child td { border-bottom: none; }
+      .data-table tr:nth-child(even) td { background: var(--bg); }
+      .checklist { list-style: none; margin-top: 12px; }
+      .checklist li { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+      .checklist li:last-child { border-bottom: none; }
+      .checklist input[type="checkbox"] { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--green); flex-shrink: 0; }
+      .rubric { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 14px; }
+      .rubric th { background: var(--navy); color: #fff; padding: 10px 12px; text-align: left; }
+      .rubric td { padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+      .rubric tr:last-child td { border-bottom: none; }
+      .score-4 { color: var(--green); font-weight: 700; }
+      .score-3 { color: var(--blue); font-weight: 700; }
+      .score-2 { color: var(--gold); font-weight: 700; }
+      .nav-row { display: flex; gap: 10px; margin-top: 24px; justify-content: space-between; }
+      .nav-btn { background: var(--blue); color: #fff; border: none; border-radius: 10px; padding: 12px 24px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 8px; transition: background .2s; }
+      .nav-btn:hover { background: #155fa0; }
+      .nav-btn.ghost { background: transparent; color: var(--blue); border: 2px solid var(--blue); }
+      .nav-btn.ghost:hover { background: var(--blue-lt); }
+      .nav-btn.green { background: var(--green); }
+      .nav-btn.green:hover { background: #185f31; }
+      .nav-btn:disabled { opacity: .45; cursor: not-allowed; }
+      #pitch { min-height: 130px; }
+      .report-box { background: var(--navy); color: #e8f4ff; border-radius: 12px; padding: 20px; margin-top: 14px; font-size: 14px; line-height: 1.7; white-space: pre-wrap; display: none; }
+      .report-box.show { display: block; }
+      .export-btn { background: transparent; border: 1.5px solid var(--line); border-radius: 8px; padding: 7px 14px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; color: var(--muted); transition: all .15s; }
+      .export-btn:hover { border-color: var(--blue); color: var(--blue); }
+      .lvl1-only { display: none; }
+      .lvl2-only { display: none; }
+      body.level-1 .lvl1-only { display: block; }
+      body.level-2 .lvl2-only { display: block; }
+      body.level-2 .lvl2-block { border-color: var(--blue); }
+      .vocab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 14px; }
+      .vocab-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+      .vocab-icon { font-size: 26px; margin-bottom: 6px; }
+      .vocab-term { font-size: 13px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
+      .vocab-def { font-size: 13px; color: var(--muted); line-height: 1.5; }
+      .vocab-ex { font-size: 12px; color: var(--blue); font-weight: 600; margin-top: 5px; }
       @media print {
-        .progress-wrap,
-        .btn,
-        .breadcrumb,
-        .hintbox,
-        .toolbar,
-        .pk-no-print {
-          display: none !important;
-        }
-        .phase,
-        .intro-card {
-          box-shadow: none;
-          break-inside: avoid;
-        }
-        body {
-          background: #fff;
-        }
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        html {
-          scroll-behavior: auto;
-        }
-        *,
-        *::before,
-        *::after {
-          animation-duration: 0.001ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.001ms !important;
-        }
+        .no-print { display: none !important; }
+        .hero { background: var(--navy) !important; }
+        body { background: #fff; }
+        .card { box-shadow: none; border-color: #ccc; }
       }
     </style>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <!-- nsr-injected:end -->
-    <link rel="stylesheet" href="/shared/projects/projects-premium.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-tabs.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-tplus.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-interactive.css" />
-    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-  <link rel="stylesheet" href="/assets/mobile-access.css">
-  <!-- mobile-access-injected:end -->
-</head>
-  <body class="pk" data-pk-theme="u1">
-    <header class="phero">
-      <div class="deco">🤖</div>
+  </head>
+  <body class="level-1" id="body">
+
+    <header class="hero no-print">
+      <div class="hero-emoji">🤖</div>
       <h1>Build-a-Bot Budget Lab</h1>
-      <p>
-        You are <strong>your own team's</strong> purchasing engineer. Order
-        parts with <em>your real prices</em>, compare with a partner, and check
-        your spending against real robotics kit costs.
-      </p>
-      <div class="tags">
+      <p class="hero-sub">You're the lead engineer! Use real math to build your robotics team — step by step.</p>
+      <div class="hero-tags">
         <span class="tag gold">Unit 1 · Number Sense</span>
         <span class="tag">6.NS.2</span>
         <span class="tag">6.NS.3</span>
         <span class="tag">6.NS.4</span>
-        <span class="tag">Version B · Real-World Investigation</span>
+        <span class="tag">Version B</span>
       </div>
-      <div class="toolbar pk-no-print">
-        <button onclick="PK.toggleEs()">🌐 EN / ES help</button>
-        <span class="pk-level-toggle">
-          <button data-level-btn="level-1" type="button">
-            🟢 Level 1 (support)
-          </button>
-          <button data-level-btn="level-2" type="button">
-            🔵 Level 2 (challenge)
-          </button>
-        </span>
-        <button class="pk-tts-toggle" data-tts-toggle type="button" aria-pressed="false" title="Read text aloud">🔊 Read aloud</button>
-        <button onclick="PK.save('u1ProjectB')">💾 Save</button>
-        <button
-          onclick="PK.load('u1ProjectB', { show: true, after: recalcAll })"
-        >
-          📂 Load
-        </button>
+      <div class="level-bar">
+        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">🟢 Level 1 — With Support</button>
+        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">🔵 Level 2 — Challenge</button>
       </div>
     </header>
 
-    <div class="wrap">
-      <div class="progress-wrap">
-        <div class="progress-label">
-          Project progress: <span id="pct">0</span>% complete
+    <div class="wizard">
+      <nav class="step-trail no-print" id="stepTrail" aria-label="Project steps"></nav>
+      <div class="prog-wrap no-print">
+        <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+        <div class="prog-label" id="progLabel">Step 1 of 6</div>
+      </div>
+
+      <!-- STEP 1: KEY WORDS -->
+      <div class="step-panel active" id="step-1">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon gold">📖</div>
+            <div>
+              <div class="card-title">Key Words</div>
+              <div class="card-sub">Learn these 4 math words before you start building</div>
+            </div>
+          </div>
+
+          <svg class="visual-svg" viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">
+            <rect x="10" y="20" width="110" height="120" rx="10" fill="#e8f2fc" stroke="#1a6fb5" stroke-width="2"/>
+            <text x="65" y="46" text-anchor="middle" font-size="22">🧰</text>
+            <text x="65" y="66" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">GCF</text>
+            <text x="65" y="80" text-anchor="middle" font-size="9" fill="#5e6e7e">Biggest shared</text>
+            <text x="65" y="92" text-anchor="middle" font-size="9" fill="#5e6e7e">factor</text>
+            <text x="65" y="110" text-anchor="middle" font-size="9" fill="#1a6fb5" font-weight="bold">GCF(18,12)=6</text>
+            <rect x="135" y="20" width="110" height="120" rx="10" fill="#e4f5f3" stroke="#0e8a7d" stroke-width="2"/>
+            <text x="190" y="46" text-anchor="middle" font-size="22">🔋</text>
+            <text x="190" y="66" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">LCM</text>
+            <text x="190" y="80" text-anchor="middle" font-size="9" fill="#5e6e7e">Smallest shared</text>
+            <text x="190" y="92" text-anchor="middle" font-size="9" fill="#5e6e7e">multiple</text>
+            <text x="190" y="110" text-anchor="middle" font-size="9" fill="#0e8a7d" font-weight="bold">LCM(3,4)=12</text>
+            <rect x="260" y="20" width="110" height="120" rx="10" fill="#fdf3e0" stroke="#c9820f" stroke-width="2"/>
+            <text x="315" y="46" text-anchor="middle" font-size="22">💰</text>
+            <text x="315" y="66" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Decimals</text>
+            <text x="315" y="80" text-anchor="middle" font-size="9" fill="#5e6e7e">Line up the dot,</text>
+            <text x="315" y="92" text-anchor="middle" font-size="9" fill="#5e6e7e">add or subtract</text>
+            <text x="315" y="110" text-anchor="middle" font-size="9" fill="#c9820f" font-weight="bold">$34.75+$12.50</text>
+            <rect x="385" y="20" width="125" height="120" rx="10" fill="#e6f4eb" stroke="#1e7d40" stroke-width="2"/>
+            <text x="447" y="46" text-anchor="middle" font-size="22">🤖</text>
+            <text x="447" y="66" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Division</text>
+            <text x="447" y="80" text-anchor="middle" font-size="9" fill="#5e6e7e">Cost split</text>
+            <text x="447" y="92" text-anchor="middle" font-size="9" fill="#5e6e7e">equally per robot</text>
+            <text x="447" y="110" text-anchor="middle" font-size="9" fill="#1e7d40" font-weight="bold">$360 / 4 = $90</text>
+          </svg>
+
+          <div class="vocab-grid">
+            <div class="vocab-card">
+              <div class="vocab-icon">🧰</div>
+              <div class="vocab-term">GCF — Greatest Common Factor</div>
+              <div class="vocab-def">The biggest number that divides evenly into two numbers.</div>
+              <div class="vocab-ex">GCF of 18 and 12 = 6 equal tool kits</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">🔋</div>
+              <div class="vocab-term">LCM — Least Common Multiple</div>
+              <div class="vocab-def">The smallest number that both numbers fit into evenly.</div>
+              <div class="vocab-ex">LCM of 3 and 4 = 12 hrs until both robots sync</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">💰</div>
+              <div class="vocab-term">Decimal Operations</div>
+              <div class="vocab-def">Adding up parts costs — always line up the decimal point first.</div>
+              <div class="vocab-ex">$34.75 + $12.50 = $47.25</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">🤖</div>
+              <div class="vocab-term">Division</div>
+              <div class="vocab-def">Splitting a total budget into equal shares across robots.</div>
+              <div class="vocab-ex">$360 / 4 robots = $90 per robot</div>
+            </div>
+          </div>
+
+          <div class="instruct" style="margin-top:20px">
+            Read each word card. When you are ready, click <strong>Next Step</strong>.
+          </div>
         </div>
-        <div class="progress-track">
-          <div class="progress-fill" id="pfill"></div>
+        <div class="nav-row">
+          <button class="nav-btn ghost" disabled>Back</button>
+          <button class="nav-btn" onclick="goStep(2)">Next Step</button>
         </div>
       </div>
 
-      <div class="intro-card">
-        <h2>🧰 Your Mission</h2>
-        <p>
-          Outfit a robotics team in three steps.
-          <strong>Part 1 (Self):</strong> enter <em>your own</em> team size,
-          part prices, and budget, and run the tools.
-          <strong>Part 2 (Peer):</strong> interview another engineer and compare
-          orders. <strong>Part 3 (World):</strong> compare your spending to real
-          robotics kits. Finish with the coach's memo and report.
-        </p>
+      <!-- STEP 2: TOOL KITS (GCF) -->
+      <div class="step-panel" id="step-2">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">🧰</div>
+            <div>
+              <div class="card-title">Step 1 — Build Equal Tool Kits</div>
+              <div class="card-sub">Use GCF to split cables and sensors into equal kits with no leftovers</div>
+            </div>
+          </div>
+
+          <div class="instruct">
+            <strong>Your job:</strong> You have cables and sensors to pack into equal tool kits. Enter your counts, then find the GCF to see how many equal kits you can make.
+          </div>
+
+          <svg id="gcf-svg" class="visual-svg" viewBox="0 0 520 140" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">
+            <text x="260" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">GCF: Making Equal Tool Kits</text>
+            <rect x="20" y="50" width="210" height="60" rx="8" fill="#e8f2fc" stroke="#1a6fb5" stroke-width="2"/>
+            <text x="125" y="76" text-anchor="middle" font-size="12" fill="#0f2b3c" font-weight="bold">Cables</text>
+            <text x="125" y="98" text-anchor="middle" font-size="11" fill="#1a6fb5" id="gcf-svg-cables">Enter cable count</text>
+            <rect x="290" y="50" width="210" height="60" rx="8" fill="#e4f5f3" stroke="#0e8a7d" stroke-width="2"/>
+            <text x="395" y="76" text-anchor="middle" font-size="12" fill="#0f2b3c" font-weight="bold">Sensors</text>
+            <text x="395" y="98" text-anchor="middle" font-size="11" fill="#0e8a7d" id="gcf-svg-sensors">Enter sensor count</text>
+          </svg>
+
+          <div class="instruct lvl1-only">
+            🟢 <strong>Level 1 tip:</strong> Try friendly numbers that share factors, like 18 cables and 24 sensors.
+          </div>
+          <div class="instruct lvl2-block lvl2-only">
+            <span class="lvl2-label">LEVEL 2 CHALLENGE</span><br>
+            Use your own numbers — they do not have to be round or easy!
+          </div>
+
+          <div class="grid2">
+            <div>
+              <label class="lbl" for="g-cables">Number of cables you have</label>
+              <input type="number" id="g-cables" min="1" placeholder="e.g. 18" oninput="calcGCF()" />
+            </div>
+            <div>
+              <label class="lbl" for="g-sensors">Number of sensors you have</label>
+              <input type="number" id="g-sensors" min="1" placeholder="e.g. 24" oninput="calcGCF()" />
+            </div>
+          </div>
+
+          <button class="calc-btn" onclick="calcGCF()">Find the Most Equal Kits</button>
+          <div class="readout" id="gcf-out"></div>
+
+          <details class="hint">
+            <summary>Need a hint?</summary>
+            <p>List all the numbers that divide evenly into each count. The GCF is the biggest number on both lists.<br><strong>Example:</strong> Factors of 18: 1,2,3,6,9,18. Factors of 24: 1,2,3,4,6,8,12,24. Biggest match = <strong>6 kits</strong>.</p>
+          </details>
+
+          <div class="lvl2-block lvl2-only" style="margin-top:18px">
+            <span class="lvl2-label">LEVEL 2 EXTENSION — Distributive Property (6.NS.4)</span>
+            <p style="font-size:14px;margin:6px 0 10px">Rewrite your two counts using the GCF. Example: 18 + 24 = 6 x (3 + 4)</p>
+            <label class="lbl" for="distrib">Your equation: ___ + ___ = GCF x (___ + ___)</label>
+            <input type="text" id="distrib" placeholder="e.g.  18 + 24 = 6 x (3 + 4)" />
+          </div>
+        </div>
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(1)">Back</button>
+          <button class="nav-btn" onclick="goStep(3)">Next Step</button>
+        </div>
       </div>
 
-      <!-- ===================== VISUAL MATH NOTES ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div
-            class="phase-num"
-            style="background: var(--gold); color: #2a1c00"
-          >
-            📒
-          </div>
-          <div>
-            <div class="skill">Before you start · Vocabulary</div>
-            <h2>Visual Math Notes</h2>
-          </div>
-        </div>
-        <p>
-          Learn these words first. Tap <strong>EN / ES help</strong> at the top
-          for Spanish.
-        </p>
-        <div class="pk-vocab">
-          <div class="pk-term">
-            <span class="pk-icon">✖️</span><b>Decimal Multiplication</b>
-            <p>Multiply the price by how many you buy. Keep the dot.</p>
-            <p class="pk-es">
-              Multiplicación de decimales: precio × cantidad, manteniendo los
-              decimales.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">➗</span><b>Multi-Digit Division</b>
-            <p>Sharing a cost into equal parts.</p>
-            <p class="pk-es">
-              División de varios dígitos: dividir un costo en partes iguales.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">🧰</span><b>GCF — Greatest Common Factor</b>
-            <p>The biggest number that goes into both counts with none left over.</p>
-            <p class="pk-es">
-              MCD — Máximo Común Divisor: el número más grande que divide a
-              ambos sin sobrar.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">⏱️</span><b>LCM — Least Common Multiple</b>
-            <p>The first number that two repeating cycles both land on.</p>
-            <p class="pk-es">
-              mcm — mínimo común múltiplo: el primer número que comparten dos
-              ciclos.
-            </p>
-          </div>
-        </div>
-        <div class="grid2" style="margin-top: 18px">
-          <div class="pk-callout">
-            <h3>Formula Bank</h3>
-            <ul class="pk-formula">
-              <li>
-                <span class="pk-f-name">Line total</span>
-                <span class="pk-f-mean"
-                  >The price of one item × how many you buy.</span
-                >
-                <span class="pk-eg">Example: $12.50 × 4 = $50.00</span>
-              </li>
-              <li>
-                <span class="pk-f-name">Fair share</span>
-                <span class="pk-f-mean"
-                  >Total cost ÷ number of teammates, so everyone pays the
-                  same.</span
-                >
-                <span class="pk-eg">Example: $240 ÷ 8 = $30 each</span>
-              </li>
-              <li>
-                <span class="pk-f-name">GCF — Greatest Common Factor</span>
-                <span class="pk-f-mean"
-                  >The biggest number that divides <b>both</b> amounts evenly. It
-                  tells you how many equal kits you can build.</span
-                >
-                <span class="pk-eg">Example: GCF of 24 and 36 = 12</span>
-              </li>
-              <li>
-                <span class="pk-f-name">Money left over</span>
-                <span class="pk-f-mean"
-                  >Money you start with − money you spend.</span
-                >
-                <span class="pk-eg">Example: $200 − $175 = $25 left</span>
-              </li>
-              <li class="pk-lvl2">
-                <span class="pk-f-name">Break-apart trick (6.NS.4)</span>
-                <span class="pk-f-mean"
-                  >Pull out the GCF, add what's left inside, then multiply
-                  back.</span
-                >
-                <span class="pk-eg">Example: 24 + 36 = 12 × (2 + 3)</span>
-              </li>
-            </ul>
-          </div>
-          <div class="pk-callout">
-            <h3>Sentence Frames</h3>
-            <p>"My parts subtotal is $___ because price × quantity = ___."</p>
-            <p>"Each teammate pays $___ because total ÷ members = ___."</p>
-            <p>"The GCF of ___ and ___ is ___, so I can build ___ kits."</p>
-            <p class="pk-es">
-              "Mi subtotal de piezas es $___ porque precio × cantidad = ___."
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== PART 1 — SELF ===================== -->
-      
-      <!-- ===================== PROJECT SETUP ===================== -->
-      <section class="phase" id="phase-setup" data-phase>
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--blue)">S</div>
-          <div>
-            <span class="arc-banner">Project Setup</span>
-            <h2>Outfit YOUR Team</h2>
-          </div>
-        </div>
-        
-        <div class="grid2">
-          <div>
-            <p style="font-size: 15px; color: var(--muted); line-height: 1.6; margin-bottom: 20px;">
-              Welcome! Read the scenario below and select your level to begin your design plan.
-            </p>
-            <div style="margin-top: 16px;">
-              
-    <svg width="100%" height="220" viewBox="0 0 500 220" style="background:white; border-radius:12px; border: 1px solid #e2e8f0; max-width: 480px; margin: 0 auto; display: block;" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="setup-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#ffffff" />
-          <stop offset="100%" stop-color="#f8fafc" />
-        </linearGradient>
-      </defs>
-      
-      <rect x="20" y="20" width="460" height="200" rx="15" fill="url(#setup-grad)" stroke="#1763c7" stroke-width="2"/>
-      
-      <!-- Central Gear -->
-      <circle cx="250" cy="130" r="30" fill="none" stroke="#0e9a8c" stroke-width="6" stroke-dasharray="10,5" />
-      <circle cx="250" cy="130" r="15" fill="none" stroke="#0e9a8c" stroke-width="4" />
-      
-      <!-- Robot Block -->
-      <rect x="110" y="100" width="60" height="60" rx="8" fill="#e8f2fc" stroke="#1763c7" stroke-width="2" />
-      <circle cx="130" cy="120" r="4" fill="#1763c7" />
-      <circle cx="150" cy="120" r="4" fill="#1763c7" />
-      <path d="M 125 140 Q 140 150 155 140" fill="none" stroke="#1763c7" stroke-width="2" />
-      <line x1="140" y1="100" x2="140" y2="85" stroke="#1763c7" stroke-width="2" />
-      <circle cx="140" cy="82" r="3" fill="#ef6b52" />
-      
-      <!-- Toolbox -->
-      <rect x="330" y="110" width="60" height="45" rx="4" fill="#fdf3e0" stroke="#d4952a" stroke-width="2" />
-      <path d="M 345 110 L 345 102 A 3 3 0 0 1 348 99 L 372 99 A 3 3 0 0 1 375 102 L 375 110" fill="none" stroke="#d4952a" stroke-width="2" />
-      <rect x="355" y="122" width="10" height="8" rx="1" fill="#d4952a" />
-      
-      <text x="250" y="60" text-anchor="middle" font-size="20" font-weight="bold" fill="#0f2b3c">ROBOTICS LAB SETUP</text>
-    
-    </svg>
-  
+      <!-- STEP 3: CHARGING SCHEDULE (LCM) -->
+      <div class="step-panel" id="step-3">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon teal">🔋</div>
+            <div>
+              <div class="card-title">Step 2 — Sync the Charging Schedule</div>
+              <div class="card-sub">Use LCM to find when both robots finish charging at the same time</div>
             </div>
           </div>
-          
-          <div style="background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 20px; box-shadow: var(--shadow);">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px;">
-              <span>📋</span> Scenario &amp; Level Options
-            </h3>
-            <p style="font-size: 14px; line-height: 1.6; margin: 0 0 10px">
-              You are your <strong>robotics team's purchasing engineer</strong>. You will price a parts order, split the cost fairly among teammates, pack equal toolkits, and check whether you stayed under budget, then compare your order with a partner and with real robotics kit prices.
-            </p>
-            <ul style="font-size: 14px; line-height: 1.6; margin: 0; padding-left: 18px">
-              <li><strong>Level 1 (support):</strong> use friendly, round numbers (for example, a $18.75 motor, 8 teammates, and a $500 budget).</li>
-              <li><strong>Level 2 (challenge):</strong> use real, uneven numbers (for example, a $12.25 sensor, 7 teammates, and part counts that do not split evenly).</li>
-            </ul>
-          </div>
-        </div>
-        <p>
-          Enter your <strong>own</strong> prices, team size, and budget. Not
-          sure yet? Click <em>Use example numbers</em> to model the math.
-        </p>
-        
 
-        <!-- 1a Parts -->
-            
-            <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line);">
-              <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px;">
-                You can type your own numbers as you go, or click below to start with our example numbers:
-              </p>
-              <button class="btn ghost" type="button" onclick="useExamples()" style="width: 100%; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                ✨ Use Example Numbers
-              </button>
-            </div>
+          <div class="instruct teal">
+            <strong>Your job:</strong> Two robots charge on different schedules. Find the LCM to discover the first hour when both robots are fully charged at the same time!
           </div>
-        </div>
-      </section>
-  
 
-      <!-- ===================== PART 1A — SELF ===================== -->
-      <section class="phase" id="phase-1a" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">1a</div>
-          <div>
-            <span class="arc-banner">Part 1a · Self — your real plan</span>
-            <h2>✖️ Price the parts order (decimal multiplication)</h2>
-          </div>
-        </div>
-        
-        <div class="grid2">
-          <div>
-            
-    <div id="invoice-svg-container" class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
-    </div>
-  
-            <table class="parts">
-          <tr>
-            <th>Part</th>
-            <th>Unit price ($)</th>
-            <th>Quantity</th>
-          </tr>
-          <tr>
-            <td>Motor</td>
-            <td>
-              <input
-                type="number"
-                id="p1"
-                data-save
-                step="0.01"
-                placeholder=""
-                oninput="calcParts()"
-                style="width: 110px; padding: 6px"
-              />
-            </td>
-            <td>
-              <input
-                type="number"
-                id="q1"
-                data-save
-                placeholder=""
-                oninput="calcParts()"
-                style="width: 80px; padding: 6px"
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Wheel set</td>
-            <td>
-              <input
-                type="number"
-                id="p2"
-                data-save
-                step="0.01"
-                placeholder=""
-                oninput="calcParts()"
-                style="width: 110px; padding: 6px"
-              />
-            </td>
-            <td>
-              <input
-                type="number"
-                id="q2"
-                data-save
-                placeholder=""
-                oninput="calcParts()"
-                style="width: 80px; padding: 6px"
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Sensor</td>
-            <td>
-              <input
-                type="number"
-                id="p3"
-                data-save
-                step="0.01"
-                placeholder=""
-                oninput="calcParts()"
-                style="width: 110px; padding: 6px"
-              />
-            </td>
-            <td>
-              <input
-                type="number"
-                id="q3"
-                data-save
-                placeholder=""
-                oninput="calcParts()"
-                style="width: 80px; padding: 6px"
-              />
-            </td>
-          </tr>
-        </table>
-        <button class="btn" type="button" onclick="calcParts()">
-          Calculate parts subtotal
-        </button>
-        <div class="readout" id="parts-out"></div>
-        <details class="hintbox">
-          <summary>Need a hint?</summary>
-          <p>
-            Count decimal places: 18.75 (2 places) × 4 = 75.00. Add all three
-            line totals.
-          </p>
-        </details>
-        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-          Level 1 worked step: 18.75 × 4 → (18 × 4) + (0.75 × 4) = 72 + 3 =
-          75.00.
-        </p>
+          <svg class="visual-svg" viewBox="0 0 520 130" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">
+            <text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">LCM: When do both robots sync?</text>
+            <line x1="30" y1="60" x2="490" y2="60" stroke="#e2e7ec" stroke-width="3"/>
+            <circle cx="30"  cy="60" r="7" fill="#1a6fb5"/>
+            <circle cx="143" cy="60" r="7" fill="#1a6fb5"/>
+            <circle cx="256" cy="60" r="7" fill="#1a6fb5"/>
+            <circle cx="369" cy="60" r="7" fill="#1a6fb5"/>
+            <circle cx="482" cy="60" r="7" fill="#1a6fb5"/>
+            <text x="260" y="82" text-anchor="middle" font-size="10" fill="#1a6fb5">Robot A — charges every 3 hrs</text>
+            <rect x="25"  y="93" width="10" height="10" rx="2" fill="#0e8a7d"/>
+            <rect x="175" y="93" width="10" height="10" rx="2" fill="#0e8a7d"/>
+            <rect x="325" y="93" width="10" height="10" rx="2" fill="#0e8a7d"/>
+            <rect x="475" y="93" width="10" height="10" rx="2" fill="#0e8a7d"/>
+            <text x="260" y="118" text-anchor="middle" font-size="10" fill="#0e8a7d">Robot B — charges every 4 hrs — sync at 12 hrs!</text>
+            <text x="482" y="50" text-anchor="middle" font-size="16">&#x2B50;</text>
+          </svg>
 
-        <!-- 1b Split -->
+          <div class="lvl1-only instruct teal">
+            🟢 <strong>Level 1 tip:</strong> Try numbers like 3 and 4 — their LCM is 12.
           </div>
-          
-          <div style="background: var(--bg); border: 2.5px solid var(--line); border-radius: 18px; padding: 20px; box-shadow: var(--shadow); height: fit-content;" class="pk-no-print">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px; color: var(--navy); font-size: 16px;">
-              <span>💡</span> Guided Steps &amp; Help
-            </h3>
-            
-        <p style="font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-bottom: 12px;">
-          <strong>Multiplying Decimals for Parts Order:</strong>
-        </p>
-        <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-          <li>Enter your part quantities and unit prices carefully.</li>
-          <li>For each part, write the multiplication problem: <code>unit price × quantity</code>.</li>
-          <li>Multiply as if they are whole numbers, then place the decimal point in the answer so it has 2 decimal places.</li>
-          <li>Add the three line totals to find your <strong>Parts Subtotal</strong>.</li>
-        </ol>
-        <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
-          💡 <strong>Example:</strong> Motor: 4 × $18.75 = <strong>$75.00</strong>. Wheel Set: 6 × $6.40 = <strong>$38.40</strong>.
-        </div>
-      
-          </div>
-        </div>
-      </section>
-    
 
-      <!-- ===================== PART 1B — SELF ===================== -->
-      <section class="phase" id="phase-1b" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">1b</div>
-          <div>
-            <span class="arc-banner">Part 1b · Self — your real plan</span>
-            <h2>➗ Split the cost fairly (division)</h2>
-          </div>
-        </div>
-        
-        <div class="grid2">
-          <div>
-            
-    <div id="division-svg-container" class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
-    </div>
-  
-            <div class="grid2">
-          
-        <!-- ===================== INLINE RESEARCH LAB ===================== -->
-        <div class="pk-research-inline-card">
-          <div class="pk-research-inline-header">
-            <span class="pk-research-badge">🔍 Research Required</span>
-            <a href="https://education.lego.com/en-us/products/lego-education-spike-prime-set/45678/" target="_blank" class="pk-research-inline-link">🔗 LEGO Education SPIKE Prime Catalog ↗</a>
-          </div>
-          <p class="pk-research-inline-instructions">Open the LEGO Education website or spike PRIME catalog. Find the retail price of a Spike Prime Core Expansion Set or basic set. Enter the researched price below:</p>
           <div class="grid2">
             <div>
-              <label class="fld" for="worldCountry">Researched Kit Name</label>
-              <input type="text" id="worldCountry" data-save placeholder="" oninput="recalcAll()">
+              <label class="lbl" for="l-robotA">Robot A charges every ___ hours</label>
+              <input type="number" id="l-robotA" min="1" placeholder="e.g. 3" oninput="calcLCM()" />
             </div>
             <div>
-              <label class="fld" for="s-total">Kit Price ($)</label>
-              <input
-              type="number"
-              id="s-total"
-              data-save
-              step="0.01"
-              placeholder=""
-              oninput="calcSplit()"
-            />
+              <label class="lbl" for="l-robotB">Robot B charges every ___ hours</label>
+              <input type="number" id="l-robotB" min="1" placeholder="e.g. 4" oninput="calcLCM()" />
             </div>
           </div>
-        </div>
-    
-          <div>
-            <label class="fld" for="s-members">Your team members</label
-            ><input
-              type="number"
-              id="s-members"
-              data-save
-              min="1"
-              placeholder=""
-              oninput="calcSplit()"
-            />
-          </div>
-        </div>
-        <button class="btn alt" type="button" onclick="calcSplit()">
-          Find each share
-        </button>
-        <div class="readout" id="split-out"></div>
-        <details class="hintbox">
-          <summary>Need a hint?</summary>
-          <p>
-            Divide the total by the number of members. 384.00 ÷ 8 =48.00
-            each.
-          </p>
-        </details>
 
-        <!-- 1c GCF kits -->
-          </div>
-          
-          <div style="background: var(--bg); border: 2.5px solid var(--line); border-radius: 18px; padding: 20px; box-shadow: var(--shadow); height: fit-content;" class="pk-no-print">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px; color: var(--navy); font-size: 16px;">
-              <span>💡</span> Guided Steps &amp; Help
-            </h3>
-            
-        <p style="font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-bottom: 12px;">
-          <strong>Dividing Decimals for Cost Sharing:</strong>
-        </p>
-        <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-          <li>Write down the <strong>Total Shared Cost</strong> as the dividend and the number of <strong>Teammates</strong> as the divisor.</li>
-          <li>When dividing decimals by a whole number, place the decimal point in the quotient directly above the decimal point in the dividend.</li>
-          <li>Divide step-by-step using long division.</li>
-          <li>Multiply your answer by the teammate count to verify you get the exact total.</li>
-        </ol>
-        <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
-          💡 <strong>Example:</strong> Total cost $384.00 ÷ 8 members = <strong>$48.00 each</strong>.
-        </div>
-      
-          </div>
-        </div>
-      </section>
-    
+          <button class="calc-btn teal" onclick="calcLCM()">Find the Sync Hour</button>
+          <div class="readout" id="lcm-out"></div>
 
-      <!-- ===================== PART 1C — SELF ===================== -->
-      <section class="phase" id="phase-1c" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">1c</div>
-          <div>
-            <span class="arc-banner">Part 1c · Self — your real plan</span>
-            <h2>🧰 Organize the toolkit (GCF)</h2>
-          </div>
+          <details class="hint">
+            <summary>Need a hint?</summary>
+            <p>List multiples of each number until they share one.<br><strong>Robot A (3):</strong> 3, 6, 9, <strong>12</strong> ... <strong>Robot B (4):</strong> 4, 8, <strong>12</strong> ... LCM = 12 hours.</p>
+          </details>
         </div>
-        
-        <div class="grid2">
-          <div>
-            
-    <div id="gcf-svg-container" class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
-    </div>
-  
-            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-          Level 1 tip: try counts that share a factor, like 24 and 36.
-        </p>
-        <div class="grid2">
-          <div>
-            <label class="fld" for="f-screws">Screws you have</label
-            ><input
-              type="number"
-              id="f-screws"
-              data-save
-              min="1"
-              placeholder=""
-              oninput="calcKits()"
-            />
-          </div>
-          <div>
-            <label class="fld" for="f-bolts">Bolts you have</label
-            ><input
-              type="number"
-              id="f-bolts"
-              data-save
-              min="1"
-              placeholder=""
-              oninput="calcKits()"
-            />
-          </div>
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(2)">Back</button>
+          <button class="nav-btn" onclick="goStep(4)">Next Step</button>
         </div>
-        <button class="btn" type="button" onclick="calcKits()">
-          Make the most kits
-        </button>
-        <div class="readout" id="kits-out"></div>
-        <div class="pki-manip" data-manip="gcf-bags" data-item-a="🔩" data-label-a="screws" data-item-b="⚙️" data-label-b="bolts" data-default-a="72" data-default-b="54" data-group="toolkit"></div>
-        <div class="pk-lvl2" style="margin-top: 16px">
-          <div class="task">
-            <strong>Level 2 extension (Distributive Property · 6.NS.4):</strong>
-            Rewrite screws + bolts as <code>GCF × (a + b)</code>. Example: 72 +
-            54 = 18 × (4 + 3). Write yours below.
-          </div>
-          <label class="fld" for="distrib"
-            >Rewrite screws + bolts using your GCF</label
-          >
-          <input
-            type="text"
-            id="distrib"
-            data-save
-            placeholder=""
-          />
-        </div>
-        <details class="hintbox">
-          <summary>Need a hint?</summary>
-          <p>GCF(72, 54) = 18, so 18 kits with 4 screws and 3 bolts each.</p>
-        </details>
+      </div>
 
-        <!-- 1d Budget -->
-          </div>
-          
-          <div style="background: var(--bg); border: 2.5px solid var(--line); border-radius: 18px; padding: 20px; box-shadow: var(--shadow); height: fit-content;" class="pk-no-print">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px; color: var(--navy); font-size: 16px;">
-              <span>💡</span> Guided Steps &amp; Help
-            </h3>
-            
-        <p style="font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-bottom: 12px;">
-          <strong>GCF Toolkit Packaging:</strong>
-        </p>
-        <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-          <li>List all factors of your <strong>Screw</strong> count (numbers that divide it evenly).</li>
-          <li>List all factors of your <strong>Bolt</strong> count.</li>
-          <li>Find the largest factor shared by both lists. This GCF is the maximum number of identical toolkits you can build.</li>
-          <li>Divide your screw and bolt counts by the GCF to find the contents of each kit.</li>
-        </ol>
-        <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
-          💡 <strong>Example:</strong> GCF of 72 screws and 54 bolts is <strong>18 toolkits</strong>. Each toolkit gets 4 screws and 3 bolts.
-        </div>
-      
-          </div>
-        </div>
-      </section>
-    
-
-      <!-- ===================== PART 1D — SELF ===================== -->
-      <section class="phase" id="phase-1d" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">1d</div>
-          <div>
-            <span class="arc-banner">Part 1d · Self — your real plan</span>
-            <h2>💵 Are you under budget? (decimal operations)</h2>
-          </div>
-        </div>
-        
-        <div class="grid2">
-          <div>
-            
-    <div id="budget-svg-container" class="pk-math-scaffold-card no-print" style="margin: 20px 0; padding: 12px; background: #fff; border: 1px solid var(--line); border-radius: 12px; max-width: 480px; margin-left: auto; margin-right: auto;">
-    </div>
-  
-            <div class="grid2">
-          <div>
-            <label class="fld" for="b-budget">Your total budget ($)</label
-            ><input
-              type="number"
-              id="b-budget"
-              data-save
-              step="0.01"
-              placeholder=""
-              oninput="calcBudget()"
-            />
-          </div>
-          <div>
-            <label class="fld" for="b-parts">Parts subtotal ($)</label
-            ><input
-              type="number"
-              id="b-parts"
-              data-save
-              step="0.01"
-              placeholder=""
-              oninput="calcBudget()"
-            />
-          </div>
-          <div>
-            <label class="fld" for="b-travel">Travel ($)</label
-            ><input
-              type="number"
-              id="b-travel"
-              data-save
-              step="0.01"
-              placeholder=""
-              oninput="calcBudget()"
-            />
-          </div>
-          <div>
-            <label class="fld" for="b-snacks">Snacks ($)</label
-            ><input
-              type="number"
-              id="b-snacks"
-              data-save
-              step="0.01"
-              placeholder=""
-              oninput="calcBudget()"
-            />
-          </div>
-        </div>
-        <button class="btn alt" type="button" onclick="calcBudget()">
-          Check the budget
-        </button>
-        <div class="readout" id="budget-out"></div>
-
-        <div class="task" style="margin-top: 18px">
-          <strong>Quick division check:</strong> A reel of 96 zip ties is shared
-          among 6 robots. How many per robot?
-        </div>
-        <label class="fld" for="check-ties">Your answer</label>
-        <input
-          type="number"
-          id="check-ties"
-          data-save
-          placeholder=""
-        />
-        <button class="btn" type="button" onclick="checkTies()">
-          Check answer
-        </button>
-        <div class="feedback" id="check-tiesFb"></div>
-          </div>
-          
-          <div style="background: var(--bg); border: 2.5px solid var(--line); border-radius: 18px; padding: 20px; box-shadow: var(--shadow); height: fit-content;" class="pk-no-print">
-            <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px; color: var(--navy); font-size: 16px;">
-              <span>💡</span> Guided Steps &amp; Help
-            </h3>
-            
-        <p style="font-size: 13.5px; line-height: 1.5; color: var(--muted); margin-bottom: 12px;">
-          <strong>Decimal Operations for Budget Tracking:</strong>
-        </p>
-        <ol style="margin-left: 18px; font-size: 13px; line-height: 1.5; display: grid; gap: 8px; color: var(--ink);">
-          <li>Align the decimal points vertically when writing down your expenses.</li>
-          <li>Add up <strong>Parts</strong>, <strong>Travel</strong>, and <strong>Snacks</strong> to find your <strong>Total Cost</strong>.</li>
-          <li>Subtract this Total Cost from your starting <strong>Budget Limit</strong>.</li>
-          <li>A positive difference means you are <strong>under budget</strong>, while a negative difference means you are <strong>over budget</strong>.</li>
-        </ol>
-        <div style="margin-top: 14px; padding: 10px; background: var(--sky); border-radius: 8px; font-size: 12px;">
-          💡 <strong>Example:</strong> Budget $500.00 − Expenses $425.45 = <strong>$74.55 leftover</strong>.
-        </div>
-      
-          </div>
-        </div>
-      </section>
-    
-
-      
-      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
-      <section class="pk-visualizer-card no-print">
-        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
-        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px;">
-          This visual interactive canvas updates in real-time as you complete your math calculations.
-        </p>
-        <div id="projectVisualizer"></div>
-      </section>
-  
-      <!-- ===================== PART 2 — PEER ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--blue)">2</div>
-          <div>
-            <span class="arc-banner"
-              >Part 2 · Peer — interview an engineer</span
-            >
-            <div class="skill">Compare &amp; reason · 6.NS.3</div>
-            <h2>Interview &amp; Compare</h2>
-          </div>
-        </div>
-        <p>
-          Ask another team's purchasing engineer about
-          <strong>their</strong> order, then auto-compare.
-        </p>
-        <div class="pk-callout pk-no-print" style="margin-bottom: 14px">
-          <h3>Interview Sentence Frames</h3>
-          <p>"What was your parts subtotal? How many kits did you build?"</p>
-          <p>"What does each teammate pay? How much budget is left?"</p>
-          <p class="pk-es">
-            "¿Cuál fue tu subtotal de piezas? ¿Cuántos kits armaste?"
-          </p>
-        </div>
-        <div class="grid2">
-          <div>
-            <label class="fld" for="partnerName">Partner name or initials</label
-            ><input
-              type="text"
-              id="partnerName"
-              data-save
-              placeholder=""
-            />
-          </div>
-          <div>
-            <label class="fld" for="p-subtotal"
-              >Partner: parts subtotal ($)</label
-            ><input
-              type="number"
-              id="p-subtotal"
-              data-save
-              step="0.01"
-              oninput="comparePeer()"
-            />
-          </div>
-          <div>
-            <label class="fld" for="p-share"
-              >Partner: cost per teammate ($)</label
-            ><input
-              type="number"
-              id="p-share"
-              data-save
-              step="0.01"
-              oninput="comparePeer()"
-            />
-          </div>
-          <div>
-            <label class="fld" for="p-kits">Partner: number of kits (GCF)</label
-            ><input
-              type="number"
-              id="p-kits"
-              data-save
-              min="0"
-              oninput="comparePeer()"
-            />
-          </div>
-        </div>
-        <button class="btn alt" type="button" onclick="comparePeer()">
-          Compare our orders
-        </button>
-        <div id="peerBox" class="pk-stats" style="margin-top: 16px"></div>
-        <label class="fld" for="peerReflect"
-          >Whose order is the better deal, and how do you know?</label
-        >
-        <textarea
-          id="peerReflect"
-          data-save
-          placeholder=""
-        ></textarea>
-      </section>
-
-      <!-- ===================== PART 3 — WORLD ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div
-            class="phase-num"
-            style="background: var(--gold); color: #2a1c00"
-          >
-            3
-          </div>
-          <div>
-            <span class="arc-banner">Part 3 · World — real robotics kits</span>
-            <div class="skill">Compare to real data · 6.NS.3</div>
-            <h2>How Does Your Spending Compare?</h2>
-          </div>
-        </div>
-        <p>
-          These are realistic prices for popular school robotics kits and team
-          budgets. Pick a category and see where your number lands.
-        </p>
-        <div class="grid2">
-          <div>
-            <label class="fld" for="worldCat">Compare against</label>
-            <select id="worldCat" data-save onchange="worldGo()">
-              <option value="kitPrice">Kit price ($)</option>
-              <option value="perStudent">Cost per student ($)</option>
-              <option value="teamBudget">Team budget ($)</option>
-            </select>
-            <label class="fld" for="myWorld">My number</label>
-            <input
-              type="number"
-              id="myWorld"
-              data-save
-              step="0.01"
-              oninput="worldGo()"
-              placeholder=""
-            />
-            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
-              Tip: try your parts subtotal or your cost per teammate.
-            </p>
-            <div id="worldMeter"></div>
-          </div>
-          <div>
-            <h3>Robotics Kit Sample 🤖</h3>
-            <div
-              style="
-                overflow: auto;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-              "
-            >
-              <table class="rubric" style="margin-top: 0">
-                <tr>
-                  <th>Kit / Team</th>
-                  <th>Kit price</th>
-                  <th>Per student</th>
-                  <th>Team budget</th>
-                </tr>
-                <tbody id="worldRows"></tbody>
-              </table>
+      <!-- STEP 4: PARTS BUDGET -->
+      <div class="step-panel" id="step-4">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon gold">💰</div>
+            <div>
+              <div class="card-title">Step 3 — Track the Parts Budget</div>
+              <div class="card-sub">Add up parts costs, then divide by number of robots to find cost per robot</div>
             </div>
           </div>
-        </div>
 
-        <div
-          class="phase"
-          style="margin: 18px 0 0; box-shadow: none; border-style: dashed"
-        >
-          <h3>🔬 What-If Lab</h3>
-          <p style="color: var(--muted); font-size: 14px">
-            Add a pretend new kit price and watch the sample average change.
-          </p>
+          <div class="instruct gold">
+            <strong>Your job:</strong> Enter what you will spend on motors, sensors, and frames. Add them up, then divide by the number of robots to find the cost per robot.
+          </div>
+
+          <svg class="visual-svg" viewBox="0 0 520 130" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">
+            <text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">Budget = Motors + Sensors + Frames</text>
+            <rect x="20" y="40" width="140" height="70" rx="10" fill="#fdf3e0" stroke="#c9820f" stroke-width="2"/>
+            <text x="90" y="66" text-anchor="middle" font-size="20">&#9881;</text>
+            <text x="90" y="86" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Motors</text>
+            <text x="90" y="102" text-anchor="middle" font-size="10" fill="#c9820f">$___</text>
+            <text x="185" y="80" text-anchor="middle" font-size="22" fill="#c9820f" font-weight="bold">+</text>
+            <rect x="200" y="40" width="140" height="70" rx="10" fill="#fdf3e0" stroke="#c9820f" stroke-width="2"/>
+            <text x="270" y="66" text-anchor="middle" font-size="20">&#128225;</text>
+            <text x="270" y="86" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Sensors</text>
+            <text x="270" y="102" text-anchor="middle" font-size="10" fill="#c9820f">$___</text>
+            <text x="365" y="80" text-anchor="middle" font-size="22" fill="#c9820f" font-weight="bold">+</text>
+            <rect x="380" y="40" width="130" height="70" rx="10" fill="#fdf3e0" stroke="#c9820f" stroke-width="2"/>
+            <text x="445" y="66" text-anchor="middle" font-size="20">&#129470;</text>
+            <text x="445" y="86" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Frames</text>
+            <text x="445" y="102" text-anchor="middle" font-size="10" fill="#c9820f">$___</text>
+          </svg>
+
+          <div class="lvl1-only instruct gold">
+            🟢 <strong>Level 1 tip:</strong> Try round numbers like $60 motors, $35 sensors, $25 frames, 4 robots.
+          </div>
+
           <div class="grid2">
             <div>
-              <label class="fld" for="whatIfVal">New value to add ($)</label
-              ><input
-                type="number"
-                id="whatIfVal"
-                step="0.01"
-                placeholder=""
-              />
+              <label class="lbl" for="c-motors">Motors cost ($)</label>
+              <input type="number" id="c-motors" step="0.01" min="0" placeholder="e.g. 60.00" oninput="calcBudget()" />
+            </div>
+            <div>
+              <label class="lbl" for="c-sensors">Sensors cost ($)</label>
+              <input type="number" id="c-sensors" step="0.01" min="0" placeholder="e.g. 35.00" oninput="calcBudget()" />
+            </div>
+            <div>
+              <label class="lbl" for="c-frames">Frames cost ($)</label>
+              <input type="number" id="c-frames" step="0.01" min="0" placeholder="e.g. 25.00" oninput="calcBudget()" />
+            </div>
+            <div>
+              <label class="lbl" for="c-robots">Number of robots</label>
+              <input type="number" id="c-robots" min="1" placeholder="e.g. 4" oninput="calcBudget()" />
             </div>
           </div>
-          <button class="btn" type="button" onclick="runWhatIf()">
-            Run test
-          </button>
-          <div class="pk-whatif" id="whatIfBox" style="margin-top: 12px">
-            Enter a value to test.
-          </div>
-        </div>
 
-        <label class="fld" for="worldReflect"
-          >Is your spending lower or higher than the kit sample? Why might that
-          be?</label
-        >
-        <textarea
-          id="worldReflect"
-          data-save
-          placeholder=""
-        ></textarea>
-        <div class="pk-lvl2">
-          <label class="fld" for="worldHard"
-            >Level 2 question: A kit costs $279.00 and is split among 6
-            students. What does each student pay? Show your thinking.</label
-          >
-          <textarea
-            id="worldHard"
-            data-save
-            placeholder=""
-          ></textarea>
-        </div>
-        <label class="fld" for="careful"
-          >Careful thinking: why is it tricky to compare team budgets between
-          schools?</label
-        >
-        <textarea
-          id="careful"
-          data-save
-          placeholder=""
-        ></textarea>
-      </section>
+          <button class="calc-btn gold" onclick="calcBudget()">Calculate Budget and Cost Per Robot</button>
+          <div class="readout" id="budget-out"></div>
 
-      <!-- ===================== DELIVERABLE ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--green)">★</div>
-          <div>
-            <div class="skill">Final Deliverable</div>
-            <h2>Write the Coach's Memo</h2>
+          <div style="margin-top:22px;">
+            <h3 style="font-size:15px;font-weight:800;color:var(--navy);margin-bottom:6px;">Real-World Robotics Kit Prices</h3>
+            <p style="font-size:14px;color:var(--muted);margin-bottom:6px;">Here are real robotics kit price ranges. See where your cost per robot lands!</p>
+            <table class="data-table">
+              <thead>
+                <tr><th>Kit Type</th><th>Price Range</th><th>What You Get</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Budget Kit</td><td>$45 – $80</td><td>Basic motors, simple frame, minimal sensors</td></tr>
+                <tr><td>Mid-Range Kit</td><td>$100 – $200</td><td>Multiple sensors, stronger motors, programmable</td></tr>
+                <tr><td>Pro Kit</td><td>$300 – $600</td><td>Advanced AI sensors, metal frame, competition-ready</td></tr>
+              </tbody>
+            </table>
+            <label class="lbl" for="world-compare">Which kit category does your cost per robot match? Write one sentence.</label>
+            <textarea id="world-compare" placeholder="My cost per robot is $___. This matches the ___ kit because..."></textarea>
           </div>
-        </div>
-        <p>
-          Write a 3–5 sentence memo recommending whether the team should approve
-          this order. Use your real numbers.
-        </p>
-        <textarea
-          id="pitch"
-          data-save
-          placeholder=""
-        ></textarea>
-        <h3 style="margin: 22px 0 6px">Engineering Checklist</h3>
-        <ul class="checklist" id="checklist">
-          <li>
-            <input type="checkbox" data-save id="ck1" /> I multiplied price ×
-            quantity for every part.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck2" /> I divided to find each
-            teammate's fair share.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck3" /> I used the GCF to build
-            identical toolkits.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck4" /> I confirmed the full
-            total is at or under my budget.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck5" /> I interviewed a partner
-            and compared orders.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck6" /> I compared my spending
-            to the kit sample.
-          </li>
-        </ul>
 
-        <div class="grid2" style="margin-top: 18px">
-          <div>
-            <button class="btn" type="button" onclick="buildReport()">
-              📝 Generate report
-            </button>
-          </div>
-          <div class="pk-no-print">
-            <button
-              class="btn ghost"
-              type="button"
-              onclick="PK.copyReport('reportBox')"
-            >
-              Copy report
-            </button>
-            <button
-              class="btn ghost"
-              type="button"
-              onclick="PK.downloadText('build-a-bot-memo.txt', 'reportBox')"
-            >
-              Download .txt
-            </button>
-            <button class="btn ghost" type="button" onclick="downloadCsv()">
-              Download .csv
-            </button>
-            <button
-              class="btn"
-              style="background: var(--navy)"
-              type="button"
-              onclick="window.print()"
-            >
-              🖨️ Print
-            </button>
-          </div>
+          <details class="hint">
+            <summary>Need a hint for division?</summary>
+            <p>Total Cost / Number of Robots = Cost Per Robot.<br><strong>Example:</strong> $120 / 4 robots = $30.00 per robot.</p>
+          </details>
         </div>
-        <div class="pk-report" id="reportBox" style="margin-top: 16px">
-          Click "Generate report" to build your memo summary.
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(3)">Back</button>
+          <button class="nav-btn" onclick="goStep(5)">Next Step</button>
         </div>
-      </section>
+      </div>
 
-      <!-- RUBRIC -->
-      <section class="phase">
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--navy)">✓</div>
-          <div>
-            <div class="skill">How You Are Scored</div>
-            <h2>Project Rubric</h2>
+      <!-- STEP 5: COMPARE WITH A PARTNER -->
+      <div class="step-panel" id="step-5">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon teal">👥</div>
+            <div>
+              <div class="card-title">Step 4 — Compare With a Partner</div>
+              <div class="card-sub">Interview a classmate and compare your robotics team orders</div>
+            </div>
           </div>
-        </div>
-        <table class="rubric">
-          <tr>
-            <th>Category</th>
-            <th>4 — Expert</th>
-            <th>3 — Proficient</th>
-            <th>2 — Developing</th>
-          </tr>
-          <tr>
-            <td>Decimal Multiplication</td>
-            <td>All line totals accurate; place value perfect</td>
-            <td>Subtotal accurate</td>
-            <td>Minor decimal errors</td>
-          </tr>
-          <tr>
-            <td>Division</td>
-            <td>Fair share correct and division check correct</td>
-            <td>Fair share correct</td>
-            <td>Attempted with one error</td>
-          </tr>
-          <tr>
-            <td>Factors (GCF)</td>
-            <td>Correct number of kits with contents explained</td>
-            <td>Correct GCF</td>
-            <td>Partial factor reasoning</td>
-          </tr>
-          <tr>
-            <td>Comparison (Peer &amp; World)</td>
-            <td>Compares orders and kit data with clear reasoning</td>
-            <td>Comparisons present and mostly correct</td>
-            <td>Comparison attempted</td>
-          </tr>
-          <tr>
-            <td>Communication</td>
-            <td>Memo justifies recommendation with every number</td>
-            <td>Memo uses most numbers</td>
-            <td>Memo unclear or missing data</td>
-          </tr>
-        </table>
-      </section>
 
-      <p class="footer">
-        Neft Teacher · Unit 1 Culminating Project · Version B ·
-        <span id="yr"></span>
-      </p>
+          <div class="instruct teal">
+            <strong>Your job:</strong> Ask a partner these 3 questions. Write their answers below, then press Compare to see the differences.
+          </div>
+
+          <svg class="visual-svg" viewBox="0 0 520 100" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">
+            <text x="140" y="40" text-anchor="middle" font-size="28">&#128587;</text>
+            <text x="140" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">You</text>
+            <rect x="185" y="38" width="155" height="30" rx="8" fill="#e4f5f3" stroke="#0e8a7d" stroke-width="1.5"/>
+            <text x="262" y="58" text-anchor="middle" font-size="11" fill="#0e8a7d">"How many kits did you build?"</text>
+            <text x="385" y="40" text-anchor="middle" font-size="28">&#128587;</text>
+            <text x="385" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">Partner</text>
+          </svg>
+
+          <div style="background:var(--teal-lt);border-radius:12px;padding:14px 16px;margin-bottom:18px;">
+            <strong style="font-size:14px;color:var(--teal);">Interview Questions — Ask Your Partner:</strong>
+            <ol style="margin-top:8px;font-size:14px;line-height:1.9;padding-left:18px;color:var(--ink);">
+              <li>How many equal tool kits did you build? (GCF result)</li>
+              <li>What is your cost per robot? ($)</li>
+              <li>How much of your total budget is left over?</li>
+            </ol>
+          </div>
+
+          <label class="lbl" for="p-name">Partner's name or initials</label>
+          <input type="text" id="p-name" placeholder="e.g. Jordan" />
+
+          <div class="grid2" style="margin-top:4px;">
+            <div>
+              <label class="lbl" for="p-kits">Partner's number of tool kits</label>
+              <input type="number" id="p-kits" min="0" oninput="comparePeer()" placeholder="" />
+            </div>
+            <div>
+              <label class="lbl" for="p-per">Partner's cost per robot ($)</label>
+              <input type="number" id="p-per" step="0.01" min="0" oninput="comparePeer()" placeholder="" />
+            </div>
+          </div>
+
+          <button class="calc-btn teal" onclick="comparePeer()">Compare Our Teams</button>
+          <div class="readout" id="peer-out"></div>
+
+          <label class="lbl" for="peer-reflect" style="margin-top:18px;">Whose team used the budget more efficiently? Explain using your numbers.</label>
+          <textarea id="peer-reflect" placeholder="My team had ___ kits and $__ per robot. My partner had... I think ___ used the budget more efficiently because..."></textarea>
+        </div>
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(4)">Back</button>
+          <button class="nav-btn green" onclick="goStep(6)">Next Step</button>
+        </div>
+      </div>
+
+      <!-- STEP 6: FINISH + RUBRIC -->
+      <div class="step-panel" id="step-6">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon green">🏆</div>
+            <div>
+              <div class="card-title">Step 5 — Finish and Submit</div>
+              <div class="card-sub">Write your pitch, check the list, get your score</div>
+            </div>
+          </div>
+
+          <div class="instruct green">
+            <strong>Your job:</strong> Write 3–5 sentences pitching your robotics team plan using your real numbers. Then check off everything you completed.
+          </div>
+
+          <label class="lbl" for="pitch">Your Robotics Team Pitch (use your real numbers!)</label>
+          <textarea id="pitch" placeholder="My robotics team plan uses math to keep everything fair and on budget. I built ___ equal tool kits by finding the GCF of ___ cables and ___ sensors. My two robots sync charges every ___ hours (LCM). My total parts budget is $___, which comes out to $___ per robot..."></textarea>
+
+          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">Checklist — Check off everything you completed</h3>
+          <ul class="checklist" id="checklist">
+            <li><input type="checkbox" id="ck1" /> I found the GCF to build equal tool kits.</li>
+            <li><input type="checkbox" id="ck2" /> I found the LCM to sync the charging schedule.</li>
+            <li><input type="checkbox" id="ck3" /> I calculated my total parts budget and cost per robot.</li>
+            <li><input type="checkbox" id="ck4" /> I compared my cost per robot to the real robotics kit prices.</li>
+            <li><input type="checkbox" id="ck5" /> I interviewed a partner and compared our team orders.</li>
+            <li><input type="checkbox" id="ck6" /> I wrote a pitch using my real numbers.</li>
+          </ul>
+
+          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">How You Are Scored</h3>
+          <table class="rubric">
+            <thead>
+              <tr><th>Skill</th><th class="score-4">4 — Expert</th><th class="score-3">3 — Proficient</th><th class="score-2">2 — Developing</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>GCF / LCM</strong></td><td>Both correct with explanation</td><td>Both correct</td><td>One correct</td></tr>
+              <tr><td><strong>Decimal Budget</strong></td><td>All costs correct, under budget</td><td>Total is accurate</td><td>Small decimal error</td></tr>
+              <tr><td><strong>Division</strong></td><td>Cost per robot correct + reasoning</td><td>Cost per robot correct</td><td>Setup correct, computation error</td></tr>
+              <tr><td><strong>Comparison</strong></td><td>Compares partner + kit price data with reasoning</td><td>Both comparisons present</td><td>At least one comparison</td></tr>
+              <tr><td><strong>Pitch</strong></td><td>Uses all real numbers, clear reasoning</td><td>Uses most numbers</td><td>Written but incomplete</td></tr>
+            </tbody>
+          </table>
+
+          <div class="nav-row no-print" style="margin-top:22px;flex-wrap:wrap;justify-content:flex-start;gap:8px;">
+            <button class="calc-btn" onclick="buildReport()">Generate Summary</button>
+            <button class="export-btn" onclick="copyReport()">Copy</button>
+            <button class="export-btn" onclick="downloadTxt()">Download .txt</button>
+            <button class="export-btn" onclick="window.print()">Print</button>
+          </div>
+          <pre class="report-box" id="reportBox"></pre>
+        </div>
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(5)">Back</button>
+          <button class="nav-btn green" onclick="alert('Great work! Show this page to your teacher.')">I am Done!</button>
+        </div>
+      </div>
+
     </div>
 
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <script src="/assets/app.js" defer></script>
     <script>
-      const yrEl = document.getElementById("yr");
-      if (yrEl) yrEl.textContent = new Date().getFullYear();
-      const $ = (id) => document.getElementById(id);
-      const num = (id) => { const e = $(id); return e ? parseFloat(e.value) : NaN; };
-
-      function gcd(a, b) {
-        a = Math.abs(a);
-        b = Math.abs(b);
-        while (b) {
-          [a, b] = [b, a % b];
-        }
-        return a;
-      }
-      function getFactors(n) {
-        const factors = [];
-        for (let i = 1; i <= n; i++) {
-          if (n % i === 0) factors.push(i);
-        }
-        return factors;
-      }
-      function show(id, html) {
-        const el = $(id);
-        el.innerHTML = html;
-        el.classList.add("show");
-        updateProgress();
-      }
-
-      const proj = {
-        subtotal: null,
-        share: null,
-        kits: null,
-        total: null,
-        left: null,
-      };
-
-      /* ---- Visual Drawing Helpers (SVG math representations) ---- */
-      function drawInvoiceSvg() {
-        const container = $("invoice-svg-container");
-        if (!container) return;
-        
-        let p1 = num("p1"), q1 = num("q1");
-        let p2 = num("p2"), q2 = num("q2");
-        let p3 = num("p3"), q3 = num("q3");
-
-        let p1Valid = !isNaN(p1) && p1 >= 0 && !isNaN(q1) && q1 >= 0;
-        let p2Valid = !isNaN(p2) && p2 >= 0 && !isNaN(q2) && q2 >= 0;
-        let p3Valid = !isNaN(p3) && p3 >= 0 && !isNaN(q3) && q3 >= 0;
-
-        // Show a worked EXAMPLE ledger by default so the card always has a
-        // reference; switches to the student's real order as they type.
-        const isExample = !p1Valid && !p2Valid && !p3Valid;
-        if (isExample) {
-          p1 = 12.5; q1 = 4;
-          p2 = 3.25; q2 = 8;
-          p3 = 8.0; q3 = 2;
-          p1Valid = p2Valid = p3Valid = true;
-        }
-
-        const motorTotal = p1Valid ? p1 * q1 : 0;
-        const wheelTotal = p2Valid ? p2 * q2 : 0;
-        const sensorTotal = p3Valid ? p3 * q3 : 0;
-        const subtotal = motorTotal + wheelTotal + sensorTotal;
-        
-        container.innerHTML = `
-          <svg width="100%" height="220" viewBox="0 0 500 220" style="background:#fff; border-radius:8px; border: 1px solid var(--line);" xmlns="http://www.w3.org/2000/svg">
-            <text x="250" y="30" text-anchor="middle" font-size="16" font-weight="bold" fill="#0f2b3c">Robotics Parts Order Ledger</text>
-            ${
-              isExample
-                ? `<rect x="372" y="14" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" />
-                   <text x="430" y="28" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example order</text>`
-                : ""
-            }
-            <!-- Table Headers -->
-            <text x="30" y="60" font-size="13" font-weight="bold" fill="#5e6e7e">Item</text>
-            <text x="220" y="60" font-size="13" font-weight="bold" fill="#5e6e7e" text-anchor="end">Unit Price</text>
-            <text x="310" y="60" font-size="13" font-weight="bold" fill="#5e6e7e" text-anchor="middle">Qty</text>
-            <text x="470" y="60" font-size="13" font-weight="bold" fill="#5e6e7e" text-anchor="end">Line Total</text>
-            
-            <line x1="20" y1="68" x2="480" y2="68" stroke="#cbd5e1" stroke-width="1.5" />
-            
-            <!-- Row 1: Motor -->
-            <text x="30" y="95" font-size="13" font-weight="bold" fill="#0f2b3c">Motor</text>
-            <text x="220" y="95" font-size="13" fill="#0f2b3c" text-anchor="end">${p1Valid ? '$' + p1.toFixed(2) : '-'}</text>
-            <text x="310" y="95" font-size="13" fill="#0f2b3c" text-anchor="middle">${p1Valid ? q1 : '-'}</text>
-            <text x="470" y="95" font-size="13" font-weight="bold" fill="#0f2b3c" text-anchor="end">${p1Valid ? '$' + motorTotal.toFixed(2) : '-'}</text>
-            
-            <!-- Row 2: Wheel set -->
-            <text x="30" y="125" font-size="13" font-weight="bold" fill="#0f2b3c">Wheel set</text>
-            <text x="220" y="125" font-size="13" fill="#0f2b3c" text-anchor="end">${p2Valid ? '$' + p2.toFixed(2) : '-'}</text>
-            <text x="310" y="125" font-size="13" fill="#0f2b3c" text-anchor="middle">${p2Valid ? q2 : '-'}</text>
-            <text x="470" y="125" font-size="13" font-weight="bold" fill="#0f2b3c" text-anchor="end">${p2Valid ? '$' + wheelTotal.toFixed(2) : '-'}</text>
-            
-            <!-- Row 3: Sensor -->
-            <text x="30" y="155" font-size="13" font-weight="bold" fill="#0f2b3c">Sensor</text>
-            <text x="220" y="155" font-size="13" fill="#0f2b3c" text-anchor="end">${p3Valid ? '$' + p3.toFixed(2) : '-'}</text>
-            <text x="310" y="155" font-size="13" fill="#0f2b3c" text-anchor="middle">${p3Valid ? q3 : '-'}</text>
-            <text x="470" y="155" font-size="13" font-weight="bold" fill="#0f2b3c" text-anchor="end">${p3Valid ? '$' + sensorTotal.toFixed(2) : '-'}</text>
-            
-            <line x1="20" y1="172" x2="480" y2="172" stroke="#0f2b3c" stroke-width="1.5" stroke-dasharray="2,2" />
-            
-            <!-- Subtotal -->
-            <text x="350" y="200" font-size="14" font-weight="bold" fill="#5e6e7e" text-anchor="end">Subtotal:</text>
-            <text x="470" y="200" font-size="16" font-weight="bold" fill="#1763c7" text-anchor="end">$${subtotal.toFixed(2)}</text>
-          </svg>
-        `;
-      }
-
-      function drawDivisionSvg() {
-        let t = num("s-total"),
-          m = num("s-members");
-        const container = $("division-svg-container");
-        if (!container) return;
-        const isExample = isNaN(t) || t < 0 || isNaN(m) || m <= 0;
-        if (isExample) {
-          t = 240;
-          m = 8;
-        }
-        const quotient = t / m;
-        const quotientStr = quotient.toFixed(2);
-        const dividendStr = t.toFixed(2);
-        const divisorStr = m.toString();
-        
-        const decDiv = dividendStr.indexOf('.');
-        const decQuot = quotientStr.indexOf('.');
-        
-        const charWidth = 14;
-        const centerX = 240;
-        
-        let quotientDigits = "";
-        for (let i = 0; i < quotientStr.length; i++) {
-          const cx = centerX + (i - decQuot) * charWidth;
-          const isDec = quotientStr[i] === '.';
-          quotientDigits += `<text x="${cx}" y="85" font-family="'Courier New', Courier, monospace" font-size="18" font-weight="${isDec ? 'bold' : 'normal'}" fill="${isDec ? '#ef6b52' : '#0f2b3c'}" text-anchor="middle">${quotientStr[i]}</text>`;
-        }
-        
-        let dividendDigits = "";
-        for (let i = 0; i < dividendStr.length; i++) {
-          const cx = centerX + (i - decDiv) * charWidth;
-          const isDec = dividendStr[i] === '.';
-          dividendDigits += `<text x="${cx}" y="120" font-family="'Courier New', Courier, monospace" font-size="18" font-weight="${isDec ? 'bold' : 'normal'}" fill="${isDec ? '#ef6b52' : '#0f2b3c'}" text-anchor="middle">${dividendStr[i]}</text>`;
-        }
-        
-        const leftX = centerX - decDiv * charWidth - 8;
-        const rightX = centerX + (dividendStr.length - 1 - decDiv) * charWidth + 8;
-        
-        const bracketPath = `M ${leftX - 4} 125 L ${leftX} 125 L ${leftX} 95 L ${rightX} 95`;
-        const divisorX = leftX - 10;
-        
-        const decPointX = centerX;
-        const decimalLine = `<line x1="${decPointX}" y1="70" x2="${decPointX}" y2="135" stroke="#ef6b52" stroke-width="1.5" stroke-dasharray="3,3" />`;
-        
-        container.innerHTML = `
-          <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px; border: 1px solid var(--line);" xmlns="http://www.w3.org/2000/svg">
-            <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Place-Value Division Alignment</text>
-            ${
-              isExample
-                ? `<rect x="360" y="16" width="128" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" />
-                   <text x="424" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · $240 ÷ 8</text>`
-                : ""
-            }
-            ${decimalLine}
-            <path d="${bracketPath}" fill="none" stroke="#0f2b3c" stroke-width="2" />
-            <text x="${divisorX}" y="120" font-family="'Courier New', Courier, monospace" font-size="18" fill="#0f2b3c" text-anchor="end">${divisorStr}</text>
-            ${quotientDigits}
-            ${dividendDigits}
-            <text x="250" y="170" text-anchor="middle" font-size="12" fill="#5e6e7e">Decimal point in quotient aligns directly above dividend.</text>
-          </svg>
-        `;
-      }
-
-      function drawGCFSvg() {
-        let s = num("f-screws");
-        let b = num("f-bolts");
-        const container = $("gcf-svg-container");
-        if (!container) return;
-        const isExample = isNaN(s) || s <= 0 || isNaN(b) || b <= 0;
-        if (isExample) {
-          s = 24;
-          b = 36;
-        }
-
-        const g = gcd(s, b);
-        const sFactors = getFactors(s);
-        const bFactors = getFactors(b);
-        
-        const leftOnly = sFactors.filter(f => !bFactors.includes(f));
-        const rightOnly = bFactors.filter(f => !sFactors.includes(f));
-        const both = sFactors.filter(f => bFactors.includes(f));
-        
-        const leftCircle = `<circle cx="195" cy="110" r="55" fill="rgba(23, 99, 199, 0.07)" stroke="#1763c7" stroke-width="2" />`;
-        const rightCircle = `<circle cx="305" cy="110" r="55" fill="rgba(244, 169, 36, 0.07)" stroke="#f4a924" stroke-width="2" />`;
-        
-        const fmtList = (arr) => arr.length > 5 ? arr.slice(0, 4).join(", ") + "..." : arr.join(", ");
-        
-        const leftText = leftOnly.length ? fmtList(leftOnly) : "";
-        const rightText = rightOnly.length ? fmtList(rightOnly) : "";
-        const bothText = both.filter(f => f !== g).join(", ");
-        
-        const gcfText = `<tspan font-weight="bold" fill="#19a35a" font-size="16">${g}</tspan>`;
-        
-        container.innerHTML = `
-          <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px; border: 1px solid var(--line);" xmlns="http://www.w3.org/2000/svg">
-            <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">GCF Venn Diagram Guide</text>
-            ${
-              isExample
-                ? `<rect x="360" y="16" width="128" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" />
-                   <text x="424" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · 24 and 36</text>`
-                : ""
-            }
-            ${leftCircle}
-            ${rightCircle}
-            
-            <text x="140" y="48" font-size="11" font-weight="bold" fill="#1763c7" text-anchor="middle">Screws (${s})</text>
-            <text x="360" y="48" font-size="11" font-weight="bold" fill="#f4a924" text-anchor="middle">Bolts (${b})</text>
-            
-            <text x="165" y="114" font-size="11" fill="#1763c7" text-anchor="middle">${leftText}</text>
-            <text x="335" y="114" font-size="11" fill="#f4a924" text-anchor="middle">${rightText}</text>
-            
-            <text x="250" y="105" font-size="11" fill="#5e6e7e" text-anchor="middle">${bothText ? bothText + "," : ""}</text>
-            <text x="250" y="125" text-anchor="middle">${gcfText}</text>
-            <text x="250" y="90" font-size="9" fill="#19a35a" font-weight="bold" text-anchor="middle">GCF</text>
-            
-            <text x="250" y="182" text-anchor="middle" font-size="12" font-weight="bold" fill="#19a35a">
-              GCF(${s}, ${b}) = ${g} toolkits | Each gets ${s/g} screws & ${b/g} bolts
-            </text>
-          </svg>
-        `;
-      }
-
-      function drawBudgetSvg() {
-        let budget = num("b-budget");
-        let rawVals = ["b-parts", "b-travel", "b-snacks"].map(num);
-        const container = $("budget-svg-container");
-        if (!container) return;
-        const isExample =
-          rawVals.some((v) => isNaN(v) || v < 0) || isNaN(budget) || budget <= 0;
-        if (isExample) {
-          budget = 200;
-          rawVals = [120, 30, 20];
-        }
-
-        const total = rawVals.reduce((a, c) => a + c, 0);
-        const left = budget - total;
-        
-        const barWidth = 400;
-        const startX = 50;
-        const barY = 80;
-        const barHeight = 24;
-        
-        let rects = "";
-        let currentX = startX;
-        
-        const colors = ["#1763c7", "#0e9a8c", "#6d4ad6"];
-        
-        const maxVal = Math.max(budget, total);
-        
-        for (let i = 0; i < rawVals.length; i++) {
-          const w = (rawVals[i] / maxVal) * barWidth;
-          if (w > 0) {
-            rects += `<rect x="${currentX}" y="${barY}" width="${w}" height="${barHeight}" fill="${colors[i]}" />`;
-            currentX += w;
-          }
-        }
-        
-        let leftoverWidth = 0;
-        if (left > 0) {
-          leftoverWidth = (left / maxVal) * barWidth;
-          rects += `<rect x="${currentX}" y="${barY}" width="${leftoverWidth}" height="${barHeight}" fill="#e2f5ee" stroke="#19a35a" stroke-width="1" stroke-dasharray="2,2" />`;
-        }
-        
-        const budgetMarkerX = startX + (budget / maxVal) * barWidth;
-        const budgetMarker = `
-          <line x1="${budgetMarkerX}" y1="${barY - 10}" x2="${budgetMarkerX}" y2="${barY + barHeight + 10}" stroke="#ef6b52" stroke-width="2" />
-          <text x="${budgetMarkerX}" y="${barY - 14}" text-anchor="middle" font-size="9" fill="#ef6b52" font-weight="bold">Limit ($${budget.toFixed(2)})</text>
-        `;
-        
-        let feedbackText = "";
-        if (left >= 0) {
-          feedbackText = `<text x="250" y="172" text-anchor="middle" font-size="13" font-weight="bold" fill="#19a35a">✅ Under Budget: $${left.toFixed(2)} remaining</text>`;
-        } else {
-          feedbackText = `<text x="250" y="172" text-anchor="middle" font-size="13" font-weight="bold" fill="#ef6b52">⚠️ Over Budget: $${Math.abs(left).toFixed(2)} overflow</text>`;
-        }
-        
-        container.innerHTML = `
-          <svg width="100%" height="200" viewBox="0 0 500 200" style="background:#fff; border-radius:8px; border: 1px solid var(--line);" xmlns="http://www.w3.org/2000/svg">
-            <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Budget Ledger Breakdown</text>
-            ${
-              isExample
-                ? `<rect x="372" y="16" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" />
-                   <text x="430" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example ledger</text>`
-                : ""
-            }
-
-            <rect x="${startX}" y="${barY}" width="${barWidth}" height="${barHeight}" rx="4" fill="#f1f5f9" />
-            
-            ${rects}
-            ${budgetMarker}
-            ${feedbackText}
-            
-            <g transform="translate(70, 135)">
-              <rect x="0" y="0" width="10" height="10" fill="#1763c7" />
-              <text x="14" y="9" font-size="9" fill="#5e6e7e">Parts</text>
-              
-              <rect x="90" y="0" width="10" height="10" fill="#0e9a8c" />
-              <text x="104" y="9" font-size="9" fill="#5e6e7e">Travel</text>
-              
-              <rect x="180" y="0" width="10" height="10" fill="#6d4ad6" />
-              <text x="194" y="9" font-size="9" fill="#5e6e7e">Snacks</text>
-              
-              <rect x="270" y="0" width="10" height="10" fill="#e2f5ee" stroke="#19a35a" />
-              <text x="284" y="9" font-size="9" fill="#5e6e7e">Leftover</text>
-            </g>
-          </svg>
-        `;
-      }
-
-      /* ---- Calculators with dynamic visual math connections ---- */
-      function calcParts() {
-        let total = 0,
-          rows = "",
-          valid = true;
-        for (let i = 1; i <= 3; i++) {
-          const p = num("p" + i),
-            q = num("q" + i);
-          if (isNaN(p) || p < 0 || isNaN(q) || q < 0) {
-            valid = false;
-            continue;
-          }
-          const line = p * q;
-          total += line;
-          rows +=
-            "Line " +
-            i +
-            ": $" +
-            p.toFixed(2) +
-            " × " +
-            q +
-            " = <strong>$" +
-            line.toFixed(2) +
-            "</strong><br>";
-        }
-        if (!valid || !rows) {
-          $("parts-out").classList.remove("show");
-          proj.subtotal = null;
-          drawInvoiceSvg();
-          return;
-        }
-        proj.subtotal = total;
-        show(
-          "parts-out",
-          '<div class="big">$' +
-            total.toFixed(2) +
-            "</div>" +
-            rows +
-            "✅ That is your parts subtotal.",
-        );
-        drawInvoiceSvg();
-      }
-
-      function calcSplit() {
-        const t = num("s-total"),
-          m = num("s-members");
-        if (isNaN(t) || t < 0 || isNaN(m) || m <= 0) {
-          $("split-out").classList.remove("show");
-          proj.share = null;
-          drawDivisionSvg();
-          return;
-        }
-        proj.share = t / m;
-        show(
-          "split-out",
-          '<div class="big">$' +
-            (t / m).toFixed(2) +
-            " each</div>$" +
-            t.toFixed(2) +
-            " ÷ " +
-            m +
-            " members = <strong>$" +
-            (t / m).toFixed(2) +
-            "</strong> per teammate.",
-        );
-        drawDivisionSvg();
-      }
-
-      function calcKits() {
-        const s = num("f-screws"),
-          b = num("f-bolts");
-        if (isNaN(s) || s <= 0 || isNaN(b) || b <= 0) {
-          $("kits-out").classList.remove("show");
-          proj.kits = null;
-          drawGCFSvg();
-          if (typeof drawVisualizer === "function") drawVisualizer();
-          return;
-        }
-        const g = gcd(s, b);
-        proj.kits = g;
-        show(
-          "kits-out",
-          '<div class="big">' +
-            g +
-            " toolkits</div>Each kit gets <strong>" +
-            s / g +
-            " screws</strong> and <strong>" +
-            b / g +
-            " bolts</strong>. GCF(" +
-            s +
-            ", " +
-            b +
-            ") = " +
-            g +
-            (g === 1 ? " ⚠️ try counts that share a bigger factor." : "."),
-        );
-        drawGCFSvg();
-        if (typeof drawVisualizer === "function") drawVisualizer();
-      }
-
-      function calcBudget() {
-        const budget = num("b-budget");
-        const rawVals = ["b-parts", "b-travel", "b-snacks"].map(num);
-        if (
-          rawVals.some((v) => isNaN(v) || v < 0) ||
-          isNaN(budget) ||
-          budget < 0
-        ) {
-          $("budget-out").classList.remove("show");
-          proj.total = null;
-          proj.left = null;
-          drawBudgetSvg();
-          return;
-        }
-        const t = rawVals.reduce((a, c) => a + c, 0);
-        const left = budget - t;
-        proj.total = t;
-        proj.left = left;
-        show(
-          "budget-out",
-          '<div class="big">$' +
-            t.toFixed(2) +
-            " total</div>" +
-            (left >= 0
-              ? "✅ <strong>$" +
-                left.toFixed(2) +
-                "</strong> under your $" +
-                budget.toFixed(2) +
-                " budget."
-              : "⚠️ <strong>$" +
-                Math.abs(left).toFixed(2) +
-                " over budget</strong> — trim a category."),
-        );
-        drawBudgetSvg();
-      }
-
-      function checkTies() {
-        PK.checkWork("check-ties", 16, 0);
-        updateProgress();
-      }
-
-      /* ---- Part 2 peer ---- */
-      function comparePeer() {
-        const rows = [];
-        const pSub = num("p-subtotal"),
-          pShare = num("p-share"),
-          pKits = num("p-kits");
-        if (proj.subtotal != null && !isNaN(pSub))
-          rows.push({
-            label: "Subtotal $",
-            me: proj.subtotal,
-            partner: pSub,
-            fmt: (x) => Number(x).toFixed(2),
-          });
-        if (proj.share != null && !isNaN(pShare))
-          rows.push({
-            label: "Per teammate $",
-            me: proj.share,
-            partner: pShare,
-            fmt: (x) => Number(x).toFixed(2),
-          });
-        if (proj.kits != null && !isNaN(pKits))
-          rows.push({ label: "Kits", me: proj.kits, partner: pKits });
-        if (!rows.length) {
-          $("peerBox").innerHTML =
-            '<p class="pk-fb">Finish Part 1 and enter partner numbers to compare.</p>';
-          return;
-        }
-        PK.peerCompare("peerBox", rows);
-        updateProgress();
-      }
-
-      /* ---- Part 3 world ---- */
-      // [name, kitPrice, perStudent, teamBudget] — realistic robotics values
-      const world = [
-        ["VEX IQ Kit", 279.99, 35.0, 800],
-        ["LEGO SPIKE Prime", 359.95, 45.0, 1000],
-        ["VEX V5 Kit", 999.99, 55.0, 1500],
-        ["Hummingbird Bit", 199.0, 25.0, 600],
-        ["Sphero RVR", 249.99, 30.0, 700],
-        ["Arduino Robot Kit", 89.9, 18.0, 450],
-        ["micro:bit Robot", 64.5, 12.0, 400],
-        ["FIRST LEGO League", 449.0, 50.0, 1200],
+      const STEPS = [
+        { id: 1, label: 'Key Words', icon: '📖' },
+        { id: 2, label: 'Tool Kits', icon: '🧰' },
+        { id: 3, label: 'Charging',  icon: '🔋' },
+        { id: 4, label: 'Budget',    icon: '💰' },
+        { id: 5, label: 'Compare',   icon: '👥' },
+        { id: 6, label: 'Finish',    icon: '🏆' },
       ];
-      const wIdx = { kitPrice: 1, perStudent: 2, teamBudget: 3 };
-      function renderWorld() {
-        $("worldRows").innerHTML = world
-          .map(
-            (r) =>
-              `<tr><td>${r[0]}</td><td>$${r[1].toFixed(2)}</td><td>$${r[2].toFixed(2)}</td><td>$${r[3]}</td></tr>`,
-          )
-          .join("");
-      }
-      function worldSample() {
-        return world.map((r) => r[wIdx[$("worldCat").value]]);
-      }
-      
-      function worldGo() {
-        const my = num("myWorld");
-        const customName = $("worldCountry") ? $("worldCountry").value.trim() : "";
-        const customSize = $("s-total") ? num("s-total") : NaN;
-        
-        let sample = worldSample();
-        if (!isNaN(customSize) && customSize > 0) {
-          sample = [...sample, customSize];
-        }
-        
-        const labels = { mean: "Sample avg $", me: "Me $" };
+      let currentStep = 1;
+      const visited = new Set([1]);
 
-        PK.worldMeter("worldMeter", sample, my, labels);
-        
-        const fb = $("worldMeter");
-        if (!isNaN(customSize) && customSize > 0 && customName) {
-          const ratio = (my / customSize).toFixed(2);
-          const pct = Math.round((my / customSize) * 100);
-          const diff = Math.abs(my - customSize).toFixed(2);
-          
-          let myValStr = true ? "$" + my.toFixed(2) : my + "";
-          let custValStr = true ? "$" + customSize.toFixed(2) : customSize + "";
-          let diffStr = true ? "$" + Number(diff).toFixed(2) : Number(diff).toFixed(2) + "";
+      function setLevel(n) {
+        document.getElementById('body').className = 'level-' + n;
+        document.getElementById('btn-lv1').classList.toggle('active', n === 1);
+        document.getElementById('btn-lv2').classList.toggle('active', n === 2);
+      }
 
-          const rel = my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
-          const desc = `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
-            `📊 Research Comparison: Your value (${myValStr}) is <strong>${rel}</strong> than <strong>${customName}</strong> (${custValStr}) ` +
-            `by <strong>${diffStr}</strong>. Your value is <strong>${pct}%</strong> (${ratio}x) of the size of the researched benchmark.` +
-            `</div>`;
-          fb.innerHTML += desc;
-        }
-        
-        if (typeof drawVisualizer === 'function') {
-          drawVisualizer();
-        }
-        
+      function buildTrail() {
+        const trail = document.getElementById('stepTrail');
+        trail.innerHTML = STEPS.map((s, i) => {
+          const isLast = i === STEPS.length - 1;
+          const isDone = visited.has(s.id) && s.id !== currentStep;
+          return '<span class="step-trail-item' + (s.id === currentStep ? ' active' : '') + (isDone ? ' done' : '') + '" onclick="goStep(' + s.id + ')">'
+            + '<span class="s-num">' + (isDone ? '&#x2713;' : s.id) + '</span>'
+            + '<span class="s-label">' + s.label + '</span>'
+            + '</span>' + (!isLast ? '<span class="step-arrow">&#x203A;</span>' : '');
+        }).join('');
+      }
+
+      function goStep(n) {
+        if (n < 1 || n > STEPS.length) return;
+        document.getElementById('step-' + currentStep).classList.remove('active');
+        currentStep = n;
+        visited.add(n);
+        document.getElementById('step-' + n).classList.add('active');
+        buildTrail();
         updateProgress();
-      }
-  
-      
-      function runWhatIf() {
-        const v = parseFloat($("whatIfVal").value);
-        let sample = worldSample();
-        const customSize = $("s-total") ? num("s-total") : NaN;
-        if (!isNaN(customSize) && customSize > 0) {
-          sample = [...sample, customSize];
-        }
-        if (isNaN(v)) {
-          $("whatIfBox").textContent = "Enter a number first.";
-          return;
-        }
-        const before = PK.mean(sample);
-        const after = PK.mean(sample.concat([v]));
-        
-        let beforeStr = true ? "$" + before.toFixed(2) : before.toFixed(2) + "";
-        let afterStr = true ? "$" + after.toFixed(2) : after.toFixed(2) + "";
-        let vStr = true ? "$" + v.toFixed(2) : v + "";
-
-        PK.whatIf(
-          "whatIfBox",
-          { average: beforeStr },
-          { average: afterStr },
-          "Adding a value of " + vStr + " to the sample:"
-        );
-      }
-  
-
-      function useExamples() {
-        const ex = {
-          
-          "worldCountry": "VEX IQ Kit",
-          "s-total": 329.95,
-          p1: 18.75,
-          q1: 4,
-          p2: 6.4,
-          q2: 6,
-          p3: 12.25,
-          q3: 3,
-          "s-members": 8,
-          "f-screws": 72,
-          "f-bolts": 54,
-          "b-budget": 500,
-          "b-parts": 150.15,
-          "b-travel": 210.5,
-          "b-snacks": 64.8,
-          myWorld: "",
-          
-        };
-        Object.entries(ex).forEach(([k, v]) => {
-          if ($(k)) $(k).value = v;
-        });
-        recalcAll();
-      }
-      
-
-      
-      function drawVisualizer() {
-        let s = num("f-screws");
-        let b = num("f-bolts");
-        // Default to a worked EXAMPLE build so the visualizer always shows
-        // something to look at; switches to the student's numbers on input.
-        const isExample = !(!isNaN(s) && s > 0 && !isNaN(b) && b > 0);
-        if (isExample) {
-          s = 24;
-          b = 36;
-        }
-
-        let html = "";
-        if (!isNaN(s) && s > 0 && !isNaN(b) && b > 0) {
-          const g = gcd(s, b);
-          const screwsPer = s / g;
-          const boltsPer = b / g;
-          
-          const numBoxes = Math.min(g, 6);
-          let boxesHtml = "";
-          for (let i = 0; i < numBoxes; i++) {
-            const x = 30 + (i % 3) * 150;
-            const y = 30 + Math.floor(i / 3) * 100;
-            
-            let itemsHtml = "";
-            for (let sc = 0; sc < Math.min(screwsPer, 8); sc++) {
-              const sx = x + 15 + (sc % 4) * 16;
-              const sy = y + 35 + Math.floor(sc / 4) * 16;
-              itemsHtml += `<circle cx="${sx}" cy="${sy}" r="5" fill="#1a6fb5" />`;
-            }
-            for (let bl = 0; bl < Math.min(boltsPer, 8); bl++) {
-              const bx = x + 85 + (bl % 4) * 16;
-              const by = y + 35 + Math.floor(bl / 4) * 16;
-              itemsHtml += `<rect x="${bx - 5}" y="${by - 5}" width="10" height="10" rx="2" fill="#d4952a" />`;
-            }
-            
-            boxesHtml += `
-              <g>
-                <rect x="${x}" y="${y}" width="140" height="80" rx="8" fill="none" stroke="#0e8a7d" stroke-width="2" />
-                <text x="${x + 70}" y="${y + 20}" text-anchor="middle" font-size="10" font-weight="bold" fill="#0e8a7d">Toolkit #${i+1}</text>
-                ${itemsHtml}
-              </g>
-            `;
-          }
-          
-          html = `
-            ${
-              isExample
-                ? `<rect x="360" y="8" width="130" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="425" y="22" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · 24 and 36</text>`
-                : ""
-            }
-            ${boxesHtml}
-            <text x="250" y="215" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">
-              GCF = ${g} Toolkits | Each gets ${screwsPer} Screws (🔵) & ${boltsPer} Bolts (🟧)
-            </text>
-          `;
-        } else {
-          html = `
-            <text x="250" y="120" text-anchor="middle" font-size="14" fill="#5e6e7e" italic>Enter Screws & Bolts amounts to visualize toolkits</text>
-          `;
-        }
-        
-        const svgString = `
-          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
-            ${html}
-          </svg>
-        `;
-        $("projectVisualizer").innerHTML = svgString;
-      }
-    
-  
-function recalcAll() {
-        calcParts();
-        calcSplit();
-        calcKits();
-        calcBudget();
-        comparePeer();
-        renderWorld();
-        worldGo();
-        updateProgress();
-      }
-
-      function reportText() {
-        const f = (x) => (x == null ? "(not finished)" : Number(x).toFixed(2));
-        return (
-          "BUILD-A-BOT BUDGET LAB — MY REPORT\n" +
-          "===================================\n\n" +
-          "PART 1: MY ORDER (SELF)\n" +
-          "Parts subtotal: $" +
-          f(proj.subtotal) +
-          "\n" +
-          "Cost per teammate: $" +
-          f(proj.share) +
-          "\n" +
-          "Toolkits (GCF): " +
-          (proj.kits == null ? "(not finished)" : proj.kits) +
-          "\n" +
-          "Total spent: $" +
-          f(proj.total) +
-          "  |  Budget left: $" +
-          f(proj.left) +
-          "\n\n" +
-          "PART 2: PEER COMPARISON\n" +
-          "Partner: " +
-          ($("partnerName").value || "(none)") +
-          "\n" +
-          "Partner subtotal: $" +
-          ($("p-subtotal").value || "-") +
-          "  per teammate: $" +
-          ($("p-share").value || "-") +
-          "  kits: " +
-          ($("p-kits").value || "-") +
-          "\n" +
-          "Reflection: " +
-          ($("peerReflect").value || "(not written)") +
-          "\n\n" +
-          "PART 3: WORLD COMPARISON\n" +
-          "My value vs kits: " +
-          ($("worldReflect").value || "(not written)") +
-          "\n" +
-          "Careful thinking: " +
-          ($("careful").value || "(not written)") +
-          "\n\n" +
-          "COACH'S MEMO:\n" +
-          ($("pitch").value || "(not written)")
-        );
-      }
-      function buildReport() {
-        recalcAll();
-        PK.generateReport("reportBox", reportText());
-      }
-      function downloadCsv() {
-        const rows = [
-          ["field", "value"],
-          ["parts_subtotal", proj.subtotal],
-          ["cost_per_teammate", proj.share],
-          ["kits", proj.kits],
-          ["total_spent", proj.total],
-          ["budget_left", proj.left],
-          ["partner", $("partnerName").value],
-          ["partner_subtotal", $("p-subtotal").value],
-          ["partner_per_teammate", $("p-share").value],
-          ["partner_kits", $("p-kits").value],
-        ];
-        PK.downloadCsv("build-a-bot-data.csv", rows);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
 
       function updateProgress() {
-        const readouts = document.querySelectorAll(".readout.show").length; // max 4
-        const tiesOk = $("check-tiesFb").querySelector(".pk-ok") ? 1 : 0;
-        const checks = document.querySelectorAll(
-          "#checklist input:checked",
-        ).length; // max 6
-        const peer = $("p-subtotal").value || $("p-share").value ? 1 : 0;
-        const wrld = $("myWorld").value ? 1 : 0;
-        const pitch = $("pitch").value.trim().length > 20 ? 1 : 0;
-        const total = readouts + tiesOk + checks + peer + wrld + pitch; // max 14
-        const pct = Math.min(100, Math.round((total / 14) * 100));
-        $("pfill").style.width = pct + "%";
-        $("pct").textContent = pct;
+        var pct = Math.round(((currentStep - 1) / (STEPS.length - 1)) * 100);
+        document.getElementById('progFill').style.width = pct + '%';
+        document.getElementById('progLabel').textContent = 'Step ' + currentStep + ' of ' + STEPS.length;
       }
-      document
-        .getElementById("checklist")
-        .addEventListener("change", updateProgress);
-      document
-        .getElementById("pitch")
-        .addEventListener("input", updateProgress);
 
-      window.onLevelChange = function (level) {
-        if (level === "level-1") {
-          const empty = !$("f-screws").value && !$("f-bolts").value;
-          if (empty) {
-            $("f-screws").value = 24;
-            $("f-bolts").value = 36;
-            calcKits();
-          }
+      function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
+      function lcm(a, b) { return (a * b) / gcd(a, b); }
+      function getFactors(n) {
+        var f = [];
+        for (var i = 1; i <= n; i++) if (n % i === 0) f.push(i);
+        return f;
+      }
+      function showReadout(id, html) {
+        var el = document.getElementById(id);
+        el.innerHTML = html;
+        el.classList.add('show');
+      }
+
+      function calcGCF() {
+        var a = parseInt(document.getElementById('g-cables').value);
+        var b = parseInt(document.getElementById('g-sensors').value);
+        var sc = document.getElementById('gcf-svg-cables');
+        var ss = document.getElementById('gcf-svg-sensors');
+        if (sc && !isNaN(a)) sc.textContent = a + ' cables';
+        if (ss && !isNaN(b)) ss.textContent = b + ' sensors';
+        if (isNaN(a) || isNaN(b) || a < 1 || b < 1) return;
+        var g = gcd(a, b);
+        showReadout('gcf-out',
+          '<strong>GCF of ' + a + ' and ' + b + ' = ' + g + ' equal tool kits</strong><br>' +
+          'Each kit gets <strong>' + Math.floor(a/g) + ' cables</strong> and <strong>' + Math.floor(b/g) + ' sensors</strong>.<br>' +
+          '<small>Factors of ' + a + ': ' + getFactors(a).join(', ') + ' &nbsp;|&nbsp; Factors of ' + b + ': ' + getFactors(b).join(', ') + '</small>'
+        );
+      }
+
+      function calcLCM() {
+        var a = parseInt(document.getElementById('l-robotA').value);
+        var b = parseInt(document.getElementById('l-robotB').value);
+        if (isNaN(a) || isNaN(b) || a < 1 || b < 1) return;
+        var l = lcm(a, b);
+        var am = [], bm = [];
+        for (var i = 1; i <= 6; i++) { am.push(a*i); bm.push(b*i); }
+        showReadout('lcm-out',
+          '<strong>LCM of ' + a + ' and ' + b + ' = ' + l + ' hours</strong><br>' +
+          'Both robots will be fully charged at the same time at hour <strong>' + l + '</strong>!<br>' +
+          '<small>Robot A (x' + a + '): ' + am.join(', ') + '... &nbsp;|&nbsp; Robot B (x' + b + '): ' + bm.join(', ') + '...</small>'
+        );
+      }
+
+      function calcBudget() {
+        var motors  = parseFloat(document.getElementById('c-motors').value)  || 0;
+        var sensors = parseFloat(document.getElementById('c-sensors').value) || 0;
+        var frames  = parseFloat(document.getElementById('c-frames').value)  || 0;
+        var robots  = parseInt(document.getElementById('c-robots').value);
+        var total   = motors + sensors + frames;
+        if (total === 0) return;
+        if (isNaN(robots) || robots < 1) {
+          showReadout('budget-out', '<strong>Total parts cost: $' + total.toFixed(2) + '</strong><br>Enter the number of robots to find cost per robot.');
+          return;
         }
-      };
-
-      document.addEventListener("DOMContentLoaded", function () {
-        renderWorld();
-        PK.initLevel({ storageKey: "u1ProjectB", default: "level-1" });
-        PK.initTts({ storageKey: "u1ProjectB" });
-        PK.load("u1ProjectB", { after: recalcAll });
-        updateProgress();
-      });
-    </script>
-    <script src="/assets/nt-page-enhance.js" defer></script>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-    <!-- nsr-injected:end -->
-        <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
-    <script type="application/json" id="pk-research">
-      {
-        "icon": "🔎",
-        "title": "Research Lab — Price It Like a Pro",
-        "intro": "Real buyers and budgeters never guess — they look up prices and do the decimal math. Gather real numbers, then use them.",
-        "brief": {
-          "theme": "field",
-          "title": "🧰 Your Research Mission",
-          "hook": "Find <b>real prices</b> and run the decimal math the way a real budget planner does.",
-          "steps": [
-            "Open a link (new tab — you keep your project).",
-            "Find the fact and type it into Field Notes.",
-            "Use your real numbers in the math problems.",
-            "Check off the Investigation Checklist."
-          ]
-        },
-        "fieldNotes": {
-          "title": "Field Notes — Record What You Find",
-          "intro": "Jot the exact number or rule you find. You'll reuse these in the math below.",
-          "fields": [
-            {
-              "label": "How to multiply decimals (the rule)",
-              "source": "Math is Fun",
-              "placeholder": "multiply, then count decimal places",
-              "hint": "Count total decimal places in BOTH factors."
-            },
-            {
-              "label": "How to divide decimals (the rule)",
-              "source": "Math is Fun",
-              "placeholder": "move the decimal point, then divide",
-              "hint": "Make the divisor a whole number first."
-            },
-            {
-              "label": "A real price of one item you want (from a store site or receipt)",
-              "source": "Any store site / receipt",
-              "placeholder": "$12.49",
-              "hint": "Use the exact price, cents included."
-            },
-            {
-              "label": "A real price of a second item",
-              "source": "Any store site / receipt",
-              "placeholder": "$3.75",
-              "hint": "Cents matter for decimal practice."
-            },
-            {
-              "label": "Your total budget",
-              "source": "Your plan",
-              "placeholder": "$50.00",
-              "hint": "Pick a realistic class budget."
-            }
-          ]
-        },
-        "mathTasks": [
-          {
-            "title": "1 · Order cost",
-            "prompt": "Pick a quantity of your first item (Field Note 3). Multiply price × quantity with <b>decimal multiplication</b>. Show your work.",
-            "level2": "Add the cost of your second item order. What is the combined total?"
-          },
-          {
-            "title": "2 · How many can you afford?",
-            "prompt": "Using your budget (Field Note 5) and the price of an item, use <b>decimal division</b> to find how many whole items you can buy.",
-            "level2": "How much money is left over after buying that many? Show the subtraction."
-          },
-          {
-            "title": "3 · Stay on budget",
-            "prompt": "Total your full order. Is it under your budget? By how much? Show the math.",
-            "level2": "If you went over, what is one item you could cut to get back under budget?"
-          }
-        ],
-        "investigationChecklist": [
-          "I recorded the decimal-multiplication rule.",
-          "I recorded the decimal-division rule.",
-          "I found two real prices.",
-          "I used real prices in a multiplication problem.",
-          "I used division to check what I can afford.",
-          "I confirmed my order fits the budget."
-        ],
-        "links": [
-          {
-            "icon": "✖️",
-            "name": "Math is Fun — Multiplying Decimals",
-            "url": "https://www.mathsisfun.com/multiplying-decimals.html",
-            "find": "The step-by-step rule with a worked example.",
-            "look": "count the decimal places in both numbers"
-          },
-          {
-            "icon": "➗",
-            "name": "Math is Fun — Dividing Decimals",
-            "url": "https://www.mathsisfun.com/dividing-decimals.html",
-            "find": "How to move the decimal point before dividing.",
-            "look": "make the divisor a whole number"
-          },
-          {
-            "icon": "🔢",
-            "name": "Math is Fun — Decimals",
-            "url": "https://www.mathsisfun.com/decimals.html",
-            "find": "What each decimal place is worth.",
-            "look": "tenths, hundredths, thousandths"
-          }
-        ],
-        "note": "These sites were picked for class. They open in a new tab so you keep your project. If a page asks you to sign in or buy something, just close it and come back."
+        var perRobot = total / robots;
+        showReadout('budget-out',
+          '<strong>Total parts cost: $' + total.toFixed(2) + '</strong><br>' +
+          'Cost per robot: <strong>$' + perRobot.toFixed(2) + '</strong> ($' + total.toFixed(2) + ' / ' + robots + ' robots)<br>' +
+          '<small>Motors $' + motors.toFixed(2) + ' + Sensors $' + sensors.toFixed(2) + ' + Frames $' + frames.toFixed(2) + ' = $' + total.toFixed(2) + '</small>'
+        );
       }
+
+      function comparePeer() {
+        var cableVal  = parseInt(document.getElementById('g-cables').value)  || 0;
+        var sensorVal = parseInt(document.getElementById('g-sensors').value) || 0;
+        var myKits = (cableVal > 0 && sensorVal > 0) ? gcd(cableVal, sensorVal) : null;
+        var motors  = parseFloat(document.getElementById('c-motors').value)  || 0;
+        var sensors = parseFloat(document.getElementById('c-sensors').value) || 0;
+        var frames  = parseFloat(document.getElementById('c-frames').value)  || 0;
+        var robots  = parseInt(document.getElementById('c-robots').value);
+        var myPer = (!isNaN(robots) && robots > 0) ? (motors + sensors + frames) / robots : null;
+        var pKits = parseInt(document.getElementById('p-kits').value);
+        var pPer  = parseFloat(document.getElementById('p-per').value);
+        if (isNaN(pKits) || isNaN(pPer)) return;
+        var html = '';
+        if (myKits !== null) {
+          var diff = myKits - pKits;
+          html += '<strong>Tool Kits:</strong> You built <strong>' + myKits + '</strong>, partner built <strong>' + pKits + '</strong> — ' +
+            (diff > 0 ? 'You built ' + diff + ' more.' : diff < 0 ? 'Partner built ' + Math.abs(diff) + ' more.' : 'Same number!');
+        }
+        if (myPer !== null) {
+          var diff2 = (myPer - pPer).toFixed(2);
+          html += '<br><strong>Cost Per Robot:</strong> You: <strong>$' + myPer.toFixed(2) + '</strong>, Partner: <strong>$' + pPer.toFixed(2) + '</strong> — ' +
+            (parseFloat(diff2) < 0 ? 'Your team costs $' + Math.abs(diff2) + ' less per robot.' :
+             parseFloat(diff2) > 0 ? "Partner's team costs $" + Math.abs(diff2) + ' less per robot.' : 'Same cost!');
+        }
+        if (html) showReadout('peer-out', html);
+      }
+
+      function buildReport() {
+        var cables  = document.getElementById('g-cables').value;
+        var sens    = document.getElementById('g-sensors').value;
+        var robotA  = document.getElementById('l-robotA').value;
+        var robotB  = document.getElementById('l-robotB').value;
+        var motors  = document.getElementById('c-motors').value;
+        var sensorC = document.getElementById('c-sensors').value;
+        var frames  = document.getElementById('c-frames').value;
+        var robots  = document.getElementById('c-robots').value;
+        var pitch       = document.getElementById('pitch').value;
+        var partner     = document.getElementById('p-name').value;
+        var pReflect    = document.getElementById('peer-reflect').value;
+        var worldNote   = document.getElementById('world-compare').value;
+        var total = (parseFloat(motors)||0) + (parseFloat(sensorC)||0) + (parseFloat(frames)||0);
+        var perRobot = robots ? (total / parseFloat(robots)).toFixed(2) : '-';
+        var g = (cables && sens) ? gcd(parseInt(cables), parseInt(sens)) : '-';
+        var l = (robotA && robotB) ? lcm(parseInt(robotA), parseInt(robotB)) : '-';
+        var lines = [
+          '=== BUILD-A-BOT BUDGET LAB -- UNIT 1 PROJECT (Version B) ===',
+          '',
+          'MATH SKILLS USED: GCF, LCM, Decimal Operations, Division',
+          '',
+          'STEP 1 -- EQUAL TOOL KITS (GCF)',
+          '   Cables: ' + (cables || '-') + ' | Sensors: ' + (sens || '-'),
+          '   GCF = ' + g + ' equal tool kits',
+          '',
+          'STEP 2 -- CHARGING SCHEDULE (LCM)',
+          '   Robot A charges every: ' + (robotA || '-') + ' hrs | Robot B charges every: ' + (robotB || '-') + ' hrs',
+          '   LCM = Both robots sync at hour ' + l,
+          '',
+          'STEP 3 -- PARTS BUDGET',
+          '   Motors: $' + (motors || '-') + ' | Sensors: $' + (sensorC || '-') + ' | Frames: $' + (frames || '-'),
+          '   Total: $' + total.toFixed(2) + ' | Robots: ' + (robots || '-'),
+          '   Cost per robot: $' + perRobot,
+          worldNote ? '   Kit comparison note: ' + worldNote : '',
+          '',
+          'STEP 4 -- PARTNER COMPARISON',
+          '   Partner: ' + (partner || '-'),
+          pReflect ? '   Reflection: ' + pReflect : '',
+          '',
+          'MY PITCH:',
+          pitch || '(no pitch written)',
+          '',
+          '===================================',
+          'Generated: ' + new Date().toLocaleDateString(),
+        ];
+        var box = document.getElementById('reportBox');
+        box.textContent = lines.join('\n');
+        box.classList.add('show');
+      }
+
+      function copyReport() {
+        var txt = document.getElementById('reportBox').textContent;
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(txt).then(function() { alert('Copied to clipboard!'); });
+        }
+      }
+
+      function downloadTxt() {
+        var txt = document.getElementById('reportBox').textContent;
+        var a = document.createElement('a');
+        a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(txt);
+        a.download = 'build-a-bot-budget-lab.txt';
+        a.click();
+      }
+
+      buildTrail();
+      updateProgress();
     </script>
-    <script src="/shared/projects/projects-tabs.js" defer></script>
-    <script src="/shared/projects/projects-interactive.js" defer></script>
-    <script src="/shared/projects/manip-gcf-bags.js" defer></script>
-  <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-  <script src="/assets/math-workbench-launcher.js" defer></script>
-  <!-- mwb-injected:end -->
-</body>
+  </body>
 </html>

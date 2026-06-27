@@ -3,2509 +3,1232 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css" />
-    <title>
-      Real-World Data Investigation — Statistics Culminating Project B
-    </title>
-    <meta
-      name="description"
-      content="Grade 6 Statistics culminating project B. Pose a statistical question, analyze real-world data, compute measures of center and spread, and choose the best display."
-    />
-    <link rel="stylesheet" href="/shared/projects/projects-kit.css" />
-    <script src="/shared/projects/projects-kit.js" defer></script>
+    <title>Real-World Data Investigation — Statistics Culminating Project B</title>
+    <meta name="description" content="Pose a statistical question, analyze weather temperatures, compute measures of center and spread, and represent the data on a box plot. Step-by-step tab-based guide." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <style>
       :root {
         --navy: #0f2b3c;
         --blue: #1a6fb5;
-        --blue-light: #e8f2fc;
+        --blue-lt: #e8f2fc;
         --teal: #0e8a7d;
-        --teal-light: #e4f5f3;
-        --gold: #d4952a;
-        --gold-light: #fdf3e0;
+        --teal-lt: #e4f5f3;
+        --gold: #c9820f;
+        --gold-lt: #fdf3e0;
+        --green: #1e7d40;
+        --green-lt: #e6f4eb;
         --coral: #c45a3c;
-        --coral-light: #fdeee9;
-        --green: #2d874b;
-        --green-light: #e6f4eb;
-        --purple: #6d3fa0;
-        --purple-light: #f0eafa;
         --ink: #1a2633;
         --muted: #5e6e7e;
         --line: #e2e7ec;
-        --bg: #f7f9fb;
+        --bg: #f4f7fa;
         --card: #ffffff;
         --radius: 16px;
-        --shadow: 0 4px 18px rgba(15, 43, 60, 0.1);
-        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+        --shadow: 0 2px 16px rgba(15,43,60,.10);
       }
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        margin: 0;
-        font-family: var(--font);
-        color: var(--ink);
-        background: var(--bg);
-        line-height: 1.55;
-      }
-      .wrap {
-        max-width: 880px;
-        margin: 0 auto;
-        padding: 0 20px 60px;
-      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: 'Inter', system-ui, sans-serif; color: var(--ink); background: var(--bg); line-height: 1.6; }
 
-      .phero {
-        background: linear-gradient(135deg, #0e3d2b 0%, #0e8a7d 100%);
+      /* ---- Hero ---- */
+      .hero {
+        background: linear-gradient(135deg, #0f2b3c 0%, #1a6fb5 60%, #0e8a7d 100%);
         color: #fff;
-        padding: 40px 24px 34px;
+        padding: 36px 24px 28px;
         text-align: center;
-        position: relative;
-        overflow: hidden;
       }
-      .phero .deco {
-        font-size: 56px;
-        line-height: 1;
-      }
-      .phero h1 {
-        font-size: clamp(26px, 5vw, 40px);
-        margin: 10px 0 8px;
-        letter-spacing: -0.02em;
-      }
-      .phero p {
-        max-width: 620px;
-        margin: 0 auto;
-        color: rgba(255, 255, 255, 0.85);
-        font-size: 17px;
-      }
-      .tags {
-        margin-top: 16px;
-        display: flex;
-        gap: 8px;
-        justify-content: center;
-        flex-wrap: wrap;
-      }
-      .tag {
-        background: rgba(255, 255, 255, 0.14);
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        border-radius: 50px;
-        padding: 5px 14px;
-        font-size: 13px;
-        font-weight: 700;
-      }
-      .tag.gold {
-        background: var(--gold);
-        border-color: var(--gold);
-        color: #2a1c00;
-      }
+      .hero-emoji { font-size: 52px; line-height: 1; margin-bottom: 10px; }
+      .hero h1 { font-size: clamp(24px,5vw,38px); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; }
+      .hero-sub { color: rgba(255,255,255,.85); font-size: 16px; max-width: 580px; margin: 0 auto 16px; }
+      .hero-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; }
+      .tag { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.28); border-radius: 50px; padding: 4px 13px; font-size: 12px; font-weight: 700; letter-spacing: .04em; }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #fff; }
 
-      .breadcrumb {
-        font-size: 13px;
-        padding: 14px 0 0;
-        color: var(--muted);
+      /* ---- Level selector ---- */
+      .level-bar {
+        display: flex; gap: 10px; justify-content: center;
+        background: rgba(255,255,255,.10); border-radius: 50px;
+        padding: 6px 10px; max-width: 400px; margin: 0 auto;
       }
-      .breadcrumb a {
-        color: var(--blue);
-        text-decoration: none;
-        font-weight: 600;
+      .level-btn {
+        flex: 1; background: transparent; color: rgba(255,255,255,.75);
+        border: 2px solid rgba(255,255,255,.30); border-radius: 50px;
+        padding: 7px 16px; font-size: 13px; font-weight: 700;
+        cursor: pointer; font-family: inherit; transition: all .2s;
       }
+      .level-btn.active { background: #fff; color: var(--navy); border-color: #fff; }
 
-      .intro-card {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-left: 6px solid var(--gold);
-        border-radius: var(--radius);
-        padding: 22px 24px;
-        margin: 26px 0;
-        box-shadow: var(--shadow);
-      }
-      .intro-card h2 {
-        margin: 0 0 8px;
-        font-size: 20px;
-      }
-      .intro-card .scenario {
-        font-size: 16px;
-        color: var(--ink);
-      }
+      /* ---- Tab wizard ---- */
+      .wizard { max-width: 860px; margin: 0 auto; padding: 0 16px 60px; }
 
-      .phase {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-radius: var(--radius);
-        padding: 24px;
-        margin: 22px 0;
-        box-shadow: var(--shadow);
+      .step-trail {
+        display: flex; align-items: center; gap: 0;
+        padding: 22px 0 0; overflow-x: auto;
       }
-      .phase-head {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        margin-bottom: 6px;
+      .step-trail-item {
+        display: flex; align-items: center; gap: 6px;
+        cursor: pointer; white-space: nowrap; padding: 8px 12px;
+        border-radius: 10px; transition: background .15s;
       }
-      .phase-num {
-        flex: 0 0 auto;
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
-        background: var(--teal);
-        color: #fff;
-        font-weight: 800;
-        font-size: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+      .step-trail-item:hover { background: var(--blue-lt); }
+      .step-trail-item.active .s-num {
+        background: var(--blue); color: #fff;
       }
-      .phase:nth-of-type(2) .phase-num {
-        background: var(--blue);
+      .step-trail-item.done .s-num {
+        background: var(--green); color: #fff;
       }
-      .phase:nth-of-type(3) .phase-num {
-        background: var(--gold);
-        color: #2a1c00;
+      .s-num {
+        width: 30px; height: 30px; border-radius: 50%;
+        background: var(--line); color: var(--muted);
+        font-weight: 800; font-size: 13px;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0; transition: all .2s;
       }
-      .phase:nth-of-type(4) .phase-num {
-        background: var(--coral);
-      }
-      .phase:nth-of-type(5) .phase-num {
-        background: var(--purple);
-      }
-      .phase h2 {
-        margin: 0;
-        font-size: 21px;
-      }
-      .phase .skill {
-        font-size: 12px;
-        font-weight: 700;
-        color: var(--muted);
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-      }
-      .phase > p {
-        color: var(--muted);
-      }
+      .s-label { font-size: 13px; font-weight: 600; color: var(--muted); }
+      .step-trail-item.active .s-label { color: var(--blue); }
+      .step-trail-item.done .s-label { color: var(--green); }
+      .step-arrow { color: var(--line); font-size: 16px; padding: 0 2px; }
 
-      .task {
-        background: var(--blue-light);
-        border-radius: 12px;
-        padding: 16px 18px;
-        margin: 16px 0;
-      }
-      .task strong {
-        color: var(--navy);
-      }
-      .task.teal {
-        background: var(--teal-light);
-      }
-      .task.gold {
-        background: var(--gold-light);
-      }
+      /* ---- Progress bar ---- */
+      .prog-wrap { margin: 14px 0 4px; }
+      .prog-bar { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; }
+      .prog-fill { height: 100%; background: linear-gradient(90deg,var(--blue),var(--teal)); border-radius: 99px; transition: width .4s ease; }
+      .prog-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
 
-      .dataset-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 14px 0;
-        font-size: 15px;
-      }
-      .dataset-table th {
-        background: var(--navy);
-        color: #fff;
-        padding: 8px 12px;
-        text-align: left;
-      }
-      .dataset-table td {
-        border: 1px solid var(--line);
-        padding: 8px 12px;
-      }
-      .dataset-table tr:nth-child(even) td {
-        background: var(--bg);
-      }
+      /* ---- Step panel ---- */
+      .step-panel { display: none; animation: fadein .25s ease; }
+      .step-panel.active { display: block; }
+      @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
-      label.fld {
-        display: block;
-        font-weight: 700;
-        font-size: 14px;
-        margin: 14px 0 6px;
+      /* ---- Card ---- */
+      .card {
+        background: var(--card); border: 1px solid var(--line);
+        border-radius: var(--radius); padding: 28px 26px;
+        box-shadow: var(--shadow); margin-top: 16px;
       }
-      input[type="number"],
-      input[type="text"],
-      select,
-      textarea {
-        width: 100%;
-        padding: 11px 13px;
-        border: 2px solid var(--line);
-        border-radius: 10px;
-        font-family: inherit;
-        font-size: 15px;
-        background: #fff;
+      .card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+      .card-icon {
+        width: 50px; height: 50px; border-radius: 14px;
+        background: var(--blue-lt); display: flex;
+        align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0;
       }
-      input:focus,
-      select:focus,
-      textarea:focus {
-        outline: none;
-        border-color: var(--teal);
+      .card-icon.gold { background: var(--gold-lt); }
+      .card-icon.teal { background: var(--teal-lt); }
+      .card-icon.green { background: var(--green-lt); }
+      .card-title { font-size: 20px; font-weight: 800; color: var(--navy); margin-bottom: 3px; }
+      .card-sub { font-size: 13px; color: var(--muted); font-weight: 500; }
+
+      /* ---- Instruction box ---- */
+      .instruct {
+        background: var(--blue-lt); border-left: 4px solid var(--blue);
+        border-radius: 10px; padding: 14px 16px; margin-bottom: 20px;
+        font-size: 15px; line-height: 1.6;
       }
-      textarea {
-        resize: vertical;
-        min-height: 90px;
+      .instruct.gold { background: var(--gold-lt); border-color: var(--gold); }
+      .instruct.teal { background: var(--teal-lt); border-color: var(--teal); }
+      .instruct.green { background: var(--green-lt); border-color: var(--green); }
+
+      /* ---- SVG visual ---- */
+      .visual-svg { display: block; width: 100%; max-width: 520px; margin: 0 auto 20px; border-radius: 12px; }
+
+      /* ---- Form inputs ---- */
+      label.lbl { display: block; font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 5px; margin-top: 14px; }
+      input[type="number"], input[type="text"], textarea, select {
+        width: 100%; padding: 10px 14px; border: 1.5px solid var(--line);
+        border-radius: 10px; font-size: 15px; font-family: inherit;
+        background: var(--bg); color: var(--ink); transition: border-color .2s;
       }
-      .grid2 {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 14px;
+      input:focus, textarea:focus, select:focus { outline: none; border-color: var(--blue); }
+      textarea { min-height: 90px; resize: vertical; }
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+      @media (max-width: 768px) {
+        .grid4 { grid-template-columns: repeat(2, 1fr); }
       }
       @media (max-width: 560px) {
-        .grid2 {
-          grid-template-columns: 1fr;
-        }
+        .grid2 { grid-template-columns: 1fr; }
+        .grid4 { grid-template-columns: 1fr; }
       }
 
-      .btn {
-        background: var(--teal);
-        color: #fff;
-        border: none;
-        border-radius: 10px;
-        padding: 11px 20px;
-        font-weight: 800;
-        font-size: 15px;
-        cursor: pointer;
-        font-family: inherit;
-        margin-top: 14px;
-        display: inline-block;
+      /* ---- Calc button & readout ---- */
+      .calc-btn {
+        background: var(--blue); color: #fff; border: none;
+        border-radius: 10px; padding: 11px 20px; font-size: 14px;
+        font-weight: 700; cursor: pointer; font-family: inherit;
+        margin-top: 12px; transition: background .2s;
       }
-      .btn:hover {
-        filter: brightness(1.08);
-      }
-      .btn.blue {
-        background: var(--blue);
-      }
-      .btn.gold {
-        background: var(--gold);
-        color: #2a1c00;
-      }
-      .btn.coral {
-        background: var(--coral);
-      }
-      .btn.purple {
-        background: var(--purple);
-      }
-
+      .calc-btn:hover { background: #155fa0; }
+      .calc-btn.gold { background: var(--gold); }
+      .calc-btn.gold:hover { background: #a36a0c; }
+      .calc-btn.teal { background: var(--teal); }
+      .calc-btn.teal:hover { background: #0a6b62; }
+      .calc-btn.green { background: var(--green); }
+      .calc-btn.green:hover { background: #185f31; }
       .readout {
-        margin-top: 16px;
-        border-radius: 12px;
-        padding: 16px 18px;
-        font-size: 15px;
-        background: var(--teal-light);
-        border: 1px solid #bfe6e0;
-        display: none;
+        background: var(--navy); color: #e8f4ff;
+        border-radius: 10px; padding: 14px 18px; margin-top: 12px;
+        font-size: 15px; line-height: 1.6; display: none;
       }
-      .readout.show {
-        display: block;
+      .readout.show { display: block; }
+      .readout strong { color: #7dd3fc; }
+
+      /* ---- Hint ---- */
+      details.hint { margin-top: 14px; }
+      details.hint summary {
+        cursor: pointer; font-size: 13px; font-weight: 600;
+        color: var(--blue); list-style: none; display: inline-flex;
+        align-items: center; gap: 5px;
       }
-      .readout .big {
-        font-size: 26px;
-        font-weight: 800;
-        color: var(--teal);
-        margin-bottom: 6px;
+      details.hint summary::before { content: "💡"; }
+      details.hint p { font-size: 14px; color: var(--muted); margin-top: 8px; padding: 10px 12px; background: var(--blue-lt); border-radius: 8px; }
+
+      /* ---- Level 2 extension ---- */
+      .lvl2-block {
+        border: 2px dashed var(--blue); border-radius: 12px;
+        padding: 14px 16px; margin-top: 18px;
       }
-      .readout .step {
-        font-size: 13px;
-        color: var(--muted);
-        margin-top: 8px;
-        font-family: monospace;
-        line-height: 1.7;
-        white-space: pre-wrap;
+      .lvl2-label {
+        display: inline-block; background: var(--blue); color: #fff;
+        font-size: 11px; font-weight: 800; letter-spacing: .05em;
+        border-radius: 50px; padding: 3px 10px; margin-bottom: 8px;
       }
 
-      .feedback {
-        margin-top: 10px;
-        font-weight: 700;
-        min-height: 22px;
-      }
-      .feedback.ok {
-        color: var(--green);
-      }
-      .feedback.no {
-        color: var(--coral);
-      }
+      /* ---- Real-world data table ---- */
+      .data-table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14px; }
+      .data-table th { background: var(--navy); color: #fff; padding: 8px 12px; text-align: left; }
+      .data-table td { padding: 8px 12px; border-bottom: 1px solid var(--line); }
+      .data-table tr:last-child td { border-bottom: none; }
+      .data-table tr:nth-child(even) td { background: var(--bg); }
 
-      .hintbox {
-        margin-top: 12px;
+      /* ---- Comparison stats ---- */
+      .stat-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
+      .stat-box {
+        flex: 1; min-width: 120px; background: var(--bg);
+        border: 1px solid var(--line); border-radius: 12px;
+        padding: 14px; text-align: center;
       }
-      .hintbox summary {
-        cursor: pointer;
-        font-weight: 700;
-        color: var(--teal);
-        font-size: 14px;
-      }
-      .hintbox p {
-        background: var(--gold-light);
-        border-radius: 10px;
-        padding: 12px 14px;
-        margin: 8px 0 0;
-        font-size: 14px;
-      }
+      .stat-num { font-size: 24px; font-weight: 800; color: var(--blue); }
+      .stat-lbl { font-size: 12px; color: var(--muted); margin-top: 3px; }
 
-      .display-btns {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        margin: 14px 0;
-      }
-      .display-btn {
-        padding: 10px 18px;
-        border: 2px solid var(--line);
-        border-radius: 10px;
-        background: #fff;
-        cursor: pointer;
-        font-family: inherit;
-        font-size: 14px;
-        font-weight: 700;
-        transition: all 0.2s;
-      }
-      .display-btn:hover {
-        border-color: var(--teal);
-        background: var(--teal-light);
-      }
-      .display-btn.selected {
-        border-color: var(--teal);
-        background: var(--teal);
-        color: #fff;
-      }
+      /* ---- Checklist ---- */
+      .checklist { list-style: none; margin-top: 12px; }
+      .checklist li { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+      .checklist li:last-child { border-bottom: none; }
+      .checklist input[type="checkbox"] { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--green); flex-shrink: 0; }
 
-      .center-btns {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        margin: 14px 0;
-      }
-      .center-btn {
-        padding: 10px 18px;
-        border: 2px solid var(--line);
-        border-radius: 10px;
-        background: #fff;
-        cursor: pointer;
-        font-family: inherit;
-        font-size: 14px;
-        font-weight: 700;
-        transition: all 0.2s;
-      }
-      .center-btn:hover {
-        border-color: var(--blue);
-        background: var(--blue-light);
-      }
-      .center-btn.selected {
-        border-color: var(--blue);
-        background: var(--blue);
-        color: #fff;
-      }
+      /* ---- Rubric ---- */
+      .rubric { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 14px; }
+      .rubric th { background: var(--navy); color: #fff; padding: 10px 12px; text-align: left; }
+      .rubric td { padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+      .rubric tr:last-child td { border-bottom: none; }
+      .score-4 { color: var(--green); font-weight: 700; }
+      .score-3 { color: var(--blue); font-weight: 700; }
+      .score-2 { color: var(--gold); font-weight: 700; }
 
-      .rubric {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 12px;
-        font-size: 14px;
+      /* ---- Nav buttons ---- */
+      .nav-row { display: flex; gap: 10px; margin-top: 24px; justify-content: space-between; }
+      .nav-btn {
+        background: var(--blue); color: #fff; border: none;
+        border-radius: 10px; padding: 12px 24px; font-size: 15px;
+        font-weight: 700; cursor: pointer; font-family: inherit;
+        display: flex; align-items: center; gap: 8px; transition: background .2s;
       }
-      .rubric th,
-      .rubric td {
-        border: 1px solid var(--line);
-        padding: 10px 12px;
-        text-align: left;
-        vertical-align: top;
-      }
-      .rubric th {
-        background: var(--navy);
-        color: #fff;
-        font-size: 13px;
-      }
-      .rubric td:first-child {
-        font-weight: 700;
-        width: 28%;
-      }
+      .nav-btn:hover { background: #155fa0; }
+      .nav-btn.ghost { background: transparent; color: var(--blue); border: 2px solid var(--blue); }
+      .nav-btn.ghost:hover { background: var(--blue-lt); }
+      .nav-btn:disabled { opacity: .45; cursor: not-allowed; }
 
-      .checklist {
-        list-style: none;
-        padding: 0;
-        margin: 12px 0 0;
+      /* ---- Report / pitch textarea ---- */
+      #pitch { min-height: 130px; }
+      .report-box {
+        background: var(--navy); color: #e8f4ff; border-radius: 12px;
+        padding: 20px; margin-top: 14px; font-size: 14px; line-height: 1.7;
+        white-space: pre-wrap; display: none;
       }
-      .checklist li {
-        display: flex;
-        gap: 10px;
-        align-items: flex-start;
-        padding: 8px 0;
-        border-bottom: 1px solid var(--line);
+      .report-box.show { display: block; }
+      .export-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+      .export-btn {
+        background: transparent; border: 1.5px solid var(--line);
+        border-radius: 8px; padding: 7px 14px; font-size: 13px;
+        font-weight: 600; cursor: pointer; font-family: inherit;
+        color: var(--muted); transition: all .15s;
       }
-      .checklist input {
-        width: 20px;
-        height: 20px;
-        margin-top: 2px;
-        flex: 0 0 auto;
-      }
+      .export-btn:hover { border-color: var(--blue); color: var(--blue); }
 
-      .progress-wrap {
-        position: sticky;
-        top: 0;
-        z-index: 5;
-        background: var(--bg);
-        padding: 12px 0;
-      }
-      .progress-track {
-        height: 12px;
-        background: var(--line);
-        border-radius: 50px;
-        overflow: hidden;
-      }
-      .progress-fill {
-        height: 100%;
-        width: 0;
-        background: linear-gradient(90deg, var(--teal), var(--green));
-        transition: width 0.4s;
-      }
-      .progress-label {
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--muted);
-        margin-bottom: 6px;
-      }
+      /* ---- Level-gated content ---- */
+      .lvl1-only { display: none; }
+      .lvl2-only { display: none; }
+      body.level-1 .lvl1-only { display: block; }
+      body.level-2 .lvl2-only { display: block; }
+      body.level-2 .lvl2-block { border-color: var(--blue); }
 
-      .footer {
-        text-align: center;
-        color: var(--muted);
-        font-size: 14px;
-        margin-top: 40px;
-      }
-      .printbtn {
-        background: var(--navy);
-        color: #fff;
-      }
+      /* ---- Vocab cards ---- */
+      .vocab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin-top: 14px; }
+      .vocab-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+      .vocab-icon { font-size: 26px; margin-bottom: 6px; }
+      .vocab-term { font-size: 13px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
+      .vocab-def { font-size: 13px; color: var(--muted); line-height: 1.5; }
+      .vocab-ex { font-size: 12px; color: var(--blue); font-weight: 600; margin-top: 5px; }
 
-      .toolbar {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        justify-content: center;
-        margin-top: 16px;
-      }
-      .toolbar button {
-        background: rgba(255, 255, 255, 0.12);
-        color: #fff;
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        border-radius: 50px;
-        padding: 8px 16px;
-        font-weight: 700;
-        font-size: 13px;
-        cursor: pointer;
-        font-family: inherit;
-      }
-      .toolbar button:hover {
-        background: rgba(255, 255, 255, 0.22);
-      }
-      .dot-plot-wrap {
-        margin: 16px 0;
-        overflow-x: auto;
-      }
-      .dot-plot-svg {
-        display: block;
-        max-width: 100%;
-      }
-      .btn.ghost {
-        background: #fff;
-        color: var(--teal);
-        border: 2px solid var(--line);
-      }
-      .teacher-key {
-        display: none;
-      }
-
+      /* ---- Print ---- */
       @media print {
-        .phero .deco,
-        .progress-wrap,
-        .btn,
-        .breadcrumb,
-        .hintbox,
-        .toolbar,
-        .pk-no-print {
-          display: none !important;
-        }
-        .phase,
-        .intro-card {
-          box-shadow: none;
-          break-inside: avoid;
-        }
-        body {
-          background: #fff;
-        }
-        .readout {
-          display: block !important;
-        }
-        .teacher-key {
-          display: block !important;
-          break-before: page;
-        }
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        html {
-          scroll-behavior: auto;
-        }
-        *,
-        *::before,
-        *::after {
-          animation-duration: 0.001ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.001ms !important;
-        }
+        .no-print { display: none !important; }
+        .hero { background: var(--navy) !important; }
+        body { background: #fff; }
+        .card { box-shadow: none; border-color: #ccc; }
       }
     </style>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
-    <!-- nsr-injected:end -->
-    <link rel="stylesheet" href="/shared/projects/projects-premium.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-tabs.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-tplus.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-interactive.css" />
-    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-    <link rel="stylesheet" href="/assets/mobile-access.css" />
-    <!-- mobile-access-injected:end -->
   </head>
-  <body class="pk" data-pk-theme="stats">
-    <header class="phero">
-      <div class="deco">🌦️</div>
+  <body class="level-1" id="body">
+
+    <!-- ====== HERO ====== -->
+    <header class="hero no-print">
+      <div class="hero-emoji">🌦️</div>
       <h1>Real-World Data Investigation</h1>
-      <p>
-        Choose a real-world topic, pose a statistical question, analyze a data
-        set, describe the spread, pick the best display, and write your
-        investigation report.
-      </p>
-      <div class="tags">
-        <span class="tag gold">Statistics &amp; Data</span>
-        <span class="tag">6.SP</span>
+      <p class="hero-sub">Statistics Culminating Project B — Pose a statistical question, analyze weather variability, and map it using a box plot.</p>
+      <div class="hero-tags">
+        <span class="tag gold">6th Grade · Statistics</span>
         <span class="tag">6.SP.1</span>
+        <span class="tag">6.SP.2</span>
         <span class="tag">6.SP.3</span>
         <span class="tag">6.SP.4</span>
-        <span class="tag">6.SP.5c</span>
-        <span class="tag">Version B · Real-World Investigation</span>
+        <span class="tag">6.SP.5</span>
+        <span class="tag">Version B</span>
       </div>
-      <div class="toolbar pk-no-print">
-        <button type="button" onclick="PK.toggleEs()">🌐 EN / ES help</button>
-        <span class="pk-level-toggle">
-          <button data-level-btn="level-1" type="button">🟢 Level 1</button>
-          <button data-level-btn="level-2" type="button">🔵 Level 2</button>
-        </span>
-        <button
-          class="pk-tts-toggle"
-          data-tts-toggle
-          type="button"
-          aria-pressed="false"
-          title="Read text aloud"
-        >
-          🔊 Read aloud
-        </button>
-        <button type="button" onclick="PK.save('statProjectB')">💾 Save</button>
-        <button
-          type="button"
-          onclick="PK.load('statProjectB', { show: true, after: recalcAll })"
-        >
-          📂 Load
-        </button>
+      <div class="level-bar">
+        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">🟢 Level 1 — With Support</button>
+        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">🔵 Level 2 — Challenge</button>
       </div>
     </header>
 
-    <div class="wrap">
-      <div class="progress-wrap">
-        <div class="progress-label">
-          Project progress: <span id="pct">0</span>% complete
-        </div>
-        <div class="progress-track">
-          <div class="progress-fill" id="pfill"></div>
-        </div>
+    <!-- ====== WIZARD ====== -->
+    <div class="wizard">
+
+      <!-- Step trail -->
+      <nav class="step-trail no-print" id="stepTrail" aria-label="Project steps"></nav>
+
+      <!-- Progress bar -->
+      <div class="prog-wrap no-print">
+        <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+        <div class="prog-label" id="progLabel">Step 1 of 6</div>
       </div>
 
-      <div class="intro-card">
-        <h2>🔬 Your Mission</h2>
-        <p class="scenario">
-          You are a data investigator. Choose a real-world dataset (sports,
-          weather, or survey), pose a statistical question, compute the mean and
-          median, measure the spread with range and MAD, then choose the best
-          display and write an investigation report. Work through all four
-          phases, fill every calculator, and complete the checklist.
-        </p>
-      </div>
-
-      <!-- ===================== VISUAL MATH NOTES ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div
-            class="phase-num"
-            style="background: var(--gold); color: #2a1c00"
-          >
-            📒
-          </div>
-          <div>
-            <div class="skill">Before you start · Vocabulary</div>
-            <h2>Visual Math Notes</h2>
-          </div>
-        </div>
-        <p>
-          Learn these words first. Tap <strong>EN / ES help</strong> at the top
-          for Spanish.
-        </p>
-        <div class="pk-vocab">
-          <div class="pk-term">
-            <span class="pk-icon">⚖️</span><b>Mean (average)</b>
-            <p>Add all the numbers, then share them equally.</p>
-            <p class="pk-es">
-              Media (promedio): suma todos los valores y divide entre cuántos
-              hay.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">🎯</span><b>Median</b>
-            <p>The middle number when you put them in order.</p>
-            <p class="pk-es">
-              Mediana: ordena los números; el valor del medio es la mediana.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">🔁</span><b>Mode</b>
-            <p>The number that shows up the most.</p>
-            <p class="pk-es">Moda: el valor que aparece más veces.</p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">📏</span><b>Range</b>
-            <p>The biggest number minus the smallest.</p>
-            <p class="pk-es">Rango: qué tan disperso está: mayor − menor.</p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">📐</span><b>MAD</b>
-            <p>How far the numbers usually sit from the average.</p>
-            <p class="pk-es">
-              DAM (desviación absoluta media): la distancia promedio de cada
-              valor a la media.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">📈</span><b>Distribution shape</b>
-            <p>The way the data sits: even, leaning, or with a few far out.</p>
-            <p class="pk-es">
-              Forma de la distribución: el patrón general: simétrica, sesgada o
-              con valores atípicos.
-            </p>
-          </div>
-        </div>
-        <div class="grid2" style="margin-top: 18px">
-          <div class="pk-callout">
-            <h3>Formula Bank</h3>
-            <ul class="pk-formula">
-              <li>
-                <span class="pk-f-name">Mean (average)</span>
-                <span class="pk-f-mean"
-                  >Add up every value, then split the total evenly across how
-                  many values you have.</span
-                >
-                <span class="pk-eg"
-                  >Example: 4 + 6 + 8 = 18, then 18 ÷ 3 = 6</span
-                >
-              </li>
-              <li>
-                <span class="pk-f-name">Median (the middle)</span>
-                <span class="pk-f-mean"
-                  >Put the values in order from least to greatest, then point to
-                  the one in the middle.</span
-                >
-                <span class="pk-eg">Example: 3, 5, 9 → the median is 5</span>
-              </li>
-              <li>
-                <span class="pk-f-name">Mode (most common)</span>
-                <span class="pk-f-mean"
-                  >The value that shows up the most times. A data set can have
-                  one mode, more than one, or none.</span
-                >
-                <span class="pk-eg">Example: 4, 5, 5, 8 → the mode is 5</span>
-              </li>
-              <li>
-                <span class="pk-f-name">Range (the spread)</span>
-                <span class="pk-f-mean"
-                  >How far apart your data is: the biggest value minus the
-                  smallest value.</span
-                >
-                <span class="pk-eg">Example: 12 − 4 = 8</span>
-              </li>
-              <li class="pk-lvl1">
-                <span class="pk-f-name">Reading a dot plot</span>
-                <span class="pk-f-mean"
-                  >Each dot is one piece of data. A taller stack of dots means
-                  that value happened more often.</span
-                >
-                <span class="pk-eg"
-                  >Example: three dots above 5 means 5 showed up 3 times.</span
-                >
-              </li>
-              <li class="pk-lvl2">
-                <span class="pk-f-name">MAD — mean absolute deviation</span>
-                <span class="pk-f-mean"
-                  >How far each value sits from the mean, on average. A bigger
-                  MAD means the data is more spread out.</span
-                >
-                <span class="pk-eg"
-                  >Example: 4, 6, 8 has mean 6, so MAD = (2 + 0 + 2) ÷ 3 ≈
-                  1.3</span
-                >
-              </li>
-            </ul>
-            <p class="pk-es">
-              Media = suma ÷ cantidad · Mediana = ordenar → medio · DAM =
-              promedio de |valor − media| · Rango = máximo − mínimo
-            </p>
-          </div>
-          <div class="pk-callout">
-            <h3>Sentence Frames</h3>
-            <p>"The mean is ___ and the median is ___, so the data is ___."</p>
-            <p>
-              "The range is ___ and the MAD is ___, which means the data is
-              (spread out / clustered) because ___."
-            </p>
-            <p>"I chose a ___ display because ___."</p>
-            <p class="pk-es">
-              "La media es ___ y la mediana es ___, así que los datos son ___."
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <!-- PHASE 1: STATISTICAL QUESTION -->
-      <section class="phase" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">1</div>
-          <div>
-            <div class="skill">Statistical Question · 6.SP.1</div>
-            <h2>Pose Your Statistical Question</h2>
-          </div>
-        </div>
-        <p>
-          A statistical question <em>anticipates variability</em> — different
-          people, places, or times give different answers. Start your
-          investigation by choosing a topic and a statistical question.
-        </p>
-
-        <div class="task">
-          <strong>Choose a topic and dataset:</strong>
-        </div>
-
-        <label class="fld" for="topic">Select your investigation topic</label>
-        <select id="topic" data-save onchange="loadDataset()">
-          <option value="">-- Select a topic --</option>
-          <option value="basketball">
-            NBA Player Points Per Game (Sports)
-          </option>
-          <option value="weather">Monthly Rainfall in inches (Weather)</option>
-          <option value="survey">Hours of Screen Time per Day (Survey)</option>
-        </select>
-
-        <div id="dataset-display" style="margin-top: 16px"></div>
-
-        <label class="fld" for="sq-answer"
-          >Write your statistical question for this dataset</label
-        >
-        <textarea id="sq-answer" data-save rows="3" placeholder=""></textarea>
-
-        <label class="fld" for="units-answer"
-          >What are the units of measurement for this data?</label
-        >
-        <input type="text" id="units-answer" data-save placeholder="" />
-
-        <button class="btn" onclick="checkSQ()">Submit My Question</button>
-        <div class="readout" id="sq-out"></div>
-        <div class="pki-manip" data-manip="dot-plot" data-max="20"></div>
-
-        <details class="hintbox">
-          <summary>Need a hint?</summary>
-          <p>
-            A statistical question has many possible answers — the data varies.
-            Ask something like "How much ___ does each ___ have?" rather than
-            "What is the total ___?" Make sure to name what you are measuring
-            and who or what you are measuring it on.
-          </p>
-        </details>
-      </section>
-
-      <!-- PHASE 2: MEAN AND MEDIAN -->
-      <section class="phase" id="phase-2" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">2</div>
-          <div>
-            <span class="arc-banner">Phase 2 · Center &amp; Outliers</span>
-            <div class="skill">Measures of Center · 6.SP.3 · 6.SP.5c</div>
-            <h2>Mean and Median — Compare the Centers</h2>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <div>
-            <p
-              style="
-                font-size: 15px;
-                color: var(--muted);
-                line-height: 1.6;
-                margin-bottom: 20px;
-              "
-            >
-              Compute the <strong>mean</strong> and <strong>median</strong> for
-              your selected dataset, then compare them. Are they close? What
-              does that tell you about the shape of the distribution?
-            </p>
-            <div style="margin-top: 16px">
-              <svg
-                width="100%"
-                height="220"
-                viewBox="0 0 500 220"
-                style="
-                  background: white;
-                  border-radius: 12px;
-                  border: 1px solid #e2e8f0;
-                  max-width: 480px;
-                  margin: 0 auto;
-                  display: block;
-                "
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <defs>
-                  <linearGradient
-                    id="setup-grad"
-                    x1="0%"
-                    y1="0%"
-                    x2="100%"
-                    y2="100%"
-                  >
-                    <stop offset="0%" stop-color="#ffffff" />
-                    <stop offset="100%" stop-color="#f8fafc" />
-                  </linearGradient>
-                </defs>
-
-                <rect
-                  x="20"
-                  y="20"
-                  width="460"
-                  height="200"
-                  rx="15"
-                  fill="url(#setup-grad)"
-                  stroke="#0e8a7d"
-                  stroke-width="2"
-                />
-                <text
-                  x="250"
-                  y="60"
-                  text-anchor="middle"
-                  font-size="20"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  DATA ANALYSIS HUB
-                </text>
-                <rect
-                  x="100"
-                  y="100"
-                  width="300"
-                  height="20"
-                  fill="#e2e8f0"
-                  rx="4"
-                />
-                <rect
-                  x="150"
-                  y="100"
-                  width="120"
-                  height="20"
-                  fill="#0e8a7d"
-                  rx="4"
-                />
-              </svg>
+      <!-- ======================================
+           STEP 0 — KEY WORDS
+      ====================================== -->
+      <div class="step-panel active" id="step-0">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon gold">📖</div>
+            <div>
+              <div class="card-title">Key Words</div>
+              <div class="card-sub">Learn these 6 statistics words before you begin</div>
             </div>
           </div>
 
-          <div
-            style="
-              background: var(--bg);
-              border: 1px solid var(--line);
-              border-radius: 12px;
-              padding: 20px;
-              box-shadow: var(--shadow);
-            "
-          >
-            <h3
-              style="
-                margin-top: 0;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-              "
-            >
-              <span>📊</span> Data Calculations
-            </h3>
-
-            <div class="task teal" style="margin-bottom: 12px">
-              <strong style="font-size: 12px"
-                >Selected dataset will appear here after you choose a topic in
-                Phase 1.</strong
-              >
-            </div>
-
-            <label class="fld" for="dataset2"
-              >Your data set (comma-separated)</label
-            >
-            <input
-              type="text"
-              id="dataset2"
-              data-save
-              oninput="calcCenter2()"
-              placeholder=""
-              style="margin-bottom: 12px"
-            />
-
-            <div style="display: flex; gap: 8px; margin-bottom: 15px">
-              <button class="btn blue" onclick="useTopicData()" style="flex: 1">
-                Use Topic Data
-              </button>
-              <button class="btn" onclick="calcCenter2()" style="flex: 1">
-                Calculate
-              </button>
-            </div>
-
-            <div
-              class="readout"
-              id="center2-out"
-              style="margin-bottom: 15px"
-            ></div>
-
-            <!-- ===================== INLINE RESEARCH LAB ===================== -->
-            <div class="pk-research-inline-card" style="margin-top: 15px">
-              <div class="pk-research-inline-header">
-                <span class="pk-research-badge">🔍 Research Required</span>
-                <a
-                  href="https://www.ncei.noaa.gov/access/monitoring/climate-at-a-glance/national/rankings"
-                  target="_blank"
-                  class="pk-research-inline-link"
-                  >🔗 NOAA &amp; public data tables ↗</a
-                >
-              </div>
-              <p class="pk-research-inline-instructions">
-                Research a published real-world average for your chosen topic
-                (for example a league average, a city's typical monthly
-                rainfall, or a national survey result). Enter your source and
-                the researched average below to compare it with your sample —
-                this comparison does <strong>not</strong> change your data set.
-              </p>
-              <div class="grid2">
-                <div>
-                  <label class="fld" for="worldCountry"
-                    >Source you researched</label
-                  >
-                  <input
-                    type="text"
-                    id="worldCountry"
-                    data-save
-                    placeholder=""
-                    oninput="recalcAll()"
-                  />
-                </div>
-                <div>
-                  <label class="fld" for="worldSize"
-                    >Researched real-world average</label
-                  >
-                  <input
-                    type="number"
-                    id="worldSize"
-                    data-save
-                    placeholder=""
-                    oninput="recalcAll()"
-                  />
-                </div>
-              </div>
-              <div
-                id="research-compare-out"
-                class="pk-research-compare-out"
-                style="margin-top: 12px"
-              ></div>
-            </div>
-          </div>
-        </div>
-
-        <label class="fld" for="center-compare" style="margin-top: 20px"
-          >Compare mean and median: what do the two values tell you about your
-          data?</label
-        >
-        <textarea
-          id="center-compare"
-          data-save
-          rows="3"
-          placeholder=""
-        ></textarea>
-
-        <details class="hintbox">
-          <summary>Need a hint?</summary>
-          <p>
-            <strong>Mean:</strong> Add all values, divide by count. Sensitive to
-            outliers.<br />
-            <strong>Median:</strong> Sort values; take the middle (or average
-            two middles). Resistant to outliers.<br />
-            If mean &gt; median, the data may be skewed right. If mean &lt;
-            median, it may be skewed left. If they are close, the data is
-            roughly symmetric.
-          </p>
-        </details>
-
-        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-          Level 1 tip: start with just 5 numbers. Add them and divide for the
-          mean, then cross them off in order from least to greatest to land on
-          the median.
-        </p>
-        <div class="pk-lvl2">
-          <div class="task">
-            <strong>Level 2 extension:</strong> Add one value that is far larger
-            than the rest, recalculate, and explain in writing whether the
-            <em>mean</em> or the <em>median</em> changed more — and why.
-          </div>
-        </div>
-      </section>
-
-      <!-- PHASE 3: SPREAD -->
-      <section class="phase" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">3</div>
-          <div>
-            <div class="skill">Measures of Variability · 6.SP.5c</div>
-            <h2>Range and MAD — How Spread Out Is the Data?</h2>
-          </div>
-        </div>
-        <p>
-          Compute the <strong>range</strong> and
-          <strong>mean absolute deviation (MAD)</strong> to describe how
-          consistent or spread out your data is. A small MAD means the data
-          clusters near the mean.
-        </p>
-
-        <button class="btn coral" onclick="calcSpread()">
-          Calculate Range &amp; MAD
-        </button>
-        <div class="readout" id="spread-out"></div>
-
-        <label class="fld" for="spread-interpret" style="margin-top: 20px"
-          >Interpret the spread: what does the range or MAD tell you about your
-          topic?</label
-        >
-        <textarea
-          id="spread-interpret"
-          data-save
-          rows="3"
-          placeholder=""
-        ></textarea>
-
-        <div class="task" style="margin-top: 18px">
-          <strong>Quick check:</strong> The data set is 4, 8, 6, 10, 2. What is
-          the mean?
-        </div>
-        <label class="fld" for="check-mean">Your answer (mean)</label>
-        <input
-          type="number"
-          id="check-mean"
-          data-save
-          placeholder=""
-          style="max-width: 200px"
-        />
-        <button class="btn blue" onclick="checkMean()" style="margin-left: 8px">
-          Check
-        </button>
-        <div class="feedback" id="mean-fb"></div>
-
-        <details class="hintbox">
-          <summary>Need a hint?</summary>
-          <p>
-            <strong>Range</strong> = Maximum − Minimum.<br />
-            <strong>MAD steps:</strong> (1) Find the mean. (2) Subtract the mean
-            from each value, then take the absolute value. (3) Average all those
-            absolute deviations.<br />
-            <strong>Quick-check mean</strong> = (4 + 8 + 6 + 10 + 2) ÷ 5. Add
-            them all up first!
-          </p>
-        </details>
-
-        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-          Level 1 tip: range is just the biggest number minus the smallest. Find
-          those two values first, then subtract.
-        </p>
-        <div class="pk-lvl2">
-          <div class="task">
-            <strong>Level 2 extension:</strong> Compare two data sets that have
-            the same mean but different MADs. Which one is more consistent, and
-            how does the MAD prove it?
-          </div>
-        </div>
-      </section>
-
-      <!-- PHASE 4: DISPLAY + BEST MEASURE -->
-      <section class="phase" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">4</div>
-          <div>
-            <div class="skill">
-              Data Display &amp; Best Measure · 6.SP.4 · 6.SP.2
-            </div>
-            <h2>Choose the Best Display and Measure of Center</h2>
-          </div>
-        </div>
-        <p>
-          Based on your data and its shape, choose the
-          <strong>best type of display</strong> and the
-          <strong>best measure of center</strong>. Justify your choices.
-        </p>
-
-        <p>
-          First, draw a dot plot of your dataset so you can see the shape before
-          you decide.
-        </p>
-        <button class="btn gold" onclick="drawDotPlot()">Draw Dot Plot</button>
-        <div id="dot-plot-container" style="margin-top: 16px"></div>
-
-        <label class="fld" style="margin-top: 20px"
-          >Which display best fits your data and question?</label
-        >
-        <div class="display-btns">
-          <button
-            class="display-btn"
-            id="db-dot"
-            onclick="pickDisplay('dot plot')"
-          >
-            Dot Plot
-          </button>
-          <button
-            class="display-btn"
-            id="db-hist"
-            onclick="pickDisplay('histogram')"
-          >
-            Histogram
-          </button>
-          <button
-            class="display-btn"
-            id="db-box"
-            onclick="pickDisplay('box plot')"
-          >
-            Box Plot
-          </button>
-        </div>
-        <div class="feedback" id="display-fb" style="min-height: 24px"></div>
-
-        <label class="fld" style="margin-top: 14px"
-          >Which measure of center is best for your data's shape?</label
-        >
-        <div class="center-btns">
-          <button class="center-btn" id="cb-mean" onclick="pickCenter('mean')">
-            Mean
-          </button>
-          <button
-            class="center-btn"
-            id="cb-median"
-            onclick="pickCenter('median')"
-          >
-            Median
-          </button>
-          <button class="center-btn" id="cb-mode" onclick="pickCenter('mode')">
-            Mode
-          </button>
-        </div>
-        <div class="feedback" id="center-fb" style="min-height: 24px"></div>
-
-        <label class="fld" style="margin-top: 18px" for="display-justify"
-          >Justify your choices: why is this display and measure of center the
-          best for your data?</label
-        >
-        <textarea
-          id="display-justify"
-          data-save
-          rows="4"
-          placeholder=""
-        ></textarea>
-
-        <p
-          class="pk-lvl1"
-          style="font-size: 14px; color: var(--muted); margin-top: 4px"
-        >
-          Level 1 tip: dot plots are best for small data sets like these (fewer
-          than ~20 values). If the mean and median are close, the mean is a fine
-          measure of center.
-        </p>
-
-        <div class="pk-lvl2" style="margin-top: 18px">
-          <div class="task teal">
-            <strong>Level 2 — Compare two distributions:</strong> Choose a
-            <em>second</em> topic, draw its dot plot, and compare the two
-            distributions' shape and spread in writing.
-          </div>
-          <label class="fld" for="dataset2b"
-            >Second data set (numbers separated by commas)</label
-          >
-          <input
-            type="text"
-            id="dataset2b"
-            data-save
-            oninput="drawDotPlot2()"
-            placeholder=""
-          />
-          <button class="btn gold" onclick="drawDotPlot2()">
-            Draw Second Dot Plot
-          </button>
-          <div id="dot-plot-container2" style="margin-top: 16px"></div>
-          <div id="compare2-out" class="readout"></div>
-          <label class="fld" for="compare2-write"
-            >Compare the two distributions: which is more spread out, and how do
-            their shapes differ?</label
-          >
-          <textarea
-            id="compare2-write"
-            data-save
-            rows="3"
-            placeholder=""
-          ></textarea>
-        </div>
-
-        <div class="task gold" style="margin-top: 18px">
-          <strong>Quick check:</strong> A data set has a mean of 14 and a median
-          of 8. A student says the mean is the best measure of center. Should
-          you use the mean or the median, and why?
-        </div>
-        <label class="fld" for="check-best">Your answer</label>
-        <textarea id="check-best" data-save rows="2" placeholder=""></textarea>
-        <button class="btn purple" onclick="checkBest()">
-          Check My Reasoning
-        </button>
-        <div class="feedback" id="best-fb"></div>
-
-        <details class="hintbox">
-          <summary>Need a hint?</summary>
-          <p>
-            <strong>Display guide:</strong> Use a dot plot for small data sets
-            (fewer than ~20 values). Use a histogram for large data sets grouped
-            into intervals. Use a box plot to show the five-number summary and
-            compare two groups.<br />
-            <strong>Measure of center:</strong> If the mean and median are far
-            apart, an outlier or skew is pulling the mean — in that case, the
-            median is more representative. If they are close, the mean is
-            fine.<br />
-            <strong>Quick-check:</strong> When mean (14) and median (8) are far
-            apart, the mean is pulled by high outliers. The median (8) is more
-            resistant and better represents the typical value.
-          </p>
-        </details>
-      </section>
-
-      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
-      <section class="pk-visualizer-card no-print">
-        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
-        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px">
-          This visual interactive canvas updates in real-time as you complete
-          your math calculations.
-        </p>
-        <div id="projectVisualizer"></div>
-      </section>
-
-      <!-- DELIVERABLE -->
-      <section class="phase">
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--green)">★</div>
-          <div>
-            <div class="skill">Final Deliverable</div>
-            <h2>Write Your Investigation Report</h2>
-          </div>
-        </div>
-        <p>
-          Write an investigation report. Include your statistical question, the
-          mean and median, the range and MAD, your chosen display, the best
-          measure of center, and what your findings mean in context.
-        </p>
-        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-          Level 1: write 4–6 sentences using the frame below.
-        </p>
-        <p class="pk-lvl2" style="font-size: 14px; color: var(--muted)">
-          Level 2: write 6–8 sentences and include your comparison of the two
-          distributions' shape and spread.
-        </p>
-        <textarea id="report" data-save placeholder=""></textarea>
-
-        <h3 style="margin: 22px 0 6px">Project Checklist</h3>
-        <ul class="checklist" id="checklist">
-          <li>
-            <input type="checkbox" data-save id="ckb1" /> I chose a topic, wrote
-            a statistical question, and identified units.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ckb2" /> I computed the mean
-            correctly (sum ÷ count) with work shown.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ckb3" /> I found the median by
-            sorting and identifying the middle value.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ckb4" /> I compared mean and
-            median and explained what the difference means.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ckb5" /> I computed the range
-            and MAD with step-by-step work shown.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ckb6" /> I drew a dot plot,
-            chose an appropriate display type, and justified my choice.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ckb7" /> My investigation
-            report uses all measures and explains findings in context.
-          </li>
-        </ul>
-
-        <div class="grid2" style="margin-top: 18px">
-          <div>
-            <button class="btn" type="button" onclick="buildReport()">
-              📝 Generate report
-            </button>
-          </div>
-          <div class="pk-no-print">
-            <button
-              class="btn ghost"
-              type="button"
-              onclick="PK.copyReport('reportBox')"
-            >
-              Copy report
-            </button>
-            <button
-              class="btn ghost"
-              type="button"
-              onclick="PK.downloadText('data-investigation.txt', 'reportBox')"
-            >
-              Download .txt
-            </button>
-            <button class="btn ghost" type="button" onclick="downloadCsv()">
-              Download .csv
-            </button>
-            <button class="btn printbtn" type="button" onclick="window.print()">
-              🖨️ Print
-            </button>
-          </div>
-        </div>
-        <div class="pk-report" id="reportBox" style="margin-top: 16px">
-          Click "Generate report" to build your investigation summary.
-        </div>
-      </section>
-
-      <!-- RUBRIC -->
-      <section class="phase">
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--navy)">✓</div>
-          <div>
-            <div class="skill">How You Are Scored</div>
-            <h2>Project Rubric</h2>
-          </div>
-        </div>
-        <table class="rubric">
-          <tr>
-            <th>Category</th>
-            <th>4 — Expert</th>
-            <th>3 — Proficient</th>
-            <th>2 — Developing</th>
-          </tr>
-          <tr>
-            <td>Statistical Question (6.SP.1)</td>
-            <td>
-              Question clearly anticipates variability; units correctly
-              identified; strong reasoning
-            </td>
-            <td>Question is statistical; units identified</td>
-            <td>Question is partially statistical or units missing</td>
-          </tr>
-          <tr>
-            <td>Mean &amp; Median (6.SP.3 / 6.SP.5c)</td>
-            <td>
-              Both correct with work shown; comparison explains what the
-              difference reveals about shape
-            </td>
-            <td>Both correct; comparison attempted</td>
-            <td>One correct or minor computation error; comparison missing</td>
-          </tr>
-          <tr>
-            <td>Range &amp; MAD (6.SP.5c)</td>
-            <td>
-              Both correct with full steps shown; spread interpreted
-              meaningfully in context
-            </td>
-            <td>Both correct; interpretation attempted</td>
-            <td>Range correct; MAD has a step error; interpretation limited</td>
-          </tr>
-          <tr>
-            <td>Display &amp; Best Measure (6.SP.4 / 6.SP.2)</td>
-            <td>
-              Display and measure of center correctly chosen and well-justified
-              based on data shape
-            </td>
-            <td>Correct choices with some justification</td>
-            <td>Choices made but justification is missing or unclear</td>
-          </tr>
-          <tr>
-            <td>Communication (Investigation Report)</td>
-            <td>
-              Report uses all five measures, explains findings in context, and
-              draws a meaningful conclusion
-            </td>
-            <td>Report uses most measures; conclusion present</td>
-            <td>Report is incomplete or context missing</td>
-          </tr>
-        </table>
-      </section>
-
-      <!-- TEACHER ANSWER KEY (print only) -->
-      <section class="phase teacher-key">
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--navy)">🔑</div>
-          <div>
-            <div class="skill">For the Teacher · Prints on its own page</div>
-            <h2>Quick-Check Answer Key</h2>
-          </div>
-        </div>
-        <table class="rubric">
-          <tr>
-            <th>Item</th>
-            <th>Answer</th>
-            <th>Why</th>
-          </tr>
-          <tr>
-            <td>Phase 3 — Mean of 4, 8, 6, 10, 2</td>
-            <td><strong>Mean = 6</strong></td>
-            <td>Sum = 4+8+6+10+2 = 30; 30 ÷ 5 = 6.</td>
-          </tr>
-          <tr>
-            <td>Phase 4 — mean 14, median 8: which center?</td>
-            <td><strong>Use the median (8)</strong></td>
-            <td>
-              Mean &gt; median means high values/outliers pull the mean up; the
-              median resists outliers and better represents the typical value.
-            </td>
-          </tr>
-          <tr>
-            <td>Topic means (for reference)</td>
-            <td>Basketball ≈ 20.59 · Rainfall ≈ 2.39 · Screen time ≈ 4.47</td>
-            <td>Computed from the built-in datasets (sum ÷ count).</td>
-          </tr>
-          <tr>
-            <td>Display guidance</td>
-            <td>Dot plot for these small (n &lt; 20) data sets</td>
-            <td>
-              Histograms suit large interval data; box plots compare groups via
-              the five-number summary.
-            </td>
-          </tr>
-        </table>
-      </section>
-
-      <p class="footer">
-        Neft Teacher · Statistics Culminating Project · Version B ·
-        <span id="yr"></span>
-      </p>
-    </div>
-
-    <script>
-      const yrEl = document.getElementById("yr");
-      if (yrEl) yrEl.textContent = new Date().getFullYear();
-      const $ = (id) => document.getElementById(id);
-      const num = (id) => {
-        const e = $(id);
-        return e ? parseFloat(e.value) : NaN;
-      };
-
-      // ── Datasets ──
-      var DATASETS = {
-        basketball: {
-          label: "NBA Player Points Per Game",
-          unit: "points per game",
-          values: [22.5, 18.3, 29.4, 14.1, 25.0, 19.8, 16.2, 27.1, 12.5, 21.0],
-          question:
-            "How many points per game did each player score this season?",
-        },
-        weather: {
-          label: "Monthly Rainfall (inches)",
-          unit: "inches",
-          values: [1.2, 2.5, 3.8, 4.1, 3.3, 2.0, 0.8, 0.9, 1.5, 2.8, 3.6, 2.2],
-          question:
-            "How much rainfall (in inches) did our city receive each month last year?",
-        },
-        survey: {
-          label: "Daily Screen Time (hours)",
-          unit: "hours",
-          values: [3, 5, 2, 7, 4, 6, 3, 5, 8, 4, 3, 5, 2, 6, 4],
-          question:
-            "How many hours of screen time per day does each student in our grade report?",
-        },
-      };
-
-      var currentData = [];
-      var currentMean = null;
-
-      // ── Utilities ──
-      function show(id, html) {
-        var el = document.getElementById(id);
-        el.innerHTML = html;
-        el.classList.add("show");
-        updateProgress();
-      }
-
-      function parseInput(str) {
-        var parts = str.split(/[,\s]+/).filter(function (s) {
-          return s.trim() !== "";
-        });
-        var nums = [];
-        for (var i = 0; i < parts.length; i++) {
-          var n = parseFloat(parts[i]);
-          if (isNaN(n)) {
-            return null;
-          }
-          nums.push(n);
-        }
-        return nums.length >= 2 ? nums : null;
-      }
-
-      function sortNums(arr) {
-        return arr.slice().sort(function (a, b) {
-          return a - b;
-        });
-      }
-
-      function calcMean(arr) {
-        var s = 0;
-        for (var i = 0; i < arr.length; i++) {
-          s += arr[i];
-        }
-        return s / arr.length;
-      }
-
-      function calcMedian(arr) {
-        var s = sortNums(arr);
-        var n = s.length;
-        if (n % 2 === 1) {
-          return s[Math.floor(n / 2)];
-        }
-        return (s[n / 2 - 1] + s[n / 2]) / 2;
-      }
-
-      function calcMAD(arr, mean) {
-        var devs = [];
-        for (var i = 0; i < arr.length; i++) {
-          devs.push(Math.abs(arr[i] - mean));
-        }
-        return calcMean(devs);
-      }
-
-      // ── Phase 1: Dataset + Statistical Question ──
-      function loadDataset(keepInput) {
-        var key = document.getElementById("topic").value;
-        var container = document.getElementById("dataset-display");
-        if (!key) {
-          container.innerHTML = "";
-          return;
-        }
-        var ds = DATASETS[key];
-        if (!keepInput) {
-          currentData = ds.values.slice();
-          currentMean = null;
-        }
-
-        var rows = "";
-        for (var i = 0; i < ds.values.length; i++) {
-          rows +=
-            "<tr><td>" +
-            (i + 1) +
-            "</td><td>" +
-            ds.values[i] +
-            " " +
-            ds.unit +
-            "</td></tr>";
-        }
-        container.innerHTML =
-          "<strong style='display:block;margin-bottom:8px;'>Dataset: " +
-          ds.label +
-          "</strong>" +
-          "<table class='dataset-table'>" +
-          "<tr><th>Observation #</th><th>Value (" +
-          ds.unit +
-          ")</th></tr>" +
-          rows +
-          "</table>" +
-          "<p style='font-size:13px;color:var(--muted);'>Suggested question: <em>" +
-          ds.question +
-          "</em></p>";
-
-        if (!keepInput) {
-          document.getElementById("dataset2").value = ds.values.join(", ");
-        }
-      }
-
-      function checkSQ() {
-        var sq = document.getElementById("sq-answer").value.trim();
-        var units = document.getElementById("units-answer").value.trim();
-        var key = document.getElementById("topic").value;
-        if (!key) {
-          show("sq-out", "<p>⚠️ Please select a topic first.</p>");
-          return;
-        }
-        if (sq.length < 15) {
-          show(
-            "sq-out",
-            "<p>⚠️ Please write a complete statistical question (full sentence).</p>",
-          );
-          return;
-        }
-        if (units.length < 2) {
-          show("sq-out", "<p>⚠️ Please identify the units of measurement.</p>");
-          return;
-        }
-        var ds = DATASETS[key];
-        show(
-          "sq-out",
-          "<div class='big'>Question Submitted!</div>" +
-            '<p>Your question: <em>"' +
-            sq +
-            '"</em></p>' +
-            "<p>Your units: <strong>" +
-            units +
-            "</strong></p>" +
-            "<p>Dataset loaded: <strong>" +
-            ds.label +
-            "</strong> (" +
-            ds.values.length +
-            " observations)</p>" +
-            "<p>✅ Great start! A statistical question like yours expects variability — the data values will differ, which is exactly what statistics helps us understand.</p>",
-        );
-      }
-
-      // ── Phase 2: Mean and Median ──
-      function useTopicData() {
-        var key = document.getElementById("topic").value;
-        if (!key) {
-          alert("Please select a topic in Phase 1 first.");
-          return;
-        }
-        document.getElementById("dataset2").value =
-          DATASETS[key].values.join(", ");
-        currentData = DATASETS[key].values.slice();
-        currentMean = null;
-      }
-
-      function calcCenter2() {
-        var str = document.getElementById("dataset2").value;
-        var nums = parseInput(str);
-        if (!nums) {
-          show(
-            "center2-out",
-            "<p>⚠️ Please enter at least 2 valid numbers separated by commas.</p>",
-          );
-          return;
-        }
-        currentData = nums;
-        var n = nums.length;
-        var sum = 0;
-        for (var i = 0; i < nums.length; i++) {
-          sum += nums[i];
-        }
-        var mean = sum / n;
-        currentMean = mean;
-
-        var sorted = sortNums(nums);
-        var median = calcMedian(nums);
-
-        var medianStep;
-        if (n % 2 === 1) {
-          var mi = Math.floor(n / 2);
-          medianStep =
-            "Sorted: " +
-            sorted.join(", ") +
-            "\nMiddle position " +
-            (mi + 1) +
-            " → median = " +
-            median;
-        } else {
-          var lo = n / 2 - 1;
-          var hi = n / 2;
-          medianStep =
-            "Sorted: " +
-            sorted.join(", ") +
-            "\nEven count — average positions " +
-            (lo + 1) +
-            " and " +
-            (hi + 1) +
-            " → (" +
-            sorted[lo] +
-            " + " +
-            sorted[hi] +
-            ") ÷ 2 = " +
-            median.toFixed(2);
-        }
-
-        var diff = Math.abs(mean - median);
-        var comparison =
-          diff < 1.5
-            ? "Mean and median are close (" +
-              diff.toFixed(2) +
-              " apart), suggesting the distribution is roughly symmetric."
-            : mean > median
-              ? "Mean (" +
-                mean.toFixed(2) +
-                ") > Median (" +
-                median.toFixed(2) +
-                ") — the mean may be pulled up by higher values (possible right skew or outlier)."
-              : "Mean (" +
-                mean.toFixed(2) +
-                ") < Median (" +
-                median.toFixed(2) +
-                ") — the mean may be pulled down by lower values (possible left skew or outlier).";
-
-        show(
-          "center2-out",
-          "<div class='big'>Mean = " +
-            mean.toFixed(2) +
-            " &nbsp;|&nbsp; Median = " +
-            median.toFixed(2) +
-            "</div>" +
-            "<div class='step'>" +
-            "MEAN:\n  Sum = " +
-            nums.join(" + ") +
-            " = " +
-            sum.toFixed(2) +
-            "\n  Count = " +
-            n +
-            "\n  Mean = " +
-            sum.toFixed(2) +
-            " ÷ " +
-            n +
-            " = " +
-            mean.toFixed(2) +
-            "\n\nMEDIAN:\n  " +
-            medianStep +
-            "\n\nCOMPARISON:\n  " +
-            comparison +
-            "</div>",
-        );
-      }
-
-      // ── Phase 3: Spread ──
-      function calcSpread() {
-        var str = document.getElementById("dataset2").value;
-        var nums = currentData.length ? currentData : parseInput(str);
-        if (!nums || nums.length < 2) {
-          show(
-            "spread-out",
-            "<p>⚠️ Please complete Phase 2 first (calculate mean &amp; median).</p>",
-          );
-          return;
-        }
-        var mean = currentMean !== null ? currentMean : calcMean(nums);
-        currentMean = mean;
-
-        var sorted = sortNums(nums);
-        var minVal = sorted[0];
-        var maxVal = sorted[sorted.length - 1];
-        var range = maxVal - minVal;
-
-        var devLines = [];
-        var devVals = [];
-        for (var i = 0; i < nums.length; i++) {
-          var d = Math.abs(nums[i] - mean);
-          devVals.push(d);
-          devLines.push(
-            "  |" + nums[i] + " - " + mean.toFixed(2) + "| = " + d.toFixed(2),
-          );
-        }
-        var madSum = 0;
-        for (var j = 0; j < devVals.length; j++) {
-          madSum += devVals[j];
-        }
-        var mad = madSum / devVals.length;
-
-        show(
-          "spread-out",
-          "<div class='big'>Range = " +
-            range.toFixed(2) +
-            " &nbsp;|&nbsp; MAD = " +
-            mad.toFixed(2) +
-            "</div>" +
-            "<div class='step'>" +
-            "RANGE:\n  Max (" +
-            maxVal +
-            ") - Min (" +
-            minVal +
-            ") = " +
-            range.toFixed(2) +
-            "\n\nMAD steps:\n  Mean = " +
-            mean.toFixed(2) +
-            "\n  Absolute deviations:\n" +
-            devLines.join("\n") +
-            "\n  Sum of deviations = " +
-            madSum.toFixed(2) +
-            "\n  MAD = " +
-            madSum.toFixed(2) +
-            " ÷ " +
-            nums.length +
-            " = " +
-            mad.toFixed(2) +
-            "</div>",
-        );
-      }
-
-      function checkMean() {
-        var v = parseFloat(document.getElementById("check-mean").value);
-        var raw = document.getElementById("check-mean").value.trim();
-        var fb = document.getElementById("mean-fb");
-        if (raw === "" || isNaN(v)) {
-          fb.textContent = "⚠️ Please enter a number.";
-          fb.className = "feedback no";
-          return;
-        }
-        // Quick-check: 4, 8, 6, 10, 2 → sum = 30, n = 5, mean = 6
-        if (v === 6) {
-          fb.textContent =
-            "✅ Correct! Sum = 4+8+6+10+2 = 30. Count = 5. Mean = 30 ÷ 5 = 6.";
-          fb.className = "feedback ok";
-        } else {
-          fb.textContent =
-            "❌ Not yet. Add all five values: 4+8+6+10+2 = 30. Then divide by 5. Mean = 30 ÷ 5 = 6.";
-          fb.className = "feedback no";
-        }
-        updateProgress();
-      }
-
-      // ── Phase 4: Display + Best Measure ──
-      var chosenDisplay = null;
-      var chosenCenter = null;
-
-      function pickDisplay(name) {
-        chosenDisplay = name;
-        var ids = ["db-dot", "db-hist", "db-box"];
-        for (var i = 0; i < ids.length; i++) {
-          document.getElementById(ids[i]).classList.remove("selected");
-        }
-        var map = {
-          "dot plot": "db-dot",
-          histogram: "db-hist",
-          "box plot": "db-box",
-        };
-        if (map[name]) {
-          document.getElementById(map[name]).classList.add("selected");
-        }
-        var fb = document.getElementById("display-fb");
-        fb.className = "feedback ok";
-        fb.textContent =
-          "✅ Selected: " +
-          name +
-          ". Justify your choice in the text box below.";
-        updateProgress();
-      }
-
-      function pickCenter(name) {
-        chosenCenter = name;
-        var ids = ["cb-mean", "cb-median", "cb-mode"];
-        for (var i = 0; i < ids.length; i++) {
-          document.getElementById(ids[i]).classList.remove("selected");
-        }
-        var map = { mean: "cb-mean", median: "cb-median", mode: "cb-mode" };
-        if (map[name]) {
-          document.getElementById(map[name]).classList.add("selected");
-        }
-        var fb = document.getElementById("center-fb");
-        fb.className = "feedback ok";
-        fb.textContent =
-          "✅ Selected: " +
-          name +
-          ". Justify your choice in the text box below.";
-        updateProgress();
-      }
-
-      function checkBest() {
-        var answer = document.getElementById("check-best").value.trim();
-        var fb = document.getElementById("best-fb");
-        if (answer.length < 15) {
-          fb.textContent =
-            "⚠️ Please write a complete sentence explaining your reasoning.";
-          fb.className = "feedback no";
-          return;
-        }
-        // Check if student mentioned median (correct answer for this skewed scenario)
-        var lower = answer.toLowerCase();
-        if (lower.indexOf("median") !== -1) {
-          fb.textContent =
-            "✅ Good reasoning! When mean (14) and median (8) are far apart, the data is skewed or has outliers. The median is resistant to outliers and better represents the typical value.";
-          fb.className = "feedback ok";
-        } else if (
-          lower.indexOf("mean") !== -1 &&
-          lower.indexOf("not") === -1 &&
-          lower.indexOf("no") === -1
-        ) {
-          fb.textContent =
-            "🤔 Reconsider — the mean (14) is much higher than the median (8), meaning high values are pulling the mean up. The median is a better measure here because it is not affected by outliers.";
-          fb.className = "feedback no";
-        } else {
-          fb.textContent =
-            "✅ Nice try! The key idea: when mean and median are far apart, prefer the median — it resists the pull of extreme values.";
-          fb.className = "feedback ok";
-        }
-        updateProgress();
-      }
-
-      // ── Progress ──
-      function updateProgress() {
-        var readouts = document.querySelectorAll(".readout.show").length;
-        var meanOk = document.getElementById("mean-fb").classList.contains("ok")
-          ? 1
-          : 0;
-        var displayOk = chosenDisplay ? 1 : 0;
-        var centerOk = chosenCenter ? 1 : 0;
-        var bestOk = document.getElementById("best-fb").classList.contains("ok")
-          ? 1
-          : 0;
-        var checks = document.querySelectorAll(
-          "#checklist input:checked",
-        ).length;
-        var report =
-          document.getElementById("report").value.trim().length > 30 ? 1 : 0;
-        var centerCompare =
-          document.getElementById("center-compare").value.trim().length > 10
-            ? 1
-            : 0;
-        var spreadInterp =
-          document.getElementById("spread-interpret").value.trim().length > 10
-            ? 1
-            : 0;
-        var displayJust =
-          document.getElementById("display-justify").value.trim().length > 10
-            ? 1
-            : 0;
-        // max: 3 readouts + meanOk + displayOk + centerOk + bestOk + 7 checks + report + 3 textareas = 18
-        var total =
-          readouts +
-          meanOk +
-          displayOk +
-          centerOk +
-          bestOk +
-          checks +
-          report +
-          centerCompare +
-          spreadInterp +
-          displayJust;
-        var pct = Math.min(100, Math.round((total / 18) * 100));
-        document.getElementById("pfill").style.width = pct + "%";
-        document.getElementById("pct").textContent = pct;
-      }
-
-      // ── Dot plot SVG (shared with Version A pattern) ──
-      function dotPlotSvg(nums, title, isExample) {
-        var sorted = sortNums(nums);
-        var minVal = sorted[0];
-        var maxVal = sorted[sorted.length - 1];
-        var range = maxVal - minVal;
-        var freq = {};
-        for (var i = 0; i < sorted.length; i++) {
-          freq[sorted[i]] = (freq[sorted[i]] || 0) + 1;
-        }
-        var maxFreq = 0;
-        var keys = Object.keys(freq);
-        for (var j = 0; j < keys.length; j++) {
-          if (freq[keys[j]] > maxFreq) {
-            maxFreq = freq[keys[j]];
-          }
-        }
-        var W = 600,
-          dotR = 10,
-          pad = 40,
-          axisY = 40 + maxFreq * (dotR * 2 + 4);
-        var H = axisY + 50;
-        var xScale = range > 0 ? (W - pad * 2) / range : 0;
-        var dots = "",
-          labels = "";
-        var uniqueVals = keys.map(parseFloat).sort(function (a, b) {
-          return a - b;
-        });
-        for (var u = 0; u < uniqueVals.length; u++) {
-          var val = uniqueVals[u];
-          var cx = range > 0 ? pad + (val - minVal) * xScale : W / 2;
-          var count = freq[val];
-          for (var c = 0; c < count; c++) {
-            var cy = axisY - dotR - c * (dotR * 2 + 4);
-            dots +=
-              '<circle cx="' +
-              cx.toFixed(1) +
-              '" cy="' +
-              cy.toFixed(1) +
-              '" r="' +
-              dotR +
-              '" fill="#1a6fb5" opacity="0.8"/>';
-          }
-          labels +=
-            '<text x="' +
-            cx.toFixed(1) +
-            '" y="' +
-            (axisY + 20) +
-            '" text-anchor="middle" font-size="12" fill="#1a2633">' +
-            val +
-            "</text>";
-        }
-        var axis =
-          '<line x1="' +
-          pad +
-          '" y1="' +
-          axisY +
-          '" x2="' +
-          (W - pad) +
-          '" y2="' +
-          axisY +
-          '" stroke="#5e6e7e" stroke-width="2"/>';
-        var svg =
-          '<svg class="dot-plot-svg" viewBox="0 0 ' +
-          W +
-          " " +
-          H +
-          '" xmlns="http://www.w3.org/2000/svg">' +
-          '<rect width="' +
-          W +
-          '" height="' +
-          H +
-          '" fill="#f7f9fb" rx="12"/>' +
-          '<text x="' +
-          W / 2 +
-          '" y="20" text-anchor="middle" font-size="14" font-weight="700" fill="#0f2b3c">' +
-          (title || "Dot Plot of Your Data") +
-          "</text>" +
-          (isExample
-            ? '<rect x="' +
-              (W - 150) +
-              '" y="6" width="120" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="' +
-              (W - 90) +
-              '" y="20" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example data</text>'
-            : "") +
-          axis +
-          dots +
-          labels +
-          "</svg>";
-        return '<div class="dot-plot-wrap">' + svg + "</div>";
-      }
-
-      function drawDotPlot() {
-        var nums = currentData.length
-          ? currentData
-          : parseInput(document.getElementById("dataset2").value);
-        var box = document.getElementById("dot-plot-container");
-        // Show a worked EXAMPLE data set by default so the card always renders a
-        // real dot plot; swaps to the student's own data as soon as they enter it.
-        var isExample = !nums || nums.length === 0;
-        if (isExample) {
-          nums = [4, 5, 5, 6, 8, 9, 12];
-        }
-        box.innerHTML = dotPlotSvg(nums, "Dot Plot of Your Data", isExample);
-        updateProgress();
-      }
-
-      // ── Level 2: second dataset + comparison ──
-      function drawDotPlot2() {
-        var nums = parseInput(document.getElementById("dataset2b").value);
-        var box = document.getElementById("dot-plot-container2");
-        var out = document.getElementById("compare2-out");
-        if (!nums) {
-          box.innerHTML = "";
-          out.classList.remove("show");
-          return;
-        }
-        box.innerHTML = dotPlotSvg(nums, "Dot Plot — Second Data Set");
-        var nums1 = currentData.length
-          ? currentData
-          : parseInput(document.getElementById("dataset2").value);
-        if (nums1) {
-          var m1 = calcMean(nums1),
-            m2 = calcMean(nums);
-          var mad1 = calcMAD(nums1, m1),
-            mad2 = calcMAD(nums, m2);
-          var more = mad1 > mad2 ? "set 1" : mad1 < mad2 ? "set 2" : "neither";
-          out.innerHTML =
-            "<div class='big'>MAD: set 1 = " +
-            mad1.toFixed(2) +
-            " | set 2 = " +
-            mad2.toFixed(2) +
-            "</div>" +
-            "<div class='step'>Set 1 mean = " +
-            m1.toFixed(2) +
-            ", range = " +
-            (Math.max.apply(null, nums1) - Math.min.apply(null, nums1)) +
-            "\nSet 2 mean = " +
-            m2.toFixed(2) +
-            ", range = " +
-            (Math.max.apply(null, nums) - Math.min.apply(null, nums)) +
-            "\nLarger MAD = more spread out → " +
-            more +
-            "</div>";
-          out.classList.add("show");
-        }
-        updateProgress();
-      }
-
-      // ── Report + export ──
-      function reportText() {
-        var g = function (id) {
-          var el = document.getElementById(id);
-          return el && el.value.trim() ? el.value.trim() : "(not written)";
-        };
-        var nums = currentData.length
-          ? currentData
-          : parseInput(document.getElementById("dataset2").value);
-        var line = "(not calculated)";
-        if (nums) {
-          var mean = calcMean(nums);
-          var median = calcMedian(nums);
-          var sorted = sortNums(nums);
-          var range = sorted[sorted.length - 1] - sorted[0];
-          var mad = calcMAD(nums, mean);
-          line =
-            "Mean = " +
-            mean.toFixed(2) +
-            " | Median = " +
-            median.toFixed(2) +
-            " | Range = " +
-            range +
-            " | MAD = " +
-            mad.toFixed(2);
-        }
-        return (
-          "REAL-WORLD DATA INVESTIGATION — MY REPORT\n" +
-          "=========================================\n\n" +
-          "TOPIC: " +
-          (document.getElementById("topic").value || "(none)") +
-          "\n" +
-          "STATISTICAL QUESTION: " +
-          g("sq-answer") +
-          "\n" +
-          "UNITS: " +
-          g("units-answer") +
-          "\n\n" +
-          "DATA: " +
-          (nums ? nums.join(", ") : "(none)") +
-          "\n" +
-          "RESULTS: " +
-          line +
-          "\n\n" +
-          "CENTER COMPARISON: " +
-          g("center-compare") +
-          "\n" +
-          "SPREAD INTERPRETATION: " +
-          g("spread-interpret") +
-          "\n" +
-          "DISPLAY + MEASURE JUSTIFICATION: " +
-          g("display-justify") +
-          "\n\n" +
-          "INVESTIGATION REPORT:\n" +
-          g("report")
-        );
-      }
-
-      function buildReport() {
-        recalcAll();
-        PK.generateReport("reportBox", reportText());
-      }
-
-      function downloadCsv() {
-        var nums = currentData.length
-          ? currentData
-          : parseInput(document.getElementById("dataset2").value) || [];
-        var rows = [["observation", "value"]];
-        for (var i = 0; i < nums.length; i++) {
-          rows.push([i + 1, nums[i]]);
-        }
-        if (nums.length) {
-          var mean = calcMean(nums);
-          rows.push(["mean", mean.toFixed(2)]);
-          rows.push(["median", calcMedian(nums).toFixed(2)]);
-          rows.push(["mad", calcMAD(nums, mean).toFixed(2)]);
-        }
-        PK.downloadCsv("data-investigation.csv", rows);
-      }
-
-      // Compare a researched real-world average against the student's sample.
-      // IMPORTANT: this is a read-only comparison — it must never mutate
-      // dataset2, or it would corrupt the student's mean/median/MAD/dot plot.
-      function syncResearch() {
-        const out = $("research-compare-out");
-        if (!out) return;
-        const benchmark = num("worldSize");
-        const source = $("worldCountry") ? $("worldCountry").value.trim() : "";
-        const nums = $("dataset2") ? parseInput($("dataset2").value) : null;
-        if (isNaN(benchmark) || benchmark <= 0 || !nums || !nums.length) {
-          out.innerHTML = "";
-          return;
-        }
-        const mean = calcMean(nums);
-        const rel =
-          mean > benchmark
-            ? "higher than"
-            : mean < benchmark
-              ? "lower than"
-              : "equal to";
-        const diff = Math.abs(mean - benchmark).toFixed(2);
-        out.innerHTML =
-          '<div style="padding:12px; background:var(--teal-light, #e0f2f1); border-radius:10px; font-weight:bold; color:var(--teal, #0e8a7d); font-size:14px; border:1px solid #b2dfdb;">' +
-          "📊 Research Comparison: your sample mean (<strong>" +
-          mean.toFixed(2) +
-          "</strong>) is <strong>" +
-          rel +
-          "</strong> the researched " +
-          (source ? "<strong>" + source + "</strong> " : "") +
-          "benchmark (<strong>" +
-          benchmark +
-          "</strong>) by <strong>" +
-          diff +
-          "</strong>." +
-          "</div>";
-      }
-
-      function drawVisualizer() {
-        let raw = "";
-        if (
-          document.getElementById("dataset2b") &&
-          document.getElementById("dataset2b").value.trim()
-        ) {
-          raw = document.getElementById("dataset2b").value;
-        } else if (
-          document.getElementById("dataset2") &&
-          document.getElementById("dataset2").value.trim()
-        ) {
-          raw = document.getElementById("dataset2").value;
-        }
-        let nums = parseInput(raw);
-        // Default to a worked EXAMPLE so the box plot always renders a real plot;
-        // switches to the student's own data the moment they enter it.
-        const isExample = !nums || nums.length === 0;
-        if (isExample) {
-          nums = [4, 5, 5, 6, 8, 9, 12];
-        }
-
-        const min = Math.min(...nums),
-          max = Math.max(...nums);
-        const mean = calcMean(nums);
-        const sorted = sortNums(nums);
-        const median = calcMedian(nums);
-
-        let q1 = sorted[Math.floor(sorted.length / 4)];
-        let q3 = sorted[Math.floor((sorted.length * 3) / 4)];
-
-        const maxVal = Math.max(max, 130);
-        const minVal = Math.min(min, 30);
-        const range = maxVal - minVal;
-
-        const getPx = (v) => 80 + ((v - minVal) / range) * 340;
-
-        const medPx = getPx(median);
-        const minPx = getPx(min);
-        const maxPx = getPx(max);
-        const q1Px = getPx(q1);
-        const q3Px = getPx(q3);
-
-        const svgString = `
-          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
-            <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Dataset Statistical Summary Box Plot</text>
-            ${isExample ? `<rect x="360" y="16" width="120" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="420" y="30" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example data</text>` : ""}
-
-            <!-- Box -->
-            <rect x="${q1Px}" y="100" width="${q3Px - q1Px}" height="40" fill="rgba(14, 138, 125, 0.2)" stroke="#0e8a7d" stroke-width="2" />
+          <!-- SVG Visual: box plot details -->
+          <svg class="visual-svg" viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg" style="background:white; border:1px solid #e2e7ec; border-radius:12px;">
+            <!-- Background grid lines for style -->
+            <line x1="40" y1="40" x2="40" y2="130" stroke="#f1f5f9" stroke-width="2" />
+            <line x1="150" y1="40" x2="150" y2="130" stroke="#f1f5f9" stroke-width="2" />
+            <line x1="260" y1="40" x2="260" y2="130" stroke="#f1f5f9" stroke-width="2" />
+            <line x1="370" y1="40" x2="370" y2="130" stroke="#f1f5f9" stroke-width="2" />
+            <line x1="480" y1="40" x2="480" y2="130" stroke="#f1f5f9" stroke-width="2" />
+
+            <!-- Number Line -->
+            <line x1="40" y1="120" x2="480" y2="120" stroke="#5e6e7e" stroke-width="2" />
+            <!-- Arrowheads -->
+            <path d="M 38,120 L 44,116 L 44,124 Z" fill="#5e6e7e" />
+            <path d="M 482,120 L 476,116 L 476,124 Z" fill="#5e6e7e" />
+            
+            <!-- Ticks -->
+            <line x1="40" y1="120" x2="40" y2="126" stroke="#5e6e7e" stroke-width="2" />
+            <line x1="150" y1="120" x2="150" y2="126" stroke="#5e6e7e" stroke-width="2" />
+            <line x1="260" y1="120" x2="260" y2="126" stroke="#5e6e7e" stroke-width="2" />
+            <line x1="370" y1="120" x2="370" y2="126" stroke="#5e6e7e" stroke-width="2" />
+            <line x1="480" y1="120" x2="480" y2="126" stroke="#5e6e7e" stroke-width="2" />
+            
+            <text x="40" y="142" text-anchor="middle" font-size="10" fill="#5e6e7e" font-weight="bold">Min (50°)</text>
+            <text x="150" y="142" text-anchor="middle" font-size="10" fill="#5e6e7e" font-weight="bold">Q1 (60°)</text>
+            <text x="260" y="142" text-anchor="middle" font-size="10" fill="#5e6e7e" font-weight="bold">Median (70°)</text>
+            <text x="370" y="142" text-anchor="middle" font-size="10" fill="#5e6e7e" font-weight="bold">Q3 (80°)</text>
+            <text x="480" y="142" text-anchor="middle" font-size="10" fill="#5e6e7e" font-weight="bold">Max (90°)</text>
             
             <!-- Whiskers -->
-            <line x1="${minPx}" y1="120" x2="${q1Px}" y2="120" stroke="#0f2b3c" stroke-width="1.5" />
-            <line x1="${maxPx}" y1="120" x2="${q3Px}" y2="120" stroke="#0f2b3c" stroke-width="1.5" />
-            <line x1="${minPx}" y1="105" x2="${minPx}" y2="135" stroke="#0f2b3c" stroke-width="1.5" />
-            <line x1="${maxPx}" y1="105" x2="${maxPx}" y2="135" stroke="#0f2b3c" stroke-width="1.5" />
+            <line x1="40" y1="70" x2="150" y2="70" stroke="#1a6fb5" stroke-width="2" />
+            <line x1="370" y1="70" x2="480" y2="70" stroke="#1a6fb5" stroke-width="2" />
+            
+            <!-- Min / Max ticks -->
+            <line x1="40" y1="58" x2="40" y2="82" stroke="#1a6fb5" stroke-width="2" />
+            <line x1="480" y1="58" x2="480" y2="82" stroke="#1a6fb5" stroke-width="2" />
+            
+            <!-- Box -->
+            <rect x="150" y="40" width="220" height="60" rx="3" fill="#e8f2fc" stroke="#1a6fb5" stroke-width="2.5" />
             
             <!-- Median Line -->
-            <line x1="${medPx}" y1="100" x2="${medPx}" y2="140" stroke="#d4952a" stroke-width="2" />
+            <line x1="260" y1="40" x2="260" y2="100" stroke="#0e8a7d" stroke-width="3" />
             
             <!-- Labels -->
-            <text x="${minPx}" y="80" text-anchor="middle" font-size="9" font-weight="bold" fill="#5e6e7e">Min: ${min}</text>
-            <text x="${q1Px}" y="80" text-anchor="middle" font-size="9" font-weight="bold" fill="#0e8a7d">Q1: ${q1}</text>
-            <text x="${medPx}" y="75" text-anchor="middle" font-size="10" font-weight="bold" fill="#d4952a">Med: ${median}</text>
-            <text x="${q3Px}" y="80" text-anchor="middle" font-weight="bold" fill="#0e8a7d">Q3: ${q3}</text>
-            <text x="${maxPx}" y="80" text-anchor="middle" font-size="9" font-weight="bold" fill="#5e6e7e">Max: ${max}</text>
+            <text x="95" y="63" text-anchor="middle" font-size="9" fill="#1a6fb5" font-weight="bold">Lower Whisker (25%)</text>
+            <text x="425" y="63" text-anchor="middle" font-size="9" fill="#1a6fb5" font-weight="bold">Upper Whisker (25%)</text>
+            <text x="260" y="28" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Interquartile Range (IQR) = Middle 50%</text>
+            <path d="M 150,32 L 150,36 L 370,36 L 370,32" fill="none" stroke="#0f2b3c" stroke-width="1.5" />
+          </svg>
+
+          <div class="vocab-grid">
+            <div class="vocab-card">
+              <div class="vocab-icon">❓</div>
+              <div class="vocab-term">Statistical Question</div>
+              <div class="vocab-def">A question that anticipates different answers (variability) when collecting data.</div>
+              <div class="vocab-ex">"What is the daily high temp in Seattle?"</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">⚖️</div>
+              <div class="vocab-term">Mean (Average)</div>
+              <div class="vocab-def">The balance point: add all values together, then divide by the total count of values.</div>
+              <div class="vocab-ex">(70 + 72 + 77) ÷ 3 = 73°F</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">🎯</div>
+              <div class="vocab-term">Median (Middle)</div>
+              <div class="vocab-def">The middle value in an ordered set. If two middles exist, find their average.</div>
+              <div class="vocab-ex">In 65, 72, 80, the median is 72°F</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">📐</div>
+              <div class="vocab-term">Interquartile Range (IQR)</div>
+              <div class="vocab-def">The distance between the 1st and 3rd quartiles: IQR = Q3 - Q1. Measures typical spread.</div>
+              <div class="vocab-ex">Q3 (80°) - Q1 (70°) = 10°F IQR</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">📊</div>
+              <div class="vocab-term">Box Plot</div>
+              <div class="vocab-def">A display showing the 5-number summary: Min, Q1, Median, Q3, and Max. Highlights quartiles.</div>
+              <div class="vocab-ex">Visualizes spread and whiskers.</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">🏢</div>
+              <div class="vocab-term">Histogram</div>
+              <div class="vocab-def">A bar graph showing data grouped into equal range intervals (like 60-69, 70-79).</div>
+              <div class="vocab-ex">Displays frequency of data ranges.</div>
+            </div>
+          </div>
+
+          <div class="instruct" style="margin-top:20px">
+            ✅ Read each vocabulary card and review the box plot diagram above. When you're ready, click <strong>Next Step</strong>.
+          </div>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" disabled>← Back</button>
+          <button class="nav-btn" onclick="goStep(1)">Next Step →</button>
+        </div>
+      </div>
+
+      <!-- ======================================
+           STEP 1 — MEASURES OF CENTER & SPREAD
+      ====================================== -->
+      <div class="step-panel" id="step-1">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">🌡️</div>
+            <div>
+              <div class="card-title">Step 1 — Measures of Center &amp; Spread</div>
+              <div class="card-sub">Record daily high temperatures and calculate statistics</div>
+            </div>
+          </div>
+
+          <div class="instruct">
+            <strong>Your job:</strong> Pose a statistical question about daily temperatures. Then, enter daily high temperatures for 5 to 8 days in your chosen city and click Calculate to find the statistical summaries.
+          </div>
+
+          <label class="lbl" for="stat-question">🔍 Pose your Statistical Question for this weather investigation:</label>
+          <input type="text" id="stat-question" placeholder="e.g., What are the daily high temperatures in Denver during October?" />
+          
+          <details class="hint">
+            <summary>What makes a question statistical?</summary>
+            <p>A statistical question expects <strong>variability</strong> (a range of different answers).<br>
+            • <em>Statistical:</em> "What was the daily high temperature in Seattle each day last week?" (Expects changes)<br>
+            • <em>Not Statistical:</em> "What is the freezing point of water?" (Always 32°F; no variability)</p>
+          </details>
+
+          <h3 style="font-size:15px; font-weight:800; color:var(--navy); margin-top:22px; margin-bottom:8px;">📅 Enter Daily High Temperatures (°F)</h3>
+          
+          <div class="lvl1-only" style="margin-bottom:14px;">
+            <button type="button" class="calc-btn gold" style="margin-top:0;" onclick="loadSampleData()">📅 Load Sample Weather Data</button>
+            <span style="font-size:13px; color:var(--muted); margin-left:8px;">Loads 5 days of sample temperatures.</span>
+          </div>
+
+          <div class="grid4">
+            <div>
+              <label class="lbl" for="temp-1">Day 1 Temp</label>
+              <input type="number" id="temp-1" placeholder="e.g. 72" oninput="clearCalculation()" />
+            </div>
+            <div>
+              <label class="lbl" for="temp-2">Day 2 Temp</label>
+              <input type="number" id="temp-2" placeholder="e.g. 75" oninput="clearCalculation()" />
+            </div>
+            <div>
+              <label class="lbl" for="temp-3">Day 3 Temp</label>
+              <input type="number" id="temp-3" placeholder="e.g. 78" oninput="clearCalculation()" />
+            </div>
+            <div>
+              <label class="lbl" for="temp-4">Day 4 Temp</label>
+              <input type="number" id="temp-4" placeholder="e.g. 70" oninput="clearCalculation()" />
+            </div>
+            <div>
+              <label class="lbl" for="temp-5">Day 5 Temp</label>
+              <input type="number" id="temp-5" placeholder="e.g. 75" oninput="clearCalculation()" />
+            </div>
+            
+            <!-- Days 6-8 are Level 2 challenge elements -->
+            <div class="lvl2-only">
+              <label class="lbl" for="temp-6">Day 6 Temp (Lvl 2)</label>
+              <input type="number" id="temp-6" placeholder="e.g. 74" oninput="clearCalculation()" />
+            </div>
+            <div class="lvl2-only">
+              <label class="lbl" for="temp-7">Day 7 Temp (Lvl 2)</label>
+              <input type="number" id="temp-7" placeholder="e.g. 82" oninput="clearCalculation()" />
+            </div>
+            <div class="lvl2-only">
+              <label class="lbl" for="temp-8">Day 8 Temp (Lvl 2)</label>
+              <input type="number" id="temp-8" placeholder="e.g. 68" oninput="clearCalculation()" />
+            </div>
+          </div>
+
+          <button class="calc-btn" onclick="calculateStats()">🧮 Calculate Center &amp; Spread</button>
+          <div class="readout" id="stats-out"></div>
+
+          <div class="lvl2-block lvl2-only">
+            <span class="lvl2-label">LEVEL 2 CHALLENGE — Outlier Analysis</span>
+            <p style="font-size:14px; margin-bottom:8px;">Add an outlier (a temperature much higher or lower than the rest) into one of the Level 2 slots. How does it change the <strong>mean</strong> versus the <strong>median</strong>? Which center is more reliable when outliers exist?</p>
+            <textarea id="outlier-reflect" placeholder="Adding the outlier of ___°F changed the mean by... but the median... I think the median is more reliable because..."></textarea>
+          </div>
+
+          <details class="hint">
+            <summary>Need a calculation guide?</summary>
+            <p><strong>Mean:</strong> Add all values, divide by count.<br>
+            <strong>Median:</strong> Sort the numbers, find the middle value. If count is even, average the 2 middle numbers.<br>
+            <strong>Range:</strong> Maximum value − Minimum value.<br>
+            <strong>IQR:</strong> Median of upper half (Q3) − Median of lower half (Q1).</p>
+          </details>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(0)">← Back</button>
+          <button class="nav-btn" onclick="goStep(2)">Next Step →</button>
+        </div>
+      </div>
+
+      <!-- ======================================
+           STEP 2 — CHOOSE THE DISPLAY
+      ====================================== -->
+      <div class="step-panel" id="step-2">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon teal">📊</div>
+            <div>
+              <div class="card-title">Step 2 — Choose the Display</div>
+              <div class="card-sub">Identify the best representation &amp; visualize your data</div>
+            </div>
+          </div>
+
+          <div class="instruct teal">
+            <strong>Your job:</strong> Compare different data displays. Decide which display best represents the overall spread, quartiles, and IQR of your temperatures, and view your automatically generated box plot.
+          </div>
+
+          <!-- Dynamic box plot visualization container -->
+          <div id="dynamic-box-plot-wrap">
+            <!-- Programmatically rendered SVG will go here -->
+          </div>
+
+          <div class="grid2" style="margin-top:10px;">
+            <div style="background:var(--blue-lt); border-radius:12px; padding:12px 14px; font-size:13px;">
+              <strong>🎯 Dot Plot</strong><br>
+              Shows every individual daily temperature. Perfect for small datasets, but does not group data or show quartiles clearly.
+            </div>
+            <div style="background:var(--teal-lt); border-radius:12px; padding:12px 14px; font-size:13px;">
+              <strong>🏢 Histogram</strong><br>
+              Groups values into temperature ranges (like 70–79°F). Shows frequencies, but hides individual values and exact centers.
+            </div>
+          </div>
+
+          <div style="margin-top:20px;">
+            <label class="lbl" for="display-best">📊 Which display type is best for visualizing the 5-number summary and IQR directly?</label>
+            <select id="display-best" onchange="checkDisplaySelection()">
+              <option value="">-- Choose display type --</option>
+              <option value="Dot Plot">Dot Plot</option>
+              <option value="Histogram">Histogram</option>
+              <option value="Box Plot">Box Plot</option>
+            </select>
+          </div>
+          <div class="readout" id="display-feedback"></div>
+
+          <label class="lbl" for="display-explain" style="margin-top:14px;">✍️ Why is the display you chose better than the others for analyzing temperature variability?</label>
+          <textarea id="display-explain" placeholder="I selected a ___ because it groups... and shows the IQR... whereas other displays like..."></textarea>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(1)">← Back</button>
+          <button class="nav-btn" onclick="goStep(3)">Next Step →</button>
+        </div>
+      </div>
+
+      <!-- ======================================
+           STEP 3 — COMPARE REGIONS
+      ====================================== -->
+      <div class="step-panel" id="step-3">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon gold">🌎</div>
+            <div>
+              <div class="card-title">Step 3 — Compare Regions</div>
+              <div class="card-sub">Contrast your data spread against real regional databases</div>
+            </div>
+          </div>
+
+          <div class="instruct gold">
+            <strong>Your job:</strong> Compare your climate's Interquartile Range (IQR) to standard regional weather metrics. Find which region matches your climate's variability.
+          </div>
+
+          <div class="stat-row">
+            <div class="stat-box">
+              <div class="stat-num" id="my-iqr-stat">—</div>
+              <div class="stat-lbl">Your Climate IQR</div>
+            </div>
+          </div>
+
+          <h3 style="font-size:15px; font-weight:800; color:var(--navy); margin-top:20px;">🌎 Typical Daily Temperature IQRs by Region</h3>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Region Category</th>
+                <th>Typical IQR Range</th>
+                <th>Climate Characteristics</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Coastal Regions</strong> (e.g. Seattle, San Diego)</td>
+                <td>5°F – 10°F</td>
+                <td>Low variability. Sea breezes and ocean water buffer temperatures, keeping them highly consistent.</td>
+              </tr>
+              <tr>
+                <td><strong>Desert Regions</strong> (e.g. Phoenix, Las Vegas)</td>
+                <td>15°F – 25°F</td>
+                <td>High variability. Dry air and lack of vegetation allow intense daytime heating and rapid nighttime cooling.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div style="margin-top:20px;">
+            <label class="lbl" for="region-match">🌎 Which region does your weather log match better based on your IQR?</label>
+            <select id="region-match">
+              <option value="">-- Select a match --</option>
+              <option value="Coastal Region">Coastal Region (IQR: 5°F - 10°F)</option>
+              <option value="Desert Region">Desert Region (IQR: 15°F - 25°F)</option>
+              <option value="Neither">Neither / Other (IQR outside typical coastal/desert ranges)</option>
+            </select>
+          </div>
+
+          <label class="lbl" for="region-explain" style="margin-top:14px;">✍️ Compare your temperature statistics to this region. How does your IQR support your choice?</label>
+          <textarea id="region-explain" placeholder="My daily temperature IQR is ___°F, which fits into... This means my weather is..."></textarea>
+
+          <div class="lvl2-block lvl2-only">
+            <span class="lvl2-label">LEVEL 2 SCIENCE INQUIRY — Thermal Absorption</span>
+            <p style="font-size:14px; margin-bottom:8px;">Explain the scientific reason behind these differences. Why does water (specific heat capacity) stabilize temperatures in coastal areas while deserts have wide temperature swings?</p>
+            <textarea id="science-reason" placeholder="Coastal regions have smaller IQRs because water has a high specific heat capacity, which... On the other hand, deserts..."></textarea>
+          </div>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(2)">← Back</button>
+          <button class="nav-btn" onclick="goStep(4)">Next Step →</button>
+        </div>
+      </div>
+
+      <!-- ======================================
+           STEP 4 — PARTNER COMPARE
+      ====================================== -->
+      <div class="step-panel" id="step-4">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon teal">👥</div>
+            <div>
+              <div class="card-title">Step 4 — Partner Compare</div>
+              <div class="card-sub">Swap data logs and analyze differences in centers and spreads</div>
+            </div>
+          </div>
+
+          <div class="instruct teal">
+            <strong>Your job:</strong> Find a classmate, swap your calculated weather statistics, and enter their data below. Analyze who has the more consistent weather pattern.
+          </div>
+
+          <!-- SVG: Swap visual -->
+          <svg class="visual-svg" viewBox="0 0 520 100" xmlns="http://www.w3.org/2000/svg" style="background:white; border:1px solid #e2e7ec; border-radius:12px;">
+            <text x="140" y="40" text-anchor="middle" font-size="28">🙋</text>
+            <text x="140" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">You</text>
+            <rect x="185" y="38" width="150" height="30" rx="8" fill="#e4f5f3" stroke="#0e8a7d" stroke-width="1.5"/>
+            <text x="260" y="58" text-anchor="middle" font-size="11" fill="#0e8a7d">"What was your median and IQR?"</text>
+            <text x="380" y="40" text-anchor="middle" font-size="28">🙋</text>
+            <text x="380" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">Partner</text>
+          </svg>
+
+          <label class="lbl" for="p-name">Classmate's Name or Initials</label>
+          <input type="text" id="p-name" placeholder="e.g. Alex" />
+
+          <div class="grid2">
+            <div>
+              <label class="lbl" for="p-median">Partner's Median Temperature (°F)</label>
+              <input type="number" id="p-median" step="0.1" placeholder="e.g. 74.0" />
+            </div>
+            <div>
+              <label class="lbl" for="p-iqr">Partner's Temperature IQR (°F)</label>
+              <input type="number" id="p-iqr" step="0.1" placeholder="e.g. 7.5" />
+            </div>
+          </div>
+
+          <button class="calc-btn teal" onclick="comparePartner()">📊 Compare Our Climates</button>
+          <div class="readout" id="partner-out"></div>
+
+          <label class="lbl" for="p-reflect" style="margin-top:18px;">✍️ Reflection: What do the differences in your medians and IQRs tell you about the climates of your two locations?</label>
+          <textarea id="p-reflect" placeholder="Our medians differ by... while our IQRs show that... This suggests that..."></textarea>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(3)">← Back</button>
+          <button class="nav-btn green" onclick="goStep(5)">Next Step →</button>
+        </div>
+      </div>
+
+      <!-- ======================================
+           STEP 5 — FINISH
+      ====================================== -->
+      <div class="step-panel" id="step-5">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon green">🏆</div>
+            <div>
+              <div class="card-title">Step 5 — Finish &amp; Submit</div>
+              <div class="card-sub">Write your pitch, audit the checklist, and generate your report</div>
+            </div>
+          </div>
+
+          <div class="instruct green">
+            <strong>Your job:</strong> Write a 3–5 sentence weather analysis pitch summarizing your climate statistics. Verify the project checklist, read the rubric, and generate your final printable report.
+          </div>
+
+          <!-- Pitch -->
+          <label class="lbl" for="pitch">✍️ Weather Analysis Pitch (Summarize the climate using your mean, median, and IQR):</label>
+          <textarea id="pitch" placeholder="My temperature investigation shows that Denver has a median daily high of 75.0°F with an IQR of 6.0°F... This indicates..."></textarea>
+
+          <!-- Checklist -->
+          <h3 style="font-size:16px; font-weight:800; color:var(--navy); margin:22px 0 6px;">✅ Project Checklist — Check off completed items</h3>
+          <ul class="checklist" id="checklist">
+            <li><input type="checkbox" id="ck1" /> I posed a clear, statistical question.</li>
+            <li><input type="checkbox" id="ck2" /> I recorded 5–8 daily temperature observations in a dataset.</li>
+            <li><input type="checkbox" id="ck3" /> I calculated the mean, median, range, and IQR.</li>
+            <li><input type="checkbox" id="ck4" /> I analyzed and chose the box plot as the best representation of data spread.</li>
+            <li><input type="checkbox" id="ck5" /> I compared my climate to coastal and desert regional tables.</li>
+            <li><input type="checkbox" id="ck6" /> I shared my calculations and compared metrics with a classmate.</li>
+          </ul>
+
+          <!-- Rubric -->
+          <h3 style="font-size:16px; font-weight:800; color:var(--navy); margin:22px 0 6px;">📊 Grading Rubric</h3>
+          <table class="rubric">
+            <thead>
+              <tr>
+                <th>Skill</th>
+                <th class="score-4">4 — Expert</th>
+                <th class="score-3">3 — Proficient</th>
+                <th class="score-2">2 — Developing</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Statistical Question &amp; Data (6.SP.1)</strong></td>
+                <td>Posed a clear statistical question showing variability; collected full dataset.</td>
+                <td>Posed statistical question and collected values.</td>
+                <td>Question is not statistical or data is incomplete.</td>
+              </tr>
+              <tr>
+                <td><strong>Calculations (6.SP.3, 6.SP.5c)</strong></td>
+                <td>All statistics (mean, median, range, IQR) calculated with 100% accuracy.</td>
+                <td>Calculated measures of center and spread correctly.</td>
+                <td>Minor math error in calculations.</td>
+              </tr>
+              <tr>
+                <td><strong>Visual Display (6.SP.4)</strong></td>
+                <td>Analyzed and selected box plot with correct dynamic SVG representation.</td>
+                <td>Correctly rendered box plot.</td>
+                <td>Plot rendered but chose incorrect display analysis.</td>
+              </tr>
+              <tr>
+                <td><strong>Comparisons (6.SP.5b)</strong></td>
+                <td>Detailed comparisons against regional averages and classmates with scientific reasoning.</td>
+                <td>Compared IQR against regions and a partner.</td>
+                <td>Lacks data support in comparisons.</td>
+              </tr>
+              <tr>
+                <td><strong>Pitch (6.SP.5)</strong></td>
+                <td>Uses all statistical measures (centers, spreads) to build a clear weather summary.</td>
+                <td>Pitch contains mean, median, and IQR.</td>
+                <td>Incomplete pitch or numbers missing.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Exporter Actions -->
+          <div class="nav-row no-print" style="margin-top:22px; flex-wrap:wrap; justify-content:flex-start; gap:8px;">
+            <button class="calc-btn" onclick="buildReport()">📝 Generate Summary</button>
+            <button class="export-btn" onclick="copyReport()">📋 Copy</button>
+            <button class="export-btn" onclick="downloadTxt()">⬇️ Download .txt</button>
+            <button class="export-btn" onclick="window.print()">🖨️ Print</button>
+          </div>
+          <pre class="report-box" id="reportBox"></pre>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(4)">← Back</button>
+          <button class="nav-btn green" onclick="alert('Congratulations! 🎉 Show this screen and your generated report to your teacher.')">🎉 I'm Done!</button>
+        </div>
+      </div>
+
+    </div><!-- end wizard -->
+
+    <!-- ====== SCRIPTS ====== -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <script src="/assets/app.js" defer></script>
+    <script>
+      // ---- State ----
+      const STEPS = [
+        { id: 0, label: 'Key Words', icon: '📖' },
+        { id: 1, label: 'Center & Spread', icon: '🌡️' },
+        { id: 2, label: 'Choose Display', icon: '📊' },
+        { id: 3, label: 'Compare Regions', icon: '🌎' },
+        { id: 4, label: 'Partner Compare', icon: '👥' },
+        { id: 5, label: 'Finish', icon: '🏆' },
+      ];
+      let currentStep = 0;
+      const visited = new Set([0]);
+
+      // ---- Level toggle ----
+      function setLevel(n) {
+        document.getElementById('body').className = 'level-' + n;
+        document.getElementById('btn-lv1').classList.toggle('active', n === 1);
+        document.getElementById('btn-lv2').classList.toggle('active', n === 2);
+        clearCalculation();
+      }
+
+      // ---- Build step trail ----
+      function buildTrail() {
+        const trail = document.getElementById('stepTrail');
+        if (!trail) return;
+        trail.innerHTML = STEPS.map((s, i) => {
+          const isLast = i === STEPS.length - 1;
+          return `<span class="step-trail-item${s.id === currentStep ? ' active' : ''}${visited.has(s.id) && s.id !== currentStep ? ' done' : ''}" onclick="goStep(${s.id})">
+            <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? '✓' : (s.id + 1)}</span>
+            <span class="s-label">${s.label}</span>
+          </span>${!isLast ? '<span class="step-arrow">›</span>' : ''}`;
+        }).join('');
+      }
+
+      // ---- Navigation ----
+      function goStep(n) {
+        if (n < 0 || n >= STEPS.length) return;
+        document.getElementById('step-' + currentStep).classList.remove('active');
+        currentStep = n;
+        visited.add(n);
+        document.getElementById('step-' + n).classList.add('active');
+        buildTrail();
+        updateProgress();
+        
+        // Draw box plot if entering Step 2
+        if (currentStep === 2) {
+          drawDynamicBoxPlot();
+        }
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function updateProgress() {
+        const fill = document.getElementById('progFill');
+        const label = document.getElementById('progLabel');
+        if (!fill || !label) return;
+        const pct = Math.round((currentStep / (STEPS.length - 1)) * 100);
+        fill.style.width = pct + '%';
+        label.textContent = `Step ${currentStep + 1} of ${STEPS.length}`;
+      }
+
+      // ---- Helpers ----
+      function showReadout(id, html) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.innerHTML = html;
+        el.classList.add('show');
+      }
+
+      // ---- Pre-load sample data for Level 1 ----
+      function loadSampleData() {
+        const sample = [72, 75, 78, 70, 75];
+        for (let i = 1; i <= 5; i++) {
+          const el = document.getElementById('temp-' + i);
+          if (el) el.value = sample[i-1];
+        }
+        for (let i = 6; i <= 8; i++) {
+          const el = document.getElementById('temp-' + i);
+          if (el) el.value = '';
+        }
+        document.getElementById('stat-question').value = "What was the daily high temperature in San Diego over a 5-day period?";
+        calculateStats();
+      }
+
+      function clearCalculation() {
+        window.projectData = null;
+        const statsOut = document.getElementById('stats-out');
+        if (statsOut) {
+          statsOut.classList.remove('show');
+          statsOut.innerHTML = '';
+        }
+        updateCompareRegionsUI();
+      }
+
+      // ---- Statistics Calculations ----
+      function calculateStats() {
+        const values = [];
+        const isLvl2 = document.getElementById('body').classList.contains('level-2');
+        const totalInputs = isLvl2 ? 8 : 5;
+        
+        for (let i = 1; i <= totalInputs; i++) {
+          const el = document.getElementById('temp-' + i);
+          if (!el) continue;
+          const v = parseFloat(el.value);
+          if (!isNaN(v)) {
+            values.push(v);
+          }
+        }
+        
+        if (values.length < 5) {
+          showReadout('stats-out', `<span style="color:#ef4444; font-weight:bold;">⚠️ Please enter at least 5 temperature values to run calculations.</span>`);
+          return;
+        }
+        
+        // Sort values ascending
+        const sorted = [...values].sort((a, b) => a - b);
+        
+        // Mean
+        const sum = sorted.reduce((s, x) => s + x, 0);
+        const mean = sum / sorted.length;
+        
+        // Median
+        const mid = Math.floor(sorted.length / 2);
+        const median = sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+        
+        // Range
+        const min = sorted[0];
+        const max = sorted[sorted.length - 1];
+        const range = max - min;
+        
+        // Q1 and Q3 calculation (middle school method)
+        let lowerHalf = [];
+        let upperHalf = [];
+        if (sorted.length % 2 === 0) {
+          lowerHalf = sorted.slice(0, mid);
+          upperHalf = sorted.slice(mid);
+        } else {
+          lowerHalf = sorted.slice(0, mid);
+          upperHalf = sorted.slice(mid + 1);
+        }
+        
+        function getMedian(arr) {
+          if (arr.length === 0) return 0;
+          const m = Math.floor(arr.length / 2);
+          return arr.length % 2 !== 0 ? arr[m] : (arr[m - 1] + arr[m]) / 2;
+        }
+        
+        const q1 = getMedian(lowerHalf);
+        const q3 = getMedian(upperHalf);
+        const iqr = q3 - q1;
+        
+        // Save to global state
+        window.projectData = {
+          values: sorted,
+          min: min,
+          max: max,
+          mean: mean,
+          median: median,
+          range: range,
+          q1: q1,
+          q3: q3,
+          iqr: iqr
+        };
+        
+        showReadout('stats-out', `
+          <strong>✅ Calculations Successful!</strong><br>
+          • Ordered Temperatures: <strong>${sorted.join(', ')} °F</strong><br>
+          • Mean (Average): <strong>${mean.toFixed(1)}°F</strong> <small>(Sum of ${sum} ÷ Count of ${sorted.length})</small><br>
+          • Median (Middle): <strong>${median.toFixed(1)}°F</strong><br>
+          • Range (Total Spread): <strong>${range.toFixed(1)}°F</strong> <small>(Max: ${max} - Min: ${min})</small><br>
+          • Q1 (Lower Quartile): <strong>${q1.toFixed(1)}°F</strong> &nbsp;|&nbsp; Q3 (Upper Quartile): <strong>${q3.toFixed(1)}°F</strong><br>
+          • IQR (Typical Spread): <strong>${iqr.toFixed(1)}°F</strong> <small>(Q3: ${q3.toFixed(1)} - Q1: ${q1.toFixed(1)})</small>
+        `);
+        
+        updateCompareRegionsUI();
+      }
+
+      // ---- Draw dynamic SVG box plot ----
+      function drawDynamicBoxPlot() {
+        const container = document.getElementById('dynamic-box-plot-wrap');
+        if (!container) return;
+        
+        if (!window.projectData) {
+          container.innerHTML = `
+            <div style="background:#f4f7fa; border:2px dashed #cbd5e1; border-radius:12px; height:150px; display:flex; align-items:center; justify-content:center; color:#64748b; font-size:14px; font-weight:500;">
+              ⚠️ Please enter temperatures and click "Calculate" in Step 1 to draw your box plot.
+            </div>
+          `;
+          return;
+        }
+        
+        const { min, max, q1, q3, median } = window.projectData;
+        const dataRange = max - min;
+        const axisMin = Math.floor(min - (dataRange > 0 ? dataRange * 0.2 : 2));
+        const axisMax = Math.ceil(max + (dataRange > 0 ? dataRange * 0.2 : 2));
+        const span = axisMax - axisMin;
+        
+        function getX(v) {
+          const padLeft = 60;
+          const padRight = 60;
+          const width = 520;
+          const drawWidth = width - padLeft - padRight;
+          if (span === 0) return width / 2;
+          return padLeft + ((v - axisMin) / span) * drawWidth;
+        }
+        
+        let ticksHTML = '';
+        const tickStep = span <= 10 ? 1 : (span <= 20 ? 2 : 5);
+        const startTick = Math.ceil(axisMin / tickStep) * startTick;
+        let finalTickStep = tickStep;
+        // Fix standard loop for ticks
+        const roundedStart = Math.ceil(axisMin / finalTickStep) * finalTickStep;
+        for (let val = roundedStart; val <= axisMax; val += finalTickStep) {
+          const tx = getX(val);
+          ticksHTML += `
+            <line x1="${tx}" y1="100" x2="${tx}" y2="106" stroke="#5e6e7e" stroke-width="1.5" />
+            <text x="${tx}" y="122" text-anchor="middle" font-size="10" fill="#5e6e7e" font-weight="600">${val}°F</text>
+          `;
+        }
+        
+        const xMin = getX(min);
+        const xMax = getX(max);
+        const xQ1 = getX(q1);
+        const xQ3 = getX(q3);
+        const xMed = getX(median);
+        
+        const svgHTML = `
+          <svg class="visual-svg" viewBox="0 0 520 145" xmlns="http://www.w3.org/2000/svg" style="background:white; border:1px solid #e2e7ec; border-radius:12px;">
+            <!-- Title -->
+            <text x="260" y="20" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c" letter-spacing="0.03em">YOUR WEATHER DATA BOX PLOT</text>
             
             <!-- Axis Line -->
-            <line x1="80" y1="180" x2="420" y2="180" stroke="#0f2b3c" stroke-width="1.5" />
-            <text x="80" y="195" text-anchor="middle" font-size="10" fill="#1a2633">${minVal}</text>
-            <text x="420" y="195" text-anchor="middle" font-size="10" fill="#1a2633">${maxVal}</text>
+            <line x1="45" y1="100" x2="475" y2="100" stroke="#5e6e7e" stroke-width="2" />
+            <path d="M 43,100 L 48,96 L 48,104 Z" fill="#5e6e7e" />
+            <path d="M 477,100 L 472,96 L 472,104 Z" fill="#5e6e7e" />
             
-            <text x="250" y="220" text-anchor="middle" font-size="11" font-weight="bold" fill="#2d874b">Mean = ${mean.toFixed(2)} | Range = ${max - min}</text>
+            <!-- Ticks -->
+            ${ticksHTML}
+            
+            <!-- Whiskers -->
+            <line x1="${xMin}" y1="60" x2="${xQ1}" y2="60" stroke="#1a6fb5" stroke-width="2" />
+            <line x1="${xQ3}" y1="60" x2="${xMax}" y2="60" stroke="#1a6fb5" stroke-width="2" />
+            
+            <!-- Whisker End Ticks -->
+            <line x1="${xMin}" y1="48" x2="${xMin}" y2="72" stroke="#1a6fb5" stroke-width="2" />
+            <line x1="${xMax}" y1="48" x2="${xMax}" y2="72" stroke="#1a6fb5" stroke-width="2" />
+            
+            <!-- Box -->
+            <rect x="${xQ1}" y="35" width="${xQ3 - xQ1}" height="50" rx="3" fill="#e8f2fc" stroke="#1a6fb5" stroke-width="2" />
+            
+            <!-- Median line -->
+            <line x1="${xMed}" y1="35" x2="${xMed}" y2="85" stroke="#0e8a7d" stroke-width="2.5" />
+            
+            <!-- Text Labels -->
+            <text x="${xMin}" y="42" text-anchor="middle" font-size="10" fill="#1a6fb5" font-weight="bold">${min.toFixed(1)}°</text>
+            <text x="${xQ1}" y="30" text-anchor="middle" font-size="10" fill="#1a6fb5" font-weight="bold">${q1.toFixed(1)}°</text>
+            <text x="${xMed}" y="30" text-anchor="middle" font-size="10" fill="#0e8a7d" font-weight="bold">${median.toFixed(1)}°</text>
+            <text x="${xQ3}" y="30" text-anchor="middle" font-size="10" fill="#1a6fb5" font-weight="bold">${q3.toFixed(1)}°</text>
+            <text x="${xMax}" y="42" text-anchor="middle" font-size="10" fill="#1a6fb5" font-weight="bold">${max.toFixed(1)}°</text>
           </svg>
         `;
-        $("projectVisualizer").innerHTML = svgString;
+        container.innerHTML = svgHTML;
       }
 
-      function recalcAll() {
-        if (typeof syncResearch === "function") syncResearch();
-        if (document.getElementById("topic").value) {
-          loadDataset(true);
+      // ---- Display selection checking ----
+      function checkDisplaySelection() {
+        const choice = document.getElementById('display-best').value;
+        const fb = document.getElementById('display-feedback');
+        if (!fb) return;
+        if (choice === 'Box Plot') {
+          showReadout('display-feedback', `<strong>🎉 Correct!</strong> Box plots are designed to visualize the 5-number summary and IQR directly, which makes it the best choice for representing statistical range and spreads.`);
+        } else if (choice === 'Histogram' || choice === 'Dot Plot') {
+          showReadout('display-feedback', `<strong>💡 Try again:</strong> While a ${choice} shows data, it is not built to directly display the Q1, Q3, and IQR values like a box plot does.`);
+        } else {
+          fb.classList.remove('show');
+          fb.innerHTML = '';
         }
-        if (document.getElementById("dataset2").value) {
-          calcCenter2();
-          calcSpread();
-        }
-        drawDotPlot();
-        if (document.getElementById("dataset2b").value) {
-          drawDotPlot2();
-        }
-        if (typeof drawVisualizer === "function") drawVisualizer();
-        updateProgress();
       }
 
-      // ── Level hook: Level 1 prefills a smaller dataset if empty ──
-      window.onLevelChange = function (level) {
-        if (level === "level-1") {
-          var ds2 = document.getElementById("dataset2");
-          if (!ds2.value.trim() && !document.getElementById("topic").value) {
-            ds2.value = "4, 6, 5, 7, 5";
-            currentData = [4, 6, 5, 7, 5];
-            currentMean = null;
-            calcCenter2();
-          }
+      // ---- Step 3 Regional Comparisons ----
+      function updateCompareRegionsUI() {
+        const el = document.getElementById('my-iqr-stat');
+        if (!el) return;
+        if (window.projectData) {
+          el.textContent = window.projectData.iqr.toFixed(1) + '°F';
+        } else {
+          el.textContent = '—';
         }
-      };
+      }
 
-      document
-        .getElementById("checklist")
-        .addEventListener("change", updateProgress);
-      document
-        .getElementById("report")
-        .addEventListener("input", updateProgress);
-      document
-        .getElementById("center-compare")
-        .addEventListener("input", updateProgress);
-      document
-        .getElementById("spread-interpret")
-        .addEventListener("input", updateProgress);
-      document
-        .getElementById("display-justify")
-        .addEventListener("input", updateProgress);
+      // ---- Step 4 Partner Comparison ----
+      function comparePartner() {
+        const pName = document.getElementById('p-name').value || 'Partner';
+        const pMedVal = parseFloat(document.getElementById('p-median').value);
+        const pIqrVal = parseFloat(document.getElementById('p-iqr').value);
+        
+        if (isNaN(pMedVal) || isNaN(pIqrVal)) {
+          showReadout('partner-out', `<span style="color:#ef4444; font-weight:bold;">⚠️ Please enter numbers for your classmate's Median and IQR.</span>`);
+          return;
+        }
+        
+        if (!window.projectData) {
+          showReadout('partner-out', `<span style="color:#ef4444; font-weight:bold;">⚠️ Please complete Step 1 calculations for your own data first.</span>`);
+          return;
+        }
+        
+        const myMed = window.projectData.median;
+        const myIqr = window.projectData.iqr;
+        
+        const medDiff = Math.abs(myMed - pMedVal).toFixed(1);
+        const iqrDiff = Math.abs(myIqr - pIqrVal).toFixed(1);
+        
+        let text = `
+          <strong>📊 Climate Comparison Summary:</strong><br>
+          • <strong>Median (Center):</strong> Your median high temperature is <strong>${myMed.toFixed(1)}°F</strong>. ${pName}'s median is <strong>${pMedVal.toFixed(1)}°F</strong> (Difference: <strong>${medDiff}°F</strong>).<br>
+          • <strong>IQR (Spread):</strong> Your IQR is <strong>${myIqr.toFixed(1)}°F</strong>. ${pName}'s IQR is <strong>${pIqrVal.toFixed(1)}°F</strong> (Difference: <strong>${iqrDiff}°F</strong>).<br><br>
+        `;
+        
+        if (myIqr < pIqrVal) {
+          text += `✨ Your climate is <strong>more consistent (less variable)</strong> because your temperature spread (IQR) is narrower by ${iqrDiff}°F.`;
+        } else if (myIqr > pIqrVal) {
+          text += `✨ ${pName}'s climate is <strong>more consistent (less variable)</strong> because their temperature spread (IQR) is narrower by ${iqrDiff}°F.`;
+        } else {
+          text += `✨ Both of your climates have the <strong>exact same temperature consistency</strong> (equal IQRs).`;
+        }
+        
+        showReadout('partner-out', text);
+      }
 
-      // ── init (runs after deferred kit script is ready) ──
-      document.addEventListener("DOMContentLoaded", function () {
-        PK.initLevel({ storageKey: "statProjectB", default: "level-1" });
-        PK.initTts({ storageKey: "statProjectB" });
-        PK.load("statProjectB", { after: recalcAll });
-        updateProgress();
-      });
+      // ---- Report Generation ----
+      function buildReport() {
+        if (!window.projectData) {
+          alert("Please enter temperatures and run calculations on Step 1 before generating the summary.");
+          return;
+        }
+        
+        const { values, min, max, mean, median, range, q1, q3, iqr } = window.projectData;
+        const isLvl2 = document.getElementById('body').classList.contains('level-2');
+        
+        const statQuestion = document.getElementById('stat-question').value || '—';
+        const displayBest = document.getElementById('display-best').value || '—';
+        const displayExplain = document.getElementById('display-explain').value || '—';
+        
+        const regionMatch = document.getElementById('region-match').value || '—';
+        const regionExplain = document.getElementById('region-explain').value || '—';
+        const scienceReason = isLvl2 ? (document.getElementById('science-reason')?.value || 'N/A') : 'N/A';
+        
+        const pName = document.getElementById('p-name').value || '—';
+        const pMedian = document.getElementById('p-median').value || '—';
+        const pIqr = document.getElementById('p-iqr').value || '—';
+        const pReflect = document.getElementById('p-reflect').value || '—';
+        
+        const pitch = document.getElementById('pitch').value || '—';
+        
+        const lines = [
+          '═══ STATISTICS CULMINATING PROJECT — WEATHER INVESTIGATION B ═══',
+          `Level of Challenge: ${isLvl2 ? 'Level 2 (Challenge)' : 'Level 1 (With Support)'}`,
+          `Generated: ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}`,
+          '═════════════════════════════════════════════════════════════════',
+          '',
+          `❓ STATISTICAL QUESTION:`,
+          `   "${statQuestion}"`,
+          '',
+          '🌡️ STEP 1 — MEASURES OF CENTER & SPREAD (DATA LOG)',
+          `   Temperatures Collected: ${values.join(', ')} (°F)`,
+          `   Mean (Average): ${mean.toFixed(1)}°F`,
+          `   Median (Middle): ${median.toFixed(1)}°F`,
+          `   Range (Total Spread): ${range.toFixed(1)}°F`,
+          `   5-Number Summary: [Min: ${min.toFixed(1)}, Q1: ${q1.toFixed(1)}, Med: ${median.toFixed(1)}, Q3: ${q3.toFixed(1)}, Max: ${max.toFixed(1)}]`,
+          `   Interquartile Range (IQR): ${iqr.toFixed(1)}°F`,
+          '',
+          '📊 STEP 2 — CHOOSE & ANALYZE THE DISPLAY',
+          `   Recommended Display: ${displayBest}`,
+          `   Display Selection Reason: ${displayExplain}`,
+          '',
+          '🌎 STEP 3 — COMPARISON TO REGIONAL BASES',
+          `   Region Category Match: ${regionMatch}`,
+          `   Regional Comparison Reasoning: ${regionExplain}`,
+        ];
+        
+        if (isLvl2) {
+          lines.push(`   Thermal Science Reasoning (Lvl 2): ${scienceReason}`);
+        }
+        
+        lines.push(
+          '',
+          '👥 STEP 4 — CLASSMATE CLIMATE ALIGNMENT',
+          `   Partner Name: ${pName}`,
+          `   Partner Median: ${pMedian}°F | Partner IQR: ${pIqr}°F`,
+          `   Reflection: ${pReflect}`,
+          '',
+          '✍️ STEP 5 — FINAL ANALYSIS PITCH',
+          `   "${pitch}"`,
+          '',
+          '═════════════════════════════════════════════════════════════════'
+        );
+        
+        const box = document.getElementById('reportBox');
+        if (box) {
+          box.textContent = lines.join('\n');
+          box.classList.add('show');
+        }
+      }
+
+      function copyReport() {
+        const txt = document.getElementById('reportBox')?.textContent;
+        if (!txt) {
+          alert("Please click 'Generate Summary' first.");
+          return;
+        }
+        navigator.clipboard?.writeText(txt).then(() => alert('Copied to clipboard!'));
+      }
+
+      function downloadTxt() {
+        const txt = document.getElementById('reportBox')?.textContent;
+        if (!txt) {
+          alert("Please click 'Generate Summary' first.");
+          return;
+        }
+        const a = document.createElement('a');
+        a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(txt);
+        a.download = 'weather-statistics-report.txt';
+        a.click();
+      }
+
+      // ---- Initialize wizard ----
+      buildTrail();
+      updateProgress();
     </script>
-    <script src="/assets/nt-page-enhance.js" defer></script>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-    <!-- nsr-injected:end -->
-    <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
-    <script type="application/json" id="pk-research">
-      {
-        "icon": "🔎",
-        "title": "Research Lab — Investigate Real Data",
-        "intro": "Statisticians collect real data, then summarize its center and spread. Look up the measures, then run them on real numbers.",
-        "brief": {
-          "theme": "field",
-          "title": "🔬 Your Research Mission",
-          "hook": "Find how to measure <b>center and spread</b>, then summarize a real data set.",
-          "steps": [
-            "Open a link (new tab — you keep your project).",
-            "Record the rules in Field Notes.",
-            "Compute center and spread in the math problems.",
-            "Check off the Investigation Checklist."
-          ]
-        },
-        "fieldNotes": {
-          "title": "Field Notes — Record What You Find",
-          "intro": "Jot the exact number or rule you find. You'll reuse these in the math below.",
-          "fields": [
-            {
-              "label": "How to find the mean",
-              "source": "Math is Fun",
-              "placeholder": "add all, divide by how many",
-              "hint": "The balance point of the data."
-            },
-            {
-              "label": "How to find the range",
-              "source": "Math is Fun",
-              "placeholder": "max − min",
-              "hint": "How spread out the data is."
-            },
-            {
-              "label": "What MAD measures",
-              "source": "Math is Fun",
-              "placeholder": "average distance from the mean",
-              "hint": "Mean Absolute Deviation."
-            },
-            {
-              "label": "A real data set you collect (5+ numbers)",
-              "source": "A class survey you run",
-              "placeholder": "7, 9, 6, 10, 8",
-              "hint": "Ask classmates one number question."
-            }
-          ]
-        },
-        "mathTasks": [
-          {
-            "title": "1 · Center",
-            "prompt": "Using your data (Field Note 4), find the <b>mean</b> and the <b>median</b>. Show the work for both.",
-            "level2": "Are the mean and median close? What does that tell you about the data?"
-          },
-          {
-            "title": "2 · Spread",
-            "prompt": "Find the <b>range</b> of your data. Then find the <b>MAD</b> (average distance of each value from the mean). Show the steps.",
-            "level2": "Add one outlier to your data. How do the range and MAD change?"
-          },
-          {
-            "title": "3 · Display & describe",
-            "prompt": "Choose the best display (dot plot, histogram, or box plot) for your data and explain why. Describe the data in one sentence using center and spread.",
-            "level2": "Which measure of center best represents your data, and why?"
-          }
-        ],
-        "investigationChecklist": [
-          "I recorded how to find the mean.",
-          "I recorded how to find the range.",
-          "I recorded what MAD measures.",
-          "I collected a real data set.",
-          "I computed center (mean and median).",
-          "I computed spread (range and MAD)."
-        ],
-        "links": [
-          {
-            "icon": "⚖️",
-            "name": "Math is Fun — Mean",
-            "url": "https://www.mathsisfun.com/mean.html",
-            "find": "How to compute the average.",
-            "look": "add up, then divide by the count"
-          },
-          {
-            "icon": "↔️",
-            "name": "Math is Fun — Range",
-            "url": "https://www.mathsisfun.com/data/range.html",
-            "find": "Spread as max minus min.",
-            "look": "highest − lowest"
-          },
-          {
-            "icon": "📐",
-            "name": "Math is Fun — Mean Deviation (MAD)",
-            "url": "https://www.mathsisfun.com/data/mean-deviation.html",
-            "find": "Average distance from the mean.",
-            "look": "the step-by-step MAD example"
-          },
-          {
-            "icon": "🎯",
-            "name": "Math is Fun — Median",
-            "url": "https://www.mathsisfun.com/median.html",
-            "find": "The exact middle value.",
-            "look": "sort, then take the middle"
-          }
-        ],
-        "note": "These sites were picked for class. They open in a new tab so you keep your project. If a page asks you to sign in or buy something, just close it and come back."
-      }
-    </script>
-    <script src="/shared/projects/projects-tabs.js" defer></script>
-    <script src="/shared/projects/projects-interactive.js" defer></script>
-    <script src="/shared/projects/manip-dot-plot.js" defer></script>
-    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-    <script src="/assets/math-workbench-launcher.js" defer></script>
-    <!-- mwb-injected:end -->
   </body>
 </html>

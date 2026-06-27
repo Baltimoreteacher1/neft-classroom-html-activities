@@ -3,2822 +3,1623 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Submarine Mission Control — Unit 7 Culminating Project</title>
-    <meta
-      name="description"
-      content="Unit 7 Integers &amp; Coordinate Plane culminating project. Track YOUR elevation and temperature life with integers, absolute value, and ordering, compare with a partner, then explore real ocean depths and record temperatures."
-    />
-    <link rel="stylesheet" href="/assets/shared.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-kit.css" />
-    <script src="/shared/projects/projects-kit.js" defer></script>
+    <meta name="description" content="Unit 7 Integers &amp; Coordinate Plane culminating project. Navigate your submarine, plot mission coordinates, calculate depths, and explore ocean zones." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <style>
       :root {
-        --navy: #0f2b3c;
-        --blue: #1a6fb5;
-        --blue-light: #e8f2fc;
-        --teal: #0e8a7d;
-        --teal-light: #e4f5f3;
-        --gold: #d4952a;
-        --gold-light: #fdf3e0;
-        --coral: #c45a3c;
-        --coral-light: #fdeee9;
-        --green: #2d874b;
-        --green-light: #e6f4eb;
-        --ocean: #0a4f7a;
-        --ocean-light: #e0f0fa;
-        --ink: #1a2633;
-        --muted: #5e6e7e;
-        --line: #e2e7ec;
-        --bg: #f7f9fb;
+        --navy: #0a2233;
+        --blue: #146094;
+        --blue-lt: #e5eff6;
+        --teal: #0f8279;
+        --teal-lt: #e2f4f2;
+        --gold: #d48c08;
+        --gold-lt: #fdf6e6;
+        --green: #1a7a3e;
+        --green-lt: #e4f4ea;
+        --coral: #c04f36;
+        --ink: #15222e;
+        --muted: #5c6d7e;
+        --line: #e0e6ed;
+        --bg: #f3f6f9;
         --card: #ffffff;
         --radius: 16px;
-        --shadow: 0 4px 18px rgba(15, 43, 60, 0.1);
-        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+        --shadow: 0 4px 20px rgba(11,34,64,.08);
       }
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        margin: 0;
-        font-family: var(--font);
-        color: var(--ink);
-        background: var(--bg);
-        line-height: 1.55;
-      }
-      .wrap {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 0 20px 60px;
-      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: 'Inter', system-ui, sans-serif; color: var(--ink); background: var(--bg); line-height: 1.6; }
 
-      .phero {
-        background: linear-gradient(
-          135deg,
-          #031e33 0%,
-          #0a4f7a 60%,
-          #0e8a7d 100%
-        );
+      /* ---- Hero ---- */
+      .hero {
+        background: linear-gradient(135deg, #0a2233 0%, #146094 60%, #0f8279 100%);
         color: #fff;
-        padding: 40px 24px 34px;
+        padding: 36px 24px 28px;
         text-align: center;
-        position: relative;
-        overflow: hidden;
       }
-      .phero .deco {
-        font-size: 56px;
-        line-height: 1;
-      }
-      .phero h1 {
-        font-size: clamp(26px, 5vw, 40px);
-        margin: 10px 0 8px;
-        letter-spacing: -0.02em;
-      }
-      .phero p {
-        max-width: 640px;
-        margin: 0 auto;
-        color: rgba(255, 255, 255, 0.85);
-        font-size: 17px;
-      }
-      .tags {
-        margin-top: 16px;
-        display: flex;
-        gap: 8px;
-        justify-content: center;
-        flex-wrap: wrap;
-      }
-      .tag {
-        background: rgba(255, 255, 255, 0.14);
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        border-radius: 50px;
-        padding: 5px 14px;
-        font-size: 13px;
-        font-weight: 700;
-      }
-      .tag.gold {
-        background: var(--gold);
-        border-color: var(--gold);
-        color: #2a1c00;
-      }
+      .hero-emoji { font-size: 52px; line-height: 1; margin-bottom: 10px; }
+      .hero h1 { font-size: clamp(24px,5vw,38px); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; }
+      .hero-sub { color: rgba(255,255,255,.85); font-size: 16px; max-width: 580px; margin: 0 auto 16px; }
+      .hero-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; }
+      .tag { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.28); border-radius: 50px; padding: 4px 13px; font-size: 12px; font-weight: 700; letter-spacing: .04em; }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #fff; }
 
-      .toolbar {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        justify-content: center;
-        margin-top: 16px;
+      /* ---- Level selector ---- */
+      .level-bar {
+        display: flex; gap: 10px; justify-content: center;
+        background: rgba(255,255,255,.10); border-radius: 50px;
+        padding: 6px 10px; max-width: 400px; margin: 0 auto;
       }
-      .toolbar button {
-        background: rgba(255, 255, 255, 0.12);
-        color: #fff;
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        border-radius: 50px;
-        padding: 8px 16px;
-        font-weight: 700;
-        font-size: 13px;
-        cursor: pointer;
-        font-family: inherit;
+      .level-btn {
+        flex: 1; background: transparent; color: rgba(255,255,255,.75);
+        border: 2px solid rgba(255,255,255,.30); border-radius: 50px;
+        padding: 7px 16px; font-size: 13px; font-weight: 700;
+        cursor: pointer; font-family: inherit; transition: all .2s;
       }
-      .toolbar button:hover {
-        background: rgba(255, 255, 255, 0.22);
-      }
+      .level-btn.active { background: #fff; color: var(--navy); border-color: #fff; }
 
-      .intro-card {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-left: 6px solid var(--ocean);
-        border-radius: var(--radius);
-        padding: 22px 24px;
-        margin: 26px 0;
-        box-shadow: var(--shadow);
-      }
-      .intro-card h2 {
-        margin: 0 0 8px;
-        font-size: 20px;
-      }
-      .intro-card .scenario {
-        font-size: 16px;
-        color: var(--ink);
-      }
+      /* ---- Tab wizard ---- */
+      .wizard { max-width: 860px; margin: 0 auto; padding: 0 16px 60px; }
 
-      .phase {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-radius: var(--radius);
-        padding: 24px;
-        margin: 22px 0;
-        box-shadow: var(--shadow);
+      .step-trail {
+        display: flex; align-items: center; gap: 0;
+        padding: 22px 0 0; overflow-x: auto;
       }
-      .phase-head {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        margin-bottom: 6px;
+      .step-trail-item {
+        display: flex; align-items: center; gap: 6px;
+        cursor: pointer; white-space: nowrap; padding: 8px 12px;
+        border-radius: 10px; transition: background .15s;
       }
-      .phase-num {
-        flex: 0 0 auto;
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
-        background: var(--ocean);
-        color: #fff;
-        font-weight: 800;
-        font-size: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+      .step-trail-item:hover { background: var(--blue-lt); }
+      .step-trail-item.active .s-num {
+        background: var(--blue); color: #fff;
       }
-      .phase h2 {
-        margin: 0;
-        font-size: 21px;
+      .step-trail-item.done .s-num {
+        background: var(--green); color: #fff;
       }
-      .phase .skill {
-        font-size: 12px;
-        font-weight: 700;
-        color: var(--muted);
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
+      .s-num {
+        width: 30px; height: 30px; border-radius: 50%;
+        background: var(--line); color: var(--muted);
+        font-weight: 800; font-size: 13px;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0; transition: all .2s;
       }
-      .phase > p {
-        color: var(--muted);
-      }
-      .arc-banner {
-        display: inline-block;
-        font-size: 12px;
-        font-weight: 800;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        color: var(--ocean);
-        background: var(--ocean-light);
-        border-radius: 50px;
-        padding: 4px 12px;
-        margin-bottom: 10px;
-      }
+      .s-label { font-size: 13px; font-weight: 600; color: var(--muted); }
+      .step-trail-item.active .s-label { color: var(--blue); }
+      .step-trail-item.done .s-label { color: var(--green); }
+      .step-arrow { color: var(--line); font-size: 16px; padding: 0 2px; }
 
-      .task {
-        background: var(--ocean-light);
-        border-radius: 12px;
-        padding: 16px 18px;
-        margin: 16px 0;
-      }
-      .task strong {
-        color: var(--ocean);
-      }
+      /* ---- Progress bar ---- */
+      .prog-wrap { margin: 14px 0 4px; }
+      .prog-bar { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; }
+      .prog-fill { height: 100%; background: linear-gradient(90deg,var(--blue),var(--teal)); border-radius: 99px; transition: width .4s ease; }
+      .prog-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
 
-      label.fld {
-        display: block;
-        font-weight: 700;
-        font-size: 14px;
-        margin: 14px 0 6px;
-      }
-      input[type="number"],
-      input[type="text"],
-      select,
-      textarea {
-        width: 100%;
-        padding: 11px 13px;
-        border: 2px solid var(--line);
-        border-radius: 10px;
-        font-family: inherit;
-        font-size: 15px;
-        background: #fff;
-      }
-      input:focus,
-      select:focus,
-      textarea:focus {
-        outline: none;
-        border-color: var(--ocean);
-      }
-      textarea {
-        resize: vertical;
-        min-height: 80px;
-      }
-      .grid2 {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 14px;
-      }
-      @media (max-width: 560px) {
-        .grid2 {
-          grid-template-columns: 1fr;
-        }
-      }
+      /* ---- Step panel ---- */
+      .step-panel { display: none; animation: fadein .25s ease; }
+      .step-panel.active { display: block; }
+      @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
-      .btn {
-        background: var(--ocean);
-        color: #fff;
-        border: none;
-        border-radius: 10px;
-        padding: 11px 20px;
-        font-weight: 800;
-        font-size: 15px;
-        cursor: pointer;
-        font-family: inherit;
-        margin-top: 14px;
+      /* ---- Card ---- */
+      .card {
+        background: var(--card); border: 1px solid var(--line);
+        border-radius: var(--radius); padding: 28px 26px;
+        box-shadow: var(--shadow); margin-top: 16px;
       }
-      .btn:hover {
-        filter: brightness(1.08);
+      .card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+      .card-icon {
+        width: 50px; height: 50px; border-radius: 14px;
+        background: var(--blue-lt); display: flex;
+        align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0;
       }
-      .btn.alt {
-        background: var(--teal);
-      }
-      .btn.ghost {
-        background: #fff;
-        color: var(--ocean);
-        border: 2px solid var(--line);
-      }
+      .card-icon.gold { background: var(--gold-lt); }
+      .card-icon.teal { background: var(--teal-lt); }
+      .card-icon.green { background: var(--green-lt); }
+      .card-title { font-size: 20px; font-weight: 800; color: var(--navy); margin-bottom: 3px; }
+      .card-sub { font-size: 13px; color: var(--muted); font-weight: 500; }
 
+      /* ---- Instruction box ---- */
+      .instruct {
+        background: var(--blue-lt); border-left: 4px solid var(--blue);
+        border-radius: 10px; padding: 14px 16px; margin-bottom: 20px;
+        font-size: 15px; line-height: 1.6;
+      }
+      .instruct.gold { background: var(--gold-lt); border-color: var(--gold); }
+      .instruct.teal { background: var(--teal-lt); border-color: var(--teal); }
+      .instruct.green { background: var(--green-lt); border-color: var(--green); }
+
+      /* ---- SVG visual ---- */
+      .visual-svg { display: block; width: 100%; max-width: 520px; margin: 0 auto 20px; border-radius: 12px; }
+
+      /* ---- Form inputs ---- */
+      label.lbl { display: block; font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 5px; margin-top: 14px; }
+      input[type="number"], input[type="text"], textarea, select {
+        width: 100%; padding: 10px 14px; border: 1.5px solid var(--line);
+        border-radius: 10px; font-size: 15px; font-family: inherit;
+        background: var(--bg); color: var(--ink); transition: border-color .2s;
+      }
+      input:focus, textarea:focus, select:focus { outline: none; border-color: var(--blue); }
+      textarea { min-height: 90px; resize: vertical; }
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
+
+      /* ---- Calc button & readout ---- */
+      .calc-btn {
+        background: var(--blue); color: #fff; border: none;
+        border-radius: 10px; padding: 11px 20px; font-size: 14px;
+        font-weight: 700; cursor: pointer; font-family: inherit;
+        margin-top: 12px; transition: background .2s;
+      }
+      .calc-btn:hover { background: #155fa0; }
+      .calc-btn.gold { background: var(--gold); }
+      .calc-btn.gold:hover { background: #a36a0c; }
+      .calc-btn.teal { background: var(--teal); }
+      .calc-btn.teal:hover { background: #0a6b62; }
+      .calc-btn.green { background: var(--green); }
+      .calc-btn.green:hover { background: #185f31; }
       .readout {
-        margin-top: 16px;
-        border-radius: 12px;
-        padding: 16px 18px;
-        font-size: 15px;
-        background: var(--ocean-light);
-        border: 1px solid #a0cce8;
-        display: none;
+        background: var(--navy); color: #e8f4ff;
+        border-radius: 10px; padding: 14px 18px; margin-top: 12px;
+        font-size: 15px; line-height: 1.6; display: none;
       }
-      .readout.show {
-        display: block;
+      .readout.show { display: block; }
+      .readout strong { color: #7dd3fc; }
+
+      /* ---- Hint ---- */
+      details.hint { margin-top: 14px; }
+      details.hint summary {
+        cursor: pointer; font-size: 13px; font-weight: 600;
+        color: var(--blue); list-style: none; display: inline-flex;
+        align-items: center; gap: 5px;
       }
-      .readout .big {
-        font-size: 28px;
-        font-weight: 800;
-        color: var(--ocean);
+      details.hint summary::before { content: "💡"; }
+      details.hint p { font-size: 14px; color: var(--muted); margin-top: 8px; padding: 10px 12px; background: var(--blue-lt); border-radius: 8px; }
+
+      /* ---- Level 2 extension ---- */
+      .lvl2-block {
+        border: 2px dashed var(--blue); border-radius: 12px;
+        padding: 14px 16px; margin-top: 18px;
       }
-      .feedback {
-        margin-top: 10px;
-        font-weight: 700;
-        min-height: 22px;
-      }
-      .feedback.ok {
-        color: var(--green);
-      }
-      .feedback.no {
-        color: var(--coral);
+      .lvl2-label {
+        display: inline-block; background: var(--blue); color: #fff;
+        font-size: 11px; font-weight: 800; letter-spacing: .05em;
+        border-radius: 50px; padding: 3px 10px; margin-bottom: 8px;
       }
 
-      .hintbox {
-        margin-top: 12px;
-      }
-      .hintbox summary {
-        cursor: pointer;
-        font-weight: 700;
-        color: var(--ocean);
-        font-size: 14px;
-      }
-      .hintbox p {
-        background: var(--gold-light);
-        border-radius: 10px;
-        padding: 12px 14px;
-        margin: 8px 0 0;
-        font-size: 14px;
-      }
+      /* ---- Real-world data table ---- */
+      .data-table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14px; }
+      .data-table th { background: var(--navy); color: #fff; padding: 8px 12px; text-align: left; }
+      .data-table td { padding: 8px 12px; border-bottom: 1px solid var(--line); }
+      .data-table tr:last-child td { border-bottom: none; }
+      .data-table tr:nth-child(even) td { background: var(--bg); }
 
-      .rubric {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 12px;
-        font-size: 14px;
+      /* ---- Comparison stats ---- */
+      .stat-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
+      .stat-box {
+        flex: 1; min-width: 120px; background: var(--bg);
+        border: 1px solid var(--line); border-radius: 12px;
+        padding: 14px; text-align: center;
       }
-      .rubric th,
-      .rubric td {
-        border: 1px solid var(--line);
-        padding: 10px 12px;
-        text-align: left;
-        vertical-align: top;
-      }
-      .rubric th {
-        background: var(--navy);
-        color: #fff;
-        font-size: 13px;
-      }
-      .rubric td:first-child {
-        font-weight: 700;
-        width: 30%;
-      }
+      .stat-num { font-size: 24px; font-weight: 800; color: var(--blue); }
+      .stat-lbl { font-size: 12px; color: var(--muted); margin-top: 3px; }
 
-      .checklist {
-        list-style: none;
-        padding: 0;
-        margin: 12px 0 0;
-      }
-      .checklist li {
-        display: flex;
-        gap: 10px;
-        align-items: flex-start;
-        padding: 8px 0;
-        border-bottom: 1px solid var(--line);
-      }
-      .checklist input {
-        width: 20px;
-        height: 20px;
-        margin-top: 2px;
-        flex: 0 0 auto;
-      }
+      /* ---- Checklist ---- */
+      .checklist { list-style: none; margin-top: 12px; }
+      .checklist li { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+      .checklist li:last-child { border-bottom: none; }
+      .checklist input[type="checkbox"] { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--green); flex-shrink: 0; }
 
-      .progress-wrap {
-        position: sticky;
-        top: 0;
-        z-index: 5;
-        background: var(--bg);
-        padding: 12px 0;
-      }
-      .progress-track {
-        height: 12px;
-        background: var(--line);
-        border-radius: 50px;
-        overflow: hidden;
-      }
-      .progress-fill {
-        height: 100%;
-        width: 0;
-        background: linear-gradient(90deg, var(--ocean), var(--teal));
-        transition: width 0.4s;
-      }
-      .progress-label {
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--muted);
-        margin-bottom: 6px;
-      }
+      /* ---- Rubric ---- */
+      .rubric { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 14px; }
+      .rubric th { background: var(--navy); color: #fff; padding: 10px 12px; text-align: left; }
+      .rubric td { padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+      .rubric tr:last-child td { border-bottom: none; }
+      .score-4 { color: var(--green); font-weight: 700; }
+      .score-3 { color: var(--blue); font-weight: 700; }
+      .score-2 { color: var(--gold); font-weight: 700; }
 
-      .footer {
-        text-align: center;
-        color: var(--muted);
-        font-size: 14px;
-        margin-top: 40px;
+      /* ---- Nav buttons ---- */
+      .nav-row { display: flex; gap: 10px; margin-top: 24px; justify-content: space-between; }
+      .nav-btn {
+        background: var(--blue); color: #fff; border: none;
+        border-radius: 10px; padding: 12px 24px; font-size: 15px;
+        font-weight: 700; cursor: pointer; font-family: inherit;
+        display: flex; align-items: center; gap: 8px; transition: background .2s;
       }
-      .printbtn {
-        background: var(--navy);
-      }
-      h3 {
-        font-size: 17px;
-      }
+      .nav-btn:hover { background: #155fa0; }
+      .nav-btn.ghost { background: transparent; color: var(--blue); border: 2px solid var(--blue); }
+      .nav-btn.ghost:hover { background: var(--blue-lt); }
+      .nav-btn:disabled { opacity: .45; cursor: not-allowed; }
 
-      .order-list {
-        font-size: 16px;
-        font-weight: 800;
-        color: var(--ocean);
-        margin: 10px 0;
-        padding: 12px 16px;
-        background: var(--ocean-light);
-        border-radius: 10px;
+      /* ---- Report / pitch textarea ---- */
+      #pitch { min-height: 130px; }
+      .report-box {
+        background: var(--navy); color: #e8f4ff; border-radius: 12px;
+        padding: 20px; margin-top: 14px; font-size: 14px; line-height: 1.7;
+        white-space: pre-wrap; display: none;
       }
+      .report-box.show { display: block; }
+      .export-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+      .export-btn {
+        background: transparent; border: 1.5px solid var(--line);
+        border-radius: 8px; padding: 7px 14px; font-size: 13px;
+        font-weight: 600; cursor: pointer; font-family: inherit;
+        color: var(--muted); transition: all .15s;
+      }
+      .export-btn:hover { border-color: var(--blue); color: var(--blue); }
 
+      /* ---- Level-gated content ---- */
+      .lvl1-only { display: none; }
+      .lvl2-only { display: none; }
+      body.level-1 .lvl1-only { display: block; }
+      body.level-2 .lvl2-only { display: block; }
+      body.level-2 .lvl2-block { border-color: var(--blue); }
+
+      /* ---- Vocab cards ---- */
+      .vocab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 14px; }
+      .vocab-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+      .vocab-icon { font-size: 26px; margin-bottom: 6px; }
+      .vocab-term { font-size: 13px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
+      .vocab-def { font-size: 13px; color: var(--muted); line-height: 1.5; }
+      .vocab-ex { font-size: 12px; color: var(--blue); font-weight: 600; margin-top: 5px; }
+
+      /* ---- Print ---- */
       @media print {
-        .phero .deco,
-        .progress-wrap,
-        .btn,
-        .breadcrumb,
-        .hintbox,
-        .toolbar,
-        .pk-no-print {
-          display: none !important;
-        }
-        .phase,
-        .intro-card {
-          box-shadow: none;
-          break-inside: avoid;
-        }
-        body {
-          background: #fff;
-        }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        html {
-          scroll-behavior: auto;
-        }
-        *,
-        *::before,
-        *::after {
-          animation-duration: 0.001ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.001ms !important;
-        }
+        .no-print { display: none !important; }
+        .hero { background: var(--navy) !important; }
+        body { background: #fff; }
+        .card { box-shadow: none; border-color: #ccc; }
       }
     </style>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <!-- nsr-injected:end -->
-    <link rel="stylesheet" href="/shared/projects/projects-premium.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-tabs.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-tplus.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-interactive.css" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
     <link rel="stylesheet" href="/assets/mobile-access.css" />
     <!-- mobile-access-injected:end -->
   </head>
-  <body class="pk" data-pk-theme="u7">
-    <header class="phero">
-      <div class="deco">🌊</div>
+  <body class="level-1" id="body">
+
+    <!-- ====== HERO ====== -->
+    <header class="hero no-print">
+      <div class="hero-emoji">🛸</div>
       <h1>Submarine Mission Control</h1>
-      <p>
-        Track <strong>your own</strong> elevation and temperature life with
-        integers. Enter the highest and lowest places you have been and real
-        temperatures, compare with a partner, then explore real ocean-zone
-        depths and world record temperatures.
-      </p>
-      <div class="tags">
+      <p class="hero-sub">Plot coordinates, calculate depths, reflect positions, and explore real ocean depths.</p>
+      <div class="hero-tags">
         <span class="tag gold">Unit 7 · Integers &amp; Coordinate Plane</span>
-        <span class="tag">6.NS.5</span>
-        <span class="tag">6.NS.7</span>
-        <span class="tag">Version B · Real-World Investigation</span>
+        <span class="tag">6.NS.6</span>
+        <span class="tag">6.NS.8</span>
+        <span class="tag">Version B</span>
       </div>
-      <div class="toolbar pk-no-print">
-        <button onclick="PK.toggleEs()">🌐 EN / ES help</button>
-        <span class="pk-level-toggle">
-          <button data-level-btn="level-1" type="button">🟢 Level 1</button>
-          <button data-level-btn="level-2" type="button">🔵 Level 2</button>
-        </span>
-        <button
-          class="pk-tts-toggle"
-          data-tts-toggle
-          type="button"
-          aria-pressed="false"
-          title="Read text aloud"
-        >
-          🔊 Read aloud
-        </button>
-        <button onclick="PK.save('u7ProjectB')">💾 Save</button>
-        <button
-          onclick="PK.load('u7ProjectB', { show: true, after: recalcAll })"
-        >
-          📂 Load
-        </button>
+      <div class="level-bar">
+        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">🟢 Level 1 — With Support</button>
+        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">🔵 Level 2 — Challenge</button>
       </div>
     </header>
 
-    <div class="wrap">
-      <div class="progress-wrap">
-        <div class="progress-label">
-          Project progress: <span id="pct">0</span>% complete
+    <!-- ====== WIZARD ====== -->
+    <div class="wizard">
+
+      <!-- Step trail -->
+      <nav class="step-trail no-print" id="stepTrail" aria-label="Project steps"></nav>
+
+      <!-- Progress bar -->
+      <div class="prog-wrap no-print">
+        <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+        <div class="prog-label" id="progLabel">Step 1 of 6</div>
+      </div>
+
+      <!-- ======================================
+           STEP 0 — KEY WORDS
+      ====================================== -->
+      <div class="step-panel active" id="step-0">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon gold">📖</div>
+            <div>
+              <div class="card-title">Key Words</div>
+              <div class="card-sub">Learn these 4 navigation terms before you dive in</div>
+            </div>
+          </div>
+
+          <!-- SVG Visual: submarine depth scale -->
+          <svg class="visual-svg" viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" style="background:white; border:1px solid #e2e7ec; border-radius:12px;">
+            <!-- Sky background -->
+            <rect x="0" y="0" width="520" height="60" fill="#e8f2fc" />
+            <!-- Ocean background with blue gradient -->
+            <defs>
+              <linearGradient id="oceanGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#1a6fb5" stop-opacity="0.8" />
+                <stop offset="100%" stop-color="#0f2b3c" />
+              </linearGradient>
+            </defs>
+            <rect x="0" y="60" width="520" height="140" fill="url(#oceanGrad)" />
+
+            <!-- Surface waves -->
+            <path d="M 0 60 Q 20 55 40 60 T 80 60 T 120 60 T 160 60 T 200 60 T 240 60 T 280 60 T 320 60 T 360 60 T 400 60 T 440 60 T 480 60 T 520 60" fill="none" stroke="#e8f2fc" stroke-width="2" />
+
+            <!-- Vertical Scale line (y-axis) -->
+            <line x1="80" y1="20" x2="80" y2="180" stroke="#ffffff" stroke-width="2" stroke-dasharray="3,3" />
+
+            <!-- Scale ticks -->
+            <!-- +100m (Helicopter) -->
+            <circle cx="80" cy="30" r="4" fill="#ffffff" />
+            <text x="95" y="34" fill="#0f2b3c" font-size="11" font-weight="bold">🚁 Helicopter (+100m)</text>
+
+            <!-- 0m (Sea Level) -->
+            <circle cx="80" cy="60" r="5" fill="#e4f5f3" stroke="#0e8a7d" stroke-width="1.5" />
+            <text x="95" y="64" fill="#ffffff" font-size="11" font-weight="bold">🌊 Sea Level (0m)</text>
+
+            <!-- -100m (Submarine) -->
+            <circle cx="80" cy="120" r="5" fill="#fdf3e0" stroke="#c9820f" stroke-width="1.5" />
+            <!-- Submarine Drawing at -100m -->
+            <g transform="translate(180, 105) scale(0.6)">
+              <rect x="10" y="20" width="60" height="25" rx="10" fill="#c9820f" stroke="#ffffff" stroke-width="1.5" />
+              <path d="M 40 20 L 40 10 L 45 10 L 45 13" fill="none" stroke="#ffffff" stroke-width="2" />
+              <circle cx="25" cy="32" r="3" fill="#ffffff" />
+              <circle cx="40" cy="32" r="3" fill="#ffffff" />
+              <circle cx="55" cy="32" r="3" fill="#ffffff" />
+              <path d="M 70 28 L 78 20 L 78 35 Z" fill="#c9820f" stroke="#ffffff" stroke-width="1.5" />
+            </g>
+            <text x="95" y="124" fill="#ffffff" font-size="11" font-weight="bold">🛸 Submarine Checkpoint A (-100m)</text>
+
+            <!-- -200m (Deep Reef) -->
+            <circle cx="80" cy="170" r="4" fill="#ffffff" />
+            <text x="95" y="174" fill="#ffffff" font-size="11" font-style="italic" opacity="0.8">🐠 Deep Reef (-200m)</text>
+
+            <!-- Absolute Value Bracket -->
+            <path d="M 50 60 L 40 60 L 40 90 L 40 120 L 50 120" fill="none" stroke="#fdf3e0" stroke-width="2" />
+            <text x="25" y="94" fill="#fdf3e0" font-size="10" font-weight="bold" text-anchor="end">|-100| = 100m</text>
+            <text x="25" y="106" fill="#fdf3e0" font-size="9" text-anchor="end">(Distance from 0)</text>
+          </svg>
+
+          <div class="vocab-grid">
+            <div class="vocab-card">
+              <div class="vocab-icon">🦈</div>
+              <div class="vocab-term">Negative Integer</div>
+              <div class="vocab-def">A whole number less than zero. Used to represent depths below sea level.</div>
+              <div class="vocab-ex">Sub depth = -100 meters</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">🌐</div>
+              <div class="vocab-term">Coordinate Plane</div>
+              <div class="vocab-def">A grid with horizontal x-axis and vertical y-axis used to plot positions.</div>
+              <div class="vocab-ex">Harbor location = (3, 4)</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">📏</div>
+              <div class="vocab-term">Absolute Value</div>
+              <div class="vocab-def">The distance a number is from zero. Distance is always positive!</div>
+              <div class="vocab-ex">|-100| = 100 meters from surface</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">🗺️</div>
+              <div class="vocab-term">Distance on Grid</div>
+              <div class="vocab-def">The vertical or horizontal gap between checkpoints found via coordinate math.</div>
+              <div class="vocab-ex">From -100m to -200m is 100m</div>
+            </div>
+          </div>
+
+          <div class="instruct" style="margin-top:20px">
+            ✅ Read each word card. When you're ready to plot your submarine checkpoints, click <strong>Next Step</strong>.
+          </div>
         </div>
-        <div class="progress-track">
-          <div class="progress-fill" id="pfill"></div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" disabled>← Back</button>
+          <button class="nav-btn" onclick="goStep(1)">Next Step →</button>
         </div>
       </div>
 
-      <div class="intro-card">
-        <h2>🔭 Your Mission</h2>
-        <p class="scenario">
-          Run mission control using <em>your own</em> data in three steps.
-          <strong>Part 1 (Self):</strong> enter the highest place you have been
-          (+), the lowest (−), today's temperature, and a freezer temperature;
-          feed them into the absolute-value and ordering engines.
-          <strong>Part 2 (Peer):</strong> a partner enters their depth and
-          temperature set, then auto-compare.
-          <strong>Part 3 (World):</strong> compare to real ocean-zone depths and
-          record temperatures, run the What-If Lab, and finish your mission log.
-        </p>
-      </div>
+      <!-- ======================================
+           STEP 1 — PLOT MISSION CHECKPOINTS
+      ====================================== -->
+      <div class="step-panel" id="step-1">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">📍</div>
+            <div>
+              <div class="card-title">Step 1 — Plot Mission Checkpoints</div>
+              <div class="card-sub">Plot 4 coordinates for your submarine path and identify quadrants</div>
+            </div>
+          </div>
 
-      <!-- ===================== VISUAL MATH NOTES ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div
-            class="phase-num"
-            style="background: var(--gold); color: #2a1c00"
-          >
-            📒
+          <div class="instruct">
+            <strong>Your job:</strong> Enter coordinates $(x, y)$ for your 4 submarine checkpoints. Identify which quadrant each point is in, then verify your plot.
           </div>
-          <div>
-            <div class="skill">Before you start · Vocabulary</div>
-            <h2>Visual Math Notes</h2>
-          </div>
-        </div>
-        <p>
-          Learn these words first. Tap <strong>EN / ES help</strong> at the top
-          for Spanish.
-        </p>
-        <div class="pk-vocab">
-          <div class="pk-term">
-            <svg width="64" height="44" viewBox="0 0 64 44" aria-hidden="true">
-              <line
-                x1="4"
-                y1="22"
-                x2="60"
-                y2="22"
-                stroke="#1a2633"
-                stroke-width="2"
-              />
-              <line
-                x1="32"
-                y1="16"
-                x2="32"
-                y2="28"
-                stroke="#1a2633"
-                stroke-width="2"
-              />
-              <text x="29" y="40" font-size="9" fill="#5e6e7e">0</text>
-              <circle cx="14" cy="22" r="3.5" fill="#d4952a" />
-              <text x="4" y="13" font-size="9" fill="#d4952a">|−3|=3</text>
+
+          <!-- Dynamic Coordinate Grid SVG -->
+          <div style="text-align: center; margin: 15px 0;">
+            <svg id="mission-grid" class="visual-svg" viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg" style="background:#ffffff; border:1.5px solid var(--line); border-radius:12px; max-width:320px; width:100%; aspect-ratio:1;">
+              <defs>
+                <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 2 L 10 5 L 0 8 z" fill="#0a2233" />
+                </marker>
+              </defs>
+              <!-- Minor Grid Lines -->
+              <!-- Horizontal minor lines -->
+              <line x1="10" y1="25" x2="310" y2="25" stroke="#f0f3f6" stroke-width="1" />
+              <line x1="10" y1="40" x2="310" y2="40" stroke="#f0f3f6" stroke-width="1" />
+              <line x1="10" y1="55" x2="310" y2="55" stroke="#f0f3f6" stroke-width="1" />
+              <line x1="10" y1="70" x2="310" y2="70" stroke="#f0f3f6" stroke-width="1" />
+              <line x1="10" y1="100" x2="310" y2="100" stroke="#f0f3f6" stroke-width="1" />
+              <line x1="10" y1="115" x2="310" y2="115" stroke="#f0f3f6" stroke-width="1" />
+              <line x1="10" y1="130" x2="310" y2="130" stroke="#f0f3f6" stroke-width="1" />
+              <line x1="10" y1="145" x2="310" y2="145" stroke="#f0f3f6" stroke-width="1" />
+              <line x1="10" y1="175" x2="310" y2="175" stroke="#f0f3f6" stroke-width="1" />
+              <line x1="10" y1="190" x2="310" y2="190" stroke="#f0f3f6" stroke-width="1" />
+              <line x1="10" y1="205" x2="310" y2="205" stroke="#f0f3f6" stroke-width="1" />
+              <line x1="10" y1="220" x2="310" y2="220" stroke="#f0f3f6" stroke-width="1" />
+              <line x1="10" y1="250" x2="310" y2="250" stroke="#f0f3f6" stroke-width="1" />
+              <line x1="10" y1="265" x2="310" y2="265" stroke="#f0f3f6" stroke-width="1" />
+              <line x1="10" y1="280" x2="310" y2="280" stroke="#f0f3f6" stroke-width="1" />
+              <line x1="10" y1="295" x2="310" y2="295" stroke="#f0f3f6" stroke-width="1" />
+              <!-- Vertical minor lines -->
+              <line x1="25" y1="10" x2="25" y2="310" stroke="#f0f3f6" stroke-width="1" />
+              <line x1="40" y1="10" x2="40" y2="310" stroke="#f0f3f6" stroke-width="1" />
+              <line x1="55" y1="10" x2="55" y2="310" stroke="#f0f3f6" stroke-width="1" />
+              <line x1="70" y1="10" x2="70" y2="310" stroke="#f0f3f6" stroke-width="1" />
+              <line x1="100" y1="10" x2="100" y2="310" stroke="#f0f3f6" stroke-width="1" />
+              <line x1="115" y1="10" x2="115" y2="310" stroke="#f0f3f6" stroke-width="1" />
+              <line x1="130" y1="10" x2="130" y2="310" stroke="#f0f3f6" stroke-width="1" />
+              <line x1="145" y1="10" x2="145" y2="310" stroke="#f0f3f6" stroke-width="1" />
+              <line x1="175" y1="10" x2="175" y2="310" stroke="#f0f3f6" stroke-width="1" />
+              <line x1="190" y1="10" x2="190" y2="310" stroke="#f0f3f6" stroke-width="1" />
+              <line x1="205" y1="10" x2="205" y2="310" stroke="#f0f3f6" stroke-width="1" />
+              <line x1="220" y1="10" x2="220" y2="310" stroke="#f0f3f6" stroke-width="1" />
+              <line x1="250" y1="10" x2="250" y2="310" stroke="#f0f3f6" stroke-width="1" />
+              <line x1="265" y1="10" x2="265" y2="310" stroke="#f0f3f6" stroke-width="1" />
+              <line x1="280" y1="10" x2="280" y2="310" stroke="#f0f3f6" stroke-width="1" />
+              <line x1="295" y1="10" x2="295" y2="310" stroke="#f0f3f6" stroke-width="1" />
+
+              <!-- Major lines at multiples of 5 -->
+              <line x1="10" y1="85" x2="310" y2="85" stroke="#d3dae3" stroke-width="1.2" />
+              <line x1="10" y1="235" x2="310" y2="235" stroke="#d3dae3" stroke-width="1.2" />
+              <line x1="85" y1="10" x2="85" y2="310" stroke="#d3dae3" stroke-width="1.2" />
+              <line x1="235" y1="10" x2="235" y2="310" stroke="#d3dae3" stroke-width="1.2" />
+
+              <!-- Outer borders -->
+              <line x1="10" y1="10" x2="310" y2="10" stroke="#d3dae3" stroke-width="1.2" />
+              <line x1="10" y1="310" x2="310" y2="310" stroke="#d3dae3" stroke-width="1.2" />
+              <line x1="10" y1="10" x2="10" y2="310" stroke="#d3dae3" stroke-width="1.2" />
+              <line x1="310" y1="10" x2="310" y2="310" stroke="#d3dae3" stroke-width="1.2" />
+
+              <!-- Main Axes with Arrow markers -->
+              <line x1="5" y1="160" x2="315" y2="160" stroke="#0a2233" stroke-width="2" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+              <line x1="160" y1="315" x2="160" y2="5" stroke="#0a2233" stroke-width="2" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+
+              <!-- Ticks & Labels -->
+              <text x="10" y="155" font-size="8" fill="#5c6d7e" text-anchor="middle">-10</text>
+              <text x="85" y="155" font-size="8" fill="#5c6d7e" text-anchor="middle">-5</text>
+              <text x="235" y="155" font-size="8" fill="#5c6d7e" text-anchor="middle">5</text>
+              <text x="310" y="155" font-size="8" fill="#5c6d7e" text-anchor="middle">10</text>
+              <text x="315" y="172" font-size="9" fill="#0a2233" font-weight="bold" text-anchor="end">x</text>
+
+              <text x="165" y="14" font-size="8" fill="#5c6d7e" text-anchor="start">10</text>
+              <text x="165" y="88" font-size="8" fill="#5c6d7e" text-anchor="start">5</text>
+              <text x="165" y="238" font-size="8" fill="#5c6d7e" text-anchor="start">-5</text>
+              <text x="165" y="313" font-size="8" fill="#5c6d7e" text-anchor="start">-10</text>
+              <text x="150" y="12" font-size="9" fill="#0a2233" font-weight="bold" text-anchor="end">y</text>
+
+              <!-- Dynamic Dots -->
+              <circle id="dot-a" cx="160" cy="160" r="5" fill="#146094" stroke="#ffffff" stroke-width="1.5" style="display:none;" />
+              <text id="lbl-a" x="160" y="160" font-size="10" font-weight="bold" fill="#146094" dx="8" dy="-4" style="display:none;">A</text>
+
+              <circle id="dot-b" cx="160" cy="160" r="5" fill="#0f8279" stroke="#ffffff" stroke-width="1.5" style="display:none;" />
+              <text id="lbl-b" x="160" y="160" font-size="10" font-weight="bold" fill="#0f8279" dx="8" dy="-4" style="display:none;">B</text>
+
+              <circle id="dot-c" cx="160" cy="160" r="5" fill="#d48c08" stroke="#ffffff" stroke-width="1.5" style="display:none;" />
+              <text id="lbl-c" x="160" y="160" font-size="10" font-weight="bold" fill="#d48c08" dx="8" dy="-4" style="display:none;">C</text>
+
+              <circle id="dot-d" cx="160" cy="160" r="5" fill="#c04f36" stroke="#ffffff" stroke-width="1.5" style="display:none;" />
+              <text id="lbl-d" x="160" y="160" font-size="10" font-weight="bold" fill="#c04f36" dx="8" dy="-4" style="display:none;">D</text>
             </svg>
-            <b>Absolute Value</b>
-            <p>How far a number is from 0. It is never negative.</p>
-            <p class="pk-es">
-              Valor absoluto: |n| es la distancia desde 0 — nunca es negativo.
-              |−120| = 120.
-            </p>
-          </div>
-          <div class="pk-term">
-            <svg width="64" height="44" viewBox="0 0 64 44" aria-hidden="true">
-              <line
-                x1="4"
-                y1="22"
-                x2="60"
-                y2="22"
-                stroke="#1a2633"
-                stroke-width="2"
-              />
-              <circle cx="14" cy="22" r="3" fill="#0a4f7a" />
-              <circle cx="26" cy="22" r="3" fill="#0a4f7a" />
-              <circle cx="40" cy="22" r="3" fill="#0a4f7a" />
-              <circle cx="52" cy="22" r="3" fill="#0a4f7a" />
-              <polygon points="56,19 60,22 56,25" fill="#0a4f7a" />
-            </svg>
-            <b>Ordering Integers</b>
-            <p>On a number line, numbers on the left are smaller.</p>
-            <p class="pk-es">
-              Ordenar enteros: a la izquierda es menor. Más negativo = más
-              pequeño.
-            </p>
-          </div>
-          <div class="pk-term">
-            <svg width="64" height="44" viewBox="0 0 64 44" aria-hidden="true">
-              <line
-                x1="4"
-                y1="22"
-                x2="60"
-                y2="22"
-                stroke="#1a6fb5"
-                stroke-width="2"
-              />
-              <line
-                x1="32"
-                y1="14"
-                x2="32"
-                y2="30"
-                stroke="#1a6fb5"
-                stroke-width="3"
-              />
-              <text x="20" y="40" font-size="8.5" fill="#1a6fb5">
-                sea level = 0
-              </text>
-            </svg>
-            <b>Sea Level = 0 (reference)</b>
-            <p>
-              Zero is the starting point. Above the water is positive, below is
-              negative.
-            </p>
-            <p class="pk-es">
-              Nivel del mar = 0: arriba es positivo (+), abajo es negativo (−).
-            </p>
-          </div>
-          <div class="pk-term">
-            <svg width="64" height="44" viewBox="0 0 64 44" aria-hidden="true">
-              <line
-                x1="4"
-                y1="22"
-                x2="60"
-                y2="22"
-                stroke="#1a2633"
-                stroke-width="2"
-              />
-              <line
-                x1="32"
-                y1="16"
-                x2="32"
-                y2="28"
-                stroke="#1a2633"
-                stroke-width="2"
-              />
-              <circle cx="48" cy="22" r="4" fill="#2d874b" />
-              <circle cx="16" cy="22" r="4" fill="#c45a3c" />
-              <text x="44" y="13" font-size="9" fill="#2d874b">+</text>
-              <text x="13" y="13" font-size="9" fill="#c45a3c">−</text>
-            </svg>
-            <b>Integer (positive / negative)</b>
-            <p>A whole number, like −2, 0, or 5. It can be negative.</p>
-            <p class="pk-es">
-              Entero: números enteros con negativos: …−2, −1, 0, 1, 2…
-            </p>
-          </div>
-          <div class="pk-term">
-            <svg width="64" height="44" viewBox="0 0 64 44" aria-hidden="true">
-              <line
-                x1="4"
-                y1="22"
-                x2="60"
-                y2="22"
-                stroke="#1a2633"
-                stroke-width="2"
-              />
-              <line
-                x1="14"
-                y1="18"
-                x2="14"
-                y2="26"
-                stroke="#c45a3c"
-                stroke-width="2"
-              />
-              <line
-                x1="50"
-                y1="18"
-                x2="50"
-                y2="26"
-                stroke="#2d874b"
-                stroke-width="2"
-              />
-              <line
-                x1="14"
-                y1="33"
-                x2="50"
-                y2="33"
-                stroke="#0a4f7a"
-                stroke-width="1.5"
-              />
-              <text x="24" y="42" font-size="8" fill="#0a4f7a">
-                range = spread
-              </text>
-            </svg>
-            <b>Range / Spread (Level 2)</b>
-            <p>How spread out the numbers are: biggest minus smallest.</p>
-            <p class="pk-es">
-              Rango = mayor − menor. Mide qué tan dispersos están los datos.
-            </p>
-          </div>
-        </div>
-        <div class="grid2" style="margin-top: 18px">
-          <div class="pk-callout">
-            <h3>Formula Bank</h3>
-            <ul class="pk-formula">
-              <li>
-                <span class="pk-f-name">Absolute value</span>
-                <span class="pk-f-mean"
-                  >How far a number is from 0 (sea level) on the number line. It
-                  is never negative.</span
-                >
-                <span class="pk-eg"
-                  >Example: a diver at −18 m is |−18| = 18 m from the
-                  surface.</span
-                >
-              </li>
-              <li>
-                <span class="pk-f-name">Distance from sea level</span>
-                <span class="pk-f-mean"
-                  >Take the absolute value of the depth or height. Sea level is
-                  the zero point.</span
-                >
-                <span class="pk-eg"
-                  >Example: |−40| = 40 m below the surface.</span
-                >
-              </li>
-              <li>
-                <span class="pk-f-name">Total vertical span</span>
-                <span class="pk-f-mean"
-                  >Add how far the lowest point is below zero to how far the
-                  highest point is above zero.</span
-                >
-                <span class="pk-eg"
-                  >Example: |−40| + |25| = 40 + 25 = 65 m from bottom to
-                  top.</span
-                >
-              </li>
-              <li>
-                <span class="pk-f-name">Order integers</span>
-                <span class="pk-f-mean"
-                  >On a number line, numbers get bigger from left to right. The
-                  most negative number is the least.</span
-                >
-                <span class="pk-eg">Example: −12 &lt; −3 &lt; 0 &lt; 7.</span>
-              </li>
-              <li>
-                <span class="pk-f-name">Safe check</span>
-                <span class="pk-f-mean"
-                  >Compare the distance from 0 to the limit. If |depth| ≤ limit,
-                  it is safe.</span
-                >
-                <span class="pk-eg"
-                  >Example: |−30| = 30 ≤ 40 limit → safe.</span
-                >
-              </li>
-              <li class="pk-lvl2">
-                <span class="pk-f-name">Range / spread (Level 2)</span>
-                <span class="pk-f-mean"
-                  >Range = greatest − least. It tells how spread out the
-                  readings are.</span
-                >
-                <span class="pk-eg">Example: 7 − (−12) = 19.</span>
-              </li>
-            </ul>
-          </div>
-          <div class="pk-callout">
-            <h3>Sentence Frames</h3>
-            <p>
-              "The lowest place I have been is ___, a negative integer, so |___|
-              = ___ from sea level."
-            </p>
-            <p>"My temperatures ordered from coldest to warmest are ___."</p>
-            <p>
-              "My |depth| is ___ and my partner's is ___, so ___ is farther from
-              sea level."
-            </p>
-            <p class="pk-es">
-              "El lugar más bajo donde he estado es ___, un entero negativo, así
-              que |___| = ___."
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== PART 1 — SELF ===================== -->
-
-      <!-- ===================== PROJECT SETUP ===================== -->
-      <section class="phase" id="phase-setup" data-phase>
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--blue)">S</div>
-          <div>
-            <span class="arc-banner">Project Setup</span>
-            <h2>Your Highs, Lows &amp; Temperatures</h2>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <div>
-            <p
-              style="
-                font-size: 15px;
-                color: var(--muted);
-                line-height: 1.6;
-                margin-bottom: 20px;
-              "
-            >
-              Welcome! Read the scenario below and select your level to begin
-              your design plan.
-            </p>
-            <div style="margin-top: 16px">
-              <svg
-                width="100%"
-                height="220"
-                viewBox="0 0 500 220"
-                style="
-                  background: white;
-                  border-radius: 12px;
-                  border: 1px solid #e2e8f0;
-                  max-width: 480px;
-                  margin: 0 auto;
-                  display: block;
-                "
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <defs>
-                  <linearGradient
-                    id="setup-grad"
-                    x1="0%"
-                    y1="0%"
-                    x2="100%"
-                    y2="100%"
-                  >
-                    <stop offset="0%" stop-color="#ffffff" />
-                    <stop offset="100%" stop-color="#f8fafc" />
-                  </linearGradient>
-                </defs>
-
-                <rect
-                  x="20"
-                  y="20"
-                  width="460"
-                  height="200"
-                  rx="15"
-                  fill="url(#setup-grad)"
-                  stroke="#2d874b"
-                  stroke-width="2"
-                />
-                <text
-                  x="250"
-                  y="60"
-                  text-anchor="middle"
-                  font-size="20"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  DEPTH GAUGE
-                </text>
-                <path
-                  d="M180,150 A70,70 0 0,1 320,150"
-                  fill="none"
-                  stroke="#e2e7ec"
-                  stroke-width="10"
-                />
-                <path
-                  d="M180,150 A70,70 0 0,1 270,95"
-                  fill="none"
-                  stroke="#2d874b"
-                  stroke-width="10"
-                />
-                <line
-                  x1="250"
-                  y1="150"
-                  x2="270"
-                  y2="90"
-                  stroke="#c45a3c"
-                  stroke-width="3"
-                />
-              </svg>
-            </div>
           </div>
 
-          <div
-            style="
-              background: var(--bg);
-              border: 1px solid var(--line);
-              border-radius: 12px;
-              padding: 20px;
-              box-shadow: var(--shadow);
-            "
-          >
-            <h3
-              style="
-                margin-top: 0;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-              "
-            >
-              <span>📋</span> Scenario &amp; Level Options
-            </h3>
-            <p style="font-size: 14px; line-height: 1.6; margin: 0 0 10px">
-              You are a <strong>submarine mission-control officer</strong>. You
-              log real elevations and temperatures as positive and negative
-              integers, then use absolute value and ordering to read how high,
-              how deep, and how cold each one is.
-            </p>
-            <ul
-              style="
-                font-size: 14px;
-                line-height: 1.6;
-                margin: 0;
-                padding-left: 18px;
-              "
-            >
-              <li>
-                <strong>Level 1 (support):</strong> enter a high of +50 m and a
-                low of -85 m, then use |-85| to say how far below sea level that
-                is.
-              </li>
-              <li>
-                <strong>Level 2 (challenge):</strong> order four temperatures
-                like -18, -5, 18, 35 from coldest to warmest and find the range
-                (warmest - coldest).
-              </li>
-            </ul>
-          </div>
-        </div>
-        <p>
-          Enter <strong>your own</strong> real numbers. Highest place you have
-          been is positive (+), lowest is negative (−). Not sure? Click
-          <em>Use example numbers</em>.
-        </p>
-
-        <!-- 1a Integers in context -->
-
-        <div
-          style="
-            margin-top: 20px;
-            padding-top: 16px;
-            border-top: 1px solid var(--line);
-          "
-        >
-          <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px">
-            You can type your own numbers as you go, or click below to start
-            with our example numbers:
-          </p>
-          <button
-            class="btn ghost"
-            type="button"
-            onclick="useExamples()"
-            style="
-              width: 100%;
-              font-weight: bold;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              gap: 8px;
-            "
-          >
-            ✨ Use Example Numbers
-          </button>
-        </div>
-      </section>
-
-      <!-- ===================== PART 1A — SELF ===================== -->
-      <section class="phase" id="phase-1a" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">1a</div>
-          <div>
-            <span class="arc-banner">Part 1a · Self — your real plan</span>
-            <h2>🏔️ Highest &amp; lowest places (integers in context)</h2>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <div>
-            <div
-              class="pk-math-scaffold-card no-print"
-              style="
-                margin: 20px 0;
-                padding: 12px;
-                background: #fff;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-                max-width: 480px;
-                margin-left: auto;
-                margin-right: auto;
-              "
-            >
-              <svg
-                width="100%"
-                height="200"
-                viewBox="0 0 500 200"
-                style="background: #fff; border-radius: 8px"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <text
-                  x="250"
-                  y="30"
-                  text-anchor="middle"
-                  font-size="14"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  Math Diagram Guide
-                </text>
-                <rect
-                  x="150"
-                  y="60"
-                  width="200"
-                  height="90"
-                  rx="10"
-                  fill="rgba(14,138,125,0.1)"
-                  stroke="#0e8a7d"
-                  stroke-width="1.5"
-                />
-                <text
-                  x="250"
-                  y="110"
-                  text-anchor="middle"
-                  font-size="11"
-                  font-weight="bold"
-                  fill="#0e8a7d"
-                >
-                  Interactive Calculation Visual
-                </text>
-              </svg>
-            </div>
-
-            <div class="task">
-              <strong>Enter:</strong> the highest place you have been above sea
-              level (positive, e.g., a mountain or plane), and the lowest below
-              sea level (negative, e.g., a deep pool, a basement, a valley below
-              sea level — or use a famous one).
-            </div>
-            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-              Level 1 tip: start with friendly numbers like a high of +50 m and
-              a low of −50 m. The low is the same distance below sea level as
-              the high is above it, because |−50| = 50.
-            </p>
-            <div class="grid2">
-              <!-- ===================== INLINE RESEARCH LAB ===================== -->
-              <div class="pk-research-inline-card">
-                <div class="pk-research-inline-header">
-                  <span class="pk-research-badge">🔍 Research Required</span>
-                  <a
-                    href="https://www.ngdc.noaa.gov/mgg/bathymetry/relief.html"
-                    target="_blank"
-                    class="pk-research-inline-link"
-                    >🔗 NOAA: Marine Geology & Ocean Bathymetry Relief ↗</a
-                  >
-                </div>
-                <p class="pk-research-inline-instructions">
-                  Open the NOAA database page. Look up the average depth of the
-                  Atlantic Ocean in meters (often 3,646 meters, represented as
-                  -3646 m). Enter the depth below as a negative integer:
-                </p>
-                <div class="grid2">
-                  <div>
-                    <label class="fld" for="worldCountry"
-                      >Ocean/Trench Researched</label
-                    >
-                    <input
-                      type="text"
-                      id="worldCountry"
-                      data-save
-                      placeholder=""
-                      oninput="recalcAll()"
-                    />
-                  </div>
-                  <div>
-                    <label class="fld" for="high"
-                      >Researched Ocean Depth (negative m)</label
-                    >
-                    <input
-                      type="number"
-                      id="high"
-                      data-save
-                      min="0"
-                      placeholder=""
-                      oninput="calcContext()"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <label class="fld" for="low"
-                  >Lowest place (meters, enter negative)</label
-                >
-                <input
-                  type="number"
-                  id="low"
-                  data-save
-                  max="0"
-                  placeholder=""
-                  oninput="calcContext()"
-                />
-              </div>
-            </div>
-            <button class="btn" type="button" onclick="calcContext()">
-              Interpret these values
-            </button>
-            <div class="readout" id="context-out"></div>
-            <details class="hintbox">
-              <summary>Need a hint?</summary>
-              <p>
-                Positive integers = above sea level (mountains, planes).
-                Negative integers = below sea level. Zero (sea level) is the
-                reference point — neither positive nor negative.
-              </p>
-            </details>
-
-            <div class="pk-lvl2">
-              <div class="task">
-                <strong>Level 2 extension:</strong> Find the
-                <em>total vertical span</em> from your lowest point to your
-                highest point by adding their distances from sea level: |lowest|
-                + |highest|. Explain why you add instead of subtract when one
-                value is below zero and the other is above.
-              </div>
-            </div>
-
-            <div
-              class="pk-no-print"
-              style="
-                margin-top: 16px;
-                padding: 12px;
-                background: #fff;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-              "
-            >
-              <svg
-                id="phase-svg-1a"
-                width="100%"
-                height="200"
-                viewBox="0 0 500 200"
-                style="background: #fff; border-radius: 8px"
-                xmlns="http://www.w3.org/2000/svg"
-              ></svg>
-            </div>
-
-            <!-- 1b Absolute value -->
+          <!-- Level 1 Tip -->
+          <div class="instruct lvl1-only">
+            🟢 <strong>Level 1 Tip:</strong> Try plotting points in different quadrants. We pre-filled A=(3,4), B=(-5,6), C=(-7,-5), D=(6,-3). Check their signs to determine their quadrants!
           </div>
 
-          <div
-            style="
-              background: var(--bg);
-              border: 2.5px solid var(--line);
-              border-radius: 18px;
-              padding: 20px;
-              box-shadow: var(--shadow);
-              height: fit-content;
-            "
-            class="pk-no-print"
-          >
-            <h3
-              style="
-                margin-top: 0;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                color: var(--navy);
-                font-size: 16px;
-              "
-            >
-              <span>💡</span> Guided Steps &amp; Help
-            </h3>
-
-            <p
-              style="
-                font-size: 13.5px;
-                line-height: 1.5;
-                color: var(--muted);
-                margin-bottom: 12px;
-              "
-            >
-              <strong>Reading integers in real life:</strong>
-            </p>
-            <ol
-              style="
-                margin-left: 18px;
-                font-size: 13px;
-                line-height: 1.5;
-                display: grid;
-                gap: 8px;
-                color: var(--ink);
-              "
-            >
-              <li>
-                Positive numbers (+) mean <b>above</b> zero — above sea level,
-                or hotter than 0°.
-              </li>
-              <li>
-                Negative numbers (−) mean <b>below</b> zero — below sea level,
-                or colder than 0°.
-              </li>
-              <li>
-                Zero is the reference point. The farther a number is from 0, the
-                larger its size.
-              </li>
-            </ol>
-            <div
-              style="
-                margin-top: 14px;
-                padding: 10px;
-                background: var(--sky);
-                border-radius: 8px;
-                font-size: 12px;
-              "
-            >
-              💡 <b>Example:</b> Mount Everest is <b>+8,849 m</b> (above sea
-              level); the Dead Sea shore is <b>−430 m</b> (below sea level).
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== PART 1B — SELF ===================== -->
-      <section class="phase" id="phase-1b" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">1b</div>
-          <div>
-            <span class="arc-banner">Part 1b · Self — your real plan</span>
-            <h2>📏 Distance from sea level (absolute value)</h2>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <div>
-            <div
-              class="pk-math-scaffold-card no-print"
-              style="
-                margin: 20px 0;
-                padding: 12px;
-                background: #fff;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-                max-width: 480px;
-                margin-left: auto;
-                margin-right: auto;
-              "
-            >
-              <svg
-                width="100%"
-                height="200"
-                viewBox="0 0 500 200"
-                style="background: #fff; border-radius: 8px"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <text
-                  x="250"
-                  y="30"
-                  text-anchor="middle"
-                  font-size="14"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  Math Diagram Guide
-                </text>
-                <rect
-                  x="150"
-                  y="60"
-                  width="200"
-                  height="90"
-                  rx="10"
-                  fill="rgba(14,138,125,0.1)"
-                  stroke="#0e8a7d"
-                  stroke-width="1.5"
-                />
-                <text
-                  x="250"
-                  y="110"
-                  text-anchor="middle"
-                  font-size="11"
-                  font-weight="bold"
-                  fill="#0e8a7d"
-                >
-                  Interactive Calculation Visual
-                </text>
-              </svg>
-            </div>
-
-            <p style="color: var(--muted); font-size: 14px">
-              The absolute value of your lowest place tells how far below sea
-              level it is — always positive.
-            </p>
-            <div class="task">
-              <strong>Rule:</strong> distance from sea level = |depth|. A depth
-              of −120 m means 120 m below sea level. |−120| = 120.
-            </div>
-            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-              Level 1 tip: a depth of −50 m is |−50| = 50 m below the surface.
-              Just drop the negative sign to read the distance.
-            </p>
-            <label class="fld" for="av-depth">Depth reading (meters)</label>
-            <input
-              type="number"
-              id="av-depth"
-              data-save
-              placeholder=""
-              oninput="calcAbsVal()"
-            />
-            <button class="btn alt" type="button" onclick="calcAbsVal()">
-              Calculate distance from sea level
-            </button>
-            <div class="readout" id="absval-out"></div>
-            <div
-              class="pki-manip"
-              data-manip="number-line"
-              data-range="120"
-              data-unit="m"
-            ></div>
-            <details class="hintbox">
-              <summary>Need a hint?</summary>
-              <p>
-                Absolute value is the distance from zero — never negative. |−45|
-                = 45 because −45 is 45 units left of 0. Remove the sign, keep
-                the number.
-              </p>
-            </details>
-
-            <div class="pk-lvl2">
-              <div class="task">
-                <strong>Level 2 extension:</strong> A submarine rises from −120
-                m to −45 m. How far did it travel? Use |−120| − |−45| = 120 − 45
-                = 75 m, and explain why you <em>subtract</em> here (both points
-                are below zero, on the same side of sea level) instead of
-                adding.
-              </div>
-            </div>
-
-            <div
-              class="pk-no-print"
-              style="
-                margin-top: 16px;
-                padding: 12px;
-                background: #fff;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-              "
-            >
-              <svg
-                id="phase-svg-1b"
-                width="100%"
-                height="200"
-                viewBox="0 0 500 200"
-                style="background: #fff; border-radius: 8px"
-                xmlns="http://www.w3.org/2000/svg"
-              ></svg>
-            </div>
-
-            <!-- 1c Temperatures / ordering -->
+          <!-- Level 2 Challenge -->
+          <div class="instruct lvl2-block lvl2-only">
+            <span class="lvl2-label">LEVEL 2 CHALLENGE</span><br>
+            You can use fractional coordinates like -4.5 or 8.5. Enter coordinates to map your mission checkpoints exactly.
           </div>
 
-          <div
-            style="
-              background: var(--bg);
-              border: 2.5px solid var(--line);
-              border-radius: 18px;
-              padding: 20px;
-              box-shadow: var(--shadow);
-              height: fit-content;
-            "
-            class="pk-no-print"
-          >
-            <h3
-              style="
-                margin-top: 0;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                color: var(--navy);
-                font-size: 16px;
-              "
-            >
-              <span>💡</span> Guided Steps &amp; Help
-            </h3>
-
-            <p
-              style="
-                font-size: 13.5px;
-                line-height: 1.5;
-                color: var(--muted);
-                margin-bottom: 12px;
-              "
-            >
-              <strong>Absolute value = distance from zero:</strong>
-            </p>
-            <ol
-              style="
-                margin-left: 18px;
-                font-size: 13px;
-                line-height: 1.5;
-                display: grid;
-                gap: 8px;
-                color: var(--ink);
-              "
-            >
-              <li>
-                Absolute value, written |n|, asks <i>how far</i> a number is
-                from 0 — direction does not matter.
-              </li>
-              <li>
-                To find it, just drop the negative sign. The result is never
-                negative.
-              </li>
-              <li>
-                Use it when you want a distance, like how deep below sea level
-                something is.
-              </li>
-            </ol>
-            <div
-              style="
-                margin-top: 14px;
-                padding: 10px;
-                background: var(--sky);
-                border-radius: 8px;
-                font-size: 12px;
-              "
-            >
-              💡 <b>Example:</b> |−430| = <b>430 m</b>. The Dead Sea shore is
-              430 m from sea level.
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== PART 1C — SELF ===================== -->
-      <section class="phase" id="phase-1c" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">1c</div>
-          <div>
-            <span class="arc-banner">Part 1c · Self — your real plan</span>
-            <h2>🌡️ Order your temperature life (compare &amp; order)</h2>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <div>
-            <div
-              class="pk-math-scaffold-card no-print"
-              style="
-                margin: 20px 0;
-                padding: 12px;
-                background: #fff;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-                max-width: 480px;
-                margin-left: auto;
-                margin-right: auto;
-              "
-            >
-              <svg
-                width="100%"
-                height="200"
-                viewBox="0 0 500 200"
-                style="background: #fff; border-radius: 8px"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <text
-                  x="250"
-                  y="30"
-                  text-anchor="middle"
-                  font-size="14"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  Math Diagram Guide
-                </text>
-                <rect
-                  x="150"
-                  y="60"
-                  width="200"
-                  height="90"
-                  rx="10"
-                  fill="rgba(14,138,125,0.1)"
-                  stroke="#0e8a7d"
-                  stroke-width="1.5"
-                />
-                <text
-                  x="250"
-                  y="110"
-                  text-anchor="middle"
-                  font-size="11"
-                  font-weight="bold"
-                  fill="#0e8a7d"
-                >
-                  Interactive Calculation Visual
-                </text>
-              </svg>
-            </div>
-
-            <p style="color: var(--muted); font-size: 14px">
-              Enter real temperatures from your life. Sort them from coldest to
-              warmest. More negative = colder.
-            </p>
-            <div class="grid2">
-              <div>
-                <label class="fld" for="t1">Today's temperature (°C)</label
-                ><input
-                  type="number"
-                  id="t1"
-                  data-save
-                  placeholder=""
-                  oninput="orderReadings()"
-                />
-              </div>
-              <div>
-                <label class="fld" for="t2">A freezer temperature (°C)</label
-                ><input
-                  type="number"
-                  id="t2"
-                  data-save
-                  placeholder=""
-                  oninput="orderReadings()"
-                />
-              </div>
-              <div>
-                <label class="fld" for="t3">Coldest day you remember (°C)</label
-                ><input
-                  type="number"
-                  id="t3"
-                  data-save
-                  placeholder=""
-                  oninput="orderReadings()"
-                />
-              </div>
-              <div>
-                <label class="fld" for="t4">Hottest day you remember (°C)</label
-                ><input
-                  type="number"
-                  id="t4"
-                  data-save
-                  placeholder=""
-                  oninput="orderReadings()"
-                />
-              </div>
-              <div class="pk-lvl2">
-                <label class="fld" for="t5"
-                  >A fridge temperature (°C, Level 2)</label
-                ><input
-                  type="number"
-                  id="t5"
-                  data-save
-                  placeholder=""
-                  oninput="orderReadings()"
-                />
-              </div>
-            </div>
-            <button class="btn" type="button" onclick="orderReadings()">
-              Sort temperatures coldest to warmest
-            </button>
-            <div class="readout" id="order-out"></div>
-            <details class="hintbox">
-              <summary>Need a hint?</summary>
-              <p>
-                On a number line, numbers to the left are less. −18 &lt; −5 &lt;
-                4 &lt; 18 &lt; 35. The most negative number is the coldest.
-              </p>
-            </details>
-            <div
-              class="pk-no-print"
-              style="
-                margin-top: 16px;
-                padding: 12px;
-                background: #fff;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-              "
-            >
-              <svg
-                id="phase-svg-1c"
-                width="100%"
-                height="200"
-                viewBox="0 0 500 200"
-                style="background: #fff; border-radius: 8px"
-                xmlns="http://www.w3.org/2000/svg"
-              ></svg>
-            </div>
-
-            <div class="pk-lvl2" style="margin-top: 16px">
-              <div class="task">
-                <strong>Level 2 — Range &amp; Outlier Detective:</strong> after
-                sorting, the page reports your range (warmest − coldest) and
-                flags any value far from the others.
-              </div>
-            </div>
-
-            <!-- 1d Quick check -->
-            <div class="task" style="margin-top: 18px">
-              <strong>Quick check:</strong> What is |−45|?
-            </div>
-            <label class="fld" for="check-abs">Your answer</label>
-            <input type="number" id="check-abs" data-save placeholder="" />
-            <button class="btn alt" type="button" onclick="checkAbs()">
-              Check answer
-            </button>
-            <div class="feedback" id="check-absFb"></div>
-            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-              Level 1 worked step: |−45| means the distance from 0 to −45 —
-              count 45 steps, drop the sign → 45.
-            </p>
-          </div>
-
-          <div
-            style="
-              background: var(--bg);
-              border: 2.5px solid var(--line);
-              border-radius: 18px;
-              padding: 20px;
-              box-shadow: var(--shadow);
-              height: fit-content;
-            "
-            class="pk-no-print"
-          >
-            <h3
-              style="
-                margin-top: 0;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                color: var(--navy);
-                font-size: 16px;
-              "
-            >
-              <span>💡</span> Guided Steps &amp; Help
-            </h3>
-
-            <p
-              style="
-                font-size: 13.5px;
-                line-height: 1.5;
-                color: var(--muted);
-                margin-bottom: 12px;
-              "
-            >
-              <strong>Comparing and ordering integers:</strong>
-            </p>
-            <ol
-              style="
-                margin-left: 18px;
-                font-size: 13px;
-                line-height: 1.5;
-                display: grid;
-                gap: 8px;
-                color: var(--ink);
-              "
-            >
-              <li>
-                On a number line, numbers get <b>larger</b> as you move right
-                and <b>smaller</b> as you move left.
-              </li>
-              <li>
-                Every negative number is less than 0, and every positive number
-                is greater than 0 — so any positive beats any negative.
-              </li>
-              <li>
-                For two negatives, the one <b>closer to 0</b> is larger: −2 &gt;
-                −9.
-              </li>
-            </ol>
-            <div
-              style="
-                margin-top: 14px;
-                padding: 10px;
-                background: var(--sky);
-                border-radius: 8px;
-                font-size: 12px;
-              "
-            >
-              💡 <b>Example:</b> Order −9, 3, −2, 0 from least to greatest →
-              <b>−9 &lt; −2 &lt; 0 &lt; 3</b>.
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
-      <section class="pk-visualizer-card no-print">
-        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
-        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px">
-          This visual interactive canvas updates in real-time as you complete
-          your math calculations.
-        </p>
-        <div id="projectVisualizer"></div>
-      </section>
-
-      <!-- ===================== PART 2 — PEER ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--teal)">2</div>
-          <div>
-            <span class="arc-banner">Part 2 · Peer — compare data sets</span>
-            <div class="skill">Compare &amp; reason · 6.NS.7</div>
-            <h2>Compare With a Partner</h2>
-          </div>
-        </div>
-        <p>
-          Ask a partner for <strong>their</strong> lowest depth and a couple of
-          temperatures. Type them in to auto-compare.
-        </p>
-        <div class="pk-callout pk-no-print" style="margin-bottom: 14px">
-          <h3>Interview Sentence Frames</h3>
-          <p>"What is the lowest place you have been? What is |that depth|?"</p>
-          <p>"What is your coldest temperature? Your warmest?"</p>
-          <p class="pk-es">
-            "¿Cuál es el lugar más bajo donde has estado? ¿Cuál es |esa
-            profundidad|?"
-          </p>
-        </div>
-        <div class="grid2">
-          <div>
-            <label class="fld" for="partnerName"
-              >Partner name or initials</label
-            >
-            <input type="text" id="partnerName" data-save placeholder="" />
-          </div>
-          <div>
-            <label class="fld" for="p-depth"
-              >Partner: lowest depth (meters, negative)</label
-            >
-            <input
-              type="number"
-              id="p-depth"
-              data-save
-              max="0"
-              oninput="comparePeer()"
-            />
-          </div>
-          <div>
-            <label class="fld" for="p-cold">Partner: coldest temp (°C)</label>
-            <input
-              type="number"
-              id="p-cold"
-              data-save
-              oninput="comparePeer()"
-            />
-          </div>
-          <div>
-            <label class="fld" for="p-warm">Partner: warmest temp (°C)</label>
-            <input
-              type="number"
-              id="p-warm"
-              data-save
-              oninput="comparePeer()"
-            />
-          </div>
-        </div>
-        <button class="btn alt" type="button" onclick="comparePeer()">
-          Compare our data
-        </button>
-        <div id="peerBox" class="pk-stats" style="margin-top: 16px"></div>
-        <div class="readout" id="mergedOrder" style="margin-top: 16px"></div>
-        <div class="pk-callout pk-no-print" style="margin-top: 14px">
-          <h3>Compare Sentence Frames</h3>
-          <p>
-            "My |depth| is ___ and my partner's is ___, so ___ is farther from
-            sea level."
-          </p>
-          <p>
-            "Merging our temperatures, the coldest is ___ and the warmest is
-            ___."
-          </p>
-          <p class="pk-es">
-            "Mi |profundidad| es ___ y la de mi compañero ___, así que ___."
-          </p>
-        </div>
-        <label class="fld" for="peerReflect"
-          >Whose lowest place is farther from sea level, and how do you
-          know?</label
-        >
-        <textarea id="peerReflect" data-save placeholder=""></textarea>
-      </section>
-
-      <!-- ===================== PART 3 — WORLD ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div
-            class="phase-num"
-            style="background: var(--gold); color: #2a1c00"
-          >
-            3
-          </div>
-          <div>
-            <span class="arc-banner"
-              >Part 3 · World — real depths &amp; records</span
-            >
-            <div class="skill">Compare to real data · 6.NS.7</div>
-            <h2>How Do You Compare to the Real World?</h2>
-          </div>
-        </div>
-        <p>
-          These are real ocean-zone depths and famous record temperatures. Pick
-          a category and see where your number lands.
-        </p>
-        <div class="grid2">
-          <div>
-            <label class="fld" for="worldCat">Compare against</label>
-            <select id="worldCat" data-save onchange="worldGo()">
-              <option value="depth">
-                Ocean depths (m, below sea level = −)
-              </option>
-              <option value="temp">Record low temperatures (°C)</option>
-            </select>
-            <label class="fld" for="myWorld">My number</label>
-            <input
-              type="number"
-              id="myWorld"
-              data-save
-              step="1"
-              oninput="worldGo()"
-              placeholder=""
-            />
-            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
-              Tip: your lowest depth from Part 1 is a great value to type here.
-            </p>
-            <div id="worldMeter"></div>
-          </div>
-          <div>
-            <h3 id="worldTitle">World Sample 🌍</h3>
-            <div
-              style="
-                overflow: auto;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-              "
-            >
-              <table class="rubric" style="margin-top: 0">
-                <thead>
-                  <tr id="worldHead"></tr>
-                </thead>
-                <tbody id="worldRows"></tbody>
-              </table>
-            </div>
-            <p class="pk-lvl1" style="font-size: 13px; color: var(--muted)">
-              Level 1: stick with ocean depths to keep it to one category.
-            </p>
-          </div>
-        </div>
-
-        <div
-          class="phase"
-          style="margin: 18px 0 0; box-shadow: none; border-style: dashed"
-        >
-          <h3>🔬 What-If Lab</h3>
-          <p style="color: var(--muted); font-size: 14px">
-            Add a deeper probe or a colder record and watch the minimum
-            (deepest/coldest) and the ordered list change.
-          </p>
+          <!-- Coordinate Inputs -->
           <div class="grid2">
             <div>
-              <label class="fld" for="whatIfVal"
-                >New value to add to the sample</label
-              >
-              <input type="number" id="whatIfVal" step="1" placeholder="" />
+              <h4 style="margin-top:10px; color:var(--navy);">📍 Checkpoint A (Starting Harbor)</h4>
+              <div class="grid2" style="grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div>
+                  <label class="lbl" for="x-a">X Coordinate</label>
+                  <input type="number" id="x-a" value="3" step="any" min="-10" max="10" oninput="updateGrid()" />
+                </div>
+                <div>
+                  <label class="lbl" for="y-a">Y Coordinate (Depth)</label>
+                  <input type="number" id="y-a" value="4" step="any" min="-10" max="10" oninput="updateGrid()" />
+                </div>
+              </div>
+              <label class="lbl" for="quad-a">Quadrant Location</label>
+              <select id="quad-a">
+                <option value="">-- Select --</option>
+                <option value="I">Quadrant I (+, +)</option>
+                <option value="II">Quadrant II (-, +)</option>
+                <option value="III">Quadrant III (-, -)</option>
+                <option value="IV">Quadrant IV (+, -)</option>
+                <option value="x-axis">X-Axis (x, 0)</option>
+                <option value="y-axis">Y-Axis (0, y)</option>
+                <option value="origin">Origin (0, 0)</option>
+              </select>
+            </div>
+
+            <div>
+              <h4 style="margin-top:10px; color:var(--navy);">📍 Checkpoint B (Twilight Trench)</h4>
+              <div class="grid2" style="grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div>
+                  <label class="lbl" for="x-b">X Coordinate</label>
+                  <input type="number" id="x-b" value="-5" step="any" min="-10" max="10" oninput="updateGrid()" />
+                </div>
+                <div>
+                  <label class="lbl" for="y-b">Y Coordinate (Depth)</label>
+                  <input type="number" id="y-b" value="6" step="any" min="-10" max="10" oninput="updateGrid()" />
+                </div>
+              </div>
+              <label class="lbl" for="quad-b">Quadrant Location</label>
+              <select id="quad-b">
+                <option value="">-- Select --</option>
+                <option value="I">Quadrant I (+, +)</option>
+                <option value="II">Quadrant II (-, +)</option>
+                <option value="III">Quadrant III (-, -)</option>
+                <option value="IV">Quadrant IV (+, -)</option>
+                <option value="x-axis">X-Axis (x, 0)</option>
+                <option value="y-axis">Y-Axis (0, y)</option>
+                <option value="origin">Origin (0, 0)</option>
+              </select>
+            </div>
+
+            <div>
+              <h4 style="margin-top:10px; color:var(--navy);">📍 Checkpoint C (Sunken Galleon)</h4>
+              <div class="grid2" style="grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div>
+                  <label class="lbl" for="x-c">X Coordinate</label>
+                  <input type="number" id="x-c" value="-7" step="any" min="-10" max="10" oninput="updateGrid()" />
+                </div>
+                <div>
+                  <label class="lbl" for="y-c">Y Coordinate (Depth)</label>
+                  <input type="number" id="y-c" value="-5" step="any" min="-10" max="10" oninput="updateGrid()" />
+                </div>
+              </div>
+              <label class="lbl" for="quad-c">Quadrant Location</label>
+              <select id="quad-c">
+                <option value="">-- Select --</option>
+                <option value="I">Quadrant I (+, +)</option>
+                <option value="II">Quadrant II (-, +)</option>
+                <option value="III">Quadrant III (-, -)</option>
+                <option value="IV">Quadrant IV (+, -)</option>
+                <option value="x-axis">X-Axis (x, 0)</option>
+                <option value="y-axis">Y-Axis (0, y)</option>
+                <option value="origin">Origin (0, 0)</option>
+              </select>
+            </div>
+
+            <div>
+              <h4 style="margin-top:10px; color:var(--navy);">📍 Checkpoint D (Research Base)</h4>
+              <div class="grid2" style="grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div>
+                  <label class="lbl" for="x-d">X Coordinate</label>
+                  <input type="number" id="x-d" value="6" step="any" min="-10" max="10" oninput="updateGrid()" />
+                </div>
+                <div>
+                  <label class="lbl" for="y-d">Y Coordinate (Depth)</label>
+                  <input type="number" id="y-d" value="-3" step="any" min="-10" max="10" oninput="updateGrid()" />
+                </div>
+              </div>
+              <label class="lbl" for="quad-d">Quadrant Location</label>
+              <select id="quad-d">
+                <option value="">-- Select --</option>
+                <option value="I">Quadrant I (+, +)</option>
+                <option value="II">Quadrant II (-, +)</option>
+                <option value="III">Quadrant III (-, -)</option>
+                <option value="IV">Quadrant IV (+, -)</option>
+                <option value="x-axis">X-Axis (x, 0)</option>
+                <option value="y-axis">Y-Axis (0, y)</option>
+                <option value="origin">Origin (0, 0)</option>
+              </select>
             </div>
           </div>
-          <button class="btn" type="button" onclick="runWhatIf()">
-            Run test
-          </button>
-          <div class="pk-whatif" id="whatIfBox" style="margin-top: 12px">
-            Enter a value to test.
+
+          <button class="calc-btn" onclick="verifyQuadrants()">🧮 Verify Plot &amp; Quadrants</button>
+          <div class="readout" id="quad-verify-out"></div>
+
+          <details class="hint">
+            <summary>Need a hint on quadrants?</summary>
+            <p><strong>Quadrant signs:</strong><br>• Quadrant I: (+, +) both x and y are positive.<br>• Quadrant II: (-, +) x is negative, y is positive.<br>• Quadrant III: (-, -) both x and y are negative.<br>• Quadrant IV: (+, -) x is positive, y is negative.</p>
+          </details>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(0)">← Back</button>
+          <button class="nav-btn" onclick="goStep(2)">Next Step →</button>
+        </div>
+      </div>
+
+      <!-- ======================================
+           STEP 2 — DEPTH DISTANCES
+      ====================================== -->
+      <div class="step-panel" id="step-2">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon teal">📏</div>
+            <div>
+              <div class="card-title">Step 2 — Depth Distances</div>
+              <div class="card-sub">Calculate vertical distances between depths using absolute values</div>
+            </div>
           </div>
-        </div>
 
-        <label class="fld" for="worldReflect"
-          >Is your number deeper/colder or shallower/warmer than the world
-          sample? Why?</label
-        >
-        <textarea id="worldReflect" data-save placeholder=""></textarea>
-        <div class="pk-lvl2">
-          <label class="fld" for="worldHard"
-            >Level 2 question: The Mariana Trench is −10935 m and the Titanic
-            rests at −3800 m. How much deeper is the trench? Show your thinking
-            with absolute value.</label
-          >
-          <textarea id="worldHard" data-save placeholder=""></textarea>
-        </div>
-        <label class="fld" for="careful"
-          >Careful thinking: why can a "bigger" negative number actually mean
-          deeper or colder?</label
-        >
-        <textarea id="careful" data-save placeholder=""></textarea>
-      </section>
-
-      <!-- ===================== DELIVERABLE ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--green)">★</div>
-          <div>
-            <div class="skill">Final Deliverable</div>
-            <h2>Mission Log Report</h2>
+          <div class="instruct teal">
+            <strong>Your job:</strong> Pick two checkpoints to calculate the vertical distance between them. Use the absolute values of their y-coordinates.
           </div>
-        </div>
-        <p>
-          Write a 3–5 sentence mission log using your real numbers from above.
-        </p>
-        <textarea id="pitch" data-save placeholder=""></textarea>
 
-        <h3 style="margin: 22px 0 6px">Mission Checklist</h3>
-        <ul class="checklist" id="checklist">
-          <li>
-            <input type="checkbox" data-save id="ck1" /> I used a negative
-            integer for a place below sea level and a positive for above.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck2" /> I used absolute value
-            to find distance from sea level.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck3" /> I ordered my
-            temperatures from coldest to warmest.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck4" /> I compared my data with
-            a partner's.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck5" /> I compared a number to
-            the real-world sample.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck6" /> My mission log uses my
-            real numbers and explains their meaning.
-          </li>
-        </ul>
+          <div class="grid2">
+            <!-- Selector and Equation setup -->
+            <div>
+              <label class="lbl" for="dist-pt1">Choose Checkpoint 1</label>
+              <select id="dist-pt1" onchange="updateDistanceCalc()">
+                <option value="A" selected>Checkpoint A</option>
+                <option value="B">Checkpoint B</option>
+                <option value="C">Checkpoint C</option>
+                <option value="D">Checkpoint D</option>
+              </select>
 
-        <div class="grid2" style="margin-top: 18px">
-          <div>
-            <button class="btn" type="button" onclick="buildReport()">
-              📝 Generate report
-            </button>
+              <label class="lbl" for="dist-pt2">Choose Checkpoint 2</label>
+              <select id="dist-pt2" onchange="updateDistanceCalc()">
+                <option value="A">Checkpoint A</option>
+                <option value="B" selected>Checkpoint B</option>
+                <option value="C">Checkpoint C</option>
+                <option value="D">Checkpoint D</option>
+              </select>
+
+              <div style="background:var(--bg); border:1.5px solid var(--line); border-radius:12px; padding:12px; margin-top:14px;">
+                <label class="lbl" style="margin-top:0;" for="dist-side">Location relative to sea level (y=0)</label>
+                <select id="dist-side">
+                  <option value="">-- Select --</option>
+                  <option value="same">Same Side of Sea Level (Both Above or Both Below)</option>
+                  <option value="opposite">Opposite Sides of Sea Level (One Above, One Below)</option>
+                </select>
+
+                <label class="lbl" for="dist-op">Choose Math Operation</label>
+                <select id="dist-op">
+                  <option value="">-- Select Operator --</option>
+                  <option value="+">➕ Add Absolute Values (|y1| + |y2|)</option>
+                  <option value="-">➖ Subtract Absolute Values (|y1| - |y2|)</option>
+                </select>
+
+                <label class="lbl" for="dist-ans">Calculated Distance (units)</label>
+                <input type="number" id="dist-ans" placeholder="e.g. 10" step="any" />
+              </div>
+            </div>
+
+            <!-- Dynamic distance scale SVG visual -->
+            <div style="text-align: center;">
+              <label class="lbl">Vertical Distance Visual</label>
+              <svg id="distance-svg" class="visual-svg" viewBox="0 0 100 240" xmlns="http://www.w3.org/2000/svg" style="background:#ffffff; border:1px solid var(--line); border-radius:12px; max-width:140px; width:100%; aspect-ratio:100/240;">
+                <!-- Vertical axis line -->
+                <line x1="40" y1="10" x2="40" y2="230" stroke="#0a2233" stroke-width="2" />
+                <!-- Sea level line -->
+                <line x1="30" y1="120" x2="50" y2="120" stroke="#146094" stroke-width="2" />
+                <text x="25" y="123" font-size="8" fill="#146094" font-weight="bold" text-anchor="end">0 (Sea Level)</text>
+
+                <!-- Scale tick marks -->
+                <line x1="35" y1="20" x2="45" y2="20" stroke="#5c6d7e" stroke-width="1" />
+                <text x="30" y="23" font-size="7" fill="#5c6d7e" text-anchor="end">+10</text>
+
+                <line x1="35" y1="70" x2="45" y2="70" stroke="#5c6d7e" stroke-width="1" />
+                <text x="30" y="73" font-size="7" fill="#5c6d7e" text-anchor="end">+5</text>
+
+                <line x1="35" y1="170" x2="45" y2="170" stroke="#5c6d7e" stroke-width="1" />
+                <text x="30" y="173" font-size="7" fill="#5c6d7e" text-anchor="end">-5</text>
+
+                <line x1="35" y1="220" x2="45" y2="220" stroke="#5c6d7e" stroke-width="1" />
+                <text x="30" y="223" font-size="7" fill="#5c6d7e" text-anchor="end">-10</text>
+
+                <!-- Dynamic point dots -->
+                <circle id="dist-pt1-dot" cx="40" cy="120" r="5" fill="#146094" stroke="#ffffff" stroke-width="1.5" style="display:none;" />
+                <text id="dist-pt1-lbl" x="48" y="123" font-size="9" font-weight="bold" fill="#146094" style="display:none;">A (0)</text>
+
+                <circle id="dist-pt2-dot" cx="40" cy="120" r="5" fill="#0f8279" stroke="#ffffff" stroke-width="1.5" style="display:none;" />
+                <text id="dist-pt2-lbl" x="48" y="123" font-size="9" font-weight="bold" fill="#0f8279" style="display:none;">B (0)</text>
+
+                <!-- Dynamic brackets -->
+                <line id="dist-bracket-line" x1="75" y1="120" x2="75" y2="120" stroke="#d48c08" stroke-width="1.5" stroke-dasharray="3,3" style="display:none;" />
+                <line id="dist-bracket-top" x1="70" y1="120" x2="80" y2="120" stroke="#d48c08" stroke-width="1.5" style="display:none;" />
+                <line id="dist-bracket-bottom" x1="70" y1="120" x2="80" y2="120" stroke="#d48c08" stroke-width="1.5" style="display:none;" />
+                <text id="dist-bracket-text" x="83" y="123" font-size="9" font-weight="bold" fill="#d48c08" text-anchor="start" style="display:none;">0 units</text>
+              </svg>
+            </div>
           </div>
-          <div class="pk-no-print">
-            <button
-              class="btn ghost"
-              type="button"
-              onclick="PK.copyReport('reportBox')"
-            >
-              Copy report
-            </button>
-            <button
-              class="btn ghost"
-              type="button"
-              onclick="PK.downloadText('mission-log.txt', 'reportBox')"
-            >
-              Download .txt
-            </button>
-            <button class="btn ghost" type="button" onclick="downloadCsv()">
-              Download .csv
-            </button>
-            <button class="btn printbtn" type="button" onclick="window.print()">
-              🖨️ Print
-            </button>
+
+          <button class="calc-btn teal" onclick="verifyDistance()">🧮 Verify Distance Calculation</button>
+          <div class="readout" id="distance-verify-out"></div>
+
+          <details class="hint">
+            <summary>Need a hint on vertical distance?</summary>
+            <p><strong>Rules for distance on a vertical scale:</strong><br>• <strong>Opposite sides:</strong> Add their absolute values. E.g. helicopter at +5 and submarine at -3: |5| + |-3| = 5 + 3 = 8 units.<br>• <strong>Same side:</strong> Subtract their absolute values (larger minus smaller). E.g. sub at -8 and sub at -3: |-8| - |-3| = 8 - 3 = 5 units.</p>
+          </details>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(1)">← Back</button>
+          <button class="nav-btn" onclick="goStep(3)">Next Step →</button>
+        </div>
+      </div>
+
+      <!-- ======================================
+           STEP 3 — SUBMARINE REFLECTIONS
+      ====================================== -->
+      <div class="step-panel" id="step-3">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon gold">🔄</div>
+            <div>
+              <div class="card-title">Step 3 — Submarine Reflections &amp; Ocean Zones</div>
+              <div class="card-sub">Reflect coordinates over axes and compare to real ocean zones</div>
+            </div>
           </div>
-        </div>
-        <div class="pk-report" id="reportBox" style="margin-top: 16px">
-          Click "Generate report" to build your mission log.
-        </div>
-      </section>
 
-      <!-- RUBRIC -->
-      <section class="phase">
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--navy)">✓</div>
-          <div>
-            <div class="skill">How You Are Scored</div>
-            <h2>Project Rubric</h2>
+          <div class="instruct gold">
+            <strong>Your job:</strong> Predict the new coordinates of a checkpoint reflected over the x-axis, y-axis, and both axes. Test your coordinates using the simulator.
           </div>
+
+          <div class="grid2">
+            <!-- Inputs -->
+            <div>
+              <label class="lbl" for="reflect-select">Select Checkpoint to Reflect</label>
+              <select id="reflect-select" onchange="updateReflectionSVG(); updateReflectionDisp();">
+                <option value="A">Checkpoint A</option>
+                <option value="B" selected>Checkpoint B</option>
+                <option value="C">Checkpoint C</option>
+                <option value="D">Checkpoint D</option>
+              </select>
+
+              <div style="font-size: 14px; margin: 10px 0; font-weight: bold; color: var(--navy)">
+                Original Position: ( <span id="refl-orig-x-display">—</span> , <span id="refl-orig-y-display">—</span> )
+              </div>
+
+              <label class="lbl">Predicted Reflection Coordinates:</label>
+              <div style="margin-bottom:12px;">
+                <span style="font-weight:600; font-size:13px; width:170px; display:inline-block;">Reflect over X-Axis:</span>
+                ( <input type="number" id="refl-x-x" placeholder="x" style="width:65px; display:inline;" step="any" />, 
+                  <input type="number" id="refl-x-y" placeholder="y" style="width:65px; display:inline;" step="any" /> )
+              </div>
+              <div style="margin-bottom:12px;">
+                <span style="font-weight:600; font-size:13px; width:170px; display:inline-block;">Reflect over Y-Axis:</span>
+                ( <input type="number" id="refl-y-x" placeholder="x" style="width:65px; display:inline;" step="any" />, 
+                  <input type="number" id="refl-y-y" placeholder="y" style="width:65px; display:inline;" step="any" /> )
+              </div>
+              <div style="margin-bottom:12px;">
+                <span style="font-weight:600; font-size:13px; width:170px; display:inline-block;">Reflect over Both Axes:</span>
+                ( <input type="number" id="refl-both-x" placeholder="x" style="width:65px; display:inline;" step="any" />, 
+                  <input type="number" id="refl-both-y" placeholder="y" style="width:65px; display:inline;" step="any" /> )
+              </div>
+            </div>
+
+            <!-- Dynamic reflection grid -->
+            <div style="text-align: center;">
+              <label class="lbl">Reflection Visualizer</label>
+              <svg id="reflection-grid" class="visual-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="background:#ffffff; border:1px solid var(--line); border-radius:12px; max-width:200px; width:100%; aspect-ratio:1;">
+                <!-- Grid lines -->
+                <line x1="5" y1="100" x2="195" y2="100" stroke="#0a2233" stroke-width="1.5" />
+                <line x1="100" y1="5" x2="100" y2="195" stroke="#0a2233" stroke-width="1.5" />
+
+                <!-- Quadrant labels -->
+                <text x="150" y="50" font-size="9" fill="#5c6d7e" font-weight="bold" text-anchor="middle" opacity="0.3">Quad I</text>
+                <text x="50" y="50" font-size="9" fill="#5c6d7e" font-weight="bold" text-anchor="middle" opacity="0.3">Quad II</text>
+                <text x="50" y="150" font-size="9" fill="#5c6d7e" font-weight="bold" text-anchor="middle" opacity="0.3">Quad III</text>
+                <text x="150" y="150" font-size="9" fill="#5c6d7e" font-weight="bold" text-anchor="middle" opacity="0.3">Quad IV</text>
+
+                <!-- Original point -->
+                <circle id="reflect-orig-dot" cx="100" cy="100" r="4.5" fill="#1a7a3e" stroke="#ffffff" stroke-width="1" style="display:none;" />
+                <text id="reflect-orig-lbl" x="100" y="100" font-size="7" font-weight="bold" fill="#1a7a3e" dx="6" dy="-3" style="display:none;">Orig</text>
+
+                <!-- Reflections -->
+                <circle id="reflect-x-dot" cx="100" cy="100" r="4" fill="#146094" stroke="#ffffff" stroke-width="1" style="display:none;" />
+                <text id="reflect-x-lbl" x="100" y="100" font-size="7" font-weight="bold" fill="#146094" dx="6" dy="-3" style="display:none;">Refl X</text>
+
+                <circle id="reflect-y-dot" cx="100" cy="100" r="4" fill="#0f8279" stroke="#ffffff" stroke-width="1" style="display:none;" />
+                <text id="reflect-y-lbl" x="100" y="100" font-size="7" font-weight="bold" fill="#0f8279" dx="6" dy="-3" style="display:none;">Refl Y</text>
+
+                <circle id="reflect-both-dot" cx="100" cy="100" r="4" fill="#d48c08" stroke="#ffffff" stroke-width="1" style="display:none;" />
+                <text id="reflect-both-lbl" x="100" y="100" font-size="7" font-weight="bold" fill="#d48c08" dx="6" dy="-3" style="display:none;">Refl XY</text>
+
+                <!-- Paths -->
+                <line id="reflect-path-x" x1="100" y1="100" x2="100" y2="100" stroke="#146094" stroke-dasharray="2,2" stroke-width="1" style="display:none;" />
+                <line id="reflect-path-y" x1="100" y1="100" x2="100" y2="100" stroke="#0f8279" stroke-dasharray="2,2" stroke-width="1" style="display:none;" />
+                <line id="reflect-path-both" x1="100" y1="100" x2="100" y2="100" stroke="#d48c08" stroke-dasharray="2,2" stroke-width="1" style="display:none;" />
+              </svg>
+            </div>
+          </div>
+
+          <button class="calc-btn gold" onclick="verifyReflection()">🔄 Simulate &amp; Verify Reflections</button>
+          <div class="readout" id="reflection-verify-out"></div>
+
+          <!-- Real World Ocean depths comparison -->
+          <div style="margin-top:22px;">
+            <h3 style="font-size:15px; font-weight:800; color:var(--navy); margin-bottom:6px;">🌊 Ocean Depth Zones (Scale: 1 unit = 100 meters)</h3>
+            <p style="font-size:14px; color:var(--muted); margin-bottom:6px;">Compare your submarine checkpoints' Y-coordinates to the zones below.</p>
+            <table class="data-table">
+              <thead>
+                <tr><th>Zone Name</th><th>Depth Range</th><th>y-coordinate Range</th><th>Description</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Sunlight Zone (Epipelagic)</td><td>0m to 200m</td><td>y = 0 to y = -2</td><td>Warmest, most sunlight. 90% of sea life lives here.</td></tr>
+                <tr><td>Twilight Zone (Mesopelagic)</td><td>200m to 1,000m</td><td>y = -2 to y = -10</td><td>Dim light, no plant life. Many glowing creatures.</td></tr>
+                <tr><td>Midnight Zone (Bathypelagic)</td><td>below 1,000m</td><td>y &lt; -10</td><td>Complete darkness. Average ocean depth is 3,700m.</td></tr>
+              </tbody>
+            </table>
+
+            <h4 style="margin-top:14px; font-size:14px; color:var(--navy);">Your Checkpoints Classified:</h4>
+            <div id="ocean-zones-out"></div>
+
+            <label class="lbl" for="zones-reflect-text">Explain which ocean zones your mission checkpoints explored based on their depths:</label>
+            <textarea id="zones-reflect-text" placeholder="My submarine mission starting harbor was at sea level. We descended into the Sunlight zone at Checkpoint A, and reached the Twilight Zone at..."></textarea>
+          </div>
+
+          <details class="hint">
+            <summary>Need a hint on coordinate reflections?</summary>
+            <p><strong>Reflection Rules:</strong><br>• Reflected over x-axis: (x, y) ➔ (x, -y). The x coordinate stays the same, the y sign flips.<br>• Reflected over y-axis: (x, y) ➔ (-x, y). The y coordinate stays the same, the x sign flips.<br>• Reflected over both axes: (x, y) ➔ (-x, -y). Both signs flip!</p>
+          </details>
         </div>
-        <table class="rubric">
-          <tr>
-            <th>Category</th>
-            <th>4 — Expert</th>
-            <th>3 — Proficient</th>
-            <th>2 — Developing</th>
-          </tr>
-          <tr>
-            <td>Integers in Context</td>
-            <td>
-              Correctly represents high/low with signs and explains why
-              negative/positive applies
-            </td>
-            <td>Both values correctly signed</td>
-            <td>One value correct or signs confused</td>
-          </tr>
-          <tr>
-            <td>Absolute Value</td>
-            <td>
-              Correct distance with clear explanation of absolute value as
-              distance from zero
-            </td>
-            <td>Correct absolute value computed</td>
-            <td>Attempted; may confuse sign and value</td>
-          </tr>
-          <tr>
-            <td>Ordering Integers</td>
-            <td>
-              All temperatures correctly ordered with number-line reasoning
-              shown
-            </td>
-            <td>Temperatures in correct order</td>
-            <td>Partial order; minor placement errors</td>
-          </tr>
-          <tr>
-            <td>Comparison (Peer &amp; World)</td>
-            <td>Compares data sets and world data with clear reasoning</td>
-            <td>Comparisons present and mostly correct</td>
-            <td>Comparison attempted</td>
-          </tr>
-          <tr>
-            <td>Communication</td>
-            <td>
-              Mission log justifies every integer with its real-world meaning
-            </td>
-            <td>Log uses most values with meaning</td>
-            <td>Log unclear or missing context</td>
-          </tr>
-        </table>
-      </section>
 
-      <p class="footer">
-        Neft Teacher · Unit 7 Culminating Project · Version B ·
-        <span id="yr"></span>
-      </p>
-    </div>
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(2)">← Back</button>
+          <button class="nav-btn" onclick="goStep(4)">Next Step →</button>
+        </div>
+      </div>
 
-    <script>
-      const yrEl = document.getElementById("yr");
-      if (yrEl) yrEl.textContent = new Date().getFullYear();
-      const $ = (id) => document.getElementById(id);
-      const num = (id) => {
-        const e = $(id);
-        return e ? parseFloat(e.value) : NaN;
-      };
+      <!-- ======================================
+           STEP 4 — PARTNER MISSION
+      ====================================== -->
+      <div class="step-panel" id="step-4">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon teal">👥</div>
+            <div>
+              <div class="card-title">Step 4 — Partner Mission Comparison</div>
+              <div class="card-sub">Compare submarine paths and maximum depths side-by-side with a classmate</div>
+            </div>
+          </div>
 
-      function show(id, html) {
-        const el = $(id);
-        if (!el) return;
-        el.innerHTML = html;
-        el.classList.add("show");
-        updateProgress();
-      }
+          <div class="instruct teal">
+            <strong>Your job:</strong> Enter the Y-coordinates from a classmate's submarine mission log. Compare their depths to yours using absolute values.
+          </div>
 
-      // running state used by report + peer + world
-      const proj = {
-        absDist: null,
-        ordered: null,
-        low: null,
-        high: null,
-        range: null,
-      };
+          <div style="background:var(--teal-lt); border-radius:12px; padding:14px 16px; margin-bottom:18px;">
+            <strong style="font-size:14px; color:var(--teal);">Classmate Interview Questions:</strong>
+            <ol style="margin-top:8px; font-size:14px; line-height:1.9; padding-left:18px; color:var(--ink);">
+              <li>What are the Y-coordinates of your 4 submarine checkpoints?</li>
+              <li>What was the maximum depth reached by your submarine?</li>
+              <li>Which ocean zones did your submarine explore?</li>
+            </ol>
+          </div>
 
-      function calcContext() {
-        const h = num("high"),
-          l = num("low");
-        if (isNaN(h) && isNaN(l)) {
-          $("context-out").classList.remove("show");
-          proj.high = proj.low = null;
-          return;
-        }
-        if (!isNaN(l) && l > 0) {
-          show(
-            "context-out",
-            "⚠️ The lowest place should be a negative number (below sea level), like −85.",
-          );
-          proj.low = null;
-          return;
-        }
-        if (!isNaN(h) && h < 0) {
-          show(
-            "context-out",
-            "⚠️ The highest place should be positive (above sea level), like 2500.",
-          );
-          proj.high = null;
-          return;
-        }
-        proj.high = isNaN(h) ? null : h;
-        proj.low = isNaN(l) ? null : l;
-        const span =
-          (isNaN(h) ? 0 : Math.abs(h)) + (isNaN(l) ? 0 : Math.abs(l));
-        show(
-          "context-out",
-          '<div class="big">' +
-            (isNaN(h) ? "?" : "+" + h) +
-            " m &nbsp;|&nbsp; " +
-            (isNaN(l) ? "?" : l) +
-            " m</div>" +
-            (isNaN(h)
-              ? ""
-              : "<strong>Highest:</strong> +" +
-                h +
-                " m means " +
-                h +
-                " meters above sea level (positive — above the 0 reference).<br><br>") +
-            (isNaN(l)
-              ? ""
-              : "<strong>Lowest:</strong> " +
-                l +
-                " m means " +
-                Math.abs(l) +
-                " meters below sea level (negative — below 0).<br><br>") +
-            (!isNaN(h) && !isNaN(l)
-              ? "📏 Total vertical span = |" +
-                l +
-                "| + " +
-                h +
-                " = " +
-                Math.abs(l) +
-                " + " +
-                h +
-                " = <strong>" +
-                span +
-                " meters</strong>. ✅"
-              : ""),
-        );
-      }
+          <label class="lbl" for="p-name">Partner's Name</label>
+          <input type="text" id="p-name" placeholder="e.g. Navigator Sarah" value="Navigator Sarah" oninput="comparePartner()" />
 
-      function calcAbsVal() {
-        const d = num("av-depth");
-        if (isNaN(d)) {
-          $("absval-out").classList.remove("show");
-          proj.absDist = null;
-          return;
-        }
-        const abs = Math.abs(d);
-        const dir = d < 0 ? "below" : d > 0 ? "above" : "at";
-        proj.absDist = abs;
-        show(
-          "absval-out",
-          '<div class="big">|' +
-            d +
-            "| = " +
-            abs +
-            " meters</div>" +
-            "You are <strong>" +
-            abs +
-            " meters " +
-            dir +
-            " sea level</strong>.<br>" +
-            "Absolute value strips the sign and gives only the <em>distance</em> from zero. " +
-            (d < 0
-              ? "|" +
-                d +
-                "| = " +
-                abs +
-                " because " +
-                d +
-                " is " +
-                abs +
-                " units left of 0."
-              : d > 0
-                ? "|" +
-                  d +
-                  "| = " +
-                  abs +
-                  " because " +
-                  d +
-                  " is " +
-                  abs +
-                  " units right of 0."
-                : "|0| = 0 — you are at sea level!") +
-            " ✅",
-        );
-      }
+          <div class="grid2" style="margin-top:4px;">
+            <div>
+              <label class="lbl" for="p-y-a">Partner's Checkpoint A (y)</label>
+              <input type="number" id="p-y-a" value="2" step="any" min="-10" max="10" oninput="comparePartner()" />
+            </div>
+            <div>
+              <label class="lbl" for="p-y-b">Partner's Checkpoint B (y)</label>
+              <input type="number" id="p-y-b" value="-8" step="any" min="-10" max="10" oninput="comparePartner()" />
+            </div>
+            <div>
+              <label class="lbl" for="p-y-c">Partner's Checkpoint C (y)</label>
+              <input type="number" id="p-y-c" value="-4" step="any" min="-10" max="10" oninput="comparePartner()" />
+            </div>
+            <div>
+              <label class="lbl" for="p-y-d">Partner's Checkpoint D (y)</label>
+              <input type="number" id="p-y-d" value="7" step="any" min="-10" max="10" oninput="comparePartner()" />
+            </div>
+          </div>
 
-      function orderReadings() {
-        const ids = ["t1", "t2", "t3", "t4", "t5"];
-        const vals = ids.map((id) => num(id)).filter((v) => !isNaN(v));
-        if (vals.length < 2) {
-          $("order-out").classList.remove("show");
-          proj.ordered = null;
-          return;
-        }
-        const sorted = vals.slice().sort((a, b) => a - b);
-        proj.ordered = sorted;
-        const range = sorted[sorted.length - 1] - sorted[0];
-        proj.range = range;
-        let extra =
-          "<br><br><strong>Why this order?</strong> Numbers to the left on the number line are smaller (colder). " +
-          "Coldest: <strong>" +
-          sorted[0] +
-          "°C</strong> · Warmest: <strong>" +
-          sorted[sorted.length - 1] +
-          "°C</strong>.";
-        // Level 2 range + outlier detective
-        const lvl2 = document.body.classList.contains("pk-level-2");
-        if (lvl2 && vals.length >= 3) {
-          const mean = PK.mean(sorted);
-          // outlier = value whose gap to its nearest neighbor is more than the range/2 and clearly far from mean
-          let outlier = null,
-            maxGap = 0;
-          for (let i = 1; i < sorted.length; i++) {
-            const gap = sorted[i] - sorted[i - 1];
-            if (gap > maxGap) {
-              maxGap = gap;
-            }
-          }
-          // flag ends if they are unusually far from the mean
-          const lowGap = Math.abs(sorted[0] - mean),
-            highGap = Math.abs(sorted[sorted.length - 1] - mean);
-          if (maxGap > range / 2 && range > 0) {
-            outlier = lowGap > highGap ? sorted[0] : sorted[sorted.length - 1];
-          }
-          extra +=
-            "<br><br><strong>Level 2 — Range:</strong> " +
-            sorted[sorted.length - 1] +
-            " − (" +
-            sorted[0] +
-            ") = <strong>" +
-            range +
-            " °C</strong> of spread.";
-          extra +=
-            outlier != null
-              ? " 🔎 <strong>Outlier detective:</strong> " +
-                outlier +
-                "°C sits far from the others — it may be an outlier."
-              : " 🔎 <strong>Outlier detective:</strong> no single value stands far apart — the readings are fairly evenly spread.";
-        }
-        show(
-          "order-out",
-          '<div class="big">' +
-            sorted.join(", ") +
-            " °C</div>" +
-            "<strong>Coldest → warmest:</strong> " +
-            sorted.join(", ") +
-            " °C" +
-            extra +
-            " ✅",
-        );
-        comparePeer();
-      }
+          <button class="calc-btn teal" onclick="comparePartner()">📊 Compare Our Missions</button>
+          <div class="readout" id="partner-compare-out"></div>
 
-      function checkAbs() {
-        const ok = PK.checkWork("check-abs", 45, 0);
-        updateProgress();
-        return ok;
-      }
+          <label class="lbl" for="peer-reflect" style="margin-top:18px;">Compare your submarine paths. Who navigated deeper, and how did your ranges compare?</label>
+          <textarea id="peer-reflect" placeholder="My submarine reached a max depth of ___ meters, while my partner's submarine reached a depth of... I navigated deeper by..."></textarea>
+        </div>
 
-      /* ---- Part 2: peer compare (uses kit) + merged ordered temps ---- */
-      function comparePeer() {
-        const rows = [];
-        const pDepth = num("p-depth");
-        if (proj.absDist != null && !isNaN(pDepth))
-          rows.push({
-            label: "|Depth| from sea level (m)",
-            me: proj.absDist,
-            partner: Math.abs(pDepth),
-          });
-        if (rows.length) PK.peerCompare("peerBox", rows);
-        else
-          $("peerBox").innerHTML =
-            '<p class="pk-fb">Finish Part 1 and enter your partner\'s numbers to compare.</p>';
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(3)">← Back</button>
+          <button class="nav-btn green" onclick="goStep(5)">Next Step →</button>
+        </div>
+      </div>
 
-        // merge temperature sets into one ordered list
-        const mine = (proj.ordered || []).slice();
-        const pc = num("p-cold"),
-          pw = num("p-warm");
-        const merged = mine.slice();
-        if (!isNaN(pc)) merged.push(pc);
-        if (!isNaN(pw)) merged.push(pw);
-        if (merged.length >= 2) {
-          const sorted = merged.slice().sort((a, b) => a - b);
-          show(
-            "mergedOrder",
-            "<strong>Merged temperatures (both of us), coldest → warmest:</strong><br>" +
-              '<span class="order-list">' +
-              sorted.join(", ") +
-              " °C</span>" +
-              "Combined coldest: <strong>" +
-              sorted[0] +
-              "°C</strong> · warmest: <strong>" +
-              sorted[sorted.length - 1] +
-              "°C</strong>.",
-          );
-        } else {
-          $("mergedOrder").classList.remove("show");
-        }
-        updateProgress();
-      }
+      <!-- ======================================
+           STEP 5 — FINISH
+      ====================================== -->
+      <div class="step-panel" id="step-5">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon green">🏆</div>
+            <div>
+              <div class="card-title">Step 5 — Finish &amp; Submit</div>
+              <div class="card-sub">Write your Navigator Log pitch, complete the checklist, and get your score</div>
+            </div>
+          </div>
 
-      /* ---- Part 3: world dataset + meter ---- */
-      const worldData = {
-        depth: {
-          title: "Real Ocean Depths 🌊 (below sea level = −)",
-          head: ["Place", "Region", "Depth (m)"],
-          rows: [
-            ["Mariana Trench", "Pacific", -10935],
-            ["Puerto Rico Trench", "Atlantic", -8376],
-            ["Titanic wreck", "N. Atlantic", -3800],
-            ["Avg. ocean depth", "Worldwide", -3688],
-            ["Twilight zone base", "Worldwide", -1000],
-            ["Sunlight zone base", "Worldwide", -200],
-          ],
-          sample: function () {
-            return this.rows.map((r) => r[2]);
-          },
-        },
-        temp: {
-          title: "Record Low Temperatures 🌡️ (°C)",
-          head: ["Place", "Country", "Record low"],
-          rows: [
-            ["Vostok Station", "Antarctica", -89],
-            ["Oymyakon", "Russia", -68],
-            ["Snag", "Canada", -63],
-            ["Prospect Creek", "USA", -62],
-            ["Verkhoyansk", "Russia", -68],
-            ["Eismitte", "Greenland", -65],
-          ],
-          sample: function () {
-            return this.rows.map((r) => r[2]);
-          },
-        },
-      };
+          <div class="instruct green">
+            <strong>Your job:</strong> Write a 3–5 sentence pitch for your mission report. Check off your completed steps and view the project scoring rubric.
+          </div>
 
-      function renderWorld() {
-        const cat = ($("worldCat") || {}).value;
-        const d = worldData[cat];
-        $("worldTitle").textContent = d.title;
-        $("worldHead").innerHTML = d.head
-          .map((h) => "<th>" + h + "</th>")
-          .join("");
-        $("worldRows").innerHTML = d.rows
-          .map(
-            (r) =>
-              "<tr><td>" +
-              r[0] +
-              "</td><td>" +
-              r[1] +
-              "</td><td>" +
-              r[2] +
-              "</td></tr>",
-          )
-          .join("");
-      }
-      function worldSample() {
-        return worldData[($("worldCat") || {}).value].sample();
-      }
+          <!-- Pitch -->
+          <label class="lbl" for="pitch">✍️ Navigator Log Pitch (Use your real project numbers!)</label>
+          <textarea id="pitch" placeholder="My submarine mission explored depths down to ___ meters at Checkpoint C. By calculating vertical distances, we found that Checkpoint A and C were separated by ___ meters. We reflected our trench coordinates to find alternate escape paths at..."></textarea>
 
-      function worldGo() {
-        const my = num("myWorld");
-        const customName = $("worldCountry")
-          ? $("worldCountry").value.trim()
-          : "";
-        const customSize = $("high") ? num("high") : NaN;
+          <!-- Checklist -->
+          <h3 style="font-size:16px; font-weight:800; color:var(--navy); margin:22px 0 6px;">✅ Checklist — Check off everything you completed</h3>
+          <ul class="checklist" id="checklist">
+            <li><input type="checkbox" id="ck1" /> I plotted 4 submarine checkpoints and identified their quadrants.</li>
+            <li><input type="checkbox" id="ck2" /> I verified my checkpoints on the coordinate grid.</li>
+            <li><input type="checkbox" id="ck3" /> I calculated vertical distances between submarine checkpoints using absolute value.</li>
+            <li><input type="checkbox" id="ck4" /> I reflected coordinates over the x and y axes.</li>
+            <li><input type="checkbox" id="ck5" /> I compared my coordinates to real-world ocean zones.</li>
+            <li><input type="checkbox" id="ck6" /> I compared submarine paths and maximum depths side-by-side with a classmate.</li>
+            <li><input type="checkbox" id="ck7" /> I completed my Navigator Log Pitch.</li>
+          </ul>
 
-        let sample = worldSample();
-        if (!isNaN(customSize) && customSize > 0) {
-          sample = [...sample, customSize];
-        }
+          <!-- Rubric -->
+          <h3 style="font-size:16px; font-weight:800; color:var(--navy); margin:22px 0 6px;">📊 How You Are Scored</h3>
+          <table class="rubric">
+            <thead>
+              <tr><th>Skill</th><th class="score-4">4 — Expert</th><th class="score-3">3 — Proficient</th><th class="score-2">2 — Developing</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Coordinate Plotting (6.NS.6)</strong></td><td>All 4 checkpoints plotted and quadrants identified correctly with explanation</td><td>All 4 plotted and identified correctly</td><td>Some plotting or identification errors</td></tr>
+              <tr><td><strong>Absolute Value &amp; Distance (6.NS.8)</strong></td><td>Distance calculation correct, showing absolute value math with clear real-world meaning</td><td>Distance calculation correct using absolute values</td><td>Calculation error or did not use absolute values</td></tr>
+              <tr><td><strong>Coordinate Reflections (6.NS.6b)</strong></td><td>All reflections correct; clear description of sign changes over axes</td><td>All reflections correct</td><td>Errors in signs of reflected points</td></tr>
+              <tr><td><strong>Ocean Zone &amp; Partner comparison</strong></td><td>Correctly identifies ocean zones and compares maximum depth and range with a partner</td><td>Classified zones and compared max depths</td><td>Incomplete zone matching or comparison</td></tr>
+              <tr><td><strong>Navigator Log Pitch</strong></td><td>Writes a compelling 3-5 sentence log using real project numbers and terms correctly</td><td>Writes a log with most numbers correct</td><td>Log is incomplete or does not use math vocabulary</td></tr>
+            </tbody>
+          </table>
 
-        const labels =
-          ($("worldCat") || {}).value === "costPerGuest" ||
-          ($("worldCat") || {}).value === "price"
-            ? { mean: "City avg $", me: "Me $" }
-            : { mean: "City avg", me: "Me" };
+          <!-- Report + export -->
+          <div class="nav-row no-print" style="margin-top:22px; flex-wrap:wrap; justify-content:flex-start; gap:8px;">
+            <button class="calc-btn" onclick="buildReport()">📝 Generate Summary</button>
+            <button class="export-btn" onclick="copyReport()">📋 Copy</button>
+            <button class="export-btn" onclick="downloadTxt()">⬇️ Download .txt</button>
+            <button class="export-btn" onclick="window.print()">🖨️ Print</button>
+          </div>
+          <pre class="report-box" id="reportBox"></pre>
+        </div>
 
-        PK.worldMeter("worldMeter", sample, my, labels);
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(4)">← Back</button>
+          <button class="nav-btn green" onclick="alert('Great work, Navigator! 🎉 Show this page to your teacher.')">🎉 I'm Done!</button>
+        </div>
+      </div>
 
-        const fb = $("worldMeter");
-        if (!isNaN(customSize) && customSize > 0 && customName) {
-          const ratio = (my / customSize).toFixed(2);
-          const pct = Math.round((my / customSize) * 100);
-          const diff = Math.abs(my - customSize).toFixed(2);
+    </div><!-- end wizard -->
 
-          let myValStr = false ? "$" + my.toFixed(2) : my + " m";
-          let custValStr = false
-            ? "$" + customSize.toFixed(2)
-            : customSize + " m";
-          let diffStr = false
-            ? "$" + Number(diff).toFixed(2)
-            : Number(diff).toFixed(2) + " m";
-
-          const rel =
-            my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
-          const desc =
-            `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
-            `📊 Research Comparison: Your value (${myValStr}) is <strong>${rel}</strong> than <strong>${customName}</strong> (${custValStr}) ` +
-            `by <strong>${diffStr}</strong>. Your value is <strong>${pct}%</strong> (${ratio}x) of the size of the researched benchmark.` +
-            `</div>`;
-          fb.innerHTML += desc;
-        }
-
-        if (typeof drawVisualizer === "function") {
-          drawVisualizer();
-        }
-
-        updateProgress();
-      }
-
-      function runWhatIf() {
-        const v = parseFloat($("whatIfVal").value);
-        let sample = worldSample();
-        const customSize = $("high") ? num("high") : NaN;
-        if (!isNaN(customSize) && customSize > 0) {
-          sample = [...sample, customSize];
-        }
-        if (isNaN(v)) {
-          $("whatIfBox").textContent = "Enter a number first.";
-          return;
-        }
-        const before = PK.mean(sample);
-        const after = PK.mean(sample.concat([v]));
-
-        let beforeStr = false
-          ? "$" + before.toFixed(2)
-          : before.toFixed(2) + " m";
-        let afterStr = false ? "$" + after.toFixed(2) : after.toFixed(2) + " m";
-        let vStr = false ? "$" + v.toFixed(2) : v + " m";
-
-        PK.whatIf(
-          "whatIfBox",
-          { average: beforeStr },
-          { average: afterStr },
-          "Adding a value of " + vStr + " to the sample:",
-        );
-      }
-
-      /* ---- Use example numbers ---- */
-      function useExamples() {
-        const ex = {
-          worldCountry: "Atlantic Ocean Floor",
-          high: -3646,
-          high: 2500,
-          low: -85,
-          "av-depth": -120,
-          t1: 18,
-          t2: -18,
-          t3: -5,
-          t4: 35,
-          t5: 4,
-        };
-        Object.entries(ex).forEach(([k, v]) => {
-          if ($(k)) $(k).value = v;
-        });
-        recalcAll();
-      }
-
-      function drawVisualizer() {
-        let high = num("high");
-        let low = num("low");
-        let depth = num("av-depth");
-
-        // Default to a worked EXAMPLE profile so the dashboard always shows a
-        // reference; switches to the student's readings as they enter them.
-        const isExample = isNaN(high) && isNaN(low) && isNaN(depth);
-        if (isExample) {
-          high = 100;
-          low = -50;
-          depth = -30;
-        }
-
-        const vals = [high, low, depth].filter((v) => !isNaN(v));
-        let html = "";
-        if (vals.length) {
-          const maxVal = Math.max(...vals.map((v) => Math.abs(v)), 1);
-          const yFor = (v) => 120 - (v / maxVal) * 70;
-
-          const plot = (v, label, color) => {
-            if (isNaN(v)) return "";
-            const y = yFor(v);
-            return `
-              <line x1="120" y1="${y}" x2="380" y2="${y}" stroke="${color}" stroke-width="2" stroke-dasharray="${v < 0 ? "4,3" : "0"}" />
-              <circle cx="250" cy="${y}" r="6" fill="${color}" />
-              <text x="388" y="${y + 4}" font-size="10" font-weight="bold" fill="${color}">${label}: ${v}m</text>
-            `;
-          };
-
-          html = `
-            ${isExample ? `<rect x="360" y="10" width="128" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="424" y="24" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example profile</text>` : ""}
-            <line x1="120" y1="120" x2="380" y2="120" stroke="#0284c7" stroke-width="2" />
-            <text x="120" y="115" font-size="10" font-weight="bold" fill="#0284c7">Sea Level (0m)</text>
-            ${plot(high, "High", "#0e8a7d")}
-            ${plot(low, "Low", "#c45a3c")}
-            ${plot(depth, "Reading", "#d4952a")}
-            <text x="250" y="220" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">Elevation &amp; Depth Profile</text>
-          `;
-        }
-
-        const svgString = `
-          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
-            ${html}
-          </svg>
-        `;
-        $("projectVisualizer").innerHTML = svgString;
-      }
-
-      function recalcAll() {
-        calcContext();
-        calcAbsVal();
-        orderReadings();
-        comparePeer();
-        renderWorld();
-        worldGo();
-        updateProgress();
-
-        if (typeof drawSubmarineSVG === "function") {
-          drawSubmarineSVG();
-          drawAbsValSVG();
-          drawOrderingSVG();
-        }
-      }
-
-      /* ---- Report ---- */
-      function reportText() {
-        return (
-          "SUBMARINE MISSION CONTROL — MY LOG\n" +
-          "==================================\n\n" +
-          "PART 1: MY DATA (SELF)\n" +
-          "Highest place: " +
-          (proj.high == null ? "(not finished)" : "+" + proj.high + " m") +
-          "\n" +
-          "Lowest place: " +
-          (proj.low == null ? "(not finished)" : proj.low + " m") +
-          "\n" +
-          "Distance from sea level: " +
-          (proj.absDist == null
-            ? "(not finished)"
-            : "|depth| = " + proj.absDist + " m") +
-          "\n" +
-          "Temperatures coldest → warmest: " +
-          (proj.ordered ? proj.ordered.join(", ") + " °C" : "(not finished)") +
-          "\n" +
-          (proj.range != null
-            ? "Range (spread): " + proj.range + " °C\n"
-            : "") +
-          "\n" +
-          "PART 2: PEER COMPARISON\n" +
-          "Partner: " +
-          ($("partnerName").value || "(none)") +
-          "\n" +
-          "Partner |depth|: " +
-          ($("p-depth").value ? Math.abs(num("p-depth")) + " m" : "-") +
-          "\n" +
-          "Reflection: " +
-          ($("peerReflect").value || "(not written)") +
-          "\n\n" +
-          "PART 3: WORLD COMPARISON\n" +
-          "My value vs world: " +
-          ($("worldReflect").value || "(not written)") +
-          "\n" +
-          "Careful thinking: " +
-          ($("careful").value || "(not written)") +
-          "\n\n" +
-          "MISSION LOG:\n" +
-          ($("pitch").value || "(not written)")
-        );
-      }
-      function buildReport() {
-        recalcAll();
-        PK.generateReport("reportBox", reportText());
-      }
-      function downloadCsv() {
-        const rows = [
-          ["field", "value"],
-          ["highest_m", proj.high],
-          ["lowest_m", proj.low],
-          ["distance_from_sea_level", proj.absDist],
-          ["temps_ordered", proj.ordered ? proj.ordered.join(" ") : ""],
-          ["range", proj.range],
-          ["partner", $("partnerName").value],
-          ["partner_depth", $("p-depth").value],
-        ];
-        PK.downloadCsv("mission-log-data.csv", rows);
-      }
-
-      /* ---- Progress ---- */
-      function updateProgress() {
-        const readouts = document.querySelectorAll(".readout.show").length; // context, absval, order, merged (up to 4)
-        const absOk = $("check-absFb").querySelector(".pk-ok") ? 1 : 0;
-        const checks = document.querySelectorAll(
-          "#checklist input:checked",
-        ).length; // max 6
-        const peer = $("p-depth").value || $("p-cold").value ? 1 : 0;
-        const wrld = $("myWorld").value ? 1 : 0;
-        const pitch = $("pitch").value.trim().length > 20 ? 1 : 0;
-        const total = readouts + absOk + checks + peer + wrld + pitch; // up to 4+1+6+1+1+1 = 14
-        const pct = Math.min(100, Math.round((total / 14) * 100));
-        $("pfill").style.width = pct + "%";
-        $("pct").textContent = pct;
-      }
-      document
-        .getElementById("checklist")
-        .addEventListener("change", updateProgress);
-      document
-        .getElementById("pitch")
-        .addEventListener("input", updateProgress);
-
-      /* ---- Level hook: Level 1 pre-fills friendly numbers if empty ---- */
-      window.onLevelChange = function (level) {
-        if (level === "level-1") {
-          const empty = !$("low").value && !$("av-depth").value;
-          if (empty) {
-            $("high").value = 100;
-            $("low").value = -50;
-            calcContext();
-            $("av-depth").value = -50;
-            calcAbsVal();
-          }
-        }
-        // re-run ordering so Level 2 range/outlier shows/hides correctly
-        orderReadings();
-      };
-
-      /* ---- init (runs after deferred kit script is ready) ---- */
-      document.addEventListener("DOMContentLoaded", function () {
-        renderWorld();
-        PK.initLevel({ storageKey: "u7ProjectB", default: "level-1" });
-        PK.initTts({ storageKey: "u7ProjectB" });
-        PK.load("u7ProjectB", { after: recalcAll });
-        updateProgress();
-      });
-
-      function drawSubmarineSVG() {
-        let high = num("high");
-        let low = num("low");
-        const svg = $("phase-svg-1a");
-        if (!svg) return;
-
-        // Show a worked EXAMPLE profile (surface 100 m, trench −50 m) as the
-        // default reference; switches to the student's readings on input.
-        const isExample = isNaN(high) || isNaN(low);
-        if (isExample) {
-          high = 100;
-          low = -50;
-        }
-
-        svg.innerHTML = `
-          <text x="250" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Sea Depth Vertical Profile</text>
-          ${isExample ? `<rect x="372" y="12" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="26" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example profile</text>` : ""}
-          
-          <rect x="180" y="50" width="140" height="110" fill="rgba(30,136,229,0.15)" stroke="#1e88e5" stroke-dasharray="2" />
-          <line x1="160" y1="50" x2="340" y2="50" stroke="#0e8a7d" stroke-width="2" />
-          <text x="350" y="54" font-size="10" font-weight="bold" fill="#0e8a7d">Sea Level (0m)</text>
-          
-          <line x1="180" y1="100" x2="320" y2="100" stroke="#ffb74d" stroke-dasharray="4" />
-          <text x="330" y="104" font-size="10" font-weight="bold" fill="#f57c00">Ocean Depth: -${high}m</text>
-          
-          <line x1="180" y1="150" x2="320" y2="150" stroke="#c45a3c" stroke-width="2" />
-          <text x="330" y="154" font-size="10" font-weight="bold" fill="#c45a3c">Trench Depth: ${low}m</text>
-        `;
-      }
-
-      function drawAbsValSVG() {
-        let depth = num("av-depth");
-        const svg = $("phase-svg-1b");
-        if (!svg) return;
-
-        // Show a worked EXAMPLE (a submarine at −50 m, |−50| = 50 m from the
-        // surface) as the default reference; switches to the reading on input.
-        const isExample = isNaN(depth);
-        if (isExample) {
-          depth = -50;
-        }
-
-        const dist = Math.abs(depth);
-
-        svg.innerHTML = `
-          <text x="250" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Absolute Value: |depth| = Distance</text>
-          ${isExample ? `<rect x="372" y="12" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="26" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · −50 m</text>` : ""}
-          
-          <line x1="250" y1="50" x2="250" y2="160" stroke="#cbd5e1" stroke-width="2" />
-          
-          <circle cx="250" cy="50" r="6" fill="#0e8a7d" />
-          <text x="270" y="54" font-size="11" font-weight="bold" fill="#0e8a7d">Sea Level (0m)</text>
-          
-          <circle cx="250" cy="140" r="8" fill="#1e88e5" />
-          <text x="270" y="144" font-size="11" font-weight="bold" fill="#1e88e5">Submarine (${depth}m)</text>
-          
-          <path d="M 230 50 L 220 50 L 220 95 L 210 95 L 220 95 L 220 140 L 230 140" fill="none" stroke="#c45a3c" stroke-width="1.5" />
-          <text x="200" y="100" text-anchor="end" font-size="12" font-weight="bold" fill="#c45a3c">|${depth}| = ${dist}m</text>
-        `;
-      }
-
-      function drawOrderingSVG() {
-        let t1 = num("t1");
-        let t2 = num("t2");
-        let t3 = num("t3");
-        let t4 = num("t4");
-        const svg = $("phase-svg-1c");
-        if (!svg) return;
-
-        // Show a worked EXAMPLE set (12, −5, 8, −12) as the default reference so
-        // the scale always has something to read; switches to the student's
-        // temperatures once all four are entered.
-        const isExample = isNaN(t1) || isNaN(t2) || isNaN(t3) || isNaN(t4);
-        if (isExample) {
-          t1 = 12;
-          t2 = -5;
-          t3 = 8;
-          t4 = -12;
-        }
-        const t5 = num("t5") || 0;
-
-        const temps = [t1, t2, t3, t4];
-        if (!isNaN(t5)) temps.push(t5);
-        temps.sort((a, b) => a - b);
-
-        let scales = "";
-        for (let i = 0; i < temps.length; i++) {
-          const tx = 80 + (340 / (temps.length - 1)) * i;
-          scales += `
-            <line x1="${tx}" y1="90" x2="${tx}" y2="130" stroke="${temps[i] < 0 ? "#1e88e5" : "#c45a3c"}" stroke-width="2.5" />
-            <circle cx="${tx}" cy="${temps[i] < 0 ? 130 : 90}" r="5" fill="${temps[i] < 0 ? "#1e88e5" : "#c45a3c"}" />
-            <text x="${tx}" y="150" text-anchor="middle" font-size="10" font-weight="bold" fill="#0f2b3c">${temps[i]}°C</text>
-          `;
-        }
-
-        svg.innerHTML = `
-          <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Colder to Warmer Temperature Order</text>
-          ${isExample ? `<rect x="372" y="14" width="116" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="430" y="28" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example set</text>` : ""}
-          <line x1="50" y1="110" x2="450" y2="110" stroke="#cbd5e1" stroke-width="2" marker-end="url(#arr-arrow)" />
-          ${scales}
-        `;
-      }
-    </script>
-    <script src="/assets/nt-page-enhance.js" defer></script>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <!-- ====== SCRIPTS ====== -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-    <!-- nsr-injected:end -->
-    <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
-    <script type="application/json" id="pk-research">
-      {
-        "icon": "🔎",
-        "title": "Research Lab — Map the Real Extremes",
-        "intro": "Pilots and explorers use positive and negative numbers for depth, altitude, and temperature. Look up real values, then compare them.",
-        "brief": {
-          "theme": "field",
-          "title": "🔭 Your Research Mission",
-          "hook": "Find <b>real highs and lows</b> (temperatures, elevations, depths) and compare them with integers.",
-          "steps": [
-            "Open a link (new tab — you keep your project).",
-            "Record real values in Field Notes.",
-            "Compare them in the math problems.",
-            "Check off the Investigation Checklist."
-          ]
-        },
-        "fieldNotes": {
-          "title": "Field Notes — Record What You Find",
-          "intro": "Jot the exact number or rule you find. You'll reuse these in the math below.",
-          "fields": [
-            {
-              "label": "What absolute value means",
-              "source": "Math is Fun",
-              "placeholder": "distance from 0",
-              "hint": "Always zero or positive."
-            },
-            {
-              "label": "A real LOW value (below zero)",
-              "source": "a temperature/elevation table",
-              "placeholder": "-12 °F",
-              "hint": "A cold temp or a depth below sea level."
-            },
-            {
-              "label": "A real HIGH value (above zero)",
-              "source": "a temperature/elevation table",
-              "placeholder": "+88 °F",
-              "hint": "A warm temp or an elevation."
-            },
-            {
-              "label": "A sea-level reference",
-              "source": "Atlas",
-              "placeholder": "0 ft = sea level",
-              "hint": "The zero point you compare to."
-            }
-          ]
-        },
-        "mathTasks": [
-          {
-            "title": "1 · Order them",
-            "prompt": "Place your low and high values (Field Notes 2 and 3) on a number line and order them with < or >. Which is greater?",
-            "level2": "Add a third real value and order all three."
-          },
-          {
-            "title": "2 · Distance",
-            "prompt": "Use <b>absolute value</b> to find how far each value is from 0. Which is farther from zero?",
-            "level2": "How far apart are the two values from each other? Show the math."
-          },
-          {
-            "title": "3 · Real meaning",
-            "prompt": "Write one sentence explaining what a negative value means in your context (colder than, below sea level, etc.).",
-            "level2": "Give a real example where a smaller (more negative) number is actually 'deeper' or 'colder'."
-          }
-        ],
-        "investigationChecklist": [
-          "I recorded what absolute value means.",
-          "I found a real value below zero.",
-          "I found a real value above zero.",
-          "I ordered values with < or >.",
-          "I used absolute value for distance from 0.",
-          "I explained what negative means in context."
-        ],
-        "links": [
-          {
-            "icon": "➖",
-            "name": "Math is Fun — Integers",
-            "url": "https://www.mathsisfun.com/positive-negative-integers.html",
-            "find": "How positive and negative numbers compare.",
-            "look": "left is less, right is greater"
-          },
-          {
-            "icon": "📏",
-            "name": "Math is Fun — Absolute Value",
-            "url": "https://www.mathsisfun.com/numbers/absolute-value.html",
-            "find": "Distance from zero, always positive.",
-            "look": "the | | bars"
-          },
-          {
-            "icon": "🧭",
-            "name": "Math is Fun — Number Line",
-            "url": "https://www.mathsisfun.com/number-line.html",
-            "find": "How to place positive and negative numbers in order.",
-            "look": "values left and right of 0"
-          },
-          {
-            "icon": "🌡️",
-            "name": "Wikipedia — US temperature extremes (table)",
-            "url": "https://en.wikipedia.org/wiki/U.S._state_and_territory_temperature_extremes",
-            "find": "Real record high and low temps in a table.",
-            "look": "a state's record low (a negative number)"
-          }
-        ],
-        "note": "These sites were picked for class. They open in a new tab so you keep your project. If a page asks you to sign in or buy something, just close it and come back."
+    <script src="/assets/app.js" defer></script>
+    <script>
+      // ---- State ----
+      const STEPS = [
+        { id: 0, label: 'Key Words', icon: '📖' },
+        { id: 1, label: 'Checkpoints', icon: '📍' },
+        { id: 2, label: 'Distances', icon: '📏' },
+        { id: 3, label: 'Reflections', icon: '🔄' },
+        { id: 4, label: 'Partner', icon: '👥' },
+        { id: 5, label: 'Finish', icon: '🏆' },
+      ];
+      let currentStep = 0;
+      const visited = new Set([0]);
+
+      // ---- Level toggle ----
+      function setLevel(n) {
+        document.getElementById('body').className = 'level-' + n;
+        document.getElementById('btn-lv1').classList.toggle('active', n === 1);
+        document.getElementById('btn-lv2').classList.toggle('active', n === 2);
       }
+
+      // ---- Build step trail ----
+      function buildTrail() {
+        const trail = document.getElementById('stepTrail');
+        trail.innerHTML = STEPS.map((s, i) => {
+          const isLast = i === STEPS.length - 1;
+          const isActive = s.id === currentStep;
+          const isDone = visited.has(s.id) && !isActive;
+          return `<span class="step-trail-item${isActive ? ' active' : ''}${isDone ? ' done' : ''}" onclick="goStep(${s.id})">
+            <span class="s-num">${isDone ? '✓' : s.id + 1}</span>
+            <span class="s-label">${s.label}</span>
+          </span>${!isLast ? '<span class="step-arrow">›</span>' : ''}`;
+        }).join('');
+      }
+
+      // ---- Navigation ----
+      function goStep(n) {
+        if (n < 0 || n >= STEPS.length) return;
+        document.getElementById('step-' + currentStep).classList.remove('active');
+        currentStep = n;
+        visited.add(n);
+        document.getElementById('step-' + n).classList.add('active');
+        buildTrail();
+        updateProgress();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function updateProgress() {
+        const pct = Math.round((currentStep / (STEPS.length - 1)) * 100);
+        document.getElementById('progFill').style.width = pct + '%';
+        document.getElementById('progLabel').textContent = `Step ${currentStep + 1} of ${STEPS.length}`;
+      }
+
+      // ---- Math helpers & verification functions ----
+      function getCorrectQuadrant(x, y) {
+        if (x === 0 && y === 0) return 'origin';
+        if (x === 0) return 'y-axis';
+        if (y === 0) return 'x-axis';
+        if (x > 0 && y > 0) return 'I';
+        if (x < 0 && y > 0) return 'II';
+        if (x < 0 && y < 0) return 'III';
+        if (x > 0 && y < 0) return 'IV';
+        return '';
+      }
+
+      function getQuadrantText(q) {
+        switch(q) {
+          case 'I': return 'Quadrant I';
+          case 'II': return 'Quadrant II';
+          case 'III': return 'Quadrant III';
+          case 'IV': return 'Quadrant IV';
+          case 'x-axis': return 'X-Axis';
+          case 'y-axis': return 'Y-Axis';
+          case 'origin': return 'Origin';
+          default: return 'Unknown';
+        }
+      }
+
+      function showReadout(id, html) {
+        const el = document.getElementById(id);
+        el.innerHTML = html;
+        el.classList.add('show');
+      }
+
+      // ---- Step 1 Grid Update & Verify ----
+      function updateGrid() {
+        const points = ['a', 'b', 'c', 'd'];
+        points.forEach(p => {
+          const xVal = parseFloat(document.getElementById(`x-${p}`).value);
+          const yVal = parseFloat(document.getElementById(`y-${p}`).value);
+          const dot = document.getElementById(`dot-${p}`);
+          const lbl = document.getElementById(`lbl-${p}`);
+
+          if (!isNaN(xVal) && !isNaN(yVal) && xVal >= -10 && xVal <= 10 && yVal >= -10 && yVal <= 10) {
+            const cx = 160 + xVal * 15;
+            const cy = 160 - yVal * 15;
+            dot.setAttribute('cx', cx);
+            dot.setAttribute('cy', cy);
+            dot.style.display = 'block';
+
+            lbl.setAttribute('x', cx);
+            lbl.setAttribute('y', cy);
+            lbl.textContent = `${p.toUpperCase()} (${xVal}, ${yVal})`;
+            lbl.style.display = 'block';
+          } else {
+            dot.style.display = 'none';
+            lbl.style.display = 'none';
+          }
+        });
+
+        // Trigger updates in dependent steps
+        updateDistanceCalc();
+        updateReflectionSVG();
+        updateReflectionDisp();
+        updateOceanZones();
+        comparePartner();
+      }
+
+      function verifyQuadrants() {
+        const points = ['a', 'b', 'c', 'd'];
+        let allCorrect = true;
+        let html = '<ul>';
+        points.forEach(p => {
+          const x = parseFloat(document.getElementById(`x-${p}`).value);
+          const y = parseFloat(document.getElementById(`y-${p}`).value);
+          const selected = document.getElementById(`quad-${p}`).value;
+          if (isNaN(x) || isNaN(y)) {
+            html += `<li>❌ Checkpoint ${p.toUpperCase()}: Please enter valid coordinate numbers.</li>`;
+            allCorrect = false;
+            return;
+          }
+          const correct = getCorrectQuadrant(x, y);
+          if (selected === correct) {
+            const qText = document.getElementById(`quad-${p}`).options[document.getElementById(`quad-${p}`).selectedIndex].text;
+            html += `<li>✅ Checkpoint ${p.toUpperCase()} (${x}, ${y}) is correctly identified in ${qText}.</li>`;
+          } else {
+            const correctText = getQuadrantText(correct);
+            html += `<li>❌ Checkpoint ${p.toUpperCase()} (${x}, ${y}) is in <strong>${correctText}</strong>, but you selected something else.</li>`;
+            allCorrect = false;
+          }
+        });
+        html += '</ul>';
+
+        if (allCorrect) {
+          showReadout('quad-verify-out', `🎉 <strong>Great Job Navigator!</strong> All quadrants are correct:<br>${html}`);
+        } else {
+          showReadout('quad-verify-out', `⚠️ <strong>Check Your Plot:</strong> Some quadrant selections need corrections:<br>${html}`);
+        }
+      }
+
+      // ---- Step 2 Distance Visuals & Verify ----
+      function updateDistanceCalc() {
+        const pt1 = document.getElementById('dist-pt1').value;
+        const pt2 = document.getElementById('dist-pt2').value;
+
+        const y1 = parseFloat(document.getElementById(`y-${pt1.toLowerCase()}`).value);
+        const y2 = parseFloat(document.getElementById(`y-${pt2.toLowerCase()}`).value);
+
+        const dot1 = document.getElementById('dist-pt1-dot');
+        const lbl1 = document.getElementById('dist-pt1-lbl');
+        const dot2 = document.getElementById('dist-pt2-dot');
+        const lbl2 = document.getElementById('dist-pt2-lbl');
+
+        const brLine = document.getElementById('dist-bracket-line');
+        const brTop = document.getElementById('dist-bracket-top');
+        const brBottom = document.getElementById('dist-bracket-bottom');
+        const brText = document.getElementById('dist-bracket-text');
+
+        if (isNaN(y1) || isNaN(y2)) {
+          dot1.style.display = 'none'; lbl1.style.display = 'none';
+          dot2.style.display = 'none'; lbl2.style.display = 'none';
+          brLine.style.display = 'none'; brTop.style.display = 'none'; brBottom.style.display = 'none'; brText.style.display = 'none';
+          return;
+        }
+
+        // SVG vertical coordinates: Center is 120. Scale: 10 pixels per unit.
+        const cy1 = 120 - y1 * 10;
+        const cy2 = 120 - y2 * 10;
+
+        dot1.setAttribute('cy', cy1);
+        dot1.style.display = 'block';
+        lbl1.setAttribute('y', cy1 + 3);
+        lbl1.textContent = `${pt1} (${y1})`;
+        lbl1.style.display = 'block';
+
+        dot2.setAttribute('cy', cy2);
+        dot2.style.display = 'block';
+        lbl2.setAttribute('y', cy2 + 3);
+        lbl2.textContent = `${pt2} (${y2})`;
+        lbl2.style.display = 'block';
+
+        // Draw bracket line
+        const yTop = Math.min(cy1, cy2);
+        const yBottom = Math.max(cy1, cy2);
+        const distUnits = Math.abs(y1 - y2);
+
+        brLine.setAttribute('y1', yTop);
+        brLine.setAttribute('y2', yBottom);
+        brLine.style.display = 'block';
+
+        brTop.setAttribute('y1', yTop);
+        brTop.setAttribute('y2', yTop);
+        brTop.style.display = 'block';
+
+        brBottom.setAttribute('y1', yBottom);
+        brBottom.setAttribute('y2', yBottom);
+        brBottom.style.display = 'block';
+
+        brText.setAttribute('y', (yTop + yBottom) / 2 + 3);
+        brText.textContent = `${distUnits.toFixed(1)} units (${(distUnits * 100).toFixed(0)}m)`;
+        brText.style.display = 'block';
+      }
+
+      function verifyDistance() {
+        const pt1 = document.getElementById('dist-pt1').value;
+        const pt2 = document.getElementById('dist-pt2').value;
+
+        const y1 = parseFloat(document.getElementById(`y-${pt1.toLowerCase()}`).value);
+        const y2 = parseFloat(document.getElementById(`y-${pt2.toLowerCase()}`).value);
+
+        if (isNaN(y1) || isNaN(y2)) {
+          showReadout('distance-verify-out', '❌ Please enter valid coordinates in Step 1 first.');
+          return;
+        }
+
+        const oppositeSides = (y1 > 0 && y2 < 0) || (y1 < 0 && y2 > 0);
+        const correctOp = oppositeSides ? '+' : '-';
+        const correctDist = Math.abs(y1 - y2);
+
+        const studentSide = document.getElementById('dist-side').value;
+        const studentOp = document.getElementById('dist-op').value;
+        const studentAns = parseFloat(document.getElementById('dist-ans').value);
+
+        if (!studentSide || !studentOp || isNaN(studentAns)) {
+          showReadout('distance-verify-out', '❌ Please make selections for side, operator, and distance first.');
+          return;
+        }
+
+        let isCorrect = true;
+        let feedback = '<ul>';
+
+        // Validate Side check
+        const expectedSide = oppositeSides ? 'opposite' : 'same';
+        if (studentSide === expectedSide) {
+          feedback += `<li>✅ Correct Location Check: They are on <strong>${studentSide === 'opposite' ? 'opposite sides' : 'the same side'}</strong> of sea level.</li>`;
+        } else {
+          feedback += `<li>❌ Incorrect Location Check: Checkpoints are actually on <strong>${expectedSide === 'opposite' ? 'opposite sides' : 'the same side'}</strong>.</li>`;
+          isCorrect = false;
+        }
+
+        // Validate Operator
+        if (studentOp === correctOp) {
+          feedback += `<li>✅ Correct Operator: Using <strong>${studentOp}</strong> to find the absolute value distance.</li>`;
+        } else {
+          feedback += `<li>❌ Incorrect Operator: Since they are on ${expectedSide === 'opposite' ? 'opposite sides' : 'the same side'}, you should <strong>${correctOp === '+' ? 'add' : 'subtract'}</strong> their absolute values.</li>`;
+          isCorrect = false;
+        }
+
+        // Validate Distance
+        if (Math.abs(studentAns - correctDist) < 0.01) {
+          feedback += `<li>✅ Correct Distance: <strong>${studentAns} units</strong> (scaled depth: <strong>${studentAns * 100} meters</strong>).</li>`;
+        } else {
+          feedback += `<li>❌ Incorrect Distance: The correct vertical distance is <strong>${correctDist} units</strong> (${correctDist * 100} meters).</li>`;
+          isCorrect = false;
+        }
+
+        feedback += '</ul>';
+
+        if (isCorrect) {
+          showReadout('distance-verify-out', `🎉 <strong>Awesome Job!</strong> Calculations verified:<br>${feedback}`);
+        } else {
+          showReadout('distance-verify-out', `⚠️ <strong>Calculations Error:</strong> Check absolute values and try again:<br>${feedback}`);
+        }
+      }
+
+      // ---- Step 3 Reflections & Ocean Zones ----
+      function updateReflectionDisp() {
+        const pt = document.getElementById('reflect-select').value;
+        const x = parseFloat(document.getElementById(`x-${pt.toLowerCase()}`).value);
+        const y = parseFloat(document.getElementById(`y-${pt.toLowerCase()}`).value);
+        if (!isNaN(x) && !isNaN(y)) {
+          document.getElementById('refl-orig-x-display').textContent = x;
+          document.getElementById('refl-orig-y-display').textContent = y;
+        } else {
+          document.getElementById('refl-orig-x-display').textContent = '—';
+          document.getElementById('refl-orig-y-display').textContent = '—';
+        }
+      }
+
+      // We had defined updateReflectionSVG and verifyReflection in CodeContent
+      function updateReflectionSVG() {
+        const pt = document.getElementById('reflect-select').value;
+        const x = parseFloat(document.getElementById(`x-${pt.toLowerCase()}`).value);
+        const y = parseFloat(document.getElementById(`y-${pt.toLowerCase()}`).value);
+
+        const dotOrig = document.getElementById('reflect-orig-dot');
+        const lblOrig = document.getElementById('reflect-orig-lbl');
+
+        const dotX = document.getElementById('reflect-x-dot');
+        const lblX = document.getElementById('reflect-x-lbl');
+        const dotY = document.getElementById('reflect-y-dot');
+        const lblY = document.getElementById('reflect-y-lbl');
+        const dotBoth = document.getElementById('reflect-both-dot');
+        const lblBoth = document.getElementById('reflect-both-lbl');
+
+        const pathX = document.getElementById('reflect-path-x');
+        const pathY = document.getElementById('reflect-path-y');
+        const pathBoth = document.getElementById('reflect-path-both');
+
+        if (isNaN(x) || isNaN(y)) {
+          dotOrig.style.display = 'none'; lblOrig.style.display = 'none';
+          dotX.style.display = 'none'; lblX.style.display = 'none';
+          dotY.style.display = 'none'; lblY.style.display = 'none';
+          dotBoth.style.display = 'none'; lblBoth.style.display = 'none';
+          pathX.style.display = 'none'; pathY.style.display = 'none'; pathBoth.style.display = 'none';
+          return;
+        }
+
+        const cx = 100 + x * 8;
+        const cy = 100 - y * 8;
+
+        const cxReflY = 100 - x * 8;
+        const cyReflX = 100 + y * 8;
+        const cxReflBoth = 100 - x * 8;
+        const cyReflBoth = 100 + y * 8;
+
+        dotOrig.setAttribute('cx', cx); dotOrig.setAttribute('cy', cy);
+        dotOrig.style.display = 'block';
+        lblOrig.setAttribute('x', cx); lblOrig.setAttribute('y', cy);
+        lblOrig.textContent = `${pt} (${x}, ${y})`;
+        lblOrig.style.display = 'block';
+
+        dotX.setAttribute('cx', cx); dotX.setAttribute('cy', cyReflX);
+        dotX.style.display = 'block';
+        lblX.setAttribute('x', cx); lblX.setAttribute('y', cyReflX);
+        lblX.textContent = `(${x}, ${-y})`;
+        lblX.style.display = 'block';
+
+        dotY.setAttribute('cx', cxReflY); dotY.setAttribute('cy', cy);
+        dotY.style.display = 'block';
+        lblY.setAttribute('x', cxReflY); lblY.setAttribute('y', cy);
+        lblY.textContent = `(${-x}, ${y})`;
+        lblY.style.display = 'block';
+
+        dotBoth.setAttribute('cx', cxReflBoth); dotBoth.setAttribute('cy', cyReflBoth);
+        dotBoth.style.display = 'block';
+        lblBoth.setAttribute('x', cxReflBoth); lblBoth.setAttribute('y', cyReflBoth);
+        lblBoth.textContent = `(${-x}, ${-y})`;
+        lblBoth.style.display = 'block';
+
+        pathX.setAttribute('x1', cx); pathX.setAttribute('y1', cy);
+        pathX.setAttribute('x2', cx); pathX.setAttribute('y2', cyReflX);
+        pathX.style.display = 'block';
+
+        pathY.setAttribute('x1', cx); pathY.setAttribute('y1', cy);
+        pathY.setAttribute('x2', cxReflY); pathY.setAttribute('y2', cy);
+        pathY.style.display = 'block';
+
+        pathBoth.setAttribute('x1', cx); pathBoth.setAttribute('y1', cy);
+        pathBoth.setAttribute('x2', cxReflBoth); pathBoth.setAttribute('y2', cyReflBoth);
+        pathBoth.style.display = 'block';
+      }
+
+      function verifyReflection() {
+        const pt = document.getElementById('reflect-select').value;
+        const x = parseFloat(document.getElementById(`x-${pt.toLowerCase()}`).value);
+        const y = parseFloat(document.getElementById(`y-${pt.toLowerCase()}`).value);
+
+        if (isNaN(x) || isNaN(y)) {
+          showReadout('reflection-verify-out', '❌ Please enter valid coordinates in Step 1 first.');
+          return;
+        }
+
+        const rx_x = parseFloat(document.getElementById('refl-x-x').value);
+        const rx_y = parseFloat(document.getElementById('refl-x-y').value);
+        const ry_x = parseFloat(document.getElementById('refl-y-x').value);
+        const ry_y = parseFloat(document.getElementById('refl-y-y').value);
+        const rb_x = parseFloat(document.getElementById('refl-both-x').value);
+        const rb_y = parseFloat(document.getElementById('refl-both-y').value);
+
+        if (isNaN(rx_x) || isNaN(rx_y) || isNaN(ry_x) || isNaN(ry_y) || isNaN(rb_x) || isNaN(rb_y)) {
+          showReadout('reflection-verify-out', '❌ Please fill in all prediction coordinate values.');
+          return;
+        }
+
+        let isCorrect = true;
+        let html = '<ul>';
+
+        if (rx_x === x && rx_y === -y) {
+          html += `<li>✅ Reflected over X-axis is correct: <strong>(${x}, ${-y})</strong>.</li>`;
+        } else {
+          html += `<li>❌ Reflected over X-axis: expected <strong>(${x}, ${-y})</strong>, you wrote (${rx_x}, ${rx_y}).</li>`;
+          isCorrect = false;
+        }
+
+        if (ry_x === -x && ry_y === y) {
+          html += `<li>✅ Reflected over Y-axis is correct: <strong>(${-x}, ${y})</strong>.</li>`;
+        } else {
+          html += `<li>❌ Reflected over Y-axis: expected <strong>(${-x}, ${y})</strong>, you wrote (${ry_x}, ${ry_y}).</li>`;
+          isCorrect = false;
+        }
+
+        if (rb_x === -x && rb_y === -y) {
+          html += `<li>✅ Reflected over both axes is correct: <strong>(${-x}, ${-y})</strong>.</li>`;
+        } else {
+          html += `<li>❌ Reflected over both axes: expected <strong>(${-x}, ${-y})</strong>, you wrote (${rb_x}, ${rb_y}).</li>`;
+          isCorrect = false;
+        }
+
+        html += '</ul>';
+
+        if (isCorrect) {
+          showReadout('reflection-verify-out', `🎉 <strong>Reflection Verified!</strong> Submarine coordinates match:<br>${html}`);
+        } else {
+          showReadout('reflection-verify-out', `⚠️ <strong>Reflection Check:</strong> Review coordinates signs and try again:<br>${html}`);
+        }
+
+        updateReflectionSVG();
+      }
+
+      function updateOceanZones() {
+        const points = ['a', 'b', 'c', 'd'];
+        let html = '<table class="data-table"><thead><tr><th>Checkpoint</th><th>Coordinate (y)</th><th>Depth (m)</th><th>Ocean Zone</th></tr></thead><tbody>';
+        points.forEach(p => {
+          const yVal = parseFloat(document.getElementById(`y-${p}`).value);
+          if (isNaN(yVal)) {
+            html += `<tr><td>Checkpoint ${p.toUpperCase()}</td><td>—</td><td>—</td><td>—</td></tr>`;
+            return;
+          }
+          const depthM = -yVal * 100;
+          let zone = '';
+          if (yVal >= 0) {
+            zone = 'Above Sea Level (Atmosphere)';
+          } else if (depthM <= 200) {
+            zone = 'Sunlight Zone (0m – 200m)';
+          } else if (depthM <= 1000) {
+            zone = 'Twilight Zone (200m – 1,000m)';
+          } else {
+            zone = 'Midnight Zone (Deep Ocean, >1,000m)';
+          }
+          html += `<tr><td>Checkpoint ${p.toUpperCase()}</td><td>y = ${yVal}</td><td>${depthM > 0 ? depthM : 0}m</td><td><strong>${zone}</strong></td></tr>`;
+        });
+        html += '</tbody></table>';
+        document.getElementById('ocean-zones-out').innerHTML = html;
+      }
+
+      // ---- Step 4 Partner Comparison ----
+      function comparePartner() {
+        const pName = document.getElementById('p-name').value || 'Partner';
+        const ya = parseFloat(document.getElementById('y-a').value);
+        const yb = parseFloat(document.getElementById('y-b').value);
+        const yc = parseFloat(document.getElementById('y-c').value);
+        const yd = parseFloat(document.getElementById('y-d').value);
+
+        const pya = parseFloat(document.getElementById('p-y-a').value);
+        const pyb = parseFloat(document.getElementById('p-y-b').value);
+        const pyc = parseFloat(document.getElementById('p-y-c').value);
+        const pyd = parseFloat(document.getElementById('p-y-d').value);
+
+        if (isNaN(ya) || isNaN(yb) || isNaN(yc) || isNaN(yd) || isNaN(pya) || isNaN(pyb) || isNaN(pyc) || isNaN(pyd)) {
+          return;
+        }
+
+        const selfMaxDepth = Math.max(0, -ya, -yb, -yc, -yd) * 100;
+        const partnerMaxDepth = Math.max(0, -pya, -pyb, -pyc, -pyd) * 100;
+        const diffMax = Math.abs(selfMaxDepth - partnerMaxDepth);
+
+        const selfMaxY = Math.max(ya, yb, yc, yd);
+        const selfMinY = Math.min(ya, yb, yc, yd);
+        const selfSpan = (selfMaxY - selfMinY) * 100;
+
+        const partnerMaxY = Math.max(pya, pyb, pyc, pyd);
+        const partnerMinY = Math.min(pya, pyb, pyc, pyd);
+        const partnerSpan = (partnerMaxY - partnerMinY) * 100;
+        const diffSpan = Math.abs(selfSpan - partnerSpan);
+
+        let html = `
+          <strong>Max Depth Comparison:</strong><br>
+          • Your deepest checkpoint reached: <strong>${selfMaxDepth} meters</strong><br>
+          • ${pName}'s deepest checkpoint reached: <strong>${partnerMaxDepth} meters</strong><br>
+          • Difference: <strong>${diffMax} meters</strong> (${selfMaxDepth > partnerMaxDepth ? 'You went deeper!' : selfMaxDepth < partnerMaxDepth ? pName + ' went deeper!' : 'Same maximum depth!'})
+        `;
+
+        html += `
+          <div class="lvl2-only" style="margin-top: 10px;">
+            <strong>Total Vertical Range (Greatest to Least Height):</strong><br>
+            • Your mission vertical range: <strong>${selfSpan} meters</strong> (from y=${selfMaxY} to y=${selfMinY})<br>
+            • ${pName}'s mission vertical range: <strong>${partnerSpan} meters</strong> (from y=${partnerMaxY} to y=${partnerMinY})<br>
+            • Difference in range: <strong>${diffSpan} meters</strong>
+          </div>
+        `;
+
+        showReadout('partner-compare-out', html);
+      }
+
+      // ---- Step 5 Generate Report & Exports ----
+      function buildReport() {
+        const xa = document.getElementById('x-a').value;
+        const ya = document.getElementById('y-a').value;
+        const xb = document.getElementById('x-b').value;
+        const yb = document.getElementById('y-b').value;
+        const xc = document.getElementById('x-c').value;
+        const yc = document.getElementById('y-c').value;
+        const xd = document.getElementById('x-d').value;
+        const yd = document.getElementById('y-d').value;
+
+        const quada = document.getElementById('quad-a').value;
+        const quadb = document.getElementById('quad-b').value;
+        const quadc = document.getElementById('quad-c').value;
+        const quadd = document.getElementById('quad-d').value;
+
+        const distPt1 = document.getElementById('dist-pt1').value;
+        const distPt2 = document.getElementById('dist-pt2').value;
+        const distSide = document.getElementById('dist-side').value;
+        const distOp = document.getElementById('dist-op').value;
+        const distAns = document.getElementById('dist-ans').value;
+
+        const reflSelect = document.getElementById('reflect-select').value;
+        const rx_x = document.getElementById('refl-x-x').value;
+        const rx_y = document.getElementById('refl-x-y').value;
+        const ry_x = document.getElementById('refl-y-x').value;
+        const ry_y = document.getElementById('refl-y-y').value;
+        const rb_x = document.getElementById('refl-both-x').value;
+        const rb_y = document.getElementById('refl-both-y').value;
+
+        const pName = document.getElementById('p-name').value || 'Partner';
+        const pya = document.getElementById('p-y-a').value;
+        const pyb = document.getElementById('p-y-b').value;
+        const pyc = document.getElementById('p-y-c').value;
+        const pyd = document.getElementById('p-y-d').value;
+
+        const pitch = document.getElementById('pitch').value;
+        const zonesNote = document.getElementById('zones-reflect-text')?.value || '';
+
+        const yValA = parseFloat(ya) || 0;
+        const yValB = parseFloat(yb) || 0;
+        const yValC = parseFloat(yc) || 0;
+        const yValD = parseFloat(yd) || 0;
+
+        const selfMaxDepth = Math.max(0, -yValA, -yValB, -yValC, -yValD) * 100;
+        const selfMaxY = Math.max(yValA, yValB, yValC, yValD);
+        const selfMinY = Math.min(yValA, yValB, yValC, yValD);
+        const selfSpan = (selfMaxY - selfMinY) * 100;
+
+        const pyValA = parseFloat(pya) || 0;
+        const pyValB = parseFloat(pyb) || 0;
+        const pyValC = parseFloat(pyc) || 0;
+        const pyValD = parseFloat(pyd) || 0;
+
+        const partnerMaxDepth = Math.max(0, -pyValA, -pyValB, -pyValC, -pyValD) * 100;
+        const partnerMaxY = Math.max(pyValA, pyValB, pyValC, pyValD);
+        const partnerMinY = Math.min(pyValA, pyValB, pyValC, pyValD);
+        const partnerSpan = (partnerMaxY - partnerMinY) * 100;
+
+        const lines = [
+          '═══ SUBMARINE MISSION CONTROL — UNIT 7 CULMINATING PROJECT ═══',
+          '',
+          '📖 MATH STANDARDS: 6.NS.6, 6.NS.8 (Negative Numbers, Coordinate Plane, Absolute Value)',
+          '',
+          '📍 STEP 1 — MISSION CHECKPOINTS',
+          `   Checkpoint A (Starting Harbor): (${xa || '—'}, ${ya || '—'}) | Quadrant: ${quada || '—'} (Scaled Depth: ${yValA < 0 ? -yValA * 100 : 0}m)`,
+          `   Checkpoint B (Twilight Trench): (${xb || '—'}, ${yb || '—'}) | Quadrant: ${quadb || '—'} (Scaled Depth: ${yValB < 0 ? -yValB * 100 : 0}m)`,
+          `   Checkpoint C (Sunken Galleon) : (${xc || '—'}, ${yc || '—'}) | Quadrant: ${quadc || '—'} (Scaled Depth: ${yValC < 0 ? -yValC * 100 : 0}m)`,
+          `   Checkpoint D (Research Base)  : (${xd || '—'}, ${yd || '—'}) | Quadrant: ${quadd || '—'} (Scaled Depth: ${yValD < 0 ? -yValD * 100 : 0}m)`,
+          '',
+          '📏 STEP 2 — DEPTH DISTANCES',
+          `   Vertical distance between Checkpoint ${distPt1} (${document.getElementById(`y-${distPt1.toLowerCase()}`)?.value || '—'}) and Checkpoint ${distPt2} (${document.getElementById(`y-${distPt2.toLowerCase()}`)?.value || '—'}):`,
+          `   - Side Check: ${distSide === 'opposite' ? 'Opposite Sides (+)' : 'Same Side (-)'}`,
+          `   - Equation: |${document.getElementById(`y-${distPt1.toLowerCase()}`)?.value || '—'}| ${distOp || '?'} |${document.getElementById(`y-${distPt2.toLowerCase()}`)?.value || '—'}| = ${distAns || '—'} units`,
+          `   - Scaled Distance: ${(parseFloat(distAns) * 100) || 0} meters`,
+          '',
+          '🔄 STEP 3 — SUBMARINE REFLECTIONS & REAL OCEAN DEPTHS',
+          `   Reflections of Checkpoint ${reflSelect} (${document.getElementById(`x-${reflSelect.toLowerCase()}`)?.value || '—'}, ${document.getElementById(`y-${reflSelect.toLowerCase()}`)?.value || '—'}):`,
+          `   - Reflected over X-axis: (${rx_x || '—'}, ${rx_y || '—'})`,
+          `   - Reflected over Y-axis: (${ry_x || '—'}, ${ry_y || '—'})`,
+          `   - Reflected over both axes: (${rb_x || '—'}, ${rb_y || '—'})`,
+          zonesNote ? `   Ocean Zones Reflection: ${zonesNote}` : '',
+          '',
+          '👥 STEP 4 — PARTNER MISSION COMPARISON',
+          `   Partner Name: ${pName}`,
+          `   - Your Max Depth: ${selfMaxDepth} meters | Partner Max Depth: ${partnerMaxDepth} meters`,
+          `   - Your Vertical Range: ${selfSpan} meters | Partner Vertical Range: ${partnerSpan} meters`,
+          `   - Reflections comparison: ${document.getElementById('peer-reflect')?.value || '—'}`,
+          '',
+          '✍️ NAVIGATOR LOG PITCH:',
+          pitch || '(no pitch written)',
+          '',
+          '═══════════════════════════════',
+          `Generated: ${new Date().toLocaleDateString()} | Active Level: ${document.getElementById('body').className.replace('level-', 'Level ')}`,
+        ];
+        const box = document.getElementById('reportBox');
+        box.textContent = lines.join('\n');
+        box.classList.add('show');
+      }
+
+      function copyReport() {
+        const txt = document.getElementById('reportBox').textContent;
+        navigator.clipboard?.writeText(txt).then(() => alert('Copied to clipboard!'));
+      }
+
+      function downloadTxt() {
+        const txt = document.getElementById('reportBox').textContent;
+        const a = document.createElement('a');
+        a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(txt);
+        a.download = 'submarine-mission-report.txt';
+        a.click();
+      }
+
+      // ---- Initialization ----
+      updateGrid();
+      buildTrail();
+      updateProgress();
     </script>
-    <script src="/shared/projects/projects-tabs.js" defer></script>
-    <script src="/shared/projects/projects-interactive.js" defer></script>
-    <script src="/shared/projects/manip-number-line.js" defer></script>
-    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-    <script src="/assets/math-workbench-launcher.js" defer></script>
-    <!-- mwb-injected:end -->
   </body>
 </html>

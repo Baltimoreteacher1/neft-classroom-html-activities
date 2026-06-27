@@ -3,2841 +3,1490 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Recipe Remix Bakery — Unit 2 Culminating Project</title>
-    <meta
-      name="description"
-      content="Unit 2 Fraction Division culminating project. Run YOUR own bakery by dividing real recipe amounts into fractional servings, compare with a partner, and see how your yields stack up against real recipes."
-    />
-    <link rel="stylesheet" href="/assets/shared.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-kit.css" />
-    <script src="/shared/projects/projects-kit.js" defer></script>
+    <meta name="description" content="Unit 2 Fraction Division culminating project. Run your own bakery by scaling recipes using fraction division. Clean step-by-step, tab-based guide." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <style>
       :root {
-        --navy: #2b1a0f;
-        --blue: #b5521a;
-        --blue-light: #fceee8;
-        --teal: #0e8a7d;
-        --teal-light: #e4f5f3;
-        --gold: #d4952a;
-        --gold-light: #fdf3e0;
+        --navy: #0b2e2d;     /* Deep Teal-Navy for warm, premium text/headers */
+        --blue: #0e8a7d;     /* Primary accent - Teal */
+        --blue-lt: #e4f5f3;  /* Primary accent light - Teal background */
+        --teal: #1a6fb5;     /* Secondary accent - Blue */
+        --teal-lt: #e8f2fc;  /* Secondary accent light - Blue background */
+        --gold: #c9820f;
+        --gold-lt: #fdf3e0;
+        --green: #1e7d40;
+        --green-lt: #e6f4eb;
         --coral: #c45a3c;
-        --coral-light: #fdeee9;
-        --green: #2d874b;
-        --green-light: #e6f4eb;
         --ink: #1a2633;
         --muted: #5e6e7e;
         --line: #e2e7ec;
-        --bg: #f7f9fb;
+        --bg: #f4f7fa;
         --card: #ffffff;
         --radius: 16px;
-        --shadow: 0 4px 18px rgba(43, 26, 15, 0.1);
-        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+        --shadow: 0 2px 16px rgba(11, 46, 45, 0.1);
       }
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        margin: 0;
-        font-family: var(--font);
-        color: var(--ink);
-        background: var(--bg);
-        line-height: 1.55;
-      }
-      .wrap {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 0 20px 60px;
-      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: 'Inter', system-ui, sans-serif; color: var(--ink); background: var(--bg); line-height: 1.6; }
 
-      .phero {
-        background: linear-gradient(
-          135deg,
-          #7c2d12 0%,
-          #b5521a 60%,
-          #d4952a 100%
-        );
+      /* ---- Hero ---- */
+      .hero {
+        background: linear-gradient(135deg, #0b2e2d 0%, #0e8a7d 60%, #1a6fb5 100%);
         color: #fff;
-        padding: 40px 24px 34px;
+        padding: 36px 24px 28px;
         text-align: center;
-        position: relative;
-        overflow: hidden;
       }
-      .phero .deco {
-        font-size: 56px;
-        line-height: 1;
-      }
-      .phero h1 {
-        font-size: clamp(26px, 5vw, 40px);
-        margin: 10px 0 8px;
-        letter-spacing: -0.02em;
-      }
-      .phero p {
-        max-width: 640px;
-        margin: 0 auto;
-        color: rgba(255, 255, 255, 0.85);
-        font-size: 17px;
-      }
-      .tags {
-        margin-top: 16px;
-        display: flex;
-        gap: 8px;
-        justify-content: center;
-        flex-wrap: wrap;
-      }
-      .tag {
-        background: rgba(255, 255, 255, 0.14);
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        border-radius: 50px;
-        padding: 5px 14px;
-        font-size: 13px;
-        font-weight: 700;
-      }
-      .tag.gold {
-        background: var(--gold);
-        border-color: var(--gold);
-        color: #2a1c00;
-      }
+      .hero-emoji { font-size: 52px; line-height: 1; margin-bottom: 10px; }
+      .hero h1 { font-size: clamp(24px,5vw,38px); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; }
+      .hero-sub { color: rgba(255,255,255,.85); font-size: 16px; max-width: 580px; margin: 0 auto 16px; }
+      .hero-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; }
+      .tag { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.28); border-radius: 50px; padding: 4px 13px; font-size: 12px; font-weight: 700; letter-spacing: .04em; }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #fff; }
 
-      .toolbar {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        justify-content: center;
-        margin-top: 16px;
+      /* ---- Level selector ---- */
+      .level-bar {
+        display: flex; gap: 10px; justify-content: center;
+        background: rgba(255,255,255,.10); border-radius: 50px;
+        padding: 6px 10px; max-width: 400px; margin: 0 auto;
       }
-      .toolbar button {
-        background: rgba(255, 255, 255, 0.12);
-        color: #fff;
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        border-radius: 50px;
-        padding: 8px 16px;
-        font-weight: 700;
-        font-size: 13px;
-        cursor: pointer;
-        font-family: inherit;
+      .level-btn {
+        flex: 1; background: transparent; color: rgba(255,255,255,.75);
+        border: 2px solid rgba(255,255,255,.30); border-radius: 50px;
+        padding: 7px 16px; font-size: 13px; font-weight: 700;
+        cursor: pointer; font-family: inherit; transition: all .2s;
       }
-      .toolbar button:hover {
-        background: rgba(255, 255, 255, 0.22);
-      }
+      .level-btn.active { background: #fff; color: var(--navy); border-color: #fff; }
 
-      .intro-card {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-left: 6px solid var(--gold);
-        border-radius: var(--radius);
-        padding: 22px 24px;
-        margin: 26px 0;
-        box-shadow: var(--shadow);
-      }
-      .intro-card h2 {
-        margin: 0 0 8px;
-        font-size: 20px;
-      }
-      .intro-card .scenario {
-        font-size: 16px;
-        color: var(--ink);
-      }
+      /* ---- Tab wizard ---- */
+      .wizard { max-width: 860px; margin: 0 auto; padding: 0 16px 60px; }
 
-      .phase {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-radius: var(--radius);
-        padding: 24px;
-        margin: 22px 0;
-        box-shadow: var(--shadow);
+      .step-trail {
+        display: flex; align-items: center; gap: 0;
+        padding: 22px 0 0; overflow-x: auto;
       }
-      .phase-head {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        margin-bottom: 6px;
+      .step-trail-item {
+        display: flex; align-items: center; gap: 6px;
+        cursor: pointer; white-space: nowrap; padding: 8px 12px;
+        border-radius: 10px; transition: background .15s;
       }
-      .phase-num {
-        flex: 0 0 auto;
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
-        background: var(--blue);
-        color: #fff;
-        font-weight: 800;
-        font-size: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+      .step-trail-item:hover { background: var(--blue-lt); }
+      .step-trail-item.active .s-num {
+        background: var(--blue); color: #fff;
       }
-      .phase h2 {
-        margin: 0;
-        font-size: 21px;
+      .step-trail-item.done .s-num {
+        background: var(--green); color: #fff;
       }
-      .phase .skill {
-        font-size: 12px;
-        font-weight: 700;
-        color: var(--muted);
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
+      .s-num {
+        width: 30px; height: 30px; border-radius: 50%;
+        background: var(--line); color: var(--muted);
+        font-weight: 800; font-size: 13px;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0; transition: all .2s;
       }
-      .phase > p {
-        color: var(--muted);
-      }
-      .arc-banner {
-        display: inline-block;
-        font-size: 12px;
-        font-weight: 800;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        color: var(--blue);
-        background: var(--blue-light);
-        border-radius: 50px;
-        padding: 4px 12px;
-        margin-bottom: 10px;
-      }
+      .s-label { font-size: 13px; font-weight: 600; color: var(--muted); }
+      .step-trail-item.active .s-label { color: var(--blue); }
+      .step-trail-item.done .s-label { color: var(--green); }
+      .step-arrow { color: var(--line); font-size: 16px; padding: 0 2px; }
 
-      .task {
-        background: var(--blue-light);
-        border-radius: 12px;
-        padding: 16px 18px;
-        margin: 16px 0;
-      }
-      .task strong {
-        color: var(--navy);
-      }
+      /* ---- Progress bar ---- */
+      .prog-wrap { margin: 14px 0 4px; }
+      .prog-bar { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; }
+      .prog-fill { height: 100%; background: linear-gradient(90deg,var(--blue),var(--teal)); border-radius: 99px; transition: width .4s ease; }
+      .prog-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
 
-      label.fld {
-        display: block;
-        font-weight: 700;
-        font-size: 14px;
-        margin: 14px 0 6px;
-      }
-      input[type="number"],
-      input[type="text"],
-      select,
-      textarea {
-        width: 100%;
-        padding: 11px 13px;
-        border: 2px solid var(--line);
-        border-radius: 10px;
-        font-family: inherit;
-        font-size: 15px;
-        background: #fff;
-      }
-      input:focus,
-      select:focus,
-      textarea:focus {
-        outline: none;
-        border-color: var(--blue);
-      }
-      textarea {
-        resize: vertical;
-        min-height: 80px;
-      }
-      .grid2 {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 14px;
-      }
-      .grid4 {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
-        gap: 10px;
-        align-items: end;
-      }
-      @media (max-width: 560px) {
-        .grid2 {
-          grid-template-columns: 1fr;
-        }
-        .grid4 {
-          grid-template-columns: 1fr 1fr;
-        }
-      }
+      /* ---- Step panel ---- */
+      .step-panel { display: none; animation: fadein .25s ease; }
+      .step-panel.active { display: block; }
+      @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
-      .frac-label {
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--muted);
-        text-align: center;
-        margin-bottom: 4px;
+      /* ---- Card ---- */
+      .card {
+        background: var(--card); border: 1px solid var(--line);
+        border-radius: var(--radius); padding: 28px 26px;
+        box-shadow: var(--shadow); margin-top: 16px;
       }
+      .card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+      .card-icon {
+        width: 50px; height: 50px; border-radius: 14px;
+        background: var(--blue-lt); display: flex;
+        align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0;
+      }
+      .card-icon.gold { background: var(--gold-lt); }
+      .card-icon.teal { background: var(--teal-lt); }
+      .card-icon.green { background: var(--green-lt); }
+      .card-title { font-size: 20px; font-weight: 800; color: var(--navy); margin-bottom: 3px; }
+      .card-sub { font-size: 13px; color: var(--muted); font-weight: 500; }
 
-      /* fraction-bar visual (Level 1) */
-      .frac-bar {
-        display: flex;
-        height: 26px;
-        border: 2px solid var(--blue);
-        border-radius: 6px;
-        overflow: hidden;
-        margin: 10px 0 4px;
-        max-width: 360px;
-        background: #fff;
+      /* ---- Instruction box ---- */
+      .instruct {
+        background: var(--blue-lt); border-left: 4px solid var(--blue);
+        border-radius: 10px; padding: 14px 16px; margin-bottom: 20px;
+        font-size: 15px; line-height: 1.6;
       }
-      .frac-bar span {
-        flex: 1 1 0;
-        border-right: 1px dashed #c98a5e;
-      }
-      .frac-bar span:last-child {
-        border-right: 0;
-      }
-      .frac-bar span.fill {
-        background: var(--gold-light);
-      }
+      .instruct.gold { background: var(--gold-lt); border-color: var(--gold); }
+      .instruct.teal { background: var(--teal-lt); border-color: var(--teal); }
+      .instruct.green { background: var(--green-lt); border-color: var(--green); }
 
-      .btn {
-        background: var(--blue);
-        color: #fff;
-        border: none;
-        border-radius: 10px;
-        padding: 11px 20px;
-        font-weight: 800;
-        font-size: 15px;
-        cursor: pointer;
-        font-family: inherit;
-        margin-top: 14px;
-      }
-      .btn:hover {
-        filter: brightness(1.08);
-      }
-      .btn.alt {
-        background: var(--teal);
-      }
-      .btn.ghost {
-        background: #fff;
-        color: var(--blue);
-        border: 2px solid var(--line);
-      }
+      /* ---- SVG visual ---- */
+      .visual-svg { display: block; width: 100%; max-width: 520px; margin: 0 auto 20px; border-radius: 12px; }
 
+      /* ---- Form inputs ---- */
+      label.lbl { display: block; font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 5px; margin-top: 14px; }
+      input[type="number"], input[type="text"], textarea, select {
+        width: 100%; padding: 10px 14px; border: 1.5px solid var(--line);
+        border-radius: 10px; font-size: 15px; font-family: inherit;
+        background: var(--bg); color: var(--ink); transition: border-color .2s;
+      }
+      input:focus, textarea:focus, select:focus { outline: none; border-color: var(--blue); }
+      textarea { min-height: 90px; resize: vertical; }
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
+
+      /* ---- Calc button & readout ---- */
+      .calc-btn {
+        background: var(--blue); color: #fff; border: none;
+        border-radius: 10px; padding: 11px 20px; font-size: 14px;
+        font-weight: 700; cursor: pointer; font-family: inherit;
+        margin-top: 12px; transition: background .2s;
+      }
+      .calc-btn:hover { background: #0a6b62; }
+      .calc-btn.gold { background: var(--gold); }
+      .calc-btn.gold:hover { background: #a36a0c; }
+      .calc-btn.teal { background: var(--teal); }
+      .calc-btn.teal:hover { background: #155fa0; }
+      .calc-btn.green { background: var(--green); }
+      .calc-btn.green:hover { background: #185f31; }
+      
       .readout {
-        margin-top: 16px;
-        border-radius: 12px;
-        padding: 16px 18px;
-        font-size: 15px;
-        background: var(--teal-light);
-        border: 1px solid #bfe6e0;
-        display: none;
+        background: var(--navy); color: #e4f5f3;
+        border-radius: 10px; padding: 14px 18px; margin-top: 12px;
+        font-size: 15px; line-height: 1.6; display: none;
       }
-      .readout.show {
-        display: block;
+      .readout.show { display: block; }
+      .readout strong { color: #82eedd; }
+      .readout sup { font-size: 11px; }
+      .readout sub { font-size: 11px; }
+
+      /* ---- Hint ---- */
+      details.hint { margin-top: 14px; }
+      details.hint summary {
+        cursor: pointer; font-size: 13px; font-weight: 600;
+        color: var(--blue); list-style: none; display: inline-flex;
+        align-items: center; gap: 5px;
       }
-      .readout .big {
-        font-size: 28px;
-        font-weight: 800;
-        color: var(--teal);
+      details.hint summary::before { content: "💡"; }
+      details.hint p { font-size: 14px; color: var(--muted); margin-top: 8px; padding: 10px 12px; background: var(--blue-lt); border-radius: 8px; }
+
+      /* ---- Level 2 extension ---- */
+      .lvl2-block {
+        border: 2px dashed var(--blue); border-radius: 12px;
+        padding: 14px 16px; margin-top: 18px;
       }
-      .feedback {
-        margin-top: 10px;
-        font-weight: 700;
-        min-height: 22px;
-      }
-      .feedback.ok {
-        color: var(--green);
-      }
-      .feedback.no {
-        color: var(--coral);
+      .lvl2-label {
+        display: inline-block; background: var(--blue); color: #fff;
+        font-size: 11px; font-weight: 800; letter-spacing: .05em;
+        border-radius: 50px; padding: 3px 10px; margin-bottom: 8px;
       }
 
-      .hintbox {
-        margin-top: 12px;
-      }
-      .hintbox summary {
-        cursor: pointer;
-        font-weight: 700;
-        color: var(--blue);
-        font-size: 14px;
-      }
-      .hintbox p,
-      .hintbox div {
-        background: var(--gold-light);
-        border-radius: 10px;
-        padding: 12px 14px;
-        margin: 8px 0 0;
-        font-size: 14px;
-      }
+      /* ---- Real-world data table ---- */
+      .data-table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14px; }
+      .data-table th { background: var(--navy); color: #fff; padding: 8px 12px; text-align: left; }
+      .data-table td { padding: 8px 12px; border-bottom: 1px solid var(--line); }
+      .data-table tr:last-child td { border-bottom: none; }
+      .data-table tr:nth-child(even) td { background: var(--bg); }
 
-      .rubric {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 12px;
-        font-size: 14px;
-      }
-      .rubric th,
-      .rubric td {
-        border: 1px solid var(--line);
-        padding: 10px 12px;
-        text-align: left;
-        vertical-align: top;
-      }
-      .rubric th {
-        background: var(--navy);
-        color: #fff;
-        font-size: 13px;
-      }
-      .rubric td:first-child {
-        font-weight: 700;
-        width: 30%;
-      }
+      /* ---- Checklist ---- */
+      .checklist { list-style: none; margin-top: 12px; }
+      .checklist li { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+      .checklist li:last-child { border-bottom: none; }
+      .checklist input[type="checkbox"] { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--green); flex-shrink: 0; }
 
-      .checklist {
-        list-style: none;
-        padding: 0;
-        margin: 12px 0 0;
-      }
-      .checklist li {
-        display: flex;
-        gap: 10px;
-        align-items: flex-start;
-        padding: 8px 0;
-        border-bottom: 1px solid var(--line);
-      }
-      .checklist input {
-        width: 20px;
-        height: 20px;
-        margin-top: 2px;
-        flex: 0 0 auto;
-      }
+      /* ---- Rubric ---- */
+      .rubric { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 14px; }
+      .rubric th { background: var(--navy); color: #fff; padding: 10px 12px; text-align: left; }
+      .rubric td { padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+      .rubric tr:last-child td { border-bottom: none; }
+      .score-4 { color: var(--green); font-weight: 700; }
+      .score-3 { color: var(--blue); font-weight: 700; }
+      .score-2 { color: var(--gold); font-weight: 700; }
 
-      .progress-wrap {
-        position: sticky;
-        top: 0;
-        z-index: 5;
-        background: var(--bg);
-        padding: 12px 0;
+      /* ---- Nav buttons ---- */
+      .nav-row { display: flex; gap: 10px; margin-top: 24px; justify-content: space-between; }
+      .nav-btn {
+        background: var(--blue); color: #fff; border: none;
+        border-radius: 10px; padding: 12px 24px; font-size: 15px;
+        font-weight: 700; cursor: pointer; font-family: inherit;
+        display: flex; align-items: center; gap: 8px; transition: background .2s;
       }
-      .progress-track {
-        height: 12px;
-        background: var(--line);
-        border-radius: 50px;
-        overflow: hidden;
-      }
-      .progress-fill {
-        height: 100%;
-        width: 0;
-        background: linear-gradient(90deg, var(--teal), var(--green));
-        transition: width 0.4s;
-      }
-      .progress-label {
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--muted);
-        margin-bottom: 6px;
-      }
+      .nav-btn:hover { background: #0a6b62; }
+      .nav-btn.ghost { background: transparent; color: var(--blue); border: 2px solid var(--blue); }
+      .nav-btn.ghost:hover { background: var(--blue-lt); }
+      .nav-btn:disabled { opacity: .45; cursor: not-allowed; }
 
-      .footer {
-        text-align: center;
-        color: var(--muted);
-        font-size: 14px;
-        margin-top: 40px;
+      /* ---- Report / pitch textarea ---- */
+      #pitch { min-height: 130px; }
+      .report-box {
+        background: var(--navy); color: #e4f5f3; border-radius: 12px;
+        padding: 20px; margin-top: 14px; font-size: 14px; line-height: 1.7;
+        white-space: pre-wrap; display: none;
       }
-      .printbtn {
-        background: var(--navy);
+      .report-box.show { display: block; }
+      .export-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+      .export-btn {
+        background: transparent; border: 1.5px solid var(--line);
+        border-radius: 8px; padding: 7px 14px; font-size: 13px;
+        font-weight: 600; cursor: pointer; font-family: inherit;
+        color: var(--muted); transition: all .15s;
       }
-      h3 {
-        font-size: 17px;
-      }
+      .export-btn:hover { border-color: var(--blue); color: var(--blue); }
 
+      /* ---- Level-gated content ---- */
+      .lvl1-only { display: none; }
+      .lvl2-only { display: none; }
+      body.level-1 .lvl1-only { display: block; }
+      body.level-2 .lvl2-only { display: block; }
+      body.level-2 .lvl2-block { border-color: var(--blue); }
+
+      /* ---- Vocab cards ---- */
+      .vocab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 14px; }
+      .vocab-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+      .vocab-icon { font-size: 26px; margin-bottom: 6px; }
+      .vocab-term { font-size: 13px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
+      .vocab-def { font-size: 13px; color: var(--muted); line-height: 1.5; }
+      .vocab-ex { font-size: 12px; color: var(--blue); font-weight: 600; margin-top: 5px; }
+
+      /* ---- Print ---- */
       @media print {
-        .phero .deco,
-        .progress-wrap,
-        .btn,
-        .breadcrumb,
-        .hintbox,
-        .toolbar,
-        .pk-no-print {
-          display: none !important;
-        }
-        .phase,
-        .intro-card {
-          box-shadow: none;
-          break-inside: avoid;
-        }
-        body {
-          background: #fff;
-        }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        html {
-          scroll-behavior: auto;
-        }
-        *,
-        *::before,
-        *::after {
-          animation-duration: 0.001ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.001ms !important;
-        }
+        .no-print { display: none !important; }
+        .hero { background: var(--navy) !important; }
+        body { background: #fff; }
+        .card { box-shadow: none; border-color: #ccc; }
       }
     </style>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <!-- nsr-injected:end -->
-    <link rel="stylesheet" href="/shared/projects/projects-premium.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-tabs.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-tplus.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-interactive.css" />
-    <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
-    <link rel="stylesheet" href="/assets/mobile-access.css" />
-    <!-- mobile-access-injected:end -->
   </head>
-  <body class="pk" data-pk-theme="u2">
-    <header class="phero">
-      <div class="deco">🧁</div>
+  <body class="level-1" id="body">
+
+    <!-- ====== HERO ====== -->
+    <header class="hero no-print">
+      <div class="hero-emoji">🧁</div>
       <h1>Recipe Remix Bakery</h1>
-      <p>
-        You run <strong>your own</strong> mini bakery. Use
-        <em>your real recipes and amounts</em>, divide them into fractional
-        servings, compare with a partner, then see how your yields stack up
-        against real recipes.
-      </p>
-      <div class="tags">
-        <span class="tag gold">Unit 2 · Fraction Division</span>
+      <p class="hero-sub">Run your own bakery by using fraction division to scale recipes — step by step.</p>
+      <div class="hero-tags">
+        <span class="tag gold">Unit 2 · Fractions</span>
         <span class="tag">6.NS.1</span>
-        <span class="tag">Version A · Design &amp; Build</span>
+        <span class="tag">Version A</span>
       </div>
-      <div class="toolbar pk-no-print">
-        <button onclick="PK.toggleEs()">🌐 EN / ES help</button>
-        <span class="pk-level-toggle">
-          <button data-level-btn="level-1" type="button">
-            🟢 Level 1 (support)
-          </button>
-          <button data-level-btn="level-2" type="button">
-            🔵 Level 2 (challenge)
-          </button>
-        </span>
-        <button
-          class="pk-tts-toggle"
-          data-tts-toggle
-          type="button"
-          aria-pressed="false"
-          title="Read text aloud"
-        >
-          🔊 Read aloud
-        </button>
-        <button onclick="PK.save('u2ProjectA')">💾 Save</button>
-        <button
-          onclick="PK.load('u2ProjectA', { show: true, after: recalcAll })"
-        >
-          📂 Load
-        </button>
+      <div class="level-bar">
+        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">🟢 Level 1 — With Support</button>
+        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">🔵 Level 2 — Challenge</button>
       </div>
     </header>
 
-    <div class="wrap">
-      <div class="progress-wrap">
-        <div class="progress-label">
-          Project progress: <span id="pct">0</span>% complete
+    <!-- ====== WIZARD ====== -->
+    <div class="wizard">
+
+      <!-- Step trail -->
+      <nav class="step-trail no-print" id="stepTrail" aria-label="Project steps"></nav>
+
+      <!-- Progress bar -->
+      <div class="prog-wrap no-print">
+        <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+        <div class="prog-label" id="progLabel">Step 1 of 6</div>
+      </div>
+
+      <!-- ======================================
+           STEP 1 — KEY WORDS
+      ====================================== -->
+      <div class="step-panel active" id="step-1">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon gold">📖</div>
+            <div>
+              <div class="card-title">Key Words</div>
+              <div class="card-sub">Learn these 4 math words before you begin</div>
+            </div>
+          </div>
+
+          <!-- SVG Visual: vocab diagram -->
+          <svg class="visual-svg" viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">
+            <!-- Fraction box -->
+            <rect x="10" y="20" width="115" height="120" rx="10" fill="#e4f5f3" stroke="#0e8a7d" stroke-width="2"/>
+            <text x="67.5" y="45" text-anchor="middle" font-size="20">🧁</text>
+            <text x="67.5" y="65" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Fraction</text>
+            <text x="67.5" y="80" text-anchor="middle" font-size="9" fill="#5e6e7e">Part of a whole</text>
+            <text x="67.5" y="92" text-anchor="middle" font-size="9" fill="#5e6e7e">amount</text>
+            <text x="67.5" y="112" text-anchor="middle" font-size="12" fill="#0e8a7d" font-weight="bold">3/4 Cup Sugar</text>
+            
+            <!-- Unit Fraction box -->
+            <rect x="135" y="20" width="115" height="120" rx="10" fill="#e8f2fc" stroke="#1a6fb5" stroke-width="2"/>
+            <text x="192.5" y="45" text-anchor="middle" font-size="20">🥄</text>
+            <text x="192.5" y="65" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Unit Fraction</text>
+            <text x="192.5" y="80" text-anchor="middle" font-size="9" fill="#5e6e7e">Numerator is 1</text>
+            <text x="192.5" y="92" text-anchor="middle" font-size="9" fill="#5e6e7e">(one single scoop)</text>
+            <text x="192.5" y="112" text-anchor="middle" font-size="12" fill="#1a6fb5" font-weight="bold">1/8 Cup Scoop</text>
+            
+            <!-- Mixed Number box -->
+            <rect x="260" y="20" width="115" height="120" rx="10" fill="#fdf3e0" stroke="#c9820f" stroke-width="2"/>
+            <text x="317.5" y="45" text-anchor="middle" font-size="20">🥖</text>
+            <text x="317.5" y="65" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Mixed Number</text>
+            <text x="317.5" y="80" text-anchor="middle" font-size="9" fill="#5e6e7e">Whole + Fraction</text>
+            <text x="317.5" y="92" text-anchor="middle" font-size="9" fill="#5e6e7e">combined</text>
+            <text x="317.5" y="112" text-anchor="middle" font-size="12" fill="#c9820f" font-weight="bold">2 1/2 Ft Roll</text>
+            
+            <!-- Quotient box -->
+            <rect x="385" y="20" width="125" height="120" rx="10" fill="#e6f4eb" stroke="#1e7d40" stroke-width="2"/>
+            <text x="447.5" y="45" text-anchor="middle" font-size="20">➗</text>
+            <text x="447.5" y="65" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">Quotient</text>
+            <text x="447.5" y="80" text-anchor="middle" font-size="9" fill="#5e6e7e">Answer: how many</text>
+            <text x="447.5" y="92" text-anchor="middle" font-size="9" fill="#5e6e7e">groups fit in</text>
+            <text x="447.5" y="112" text-anchor="middle" font-size="11" fill="#1e7d40" font-weight="bold">3/4 ÷ 1/8 = 6 Portions</text>
+          </svg>
+
+          <div class="vocab-grid">
+            <div class="vocab-card">
+              <div class="vocab-icon">🧁</div>
+              <div class="vocab-term">Fraction</div>
+              <div class="vocab-def">A number representing part of a whole, written with a numerator over a denominator.</div>
+              <div class="vocab-ex">e.g., 3/4 cup sugar</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">🥄</div>
+              <div class="vocab-term">Unit Fraction</div>
+              <div class="vocab-def">A fraction where the top number (numerator) is exactly 1, representing one equal piece.</div>
+              <div class="vocab-ex">e.g., 1/8 cup serving size</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">🥖</div>
+              <div class="vocab-term">Mixed Number</div>
+              <div class="vocab-def">A value combining a whole number and a proper fraction.</div>
+              <div class="vocab-ex">e.g., 2 1/2 feet of dough</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">➗</div>
+              <div class="vocab-term">Quotient</div>
+              <div class="vocab-def">The final answer when you divide. In fraction division, it shows "how many groups fit in".</div>
+              <div class="vocab-ex">e.g., 3/4 ÷ 1/8 = 6 portions</div>
+            </div>
+          </div>
+
+          <div class="instruct" style="margin-top:20px">
+            ✅ Read each math vocabulary card. Review the visual diagram above, then click <strong>Next Step</strong> to start portioning recipe ingredients.
+          </div>
         </div>
-        <div class="progress-track">
-          <div class="progress-fill" id="pfill"></div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" disabled>← Back</button>
+          <button class="nav-btn" onclick="goStep(2)">Next Step →</button>
         </div>
       </div>
 
-      <div class="intro-card">
-        <h2>🗺️ Your Mission</h2>
-        <p class="scenario">
-          Run a real bakery in three steps.
-          <strong>Part 1 (Self):</strong> enter a recipe
-          <em>you actually like</em>
-          and divide your real amounts into fractional servings.
-          <strong>Part 2 (Peer):</strong> swap recipes with a partner and
-          compare who gets more servings.
-          <strong>Part 3 (World):</strong> compare your servings-per-batch to
-          real recipe yields. Finish the menu card, checklist, and report.
-        </p>
-      </div>
-
-      <!-- ===================== VISUAL MATH NOTES ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div
-            class="phase-num"
-            style="background: var(--gold); color: #2a1c00"
-          >
-            📒
-          </div>
-          <div>
-            <div class="skill">Before you start · Vocabulary</div>
-            <h2>Visual Math Notes</h2>
-          </div>
-        </div>
-        <p>
-          Learn these words first. Tap <strong>EN / ES help</strong> at the top
-          for Spanish.
-        </p>
-        <div class="pk-vocab">
-          <div class="pk-term">
-            <span class="pk-icon">🍞</span><b>Dividend</b>
-            <p>The big amount you start with and cut up.</p>
-            <p class="pk-es">
-              Dividendo: la cantidad con la que empiezas y repartes.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">🔪</span><b>Divisor</b>
-            <p>The size of each piece you cut off.</p>
-            <p class="pk-es">Divisor: el tamaño de cada parte que cortas.</p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">🧁</span><b>Quotient</b>
-            <p>The answer: how many pieces you get.</p>
-            <p class="pk-es">
-              Cociente: la respuesta — cuántas porciones obtienes.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">🔄</span><b>Reciprocal</b>
-            <p>A fraction flipped over. 1/8 turns into 8/1.</p>
-            <p class="pk-es">
-              Recíproco: una fracción volteada. 1/8 se vuelve 8/1.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">📈</span><b>Improper Fraction</b>
-            <p>The top number is bigger than the bottom, like 5/2.</p>
-            <p class="pk-es">
-              Fracción impropia: el numerador es mayor que el denominador, como
-              5/2.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">🔢</span><b>Mixed Number</b>
-            <p>A whole number plus a fraction, like 2 1/2.</p>
-            <p class="pk-es">
-              Número mixto: un entero con una fracción, como 2 1/2.
-            </p>
-          </div>
-        </div>
-        <div class="grid2" style="margin-top: 18px">
-          <div class="pk-callout">
-            <h3>Formula Bank</h3>
-            <ul class="pk-formula">
-              <li>
-                <span class="pk-f-name"
-                  >Divide by a fraction = multiply by its flip</span
-                >
-                <span class="pk-f-mean"
-                  >To divide by a fraction, flip the second fraction upside down
-                  (its reciprocal) and multiply instead.</span
-                >
-                <span class="pk-eg"
-                  >Example: 3/4 ÷ 1/2 = 3/4 × 2/1 = 6/4 = 1 1/2</span
-                >
-              </li>
-              <li>
-                <span class="pk-f-name"
-                  >Turn a mixed number into a fraction first</span
-                >
-                <span class="pk-f-mean"
-                  >Multiply the whole number by the bottom, add the top, and
-                  keep the same bottom number.</span
-                >
-                <span class="pk-eg">Example: 2 1/2 = (2×2 + 1)/2 = 5/2</span>
-              </li>
-              <li>
-                <span class="pk-f-name">Smaller pieces make more pieces</span>
-                <span class="pk-f-mean"
-                  >Dividing by a smaller fraction gives a bigger answer, because
-                  tiny pieces fit into the total more times.</span
-                >
-                <span class="pk-eg"
-                  >Example: 6 ÷ 1/4 = 24, but 6 ÷ 1/2 = 12</span
-                >
-              </li>
-              <li class="pk-lvl2">
-                <span class="pk-f-name">Full servings and leftovers</span>
-                <span class="pk-f-mean"
-                  >The whole-number part of your answer is the number of full
-                  servings. Multiply the leftover part by the serving size to
-                  find the extra amount.</span
-                >
-                <span class="pk-eg"
-                  >Example: 7 ÷ 2 = 3.5 → 3 full servings, with 0.5 × 2 = 1 cup
-                  left over</span
-                >
-              </li>
-            </ul>
-          </div>
-          <div class="pk-callout">
-            <h3>Sentence Frames</h3>
-            <p>"I divided ___ by ___, so I get ___ servings."</p>
-            <p>"Dividing by ___ is the same as multiplying by ___."</p>
-            <p>
-              "My recipe makes ___ servings, which is more / fewer than ___
-              because ___."
-            </p>
-            <p class="pk-es">
-              "Dividí ___ entre ___, así que obtengo ___ porciones."
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== PART 1 — SELF ===================== -->
-
-      <!-- ===================== PROJECT SETUP ===================== -->
-      <section class="phase" id="phase-setup" data-phase>
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--blue)">S</div>
-          <div>
-            <span class="arc-banner">Project Setup</span>
-            <h2>Bake YOUR Recipe</h2>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <div>
-            <p
-              style="
-                font-size: 15px;
-                color: var(--muted);
-                line-height: 1.6;
-                margin-bottom: 20px;
-              "
-            >
-              Welcome! Read the scenario below and select your level to begin
-              your design plan.
-            </p>
-            <div style="margin-top: 16px">
-              <svg
-                width="100%"
-                height="220"
-                viewBox="0 0 500 220"
-                style="
-                  background: white;
-                  border-radius: 12px;
-                  border: 1px solid #e2e8f0;
-                  max-width: 480px;
-                  margin: 0 auto;
-                  display: block;
-                "
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <defs>
-                  <linearGradient
-                    id="setup-grad"
-                    x1="0%"
-                    y1="0%"
-                    x2="100%"
-                    y2="100%"
-                  >
-                    <stop offset="0%" stop-color="#ffffff" />
-                    <stop offset="100%" stop-color="#f8fafc" />
-                  </linearGradient>
-                </defs>
-
-                <rect
-                  x="20"
-                  y="20"
-                  width="460"
-                  height="200"
-                  rx="15"
-                  fill="url(#setup-grad)"
-                  stroke="#c45a3c"
-                  stroke-width="2"
-                />
-                <text
-                  x="250"
-                  y="60"
-                  text-anchor="middle"
-                  font-size="20"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  KITCHEN PREP STATION
-                </text>
-                <rect
-                  x="100"
-                  y="125"
-                  width="300"
-                  height="10"
-                  rx="5"
-                  fill="#d4952a"
-                />
-                <rect
-                  x="150"
-                  y="115"
-                  width="200"
-                  height="20"
-                  rx="4"
-                  fill="#a1887f"
-                />
-                <path
-                  d="M220,105 C210,80 230,60 250,60 C270,60 290,80 280,105 Z"
-                  fill="#fff"
-                  stroke="#5e6e7e"
-                  stroke-width="2"
-                />
-                <rect
-                  x="230"
-                  y="95"
-                  width="40"
-                  height="10"
-                  fill="#e8f2fc"
-                  stroke="#5e6e7e"
-                  stroke-width="2"
-                />
-              </svg>
+      <!-- ======================================
+           STEP 2 — PORTION CONTROL
+      ====================================== -->
+      <div class="step-panel" id="step-2">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">🧁</div>
+            <div>
+              <div class="card-title">Step 1 — Portion Control</div>
+              <div class="card-sub">Divide a recipe amount by a portion serving size</div>
             </div>
           </div>
 
-          <div
-            style="
-              background: var(--bg);
-              border: 1px solid var(--line);
-              border-radius: 12px;
-              padding: 20px;
-              box-shadow: var(--shadow);
-            "
-          >
-            <h3
-              style="
-                margin-top: 0;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-              "
-            >
-              <span>📋</span> Scenario &amp; Level Options
-            </h3>
-            <p style="font-size: 14px; line-height: 1.6; margin: 0 0 10px">
-              You are a <strong>bakery owner</strong>. Pick a recipe you like,
-              then divide your batch into equal fractional servings so every
-              customer gets the same amount.
-            </p>
-            <ul
-              style="
-                font-size: 14px;
-                line-height: 1.6;
-                margin: 0;
-                padding-left: 18px;
-              "
-            >
-              <li>
-                <strong>Level 1 (support):</strong> use friendly, round amounts
-                (split 6 cups of flour into 1/2-cup servings).
-              </li>
-              <li>
-                <strong>Level 2 (challenge):</strong> use real, uneven amounts
-                (split 4 1/3 cups into 3/4-cup servings and read the leftover).
-              </li>
-            </ul>
-          </div>
-        </div>
-        <p>
-          Enter a recipe <strong>you actually like</strong> and your own real
-          amounts below. Not sure yet? Click <em>Use example numbers</em> to
-          model the math, then change everything to fit your recipe.
-        </p>
-
-        <label class="fld" for="recipeName">What are you baking?</label>
-        <input type="text" id="recipeName" data-save placeholder="" />
-
-        <!-- 1a Fraction ÷ Fraction -->
-
-        <div
-          style="
-            margin-top: 20px;
-            padding-top: 16px;
-            border-top: 1px solid var(--line);
-          "
-        >
-          <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px">
-            You can type your own numbers as you go, or click below to start
-            with our example numbers:
-          </p>
-          <button
-            class="btn ghost"
-            type="button"
-            onclick="useExamples()"
-            style="
-              width: 100%;
-              font-weight: bold;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              gap: 8px;
-            "
-          >
-            ✨ Use Example Numbers
-          </button>
-        </div>
-      </section>
-
-      <!-- ===================== PART 1A — SELF ===================== -->
-      <section class="phase" id="phase-1a" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">1a</div>
-          <div>
-            <span class="arc-banner">Part 1a · Self — your real plan</span>
-            <h2>🍞 Portion control (fraction ÷ fraction)</h2>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <div>
-            <div
-              class="pk-math-scaffold-card no-print"
-              style="
-                margin: 20px 0;
-                padding: 12px;
-                background: #fff;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-                max-width: 480px;
-                margin-left: auto;
-                margin-right: auto;
-              "
-            >
-              <svg
-                width="100%"
-                height="200"
-                viewBox="0 0 500 200"
-                style="background: #fff; border-radius: 8px"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <text
-                  x="250"
-                  y="30"
-                  text-anchor="middle"
-                  font-size="14"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  Fraction Division Visualizer
-                </text>
-                <rect
-                  x="100"
-                  y="80"
-                  width="300"
-                  height="24"
-                  fill="#f1f5f9"
-                  stroke="#cbd5e1"
-                  stroke-width="1"
-                />
-                <rect
-                  x="100"
-                  y="80"
-                  width="200"
-                  height="24"
-                  fill="#ffb74d"
-                  stroke="#f57c00"
-                  stroke-width="1"
-                />
-                <rect
-                  x="100"
-                  y="130"
-                  width="300"
-                  height="24"
-                  fill="#f1f5f9"
-                  stroke="#cbd5e1"
-                  stroke-width="1"
-                />
-                <rect
-                  x="100"
-                  y="130"
-                  width="50"
-                  height="24"
-                  fill="#64b5f6"
-                  stroke="#1e88e5"
-                  stroke-width="1"
-                />
-                <text
-                  x="250"
-                  y="180"
-                  text-anchor="middle"
-                  font-size="11"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  How many parts fit into the total?
-                </text>
-              </svg>
-            </div>
-
-            <div class="task">
-              <strong>Setup:</strong> You have <em>a/b</em> of a pan of dough.
-              Each mini-loaf uses <em>c/d</em> of a pan. How many mini-loaves?
-              Use the rule: (a/b) ÷ (c/d) = (a×d)/(b×c), then simplify.
-            </div>
-            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-              Level 1 tip: try friendly pieces like 3/4 of a pan and 1/8 per
-              loaf.
-            </p>
-            <div class="grid4">
-              <div>
-                <div class="frac-label">Dough — numerator (a)</div>
-                <input
-                  type="number"
-                  id="p1a"
-                  data-save
-                  min="1"
-                  placeholder=""
-                  oninput="calcPhase1()"
-                />
-              </div>
-              <div>
-                <div class="frac-label">Dough — denominator (b)</div>
-                <input
-                  type="number"
-                  id="p1b"
-                  data-save
-                  min="1"
-                  placeholder=""
-                  oninput="calcPhase1()"
-                />
-              </div>
-              <div>
-                <div class="frac-label">Per loaf — numerator (c)</div>
-                <input
-                  type="number"
-                  id="p1c"
-                  data-save
-                  min="1"
-                  placeholder=""
-                  oninput="calcPhase1()"
-                />
-              </div>
-              <div>
-                <div class="frac-label">Per loaf — denominator (d)</div>
-                <input
-                  type="number"
-                  id="p1d"
-                  data-save
-                  min="1"
-                  placeholder=""
-                  oninput="calcPhase1()"
-                />
-              </div>
-            </div>
-            <div class="pk-lvl1" id="p1-bar"></div>
-            <button class="btn" type="button" onclick="calcPhase1()">
-              Calculate mini-loaves
-            </button>
-            <div class="readout" id="p1-out"></div>
-            <div
-              class="pki-manip"
-              data-manip="frac-divide"
-              data-whole-label="cups of batter"
-              data-piece-label="cup per serving"
-              data-default-whole-n="3"
-              data-default-whole-d="4"
-              data-default-piece-n="1"
-              data-default-piece-d="8"
-              data-unit="cups"
-            ></div>
-            <details class="hintbox">
-              <summary>Need a hint?</summary>
-              <div>
-                To divide fractions, multiply by the reciprocal: (a/b) ÷ (c/d) =
-                (a/b) × (d/c) = (a×d)/(b×c). Then find the GCF of the top and
-                bottom to simplify.
-                <span class="pk-lvl1"
-                  ><br /><br /><b>Level 1 worked step:</b> (3/4) ÷ (1/8) → flip
-                  the second fraction → (3/4) × (8/1) = 24/4 = 6
-                  mini-loaves.</span
-                >
-              </div>
-            </details>
-
-            <div class="pk-lvl2" style="margin-top: 16px">
-              <div class="task">
-                <strong>Level 2 extension (6.NS.1):</strong> Your pan holds 7/8
-                of dough and each mini-loaf needs 1/6 of a pan. How many full
-                loaves can you bake, and how much dough is left over? Show the
-                reciprocal (flip) step, then explain the leftover as a fraction
-                of one loaf.
-              </div>
-            </div>
-
-            <!-- 1b Whole ÷ unit fraction -->
+          <div class="instruct">
+            <strong>Your job:</strong> Enter or select the total amount of an ingredient you have (dividend) and divide it by the portion size (divisor). Find the quotient to see how many portions you can serve.
           </div>
 
-          <div
-            style="
-              background: var(--bg);
-              border: 2.5px solid var(--line);
-              border-radius: 18px;
-              padding: 20px;
-              box-shadow: var(--shadow);
-              height: fit-content;
-            "
-            class="pk-no-print"
-          >
-            <h3
-              style="
-                margin-top: 0;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                color: var(--navy);
-                font-size: 16px;
-              "
-            >
-              <span>💡</span> Guided Steps &amp; Help
-            </h3>
+          <!-- Dynamic SVG visual -->
+          <svg id="portion-svg" class="visual-svg" viewBox="0 0 520 140" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">
+            <!-- Will be drawn dynamically by JS -->
+          </svg>
 
-            <p
-              style="
-                font-size: 13.5px;
-                line-height: 1.5;
-                color: var(--muted);
-                margin-bottom: 12px;
-              "
-            >
-              <strong>Dividing Fractions in Recipes & Measurements:</strong>
-            </p>
-            <ol
-              style="
-                margin-left: 18px;
-                font-size: 13px;
-                line-height: 1.5;
-                display: grid;
-                gap: 8px;
-                color: var(--ink);
-              "
-            >
-              <li>
-                Write down the division problem:
-                <b>Total Amount ÷ Serving Size</b>.
-              </li>
-              <li>
-                Convert any mixed numbers to <b>improper fractions</b> (e.g., 1
-                1/2 becomes 3/2).
-              </li>
-              <li>
-                Apply the <b>Keep-Change-Flip</b> rule:
-                <ul>
-                  <li><b>Keep</b> the first fraction.</li>
-                  <li><b>Change</b> division (÷) to multiplication (×).</li>
-                  <li><b>Flip</b> the second fraction to its reciprocal.</li>
-                </ul>
-              </li>
-              <li>
-                Multiply the numerators, multiply the denominators, and
-                simplify.
-              </li>
-            </ol>
-            <div
-              style="
-                margin-top: 14px;
-                padding: 10px;
-                background: var(--sky);
-                border-radius: 8px;
-                font-size: 12px;
-              "
-            >
-              💡 <b>Example:</b> 3/4 cup total ÷ 1/8 cup serving = 3/4 × 8/1 =
-              24/4 = 6 servings.
-            </div>
+          <!-- Level 1 instructions -->
+          <div class="instruct lvl1-only">
+            🟢 <strong>Level 1 support:</strong> Choose a friendly combination like 3/4 cup sugar divided by 1/8 cup servings. Check the visual model above to see how exactly 6 servings fit!
           </div>
-        </div>
-      </section>
-
-      <!-- ===================== PART 1B — SELF ===================== -->
-      <section class="phase" id="phase-1b" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">1b</div>
-          <div>
-            <span class="arc-banner">Part 1b · Self — your real plan</span>
-            <h2>🧁 How many servings? (whole ÷ unit fraction)</h2>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <div>
-            <div
-              class="pk-math-scaffold-card no-print"
-              style="
-                margin: 20px 0;
-                padding: 12px;
-                background: #fff;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-                max-width: 480px;
-                margin-left: auto;
-                margin-right: auto;
-              "
-            >
-              <svg
-                width="100%"
-                height="200"
-                viewBox="0 0 500 200"
-                style="background: #fff; border-radius: 8px"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <text
-                  x="250"
-                  y="30"
-                  text-anchor="middle"
-                  font-size="14"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  Fraction Division Visualizer
-                </text>
-                <rect
-                  x="100"
-                  y="80"
-                  width="300"
-                  height="24"
-                  fill="#f1f5f9"
-                  stroke="#cbd5e1"
-                  stroke-width="1"
-                />
-                <rect
-                  x="100"
-                  y="80"
-                  width="200"
-                  height="24"
-                  fill="#ffb74d"
-                  stroke="#f57c00"
-                  stroke-width="1"
-                />
-                <rect
-                  x="100"
-                  y="130"
-                  width="300"
-                  height="24"
-                  fill="#f1f5f9"
-                  stroke="#cbd5e1"
-                  stroke-width="1"
-                />
-                <rect
-                  x="100"
-                  y="130"
-                  width="50"
-                  height="24"
-                  fill="#64b5f6"
-                  stroke="#1e88e5"
-                  stroke-width="1"
-                />
-                <text
-                  x="250"
-                  y="180"
-                  text-anchor="middle"
-                  font-size="11"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  How many parts fit into the total?
-                </text>
-              </svg>
-            </div>
-
-            <div class="task">
-              <strong>Setup:</strong> You made a whole number of cups of
-              frosting. Each cupcake gets 1/(d) cup. How many cupcakes? Formula:
-              whole ÷ (1/d) = whole × d.
-            </div>
-            <div class="grid2">
-              <div>
-                <label class="fld" for="p2-cups">Total cups of frosting</label>
-                <input
-                  type="number"
-                  id="p2-cups"
-                  data-save
-                  min="1"
-                  placeholder=""
-                  oninput="calcPhase2()"
-                />
-              </div>
-              <div>
-                <label class="fld" for="p2-denom"
-                  >Each cupcake uses 1 / (this number) cup</label
-                >
-                <input
-                  type="number"
-                  id="p2-denom"
-                  data-save
-                  min="1"
-                  placeholder=""
-                  oninput="calcPhase2()"
-                />
-              </div>
-            </div>
-            <button class="btn alt" type="button" onclick="calcPhase2()">
-              Calculate servings
-            </button>
-            <div class="readout" id="p2-out"></div>
-            <details class="hintbox">
-              <summary>Need a hint?</summary>
-              <p>
-                Dividing by a unit fraction 1/d is the same as multiplying by d.
-                How many 1/3-cup scoops fit in 4 cups? Each cup holds 3 scoops →
-                4 × 3 = 12.
-              </p>
-            </details>
-
-            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-              Level 1 tip: count the scoops in ONE cup first (a 1/3-cup scoop
-              fits 3 times), then multiply by the number of cups.
-            </p>
-            <div class="pk-lvl2" style="margin-top: 16px">
-              <div class="task">
-                <strong>Level 2 extension (6.NS.1):</strong> If 5 cups of
-                frosting make exactly 30 cupcakes, how big is each cupcake's
-                scoop as a unit fraction of a cup? Explain how "dividing" and
-                "how many fit" describe the same idea.
-              </div>
-            </div>
-
-            <!-- 1c Mixed ÷ fraction -->
+          <!-- Level 2 challenge instructions -->
+          <div class="instruct lvl2-block lvl2-only">
+            <span class="lvl2-label">LEVEL 2 CHALLENGE</span><br>
+            Enter any custom fraction division below! (e.g. 5/6 cup total ÷ 1/3 cup serving size). Try unusual fractions to see the exact quotient and step-by-step reciprocal multiplication.
           </div>
 
-          <div
-            style="
-              background: var(--bg);
-              border: 2.5px solid var(--line);
-              border-radius: 18px;
-              padding: 20px;
-              box-shadow: var(--shadow);
-              height: fit-content;
-            "
-            class="pk-no-print"
-          >
-            <h3
-              style="
-                margin-top: 0;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                color: var(--navy);
-                font-size: 16px;
-              "
-            >
-              <span>💡</span> Guided Steps &amp; Help
-            </h3>
-
-            <p
-              style="
-                font-size: 13.5px;
-                line-height: 1.5;
-                color: var(--muted);
-                margin-bottom: 12px;
-              "
-            >
-              <strong>Dividing Fractions in Recipes & Measurements:</strong>
-            </p>
-            <ol
-              style="
-                margin-left: 18px;
-                font-size: 13px;
-                line-height: 1.5;
-                display: grid;
-                gap: 8px;
-                color: var(--ink);
-              "
-            >
-              <li>
-                Write down the division problem:
-                <b>Total Amount ÷ Serving Size</b>.
-              </li>
-              <li>
-                Convert any mixed numbers to <b>improper fractions</b> (e.g., 1
-                1/2 becomes 3/2).
-              </li>
-              <li>
-                Apply the <b>Keep-Change-Flip</b> rule:
-                <ul>
-                  <li><b>Keep</b> the first fraction.</li>
-                  <li><b>Change</b> division (÷) to multiplication (×).</li>
-                  <li><b>Flip</b> the second fraction to its reciprocal.</li>
-                </ul>
-              </li>
-              <li>
-                Multiply the numerators, multiply the denominators, and
-                simplify.
-              </li>
-            </ol>
-            <div
-              style="
-                margin-top: 14px;
-                padding: 10px;
-                background: var(--sky);
-                border-radius: 8px;
-                font-size: 12px;
-              "
-            >
-              💡 <b>Example:</b> 3/4 cup total ÷ 1/8 cup serving = 3/4 × 8/1 =
-              24/4 = 6 servings.
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== PART 1C — SELF ===================== -->
-      <section class="phase" id="phase-1c" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">1c</div>
-          <div>
-            <span class="arc-banner">Part 1c · Self — your real plan</span>
-            <h2>🔢 Roll cuts (mixed number ÷ fraction)</h2>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <div>
-            <div
-              class="pk-math-scaffold-card no-print"
-              style="
-                margin: 20px 0;
-                padding: 12px;
-                background: #fff;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-                max-width: 480px;
-                margin-left: auto;
-                margin-right: auto;
-              "
-            >
-              <svg
-                width="100%"
-                height="200"
-                viewBox="0 0 500 200"
-                style="background: #fff; border-radius: 8px"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <text
-                  x="250"
-                  y="30"
-                  text-anchor="middle"
-                  font-size="14"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  Fraction Division Visualizer
-                </text>
-                <rect
-                  x="100"
-                  y="80"
-                  width="300"
-                  height="24"
-                  fill="#f1f5f9"
-                  stroke="#cbd5e1"
-                  stroke-width="1"
-                />
-                <rect
-                  x="100"
-                  y="80"
-                  width="200"
-                  height="24"
-                  fill="#ffb74d"
-                  stroke="#f57c00"
-                  stroke-width="1"
-                />
-                <rect
-                  x="100"
-                  y="130"
-                  width="300"
-                  height="24"
-                  fill="#f1f5f9"
-                  stroke="#cbd5e1"
-                  stroke-width="1"
-                />
-                <rect
-                  x="100"
-                  y="130"
-                  width="50"
-                  height="24"
-                  fill="#64b5f6"
-                  stroke="#1e88e5"
-                  stroke-width="1"
-                />
-                <text
-                  x="250"
-                  y="180"
-                  text-anchor="middle"
-                  font-size="11"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  How many parts fit into the total?
-                </text>
-              </svg>
-            </div>
-
-            <div class="task">
-              <strong>Setup:</strong> A dough roll is <em>whole + n/d</em> feet
-              long. Each piece is <em>c/d</em> of a foot. How many pieces? Step
-              1: mixed → improper fraction. Step 2: divide fraction by fraction.
-            </div>
-            <div class="grid4">
-              <div>
-                <div class="frac-label">Whole part</div>
-                <input
-                  type="number"
-                  id="p3w"
-                  data-save
-                  min="0"
-                  placeholder=""
-                  oninput="calcPhase3()"
-                />
-              </div>
-              <div>
-                <div class="frac-label">Fraction numerator</div>
-                <input
-                  type="number"
-                  id="p3n"
-                  data-save
-                  min="0"
-                  placeholder=""
-                  oninput="calcPhase3()"
-                />
-              </div>
-              <div>
-                <div class="frac-label">Fraction denominator</div>
-                <input
-                  type="number"
-                  id="p3d"
-                  data-save
-                  min="1"
-                  placeholder=""
-                  oninput="calcPhase3()"
-                />
-              </div>
-              <div>
-                <div class="frac-label">&nbsp;</div>
-                <div
-                  style="padding: 11px 0; font-weight: 700; color: var(--muted)"
-                >
-                  feet total
-                </div>
-              </div>
-            </div>
-            <div class="grid2" style="margin-top: 10px">
-              <!-- ===================== INLINE RESEARCH LAB ===================== -->
-              <div class="pk-research-inline-card">
-                <div class="pk-research-inline-header">
-                  <span class="pk-research-badge">🔍 Research Required</span>
-                  <a
-                    href="https://en.wikipedia.org/wiki/Chicken_egg_sizes#Weight_classes"
-                    target="_blank"
-                    class="pk-research-inline-link"
-                    >🔗 USDA FoodData Central Database ↗</a
-                  >
-                </div>
-                <p class="pk-research-inline-instructions">
-                  Open the USDA database. Look up "large egg raw". Note the
-                  weight of one large egg in ounces (usually 1.75 oz or 1 3/4
-                  oz). Enter your researched weight below:
-                </p>
-                <div class="grid2">
-                  <div>
-                    <label class="fld" for="worldCountry"
-                      >Ingredient Researched</label
-                    >
-                    <input
-                      type="text"
-                      id="worldCountry"
-                      data-save
-                      placeholder=""
-                      oninput="recalcAll()"
-                    />
-                  </div>
-                  <div>
-                    <label class="fld" for="worldSize"
-                      >Standard Large Egg Weight (oz)</label
-                    >
-                    <input
-                      type="number"
-                      id="worldSize"
-                      data-save
-                      step="any"
-                      min="0"
-                      placeholder=""
-                      oninput="recalcAll()"
-                    />
-                  </div>
-                </div>
-
-                <div
-                  style="
-                    margin-top: 12px;
-                    padding-top: 12px;
-                    border-top: 1px solid var(--line);
-                  "
-                >
-                  <label class="fld"
-                    >Equivalent Fraction (used in calculation)</label
-                  >
-                  <div style="display: flex; gap: 8px; align-items: center">
-                    <input
-                      type="number"
-                      id="p3cn"
-                      data-save
-                      readonly
-                      style="
-                        width: 70px;
-                        text-align: center;
-                        background: #f1f5f9;
-                        border-color: #cbd5e1;
-                      "
-                    />
-                    <span>/</span>
-                    <input
-                      type="number"
-                      id="p3cd"
-                      data-save
-                      readonly
-                      style="
-                        width: 70px;
-                        text-align: center;
-                        background: #f1f5f9;
-                        border-color: #cbd5e1;
-                      "
-                    />
-                    <span>oz</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <button class="btn" type="button" onclick="calcPhase3()">
-              Calculate pieces
-            </button>
-            <div class="readout" id="p3-out"></div>
-            <details class="hintbox">
-              <summary>Need a hint?</summary>
-              <p>
-                Convert the mixed number: multiply whole × denominator, add the
-                numerator. 2 1/2 → (2×2+1)/2 = 5/2. Then divide: (5/2) ÷ (3/4) =
-                (5/2) × (4/3) = 20/6 = 10/3 = 3 R 1/3. You get 3 full pieces
-                with 1/3 of a piece left over.
-              </p>
-            </details>
-
-            <!-- 1d Quick check -->
-            <div class="task" style="margin-top: 24px">
-              <strong>Quick division check:</strong> A jar holds 6 cups of
-              batter. Each muffin uses 2/3 cup. How many muffins? (Hint: 6 ÷ 2/3
-              = ?)
-            </div>
-            <label class="fld" for="check-muffins"
-              >Your answer (number of muffins)</label
-            >
-            <input type="number" id="check-muffins" data-save placeholder="" />
-            <button class="btn alt" type="button" onclick="checkMuffins()">
-              Check answer
-            </button>
-            <div class="feedback" id="check-muffinsFb"></div>
-            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-              Level 1 worked step: 6 ÷ (2/3) → flip → 6 × (3/2) = 18/2 = 9.
-            </p>
-            <div class="pk-lvl2" style="margin-top: 16px">
-              <div class="task">
-                <strong>Level 2 extension (6.NS.1):</strong> A 3 1/2-foot dough
-                roll is cut into 2/3-foot pieces. How many full pieces do you
-                get, and what fraction of one piece is left over? Convert the
-                mixed number to an improper fraction first, then explain the
-                remainder in terms of a single piece.
-              </div>
-            </div>
-          </div>
-
-          <div
-            style="
-              background: var(--bg);
-              border: 2.5px solid var(--line);
-              border-radius: 18px;
-              padding: 20px;
-              box-shadow: var(--shadow);
-              height: fit-content;
-            "
-            class="pk-no-print"
-          >
-            <h3
-              style="
-                margin-top: 0;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                color: var(--navy);
-                font-size: 16px;
-              "
-            >
-              <span>💡</span> Guided Steps &amp; Help
-            </h3>
-
-            <p
-              style="
-                font-size: 13.5px;
-                line-height: 1.5;
-                color: var(--muted);
-                margin-bottom: 12px;
-              "
-            >
-              <strong>Dividing Fractions in Recipes & Measurements:</strong>
-            </p>
-            <ol
-              style="
-                margin-left: 18px;
-                font-size: 13px;
-                line-height: 1.5;
-                display: grid;
-                gap: 8px;
-                color: var(--ink);
-              "
-            >
-              <li>
-                Write down the division problem:
-                <b>Total Amount ÷ Serving Size</b>.
-              </li>
-              <li>
-                Convert any mixed numbers to <b>improper fractions</b> (e.g., 1
-                1/2 becomes 3/2).
-              </li>
-              <li>
-                Apply the <b>Keep-Change-Flip</b> rule:
-                <ul>
-                  <li><b>Keep</b> the first fraction.</li>
-                  <li><b>Change</b> division (÷) to multiplication (×).</li>
-                  <li><b>Flip</b> the second fraction to its reciprocal.</li>
-                </ul>
-              </li>
-              <li>
-                Multiply the numerators, multiply the denominators, and
-                simplify.
-              </li>
-            </ol>
-            <div
-              style="
-                margin-top: 14px;
-                padding: 10px;
-                background: var(--sky);
-                border-radius: 8px;
-                font-size: 12px;
-              "
-            >
-              💡 <b>Example:</b> 3/4 cup total ÷ 1/8 cup serving = 3/4 × 8/1 =
-              24/4 = 6 servings.
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
-      <section class="pk-visualizer-card no-print">
-        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
-        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px">
-          This visual interactive canvas updates in real-time as you complete
-          your math calculations.
-        </p>
-        <div id="projectVisualizer"></div>
-      </section>
-
-      <!-- ===================== PART 2 — PEER ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--teal)">2</div>
-          <div>
-            <span class="arc-banner">Part 2 · Peer — swap recipes</span>
-            <div class="skill">Compare &amp; reason · 6.NS.1</div>
-            <h2>Recipe Swap &amp; Compare</h2>
-          </div>
-        </div>
-        <p>
-          Trade recipes with a partner. Interview them, type in their numbers,
-          then auto-compare: who gets more servings? Whose cut wastes less?
-        </p>
-        <div class="pk-callout pk-no-print" style="margin-bottom: 14px">
-          <h3>Interview Sentence Frames</h3>
-          <p>"How many mini-loaves did you get? What was your divisor?"</p>
-          <p>"How many cupcakes does your batch frost?"</p>
-          <p>"How many full roll pieces, and how much was left over?"</p>
-          <p class="pk-es">
-            "¿Cuántas porciones obtuviste? ¿Cuál fue tu divisor?"
-          </p>
-        </div>
-        <div class="grid2">
-          <div>
-            <label class="fld" for="partnerName"
-              >Partner name or initials</label
-            >
-            <input type="text" id="partnerName" data-save placeholder="" />
-          </div>
-          <div>
-            <label class="fld" for="p-loaves"
-              >Partner: mini-loaves (Part 1a)</label
-            >
-            <input
-              type="number"
-              id="p-loaves"
-              data-save
-              min="0"
-              step="0.01"
-              oninput="comparePeer()"
-            />
-          </div>
-          <div>
-            <label class="fld" for="p-cupcakes"
-              >Partner: cupcakes (Part 1b)</label
-            >
-            <input
-              type="number"
-              id="p-cupcakes"
-              data-save
-              min="0"
-              oninput="comparePeer()"
-            />
-          </div>
-          <div>
-            <label class="fld" for="p-pieces"
-              >Partner: full roll pieces (Part 1c)</label
-            >
-            <input
-              type="number"
-              id="p-pieces"
-              data-save
-              min="0"
-              oninput="comparePeer()"
-            />
-          </div>
-        </div>
-        <button class="btn alt" type="button" onclick="comparePeer()">
-          Compare our recipes
-        </button>
-        <div id="peerBox" class="pk-stats" style="margin-top: 16px"></div>
-        <label class="fld" for="peerReflect"
-          >Who gets more servings, and how do you know?</label
-        >
-        <textarea id="peerReflect" data-save placeholder=""></textarea>
-      </section>
-
-      <!-- ===================== PART 3 — WORLD ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div
-            class="phase-num"
-            style="background: var(--gold); color: #2a1c00"
-          >
-            3
-          </div>
-          <div>
-            <span class="arc-banner">Part 3 · World — real recipe yields</span>
-            <div class="skill">Compare to real data · 6.NS.1</div>
-            <h2>How Many Servings Do Real Recipes Make?</h2>
-          </div>
-        </div>
-        <p>
-          These are realistic recipe yields: batch size ÷ serving size =
-          servings. Pick a category and see where your number lands.
-        </p>
-        <div class="grid2">
-          <div>
-            <label class="fld" for="worldCat">Compare against</label>
-            <select id="worldCat" data-save onchange="worldGo()">
-              <option value="servings">Servings per batch</option>
-              <option value="batch">Batch size (cups)</option>
-            </select>
-            <label class="fld" for="myWorld">My number</label>
-            <input
-              type="number"
-              id="myWorld"
-              data-save
-              step="0.01"
-              oninput="worldGo()"
-              placeholder=""
-            />
-            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
-              Tip: your servings from Part 1 are a great value to type here.
-            </p>
-            <div id="worldMeter"></div>
-          </div>
-          <div>
-            <h3>Real Recipe Yields 🍰</h3>
-            <div
-              style="
-                overflow: auto;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-              "
-            >
-              <table class="rubric" style="margin-top: 0">
-                <tr>
-                  <th>Recipe</th>
-                  <th>Batch (cups)</th>
-                  <th>Serving</th>
-                  <th>Servings</th>
-                </tr>
-                <tbody id="worldRows"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <div
-          class="phase"
-          style="margin: 18px 0 0; box-shadow: none; border-style: dashed"
-        >
-          <h3>🔬 What-If Lab</h3>
-          <p style="color: var(--muted); font-size: 14px">
-            Change a serving size and watch how the servings change. Smaller
-            pieces → more servings!
-          </p>
+          <!-- Inputs -->
           <div class="grid2">
+            <!-- Level 1 selectors -->
+            <div class="lvl1-only">
+              <label class="lbl" for="p1-dividend">🥣 Total Recipe Ingredient Amount (Cup)</label>
+              <select id="p1-dividend" onchange="calcPortions()">
+                <option value="3/4">3/4 cup (sugar)</option>
+                <option value="1/2">1/2 cup (butter)</option>
+                <option value="2/3">2/3 cup (chocolate chips)</option>
+                <option value="5/8">5/8 cup (sprinkles)</option>
+              </select>
+            </div>
+            <div class="lvl1-only">
+              <label class="lbl" for="p1-divisor">🥄 Portion Serving Size (Cup)</label>
+              <select id="p1-divisor" onchange="calcPortions()">
+                <option value="1/8">1/8 cup portion</option>
+                <option value="1/4">1/4 cup portion</option>
+                <option value="1/6">1/6 cup portion</option>
+                <option value="1/12">1/12 cup portion</option>
+              </select>
+            </div>
+
+            <!-- Level 2 inputs -->
+            <div class="lvl2-only">
+              <label class="lbl">🥣 Total Recipe Amount (Dividend)</label>
+              <div class="grid2" style="margin-top:0;">
+                <div>
+                  <input type="number" id="p1-div-num" min="1" placeholder="Numerator" oninput="calcPortions()">
+                  <div style="font-size:11px;color:var(--muted);text-align:center;">Numerator</div>
+                </div>
+                <div>
+                  <input type="number" id="p1-div-den" min="1" placeholder="Denominator" oninput="calcPortions()">
+                  <div style="font-size:11px;color:var(--muted);text-align:center;">Denominator</div>
+                </div>
+              </div>
+            </div>
+            <div class="lvl2-only">
+              <label class="lbl">🥄 Portion Serving Size (Divisor)</label>
+              <div class="grid2" style="margin-top:0;">
+                <div>
+                  <input type="number" id="p1-div-num2" min="1" placeholder="Numerator" oninput="calcPortions()">
+                  <div style="font-size:11px;color:var(--muted);text-align:center;">Numerator</div>
+                </div>
+                <div>
+                  <input type="number" id="p1-div-den2" min="1" placeholder="Denominator" oninput="calcPortions()">
+                  <div style="font-size:11px;color:var(--muted);text-align:center;">Denominator</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button class="calc-btn" onclick="calcPortions()">🧮 Scale Portions</button>
+          <div class="readout" id="portion-out"></div>
+
+          <details class="hint">
+            <summary>Need a hint?</summary>
+            <p>To divide fractions, multiply the first fraction (dividend) by the reciprocal of the second fraction (divisor).<br>
+            <strong>Formula:</strong> A/B ÷ C/D = A/B × D/C = (A × D) / (B × C).</p>
+          </details>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(1)">← Back</button>
+          <button class="nav-btn" onclick="goStep(3)">Next Step →</button>
+        </div>
+      </div>
+
+      <!-- ======================================
+           STEP 3 — BIG BATCH SERVINGS
+      ====================================== -->
+      <div class="step-panel" id="step-3">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon teal">🥣</div>
             <div>
-              <label class="fld" for="wi-batch">Batch size (cups)</label>
-              <input type="number" id="wi-batch" step="0.01" placeholder="" />
+              <div class="card-title">Step 2 — Big Batch Servings</div>
+              <div class="card-sub">Divide a whole number batch by a unit fraction scoop</div>
+            </div>
+          </div>
+
+          <div class="instruct teal">
+            <strong>Your job:</strong> You made a large batch of batter (measured in whole cups). How many servings can you get if you measure them out using a unit fraction scoop?
+          </div>
+
+          <!-- Dynamic SVG visual -->
+          <svg id="batch-svg" class="visual-svg" viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">
+            <!-- Will be drawn dynamically by JS -->
+          </svg>
+
+          <!-- Level 1 instructions -->
+          <div class="instruct lvl1-only">
+            🟢 <strong>Level 1 support:</strong> Choose a whole number batch (e.g. 4 cups flour) and a unit fraction scoop (e.g. 1/3 cup). The visualizer will draw 4 cups and divide each cup into 3 portions, showing exactly 12 servings.
+          </div>
+          <!-- Level 2 challenge instructions -->
+          <div class="instruct lvl2-block lvl2-only">
+            <span class="lvl2-label">LEVEL 2 CHALLENGE</span><br>
+            Input any whole number (dividend) and any unit fraction denominator (divisor). For example, a 7-cup batch divided by 1/5-cup scoops.
+          </div>
+
+          <!-- Inputs -->
+          <div class="grid2">
+            <!-- Level 1 selectors -->
+            <div class="lvl1-only">
+              <label class="lbl" for="p2-batch">🥤 Total Batch Size (Whole Cups)</label>
+              <select id="p2-batch" onchange="calcBatch()">
+                <option value="4">4 cups</option>
+                <option value="3">3 cups</option>
+                <option value="5">5 cups</option>
+                <option value="6">6 cups</option>
+                <option value="8">8 cups</option>
+              </select>
+            </div>
+            <div class="lvl1-only">
+              <label class="lbl" for="p2-scoop">🥄 Scoop size (Unit Fraction)</label>
+              <select id="p2-scoop" onchange="calcBatch()">
+                <option value="3">1/3 cup scoop</option>
+                <option value="2">1/2 cup scoop</option>
+                <option value="4">1/4 cup scoop</option>
+                <option value="5">1/5 cup scoop</option>
+                <option value="6">1/6 cup scoop</option>
+                <option value="8">1/8 cup scoop</option>
+              </select>
+            </div>
+
+            <!-- Level 2 inputs -->
+            <div class="lvl2-only">
+              <label class="lbl" for="p2-batch-input">🥤 Total Batch Size (Whole Number Dividend)</label>
+              <input type="number" id="p2-batch-input" min="1" max="15" placeholder="e.g. 4" oninput="calcBatch()">
+            </div>
+            <div class="lvl2-only">
+              <label class="lbl" for="p2-scoop-den">🥄 Scoop size Denominator (Divisor Unit Fraction)</label>
+              <input type="number" id="p2-scoop-den" min="1" max="20" placeholder="e.g. 3 (for 1/3)" oninput="calcBatch()">
+            </div>
+          </div>
+
+          <button class="calc-btn teal" onclick="calcBatch()">🥣 Calculate Batch Servings</button>
+          <div class="readout" id="batch-out"></div>
+
+          <details class="hint">
+            <summary>Need a hint?</summary>
+            <p>Dividing a whole number by a unit fraction (1/d) is simple: multiply the whole number by the denominator (d).<br>
+            <strong>Why it works:</strong> Each 1 whole contains exactly 'd' groups of 1/d. So 'W' wholes contain W × d groups.</p>
+          </details>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(2)">← Back</button>
+          <button class="nav-btn" onclick="goStep(4)">Next Step →</button>
+        </div>
+      </div>
+
+      <!-- ======================================
+           STEP 4 — ROLL CUTS
+      ====================================== -->
+      <div class="step-panel" id="step-4">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon gold">🥖</div>
+            <div>
+              <div class="card-title">Step 3 — Roll Cuts</div>
+              <div class="card-sub">Divide a mixed number roll length by a fraction slice size</div>
+            </div>
+          </div>
+
+          <div class="instruct gold">
+            <strong>Your job:</strong> You have a long cylinder of rolled dough (mixed number length) and want to slice it into equal pieces. Find the quotient to see how many slices you get, and compare your output to real-world bakery yields.
+          </div>
+
+          <!-- Dynamic SVG visual -->
+          <svg id="roll-svg" class="visual-svg" viewBox="0 0 520 120" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">
+            <!-- Will be drawn dynamically by JS -->
+          </svg>
+
+          <!-- Level 1 instructions -->
+          <div class="instruct lvl1-only">
+            🟢 <strong>Level 1 support:</strong> Use a roll of length 2 1/2 feet and cut slices of 1/4 foot. The baguette visualizer will show exactly 10 slices can be cut.
+          </div>
+          <!-- Level 2 instructions -->
+          <div class="instruct lvl2-block lvl2-only">
+            <span class="lvl2-label">LEVEL 2 CHALLENGE</span><br>
+            Specify custom mixed numbers for the roll length and custom proper fractions for the slice size. The calculator will automatically convert the mixed number to an improper fraction first.
+          </div>
+
+          <!-- Inputs -->
+          <div class="grid2">
+            <!-- Level 1 selectors -->
+            <div class="lvl1-only">
+              <label class="lbl">🥖 Total Roll Length (Mixed Number feet)</label>
+              <div class="grid2" style="margin-top:0;">
+                <div>
+                  <select id="p3-roll-w" onchange="calcRoll()">
+                    <option value="2">2 wholes</option>
+                    <option value="1">1 whole</option>
+                    <option value="3">3 wholes</option>
+                    <option value="4">4 wholes</option>
+                  </select>
+                </div>
+                <div>
+                  <select id="p3-roll-frac" onchange="calcRoll()">
+                    <option value="1/2">1/2 foot</option>
+                    <option value="1/3">1/3 foot</option>
+                    <option value="1/4">1/4 foot</option>
+                    <option value="2/3">2/3 foot</option>
+                    <option value="3/4">3/4 foot</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="lvl1-only">
+              <label class="lbl" for="p3-slice">🔪 Slice Size (Fraction foot)</label>
+              <select id="p3-slice" onchange="calcRoll()">
+                <option value="1/4">1/4 foot slices</option>
+                <option value="1/2">1/2 foot slices</option>
+                <option value="1/3">1/3 foot slices</option>
+                <option value="1/8">1/8 foot slices</option>
+                <option value="2/3">2/3 foot slices</option>
+                <option value="3/4">3/4 foot slices</option>
+              </select>
+            </div>
+
+            <!-- Level 2 inputs -->
+            <div class="lvl2-only">
+              <label class="lbl">🥖 Total Roll Length (Mixed Number Dividend)</label>
+              <div class="grid3" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+                <div>
+                  <input type="number" id="p3-roll-w-input" min="0" placeholder="Whole" oninput="calcRoll()">
+                  <div style="font-size:11px;color:var(--muted);text-align:center;">Whole</div>
+                </div>
+                <div>
+                  <input type="number" id="p3-roll-num" min="0" placeholder="Num" oninput="calcRoll()">
+                  <div style="font-size:11px;color:var(--muted);text-align:center;">Num</div>
+                </div>
+                <div>
+                  <input type="number" id="p3-roll-den" min="1" placeholder="Den" oninput="calcRoll()">
+                  <div style="font-size:11px;color:var(--muted);text-align:center;">Den</div>
+                </div>
+              </div>
+            </div>
+            <div class="lvl2-only">
+              <label class="lbl">🔪 Slice Size (Fraction Divisor)</label>
+              <div class="grid2" style="margin-top:0;">
+                <div>
+                  <input type="number" id="p3-slice-num" min="1" placeholder="Numerator" oninput="calcRoll()">
+                  <div style="font-size:11px;color:var(--muted);text-align:center;">Numerator</div>
+                </div>
+                <div>
+                  <input type="number" id="p3-slice-den" min="1" placeholder="Denominator" oninput="calcRoll()">
+                  <div style="font-size:11px;color:var(--muted);text-align:center;">Denominator</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button class="calc-btn gold" onclick="calcRoll()">🥖 Cut the Dough</button>
+          <div class="readout" id="roll-out"></div>
+
+          <!-- Real-world comparison table -->
+          <div style="margin-top:22px;">
+            <h3 style="font-size:15px;font-weight:800;color:var(--navy);margin-bottom:6px;">🥯 Real-World Bakery Yields</h3>
+            <p style="font-size:14px;color:var(--muted);margin-bottom:6px;">Compare your roll cut slice yield against typical professional bakery batch ranges:</p>
+            <table class="data-table">
+              <thead>
+                <tr><th>Bakery Item</th><th>Slice / Portion Yield Range</th><th>Dough Prep Method</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Croissants</td><td>6 – 8 per batch</td><td>Laminated butter layers</td></tr>
+                <tr><td>Cinnamon Rolls</td><td>8 – 10 slices per log</td><td>Spiral yeast roll-up</td></tr>
+                <tr><td>Artisan Baguette</td><td>12 – 16 slices per loaf</td><td>Classic french roll cuts</td></tr>
+                <tr><td>Sourdough Loaf</td><td>10 – 14 slices per loaf</td><td>Rustic scoring &amp; slicing</td></tr>
+              </tbody>
+            </table>
+            <label class="lbl" for="bakery-compare">Compare your roll cuts to the table. Which bakery item does your yield match best? Write 1-2 sentences.</label>
+            <textarea id="bakery-compare" placeholder="My roll cuts yield ___ slices. This yield is closest to a professional batch of ... because..."></textarea>
+          </div>
+
+          <details class="hint">
+            <summary>Need a hint?</summary>
+            <p>1. Convert the mixed number length (W N/D) to an improper fraction: (W × D + N) / D.<br>
+            2. Divide the improper fraction by the slice size (multiply by reciprocal).<br>
+            <strong>Example:</strong> 2 1/2 = 5/2. Then 5/2 ÷ 1/4 = 5/2 × 4/1 = 20/2 = 10 slices.</p>
+          </details>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(3)">← Back</button>
+          <button class="nav-btn" onclick="goStep(5)">Next Step →</button>
+        </div>
+      </div>
+
+      <!-- ======================================
+           STEP 5 — PARTNER COMPARE
+      ====================================== -->
+      <div class="step-panel" id="step-5">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon teal">👥</div>
+            <div>
+              <div class="card-title">Step 4 — Compare With a Partner</div>
+              <div class="card-sub">Swap recipe results with a classmate and compare yields</div>
+            </div>
+          </div>
+
+          <div class="instruct teal">
+            <strong>Your job:</strong> Interview a classmate about their bakery numbers. Enter their name and their calculated servings below to compare your bakery yields.
+          </div>
+
+          <!-- SVG: Interview visual -->
+          <svg class="visual-svg" viewBox="0 0 520 100" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e2e7ec;border-radius:12px;">
+            <text x="140" y="40" text-anchor="middle" font-size="28">🧁</text>
+            <text x="140" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">My Bakery</text>
+            <rect x="185" y="38" width="150" height="30" rx="8" fill="#e4f5f3" stroke="#0e8a7d" stroke-width="1.5"/>
+            <text x="260" y="57" text-anchor="middle" font-size="11" fill="#0e8a7d" font-weight="bold">"How many servings did you get?"</text>
+            <text x="380" y="40" text-anchor="middle" font-size="28">🧑‍🍳</text>
+            <text x="380" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f2b3c">Partner</text>
+          </svg>
+
+          <label class="lbl" for="p-name">Partner Chef's Name</label>
+          <input type="text" id="p-name" placeholder="e.g. Alex" />
+
+          <div class="grid3" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px;">
+            <div>
+              <label class="lbl" for="p-portions">Partner's Portions (Step 1)</label>
+              <input type="number" id="p-portions" step="0.01" min="0" placeholder="e.g. 6.0" oninput="comparePeer()" />
             </div>
             <div>
-              <label class="fld" for="wi-serve"
-                >New serving size (cup, like 0.25 for 1/4)</label
-              >
-              <input type="number" id="wi-serve" step="0.01" placeholder="" />
+              <label class="lbl" for="p-batch">Partner's Servings (Step 2)</label>
+              <input type="number" id="p-batch" step="0.01" min="0" placeholder="e.g. 12" oninput="comparePeer()" />
+            </div>
+            <div>
+              <label class="lbl" for="p-slices">Partner's Slices (Step 3)</label>
+              <input type="number" id="p-slices" step="0.01" min="0" placeholder="e.g. 10" oninput="comparePeer()" />
             </div>
           </div>
-          <button class="btn" type="button" onclick="runWhatIf()">
-            Run test
-          </button>
-          <div class="pk-whatif" id="whatIfBox" style="margin-top: 12px">
-            Enter values to test.
+
+          <button class="calc-btn teal" onclick="comparePeer()">📊 Compare Our Plans</button>
+          <div class="readout" id="peer-out"></div>
+
+          <label class="lbl" for="peer-reflect" style="margin-top:18px;">How does divisor size affect servings? Compare your results and explain using your math vocabulary.</label>
+          <textarea id="peer-reflect" placeholder="Our recipes yielded different servings. I noticed that when the serving size (divisor) is smaller, the number of servings (quotient) is... because..."></textarea>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(4)">← Back</button>
+          <button class="nav-btn green" onclick="goStep(6)">Next Step →</button>
+        </div>
+      </div>
+
+      <!-- ======================================
+           STEP 6 — FINISH & SUBMIT
+      ====================================== -->
+      <div class="step-panel" id="step-6">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon green">🏆</div>
+            <div>
+              <div class="card-title">Step 5 — Finish &amp; Submit</div>
+              <div class="card-sub">Write your menu card, complete the checklist, and export your report</div>
+            </div>
           </div>
-        </div>
 
-        <label class="fld" for="worldReflect"
-          >Does your recipe make more or fewer servings than the real recipes?
-          Why might that be?</label
-        >
-        <textarea id="worldReflect" data-save placeholder=""></textarea>
-        <div class="pk-lvl2">
-          <label class="fld" for="worldHard"
-            >Level 2 question: A baker has 4 1/2 cups of batter and each waffle
-            uses 3/8 cup. How many waffles, and how much batter (if any) is left
-            over? Show your thinking.</label
-          >
-          <textarea id="worldHard" data-save placeholder=""></textarea>
-        </div>
-        <label class="fld" for="careful"
-          >Careful thinking: why is it tricky to compare "servings" between two
-          different recipes?</label
-        >
-        <textarea id="careful" data-save placeholder=""></textarea>
-      </section>
-
-      <!-- ===================== DELIVERABLE ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--green)">★</div>
-          <div>
-            <div class="skill">Final Deliverable</div>
-            <h2>Write Your Menu Card</h2>
+          <div class="instruct green">
+            <strong>Your job:</strong> Create a menu card pitch for your bakery using your mathematical results. Check off your completed steps and generate your final report!
           </div>
-        </div>
-        <p>
-          Write a short menu card (3–5 sentences) using your real numbers from
-          above.
-        </p>
-        <textarea id="pitch" data-save placeholder=""></textarea>
 
-        <h3 style="margin: 22px 0 6px">Bakery Checklist</h3>
-        <ul class="checklist" id="checklist">
-          <li>
-            <input type="checkbox" data-save id="ck1" /> I divided a fraction by
-            a fraction to find mini-loaf portions.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck2" /> I divided a whole
-            number by a unit fraction to find servings.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck3" /> I converted a mixed
-            number to an improper fraction before dividing.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck4" /> I answered and checked
-            the quick-check problem (6 ÷ 2/3 = 9).
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck5" /> I swapped recipes with
-            a partner and compared servings.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck6" /> I compared my servings
-            to the real recipe sample.
-          </li>
-        </ul>
+          <!-- Menu Card Pitch -->
+          <label class="lbl" for="pitch">✍️ Bakery Menu Card Description (write 3–5 sentences using your real numbers!)</label>
+          <textarea id="pitch" placeholder="Welcome to my Bakery! We use division to size our items. For our Portion Control Cupcakes, we divide our recipe amount of ___ cup sugar by ___ cup servings to get exactly ___ portions. Our Big Batch Batter is split into ___ servings..."></textarea>
 
-        <div class="grid2" style="margin-top: 18px">
-          <div>
-            <button class="btn" type="button" onclick="buildReport()">
-              📝 Generate report
-            </button>
+          <!-- Checklist -->
+          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">✅ Checklist — Check off everything you completed</h3>
+          <ul class="checklist" id="checklist">
+            <li><input type="checkbox" id="ck1" /> I defined vocabulary words: fraction, unit fraction, mixed number, quotient.</li>
+            <li><input type="checkbox" id="ck2" /> I divided my recipe amount by portion size in Step 1.</li>
+            <li><input type="checkbox" id="ck3" /> I divided my big batch cups by scoop unit fractions in Step 2.</li>
+            <li><input type="checkbox" id="ck4" /> I sliced my mixed-number dough roll and compared it to real bakery data in Step 3.</li>
+            <li><input type="checkbox" id="ck5" /> I compared my results to a partner's recipe yields in Step 4.</li>
+            <li><input type="checkbox" id="ck6" /> I wrote my final Bakery Menu Card with correct quantities and math terms.</li>
+          </ul>
+
+          <!-- Rubric -->
+          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">📊 Scoring Rubric</h3>
+          <table class="rubric">
+            <thead>
+              <tr><th>Skill</th><th class="score-4">4 — Expert</th><th class="score-3">3 — Proficient</th><th class="score-2">2 — Developing</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Fraction Division (6.NS.1)</strong></td>
+                <td>Calculated portions, batch servings, and roll slices with 100% accuracy and step-by-step reciprocal logic.</td>
+                <td>All calculations correct across steps 1, 2, and 3.</td>
+                <td>Some correct division calculations, but with reciprocal or simplification errors.</td>
+              </tr>
+              <tr>
+                <td><strong>Modeling &amp; Visuals</strong></td>
+                <td>Explains visually how many groups fit in, using dynamic SVGs to verify numerical quotients.</td>
+                <td>Correctly interacts with and references the visual models.</td>
+                <td>Models show values but are not connected to the division equations.</td>
+              </tr>
+              <tr>
+                <td><strong>Real-World &amp; Peer Analysis</strong></td>
+                <td>Explains clearly how divisor size affects the quotient size, referencing partner comparison and bakery yields.</td>
+                <td>Completed partner swap and real bakery comparisons.</td>
+                <td>Incomplete comparisons or simple statements without numeric comparison.</td>
+              </tr>
+              <tr>
+                <td><strong>Menu Card Presentation</strong></td>
+                <td>Writes an engaging, professional menu description using precise vocabulary and real computed values.</td>
+                <td>Written menu card description includes recipe yields.</td>
+                <td>Written description is incomplete or lacks numbers.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Action buttons -->
+          <div class="nav-row no-print" style="margin-top:22px;flex-wrap:wrap;justify-content:flex-start;gap:8px;">
+            <button class="calc-btn" onclick="buildReport()">📝 Generate Summary</button>
+            <button class="export-btn" onclick="copyReport()">📋 Copy</button>
+            <button class="export-btn" onclick="downloadTxt()">⬇️ Download .txt</button>
+            <button class="export-btn" onclick="window.print()">🖨️ Print</button>
           </div>
-          <div class="pk-no-print">
-            <button
-              class="btn ghost"
-              type="button"
-              onclick="PK.copyReport('reportBox')"
-            >
-              Copy report
-            </button>
-            <button
-              class="btn ghost"
-              type="button"
-              onclick="PK.downloadText('recipe-remix-bakery.txt', 'reportBox')"
-            >
-              Download .txt
-            </button>
-            <button class="btn ghost" type="button" onclick="downloadCsv()">
-              Download .csv
-            </button>
-            <button class="btn printbtn" type="button" onclick="window.print()">
-              🖨️ Print
-            </button>
-          </div>
+          <pre class="report-box" id="reportBox"></pre>
         </div>
-        <div class="pk-report" id="reportBox" style="margin-top: 16px">
-          Click "Generate report" to build your bakery summary.
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(5)">← Back</button>
+          <button class="nav-btn green" onclick="alert('Congratulations! 🧁 Your Bakery is officially ready for business. Show this report to your teacher!')">🎉 I'm Done!</button>
         </div>
-      </section>
+      </div>
 
-      <!-- RUBRIC -->
-      <section class="phase">
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--navy)">✓</div>
-          <div>
-            <div class="skill">How You Are Scored</div>
-            <h2>Project Rubric</h2>
-          </div>
-        </div>
-        <table class="rubric">
-          <tr>
-            <th>Category</th>
-            <th>4 — Expert</th>
-            <th>3 — Proficient</th>
-            <th>2 — Developing</th>
-          </tr>
-          <tr>
-            <td>Fraction ÷ Fraction</td>
-            <td>
-              Correct answer, simplified fraction, and decimal shown with
-              reasoning
-            </td>
-            <td>Correct answer and simplified fraction</td>
-            <td>Set up correctly but computation error</td>
-          </tr>
-          <tr>
-            <td>Whole ÷ Fraction</td>
-            <td>
-              Correct servings with explanation of why multiplying by reciprocal
-              works
-            </td>
-            <td>Correct number of servings</td>
-            <td>Attempted with a minor error</td>
-          </tr>
-          <tr>
-            <td>Mixed Numbers</td>
-            <td>
-              Converted to improper fraction correctly, divided correctly,
-              interpreted remainder
-            </td>
-            <td>Correct number of pieces</td>
-            <td>Conversion or division has an error</td>
-          </tr>
-          <tr>
-            <td>Comparison (Peer &amp; World)</td>
-            <td>
-              Compares servings with partner and real recipes using clear
-              reasoning
-            </td>
-            <td>Comparisons present and mostly correct</td>
-            <td>Comparison attempted</td>
-          </tr>
-          <tr>
-            <td>Communication</td>
-            <td>
-              Menu card justifies every calculation with real numbers and units
-            </td>
-            <td>Menu card uses most numbers correctly</td>
-            <td>Menu card is unclear or missing key values</td>
-          </tr>
-        </table>
-      </section>
+    </div><!-- end wizard -->
 
-      <p class="footer">
-        Neft Teacher · Unit 2 Culminating Project · Version A ·
-        <span id="yr"></span>
-      </p>
-    </div>
-
+    <!-- ====== SCRIPTS ====== -->
+    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
+    <script src="/assets/app.js" defer></script>
     <script>
-      const yrEl = document.getElementById("yr");
-      if (yrEl) yrEl.textContent = new Date().getFullYear();
-      const $ = (id) => document.getElementById(id);
-      const num = (id) => {
-        const e = $(id);
-        return e ? parseFloat(e.value) : NaN;
-      };
-
-      /* ---- fraction helpers (kept in page) ---- */
-      function gcd(a, b) {
-        a = Math.abs(Math.round(a));
-        b = Math.abs(Math.round(b));
-        while (b) {
-          [a, b] = [b, a % b];
-        }
-        return a || 1;
-      }
-      function simplify(n, d) {
-        if (d === 0) return { num: 0, den: 1 };
-        const g = gcd(Math.abs(n), Math.abs(d));
-        return { num: n / g, den: d / g };
-      }
-      function fracStr(n, d) {
-        const s = simplify(n, d);
-        return s.den === 1 ? String(s.num) : s.num + "/" + s.den;
-      }
-      function mixedStr(n, d) {
-        const s = simplify(n, d);
-        if (s.den === 1) return String(s.num);
-        const whole = Math.floor(s.num / s.den),
-          rem = s.num % s.den;
-        if (whole === 0) return s.num + "/" + s.den;
-        if (rem === 0) return String(whole);
-        return whole + " and " + rem + "/" + s.den;
-      }
-      function show(id, html) {
-        const el = $(id);
-        if (!el) return;
-        el.innerHTML = html;
-        el.classList.add("show");
-        updateProgress();
-      }
-      function hide(id) {
-        $(id).classList.remove("show");
-      }
-
-      // running state used by report, peer compare + world meter
-      const proj = { loaves: null, cupcakes: null, pieces: null };
-
-      /* ---- Part 1a: fraction ÷ fraction ---- */
-      function calcPhase1() {
-        const a = num("p1a"),
-          b = num("p1b"),
-          c = num("p1c"),
-          d = num("p1d");
-        renderFracBar(a, b);
-        if (
-          isNaN(a) ||
-          a <= 0 ||
-          isNaN(b) ||
-          b <= 0 ||
-          isNaN(c) ||
-          c <= 0 ||
-          isNaN(d) ||
-          d <= 0
-        ) {
-          hide("p1-out");
-          proj.loaves = null;
-          return;
-        }
-        const rNum = a * d,
-          rDen = b * c,
-          decimal = rNum / rDen;
-        proj.loaves = decimal;
-        const frac = fracStr(rNum, rDen),
-          mixed = mixedStr(rNum, rDen);
-        show(
-          "p1-out",
-          '<div class="big">' +
-            mixed +
-            " mini-loaves</div>" +
-            "(" +
-            a +
-            "/" +
-            b +
-            ") ÷ (" +
-            c +
-            "/" +
-            d +
-            ") = (" +
-            a +
-            "×" +
-            d +
-            ") / (" +
-            b +
-            "×" +
-            c +
-            ") = " +
-            rNum +
-            "/" +
-            rDen +
-            (frac !== rNum + "/" + rDen
-              ? " = <strong>" + frac + "</strong>"
-              : "") +
-            " = <strong>" +
-            mixed +
-            "</strong>" +
-            "<br>As a decimal: <strong>" +
-            decimal.toFixed(4).replace(/\.?0+$/, "") +
-            "</strong> mini-loaves" +
-            (Number.isInteger(decimal)
-              ? " ✅ A perfect whole number — no dough left over!"
-              : " (you get " +
-                Math.floor(decimal) +
-                " full loaves with a little dough remaining)"),
-        );
-      }
-      function renderFracBar(a, b) {
-        const bar = $("p1-bar");
-        if (isNaN(a) || isNaN(b) || b <= 0 || a < 0 || b > 16 || a > b) {
-          bar.innerHTML = "";
-          return;
-        }
-        let cells = "";
-        for (let i = 0; i < b; i++)
-          cells += '<span class="' + (i < a ? "fill" : "") + '"></span>';
-        bar.innerHTML =
-          '<div style="font-size:13px;color:var(--muted);font-weight:700;margin-top:8px;">Your dough: ' +
-          a +
-          "/" +
-          b +
-          ' of the pan shaded</div><div class="frac-bar">' +
-          cells +
-          "</div>";
-      }
-
-      /* ---- Part 1b: whole ÷ unit fraction ---- */
-      function calcPhase2() {
-        const cups = num("p2-cups"),
-          d = num("p2-denom");
-        if (isNaN(cups) || cups <= 0 || isNaN(d) || d <= 0) {
-          hide("p2-out");
-          proj.cupcakes = null;
-          return;
-        }
-        const result = cups * d;
-        proj.cupcakes = result;
-        show(
-          "p2-out",
-          '<div class="big">' +
-            result +
-            " cupcakes</div>" +
-            cups +
-            " ÷ (1/" +
-            d +
-            ") = " +
-            cups +
-            " × " +
-            d +
-            " = <strong>" +
-            result +
-            "</strong> cupcakes. " +
-            "Each cup holds " +
-            d +
-            " servings of 1/" +
-            d +
-            " cup, and you have " +
-            cups +
-            " cups, so " +
-            cups +
-            " × " +
-            d +
-            " = " +
-            result +
-            ". ✅",
-        );
-      }
-
-      /* ---- Part 1c: mixed ÷ fraction ---- */
-      function calcPhase3() {
-        const w = num("p3w"),
-          n = num("p3n"),
-          d = num("p3d"),
-          cn = num("p3cn"),
-          cd = num("p3cd");
-        if (
-          isNaN(w) ||
-          w < 0 ||
-          isNaN(n) ||
-          n < 0 ||
-          isNaN(d) ||
-          d <= 0 ||
-          isNaN(cn) ||
-          cn <= 0 ||
-          isNaN(cd) ||
-          cd <= 0
-        ) {
-          hide("p3-out");
-          proj.pieces = null;
-          return;
-        }
-        const mixNum = w * d + n,
-          mixDen = d;
-        const rNum = mixNum * cd,
-          rDen = mixDen * cn,
-          decimal = rNum / rDen;
-        const fullPieces = Math.floor(decimal);
-        proj.pieces = fullPieces;
-        const remainNum = rNum - fullPieces * rDen;
-        show(
-          "p3-out",
-          '<div class="big">' +
-            mixedStr(rNum, rDen) +
-            " pieces</div>" +
-            "Step 1 — Convert mixed number: " +
-            w +
-            " and " +
-            n +
-            "/" +
-            d +
-            " = (" +
-            w +
-            "×" +
-            d +
-            "+" +
-            n +
-            ")/" +
-            d +
-            " = <strong>" +
-            mixNum +
-            "/" +
-            mixDen +
-            "</strong><br>" +
-            "Step 2 — Divide: (" +
-            mixNum +
-            "/" +
-            mixDen +
-            ") ÷ (" +
-            cn +
-            "/" +
-            cd +
-            ") = (" +
-            mixNum +
-            "×" +
-            cd +
-            ")/(" +
-            mixDen +
-            "×" +
-            cn +
-            ") = " +
-            rNum +
-            "/" +
-            rDen +
-            (fracStr(rNum, rDen) !== rNum + "/" + rDen
-              ? " = <strong>" + fracStr(rNum, rDen) + "</strong>"
-              : "") +
-            "<br>You get <strong>" +
-            fullPieces +
-            " full pieces</strong>" +
-            (remainNum > 0
-              ? " with <strong>" +
-                fracStr(remainNum, rDen) +
-                "</strong> of a piece left over."
-              : " exactly — no waste! ✅"),
-        );
-      }
-
-      /* ---- Part 1d: quick check ---- */
-      function checkMuffins() {
-        const ok = PK.checkWork("check-muffins", 9, 0);
-        updateProgress();
-        return ok;
-      }
-
-      /* ---- Part 2: peer compare (uses kit) ---- */
-      function comparePeer() {
-        const rows = [];
-        const myL = proj.loaves,
-          myC = proj.cupcakes,
-          myP = proj.pieces;
-        const pL = num("p-loaves"),
-          pC = num("p-cupcakes"),
-          pP = num("p-pieces");
-        if (myL != null && !isNaN(pL))
-          rows.push({
-            label: "Mini-loaves",
-            me: myL,
-            partner: pL,
-            fmt: (x) =>
-              Number(x)
-                .toFixed(2)
-                .replace(/\.?0+$/, ""),
-          });
-        if (myC != null && !isNaN(pC))
-          rows.push({ label: "Cupcakes", me: myC, partner: pC });
-        if (myP != null && !isNaN(pP))
-          rows.push({ label: "Roll pieces", me: myP, partner: pP });
-        if (!rows.length) {
-          $("peerBox").innerHTML =
-            '<p class="pk-fb">Finish Part 1 and enter partner numbers to compare.</p>';
-          return;
-        }
-        PK.peerCompare("peerBox", rows);
-        updateProgress();
-      }
-
-      /* ---- Part 3: world dataset + meter ---- */
-      // [recipe, batchCups, servingLabel, servings] — realistic recipe yields
-      const world = [
-        ["Chocolate Chip Cookies", 3, "1/4 cup", 12],
-        ["Banana Bread", 3.5, "1/2 cup", 7],
-        ["Pancakes", 4, "1/3 cup", 12],
-        ["Muffins", 6, "2/3 cup", 9],
-        ["Brownies", 2.5, "1/8 cup", 20],
-        ["Cupcakes", 4, "1/4 cup", 16],
-        ["Granola Bars", 4.5, "3/8 cup", 12],
-        ["Dinner Rolls", 3.75, "1/4 cup", 15],
+      // ---- State ----
+      const STEPS = [
+        { id: 1, label: 'Key Words', icon: '📖' },
+        { id: 2, label: 'Portion Control', icon: '🧁' },
+        { id: 3, label: 'Big Batch', icon: '🥣' },
+        { id: 4, label: 'Roll Cuts', icon: '🥖' },
+        { id: 5, label: 'Compare', icon: '👥' },
+        { id: 6, label: 'Finish', icon: '🏆' },
       ];
-      const wIdx = { servings: 3, batch: 1 };
-      function renderWorld() {
-        $("worldRows").innerHTML = world
-          .map(
-            (r) =>
-              "<tr><td>" +
-              r[0] +
-              "</td><td>" +
-              r[1] +
-              "</td><td>" +
-              r[2] +
-              "</td><td>" +
-              r[3] +
-              "</td></tr>",
-          )
-          .join("");
-      }
-      function worldSample() {
-        return world.map((r) => r[wIdx[($("worldCat") || {}).value]]);
-      }
+      let currentStep = 1;
+      const visited = new Set([1]);
 
-      function worldGo() {
-        const my = num("myWorld");
-        const customName = $("worldCountry")
-          ? $("worldCountry").value.trim()
-          : "";
-        const customSize = $("worldSize") ? num("worldSize") : NaN;
+      let myPortionsVal = null;
+      let myBatchVal = null;
+      let myRollVal = null;
 
-        let sample = worldSample();
-        if (!isNaN(customSize) && customSize > 0) {
-          sample = [...sample, customSize];
+      // ---- Level toggle ----
+      function setLevel(n) {
+        document.getElementById('body').className = 'level-' + n;
+        document.getElementById('btn-lv1').classList.toggle('active', n === 1);
+        document.getElementById('btn-lv2').classList.toggle('active', n === 2);
+        
+        // Sync values between Level 1 and Level 2
+        if (n === 2) {
+          // Sync L1 -> L2
+          const divParts = document.getElementById('p1-dividend').value.split('/');
+          const divisorParts = document.getElementById('p1-divisor').value.split('/');
+          document.getElementById('p1-div-num').value = parseInt(divParts[0]);
+          document.getElementById('p1-div-den').value = parseInt(divParts[1]);
+          document.getElementById('p1-div-num2').value = parseInt(divisorParts[0]);
+          document.getElementById('p1-div-den2').value = parseInt(divisorParts[1]);
+          
+          document.getElementById('p2-batch-input').value = document.getElementById('p2-batch').value;
+          document.getElementById('p2-scoop-den').value = document.getElementById('p2-scoop').value;
+          
+          document.getElementById('p3-roll-w-input').value = document.getElementById('p3-roll-w').value;
+          const rollFracParts = document.getElementById('p3-roll-frac').value.split('/');
+          document.getElementById('p3-roll-num').value = parseInt(rollFracParts[0]);
+          document.getElementById('p3-roll-den').value = parseInt(rollFracParts[1]);
+          const sliceParts = document.getElementById('p3-slice').value.split('/');
+          document.getElementById('p3-slice-num').value = parseInt(sliceParts[0]);
+          document.getElementById('p3-slice-den').value = parseInt(sliceParts[1]);
+        } else {
+          // Sync L2 -> L1 (fallback to defaults if invalid options)
+          const n1 = parseInt(document.getElementById('p1-div-num').value);
+          const d1 = parseInt(document.getElementById('p1-div-den').value);
+          const val1 = n1 + '/' + d1;
+          if (document.querySelector(`#p1-dividend option[value="${val1}"]`)) {
+            document.getElementById('p1-dividend').value = val1;
+          }
+          const n2 = parseInt(document.getElementById('p1-div-num2').value);
+          const d2 = parseInt(document.getElementById('p1-div-den2').value);
+          const val2 = n2 + '/' + d2;
+          if (document.querySelector(`#p1-divisor option[value="${val2}"]`)) {
+            document.getElementById('p1-divisor').value = val2;
+          }
+          
+          const b = document.getElementById('p2-batch-input').value;
+          if (document.querySelector(`#p2-batch option[value="${b}"]`)) {
+            document.getElementById('p2-batch').value = b;
+          }
+          const sd = document.getElementById('p2-scoop-den').value;
+          if (document.querySelector(`#p2-scoop option[value="${sd}"]`)) {
+            document.getElementById('p2-scoop').value = sd;
+          }
+          
+          const rw = document.getElementById('p3-roll-w-input').value;
+          if (document.querySelector(`#p3-roll-w option[value="${rw}"]`)) {
+            document.getElementById('p3-roll-w').value = rw;
+          }
+          const rn = document.getElementById('p3-roll-num').value;
+          const rd = document.getElementById('p3-roll-den').value;
+          const rval = rn + '/' + rd;
+          if (document.querySelector(`#p3-roll-frac option[value="${rval}"]`)) {
+            document.getElementById('p3-roll-frac').value = rval;
+          }
+          const sn = document.getElementById('p3-slice-num').value;
+          const sd_s = document.getElementById('p3-slice-den').value;
+          const sval = sn + '/' + sd_s;
+          if (document.querySelector(`#p3-slice option[value="${sval}"]`)) {
+            document.getElementById('p3-slice').value = sval;
+          }
         }
-
-        const labels =
-          ($("worldCat") || {}).value === "costPerGuest" ||
-          ($("worldCat") || {}).value === "price"
-            ? { mean: "City avg $", me: "Me $" }
-            : { mean: "City avg", me: "Me" };
-
-        PK.worldMeter("worldMeter", sample, my, labels);
-
-        const fb = $("worldMeter");
-        if (!isNaN(customSize) && customSize > 0 && customName) {
-          const ratio = (my / customSize).toFixed(2);
-          const pct = Math.round((my / customSize) * 100);
-          const diff = Math.abs(my - customSize).toFixed(2);
-
-          let myValStr = false ? "$" + my.toFixed(2) : my + " oz";
-          let custValStr = false
-            ? "$" + customSize.toFixed(2)
-            : customSize + " oz";
-          let diffStr = false
-            ? "$" + Number(diff).toFixed(2)
-            : Number(diff).toFixed(2) + " oz";
-
-          const rel =
-            my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
-          const desc =
-            `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
-            `📊 Research Comparison: Your value (${myValStr}) is <strong>${rel}</strong> than <strong>${customName}</strong> (${custValStr}) ` +
-            `by <strong>${diffStr}</strong>. Your value is <strong>${pct}%</strong> (${ratio}x) of the size of the researched benchmark.` +
-            `</div>`;
-          fb.innerHTML += desc;
-        }
-
-        if (typeof drawVisualizer === "function") {
-          drawVisualizer();
-        }
-
-        updateProgress();
-      }
-
-      function runWhatIf() {
-        const batch = parseFloat($("wi-batch").value);
-        const serve = parseFloat($("wi-serve").value);
-        if (isNaN(batch) || batch <= 0 || isNaN(serve) || serve <= 0) {
-          $("whatIfBox").textContent =
-            "Enter a batch size and a serving size — both greater than 0.";
-          return;
-        }
-        const r = (x) => Math.round(x * 100) / 100;
-        const half = serve / 2;
-        PK.whatIf(
-          "whatIfBox",
-          { "serving size": serve + " cup", servings: r(batch / serve) },
-          { "serving size": half + " cup", servings: r(batch / half) },
-          "Batch of " +
-            batch +
-            " cups ÷ serving size = servings. Cut the serving size in half → twice as many servings:",
-        );
-      }
-
-      /* ---- Use example numbers ---- */
-      function useExamples() {
-        const ex = {
-          worldCountry: "Large Egg",
-          worldSize: 1.75,
-          recipeName: "classic bake set",
-          p1a: 3,
-          p1b: 4,
-          p1c: 1,
-          p1d: 8,
-          "p2-cups": 4,
-          "p2-denom": 3,
-          p3w: 2,
-          p3n: 1,
-          p3d: 2,
-          p3cn: 3,
-          p3cd: 4,
-        };
-        Object.entries(ex).forEach(([k, v]) => {
-          if ($(k)) $(k).value = v;
-        });
         recalcAll();
       }
 
-      function decimalToFraction(val) {
-        const eps = 0.005;
-        if (Math.abs(val - 1.75) < eps) return { num: 7, den: 4 };
-        if (Math.abs(val - 1.5) < eps) return { num: 3, den: 2 };
-        if (Math.abs(val - 2.0) < eps) return { num: 2, den: 1 };
-        if (Math.abs(val - 1.25) < eps) return { num: 5, den: 4 };
-        if (Math.abs(val - 2.25) < eps) return { num: 9, den: 4 };
-
-        const len = String(val).split(".")[1]?.length || 0;
-        if (len === 0) return { num: Math.round(val), den: 1 };
-        const den = Math.pow(10, len);
-        const num = Math.round(val * den);
-        const gcdVal = (a, b) => (b ? gcdVal(b, a % b) : a);
-        const g = gcdVal(num, den);
-        return { num: num / g, den: den / g };
+      // ---- Build step trail ----
+      function buildTrail() {
+        const trail = document.getElementById('stepTrail');
+        trail.innerHTML = STEPS.map((s, i) => {
+          const isLast = i === STEPS.length - 1;
+          return `<span class="step-trail-item${s.id === currentStep ? ' active' : ''}${visited.has(s.id) && s.id !== currentStep ? ' done' : ''}" onclick="goStep(${s.id})">
+            <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? '✓' : s.id}</span>
+            <span class="s-label">${s.label}</span>
+          </span>${!isLast ? '<span class="step-arrow">›</span>' : ''}`;
+        }).join('');
       }
 
-      function syncResearch() {
-        const ws = $("worldSize");
-        if (!ws) return;
-        const val = num("worldSize");
-        if (isNaN(val) || val <= 0) return;
-        const frac = decimalToFraction(val);
-        if ($("p3cn") && $("p3cd")) {
-          $("p3cn").value = frac.num;
-          $("p3cd").value = frac.den;
-          if (typeof calcPhase3 === "function") calcPhase3();
-          else if (typeof recalcAll === "function") {
-            if (typeof calcBudget === "function") calcBudget();
+      // ---- Navigation ----
+      function goStep(n) {
+        if (n < 1 || n > STEPS.length) return;
+        document.getElementById('step-' + currentStep).classList.remove('active');
+        currentStep = n;
+        visited.add(n);
+        document.getElementById('step-' + n).classList.add('active');
+        buildTrail();
+        updateProgress();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function updateProgress() {
+        const pct = Math.round(((currentStep - 1) / (STEPS.length - 1)) * 100);
+        document.getElementById('progFill').style.width = pct + '%';
+        document.getElementById('progLabel').textContent = `Step ${currentStep} of ${STEPS.length}`;
+      }
+
+      // ---- Math helpers ----
+      // Euclidean algorithm for GCD
+      function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
+      function lcm(a, b) { return (a * b) / gcd(a, b); }
+      
+      function showReadout(id, html) {
+        const el = document.getElementById(id);
+        el.innerHTML = html;
+        el.classList.add('show');
+      }
+
+      // ---- Step 1: Portion Control ----
+      function calcPortions() {
+        let n1, d1, n2, d2;
+        const isL2 = document.getElementById('body').classList.contains('level-2');
+        if (!isL2) {
+          const divParts = document.getElementById('p1-dividend').value.split('/');
+          const divisorParts = document.getElementById('p1-divisor').value.split('/');
+          n1 = parseInt(divParts[0]);
+          d1 = parseInt(divParts[1]);
+          n2 = parseInt(divisorParts[0]);
+          d2 = parseInt(divisorParts[1]);
+        } else {
+          n1 = parseInt(document.getElementById('p1-div-num').value);
+          d1 = parseInt(document.getElementById('p1-div-den').value);
+          n2 = parseInt(document.getElementById('p1-div-num2').value);
+          d2 = parseInt(document.getElementById('p1-div-den2').value);
+        }
+
+        if (isNaN(n1) || isNaN(d1) || isNaN(n2) || isNaN(d2) || d1 <= 0 || d2 <= 0 || n1 <= 0 || n2 <= 0) {
+          return;
+        }
+
+        const quotientNum = n1 * d2;
+        const quotientDen = d1 * n2;
+        const g = gcd(quotientNum, quotientDen);
+        const simpNum = quotientNum / g;
+        const simpDen = quotientDen / g;
+
+        let mixedText = '';
+        if (simpDen === 1) {
+          mixedText = `${simpNum}`;
+        } else if (simpNum > simpDen) {
+          const whole = Math.floor(simpNum / simpDen);
+          const rem = simpNum % simpDen;
+          mixedText = `${whole} <sup>${rem}</sup>/<sub>${simpDen}</sub>`;
+        } else {
+          mixedText = `<sup>${simpNum}</sup>/<sub>${simpDen}</sub>`;
+        }
+
+        const quotientVal = (n1 / d1) / (n2 / d2);
+        myPortionsVal = quotientVal;
+
+        showReadout('portion-out', `
+          <strong>Portion Quotient: ${mixedText} portions</strong> (or ${quotientVal.toFixed(2)} portions)<br>
+          <strong>Step-by-step Math:</strong><br>
+          1. Set up the division: <sup>${n1}</sup>/<sub>${d1}</sub> &divide; <sup>${n2}</sup>/<sub>${d2}</sub><br>
+          2. Multiply by the reciprocal (flip the second fraction): <sup>${n1}</sup>/<sub>${d1}</sub> &times; <sup>${d2}</sup>/<sub>${n2}</sub><br>
+          3. Calculate: (<sup>${n1} &times; ${d2}</sup>) / (<sub>${d1} &times; ${n2}</sub>) = <sup>${quotientNum}</sup>/<sub>${quotientDen}</sub> = <strong>${mixedText}</strong> portions.
+        `);
+
+        drawPortionVisual(n1, d1, n2, d2);
+      }
+
+      function drawPortionVisual(n1, d1, n2, d2) {
+        const svg = document.getElementById('portion-svg');
+        if (!svg) return;
+        
+        const w = 400; // base width
+        const startX = 60;
+        const y = 45;
+        const h = 36;
+        
+        const dividendVal = n1 / d1;
+        const divisorVal = n2 / d2;
+        
+        let html = `
+          <text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">Visualizing: How many ${n2}/${d2}s fit in ${n1}/${d1}?</text>
+          <!-- One Whole Cup Container -->
+          <rect x="${startX}" y="${y}" width="${w}" height="${h}" rx="6" fill="#f4f7fa" stroke="#e2e7ec" stroke-width="2" stroke-dasharray="4,4" />
+          <text x="${startX + w}" y="${y - 8}" text-anchor="end" font-size="9" fill="#5e6e7e" font-weight="bold">1 Whole Cup</text>
+        `;
+        
+        // Draw dividend portion
+        const divWidth = Math.min(w * dividendVal, w);
+        html += `
+          <!-- Dividend (total amount) -->
+          <rect x="${startX}" y="${y}" width="${divWidth}" height="${h}" rx="6" fill="#e4f5f3" stroke="#0e8a7d" stroke-width="2" />
+          <text x="${startX + divWidth/2}" y="${y + h/2 + 4}" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f2b3c">${n1}/${d1} Cup Total</text>
+        `;
+        
+        // Draw divisor brackets/ticks
+        const stepWidth = w * divisorVal;
+        let currentX = startX;
+        let count = 0;
+        
+        while (currentX + 1 <= startX + divWidth) {
+          const remainingWidth = (startX + divWidth) - currentX;
+          const drawWidth = Math.min(stepWidth, remainingWidth);
+          
+          if (count > 0) {
+            html += `<line x1="${currentX}" y1="${y}" x2="${currentX}" y2="${y + h}" stroke="#0e8a7d" stroke-width="1.5" stroke-dasharray="3,3" />`;
+          }
+          
+          if (drawWidth >= 5) {
+            const midX = currentX + drawWidth / 2;
+            const bracketY = y + h + 14;
+            
+            // If it fits completely
+            if (Math.abs(drawWidth - stepWidth) < 0.1) {
+              html += `
+                <path d="M ${currentX + 2} ${bracketY - 4} Q ${currentX + 2} ${bracketY} ${midX} ${bracketY} Q ${currentX + stepWidth - 2} ${bracketY} ${currentX + stepWidth - 2} ${bracketY - 4}" fill="none" stroke="#b5521a" stroke-width="1.5" />
+                <text x="${midX}" y="${bracketY + 11}" text-anchor="middle" font-size="9" font-weight="bold" fill="#b5521a">Portion ${count + 1}</text>
+              `;
+            } else {
+              // Partial portion
+              const fractionOfPortion = drawWidth / stepWidth;
+              const fracText = fractionOfPortion.toFixed(2).replace(/\.00$/, '');
+              html += `
+                <path d="M ${currentX + 2} ${bracketY - 4} Q ${currentX + 2} ${bracketY} ${midX} ${bracketY} Q ${startX + divWidth - 2} ${bracketY} ${startX + divWidth - 2} ${bracketY - 4}" fill="none" stroke="#c9820f" stroke-width="1.2" stroke-dasharray="2,2" />
+                <text x="${midX}" y="${bracketY + 11}" text-anchor="middle" font-size="8" font-weight="bold" fill="#c9820f">${fracText} port.</text>
+              `;
+            }
+          }
+          
+          currentX += stepWidth;
+          count++;
+        }
+        
+        svg.innerHTML = html;
+      }
+
+      // ---- Step 2: Big Batch Servings ----
+      function calcBatch() {
+        let w, d;
+        const isL2 = document.getElementById('body').classList.contains('level-2');
+        if (!isL2) {
+          w = parseInt(document.getElementById('p2-batch').value);
+          d = parseInt(document.getElementById('p2-scoop').value);
+        } else {
+          w = parseInt(document.getElementById('p2-batch-input').value);
+          d = parseInt(document.getElementById('p2-scoop-den').value);
+        }
+
+        if (isNaN(w) || isNaN(d) || w <= 0 || d <= 0) {
+          return;
+        }
+
+        const quotient = w * d;
+        myBatchVal = quotient;
+
+        showReadout('batch-out', `
+          <strong>Batch Quotient: ${quotient} servings</strong><br>
+          <strong>Step-by-step Math:</strong><br>
+          1. Set up the division: ${w} &divide; <sup>1</sup>/<sub>${d}</sub><br>
+          2. Multiply by the reciprocal: ${w} &times; <sup>${d}</sup>/<sub>1</sub><br>
+          3. Calculate: ${w} &times; ${d} = <strong>${quotient}</strong> servings.<br>
+          <small>Each cup contains exactly ${d} servings of size 1/${d} cup, so ${w} cups will make ${quotient} servings.</small>
+        `);
+
+        drawBatchVisual(w, d);
+      }
+
+      function drawBatchVisual(w, d) {
+        const svg = document.getElementById('batch-svg');
+        if (!svg) return;
+        
+        let html = `<text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">Visualizing: ${w} Cups Divided by 1/${d} Cup Scoops</text>`;
+        
+        const maxCups = Math.min(w, 8); // cap visual cups at 8 to keep layout clean
+        const cupWidth = 42;
+        const cupHeight = 62;
+        const startY = 45;
+        const gap = 16;
+        
+        // Centering the cups
+        const totalWidth = maxCups * cupWidth + (maxCups - 1) * gap;
+        const startX = (520 - totalWidth) / 2;
+        
+        for (let i = 0; i < maxCups; i++) {
+          const cx = startX + i * (cupWidth + gap);
+          
+          // Draw cup outline
+          html += `
+            <!-- Cup Outline -->
+            <rect x="${cx}" y="${startY}" width="${cupWidth}" height="${cupHeight}" rx="4" fill="none" stroke="#0e8a7d" stroke-width="2" />
+            <!-- Cup Handle -->
+            <path d="M ${cx + cupWidth} ${startY + 15} C ${cx + cupWidth + 12} ${startY + 15}, ${cx + cupWidth + 12} ${startY + 45}, ${cx + cupWidth} ${startY + 45}" fill="none" stroke="#0e8a7d" stroke-width="2" />
+            <!-- Cup Label -->
+            <text x="${cx + cupWidth/2}" y="${startY + cupHeight + 15}" text-anchor="middle" font-size="9" fill="#0f2b3c" font-weight="bold">Cup ${i+1}</text>
+          `;
+          
+          // Draw d divisions inside the cup
+          const sliceHeight = cupHeight / d;
+          for (let j = 0; j < d; j++) {
+            const sy = startY + j * sliceHeight;
+            
+            // Draw alternating fills to distinguish layers
+            const fillColor = j % 2 === 0 ? '#e4f5f3' : '#bfe6e0';
+            html += `
+              <rect x="${cx + 2}" y="${sy + 2}" width="${cupWidth - 4}" height="${sliceHeight - 4}" rx="2" fill="${fillColor}" />
+              <text x="${cx + cupWidth/2}" y="${sy + sliceHeight/2 + 3}" text-anchor="middle" font-size="8" fill="#0e8a7d" font-weight="bold">1/${d}</text>
+            `;
           }
         }
-        worldGo();
+        
+        if (w > 8) {
+          html += `<text x="260" y="142" text-anchor="middle" font-size="10" fill="#5e6e7e">Showing first 8 cups of ${w} total cups</text>`;
+        }
+        
+        svg.innerHTML = html;
       }
 
-      function drawVisualizer() {
-        let p1a = num("p1a");
-        let p1b = num("p1b");
-        let cups = num("p2-cups");
-        let w = num("p3w");
-        let n = num("p3n");
-        let d = num("p3d");
-
-        // Show a worked EXAMPLE (3/4 cup loaf dough, 4 frosting cups, 2 1/2-foot
-        // roll) by default so the measuring cups always have something to read;
-        // switch to the student's real bake as soon as any value is entered.
-        const isExample =
-          isNaN(p1a) &&
-          isNaN(p1b) &&
-          isNaN(cups) &&
-          isNaN(w) &&
-          isNaN(n) &&
-          isNaN(d);
-        if (isExample) {
-          p1a = 3;
-          p1b = 4;
-          cups = 4;
-          w = 2;
-          n = 1;
-          d = 2;
+      // ---- Step 3: Roll Cuts ----
+      function calcRoll() {
+        let rw, rn, rd, sn, sd;
+        const isL2 = document.getElementById('body').classList.contains('level-2');
+        if (!isL2) {
+          rw = parseInt(document.getElementById('p3-roll-w').value);
+          const rollFracParts = document.getElementById('p3-roll-frac').value.split('/');
+          rn = parseInt(rollFracParts[0]);
+          rd = parseInt(rollFracParts[1]);
+          
+          const sliceParts = document.getElementById('p3-slice').value.split('/');
+          sn = parseInt(sliceParts[0]);
+          sd = parseInt(sliceParts[1]);
+        } else {
+          rw = parseInt(document.getElementById('p3-roll-w-input').value) || 0;
+          rn = parseInt(document.getElementById('p3-roll-num').value) || 0;
+          rd = parseInt(document.getElementById('p3-roll-den').value) || 1;
+          
+          sn = parseInt(document.getElementById('p3-slice-num').value);
+          sd = parseInt(document.getElementById('p3-slice-den').value);
         }
-        const wv = isNaN(w) ? 0 : w;
-        const nv = isNaN(n) ? 0 : n;
-        const dv = isNaN(d) || d === 0 ? 1 : d;
 
-        const drawCup = (x, label, fillRatio) => {
-          const clampedRatio = Math.min(Math.max(fillRatio, 0), 1.2);
-          const fillH = clampedRatio * 90;
-          const fillY = 170 - fillH;
+        if (isNaN(rw) || isNaN(rn) || isNaN(rd) || isNaN(sn) || isNaN(sd) || rd <= 0 || sd <= 0 || sn <= 0) {
+          return;
+        }
 
-          return `
-            <g>
-              <!-- Liquid Fill -->
-              ${clampedRatio > 0 ? `<path d="M ${x + 15} ${fillY} L ${x + 85} ${fillY} L ${x + 75} 170 L ${x + 25} 170 Z" fill="rgba(14, 138, 125, 0.6)" />` : ""}
-              
-              <!-- Cup Outline -->
-              <path d="M ${x + 10} 70 L ${x + 90} 70 L ${x + 80} 170 A 5 5 0 0 1 ${x + 75} 175 L ${x + 25} 175 A 5 5 0 0 1 ${x + 20} 170 Z" fill="none" stroke="#0f2b3c" stroke-width="2" />
-              <!-- Handle -->
-              <path d="M ${x + 90} 90 C ${x + 115} 90, ${x + 115} 150, ${x + 80} 150" fill="none" stroke="#0f2b3c" stroke-width="2" />
-              
-              <!-- Scale Ticks -->
-              <line x1="${x + 22}" y1="145" x2="${x + 35}" y2="145" stroke="#0f2b3c" />
-              <text x="${x + 40}" y="148" font-size="8" fill="#5e6e7e">1/4</text>
-              <line x1="${x + 25}" y1="120" x2="${x + 40}" y2="120" stroke="#0f2b3c" />
-              <text x="${x + 45}" y="123" font-size="8" fill="#5e6e7e">1/2</text>
-              <line x1="${x + 27}" y1="95" x2="${x + 35}" y2="95" stroke="#0f2b3c" />
-              <text x="${x + 40}" y="98" font-size="8" fill="#5e6e7e">3/4</text>
-              
-              <text x="${x + 50}" y="195" text-anchor="middle" font-size="10" font-weight="bold" fill="#0f2b3c">${label}</text>
-              <text x="${x + 50}" y="210" text-anchor="middle" font-size="9" fill="#0e8a7d" font-weight="bold">Value: ${fillRatio.toFixed(2)} cups</text>
-            </g>
-          `;
-        };
+        // Mixed number to improper
+        const impNum = rw * rd + rn;
+        const impDen = rd;
 
-        const ratio1 = !isNaN(p1a) && p1b > 0 ? p1a / p1b : 0;
-        const ratio2 = !isNaN(cups) ? cups : 0;
-        const ratio3 = wv + nv / dv;
+        // Division calculation
+        const qNum = impNum * sd;
+        const qDen = impDen * sn;
+        const g = gcd(qNum, qDen);
+        const simpNum = qNum / g;
+        const simpDen = qDen / g;
 
-        const svgString = `
-          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
-            <text x="250" y="35" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">Bakery Ingredient Measuring Labs</text>
-            ${isExample ? `<rect x="360" y="18" width="128" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="424" y="32" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example · 3/4, 4, 2½</text>` : ""}
-            ${drawCup(50, "Loaf Dough", ratio1)}
-            ${drawCup(200, "Frosting Cups", ratio2 / 4)}
-            ${drawCup(350, "Roll Dough", ratio3 / 4)}
-          </svg>
+        const quotientVal = (rw + rn / rd) / (sn / sd);
+        myRollVal = quotientVal;
+
+        let mixedText = '';
+        if (simpDen === 1) {
+          mixedText = `${simpNum}`;
+        } else if (simpNum > simpDen) {
+          const whole = Math.floor(simpNum / simpDen);
+          const rem = simpNum % simpDen;
+          mixedText = `${whole} <sup>${rem}</sup>/<sub>${simpDen}</sub>`;
+        } else {
+          mixedText = `<sup>${simpNum}</sup>/<sub>${simpDen}</sub>`;
+        }
+
+        const fullSlices = Math.floor(quotientVal);
+        const leftoverFractionNum = (simpNum % simpDen);
+        let leftoverText = '';
+        if (leftoverFractionNum > 0) {
+          leftoverText = `<br>This means you get <strong>${fullSlices} full slices</strong>, with <strong><sup>${leftoverFractionNum}</sup>/<sub>${simpDen}</sub> of a slice</strong> left over.`;
+        } else {
+          leftoverText = `<br>This divides perfectly into exactly <strong>${fullSlices} slices</strong> with no leftover dough!`;
+        }
+
+        showReadout('roll-out', `
+          <strong>Roll Slices Quotient: ${mixedText} slices</strong> (or ${quotientVal.toFixed(2)} slices)${leftoverText}<br>
+          <strong>Step-by-step Math:</strong><br>
+          1. Convert mixed number length to improper fraction: ${rw} <sup>${rn}</sup>/<sub>${rd}</sub> = <sup>(${rw} &times; ${rd} + ${rn})</sup>/<sub>${rd}</sub> = <strong><sup>${impNum}</sup>/<sub>${impDen}</sub></strong> feet<br>
+          2. Set up the division: <sup>${impNum}</sup>/<sub>${impDen}</sub> &divide; <sup>${sn}</sup>/<sub>${sd}</sub><br>
+          3. Multiply by reciprocal: <sup>${impNum}</sup>/<sub>${impDen}</sub> &times; <sup>${sd}</sup>/<sub>${sn}</sub><br>
+          4. Multiply: (<sup>${impNum} &times; ${sd}</sup>) / (<sub>${impDen} &times; ${sn}</sub>) = <sup>${qNum}</sup>/<sub>${qDen}</sub> = <strong>${mixedText}</strong> slices.
+        `);
+
+        drawRollVisual(rw, rn, rd, sn, sd);
+      }
+
+      function drawRollVisual(rw, rn, rd, sn, sd) {
+        const svg = document.getElementById('roll-svg');
+        if (!svg) return;
+        
+        const lengthVal = rw + (rd > 0 ? rn / rd : 0);
+        const sliceVal = sn / sd;
+        
+        let html = `<text x="260" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f2b3c">Visualizing: Slicing a ${rw} ${rn}/${rd} Ft Roll into ${sn}/${sd} Ft Slices</text>`;
+        
+        const pxPerUnit = 120; // 1 foot = 120px
+        const startX = 40;
+        const y = 45;
+        const h = 36;
+        const rollWidth = lengthVal * pxPerUnit;
+        
+        // Draw dough roll outline
+        html += `
+          <!-- Dough Roll background -->
+          <rect x="${startX}" y="${y}" width="${rollWidth}" height="${h}" rx="18" fill="#fdf3e0" stroke="#c9820f" stroke-width="2" />
         `;
-        $("projectVisualizer").innerHTML = svgString;
+        
+        // Draw whole unit indicators (vertical lines at 1, 2, 3...)
+        for (let i = 1; i < lengthVal; i++) {
+          const ux = startX + i * pxPerUnit;
+          html += `
+            <line x1="${ux}" y1="${y}" x2="${ux}" y2="${y + h}" stroke="#c9820f" stroke-width="1" stroke-dasharray="4,4" />
+            <text x="${ux}" y="${y - 5}" text-anchor="middle" font-size="8" fill="#c9820f" font-weight="bold">${i} Ft</text>
+          `;
+        }
+        // Total length indicator
+        html += `<text x="${startX + rollWidth}" y="${y - 5}" text-anchor="end" font-size="8" fill="#c9820f" font-weight="bold">${rw} ${rn}/${rd} Ft Total</text>`;
+        
+        // Draw slice cuts
+        const slicePx = sliceVal * pxPerUnit;
+        let currentX = startX;
+        let count = 0;
+        
+        while (currentX + 1 <= startX + rollWidth) {
+          const remainingPx = (startX + rollWidth) - currentX;
+          const drawPx = Math.min(slicePx, remainingPx);
+          
+          if (count > 0) {
+            html += `<line x1="${currentX}" y1="${y}" x2="${currentX}" y2="${y + h}" stroke="#b5521a" stroke-width="2" />`;
+          }
+          
+          if (drawPx >= 5) {
+            const midX = currentX + drawPx/2;
+            html += `
+              <text x="${midX}" y="${y + h/2 + 4}" text-anchor="middle" font-size="9" font-weight="bold" fill="#b5521a">${count + 1}</text>
+            `;
+          }
+          
+          currentX += slicePx;
+          count++;
+        }
+        
+        svg.innerHTML = html;
+      }
+
+      // ---- Step 4: Partner Compare ----
+      function comparePeer() {
+        const pName = document.getElementById('p-name').value || 'Partner';
+        const pPortions = parseFloat(document.getElementById('p-portions').value);
+        const pBatch = parseFloat(document.getElementById('p-batch').value);
+        const pSlices = parseFloat(document.getElementById('p-slices').value);
+
+        if (isNaN(pPortions) && isNaN(pBatch) && isNaN(pSlices)) {
+          return;
+        }
+
+        let html = `<h3>📊 Comparison Results with Chef ${pName}:</h3><ul style="margin-top:8px;padding-left:20px;font-size:14px;line-height:1.7;">`;
+
+        if (!isNaN(pPortions) && myPortionsVal !== null) {
+          const diff = myPortionsVal - pPortions;
+          let diffText = '';
+          if (diff > 0) {
+            diffText = `You made <strong>${diff.toFixed(2)} more</strong> portions.`;
+          } else if (diff < 0) {
+            diffText = `${pName} made <strong>${Math.abs(diff).toFixed(2)} more</strong> portions.`;
+          } else {
+            diffText = `You made the exact same amount.`;
+          }
+          html += `<li><strong>Portion Control (Step 1):</strong> You: ${myPortionsVal.toFixed(2)} | ${pName}: ${pPortions.toFixed(2)} &mdash; ${diffText}</li>`;
+        }
+
+        if (!isNaN(pBatch) && myBatchVal !== null) {
+          const diff = myBatchVal - pBatch;
+          let diffText = '';
+          if (diff > 0) {
+            diffText = `You made <strong>${diff} more</strong> servings.`;
+          } else if (diff < 0) {
+            diffText = `${pName} made <strong>${Math.abs(diff)} more</strong> servings.`;
+          } else {
+            diffText = `You made the exact same amount.`;
+          }
+          html += `<li><strong>Big Batch (Step 2):</strong> You: ${myBatchVal} | ${pName}: ${pBatch} &mdash; ${diffText}</li>`;
+        }
+
+        if (!isNaN(pSlices) && myRollVal !== null) {
+          const diff = myRollVal - pSlices;
+          let diffText = '';
+          if (diff > 0) {
+            diffText = `You cut <strong>${diff.toFixed(2)} more</strong> slices.`;
+          } else if (diff < 0) {
+            diffText = `${pName} cut <strong>${Math.abs(diff).toFixed(2)} more</strong> slices.`;
+          } else {
+            diffText = `You cut the exact same amount.`;
+          }
+          html += `<li><strong>Roll Cuts (Step 3):</strong> You: ${myRollVal.toFixed(2)} | ${pName}: ${pSlices.toFixed(2)} &mdash; ${diffText}</li>`;
+        }
+
+        html += '</ul>';
+        showReadout('peer-out', html);
+      }
+
+      // ---- Step 5: Finish & Report ----
+      function buildReport() {
+        const isL2 = document.getElementById('body').classList.contains('level-2');
+        let step1Text = '';
+        if (!isL2) {
+          const divVal = document.getElementById('p1-dividend').value;
+          const divsorVal = document.getElementById('p1-divisor').value;
+          step1Text = `${divVal} ÷ ${divsorVal}`;
+        } else {
+          const num1 = document.getElementById('p1-div-num').value;
+          const den1 = document.getElementById('p1-div-den').value;
+          const num2 = document.getElementById('p1-div-num2').value;
+          const den2 = document.getElementById('p1-div-den2').value;
+          step1Text = `${num1}/${den1} ÷ ${num2}/${den2}`;
+        }
+
+        let step2Text = '';
+        if (!isL2) {
+          const batch = document.getElementById('p2-batch').value;
+          const scoop = document.getElementById('p2-scoop').value;
+          step2Text = `${batch} ÷ 1/${scoop}`;
+        } else {
+          const batch = document.getElementById('p2-batch-input').value;
+          const scoopDen = document.getElementById('p2-scoop-den').value;
+          step2Text = `${batch} ÷ 1/${scoopDen}`;
+        }
+
+        let step3Text = '';
+        if (!isL2) {
+          const w = document.getElementById('p3-roll-w').value;
+          const f = document.getElementById('p3-roll-frac').value;
+          const s = document.getElementById('p3-slice').value;
+          step3Text = `${w} ${f} ÷ ${s}`;
+        } else {
+          const w = document.getElementById('p3-roll-w-input').value;
+          const num = document.getElementById('p3-roll-num').value;
+          const den = document.getElementById('p3-roll-den').value;
+          const sNum = document.getElementById('p3-slice-num').value;
+          const sDen = document.getElementById('p3-slice-den').value;
+          step3Text = `${w} ${num}/${den} ÷ ${sNum}/${sDen}`;
+        }
+
+        const pName = document.getElementById('p-name').value || '—';
+        const pPortions = document.getElementById('p-portions').value || '—';
+        const pBatch = document.getElementById('p-batch').value || '—';
+        const pSlices = document.getElementById('p-slices').value || '—';
+
+        const pitch = document.getElementById('pitch').value || '(no menu card written)';
+        const peerReflect = document.getElementById('peer-reflect').value || '(no reflection written)';
+        const bakeryCompare = document.getElementById('bakery-compare').value || '(no bakery comparison written)';
+
+        const lines = [
+          '═══ RECIPE REMIX BAKERY REPORT — UNIT 2 PROJECT ═══',
+          '',
+          '📖 MATH STANDARD: 6.NS.1 (Fraction Division)',
+          `Level of Support: ${isL2 ? 'Level 2 (Challenge)' : 'Level 1 (With Support)'}`,
+          '',
+          '🧁 STEP 1 — PORTION CONTROL (Fraction ÷ Fraction)',
+          `   Equation: ${step1Text}`,
+          `   Portions Yield: ${myPortionsVal !== null ? myPortionsVal.toFixed(2) + ' portions' : '—'}`,
+          '',
+          '🥣 STEP 2 — BIG BATCH SERVINGS (Whole ÷ Unit Fraction)',
+          `   Equation: ${step2Text}`,
+          `   Servings Yield: ${myBatchVal !== null ? myBatchVal + ' servings' : '—'}`,
+          '',
+          '🥖 STEP 3 — ROLL CUTS (Mixed Number ÷ Fraction)',
+          `   Equation: ${step3Text}`,
+          `   Roll Cuts Slices: ${myRollVal !== null ? myRollVal.toFixed(2) + ' slices' : '—'}`,
+          `   Real-world Bakery Comparison: ${bakeryCompare}`,
+          '',
+          '👥 STEP 4 — PARTNER COMPARISON',
+          `   Classmate Chef: ${pName}`,
+          `   Partner Portions: ${pPortions} | Partner Batch: ${pBatch} | Partner Slices: ${pSlices}`,
+          `   Reflection: ${peerReflect}`,
+          '',
+          '✍️ MY MENU CARD PITCH:',
+          pitch,
+          '',
+          '═══════════════════════════════════════════════════════',
+          `Generated: ${new Date().toLocaleDateString()}`,
+        ];
+
+        const box = document.getElementById('reportBox');
+        box.textContent = lines.join('\n');
+        box.classList.add('show');
+      }
+
+      function copyReport() {
+        const txt = document.getElementById('reportBox').textContent;
+        if (!txt) {
+          alert('Please click Generate Summary first!');
+          return;
+        }
+        navigator.clipboard?.writeText(txt).then(() => alert('Copied report to clipboard!'));
+      }
+
+      function downloadTxt() {
+        const txt = document.getElementById('reportBox').textContent;
+        if (!txt) {
+          alert('Please click Generate Summary first!');
+          return;
+        }
+        const a = document.createElement('a');
+        a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(txt);
+        a.download = 'recipe-remix-bakery-report.txt';
+        a.click();
       }
 
       function recalcAll() {
-        if (typeof syncResearch === "function") syncResearch();
-        calcPhase1();
-        calcPhase2();
-        calcPhase3();
+        calcPortions();
+        calcBatch();
+        calcRoll();
         comparePeer();
-        renderWorld();
-        worldGo();
-        updateProgress();
       }
 
-      /* ---- Report ---- */
-      function f(x, d) {
-        return x == null
-          ? "(not finished)"
-          : typeof x === "number"
-            ? x.toFixed(d || 2).replace(/\.?0+$/, "")
-            : x;
-      }
-      function reportText() {
-        return (
-          "RECIPE REMIX BAKERY — MY REPORT\n" +
-          "================================\n\n" +
-          "Recipe: " +
-          ($("recipeName").value || "(not named)") +
-          "\n\n" +
-          "PART 1: MY BAKE (SELF)\n" +
-          "Mini-loaves (fraction ÷ fraction): " +
-          f(proj.loaves) +
-          "\n" +
-          "Cupcakes (whole ÷ unit fraction): " +
-          (proj.cupcakes == null ? "(not finished)" : proj.cupcakes) +
-          "\n" +
-          "Roll pieces (mixed ÷ fraction): " +
-          (proj.pieces == null
-            ? "(not finished)"
-            : proj.pieces + " full pieces") +
-          "\n" +
-          "Quick check (6 ÷ 2/3): " +
-          ($("check-muffins").value || "-") +
-          " muffins\n\n" +
-          "PART 2: PEER COMPARISON\n" +
-          "Partner: " +
-          ($("partnerName").value || "(none)") +
-          "\n" +
-          "Partner loaves: " +
-          ($("p-loaves").value || "-") +
-          "  cupcakes: " +
-          ($("p-cupcakes").value || "-") +
-          "  pieces: " +
-          ($("p-pieces").value || "-") +
-          "\n" +
-          "Reflection: " +
-          ($("peerReflect").value || "(not written)") +
-          "\n\n" +
-          "PART 3: WORLD COMPARISON\n" +
-          "My servings vs real recipes: " +
-          ($("worldReflect").value || "(not written)") +
-          "\n" +
-          "Careful thinking: " +
-          ($("careful").value || "(not written)") +
-          "\n\n" +
-          "MENU CARD:\n" +
-          ($("pitch").value || "(not written)")
-        );
-      }
-      function buildReport() {
-        recalcAll();
-        PK.generateReport("reportBox", reportText());
-      }
-      function downloadCsv() {
-        const rows = [
-          ["field", "value"],
-          ["recipe", $("recipeName").value],
-          ["mini_loaves", proj.loaves],
-          ["cupcakes", proj.cupcakes],
-          ["roll_pieces", proj.pieces],
-          ["quick_check_muffins", $("check-muffins").value],
-          ["partner", $("partnerName").value],
-          ["partner_loaves", $("p-loaves").value],
-          ["partner_cupcakes", $("p-cupcakes").value],
-          ["partner_pieces", $("p-pieces").value],
-        ];
-        PK.downloadCsv("recipe-remix-data.csv", rows);
-      }
-
-      /* ---- Progress ---- */
-      function updateProgress() {
-        const readouts = document.querySelectorAll(".readout.show").length; // max 3
-        const muffinsOk = $("check-muffinsFb").querySelector(".pk-ok") ? 1 : 0;
-        const checks = document.querySelectorAll(
-          "#checklist input:checked",
-        ).length; // max 6
-        const peer =
-          $("p-loaves").value || $("p-cupcakes").value || $("p-pieces").value
-            ? 1
-            : 0;
-        const wrld = $("myWorld").value ? 1 : 0;
-        const pitch = $("pitch").value.trim().length > 20 ? 1 : 0;
-        const total = readouts + muffinsOk + checks + peer + wrld + pitch; // max 3+1+6+1+1+1 = 13
-        const pct = Math.min(100, Math.round((total / 13) * 100));
-        $("pfill").style.width = pct + "%";
-        $("pct").textContent = pct;
-      }
-      document
-        .getElementById("checklist")
-        .addEventListener("change", updateProgress);
-      document
-        .getElementById("pitch")
-        .addEventListener("input", updateProgress);
-
-      /* ---- Level hook: Level 1 pre-fills friendly numbers if empty ---- */
-      window.onLevelChange = function (level) {
-        if (level === "level-1") {
-          const empty =
-            !$("p1a").value && !$("p1b").value && !$("p2-cups").value;
-          if (empty) {
-            useExamples();
-          }
-        }
-      };
-
-      /* ---- init (runs after deferred kit script is ready) ---- */
-      document.addEventListener("DOMContentLoaded", function () {
-        renderWorld();
-        PK.initLevel({ storageKey: "u2ProjectA", default: "level-1" });
-        PK.initTts({ storageKey: "u2ProjectA" });
-        PK.load("u2ProjectA", { after: recalcAll });
-        updateProgress();
-      });
+      // ---- Init ----
+      buildTrail();
+      updateProgress();
+      recalcAll();
     </script>
-    <script src="/assets/nt-page-enhance.js" defer></script>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
-    <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-    <!-- nsr-injected:end -->
-    <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
-    <script type="application/json" id="pk-research">
-      {
-        "icon": "🔎",
-        "title": "Research Lab — Measure Like a Maker",
-        "intro": "Carpenters and bakers divide by fractions all day. Look up the rules and real measurements, then cut the math down to size.",
-        "brief": {
-          "theme": "field",
-          "title": "🔧 Your Research Mission",
-          "hook": "Find the <b>fraction-division rule</b> and real measurements, then use them like a real maker.",
-          "steps": [
-            "Open a link (new tab — you keep your project).",
-            "Record the rule and real sizes in Field Notes.",
-            "Use them in the math problems.",
-            "Check off the Investigation Checklist."
-          ]
-        },
-        "fieldNotes": {
-          "title": "Field Notes — Record What You Find",
-          "intro": "Jot the exact number or rule you find. You'll reuse these in the math below.",
-          "fields": [
-            {
-              "label": "Rule for dividing by a fraction",
-              "source": "Math is Fun",
-              "placeholder": "multiply by the reciprocal",
-              "hint": "'Keep, change, flip.'"
-            },
-            {
-              "label": "What a reciprocal is",
-              "source": "Math is Fun",
-              "placeholder": "flip the fraction (3/4 → 4/3)",
-              "hint": "Numerator and denominator swap."
-            },
-            {
-              "label": "A real length you will cut (inches or feet)",
-              "source": "Your project / ruler",
-              "placeholder": "12 in",
-              "hint": "Measure or pick a real board/strip length."
-            },
-            {
-              "label": "The fraction-size of each piece",
-              "source": "Your plan",
-              "placeholder": "3/4 in pieces",
-              "hint": "How big is one cut piece?"
-            }
-          ]
-        },
-        "mathTasks": [
-          {
-            "title": "1 · How many pieces?",
-            "prompt": "Take your full length (Field Note 3) and divide by your piece size (Field Note 4) using <b>division by a fraction</b>. How many pieces do you get?",
-            "level2": "If some length is left over, what fraction of a piece is it?"
-          },
-          {
-            "title": "2 · Reverse it",
-            "prompt": "If you need 8 pieces that are each 1/2 ft long, how many feet of material do you need? Show the multiplication.",
-            "level2": "Write the matching division equation that undoes your multiplication."
-          },
-          {
-            "title": "3 · Check with a model",
-            "prompt": "Draw or describe a number-line or area model that shows your Problem 1 answer is correct.",
-            "level2": "Explain in one sentence why dividing by a fraction gives a bigger number."
-          }
-        ],
-        "investigationChecklist": [
-          "I recorded the divide-by-a-fraction rule.",
-          "I recorded what a reciprocal is.",
-          "I found a real length to cut.",
-          "I used fraction division to count pieces.",
-          "I wrote a multiplication equation that reverses it.",
-          "I modeled or explained why my answer makes sense."
-        ],
-        "links": [
-          {
-            "icon": "📏",
-            "name": "Math is Fun — Dividing Fractions",
-            "url": "https://www.mathsisfun.com/fractions_division.html",
-            "find": "The 'keep, change, flip' method with examples.",
-            "look": "multiply by the reciprocal"
-          },
-          {
-            "icon": "🔁",
-            "name": "Math is Fun — Reciprocal",
-            "url": "https://www.mathsisfun.com/reciprocal.html",
-            "find": "What a reciprocal is and how to make one.",
-            "look": "flip the top and bottom"
-          },
-          {
-            "icon": "🍰",
-            "name": "Math is Fun — Mixed Fractions",
-            "url": "https://www.mathsisfun.com/mixed-fractions.html",
-            "find": "How to turn mixed numbers into improper fractions before dividing.",
-            "look": "the convert-to-improper steps"
-          }
-        ],
-        "note": "These sites were picked for class. They open in a new tab so you keep your project. If a page asks you to sign in or buy something, just close it and come back."
-      }
-    </script>
-    <script src="/shared/projects/projects-tabs.js" defer></script>
-    <script src="/shared/projects/projects-interactive.js" defer></script>
-    <script src="/shared/projects/manip-frac-divide.js" defer></script>
-    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-    <script src="/assets/math-workbench-launcher.js" defer></script>
-    <!-- mwb-injected:end -->
   </body>
 </html>

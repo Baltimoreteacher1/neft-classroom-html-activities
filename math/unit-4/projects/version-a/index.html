@@ -3,2715 +3,1427 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/assets/math-mobile.css" />
     <title>Pop-Up Shop Owner — Unit 4 Culminating Project</title>
-    <meta
-      name="description"
-      content="Unit 4 Rates &amp; Percents culminating project. Price YOUR real product with markup, discount, and sales tax, compare with a partner, then test your prices against real U.S. state tax rates."
-    />
-    <link rel="stylesheet" href="/assets/shared.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-kit.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-tabs.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-tplus.css" />
-    <link rel="stylesheet" href="/shared/projects/projects-interactive.css" />
-    <script src="/shared/projects/projects-kit.js" defer></script>
+    <meta name="description" content="Unit 4 Rates & Percents culminating project. Run a pop-up shop: price items with discounts, calculate unit rates to find the best deal, and calculate sales tax." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <style>
       :root {
-        --navy: #1a1150;
-        --blue: #4f46e5;
-        --blue-light: #eeecfd;
-        --teal: #0e8a7d;
-        --teal-light: #e4f5f3;
-        --gold: #d4952a;
-        --gold-light: #fdf3e0;
-        --coral: #c45a3c;
-        --coral-light: #fdeee9;
-        --green: #2d874b;
-        --green-light: #e6f4eb;
-        --ink: #1a2633;
-        --muted: #5e6e7e;
-        --line: #e2e7ec;
-        --bg: #f7f9fb;
+        --navy: #2d1a04;
+        --blue: #d97706; /* primary gold/orange accent */
+        --blue-lt: #fff7ed; /* light amber background */
+        --teal: #b45309; /* dark gold accent */
+        --teal-lt: #fffbeb; /* very light amber */
+        --gold: #f97316; /* secondary orange-gold */
+        --gold-lt: #ffedd5;
+        --green: #15803d; /* success green */
+        --green-lt: #dcfce7;
+        --coral: #ea580c;
+        --ink: #1c1917;
+        --muted: #57534e;
+        --line: #e7e5e4;
+        --bg: #fafaf9; /* warm stone background */
         --card: #ffffff;
         --radius: 16px;
-        --shadow: 0 4px 18px rgba(26, 17, 80, 0.1);
-        --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+        --shadow: 0 2px 16px rgba(45,26,4,.08);
       }
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        margin: 0;
-        font-family: var(--font);
-        color: var(--ink);
-        background: var(--bg);
-        line-height: 1.55;
-      }
-      .wrap {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 0 20px 60px;
-      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: 'Inter', system-ui, sans-serif; color: var(--ink); background: var(--bg); line-height: 1.6; }
 
-      .phero {
-        background: linear-gradient(135deg, #1a1150 0%, #4f46e5 100%);
+      /* ---- Hero ---- */
+      .hero {
+        background: linear-gradient(135deg, #2d1a04 0%, #d97706 60%, #b45309 100%);
         color: #fff;
-        padding: 40px 24px 34px;
+        padding: 36px 24px 28px;
         text-align: center;
-        position: relative;
-        overflow: hidden;
       }
-      .phero .deco {
-        font-size: 56px;
-        line-height: 1;
-      }
-      .phero h1 {
-        font-size: clamp(26px, 5vw, 40px);
-        margin: 10px 0 8px;
-        letter-spacing: -0.02em;
-      }
-      .phero p {
-        max-width: 640px;
-        margin: 0 auto;
-        color: rgba(255, 255, 255, 0.85);
-        font-size: 17px;
-      }
-      .tags {
-        margin-top: 16px;
-        display: flex;
-        gap: 8px;
-        justify-content: center;
-        flex-wrap: wrap;
-      }
-      .tag {
-        background: rgba(255, 255, 255, 0.14);
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        border-radius: 50px;
-        padding: 5px 14px;
-        font-size: 13px;
-        font-weight: 700;
-      }
-      .tag.gold {
-        background: var(--gold);
-        border-color: var(--gold);
-        color: #2a1c00;
-      }
+      .hero-emoji { font-size: 52px; line-height: 1; margin-bottom: 10px; }
+      .hero h1 { font-size: clamp(24px,5vw,38px); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; }
+      .hero-sub { color: rgba(255,255,255,.85); font-size: 16px; max-width: 580px; margin: 0 auto 16px; }
+      .hero-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; }
+      .tag { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.28); border-radius: 50px; padding: 4px 13px; font-size: 12px; font-weight: 700; letter-spacing: .04em; }
+      .tag.gold { background: var(--gold); border-color: var(--gold); color: #fff; }
 
-      .toolbar {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        justify-content: center;
-        margin-top: 16px;
+      /* ---- Level selector ---- */
+      .level-bar {
+        display: flex; gap: 10px; justify-content: center;
+        background: rgba(255,255,255,.10); border-radius: 50px;
+        padding: 6px 10px; max-width: 400px; margin: 0 auto;
       }
-      .toolbar button {
-        background: rgba(255, 255, 255, 0.12);
-        color: #fff;
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        border-radius: 50px;
-        padding: 8px 16px;
-        font-weight: 700;
-        font-size: 13px;
-        cursor: pointer;
-        font-family: inherit;
+      .level-btn {
+        flex: 1; background: transparent; color: rgba(255,255,255,.75);
+        border: 2px solid rgba(255,255,255,.30); border-radius: 50px;
+        padding: 7px 16px; font-size: 13px; font-weight: 700;
+        cursor: pointer; font-family: inherit; transition: all .2s;
       }
-      .toolbar button:hover {
-        background: rgba(255, 255, 255, 0.22);
-      }
+      .level-btn.active { background: #fff; color: var(--navy); border-color: #fff; }
 
-      .intro-card {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-left: 6px solid var(--gold);
-        border-radius: var(--radius);
-        padding: 22px 24px;
-        margin: 26px 0;
-        box-shadow: var(--shadow);
-      }
-      .intro-card h2 {
-        margin: 0 0 8px;
-        font-size: 20px;
-      }
-      .intro-card .scenario {
-        font-size: 16px;
-        color: var(--ink);
-      }
+      /* ---- Tab wizard ---- */
+      .wizard { max-width: 860px; margin: 0 auto; padding: 0 16px 60px; }
 
-      .phase {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-radius: var(--radius);
-        padding: 24px;
-        margin: 22px 0;
-        box-shadow: var(--shadow);
+      .step-trail {
+        display: flex; align-items: center; gap: 0;
+        padding: 22px 0 0; overflow-x: auto;
       }
-      .phase-head {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        margin-bottom: 6px;
+      .step-trail-item {
+        display: flex; align-items: center; gap: 6px;
+        cursor: pointer; white-space: nowrap; padding: 8px 12px;
+        border-radius: 10px; transition: background .15s;
       }
-      .phase-num {
-        flex: 0 0 auto;
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
-        background: var(--blue);
-        color: #fff;
-        font-weight: 800;
-        font-size: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+      .step-trail-item:hover { background: var(--blue-lt); }
+      .step-trail-item.active .s-num {
+        background: var(--blue); color: #fff;
       }
-      .phase h2 {
-        margin: 0;
-        font-size: 21px;
+      .step-trail-item.done .s-num {
+        background: var(--green); color: #fff;
       }
-      .phase .skill {
-        font-size: 12px;
-        font-weight: 700;
-        color: var(--muted);
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
+      .s-num {
+        width: 30px; height: 30px; border-radius: 50%;
+        background: var(--line); color: var(--muted);
+        font-weight: 800; font-size: 13px;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0; transition: all .2s;
       }
-      .phase > p {
-        color: var(--muted);
-      }
-      .arc-banner {
-        display: inline-block;
-        font-size: 12px;
-        font-weight: 800;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        color: var(--blue);
-        background: var(--blue-light);
-        border-radius: 50px;
-        padding: 4px 12px;
-        margin-bottom: 10px;
-      }
+      .s-label { font-size: 13px; font-weight: 600; color: var(--muted); }
+      .step-trail-item.active .s-label { color: var(--blue); }
+      .step-trail-item.done .s-label { color: var(--green); }
+      .step-arrow { color: var(--line); font-size: 16px; padding: 0 2px; }
 
-      .task {
-        background: var(--blue-light);
-        border-radius: 12px;
-        padding: 16px 18px;
-        margin: 16px 0;
-      }
-      .task strong {
-        color: var(--navy);
-      }
+      /* ---- Progress bar ---- */
+      .prog-wrap { margin: 14px 0 4px; }
+      .prog-bar { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; }
+      .prog-fill { height: 100%; background: linear-gradient(90deg,var(--blue),var(--teal)); border-radius: 99px; transition: width .4s ease; }
+      .prog-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
 
-      label.fld {
-        display: block;
-        font-weight: 700;
-        font-size: 14px;
-        margin: 14px 0 6px;
-      }
-      input[type="number"],
-      input[type="text"],
-      select,
-      textarea {
-        width: 100%;
-        padding: 11px 13px;
-        border: 2px solid var(--line);
-        border-radius: 10px;
-        font-family: inherit;
-        font-size: 15px;
-        background: #fff;
-      }
-      input:focus,
-      select:focus,
-      textarea:focus {
-        outline: none;
-        border-color: var(--blue);
-      }
-      textarea {
-        resize: vertical;
-        min-height: 80px;
-      }
-      .grid2 {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 14px;
-      }
-      .grid3 {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 14px;
-      }
-      @media (max-width: 560px) {
-        .grid2,
-        .grid3 {
-          grid-template-columns: 1fr;
-        }
-      }
+      /* ---- Step panel ---- */
+      .step-panel { display: none; animation: fadein .25s ease; }
+      .step-panel.active { display: block; }
+      @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
-      .btn {
-        background: var(--blue);
-        color: #fff;
-        border: none;
-        border-radius: 10px;
-        padding: 11px 20px;
-        font-weight: 800;
-        font-size: 15px;
-        cursor: pointer;
-        font-family: inherit;
-        margin-top: 14px;
+      /* ---- Card ---- */
+      .card {
+        background: var(--card); border: 1px solid var(--line);
+        border-radius: var(--radius); padding: 28px 26px;
+        box-shadow: var(--shadow); margin-top: 16px;
       }
-      .btn:hover {
-        filter: brightness(1.08);
+      .card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+      .card-icon {
+        width: 50px; height: 50px; border-radius: 14px;
+        background: var(--blue-lt); display: flex;
+        align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0;
       }
-      .btn.alt {
-        background: var(--teal);
-      }
-      .btn.ghost {
-        background: #fff;
-        color: var(--blue);
-        border: 2px solid var(--line);
-      }
+      .card-icon.gold { background: var(--gold-lt); }
+      .card-icon.teal { background: var(--teal-lt); }
+      .card-icon.green { background: var(--green-lt); }
+      .card-title { font-size: 20px; font-weight: 800; color: var(--navy); margin-bottom: 3px; }
+      .card-sub { font-size: 13px; color: var(--muted); font-weight: 500; }
 
+      /* ---- Instruction box ---- */
+      .instruct {
+        background: var(--blue-lt); border-left: 4px solid var(--blue);
+        border-radius: 10px; padding: 14px 16px; margin-bottom: 20px;
+        font-size: 15px; line-height: 1.6;
+      }
+      .instruct.gold { background: var(--gold-lt); border-color: var(--gold); }
+      .instruct.teal { background: var(--teal-lt); border-color: var(--teal); }
+      .instruct.green { background: var(--green-lt); border-color: var(--green); }
+
+      /* ---- SVG visual ---- */
+      .visual-svg { display: block; width: 100%; max-width: 520px; margin: 0 auto 20px; border-radius: 12px; }
+
+      /* ---- Form inputs ---- */
+      label.lbl { display: block; font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 5px; margin-top: 14px; }
+      input[type="number"], input[type="text"], textarea, select {
+        width: 100%; padding: 10px 14px; border: 1.5px solid var(--line);
+        border-radius: 10px; font-size: 15px; font-family: inherit;
+        background: var(--bg); color: var(--ink); transition: border-color .2s;
+      }
+      input:focus, textarea:focus, select:focus { outline: none; border-color: var(--blue); }
+      textarea { min-height: 90px; resize: vertical; }
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
+
+      /* ---- Calc button & readout ---- */
+      .calc-btn {
+        background: var(--blue); color: #fff; border: none;
+        border-radius: 10px; padding: 11px 20px; font-size: 14px;
+        font-weight: 700; cursor: pointer; font-family: inherit;
+        margin-top: 12px; transition: background .2s;
+      }
+      .calc-btn:hover { background: #b45309; }
+      .calc-btn.gold { background: var(--gold); }
+      .calc-btn.gold:hover { background: #d97706; }
+      .calc-btn.teal { background: var(--teal); }
+      .calc-btn.teal:hover { background: #92400e; }
+      .calc-btn.green { background: var(--green); }
+      .calc-btn.green:hover { background: #166534; }
       .readout {
-        margin-top: 16px;
-        border-radius: 12px;
-        padding: 16px 18px;
-        font-size: 15px;
-        background: var(--teal-light);
-        border: 1px solid #bfe6e0;
-        display: none;
+        background: var(--navy); color: #fff7ed;
+        border-radius: 10px; padding: 14px 18px; margin-top: 12px;
+        font-size: 15px; line-height: 1.6; display: none;
       }
-      .readout.show {
-        display: block;
+      .readout.show { display: block; }
+      .readout strong { color: #fde047; }
+
+      /* ---- Hint ---- */
+      details.hint { margin-top: 14px; }
+      details.hint summary {
+        cursor: pointer; font-size: 13px; font-weight: 600;
+        color: var(--blue); list-style: none; display: inline-flex;
+        align-items: center; gap: 5px;
       }
-      .readout .big {
-        font-size: 28px;
-        font-weight: 800;
-        color: var(--teal);
+      details.hint summary::before { content: "💡"; }
+      details.hint p { font-size: 14px; color: var(--muted); margin-top: 8px; padding: 10px 12px; background: var(--blue-lt); border-radius: 8px; }
+
+      /* ---- Level 2 extension ---- */
+      .lvl2-block {
+        border: 2px dashed var(--blue); border-radius: 12px;
+        padding: 14px 16px; margin-top: 18px;
       }
-      .feedback {
-        margin-top: 10px;
-        font-weight: 700;
-        min-height: 22px;
+      .lvl2-label {
+        display: inline-block; background: var(--blue); color: #fff;
+        font-size: 11px; font-weight: 800; letter-spacing: .05em;
+        border-radius: 50px; padding: 3px 10px; margin-bottom: 8px;
       }
 
-      .hintbox {
-        margin-top: 12px;
-      }
-      .hintbox summary {
-        cursor: pointer;
-        font-weight: 700;
-        color: var(--blue);
-        font-size: 14px;
-      }
-      .hintbox p,
-      .hintbox div {
-        background: var(--gold-light);
-        border-radius: 10px;
-        padding: 12px 14px;
-        margin: 8px 0 0;
-        font-size: 14px;
-      }
+      /* ---- Real-world data table ---- */
+      .data-table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14px; }
+      .data-table th { background: var(--navy); color: #fff; padding: 8px 12px; text-align: left; }
+      .data-table td { padding: 8px 12px; border-bottom: 1px solid var(--line); }
+      .data-table tr:last-child td { border-bottom: none; }
+      .data-table tr:nth-child(even) td { background: var(--bg); }
 
-      .rubric {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 12px;
-        font-size: 14px;
+      /* ---- Comparison stats ---- */
+      .stat-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
+      .stat-box {
+        flex: 1; min-width: 120px; background: var(--bg);
+        border: 1px solid var(--line); border-radius: 12px;
+        padding: 14px; text-align: center;
       }
-      .rubric th,
-      .rubric td {
-        border: 1px solid var(--line);
-        padding: 10px 12px;
-        text-align: left;
-        vertical-align: top;
-      }
-      .rubric th {
-        background: var(--navy);
-        color: #fff;
-        font-size: 13px;
-      }
-      .rubric td:first-child {
-        font-weight: 700;
-        width: 30%;
-      }
+      .stat-num { font-size: 24px; font-weight: 800; color: var(--blue); }
+      .stat-lbl { font-size: 12px; color: var(--muted); margin-top: 3px; }
 
-      .checklist {
-        list-style: none;
-        padding: 0;
-        margin: 12px 0 0;
-      }
-      .checklist li {
-        display: flex;
-        gap: 10px;
-        align-items: flex-start;
-        padding: 8px 0;
-        border-bottom: 1px solid var(--line);
-      }
-      .checklist input {
-        width: 20px;
-        height: 20px;
-        margin-top: 2px;
-        flex: 0 0 auto;
-      }
+      /* ---- Checklist ---- */
+      .checklist { list-style: none; margin-top: 12px; }
+      .checklist li { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+      .checklist li:last-child { border-bottom: none; }
+      .checklist input[type="checkbox"] { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--green); flex-shrink: 0; }
 
-      .progress-wrap {
-        position: sticky;
-        top: 0;
-        z-index: 5;
-        background: var(--bg);
-        padding: 12px 0;
-      }
-      .progress-track {
-        height: 12px;
-        background: var(--line);
-        border-radius: 50px;
-        overflow: hidden;
-      }
-      .progress-fill {
-        height: 100%;
-        width: 0;
-        background: linear-gradient(90deg, var(--blue), var(--teal));
-        transition: width 0.4s;
-      }
-      .progress-label {
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--muted);
-        margin-bottom: 6px;
-      }
+      /* ---- Rubric ---- */
+      .rubric { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 14px; }
+      .rubric th { background: var(--navy); color: #fff; padding: 10px 12px; text-align: left; }
+      .rubric td { padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+      .rubric tr:last-child td { border-bottom: none; }
+      .score-4 { color: var(--green); font-weight: 700; }
+      .score-3 { color: var(--blue); font-weight: 700; }
+      .score-2 { color: var(--gold); font-weight: 700; }
 
-      .footer {
-        text-align: center;
-        color: var(--muted);
-        font-size: 14px;
-        margin-top: 40px;
+      /* ---- Nav buttons ---- */
+      .nav-row { display: flex; gap: 10px; margin-top: 24px; justify-content: space-between; }
+      .nav-btn {
+        background: var(--blue); color: #fff; border: none;
+        border-radius: 10px; padding: 12px 24px; font-size: 15px;
+        font-weight: 700; cursor: pointer; font-family: inherit;
+        display: flex; align-items: center; gap: 8px; transition: background .2s;
       }
-      .printbtn {
-        background: var(--navy);
-      }
-      h3 {
-        font-size: 17px;
-      }
+      .nav-btn:hover { background: #b45309; }
+      .nav-btn.ghost { background: transparent; color: var(--blue); border: 2px solid var(--blue); }
+      .nav-btn.ghost:hover { background: var(--blue-lt); }
+      .nav-btn:disabled { opacity: .45; cursor: not-allowed; }
 
+      /* ---- Report / pitch textarea ---- */
+      #pitch { min-height: 130px; }
+      .report-box {
+        background: var(--navy); color: #fff7ed; border-radius: 12px;
+        padding: 20px; margin-top: 14px; font-size: 14px; line-height: 1.7;
+        white-space: pre-wrap; display: none;
+      }
+      .report-box.show { display: block; }
+      .export-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+      .export-btn {
+        background: transparent; border: 1.5px solid var(--line);
+        border-radius: 8px; padding: 7px 14px; font-size: 13px;
+        font-weight: 600; cursor: pointer; font-family: inherit;
+        color: var(--muted); transition: all .15s;
+      }
+      .export-btn:hover { border-color: var(--blue); color: var(--blue); }
+
+      /* ---- Level-gated content ---- */
+      .lvl1-only { display: none; }
+      .lvl2-only { display: none; }
+      body.level-1 .lvl1-only { display: block; }
+      body.level-2 .lvl2-only { display: block; }
+      body.level-2 .lvl2-block { border-color: var(--blue); }
+
+      /* ---- Vocab cards ---- */
+      .vocab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 14px; }
+      .vocab-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+      .vocab-icon { font-size: 26px; margin-bottom: 6px; }
+      .vocab-term { font-size: 13px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
+      .vocab-def { font-size: 13px; color: var(--muted); line-height: 1.5; }
+      .vocab-ex { font-size: 12px; color: var(--blue); font-weight: 600; margin-top: 5px; }
+
+      /* ---- Print ---- */
       @media print {
-        .phero .deco,
-        .progress-wrap,
-        .btn,
-        .breadcrumb,
-        .hintbox,
-        .toolbar,
-        .pk-no-print {
-          display: none !important;
-        }
-        .phase,
-        .intro-card {
-          box-shadow: none;
-          break-inside: avoid;
-        }
-        body {
-          background: #fff;
-        }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        html {
-          scroll-behavior: auto;
-        }
-        *,
-        *::before,
-        *::after {
-          animation-duration: 0.001ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.001ms !important;
-        }
+        .no-print { display: none !important; }
+        .hero { background: var(--navy) !important; }
+        body { background: #fff; }
+        .card { box-shadow: none; border-color: #ccc; }
       }
     </style>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <!-- nsr-injected:end -->
-    <link rel="stylesheet" href="/shared/projects/projects-premium.css" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
     <link rel="stylesheet" href="/assets/mobile-access.css" />
     <!-- mobile-access-injected:end -->
   </head>
-  <body class="pk" data-pk-theme="u4">
-    <header class="phero">
-      <div class="deco">🛍️</div>
+  <body class="level-1" id="body">
+
+    <!-- ====== HERO ====== -->
+    <header class="hero no-print">
+      <div class="hero-emoji">🛍️</div>
       <h1>Pop-Up Shop Owner</h1>
-      <p>
-        You are launching <strong>your own</strong> pop-up shop. Price a
-        <em>real product you would actually sell</em> using markup, a sale
-        discount, and sales tax — then compare with a partner and test your
-        prices against real U.S. state tax rates.
-      </p>
-      <div class="tags">
-        <span class="tag gold">Unit 4 · Percents &amp; Rates</span>
+      <p class="hero-sub">Price your own products, compare deals, and calculate sales tax step by step.</p>
+      <div class="hero-tags">
+        <span class="tag gold">Unit 4 · Rates &amp; Percents</span>
         <span class="tag">6.RP.3c</span>
         <span class="tag">6.RP.3d</span>
-        <span class="tag">Version A · Design &amp; Build</span>
+        <span class="tag">Version A</span>
       </div>
-      <div class="toolbar pk-no-print">
-        <button onclick="PK.toggleEs()">🌐 EN / ES help</button>
-        <span class="pk-level-toggle">
-          <button data-level-btn="level-1" type="button">🟢 Level 1</button>
-          <button data-level-btn="level-2" type="button">🔵 Level 2</button>
-        </span>
-        <button
-          class="pk-tts-toggle"
-          data-tts-toggle
-          type="button"
-          aria-pressed="false"
-          title="Read text aloud"
-        >
-          🔊 Read aloud
-        </button>
-        <button onclick="PK.save('u4ProjectA')">💾 Save</button>
-        <button
-          onclick="PK.load('u4ProjectA', { show: true, after: recalcAll })"
-        >
-          📂 Load
-        </button>
+      <div class="level-bar">
+        <button class="level-btn active" id="btn-lv1" onclick="setLevel(1)">🟢 Level 1 — With Support</button>
+        <button class="level-btn" id="btn-lv2" onclick="setLevel(2)">🔵 Level 2 — Challenge</button>
       </div>
     </header>
 
-    <div class="wrap">
-      <div class="progress-wrap">
-        <div class="progress-label">
-          Project progress: <span id="pct">0</span>% complete
+    <!-- ====== WIZARD ====== -->
+    <div class="wizard">
+
+      <!-- Step trail -->
+      <nav class="step-trail no-print" id="stepTrail" aria-label="Project steps"></nav>
+
+      <!-- Progress bar -->
+      <div class="prog-wrap no-print">
+        <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+        <div class="prog-label" id="progLabel">Step 1 of 6</div>
+      </div>
+
+      <!-- ======================================
+           STEP 1 — KEY WORDS
+      ====================================== -->
+      <div class="step-panel active" id="step-1">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon gold">📖</div>
+            <div>
+              <div class="card-title">Key Words</div>
+              <div class="card-sub">Learn these 4 math words before you begin</div>
+            </div>
+          </div>
+
+          <!-- SVG Visual: price tag diagram -->
+          <svg class="visual-svg" viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e7e5e4;border-radius:12px;">
+            <!-- String loop -->
+            <path d="M 50 80 Q 85 30 130 55" fill="none" stroke="#d97706" stroke-width="2" />
+            <!-- Price tag -->
+            <path d="M 130 55 L 165 25 L 290 25 L 290 125 L 165 125 Z" fill="#fff7ed" stroke="#d97706" stroke-width="3" />
+            <!-- Hole -->
+            <circle cx="175" cy="75" r="7" fill="#2d1a04" />
+            <!-- Tag text -->
+            <text x="228" y="65" font-family="'Inter', sans-serif" font-weight="bold" font-size="13" fill="#b45309" text-anchor="middle">SUPER SALE</text>
+            <text x="228" y="98" font-family="'Inter', sans-serif" font-weight="900" font-size="22" fill="#ea580c" text-anchor="middle">20% OFF</text>
+            <!-- Math calculation bubble -->
+            <rect x="320" y="25" width="180" height="100" rx="10" fill="#f0fdf4" stroke="#15803d" stroke-width="2" />
+            <text x="410" y="50" font-family="'Inter', sans-serif" font-weight="bold" font-size="12" fill="#15803d" text-anchor="middle">Math Breakdown</text>
+            <text x="335" y="75" font-family="'Inter', sans-serif" font-size="11" fill="#1c1917">Original: $50.00</text>
+            <text x="335" y="92" font-family="'Inter', sans-serif" font-size="11" fill="#1c1917">20% off saves $10.00</text>
+            <text x="335" y="110" font-family="'Inter', sans-serif" font-weight="bold" font-size="11" fill="#15803d">Sale Price: $40.00</text>
+          </svg>
+
+          <div class="vocab-grid">
+            <div class="vocab-card">
+              <div class="vocab-icon">📊</div>
+              <div class="vocab-term">Percent</div>
+              <div class="vocab-def">A ratio or fraction that compares a number to 100. Means "per hundred."</div>
+              <div class="vocab-ex">25% = 25/100 = 0.25</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">🏷️</div>
+              <div class="vocab-term">Discount</div>
+              <div class="vocab-def">The amount of money subtracted from the original price during a sale.</div>
+              <div class="vocab-ex">Save $5.00 on a $20.00 item</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">⚖️</div>
+              <div class="vocab-term">Unit Rate</div>
+              <div class="vocab-def">The price for exactly one item, used to compare different bulk bundle deals.</div>
+              <div class="vocab-ex">$2.50 per individual candle</div>
+            </div>
+            <div class="vocab-card">
+              <div class="vocab-icon">🧾</div>
+              <div class="vocab-term">Sales Tax</div>
+              <div class="vocab-def">An extra charge added to purchases, calculated as a percentage of the subtotal.</div>
+              <div class="vocab-ex">6% tax adds $0.60 to a $10 sale</div>
+            </div>
+          </div>
+
+          <div class="instruct" style="margin-top:20px">
+            ✅ Read each math vocabulary card. When you're ready to set up your shop, click <strong>Next Step</strong>.
+          </div>
         </div>
-        <div class="progress-track">
-          <div class="progress-fill" id="pfill"></div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" disabled>← Back</button>
+          <button class="nav-btn" onclick="goStep(2)">Next Step →</button>
         </div>
       </div>
 
-      <div class="intro-card">
-        <h2>🏪 Your Mission</h2>
-        <p class="scenario">
-          Open a real pop-up shop in three steps.
-          <strong>Part 1 (Self):</strong> pick a real item, enter the real cost
-          you would pay, and choose your own markup, sale, and tax.
-          <strong>Part 2 (Peer):</strong> swap items with a partner and decide
-          who is the smarter shopper. <strong>Part 3 (World):</strong> compare
-          your final price using real U.S. state sales-tax rates. Finish with a
-          storefront sign and report.
-        </p>
-      </div>
-
-      <!-- ===================== VISUAL MATH NOTES ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div
-            class="phase-num"
-            style="background: var(--gold); color: #2a1c00"
-          >
-            📒
-          </div>
-          <div>
-            <div class="skill">Before you start · Vocabulary</div>
-            <h2>Visual Math Notes</h2>
-          </div>
-        </div>
-        <p>
-          Learn these words first. Tap <strong>EN / ES help</strong> at the top
-          for Spanish.
-        </p>
-        <div class="pk-vocab">
-          <div class="pk-term">
-            <span class="pk-icon">💲</span><b>Percent of a Number</b>
-            <p>A piece of a number, counted out of 100.</p>
-            <p class="pk-es">
-              Porcentaje de un número: una parte de 100. Multiplica número ×
-              (porcentaje ÷ 100).
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">📈</span><b>Markup</b>
-            <p>Money added on top of the cost to make a profit.</p>
-            <p class="pk-es">
-              Margen / recargo: la cantidad que SUMAS al costo para ganar
-              dinero.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">🏷️</span><b>Discount</b>
-            <p>Money taken off the price during a sale.</p>
-            <p class="pk-es">
-              Descuento: la cantidad que RESTAS del precio en una oferta.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">🧾</span><b>Sales Tax</b>
-            <p>Extra money you pay at checkout, set by the state.</p>
-            <p class="pk-es">
-              Impuesto de venta: dinero extra que el estado agrega al pagar,
-              como porcentaje.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">🔁</span><b>Conversion Factor</b>
-            <p>A fraction you multiply by to change one unit to another.</p>
-            <p class="pk-es">
-              Factor de conversión: una tasa escrita como fracción para cambiar
-              unidades.
-            </p>
-          </div>
-          <div class="pk-term">
-            <span class="pk-icon">⚖️</span><b>Unit Rate</b>
-            <p>How much for just one, like miles in 1 hour.</p>
-            <p class="pk-es">
-              Tasa unitaria: una tasa para UNO — millas por 1 hora o dólares por
-              1 artículo.
-            </p>
-          </div>
-        </div>
-        <div class="grid2" style="margin-top: 18px">
-          <div class="pk-callout">
-            <h3>Formula Bank</h3>
-            <ul class="pk-formula">
-              <li>
-                <span class="pk-f-name">Percent of a number</span>
-                <span class="pk-f-mean"
-                  >Move the percent to a decimal, then multiply. A percent is
-                  just "out of 100."</span
-                >
-                <span class="pk-eg">Example: 20% of $50 = 0.20 × 50 = $10</span>
-              </li>
-              <li>
-                <span class="pk-f-name">Markup (selling price)</span>
-                <span class="pk-f-mean"
-                  >Add the extra money on top of your cost. Selling price = cost
-                  + markup.</span
-                >
-                <span class="pk-eg"
-                  >Example: cost $40, 25% markup = $10, so sell for $50</span
-                >
-              </li>
-              <li>
-                <span class="pk-f-name">Discount (sale price)</span>
-                <span class="pk-f-mean"
-                  >Take the savings off the price. Sale price = price −
-                  discount.</span
-                >
-                <span class="pk-eg"
-                  >Example: $50, 10% off = $5 off, so sale = $45</span
-                >
-              </li>
-              <li>
-                <span class="pk-f-name">Sales tax (total)</span>
-                <span class="pk-f-mean"
-                  >Add the tax the store collects. Total = price + tax.</span
-                >
-                <span class="pk-eg"
-                  >Example: $45, 6% tax = $2.70, so total = $47.70</span
-                >
-              </li>
-              <li class="pk-lvl2">
-                <span class="pk-f-name">Stacked promo (challenge)</span>
-                <span class="pk-f-mean"
-                  >Take the discount first, then add tax on the lower
-                  price.</span
-                >
-                <span class="pk-eg"
-                  >Example: $50 → 10% off = $45 → 6% tax = $47.70</span
-                >
-              </li>
-              <li class="pk-lvl2">
-                <span class="pk-f-name">Break-even markup % (challenge)</span>
-                <span class="pk-f-mean"
-                  >The markup that makes the sale price land exactly on your
-                  cost, so you do not lose money.</span
-                >
-                <span class="pk-eg"
-                  >Example: cost $40, sell $50, on sale at 20% off → back to
-                  $40</span
-                >
-              </li>
-            </ul>
-          </div>
-          <div class="pk-callout">
-            <h3>Sentence Frames</h3>
-            <p>
-              "My cost is $___, and a ___% markup gives a selling price of
-              $___."
-            </p>
-            <p>"A ___% discount saves $___, so the sale price is $___."</p>
-            <p>"After ___% sales tax the customer pays $___."</p>
-            <p>"My final price is higher / lower than ___ because ___."</p>
-            <p class="pk-es">
-              "Mi costo es $___ y un margen de ___% da un precio de venta de
-              $___."
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== PART 1 — SELF ===================== -->
-
-      <!-- ===================== PROJECT SETUP ===================== -->
-      <section class="phase" id="phase-setup" data-phase>
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--blue)">S</div>
-          <div>
-            <span class="arc-banner">Project Setup</span>
-            <h2>Price YOUR Product</h2>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <div>
-            <p
-              style="
-                font-size: 15px;
-                color: var(--muted);
-                line-height: 1.6;
-                margin-bottom: 20px;
-              "
-            >
-              Welcome! Read the scenario below and select your level to begin
-              your design plan.
-            </p>
-            <div style="margin-top: 16px">
-              <svg
-                width="100%"
-                height="220"
-                viewBox="0 0 500 220"
-                style="
-                  background: white;
-                  border-radius: 12px;
-                  border: 1px solid #e2e8f0;
-                  max-width: 480px;
-                  margin: 0 auto;
-                  display: block;
-                "
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <defs>
-                  <linearGradient
-                    id="setup-grad"
-                    x1="0%"
-                    y1="0%"
-                    x2="100%"
-                    y2="100%"
-                  >
-                    <stop offset="0%" stop-color="#ffffff" />
-                    <stop offset="100%" stop-color="#f8fafc" />
-                  </linearGradient>
-                </defs>
-
-                <rect
-                  x="20"
-                  y="20"
-                  width="460"
-                  height="200"
-                  rx="15"
-                  fill="url(#setup-grad)"
-                  stroke="#1a6fb5"
-                  stroke-width="2"
-                />
-                <text
-                  x="250"
-                  y="60"
-                  text-anchor="middle"
-                  font-size="20"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  POP-UP SHOP REGISTER
-                </text>
-                <circle cx="210" cy="145" r="8" fill="#1a2633" />
-                <circle cx="270" cy="145" r="8" fill="#1a2633" />
-                <path
-                  d="M170,95 H200 L210,135 H280 L290,95 H190"
-                  fill="none"
-                  stroke="#1a6fb5"
-                  stroke-width="3"
-                />
-                <path
-                  d="M330,95 H360 L380,115 L360,135 H330 Z"
-                  fill="#e8f2fc"
-                  stroke="#1a6fb5"
-                  stroke-width="2"
-                />
-                <circle cx="340" cy="115" r="4" fill="#1a6fb5" />
-              </svg>
+      <!-- ======================================
+           STEP 2 — SET YOUR PRICES (PERCENTS)
+      ====================================== -->
+      <div class="step-panel" id="step-2">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">🏷️</div>
+            <div>
+              <div class="card-title">Step 1 — Set Your Prices</div>
+              <div class="card-sub">Enter original prices and calculate discount options</div>
             </div>
           </div>
 
-          <div
-            style="
-              background: var(--bg);
-              border: 1px solid var(--line);
-              border-radius: 12px;
-              padding: 20px;
-              box-shadow: var(--shadow);
-            "
-          >
-            <h3
-              style="
-                margin-top: 0;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-              "
-            >
-              <span>📋</span> Scenario &amp; Level Options
-            </h3>
-            <p style="font-size: 14px; line-height: 1.6; margin: 0 0 10px">
-              You are a <strong>pop-up shop owner</strong>. You pick a real
-              product, set your price with a markup, run a weekend sale, then
-              add sales tax to find what a customer really pays.
-            </p>
-            <ul
-              style="
-                font-size: 14px;
-                line-height: 1.6;
-                margin: 0;
-                padding-left: 18px;
-              "
-            >
-              <li>
-                <strong>Level 1 (support):</strong> price one item — like a $40
-                candle with a 25% markup — then add tax to find the total.
-              </li>
-              <li>
-                <strong>Level 2 (challenge):</strong> stack a discount and tax
-                together, then find the markup % that makes your sale price land
-                right back at your cost (break-even).
-              </li>
-            </ul>
-          </div>
-        </div>
-        <p>
-          Enter your <strong>own</strong> real numbers below. Not sure yet?
-          Click <em>Use example numbers</em> to model the math, then change them
-          to fit your shop.
-        </p>
-
-        <div class="grid2">
-          <div>
-            <label class="fld" for="item">A real item you would sell</label>
-            <input
-              type="text"
-              id="item"
-              data-save
-              placeholder=""
-              oninput="updateProgress()"
-            />
-          </div>
-          <div>
-            <label class="fld" for="cost">Real cost you would pay ($)</label>
-            <input
-              type="number"
-              id="cost"
-              data-save
-              step="0.01"
-              min="0.01"
-              placeholder=""
-              oninput="calcMarkup()"
-            />
-          </div>
-        </div>
-
-        <!-- 1a Markup -->
-
-        <div
-          style="
-            margin-top: 20px;
-            padding-top: 16px;
-            border-top: 1px solid var(--line);
-          "
-        >
-          <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px">
-            You can type your own numbers as you go, or click below to start
-            with our example numbers:
-          </p>
-          <button
-            class="btn ghost"
-            type="button"
-            onclick="useExamples()"
-            style="
-              width: 100%;
-              font-weight: bold;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              gap: 8px;
-            "
-          >
-            ✨ Use Example Numbers
-          </button>
-        </div>
-      </section>
-
-      <!-- ===================== PART 1A — SELF ===================== -->
-      <section class="phase" id="phase-1a" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">1a</div>
-          <div>
-            <span class="arc-banner">Part 1a · Self — your real plan</span>
-            <h2>📈 Set your selling price (markup)</h2>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <div>
-            <div
-              class="pk-math-scaffold-card no-print"
-              style="
-                margin: 20px 0;
-                padding: 12px;
-                background: #fff;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-                max-width: 480px;
-                margin-left: auto;
-                margin-right: auto;
-              "
-            >
-              <svg
-                width="100%"
-                height="200"
-                viewBox="0 0 500 200"
-                style="background: #fff; border-radius: 8px"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <text
-                  x="250"
-                  y="30"
-                  text-anchor="middle"
-                  font-size="14"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  Math Diagram Guide
-                </text>
-                <rect
-                  x="150"
-                  y="60"
-                  width="200"
-                  height="90"
-                  rx="10"
-                  fill="rgba(14,138,125,0.1)"
-                  stroke="#0e8a7d"
-                  stroke-width="1.5"
-                />
-                <text
-                  x="250"
-                  y="110"
-                  text-anchor="middle"
-                  font-size="11"
-                  font-weight="bold"
-                  fill="#0e8a7d"
-                >
-                  Interactive Calculation Visual
-                </text>
-              </svg>
-            </div>
-
-            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-              Level 1 tip: a friendly markup is 25%. Markup amount = cost ×
-              0.25.
-            </p>
-            <label class="fld" for="markup">Your markup (%)</label>
-            <input
-              type="number"
-              id="markup"
-              data-save
-              step="1"
-              min="1"
-              max="500"
-              placeholder=""
-              oninput="calcMarkup()"
-            />
-            <button class="btn" type="button" onclick="calcMarkup()">
-              Calculate selling price
-            </button>
-            <div class="readout" id="markup-out"></div>
-            <div
-              class="pki-manip"
-              data-manip="percent-bar"
-              data-mode="tax"
-              data-base="40"
-              data-percent="10"
-            ></div>
-            <details class="hintbox">
-              <summary>Need a hint?</summary>
-              <p>
-                Markup amount = cost × (markup ÷ 100). Example: 40.00 × (25 ÷
-                100) =10.00. Selling price = $40.00 + $10.00 = $50.00.
-              </p>
-            </details>
-
-            <!-- 1a-check -->
-            <div class="task" style="margin-top: 18px">
-              <strong>Self-check:</strong> Type the selling price your numbers
-              give. The tool checks it against the math.
-            </div>
-            <label class="fld" for="check-sell"
-              >Selling price you computed ($)</label
-            >
-            <input
-              type="number"
-              id="check-sell"
-              data-save
-              step="0.01"
-              placeholder=""
-            />
-            <button class="btn alt" type="button" onclick="checkSell()">
-              Check my answer
-            </button>
-            <div class="pk-fb feedback" id="check-sellFb"></div>
-            <div class="pk-lvl2" style="margin-top: 16px">
-              <div class="task">
-                <strong>Level 2 extension:</strong> Choose a markup that makes
-                your selling price a "clean" price tag like $49.99 or $60.00.
-                Work backward from the price you want to the markup percent, and
-                show the steps you used.
-              </div>
-            </div>
-
-            <!-- 1b Discount -->
+          <div class="instruct">
+            <strong>Your job:</strong> Enter the names and original prices of 3 products you would sell in your pop-up shop. Calculate the sale prices for 10%, 20%, and 25% discount promos.
           </div>
 
-          <div
-            style="
-              background: var(--bg);
-              border: 2.5px solid var(--line);
-              border-radius: 18px;
-              padding: 20px;
-              box-shadow: var(--shadow);
-              height: fit-content;
-            "
-            class="pk-no-print"
-          >
-            <h3
-              style="
-                margin-top: 0;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                color: var(--navy);
-                font-size: 16px;
-              "
-            >
-              <span>💡</span> Guided Steps &amp; Help
-            </h3>
+          <!-- SVG: Percent bar model -->
+          <svg class="visual-svg" viewBox="0 0 520 120" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e7e5e4;border-radius:12px;">
+            <text x="260" y="25" text-anchor="middle" font-family="'Inter', sans-serif" font-size="14" font-weight="bold" fill="#2d1a04">Percent Bar Model ($40 Item with 25% Off)</text>
+            <!-- Bar background -->
+            <rect x="40" y="45" width="440" height="30" rx="6" fill="#e7e5e4" />
+            <!-- 25% discount portion -->
+            <rect x="40" y="45" width="110" height="30" rx="6" fill="#fff7ed" stroke="#d97706" stroke-width="2" />
+            <!-- Grid marks -->
+            <line x1="150" y1="45" x2="150" y2="75" stroke="#d97706" stroke-width="1" />
+            <line x1="260" y1="45" x2="260" y2="75" stroke="#a3a3a3" stroke-width="1" />
+            <line x1="370" y1="45" x2="370" y2="75" stroke="#a3a3a3" stroke-width="1" />
+            <!-- Labels -->
+            <text x="40" y="95" font-family="'Inter', sans-serif" font-size="11" fill="#57534e" text-anchor="middle">0%</text>
+            <text x="150" y="95" font-family="'Inter', sans-serif" font-size="11" fill="#d97706" text-anchor="middle">25% off</text>
+            <text x="260" y="95" font-family="'Inter', sans-serif" font-size="11" fill="#57534e" text-anchor="middle">50%</text>
+            <text x="370" y="95" font-family="'Inter', sans-serif" font-size="11" fill="#57534e" text-anchor="middle">75%</text>
+            <text x="480" y="95" font-family="'Inter', sans-serif" font-size="11" fill="#57534e" text-anchor="middle">100%</text>
+            
+            <text x="40" y="38" font-family="'Inter', sans-serif" font-size="11" font-weight="bold" fill="#1c1917" text-anchor="middle">$0</text>
+            <text x="150" y="38" font-family="'Inter', sans-serif" font-size="11" font-weight="bold" fill="#d97706" text-anchor="middle">-$10.00</text>
+            <text x="480" y="38" font-family="'Inter', sans-serif" font-size="11" font-weight="bold" fill="#1c1917" text-anchor="middle">$40.00 original</text>
+            <text x="315" y="64" font-family="'Inter', sans-serif" font-size="11" font-weight="bold" fill="#15803d" text-anchor="middle">Sale Price: $30.00 (75% remains)</text>
+          </svg>
 
-            <p
-              style="
-                font-size: 13.5px;
-                line-height: 1.5;
-                color: var(--muted);
-                margin-bottom: 12px;
-              "
-            >
-              <strong>Calculating Percentages, Taxes, and Discounts:</strong>
-            </p>
-            <ol
-              style="
-                margin-left: 18px;
-                font-size: 13px;
-                line-height: 1.5;
-                display: grid;
-                gap: 8px;
-                color: var(--ink);
-              "
-            >
-              <li>
-                <b>Convert the percentage to a decimal</b>: Divide the percent
-                by 100 (move the decimal point 2 places left, e.g., 6.5% =
-                0.065).
-              </li>
-              <li>
-                <b>Calculate tax or tip amount</b>: Multiply the original price
-                by the decimal value.
-              </li>
-              <li>
-                <b>Find the total cost</b>: Add the tax or tip amount to the
-                original price.
-              </li>
-              <li>
-                <i>For discounts:</i> Multiply by the discount decimal, then
-                <b>subtract</b> it from the original price.
-              </li>
-            </ol>
-            <div
-              style="
-                margin-top: 14px;
-                padding: 10px;
-                background: var(--sky);
-                border-radius: 8px;
-                font-size: 12px;
-              "
-            >
-              💡 <b>Example:</b> $20.00 shirt with 8% sales tax. Tax = $20 ×
-              0.08 = $1.60. Total = $21.60.
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== PART 1B — SELF ===================== -->
-      <section class="phase" id="phase-1b" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">1b</div>
-          <div>
-            <span class="arc-banner">Part 1b · Self — your real plan</span>
-            <h2>🏷️ Run a weekend sale (discount)</h2>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <div>
-            <div
-              class="pk-math-scaffold-card no-print"
-              style="
-                margin: 20px 0;
-                padding: 12px;
-                background: #fff;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-                max-width: 480px;
-                margin-left: auto;
-                margin-right: auto;
-              "
-            >
-              <svg
-                width="100%"
-                height="200"
-                viewBox="0 0 500 200"
-                style="background: #fff; border-radius: 8px"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <text
-                  x="250"
-                  y="30"
-                  text-anchor="middle"
-                  font-size="14"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  Math Diagram Guide
-                </text>
-                <rect
-                  x="150"
-                  y="60"
-                  width="200"
-                  height="90"
-                  rx="10"
-                  fill="rgba(14,138,125,0.1)"
-                  stroke="#0e8a7d"
-                  stroke-width="1.5"
-                />
-                <text
-                  x="250"
-                  y="110"
-                  text-anchor="middle"
-                  font-size="11"
-                  font-weight="bold"
-                  fill="#0e8a7d"
-                >
-                  Interactive Calculation Visual
-                </text>
-              </svg>
-            </div>
-
-            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-              Level 1 tip: a 10% sale is the easiest. 10% off means you keep
-              90%. Find 10% by moving the decimal one place left (10% of $50 =
-              $5 off → $45 sale).
-            </p>
-            <label class="fld" for="discount">Your sale discount (%)</label>
-            <input
-              type="number"
-              id="discount"
-              data-save
-              step="1"
-              min="1"
-              max="100"
-              placeholder=""
-              oninput="calcDiscount()"
-            />
-            <button class="btn alt" type="button" onclick="calcDiscount()">
-              Calculate sale price
-            </button>
-            <div class="readout" id="discount-out"></div>
-            <details class="hintbox">
-              <summary>Need a hint?</summary>
-              <p>
-                Discount amount = selling price × (discount ÷ 100). Sale price =
-                selling price − discount amount. Example: 50 × 0.20 =10 off →
-                $40 sale price.
-              </p>
-            </details>
-            <div class="pk-lvl2" style="margin-top: 16px">
-              <div class="task">
-                <strong>Level 2 extension:</strong> Stack two deals — take your
-                discount, then take an extra 15% off the new sale price. Is "30%
-                off then 15% off" the same as "45% off"? Show the math and
-                explain why.
-              </div>
-            </div>
-
-            <!-- 1c Tax -->
+          <!-- Level 1 support hints -->
+          <div class="instruct lvl1-only">
+            🟢 <strong>Level 1 support:</strong> Use round values (like $10.00, $20.00, or $50.00) to keep calculations simple.
           </div>
 
-          <div
-            style="
-              background: var(--bg);
-              border: 2.5px solid var(--line);
-              border-radius: 18px;
-              padding: 20px;
-              box-shadow: var(--shadow);
-              height: fit-content;
-            "
-            class="pk-no-print"
-          >
-            <h3
-              style="
-                margin-top: 0;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                color: var(--navy);
-                font-size: 16px;
-              "
-            >
-              <span>💡</span> Guided Steps &amp; Help
-            </h3>
-
-            <p
-              style="
-                font-size: 13.5px;
-                line-height: 1.5;
-                color: var(--muted);
-                margin-bottom: 12px;
-              "
-            >
-              <strong>Calculating Percentages, Taxes, and Discounts:</strong>
-            </p>
-            <ol
-              style="
-                margin-left: 18px;
-                font-size: 13px;
-                line-height: 1.5;
-                display: grid;
-                gap: 8px;
-                color: var(--ink);
-              "
-            >
-              <li>
-                <b>Convert the percentage to a decimal</b>: Divide the percent
-                by 100 (move the decimal point 2 places left, e.g., 6.5% =
-                0.065).
-              </li>
-              <li>
-                <b>Calculate tax or tip amount</b>: Multiply the original price
-                by the decimal value.
-              </li>
-              <li>
-                <b>Find the total cost</b>: Add the tax or tip amount to the
-                original price.
-              </li>
-              <li>
-                <i>For discounts:</i> Multiply by the discount decimal, then
-                <b>subtract</b> it from the original price.
-              </li>
-            </ol>
-            <div
-              style="
-                margin-top: 14px;
-                padding: 10px;
-                background: var(--sky);
-                border-radius: 8px;
-                font-size: 12px;
-              "
-            >
-              💡 <b>Example:</b> $20.00 shirt with 8% sales tax. Tax = $20 ×
-              0.08 = $1.60. Total = $21.60.
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== PART 1C — SELF ===================== -->
-      <section class="phase" id="phase-1c" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">1c</div>
-          <div>
-            <span class="arc-banner">Part 1c · Self — your real plan</span>
-            <h2>🧾 Add sales tax (final total)</h2>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <!-- ===================== INLINE RESEARCH LAB ===================== -->
-          <div class="pk-research-inline-card">
-            <div class="pk-research-inline-header">
-              <span class="pk-research-badge">🔍 Research Required</span>
-              <a
-                href="https://taxfoundation.org/data/all/state/state-and-local-sales-tax-rates/"
-                target="_blank"
-                class="pk-research-inline-link"
-                >🔗 Tax Foundation: State Sales Tax Rates Table ↗</a
-              >
-            </div>
-            <p class="pk-research-inline-instructions">
-              Open the Tax Foundation portal. Look up the combined state/local
-              sales tax rate for your home state or a state of choice. Enter the
-              percentage rate below:
+          <!-- Level 2 challenge block -->
+          <div class="lvl2-block lvl2-only">
+            <span class="lvl2-label">LEVEL 2 CHALLENGE — Break-even Markup (6.RP.3c)</span>
+            <p style="font-size:14px;margin-bottom:10px;">
+              You buy an item at a wholesale cost of $12.00. You want to offer a 20% discount on it, but you want your discounted sale price to land exactly on your cost of $12.00 (break-even). What retail price should you set, and what markup percent is that?
             </p>
             <div class="grid2">
               <div>
-                <label class="fld" for="worldCountry"
-                  >State Name Researched</label
-                >
-                <input
-                  type="text"
-                  id="worldCountry"
-                  data-save
-                  placeholder=""
-                  oninput="recalcAll()"
-                />
+                <label class="lbl" for="l2-cost">Wholesale Cost ($)</label>
+                <input type="number" id="l2-cost" value="12.00" readonly />
               </div>
               <div>
-                <label class="fld" for="tax-rate"
-                  >Your state sales tax (%)</label
-                >
-                <input
-                  type="number"
-                  id="tax-rate"
-                  data-save
-                  step="0.1"
-                  min="0"
-                  max="20"
-                  placeholder=""
-                  oninput="calcTax()"
-                />
-              </div>
-            </div>
-            <div class="readout" id="tax-out"></div>
-            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-              Level 1 tip: 7% sales tax on $50 is 0.07 × 50 = $3.50. Add it to
-              the price to get the total ($53.50).
-            </p>
-            <div class="pk-lvl2" style="margin-top: 16px">
-              <div class="task">
-                <strong>Level 2 extension:</strong> Two states charge 6% and 9%
-                tax. On your $50 item, how many more dollars does the 9% state
-                cost? Would that change where you'd want to sell? Explain.
-              </div>
-            </div>
-          </div>
-
-          <div
-            style="
-              background: var(--bg);
-              border: 2.5px solid var(--line);
-              border-radius: 18px;
-              padding: 20px;
-              box-shadow: var(--shadow);
-              height: fit-content;
-            "
-            class="pk-no-print"
-          >
-            <h3
-              style="
-                margin-top: 0;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                color: var(--navy);
-                font-size: 16px;
-              "
-            >
-              <span>💡</span> Guided Steps &amp; Help
-            </h3>
-
-            <p
-              style="
-                font-size: 13.5px;
-                line-height: 1.5;
-                color: var(--muted);
-                margin-bottom: 12px;
-              "
-            >
-              <strong>Calculating Percentages, Taxes, and Discounts:</strong>
-            </p>
-            <ol
-              style="
-                margin-left: 18px;
-                font-size: 13px;
-                line-height: 1.5;
-                display: grid;
-                gap: 8px;
-                color: var(--ink);
-              "
-            >
-              <li>
-                <b>Convert the percentage to a decimal</b>: Divide the percent
-                by 100 (move the decimal point 2 places left, e.g., 6.5% =
-                0.065).
-              </li>
-              <li>
-                <b>Calculate tax or tip amount</b>: Multiply the original price
-                by the decimal value.
-              </li>
-              <li>
-                <b>Find the total cost</b>: Add the tax or tip amount to the
-                original price.
-              </li>
-              <li>
-                <i>For discounts:</i> Multiply by the discount decimal, then
-                <b>subtract</b> it from the original price.
-              </li>
-            </ol>
-            <div
-              style="
-                margin-top: 14px;
-                padding: 10px;
-                background: var(--sky);
-                border-radius: 8px;
-                font-size: 12px;
-              "
-            >
-              💡 <b>Example:</b> $20.00 shirt with 8% sales tax. Tax = $20 ×
-              0.08 = $1.60. Total = $21.60.
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== PART 1D — SELF ===================== -->
-      <section class="phase" id="phase-1d" data-phase>
-        <div class="phase-head">
-          <div class="phase-num">1d</div>
-          <div>
-            <span class="arc-banner">Part 1d · Self — your real plan</span>
-            <h2>🔁 Convert a real product-label measurement</h2>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <div>
-            <div
-              class="pk-math-scaffold-card no-print"
-              style="
-                margin: 20px 0;
-                padding: 12px;
-                background: #fff;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-                max-width: 480px;
-                margin-left: auto;
-                margin-right: auto;
-              "
-            >
-              <svg
-                width="100%"
-                height="200"
-                viewBox="0 0 500 200"
-                style="background: #fff; border-radius: 8px"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <text
-                  x="250"
-                  y="30"
-                  text-anchor="middle"
-                  font-size="14"
-                  font-weight="bold"
-                  fill="#0f2b3c"
-                >
-                  Math Diagram Guide
-                </text>
-                <rect
-                  x="150"
-                  y="60"
-                  width="200"
-                  height="90"
-                  rx="10"
-                  fill="rgba(14,138,125,0.1)"
-                  stroke="#0e8a7d"
-                  stroke-width="1.5"
-                />
-                <text
-                  x="250"
-                  y="110"
-                  text-anchor="middle"
-                  font-size="11"
-                  font-weight="bold"
-                  fill="#0e8a7d"
-                >
-                  Interactive Calculation Visual
-                </text>
-              </svg>
-            </div>
-
-            <p style="font-size: 14px; color: var(--muted)">
-              Read a measurement off a real product you would sell (a candle's
-              weight, a drink's volume, a ribbon's length) and convert it using
-              a rate.
-            </p>
-            <div class="grid3">
-              <div>
-                <label class="fld" for="conv-val">Value from the label</label>
-                <input
-                  type="number"
-                  id="conv-val"
-                  data-save
-                  step="0.01"
-                  min="0.01"
-                  placeholder=""
-                  oninput="calcConvert()"
-                />
+                <label class="lbl" for="l2-retail">Required Retail Price ($)</label>
+                <input type="number" id="l2-retail" placeholder="e.g. 15.00" oninput="verifyL2Markup()" />
               </div>
               <div>
-                <label class="fld" for="conv-from">From unit</label>
-                <select id="conv-from" data-save onchange="calcConvert()">
-                  <option value="feet">feet</option>
-                  <option value="yards">yards</option>
-                  <option value="inches">inches</option>
-                  <option value="miles">miles</option>
-                  <option class="pk-lvl2" value="pounds">pounds</option>
-                  <option class="pk-lvl2" value="ounces">ounces</option>
-                  <option class="pk-lvl2" value="cups">cups</option>
-                  <option class="pk-lvl2" value="pints">pints</option>
-                  <option class="pk-lvl2" value="quarts">quarts</option>
-                  <option class="pk-lvl2" value="gallons">gallons</option>
-                </select>
+                <label class="lbl" for="l2-markup">Required Markup %</label>
+                <input type="number" id="l2-markup" placeholder="e.g. 25" oninput="verifyL2Markup()" />
+              </div>
+            </div>
+            <button class="calc-btn" onclick="verifyL2Markup()">Verify Break-Even Math</button>
+            <div class="readout" id="l2-markup-out"></div>
+          </div>
+
+          <div style="margin-top:16px;">
+            <h3>🛒 Enter Your Product Prices</h3>
+            <div class="grid2" style="margin-top:8px;">
+              <div>
+                <label class="lbl" for="i1-name">Product 1 Name</label>
+                <input type="text" id="i1-name" placeholder="e.g. Handmade Candle" oninput="calcPrices()" />
               </div>
               <div>
-                <label class="fld" for="conv-to">To unit</label>
-                <select id="conv-to" data-save onchange="calcConvert()">
-                  <option value="inches">inches</option>
-                  <option value="feet">feet</option>
-                  <option value="yards">yards</option>
-                  <option value="miles">miles</option>
-                  <option class="pk-lvl2" value="ounces">ounces</option>
-                  <option class="pk-lvl2" value="pounds">pounds</option>
-                  <option class="pk-lvl2" value="pints">pints</option>
-                  <option class="pk-lvl2" value="cups">cups</option>
-                  <option class="pk-lvl2" value="gallons">gallons</option>
-                  <option class="pk-lvl2" value="quarts">quarts</option>
-                </select>
+                <label class="lbl" for="i1-orig">Product 1 Original Price ($)</label>
+                <input type="number" id="i1-orig" step="0.01" min="0.01" placeholder="e.g. 20.00" oninput="calcPrices()" />
               </div>
             </div>
-            <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-              Level 1: stick to length units (feet, yards, inches, miles).
-            </p>
-            <button class="btn alt" type="button" onclick="calcConvert()">
-              Convert using rate reasoning
-            </button>
-            <div class="readout" id="conv-out"></div>
-            <details class="hintbox">
-              <summary>Need a hint?</summary>
-              <p>
-                Multiply by the conversion factor written as a fraction. 5 feet
-                × (12 inches / 1 foot) = 60 inches. The "feet" units cancel,
-                leaving inches — that is rate reasoning.
-              </p>
-            </details>
-
-            <!-- Level 2 extension: stacked promo + break-even -->
-            <div class="pk-lvl2" style="margin-top: 20px">
-              <div class="task">
-                <strong
-                  >Level 2 extension — stacked promo (discount THEN tax) &amp;
-                  break-even:</strong
-                >
-                Your shop applies the discount first, then tax. Use the readout
-                below, then think about the markup % that would make your sale
-                price equal your cost (break-even).
+            <div class="grid2" style="margin-top:8px;">
+              <div>
+                <label class="lbl" for="i2-name">Product 2 Name</label>
+                <input type="text" id="i2-name" placeholder="e.g. Art Poster" oninput="calcPrices()" />
               </div>
-              <button class="btn" type="button" onclick="calcStacked()">
-                Show stacked promo &amp; break-even
-              </button>
-              <div class="readout" id="stacked-out"></div>
-              <label class="fld" for="breakeven"
-                >Break-even idea: at your discount, what markup % makes sale
-                price = cost?</label
-              >
-              <input type="text" id="breakeven" data-save placeholder="" />
+              <div>
+                <label class="lbl" for="i2-orig">Product 2 Original Price ($)</label>
+                <input type="number" id="i2-orig" step="0.01" min="0.01" placeholder="e.g. 15.00" oninput="calcPrices()" />
+              </div>
+            </div>
+            <div class="grid2" style="margin-top:8px;">
+              <div>
+                <label class="lbl" for="i3-name">Product 3 Name</label>
+                <input type="text" id="i3-name" placeholder="e.g. Clay Mug" oninput="calcPrices()" />
+              </div>
+              <div>
+                <label class="lbl" for="i3-orig">Product 3 Original Price ($)</label>
+                <input type="number" id="i3-orig" step="0.01" min="0.01" placeholder="e.g. 8.00" oninput="calcPrices()" />
+              </div>
             </div>
           </div>
 
-          <div
-            style="
-              background: var(--bg);
-              border: 2.5px solid var(--line);
-              border-radius: 18px;
-              padding: 20px;
-              box-shadow: var(--shadow);
-              height: fit-content;
-            "
-            class="pk-no-print"
-          >
-            <h3
-              style="
-                margin-top: 0;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                color: var(--navy);
-                font-size: 16px;
-              "
-            >
-              <span>💡</span> Guided Steps &amp; Help
-            </h3>
+          <button class="calc-btn gold" onclick="calcPrices()">🏷️ Calculate Discount Options</button>
+          <div class="readout" id="prices-out"></div>
 
-            <p
-              style="
-                font-size: 13.5px;
-                line-height: 1.5;
-                color: var(--muted);
-                margin-bottom: 12px;
-              "
-            >
-              <strong>Calculating Percentages, Taxes, and Discounts:</strong>
+          <details class="hint">
+            <summary>Need a discount calculation hint?</summary>
+            <p>
+              To find a sale price, calculate the discount amount first and subtract it:<br>
+              - <strong>10% off:</strong> Multiply price by 0.10. (e.g. 10% of $20.00 = $2.00 off. Sale: $18.00)<br>
+              - <strong>20% off:</strong> Multiply price by 0.20. (e.g. 20% of $20.00 = $4.00 off. Sale: $16.00)<br>
+              - <strong>25% off:</strong> Multiply price by 0.25, or divide by 4. (e.g. 25% of $20.00 = $5.00 off. Sale: $15.00)
             </p>
-            <ol
-              style="
-                margin-left: 18px;
-                font-size: 13px;
-                line-height: 1.5;
-                display: grid;
-                gap: 8px;
-                color: var(--ink);
-              "
-            >
-              <li>
-                <b>Convert the percentage to a decimal</b>: Divide the percent
-                by 100 (move the decimal point 2 places left, e.g., 6.5% =
-                0.065).
-              </li>
-              <li>
-                <b>Calculate tax or tip amount</b>: Multiply the original price
-                by the decimal value.
-              </li>
-              <li>
-                <b>Find the total cost</b>: Add the tax or tip amount to the
-                original price.
-              </li>
-              <li>
-                <i>For discounts:</i> Multiply by the discount decimal, then
-                <b>subtract</b> it from the original price.
-              </li>
-            </ol>
-            <div
-              style="
-                margin-top: 14px;
-                padding: 10px;
-                background: var(--sky);
-                border-radius: 8px;
-                font-size: 12px;
-              "
-            >
-              💡 <b>Example:</b> $20.00 shirt with 8% sales tax. Tax = $20 ×
-              0.08 = $1.60. Total = $21.60.
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== DYNAMIC VISUALIZER ===================== -->
-      <section class="pk-visualizer-card no-print">
-        <h3>📊 Dynamic Project Blueprint / Data Dashboard</h3>
-        <p style="font-size: 14px; color: var(--muted); margin-bottom: 12px">
-          This visual interactive canvas updates in real-time as you complete
-          your math calculations.
-        </p>
-        <div id="projectVisualizer"></div>
-      </section>
-
-      <!-- ===================== PART 2 — PEER ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--teal)">2</div>
-          <div>
-            <span class="arc-banner">Part 2 · Peer — swap shops</span>
-            <div class="skill">Compare &amp; reason · 6.RP.3c</div>
-            <h2>Who Is the Smarter Shopper?</h2>
-          </div>
-        </div>
-        <p>
-          Swap with a partner. Ask their <strong>item</strong>, their
-          <strong>cost</strong>, and the <strong>final price</strong> they would
-          charge. Type it in to auto-compare who runs the better shop.
-        </p>
-        <div class="pk-callout pk-no-print" style="margin-bottom: 14px">
-          <h3>Interview Sentence Frames</h3>
-          <p>"What is your item and your cost? What markup did you choose?"</p>
-          <p>"What is your final price after discount and tax?"</p>
-          <p>"Whose customer gets the better deal, and why?"</p>
-          <p class="pk-es">
-            "¿Cuál es tu artículo y tu costo? ¿Qué margen elegiste?"
-          </p>
-        </div>
-        <div class="grid2">
-          <div>
-            <label class="fld" for="partnerName"
-              >Partner name or initials</label
-            >
-            <input type="text" id="partnerName" data-save placeholder="" />
-          </div>
-          <div>
-            <label class="fld" for="p-item">Partner's item</label>
-            <input type="text" id="p-item" data-save placeholder="" />
-          </div>
-          <div>
-            <label class="fld" for="p-cost">Partner's cost ($)</label>
-            <input
-              type="number"
-              id="p-cost"
-              data-save
-              step="0.01"
-              min="0"
-              oninput="comparePeer()"
-            />
-          </div>
-          <div>
-            <label class="fld" for="p-final"
-              >Partner's final price after tax ($)</label
-            >
-            <input
-              type="number"
-              id="p-final"
-              data-save
-              step="0.01"
-              min="0"
-              oninput="comparePeer()"
-            />
-          </div>
-        </div>
-        <button class="btn alt" type="button" onclick="comparePeer()">
-          Compare our shops
-        </button>
-        <div id="peerBox" class="pk-stats" style="margin-top: 16px"></div>
-        <label class="fld" for="peerReflect"
-          >Who is the smarter shopper / better buy, and how do you know?</label
-        >
-        <textarea id="peerReflect" data-save placeholder=""></textarea>
-        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-          Level 1 tip: the "smarter shopper" is usually the one whose customer
-          pays the LOWER final price for a similar item. Compare the two final
-          prices side by side.
-        </p>
-      </section>
-
-      <!-- ===================== PART 3 — WORLD ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div
-            class="phase-num"
-            style="background: var(--gold); color: #2a1c00"
-          >
-            3
-          </div>
-          <div>
-            <span class="arc-banner"
-              >Part 3 · World — real state tax rates</span
-            >
-            <div class="skill">Compare to real data · 6.RP.3c</div>
-            <h2>Test Against Real State Sales Tax</h2>
-          </div>
-        </div>
-        <p>
-          These are realistic average combined sales-tax rates for U.S. states.
-          Pick a state to see what your customer would really pay there, and how
-          your rate compares.
-        </p>
-        <div class="grid2">
-          <div>
-            <label class="fld" for="worldState"
-              >Charge tax like this state</label
-            >
-            <select id="worldState" data-save onchange="worldGo()"></select>
-            <label class="fld" for="myWorld"
-              >My sale price before tax ($)</label
-            >
-            <input
-              type="number"
-              id="myWorld"
-              data-save
-              step="0.01"
-              oninput="worldGo()"
-              placeholder=""
-            />
-            <p class="pk-no-print" style="font-size: 13px; color: var(--muted)">
-              Tip: use your sale price from Part 1 here.
-            </p>
-            <div id="worldMeter"></div>
-            <div class="readout" id="world-out"></div>
-          </div>
-          <div>
-            <h3>U.S. State Sales-Tax Sample 🇺🇸</h3>
-            <div
-              style="
-                overflow: auto;
-                border: 1px solid var(--line);
-                border-radius: 12px;
-              "
-            >
-              <table class="rubric" style="margin-top: 0">
-                <tr>
-                  <th>State</th>
-                  <th>Avg combined tax</th>
-                </tr>
-                <tbody id="worldRows"></tbody>
-              </table>
-            </div>
-          </div>
+          </details>
         </div>
 
-        <div
-          class="phase"
-          style="margin: 18px 0 0; box-shadow: none; border-style: dashed"
-        >
-          <h3>🔬 What-If Lab</h3>
-          <p style="color: var(--muted); font-size: 14px">
-            Add a coupon (extra % off your sale price) and watch the final price
-            change.
-          </p>
-          <div class="grid2">
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(1)">← Back</button>
+          <button class="nav-btn" onclick="goStep(3)">Next Step →</button>
+        </div>
+      </div>
+
+      <!-- ======================================
+           STEP 3 — UNIT RATE DEALS (RATES)
+      ====================================== -->
+      <div class="step-panel" id="step-3">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon teal">⚖️</div>
             <div>
-              <label class="fld" for="whatIfCoupon"
-                >Extra coupon (% off the sale price)</label
-              >
-              <input
-                type="number"
-                id="whatIfCoupon"
-                step="1"
-                min="0"
-                max="100"
-                placeholder=""
-              />
+              <div class="card-title">Step 2 — Unit Rate Deals</div>
+              <div class="card-sub">Compare bundle options by finding the cost per item</div>
             </div>
           </div>
-          <button class="btn" type="button" onclick="runWhatIf()">
-            Run test
-          </button>
-          <div class="pk-whatif" id="whatIfBox" style="margin-top: 12px">
-            Enter a coupon percent to test.
+
+          <div class="instruct teal">
+            <strong>Your job:</strong> To boost sales, you want to offer bulk deals. Compare two different package deals for your shop. Calculate the unit rate (cost per individual item) to determine which is the smarter purchase.
           </div>
+
+          <!-- SVG: Unit rate comparison -->
+          <svg class="visual-svg" viewBox="0 0 520 120" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e7e5e4;border-radius:12px;">
+            <text x="260" y="25" text-anchor="middle" font-family="'Inter', sans-serif" font-size="14" font-weight="bold" fill="#2d1a04">Comparing Unit Rates (Cost Per Item)</text>
+            <!-- Deal A -->
+            <rect x="35" y="42" width="200" height="60" rx="8" fill="#fff7ed" stroke="#d97706" stroke-width="2" />
+            <text x="135" y="62" font-family="'Inter', sans-serif" font-size="12" font-weight="bold" fill="#b45309" text-anchor="middle">Deal A: 3 items for $7.50</text>
+            <text x="135" y="85" font-family="'Inter', sans-serif" font-size="14" font-weight="bold" fill="#ea580c" text-anchor="middle">$2.50 per item</text>
+            <!-- Deal B -->
+            <rect x="285" y="42" width="200" height="60" rx="8" fill="#f0fdf4" stroke="#15803d" stroke-width="2" />
+            <text x="385" y="62" font-family="'Inter', sans-serif" font-size="12" font-weight="bold" fill="#15803d" text-anchor="middle">Deal B: 2 items for $5.20</text>
+            <text x="385" y="85" font-family="'Inter', sans-serif" font-size="14" font-weight="bold" fill="#16a34a" text-anchor="middle">$2.60 per item</text>
+          </svg>
+
+          <!-- Level 1 support hint -->
+          <div class="instruct lvl1-only teal">
+            🟢 <strong>Level 1 support:</strong> Try clean division combinations like 3 for $6.00 ($2.00 each) vs 4 for $10.00 ($2.50 each).
+          </div>
+
+          <!-- Level 2 challenge block -->
+          <div class="lvl2-block lvl2-only">
+            <span class="lvl2-label">LEVEL 2 CHALLENGE — Convert Units First (6.RP.3d)</span>
+            <p style="font-size:14px;margin-bottom:10px;">
+              Your supplier sells material packages in two sizes: Option A is 12 ounces for $3.60. Option B is 1.5 pounds for $6.48. Convert Option B into ounces (1 pound = 16 ounces), find the unit rate per ounce for both, and choose the best deal.
+            </p>
+            <div class="grid2">
+              <div>
+                <label class="lbl" for="l2-oz">Option B Weight in Ounces (oz)</label>
+                <input type="number" id="l2-oz" placeholder="e.g. 24" oninput="verifyL2Supplier()" />
+              </div>
+              <div>
+                <label class="lbl" for="l2-rate-a">Option A Rate ($ / oz)</label>
+                <input type="number" id="l2-rate-a" step="0.01" placeholder="e.g. 0.30" oninput="verifyL2Supplier()" />
+              </div>
+              <div>
+                <label class="lbl" for="l2-rate-b">Option B Rate ($ / oz)</label>
+                <input type="number" id="l2-rate-b" step="0.01" placeholder="e.g. 0.27" oninput="verifyL2Supplier()" />
+              </div>
+              <div>
+                <label class="lbl" for="l2-better">Which is the better supplier deal?</label>
+                <select id="l2-better" onchange="verifyL2Supplier()">
+                  <option value="">-- Select --</option>
+                  <option value="A">Option A (12 oz)</option>
+                  <option value="B">Option B (1.5 lbs)</option>
+                </select>
+              </div>
+            </div>
+            <button class="calc-btn teal" onclick="verifyL2Supplier()">Verify Supplier Math</button>
+            <div class="readout" id="l2-deal-out"></div>
+          </div>
+
+          <div style="margin-top:16px;">
+            <h3>📊 Set Up Your Deal Comparisons</h3>
+            <div class="grid2">
+              <div>
+                <strong style="color:var(--blue)">Deal Package A</strong>
+                <label class="lbl" for="da-qty">Deal A Quantity (items)</label>
+                <input type="number" id="da-qty" min="1" placeholder="e.g. 3" oninput="compareDeals()" />
+                <label class="lbl" for="da-price">Deal A Total Cost ($)</label>
+                <input type="number" id="da-price" step="0.01" min="0.01" placeholder="e.g. 7.50" oninput="compareDeals()" />
+              </div>
+              <div>
+                <strong style="color:var(--green)">Deal Package B</strong>
+                <label class="lbl" for="db-qty">Deal B Quantity (items)</label>
+                <input type="number" id="db-qty" min="1" placeholder="e.g. 2" oninput="compareDeals()" />
+                <label class="lbl" for="db-price">Deal B Total Cost ($)</label>
+                <input type="number" id="db-price" step="0.01" min="0.01" placeholder="e.g. 5.20" oninput="compareDeals()" />
+              </div>
+            </div>
+          </div>
+
+          <button class="calc-btn teal" onclick="compareDeals()">⚖️ Compare Deals</button>
+          <div class="readout" id="deals-out"></div>
+
+          <details class="hint">
+            <summary>Need a unit rate hint?</summary>
+            <p>
+              Divide the total price by the quantity to find the unit rate (cost per single item).<br>
+              <strong>Formula:</strong> Total Cost ÷ Quantity = Unit Rate<br>
+              <strong>Example:</strong> $7.50 ÷ 3 items = $2.50 per item. Compare this to the other rate; the lower rate is the better value!
+            </p>
+          </details>
         </div>
 
-        <label class="fld" for="worldReflect"
-          >Is the cheapest price always best for your shop? Why or why
-          not?</label
-        >
-        <textarea id="worldReflect" data-save placeholder=""></textarea>
-        <p class="pk-lvl1" style="font-size: 14px; color: var(--muted)">
-          Level 1 tip: to find tax in any state, multiply your price by the rate
-          as a decimal (8% → 0.08). A higher rate means a higher total.
-        </p>
-        <div class="pk-lvl2">
-          <label class="fld" for="worldHard"
-            >Level 2: If your sale price is $40 and a state charges 9.5% tax,
-            what is the percent increase from sale price to total? Show your
-            thinking.</label
-          >
-          <textarea id="worldHard" data-save placeholder=""></textarea>
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(2)">← Back</button>
+          <button class="nav-btn" onclick="goStep(4)">Next Step →</button>
         </div>
-      </section>
+      </div>
 
-      <!-- ===================== DELIVERABLE ===================== -->
-      <section class="phase">
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--green)">★</div>
+      <!-- ======================================
+           STEP 4 — SALES TAX
+      ====================================== -->
+      <div class="step-panel" id="step-4">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon gold">🧾</div>
+            <div>
+              <div class="card-title">Step 3 — Sales Tax</div>
+              <div class="card-sub">Add standard tax and compare other regional tax rates</div>
+            </div>
+          </div>
+
+          <div class="instruct gold">
+            <strong>Your job:</strong> Enter a purchase subtotal (usually a customer's cart total). Find the standard 6% sales tax, then select different states to see how regional tax variations impact the total cost.
+          </div>
+
+          <!-- SVG: Sales tax calculation -->
+          <svg class="visual-svg" viewBox="0 0 520 130" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e7e5e4;border-radius:12px;">
+            <text x="260" y="25" text-anchor="middle" font-family="'Inter', sans-serif" font-size="14" font-weight="bold" fill="#2d1a04">Calculating Sales Tax (6% Standard)</text>
+            <!-- Receipt -->
+            <rect x="160" y="38" width="200" height="80" rx="8" fill="#fafaf9" stroke="#e7e5e4" stroke-width="2" />
+            <text x="180" y="58" font-family="'Courier New', monospace" font-size="12" fill="#1c1917">Subtotal:     $30.00</text>
+            <text x="180" y="75" font-family="'Courier New', monospace" font-size="12" fill="#ea580c">Tax (6%):     $ 1.80</text>
+            <line x1="175" y1="83" x2="345" y2="83" stroke="#e7e5e4" stroke-width="1" stroke-dasharray="3" />
+            <text x="180" y="103" font-family="'Courier New', monospace" font-size="13" font-weight="bold" fill="#15803d">Total Due:    $31.80</text>
+          </svg>
+
+          <!-- Level 1 support hint -->
+          <div class="instruct lvl1-only gold">
+            🟢 <strong>Level 1 support:</strong> A 6% tax rate means you add $0.06 of tax for every $1.00 spent. For $50.00, the tax is 50 × 0.06 = $3.00.
+          </div>
+
+          <!-- Level 2 challenge block -->
+          <div class="lvl2-block lvl2-only">
+            <span class="lvl2-label">LEVEL 2 CHALLENGE — Stacked Discount &amp; Tax (6.RP.3c)</span>
+            <p style="font-size:14px;margin-bottom:10px;">
+              A customer buys a $50.00 original price item. First, apply a 20% discount. Next, calculate and add 6% sales tax on the discounted price to get the final checkout total.
+            </p>
+            <div class="grid2">
+              <div>
+                <label class="lbl" for="l2-sale">Discounted Sale Price ($)</label>
+                <input type="number" id="l2-sale" step="0.01" placeholder="e.g. 40.00" oninput="verifyL2Stacked()" />
+              </div>
+              <div>
+                <label class="lbl" for="l2-tax-amt">6% Tax Amount ($)</label>
+                <input type="number" id="l2-tax-amt" step="0.01" placeholder="e.g. 2.40" oninput="verifyL2Stacked()" />
+              </div>
+              <div>
+                <label class="lbl" for="l2-tax-total">Final Total ($)</label>
+                <input type="number" id="l2-tax-total" step="0.01" placeholder="e.g. 42.40" oninput="verifyL2Stacked()" />
+              </div>
+            </div>
+            <button class="calc-btn" onclick="verifyL2Stacked()">Verify Stacked Math</button>
+            <div class="readout" id="l2-tax-out"></div>
+          </div>
+
+          <div style="margin-top:16px;">
+            <h3>🧾 Calculate Sales Tax</h3>
+            <div class="grid2">
+              <div>
+                <label class="lbl" for="tax-sub">Enter Shopping Subtotal ($)</label>
+                <input type="number" id="tax-sub" step="0.01" min="0.01" placeholder="e.g. 30.00" oninput="calcTax()" />
+              </div>
+              <div>
+                <label class="lbl" for="tax-state">Select Location (State tax rate)</label>
+                <select id="tax-state" onchange="calcTax()">
+                  <option value="0">Oregon (0%)</option>
+                  <option value="0">Delaware (0%)</option>
+                  <option value="4">Hawaii (4%)</option>
+                  <option value="6" selected>Maryland (6%)</option>
+                  <option value="7.25">California (7.25%)</option>
+                  <option value="9.55">Tennessee (9.55%)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <button class="calc-btn gold" onclick="calcTax()">🧾 Calculate Sales Tax</button>
+          <div class="readout" id="tax-out"></div>
+
+          <!-- Real-world data table -->
+          <div style="margin-top:22px;">
+            <h3 style="font-size:15px;font-weight:800;color:var(--navy);margin-bottom:6px;">🌎 Real-World Sales Tax Comparisons</h3>
+            <p style="font-size:14px;color:var(--muted);margin-bottom:6px;">Look at the range of tax structures across the United States:</p>
+            <table class="data-table">
+              <thead>
+                <tr><th>State category</th><th>Tax Rate</th><th>Example States</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>No Tax States</strong></td><td>0%</td><td>Oregon (OR), Delaware (DE), New Hampshire (NH)</td></tr>
+                <tr><td><strong>Standard Tax States</strong></td><td>4% – 6%</td><td>Hawaii (4%), Colorado (2.9%), Maryland (6%)</td></tr>
+                <tr><td><strong>High Tax States</strong></td><td>7% – 10%</td><td>California (7.25%), Tennessee (9.55%), Washington (8.9%)</td></tr>
+              </tbody>
+            </table>
+            <label class="lbl" for="tax-reflect">Compare your 6% tax rate total with another state. Write 1-2 reflection sentences.</label>
+            <textarea id="tax-reflect" placeholder="In Oregon, my total is $___ because they have 0% tax. Compared to standard tax, high-tax states like California..."></textarea>
+          </div>
+
+          <details class="hint">
+            <summary>Need a tax helper hint?</summary>
+            <p>
+              To calculate tax, write the percent as a decimal and multiply by your subtotal:<br>
+              - 6% tax = Subtotal × 0.06.<br>
+              - Add this tax to your subtotal to get the final total: Total = Subtotal + Tax.
+            </p>
+          </details>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(3)">← Back</button>
+          <button class="nav-btn" onclick="goStep(5)">Next Step →</button>
+        </div>
+      </div>
+
+      <!-- ======================================
+           STEP 5 — PARTNER SHOP
+      ====================================== -->
+      <div class="step-panel" id="step-5">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon teal">👥</div>
+            <div>
+              <div class="card-title">Step 4 — Partner Shop</div>
+              <div class="card-sub">Compare your pop-up shop prices with a classmate</div>
+            </div>
+          </div>
+
+          <div class="instruct teal">
+            <strong>Your job:</strong> Interview a classmate about their shop plans. Compare your primary item prices and your best bundle deal unit rates to determine whose prices are more competitive.
+          </div>
+
+          <!-- SVG: Split screen shop comparison -->
+          <svg class="visual-svg" viewBox="0 0 520 110" xmlns="http://www.w3.org/2000/svg" style="background:white;border:1px solid #e7e5e4;border-radius:12px;">
+            <!-- Left Side: My Shop -->
+            <rect x="25" y="20" width="220" height="75" rx="8" fill="#fff7ed" stroke="#d97706" stroke-width="2" />
+            <text x="135" y="40" font-family="'Inter', sans-serif" font-weight="bold" font-size="13" fill="#b45309" text-anchor="middle">My Shop Plan</text>
+            <text x="135" y="60" font-family="'Inter', sans-serif" font-size="11" fill="#1c1917" text-anchor="middle" id="svg-my-item">Item 1: $---</text>
+            <text x="135" y="78" font-family="'Inter', sans-serif" font-size="11" fill="#1c1917" text-anchor="middle" id="svg-my-deal">Deal Unit Rate: $---</text>
+            
+            <!-- Right Side: Partner Shop -->
+            <rect x="275" y="20" width="220" height="75" rx="8" fill="#f0fdf4" stroke="#15803d" stroke-width="2" />
+            <text x="385" y="40" font-family="'Inter', sans-serif" font-weight="bold" font-size="13" fill="#15803d" text-anchor="middle">Partner's Shop Plan</text>
+            <text x="385" y="60" font-family="'Inter', sans-serif" font-size="11" fill="#1c1917" text-anchor="middle" id="svg-partner-item">Item: $---</text>
+            <text x="385" y="78" font-family="'Inter', sans-serif" font-size="11" fill="#1c1917" text-anchor="middle" id="svg-partner-deal">Deal Unit Rate: $---</text>
+          </svg>
+
           <div>
-            <div class="skill">Final Deliverable</div>
-            <h2>Write Your Storefront Sign</h2>
-          </div>
-        </div>
-        <p>
-          Write a short storefront sign (3–5 sentences) using your real numbers
-          from above.
-        </p>
-        <textarea id="pitch" data-save placeholder=""></textarea>
+            <h3>👥 Interview Your Classmate</h3>
+            <label class="lbl" for="p-name">Partner's Name</label>
+            <input type="text" id="p-name" placeholder="e.g. Alex" oninput="comparePartner()" />
 
-        <h3 style="margin: 22px 0 6px">Shop Owner Checklist</h3>
-        <ul class="checklist" id="checklist">
-          <li>
-            <input type="checkbox" data-save id="ck1" /> I picked a real item
-            and used a real cost.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck2" /> I used a markup to find
-            a correct selling price.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck3" /> I applied a discount to
-            find the sale price.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck4" /> I added sales tax to
-            get the final total.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck5" /> I converted a real
-            label measurement using a rate.
-          </li>
-          <li>
-            <input type="checkbox" data-save id="ck6" /> I compared shops with a
-            partner and against a real state tax rate.
-          </li>
-        </ul>
+            <div class="grid2" style="margin-top:10px;">
+              <div>
+                <label class="lbl" for="p-i1-name">Partner's Main Item Name</label>
+                <input type="text" id="p-i1-name" placeholder="e.g. Handmade Soap" oninput="comparePartner()" />
+              </div>
+              <div>
+                <label class="lbl" for="p-i1-price">Partner's Main Item Original Price ($)</label>
+                <input type="number" id="p-i1-price" step="0.01" placeholder="e.g. 6.00" oninput="comparePartner()" />
+              </div>
+            </div>
 
-        <div class="grid2" style="margin-top: 18px">
-          <div>
-            <button class="btn" type="button" onclick="buildReport()">
-              📝 Generate report
-            </button>
+            <div class="grid2" style="margin-top:10px;">
+              <div>
+                <label class="lbl" for="p-deal-qty">Partner's Deal Quantity (items)</label>
+                <input type="number" id="p-deal-qty" placeholder="e.g. 3" oninput="comparePartner()" />
+              </div>
+              <div>
+                <label class="lbl" for="p-deal-price">Partner's Deal Total Price ($)</label>
+                <input type="number" id="p-deal-price" step="0.01" placeholder="e.g. 15.00" oninput="comparePartner()" />
+              </div>
+            </div>
           </div>
-          <div class="pk-no-print">
-            <button
-              class="btn ghost"
-              type="button"
-              onclick="PK.copyReport('reportBox')"
-            >
-              Copy report
-            </button>
-            <button
-              class="btn ghost"
-              type="button"
-              onclick="PK.downloadText('pop-up-shop-plan.txt', 'reportBox')"
-            >
-              Download .txt
-            </button>
-            <button class="btn ghost" type="button" onclick="downloadCsv()">
-              Download .csv
-            </button>
-            <button class="btn printbtn" type="button" onclick="window.print()">
-              🖨️ Print
-            </button>
-          </div>
-        </div>
-        <div class="pk-report" id="reportBox" style="margin-top: 16px">
-          Click "Generate report" to build your shop summary.
-        </div>
-      </section>
 
-      <!-- RUBRIC -->
-      <section class="phase">
-        <div class="phase-head">
-          <div class="phase-num" style="background: var(--navy)">✓</div>
-          <div>
-            <div class="skill">How You Are Scored</div>
-            <h2>Project Rubric</h2>
-          </div>
-        </div>
-        <table class="rubric">
-          <tr>
-            <th>Category</th>
-            <th>4 — Expert</th>
-            <th>3 — Proficient</th>
-            <th>2 — Developing</th>
-          </tr>
-          <tr>
-            <td>Percent of a Number (Markup)</td>
-            <td>Markup and selling price both correct with reasoning</td>
-            <td>Selling price correct</td>
-            <td>Partial work or minor error</td>
-          </tr>
-          <tr>
-            <td>Discount &amp; Tax</td>
-            <td>Sale price and final total both correct</td>
-            <td>One of the two correct</td>
-            <td>Attempted with a computation error</td>
-          </tr>
-          <tr>
-            <td>Conversion (rate reasoning)</td>
-            <td>Converts using a unit fraction; units cancel</td>
-            <td>Correct result</td>
-            <td>Attempted; setup unclear</td>
-          </tr>
-          <tr>
-            <td>Comparison (Peer &amp; World)</td>
-            <td>Compares shops and state tax with clear reasoning</td>
-            <td>Comparisons mostly correct</td>
-            <td>Comparison attempted</td>
-          </tr>
-          <tr>
-            <td>Communication</td>
-            <td>Sign justifies every number used</td>
-            <td>Sign uses most numbers</td>
-            <td>Sign unclear or missing numbers</td>
-          </tr>
-        </table>
-      </section>
+          <button class="calc-btn teal" onclick="comparePartner()">📊 Compare Shops</button>
+          <div class="readout" id="peer-out"></div>
 
-      <p class="footer">
-        Neft Teacher · Unit 4 Culminating Project · Version A ·
-        <span id="yr"></span>
-      </p>
+          <label class="lbl" for="peer-reflect" style="margin-top:18px;">Which shop has the more competitive pricing model? Explain using your numbers.</label>
+          <textarea id="peer-reflect" placeholder="My items cost $___ compared to my partner's item which costs $___. My deal unit rate is $___ vs their rate of $___... I think..."></textarea>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(4)">← Back</button>
+          <button class="nav-btn green" onclick="goStep(6)">Next Step →</button>
+        </div>
+      </div>
+
+      <!-- ======================================
+           STEP 6 — FINISH & REPORT
+      ====================================== -->
+      <div class="step-panel" id="step-6">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon green">🏆</div>
+            <div>
+              <div class="card-title">Step 5 — Finish &amp; Submit</div>
+              <div class="card-sub">Pitch your shop, review the checklist, and generate your report</div>
+            </div>
+          </div>
+
+          <div class="instruct green">
+            <strong>Your job:</strong> Write a persuasive elevator pitch (3–5 sentences) to attract customers to your shop. Showcase your best product prices, discounts, and bulk deal values, then review the rubric and generate your report!
+          </div>
+
+          <label class="lbl" for="pitch">✍️ Your Pop-Up Shop Pitch (use your actual items, prices, and rates!)</label>
+          <textarea id="pitch" placeholder="Welcome to my pop-up shop! I sell high-quality candles for $20.00, but today they are 20% off which means you pay just $16.00! You can also bundle and get 3 for $45.00, making them only $15.00 each..."></textarea>
+
+          <!-- Checklist -->
+          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">✅ Project Checklist</h3>
+          <ul class="checklist" id="checklist">
+            <li><input type="checkbox" id="ck1" /> I selected 3 items and calculated 10%, 20%, and 25% discount prices.</li>
+            <li><input type="checkbox" id="ck2" /> I compared bundle deals by finding the unit rate to identify the better deal.</li>
+            <li><input type="checkbox" id="ck3" /> I calculated 6% sales tax and compared total costs to other state rates.</li>
+            <li><input type="checkbox" id="ck4" /> I completed the Level 2 challenges (if selected).</li>
+            <li><input type="checkbox" id="ck5" /> I compared my shop metrics with a classmate's shop.</li>
+            <li><input type="checkbox" id="ck6" /> I wrote a pitch using my actual shop prices.</li>
+          </ul>
+
+          <!-- Rubric -->
+          <h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:22px 0 6px;">📊 Grading Rubric</h3>
+          <table class="rubric">
+            <thead>
+              <tr><th>Math Skill</th><th class="score-4">4 — Expert</th><th class="score-3">3 — Proficient</th><th class="score-2">2 — Developing</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Percents &amp; Discounts (6.RP.3c)</strong></td><td>All discount prices correct with steps explained</td><td>All discount prices correct</td><td>Minor calculation errors</td></tr>
+              <tr><td><strong>Unit Rates (6.RP.3d)</strong></td><td>Unit rates correct; includes Level 2 conversion explanation</td><td>Unit rates correct</td><td>Incorrect rates computed</td></tr>
+              <tr><td><strong>Sales Tax (6.RP.3c)</strong></td><td>Correctly calculated 6% tax, state comparisons, and stacked challenge</td><td>Correctly calculated tax</td><td>Minor math errors</td></tr>
+              <tr><td><strong>Shop Comparison</strong></td><td>Thorough partner comparison with a clear math-based reflection</td><td>Basic partner comparison complete</td><td>Missing partner data</td></tr>
+              <tr><td><strong>Shop Pitch</strong></td><td>Persuasive pitch containing multiple correct percents, unit rates, and pricing data</td><td>Pitch includes basic prices</td><td>Pitch is incomplete</td></tr>
+            </tbody>
+          </table>
+
+          <!-- Report tools -->
+          <div class="nav-row no-print" style="margin-top:22px;flex-wrap:wrap;justify-content:flex-start;gap:8px;">
+            <button class="calc-btn" onclick="buildReport()">📝 Generate Summary</button>
+            <button class="export-btn" onclick="copyReport()">📋 Copy</button>
+            <button class="export-btn" onclick="downloadTxt()">⬇️ Download .txt</button>
+            <button class="export-btn" onclick="window.print()">🖨️ Print</button>
+          </div>
+          <pre class="report-box" id="reportBox"></pre>
+        </div>
+
+        <div class="nav-row">
+          <button class="nav-btn ghost" onclick="goStep(5)">← Back</button>
+          <button class="nav-btn green" onclick="alert('Congratulations! 🎉 Share this page and your generated summary with your teacher.')">🎉 Project Finished!</button>
+        </div>
+      </div>
+
     </div>
 
-    <!-- Data-driven Research tab. The shared projects-tabs.js reads this and
-         builds a "Research & Resources" step. Each unit can supply its own
-         links by adding its own #pk-research block — no code changes needed. -->
-    <script>
-      const yrEl = document.getElementById("yr");
-      if (yrEl) yrEl.textContent = new Date().getFullYear();
-      const $ = (id) => document.getElementById(id);
-      const num = (id) => {
-        const e = $(id);
-        return e ? parseFloat(e.value) : NaN;
-      };
-
-      function show(id, html) {
-        const el = $(id);
-        if (!el) return;
-        el.innerHTML = html;
-        el.classList.add("show");
-        updateProgress();
-      }
-      function hide(id) {
-        const el = $(id);
-        if (el) el.classList.remove("show");
-      }
-
-      // Running state used by report, checks, peer, world.
-      const proj = {
-        cost: null,
-        markup: null,
-        sell: null,
-        disc: null,
-        sale: null,
-        tax: null,
-        total: null,
-      };
-
-      function calcMarkup() {
-        const cost = num("cost"),
-          pct = num("markup");
-        if (isNaN(cost) || cost <= 0 || isNaN(pct) || pct <= 0) {
-          hide("markup-out");
-          proj.cost = null;
-          proj.sell = null;
-          calcDiscount();
-          return;
-        }
-        const amount = cost * (pct / 100),
-          sell = cost + amount;
-        proj.cost = cost;
-        proj.markup = pct;
-        proj.sell = sell;
-        show(
-          "markup-out",
-          '<div class="big">$' +
-            sell.toFixed(2) +
-            " selling price</div>" +
-            "Cost $" +
-            cost.toFixed(2) +
-            " + markup $" +
-            amount.toFixed(2) +
-            " (" +
-            pct +
-            "% of $" +
-            cost.toFixed(2) +
-            ") = <strong>$" +
-            sell.toFixed(2) +
-            "</strong>. " +
-            "You make $" +
-            amount.toFixed(2) +
-            " profit per item at full price.",
-        );
-        calcDiscount();
-      }
-
-      function calcDiscount() {
-        const sell = proj.sell,
-          pct = num("discount");
-        if (sell == null || isNaN(pct) || pct <= 0) {
-          hide("discount-out");
-          proj.disc = null;
-          proj.sale = null;
-          calcTax();
-          return;
-        }
-        const savings = sell * (pct / 100),
-          sale = sell - savings;
-        proj.disc = pct;
-        proj.sale = sale;
-        show(
-          "discount-out",
-          '<div class="big">$' +
-            sale.toFixed(2) +
-            " sale price</div>" +
-            "Discount $" +
-            sell.toFixed(2) +
-            " × " +
-            pct +
-            "% = <strong>$" +
-            savings.toFixed(2) +
-            " off</strong>. " +
-            "Sale price = $" +
-            sell.toFixed(2) +
-            " − $" +
-            savings.toFixed(2) +
-            " = <strong>$" +
-            sale.toFixed(2) +
-            "</strong>.",
-        );
-        calcTax();
-      }
-
-      function calcTax() {
-        const sale = proj.sale,
-          taxR = num("tax-rate");
-        if (sale == null || isNaN(taxR) || taxR < 0) {
-          hide("tax-out");
-          proj.tax = null;
-          proj.total = null;
-          if (typeof drawVisualizer === "function") drawVisualizer();
-          return;
-        }
-        const taxAmt = sale * (taxR / 100),
-          total = sale + taxAmt;
-        proj.tax = taxR;
-        proj.total = total;
-        show(
-          "tax-out",
-          '<div class="big">$' +
-            total.toFixed(2) +
-            " final total</div>" +
-            "Sale $" +
-            sale.toFixed(2) +
-            " + tax $" +
-            taxAmt.toFixed(2) +
-            " (" +
-            taxR +
-            "% of $" +
-            sale.toFixed(2) +
-            ") = <strong>$" +
-            total.toFixed(2) +
-            "</strong> at checkout.",
-        );
-        if (typeof drawVisualizer === "function") drawVisualizer();
-      }
-
-      function checkSell() {
-        if (proj.sell == null) {
-          $("check-sellFb").innerHTML =
-            '<span class="pk-bad">Enter your cost and markup first.</span>';
-          return;
-        }
-        const ok = PK.checkWork(
-          "check-sell",
-          Math.round(proj.sell * 100) / 100,
-          0.01,
-        );
-        updateProgress();
-        return ok;
-      }
-      function checkTotal() {
-        if (proj.total == null) {
-          $("check-totalFb").innerHTML =
-            '<span class="pk-bad">Finish markup, discount, and tax first.</span>';
-          return;
-        }
-        const ok = PK.checkWork(
-          "check-total",
-          Math.round(proj.total * 100) / 100,
-          0.01,
-        );
-        updateProgress();
-        return ok;
-      }
-
-      // Conversion table (factor multiplies "from" to get "to")
-      const CONV = {
-        feet: { inches: 12, yards: 1 / 3, feet: 1, miles: 1 / 5280 },
-        yards: { inches: 36, feet: 3, yards: 1, miles: 1 / 1760 },
-        inches: { feet: 1 / 12, yards: 1 / 36, inches: 1, miles: 1 / 63360 },
-        miles: { feet: 5280, yards: 1760, inches: 63360, miles: 1 },
-        pounds: { ounces: 16, pounds: 1 },
-        ounces: { pounds: 1 / 16, ounces: 1 },
-        cups: { pints: 0.5, quarts: 0.25, gallons: 0.0625, cups: 1 },
-        pints: { cups: 2, quarts: 0.5, gallons: 0.125, pints: 1 },
-        quarts: { cups: 4, pints: 2, gallons: 0.25, quarts: 1 },
-        gallons: { cups: 16, pints: 8, quarts: 4, gallons: 1 },
-      };
-      function calcConvert() {
-        const val = num("conv-val"),
-          from = $("conv-from").value,
-          to = $("conv-to").value;
-        if (isNaN(val) || val <= 0) {
-          hide("conv-out");
-          return;
-        }
-        if (from === to) {
-          show(
-            "conv-out",
-            '<div class="big">' +
-              val +
-              " " +
-              to +
-              "</div>Same unit — no conversion needed!",
-          );
-          return;
-        }
-        const row = CONV[from];
-        if (!row || row[to] === undefined) {
-          show(
-            "conv-out",
-            '<div class="big">Cannot convert</div>Those units are not the same measurement type (length, weight, or volume). Choose compatible units.',
-          );
-          return;
-        }
-        const factor = row[to],
-          result = val * factor;
-        const factorStr = Number.isInteger(factor)
-          ? factor
-          : factor < 1
-            ? "1/" + Math.round(1 / factor)
-            : factor.toFixed(4);
-        const resStr = result.toFixed(4).replace(/\.?0+$/, "");
-        show(
-          "conv-out",
-          '<div class="big">' +
-            resStr +
-            " " +
-            to +
-            "</div>" +
-            val +
-            " " +
-            from +
-            " × (" +
-            factorStr +
-            " " +
-            to +
-            " / 1 " +
-            from +
-            ") = <strong>" +
-            resStr +
-            " " +
-            to +
-            "</strong>. " +
-            'The "' +
-            from +
-            '" units cancel, leaving <strong>' +
-            to +
-            "</strong>. That is rate reasoning!",
-        );
-      }
-
-      function calcStacked() {
-        if (proj.sale == null || proj.tax == null) {
-          show(
-            "stacked-out",
-            "<p>Finish markup, discount, and tax above first.</p>",
-          );
-          return;
-        }
-        const sale = proj.sale,
-          total = proj.total;
-        const inc = ((total - sale) / sale) * 100;
-        show(
-          "stacked-out",
-          '<div class="big">$' +
-            total.toFixed(2) +
-            " stacked total</div>" +
-            "Discount first → sale price $" +
-            sale.toFixed(2) +
-            ". Then tax → $" +
-            total.toFixed(2) +
-            ".<br>" +
-            "Percent increase from sale price to total = $" +
-            (total - sale).toFixed(2) +
-            " ÷ $" +
-            sale.toFixed(2) +
-            " × 100 = <strong>" +
-            inc.toFixed(1) +
-            "%</strong>. " +
-            (proj.cost != null
-              ? proj.sale <= proj.cost
-                ? "Heads up: your sale price is at or below your $" +
-                  proj.cost.toFixed(2) +
-                  " cost — you break even or lose money on sale items."
-                : "Your sale price stays above your $" +
-                  proj.cost.toFixed(2) +
-                  " cost, so you still profit on sale."
-              : ""),
-        );
-      }
-
-      /* ---- Part 2: peer compare ---- */
-      function comparePeer() {
-        const myCost = proj.cost,
-          myFinal = proj.total;
-        const pCost = num("p-cost"),
-          pFinal = num("p-final");
-        const rows = [];
-        if (myCost != null && !isNaN(pCost))
-          rows.push({
-            label: "Cost $",
-            me: myCost,
-            partner: pCost,
-            fmt: (x) => Number(x).toFixed(2),
-          });
-        if (myFinal != null && !isNaN(pFinal))
-          rows.push({
-            label: "Final price $",
-            me: myFinal,
-            partner: pFinal,
-            fmt: (x) => Number(x).toFixed(2),
-          });
-        if (!rows.length) {
-          $("peerBox").innerHTML =
-            '<p class="pk-fb">Finish Part 1 and enter partner numbers to compare.</p>';
-          return;
-        }
-        PK.peerCompare("peerBox", rows);
-        if (myFinal != null && !isNaN(pFinal)) {
-          const better =
-            myFinal < pFinal
-              ? "Your shop"
-              : pFinal < myFinal
-                ? "Your partner's shop"
-                : "Both shops (tie)";
-          $("peerBox").innerHTML +=
-            '<div class="pk-stat" style="grid-column:1/-1;background:var(--green-light)"><small>Better buy for a customer</small><b>' +
-            better +
-            "</b></div>";
-        }
-        updateProgress();
-      }
-
-      /* ---- Part 3: world dataset (avg combined state sales tax %) ---- */
-      const world = [
-        ["California", 8.85],
-        ["Texas", 8.2],
-        ["New York", 8.53],
-        ["Florida", 7.0],
-        ["Illinois", 8.86],
-        ["Washington", 9.4],
-        ["Tennessee", 9.55],
-        ["Colorado", 7.81],
-        ["Oregon", 0.0],
-        ["Georgia", 7.4],
-      ];
-      function renderWorld() {
-        $("worldRows").innerHTML = world
-          .map(
-            (r) =>
-              "<tr><td>" + r[0] + "</td><td>" + r[1].toFixed(2) + "%</td></tr>",
-          )
-          .join("");
-        $("worldState").innerHTML = world
-          .map(
-            (r, i) =>
-              '<option value="' +
-              i +
-              '">' +
-              r[0] +
-              " (" +
-              r[1].toFixed(2) +
-              "%)</option>",
-          )
-          .join("");
-      }
-      function worldSample() {
-        return world.map((r) => r[1]);
-      }
-
-      function worldGo() {
-        const my = num("myWorld");
-        const customName = $("worldCountry")
-          ? $("worldCountry").value.trim()
-          : "";
-        const customSize = $("tax-rate") ? num("tax-rate") : NaN;
-
-        let sample = worldSample();
-        if (!isNaN(customSize) && customSize > 0) {
-          sample = [...sample, customSize];
-        }
-
-        const labels =
-          ($("worldCat") || {}).value === "costPerGuest" ||
-          ($("worldCat") || {}).value === "price"
-            ? { mean: "City avg $", me: "Me $" }
-            : { mean: "City avg", me: "Me" };
-
-        PK.worldMeter("worldMeter", sample, my, labels);
-
-        const fb = $("worldMeter");
-        if (!isNaN(customSize) && customSize > 0 && customName) {
-          const ratio = (my / customSize).toFixed(2);
-          const pct = Math.round((my / customSize) * 100);
-          const diff = Math.abs(my - customSize).toFixed(2);
-
-          let myValStr = false ? "$" + my.toFixed(2) : my + "%";
-          let custValStr = false
-            ? "$" + customSize.toFixed(2)
-            : customSize + "%";
-          let diffStr = false
-            ? "$" + Number(diff).toFixed(2)
-            : Number(diff).toFixed(2) + "%";
-
-          const rel =
-            my > customSize ? "larger" : my < customSize ? "smaller" : "equal";
-          const desc =
-            `<div style="margin-top:14px; padding:12px; background:var(--teal-light); border-radius:10px; font-weight:bold; color:var(--teal); font-size:14px; border: 1px solid #b2dfdb;">` +
-            `📊 Research Comparison: Your value (${myValStr}) is <strong>${rel}</strong> than <strong>${customName}</strong> (${custValStr}) ` +
-            `by <strong>${diffStr}</strong>. Your value is <strong>${pct}%</strong> (${ratio}x) of the size of the researched benchmark.` +
-            `</div>`;
-          fb.innerHTML += desc;
-        }
-
-        if (typeof drawVisualizer === "function") {
-          drawVisualizer();
-        }
-
-        updateProgress();
-      }
-
-      function runWhatIf() {
-        const cost = num("cost");
-        const markup = num("markup");
-        const discount = num("discount");
-        const coupon = parseFloat($("whatIfCoupon").value);
-        if (isNaN(cost) || cost <= 0 || isNaN(markup) || isNaN(discount)) {
-          $("whatIfBox").textContent =
-            "First fill in your cost, markup, and sale discount in Part 1.";
-          return;
-        }
-        if (isNaN(coupon) || coupon < 0 || coupon > 100) {
-          $("whatIfBox").textContent =
-            "Enter an extra coupon percent between 0 and 100 (% off the sale price).";
-          return;
-        }
-        const money = (x) => "$" + (Math.round(x * 100) / 100).toFixed(2);
-        const sale = cost * (1 + markup / 100) * (1 - discount / 100);
-        const afterCoupon = sale * (1 - coupon / 100);
-        PK.whatIf(
-          "whatIfBox",
-          { "final price": money(sale) },
-          { "final price": money(afterCoupon) },
-          "Take an extra " +
-            coupon +
-            "% off your sale price of " +
-            money(sale) +
-            ":",
-        );
-      }
-
-      /* ---- Use example numbers ---- */
-      function useExamples() {
-        const ex = {
-          worldCountry: "California",
-          "tax-rate": 7.25,
-          item: "hand-poured candle",
-          cost: 40.0,
-          markup: 25,
-          discount: 20,
-          "conv-val": 5,
-        };
-        Object.entries(ex).forEach(([k, v]) => {
-          if ($(k)) $(k).value = v;
-        });
-        $("conv-from").value = "feet";
-        $("conv-to").value = "inches";
-        recalcAll();
-      }
-
-      function drawVisualizer() {
-        let cost = num("cost") || 0;
-        let markupPct = num("markup") || 0;
-        let discPct = num("discount") || 0;
-        let taxPct = num("tax-rate") || 0;
-
-        // Show a worked EXAMPLE receipt by default so the card always has a
-        // reference; switches to the student's real numbers once they enter a
-        // cost and markup.
-        const isExample = !(cost > 0 && markupPct > 0);
-        if (isExample) {
-          cost = 40;
-          markupPct = 25;
-          discPct = 20;
-          taxPct = 7.25;
-        }
-
-        const sell = cost * (1 + markupPct / 100);
-        const sale = sell * (1 - discPct / 100);
-        const taxAmt = sale * (taxPct / 100);
-        const total = sale + taxAmt;
-
-        const html = `
-            <g transform="translate(130, 15)">
-              <!-- Receipt Background -->
-              <rect x="0" y="0" width="240" height="210" fill="#fcfcfc" stroke="#cbd5e1" stroke-width="2" filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.05))" />
-              <line x1="10" y1="35" x2="230" y2="35" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="3,3" />
-              <text x="120" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f2b3c">POP-UP SHOP RECEIPT</text>
-
-              <text x="20" y="58" font-size="13" fill="#5e6e7e">Selling Price (+${markupPct}%):</text>
-              <text x="220" y="58" text-anchor="end" font-size="13" font-weight="bold" fill="#0f2b3c">$${sell.toFixed(2)}</text>
-
-              <text x="20" y="85" font-size="13" fill="#5e6e7e">Discount (-${discPct}%):</text>
-              <text x="220" y="85" text-anchor="end" font-size="13" fill="#c45a3c">-$${(sell - sale).toFixed(2)}</text>
-
-              <text x="20" y="112" font-size="13" fill="#5e6e7e">Sale Price:</text>
-              <text x="220" y="112" text-anchor="end" font-size="13" fill="#0f2b3c">$${sale.toFixed(2)}</text>
-
-              <text x="20" y="139" font-size="13" fill="#5e6e7e">Sales Tax (${taxPct}%):</text>
-              <text x="220" y="139" text-anchor="end" font-size="13" fill="#0f2b3c">$${taxAmt.toFixed(2)}</text>
-
-              <line x1="10" y1="158" x2="230" y2="158" stroke="#cbd5e1" stroke-width="1.5" />
-              <text x="20" y="185" font-size="14" font-weight="bold" fill="#2d874b">GRAND TOTAL:</text>
-              <text x="220" y="185" text-anchor="end" font-size="14" font-weight="bold" fill="#2d874b">$${total.toFixed(2)}</text>
-            </g>
-          `;
-
-        const svgString = `
-          <svg class="pk-visualizer-svg" width="100%" height="240" viewBox="0 0 500 240" style="background:white; border-radius:12px; border: 1px solid #e2e8f0;" xmlns="http://www.w3.org/2000/svg">
-            ${isExample ? `<rect x="12" y="10" width="86" height="20" rx="10" fill="#eef4ff" stroke="#1763c7" /><text x="55" y="24" text-anchor="middle" font-size="10" font-weight="bold" fill="#1763c7">Example</text>` : ""}
-            ${html}
-          </svg>
-        `;
-        $("projectVisualizer").innerHTML = svgString;
-      }
-
-      function recalcAll() {
-        calcMarkup();
-        calcConvert();
-        comparePeer();
-        renderWorld();
-        worldGo();
-        updateProgress();
-      }
-
-      /* ---- Report ---- */
-      function reportText() {
-        const f = (x) => (x == null ? "(not finished)" : Number(x).toFixed(2));
-        return (
-          "POP-UP SHOP OWNER — MY REPORT\n" +
-          "=============================\n\n" +
-          "PART 1: MY SHOP (SELF)\n" +
-          "Item: " +
-          ($("item").value || "(none)") +
-          "\n" +
-          "Cost: $" +
-          f(proj.cost) +
-          "  |  Markup: " +
-          (proj.markup == null ? "-" : proj.markup + "%") +
-          "\n" +
-          "Selling price: $" +
-          f(proj.sell) +
-          "\n" +
-          "Discount: " +
-          (proj.disc == null ? "-" : proj.disc + "%") +
-          "  |  Sale price: $" +
-          f(proj.sale) +
-          "\n" +
-          "Sales tax: " +
-          (proj.tax == null ? "-" : proj.tax + "%") +
-          "  |  Final total: $" +
-          f(proj.total) +
-          "\n" +
-          "Label conversion: " +
-          ($("conv-val").value || "-") +
-          " " +
-          $("conv-from").value +
-          " → " +
-          $("conv-to").value +
-          "\n\n" +
-          "PART 2: PEER COMPARISON\n" +
-          "Partner: " +
-          ($("partnerName").value || "(none)") +
-          "  |  Item: " +
-          ($("p-item").value || "-") +
-          "\n" +
-          "Partner cost: $" +
-          ($("p-cost").value || "-") +
-          "  |  Partner final: $" +
-          ($("p-final").value || "-") +
-          "\n" +
-          "Reflection: " +
-          ($("peerReflect").value || "(not written)") +
-          "\n\n" +
-          "PART 3: WORLD COMPARISON\n" +
-          "Cheapest-is-best reflection: " +
-          ($("worldReflect").value || "(not written)") +
-          "\n\n" +
-          "STOREFRONT SIGN:\n" +
-          ($("pitch").value || "(not written)")
-        );
-      }
-      function buildReport() {
-        recalcAll();
-        PK.generateReport("reportBox", reportText());
-      }
-      function downloadCsv() {
-        const rows = [
-          ["field", "value"],
-          ["item", $("item").value],
-          ["cost", proj.cost],
-          ["markup_pct", proj.markup],
-          ["selling_price", proj.sell],
-          ["discount_pct", proj.disc],
-          ["sale_price", proj.sale],
-          ["tax_pct", proj.tax],
-          ["final_total", proj.total],
-          ["partner", $("partnerName").value],
-          ["partner_cost", $("p-cost").value],
-          ["partner_final", $("p-final").value],
-        ];
-        PK.downloadCsv("pop-up-shop-data.csv", rows);
-      }
-
-      /* ---- Progress ---- */
-      function updateProgress() {
-        const readouts = document.querySelectorAll(".readout.show").length; // up to 6
-        const sellOk = $("check-sellFb")?.querySelector(".pk-ok") ? 1 : 0;
-        const totalOk = $("check-totalFb")?.querySelector(".pk-ok") ? 1 : 0;
-        const checks = document.querySelectorAll(
-          "#checklist input:checked",
-        ).length; // up to 6
-        const peer = $("p-cost")?.value || $("p-final")?.value ? 1 : 0;
-        const wrld = $("myWorld")?.value ? 1 : 0;
-        const pitch = ($("pitch")?.value || "").trim().length > 20 ? 1 : 0;
-        const total =
-          readouts + sellOk + totalOk + checks + peer + wrld + pitch; // max 6+1+1+6+1+1+1 = 17
-        const pct = Math.min(100, Math.round((total / 17) * 100));
-        if ($("pfill")) $("pfill").style.width = pct + "%";
-        if ($("pct")) $("pct").textContent = pct;
-      }
-      document
-        .getElementById("checklist")
-        .addEventListener("change", updateProgress);
-      document
-        .getElementById("pitch")
-        .addEventListener("input", updateProgress);
-
-      /* ---- Level hook: Level 1 pre-fills friendly numbers if empty ---- */
-      window.onLevelChange = function (level) {
-        if (level === "level-1") {
-          const empty = !$("cost").value && !$("markup").value;
-          if (empty) {
-            $("cost").value = 40;
-            $("markup").value = 25;
-            $("discount").value = 20;
-            $("tax-rate").value = 8;
-            $("conv-val").value = 5;
-            recalcAll();
-          }
-        }
-      };
-
-      /* ---- init ---- */
-      document.addEventListener("DOMContentLoaded", function () {
-        renderWorld();
-        PK.initLevel({ storageKey: "u4ProjectA", default: "level-1" });
-        PK.initTts({ storageKey: "u4ProjectA" });
-        PK.load("u4ProjectA", { after: recalcAll });
-        updateProgress();
-      });
-    </script>
-    <script src="/assets/nt-page-enhance.js" defer></script>
-    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <!-- ====== SCRIPTS ====== -->
     <script src="/shared/save-resume/save-resume-engine.js" defer></script>
-    <!-- nsr-injected:end -->
-    <!-- pk-research: activates the shared engine's data-driven Research Lab tab (projects-tabs.js) -->
-    <script type="application/json" id="pk-research">
-      {
-        "icon": "🔎",
-        "title": "Research Lab — Find the Real Better Buy",
-        "intro": "Smart shoppers compare unit prices, not sticker prices. Look up real prices and sizes, then compute who really wins.",
-        "brief": {
-          "theme": "field",
-          "title": "🧾 Your Research Mission",
-          "hook": "Find <b>real prices and sizes</b>, then use unit price to find the true better buy.",
-          "steps": [
-            "Open a link (new tab — you keep your project).",
-            "Record real prices and sizes in Field Notes.",
-            "Compute unit prices in the math problems.",
-            "Check off the Investigation Checklist."
-          ]
-        },
-        "fieldNotes": {
-          "title": "Field Notes — Record What You Find",
-          "intro": "Jot the exact number or rule you find. You'll reuse these in the math below.",
-          "fields": [
-            {
-              "label": "How to find a unit price",
-              "source": "Math is Fun",
-              "placeholder": "price ÷ amount",
-              "hint": "Cost per 1 ounce / item / gram."
-            },
-            {
-              "label": "Product A: price and size",
-              "source": "Any store site / label",
-              "placeholder": "$4.50 for 15 oz",
-              "hint": "Read it off a real label or listing."
-            },
-            {
-              "label": "Product B: price and size",
-              "source": "Any store site / label",
-              "placeholder": "$6.00 for 24 oz",
-              "hint": "Same kind of product, different size."
-            },
-            {
-              "label": "A unit conversion you need",
-              "source": "Math is Fun",
-              "placeholder": "16 oz = 1 lb",
-              "hint": "Match units before comparing."
-            }
-          ]
-        },
-        "mathTasks": [
-          {
-            "title": "1 · Unit price A",
-            "prompt": "Use Field Note 2 and <b>price ÷ size</b> to find Product A's price per unit. Show the division.",
-            "level2": "Round your unit price to the nearest cent."
-          },
-          {
-            "title": "2 · Better buy",
-            "prompt": "Find Product B's unit price, then say which is the better buy and by how much per unit.",
-            "level2": "If you buy enough to get 60 oz, how much do you save by choosing the better buy?"
-          },
-          {
-            "title": "3 · Convert and compare",
-            "prompt": "Use your conversion (Field Note 4) to rewrite one size in different units, then re-check the comparison.",
-            "level2": "Explain why comparing prices without matching units can trick a shopper."
-          }
-        ],
-        "investigationChecklist": [
-          "I recorded how to find a unit price.",
-          "I found two real products with price and size.",
-          "I computed unit price for both.",
-          "I named the better buy with a reason.",
-          "I used a unit conversion.",
-          "I explained why unit price beats sticker price."
-        ],
-        "links": [
-          {
-            "icon": "🏷️",
-            "name": "Math is Fun — Unit Price",
-            "url": "https://www.mathsisfun.com/measure/unit-price.html",
-            "find": "How to compute price per unit and compare.",
-            "look": "divide price by amount"
-          },
-          {
-            "icon": "🔁",
-            "name": "Math is Fun — Unit Conversion Charts",
-            "url": "https://www.mathsisfun.com/metric-imperial-conversion-charts.html",
-            "find": "Common conversions between units.",
-            "look": "ounces, pounds, grams, liters"
-          },
-          {
-            "icon": "📐",
-            "name": "Math is Fun — US Standard Units",
-            "url": "https://www.mathsisfun.com/measure/us-standard-units-introduction.html",
-            "find": "What each measurement unit means.",
-            "look": "ounces vs pounds, cups vs quarts"
-          }
-        ],
-        "note": "These sites were picked for class. They open in a new tab so you keep your project. If a page asks you to sign in or buy something, just close it and come back."
+    <script src="/assets/app.js" defer></script>
+    <script>
+      // ---- Wizard state ----
+      const STEPS = [
+        { id: 1, label: 'Key Words', icon: '📖' },
+        { id: 2, label: 'Set Prices', icon: '🏷️' },
+        { id: 3, label: 'Unit Rates', icon: '⚖️' },
+        { id: 4, label: 'Sales Tax', icon: '🧾' },
+        { id: 5, label: 'Partner Shop', icon: '👥' },
+        { id: 6, label: 'Finish', icon: '🏆' },
+      ];
+      let currentStep = 1;
+      const visited = new Set([1]);
+
+      // ---- Level toggle ----
+      function setLevel(n) {
+        document.getElementById('body').className = 'level-' + n;
+        document.getElementById('btn-lv1').classList.toggle('active', n === 1);
+        document.getElementById('btn-lv2').classList.toggle('active', n === 2);
+        saveState();
       }
+
+      // ---- Build step trail ----
+      function buildTrail() {
+        const trail = document.getElementById('stepTrail');
+        trail.innerHTML = STEPS.map((s, i) => {
+          const isLast = i === STEPS.length - 1;
+          return `<span class="step-trail-item${s.id === currentStep ? ' active' : ''}${visited.has(s.id) && s.id !== currentStep ? ' done' : ''}" onclick="goStep(${s.id})">
+            <span class="s-num">${visited.has(s.id) && s.id !== currentStep ? '✓' : s.id}</span>
+            <span class="s-label">${s.label}</span>
+          </span>${!isLast ? '<span class="step-arrow">›</span>' : ''}`;
+        }).join('');
+      }
+
+      // ---- Navigation ----
+      function goStep(n) {
+        if (n < 1 || n > STEPS.length) return;
+        document.getElementById('step-' + currentStep).classList.remove('active');
+        currentStep = n;
+        visited.add(n);
+        document.getElementById('step-' + n).classList.add('active');
+        buildTrail();
+        updateProgress();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        saveState();
+      }
+
+      function updateProgress() {
+        const pct = Math.round(((currentStep - 1) / (STEPS.length - 1)) * 100);
+        document.getElementById('progFill').style.width = pct + '%';
+        document.getElementById('progLabel').textContent = `Step ${currentStep} of ${STEPS.length}`;
+      }
+
+      // ---- Math helpers ----
+      function fmt(n) { return Number.isInteger(n) ? n.toFixed(0) : n.toFixed(2); }
+      function fmtMoney(n) { return '$' + n.toFixed(2); }
+      function showReadout(id, html) {
+        const el = document.getElementById(id);
+        el.innerHTML = html;
+        el.classList.add('show');
+      }
+
+      // ---- Discount Calculations ----
+      function calcPrices() {
+        const i1Name = document.getElementById('i1-name').value || 'Item 1';
+        const i2Name = document.getElementById('i2-name').value || 'Item 2';
+        const i3Name = document.getElementById('i3-name').value || 'Item 3';
+
+        const i1Price = parseFloat(document.getElementById('i1-orig').value);
+        const i2Price = parseFloat(document.getElementById('i2-orig').value);
+        const i3Price = parseFloat(document.getElementById('i3-orig').value);
+
+        const svgMyItem = document.getElementById('svg-my-item');
+        if (svgMyItem && !isNaN(i1Price)) {
+          svgMyItem.textContent = i1Name + ': ' + fmtMoney(i1Price);
+        }
+
+        if (isNaN(i1Price) || isNaN(i2Price) || isNaN(i3Price) || i1Price <= 0 || i2Price <= 0 || i3Price <= 0) {
+          return;
+        }
+
+        const i1_10_save = i1Price * 0.10;
+        const i1_10_pay = i1Price * 0.90;
+        const i1_20_save = i1Price * 0.20;
+        const i1_20_pay = i1Price * 0.80;
+        const i1_25_save = i1Price * 0.25;
+        const i1_25_pay = i1Price * 0.75;
+
+        const i2_10_save = i2Price * 0.10;
+        const i2_10_pay = i2Price * 0.90;
+        const i2_20_save = i2Price * 0.20;
+        const i2_20_pay = i2Price * 0.80;
+        const i2_25_save = i2Price * 0.25;
+        const i2_25_pay = i2Price * 0.75;
+
+        const i3_10_save = i3Price * 0.10;
+        const i3_10_pay = i3Price * 0.90;
+        const i3_20_save = i3Price * 0.20;
+        const i3_20_pay = i3Price * 0.80;
+        const i3_25_save = i3Price * 0.25;
+        const i3_25_pay = i3Price * 0.75;
+
+        let html = `
+          <strong>Discount Options Breakdown:</strong>
+          <table class="data-table" style="margin-top:10px;">
+            <thead>
+              <tr>
+                <th>Item Name</th>
+                <th>Original</th>
+                <th>10% Off (Save/Pay)</th>
+                <th>20% Off (Save/Pay)</th>
+                <th>25% Off (Save/Pay)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>${i1Name}</strong></td>
+                <td>${fmtMoney(i1Price)}</td>
+                <td>${fmtMoney(i1_10_save)} / <strong>${fmtMoney(i1_10_pay)}</strong></td>
+                <td>${fmtMoney(i1_20_save)} / <strong>${fmtMoney(i1_20_pay)}</strong></td>
+                <td>${fmtMoney(i1_25_save)} / <strong>${fmtMoney(i1_25_pay)}</strong></td>
+              </tr>
+              <tr>
+                <td><strong>${i2Name}</strong></td>
+                <td>${fmtMoney(i2Price)}</td>
+                <td>${fmtMoney(i2_10_save)} / <strong>${fmtMoney(i2_10_pay)}</strong></td>
+                <td>${fmtMoney(i2_20_save)} / <strong>${fmtMoney(i2_20_pay)}</strong></td>
+                <td>${fmtMoney(i2_25_save)} / <strong>${fmtMoney(i2_25_pay)}</strong></td>
+              </tr>
+              <tr>
+                <td><strong>${i3Name}</strong></td>
+                <td>${fmtMoney(i3Price)}</td>
+                <td>${fmtMoney(i3_10_save)} / <strong>${fmtMoney(i3_10_pay)}</strong></td>
+                <td>${fmtMoney(i3_20_save)} / <strong>${fmtMoney(i3_20_pay)}</strong></td>
+                <td>${fmtMoney(i3_25_save)} / <strong>${fmtMoney(i3_25_pay)}</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        `;
+        showReadout('prices-out', html);
+      }
+
+      function verifyL2Markup() {
+        const cost = parseFloat(document.getElementById('l2-cost').value);
+        const retail = parseFloat(document.getElementById('l2-retail').value);
+        const markup = parseFloat(document.getElementById('l2-markup').value);
+
+        if (isNaN(cost) || isNaN(retail) || isNaN(markup) || cost <= 0 || retail <= 0 || markup <= 0) {
+          showReadout('l2-markup-out', `<span style="color:var(--coral)">Please enter valid numbers for retail price and markup percentage.</span>`);
+          return;
+        }
+
+        const expectedRetail = cost / 0.8;
+        const expectedMarkup = 25;
+
+        const isRetailCorrect = Math.abs(retail - expectedRetail) < 0.05;
+        const isMarkupCorrect = Math.abs(markup - expectedMarkup) < 0.5;
+
+        if (isRetailCorrect && isMarkupCorrect) {
+          showReadout('l2-markup-out', `
+            <strong style="color:var(--green)">✓ Correct!</strong><br>
+            If you buy the item for <strong>${fmtMoney(cost)}</strong> wholesale, you must set the retail price to <strong>${fmtMoney(expectedRetail)}</strong>. 
+            A 20% discount takes off <strong>${fmtMoney(expectedRetail * 0.20)}</strong>, leaving a sale price of exactly <strong>${fmtMoney(cost)}</strong> (break-even). 
+            This represents a <strong>${expectedMarkup}% markup</strong> on your wholesale cost. Excellent calculation!
+          `);
+        } else {
+          let errors = [];
+          if (!isRetailCorrect) errors.push(`Retail price of <strong>${fmtMoney(retail)}</strong> is incorrect. (Hint: Cost ÷ 0.80 = ${fmtMoney(expectedRetail)})`);
+          if (!isMarkupCorrect) errors.push(`Markup percentage of <strong>${markup}%</strong> is incorrect. (Hint: Markup % = ((Retail - Cost)/Cost) * 100)`);
+          showReadout('l2-markup-out', `<span style="color:var(--coral)">❌ ${errors.join('<br>')}</span>`);
+        }
+      }
+
+      // ---- Unit Rate Calculations ----
+      function compareDeals() {
+        const qtyA = parseFloat(document.getElementById('da-qty').value);
+        const priceA = parseFloat(document.getElementById('da-price').value);
+        const qtyB = parseFloat(document.getElementById('db-qty').value);
+        const priceB = parseFloat(document.getElementById('db-price').value);
+
+        if (isNaN(qtyA) || isNaN(priceA) || isNaN(qtyB) || isNaN(priceB) || qtyA <= 0 || priceA <= 0 || qtyB <= 0 || priceB <= 0) {
+          return;
+        }
+
+        const rateA = priceA / qtyA;
+        const rateB = priceB / qtyB;
+
+        const myBestRate = Math.min(rateA, rateB);
+        const svgMyDeal = document.getElementById('svg-my-deal');
+        if (svgMyDeal) {
+          svgMyDeal.textContent = 'Deal Unit Rate: ' + fmtMoney(myBestRate) + '/item';
+        }
+
+        let betterDealMsg = '';
+        if (Math.abs(rateA - rateB) < 0.005) {
+          betterDealMsg = `<strong>Both deals have the same unit rate!</strong> They both cost <strong>${fmtMoney(rateA)}</strong> per item.`;
+        } else if (rateA < rateB) {
+          const diff = rateB - rateA;
+          betterDealMsg = `<strong>Deal A is the better deal!</strong> It costs <strong>${fmtMoney(rateA)}</strong> per item, which is <strong>${fmtMoney(diff)}</strong> cheaper than Deal B (<strong>${fmtMoney(rateB)}</strong> per item).`;
+        } else {
+          const diff = rateA - rateB;
+          betterDealMsg = `<strong>Deal B is the better deal!</strong> It costs <strong>${fmtMoney(rateB)}</strong> per item, which is <strong>${fmtMoney(diff)}</strong> cheaper than Deal A (<strong>${fmtMoney(rateA)}</strong> per item).`;
+        }
+
+        showReadout('deals-out', `
+          ${betterDealMsg}<br>
+          <small>Deal A Rate: ${priceA} ÷ ${qtyA} = ${fmtMoney(rateA)} per item &nbsp;|&nbsp; Deal B Rate: ${priceB} ÷ ${qtyB} = ${fmtMoney(rateB)} per item</small>
+        `);
+      }
+
+      function verifyL2Supplier() {
+        const oz = parseFloat(document.getElementById('l2-oz').value);
+        const rateA = parseFloat(document.getElementById('l2-rate-a').value);
+        const rateB = parseFloat(document.getElementById('l2-rate-b').value);
+        const better = document.getElementById('l2-better').value;
+
+        if (isNaN(oz) || isNaN(rateA) || isNaN(rateB) || oz <= 0 || rateA <= 0 || rateB <= 0 || !better) {
+          showReadout('l2-deal-out', `<span style="color:var(--coral)">Please fill out all the conversion fields to verify.</span>`);
+          return;
+        }
+
+        const expectedOz = 24;
+        const expectedRateA = 0.30;
+        const expectedRateB = 0.27;
+        const expectedBetter = 'B';
+
+        const isOzCorrect = Math.abs(oz - expectedOz) < 0.1;
+        const isRateACorrect = Math.abs(rateA - expectedRateA) < 0.01;
+        const isRateBCorrect = Math.abs(rateB - expectedRateB) < 0.01;
+        const isBetterCorrect = better === expectedBetter;
+
+        if (isOzCorrect && isRateACorrect && isRateBCorrect && isBetterCorrect) {
+          showReadout('l2-deal-out', `
+            <strong style="color:var(--green)">✓ Correct!</strong><br>
+            Option B is 1.5 lbs, which equals <strong>24 ounces</strong> (1.5 × 16).<br>
+            - Option A unit rate: $3.60 ÷ 12 oz = <strong>$0.30 per ounce</strong>.<br>
+            - Option B unit rate: $6.48 ÷ 24 oz = <strong>$0.27 per ounce</strong>.<br>
+            Therefore, <strong>Option B is the better deal</strong> because it is $0.03 cheaper per ounce.
+          `);
+        } else {
+          let errors = [];
+          if (!isOzCorrect) errors.push(`Option B weight in ounces of <strong>${oz} oz</strong> is incorrect (Hint: 1.5 × 16 = 24).`);
+          if (!isRateACorrect) errors.push(`Option A rate of <strong>$${rateA}</strong> is incorrect (Hint: $3.60 ÷ 12 = $0.30).`);
+          if (!isRateBCorrect) errors.push(`Option B rate of <strong>$${rateB}</strong> is incorrect (Hint: $6.48 ÷ 24 = $0.27).`);
+          if (!isBetterCorrect) errors.push(`Your choice of better supplier deal is incorrect.`);
+          showReadout('l2-deal-out', `<span style="color:var(--coral)">❌ ${errors.join('<br>')}</span>`);
+        }
+      }
+
+      // ---- Sales Tax Calculations ----
+      function calcTax() {
+        const subtotal = parseFloat(document.getElementById('tax-sub').value);
+        const stateSelect = document.getElementById('tax-state');
+        const stateName = stateSelect.options[stateSelect.selectedIndex].text;
+        const stateRate = parseFloat(stateSelect.value);
+
+        if (isNaN(subtotal) || subtotal <= 0) {
+          return;
+        }
+
+        const stdTaxAmt = subtotal * 0.06;
+        const stdTotal = subtotal + stdTaxAmt;
+
+        const stateTaxAmt = subtotal * (stateRate / 100);
+        const stateTotal = subtotal + stateTaxAmt;
+
+        showReadout('tax-out', `
+          <strong>Standard 6% Sales Tax:</strong><br>
+          Tax Amount: <strong>${fmtMoney(stdTaxAmt)}</strong> &nbsp;|&nbsp; Total Due: <strong>${fmtMoney(stdTotal)}</strong><br><br>
+          <strong>Selected Location (${stateName}):</strong><br>
+          Tax Amount: <strong>${fmtMoney(stateTaxAmt)}</strong> &nbsp;|&nbsp; Total Due: <strong>${fmtMoney(stateTotal)}</strong>
+        `);
+      }
+
+      function verifyL2Stacked() {
+        const sale = parseFloat(document.getElementById('l2-sale').value);
+        const taxAmt = parseFloat(document.getElementById('l2-tax-amt').value);
+        const total = parseFloat(document.getElementById('l2-tax-total').value);
+
+        if (isNaN(sale) || isNaN(taxAmt) || isNaN(total) || sale <= 0 || taxAmt <= 0 || total <= 0) {
+          showReadout('l2-tax-out', `<span style="color:var(--coral)">Please enter valid numbers for sale price, tax, and final total.</span>`);
+          return;
+        }
+
+        const expectedSale = 40.00;
+        const expectedTaxAmt = 2.40;
+        const expectedTotal = 42.40;
+
+        const isSaleCorrect = Math.abs(sale - expectedSale) < 0.05;
+        const isTaxCorrect = Math.abs(taxAmt - expectedTaxAmt) < 0.05;
+        const isTotalCorrect = Math.abs(total - expectedTotal) < 0.05;
+
+        if (isSaleCorrect && isTaxCorrect && isTotalCorrect) {
+          showReadout('l2-tax-out', `
+            <strong style="color:var(--green)">✓ Correct!</strong><br>
+            - Discount: $50.00 × 20% = $10.00 off, so the Sale Price is <strong>${fmtMoney(expectedSale)}</strong>.<br>
+            - Tax: $40.00 × 6% = <strong>${fmtMoney(expectedTaxAmt)}</strong>.<br>
+            - Total: $40.00 + $2.40 = <strong>${fmtMoney(expectedTotal)}</strong>.<br>
+            Standard retail systems calculate sales tax on the discounted subtotal. Great job!
+          `);
+        } else {
+          let errors = [];
+          if (!isSaleCorrect) errors.push(`Sale Price of <strong>${fmtMoney(sale)}</strong> is incorrect (Hint: $50.00 × 0.8 = $40.00).`);
+          if (!isTaxCorrect) errors.push(`Tax of <strong>${fmtMoney(taxAmt)}</strong> is incorrect (Hint: $40.00 × 0.06 = $2.40).`);
+          if (!isTotalCorrect) errors.push(`Total of <strong>${fmtMoney(total)}</strong> is incorrect (Hint: $40.00 + $2.40 = $42.40).`);
+          showReadout('l2-tax-out', `<span style="color:var(--coral)">❌ ${errors.join('<br>')}</span>`);
+        }
+      }
+
+      // ---- Partner Comparisons ----
+      function comparePartner() {
+        const myItem1Name = document.getElementById('i1-name').value || 'My Item';
+        const myItem1Price = parseFloat(document.getElementById('i1-orig').value) || 0;
+
+        const daQty = parseFloat(document.getElementById('da-qty').value);
+        const daPrice = parseFloat(document.getElementById('da-price').value);
+        const dbQty = parseFloat(document.getElementById('db-qty').value);
+        const dbPrice = parseFloat(document.getElementById('db-price').value);
+
+        const myRateA = daQty ? (daPrice / daQty) : Infinity;
+        const myRateB = dbQty ? (dbPrice / dbQty) : Infinity;
+        let myBestRate = Math.min(myRateA, myRateB);
+        if (myBestRate === Infinity) myBestRate = 0;
+
+        const partnerName = document.getElementById('p-name').value || 'Classmate';
+        const partnerItemName = document.getElementById('p-i1-name').value || 'Partner Item';
+        const partnerItemPrice = parseFloat(document.getElementById('p-i1-price').value);
+        const partnerDealQty = parseFloat(document.getElementById('p-deal-qty').value);
+        const partnerDealPrice = parseFloat(document.getElementById('p-deal-price').value);
+
+        const partnerRate = partnerDealQty ? (partnerDealPrice / partnerDealQty) : 0;
+
+        const svgPartnerItem = document.getElementById('svg-partner-item');
+        const svgPartnerDeal = document.getElementById('svg-partner-deal');
+        if (svgPartnerItem && !isNaN(partnerItemPrice)) {
+          svgPartnerItem.textContent = partnerItemName + ': ' + fmtMoney(partnerItemPrice);
+        }
+        if (svgPartnerDeal && partnerRate > 0) {
+          svgPartnerDeal.textContent = 'Deal Unit Rate: ' + fmtMoney(partnerRate) + '/item';
+        }
+
+        if (isNaN(partnerItemPrice) || isNaN(partnerDealPrice) || isNaN(partnerDealQty) || partnerItemPrice <= 0 || partnerDealPrice <= 0 || partnerDealQty <= 0) {
+          return;
+        }
+
+        let itemDiffMsg = '';
+        if (Math.abs(myItem1Price - partnerItemPrice) < 0.005) {
+          itemDiffMsg = `Both of your main items cost the same: <strong>${fmtMoney(myItem1Price)}</strong>.`;
+        } else if (myItem1Price < partnerItemPrice) {
+          const diff = partnerItemPrice - myItem1Price;
+          itemDiffMsg = `Your <strong>${myItem1Name}</strong> (${fmtMoney(myItem1Price)}) is cheaper than their <strong>${partnerItemName}</strong> (${fmtMoney(partnerItemPrice)}) by <strong>${fmtMoney(diff)}</strong>.`;
+        } else {
+          const diff = myItem1Price - partnerItemPrice;
+          itemDiffMsg = `Their <strong>${partnerItemName}</strong> (${fmtMoney(partnerItemPrice)}) is cheaper than your <strong>${myItem1Name}</strong> (${fmtMoney(myItem1Price)}) by <strong>${fmtMoney(diff)}</strong>.`;
+        }
+
+        let rateDiffMsg = '';
+        if (myBestRate === 0) {
+          rateDiffMsg = `Enter your own bundle deal in Step 2 to compare unit rates! Partner's unit rate is <strong>${fmtMoney(partnerRate)}</strong>.`;
+        } else if (Math.abs(myBestRate - partnerRate) < 0.005) {
+          rateDiffMsg = `Both of you offer the same unit rate on your best deals: <strong>${fmtMoney(myBestRate)}</strong> per item.`;
+        } else if (myBestRate < partnerRate) {
+          const diff = partnerRate - myBestRate;
+          rateDiffMsg = `Your bundle deal has a lower unit rate (<strong>${fmtMoney(myBestRate)}</strong> vs <strong>${fmtMoney(partnerRate)}</strong> per item) by <strong>${fmtMoney(diff)}</strong>. You have the better deal!`;
+        } else {
+          const diff = myBestRate - partnerRate;
+          rateDiffMsg = `Their bundle deal has a lower unit rate (<strong>${fmtMoney(partnerRate)}</strong> vs <strong>${fmtMoney(myBestRate)}</strong> per item) by <strong>${fmtMoney(diff)}</strong>. They have the better deal!`;
+        }
+
+        showReadout('peer-out', `
+          <strong>Shop Price Comparisons:</strong><br>
+          - <strong>Main Item Price:</strong> ${itemDiffMsg}<br>
+          - <strong>Bundle Deal Unit Rate:</strong> ${rateDiffMsg}
+        `);
+      }
+
+      // ---- Report Construction ----
+      function buildReport() {
+        const i1Name = document.getElementById('i1-name').value || 'Item 1';
+        const i1Price = parseFloat(document.getElementById('i1-orig').value) || 0;
+        const i2Name = document.getElementById('i2-name').value || 'Item 2';
+        const i2Price = parseFloat(document.getElementById('i2-orig').value) || 0;
+        const i3Name = document.getElementById('i3-name').value || 'Item 3';
+        const i3Price = parseFloat(document.getElementById('i3-orig').value) || 0;
+
+        const daQty = parseFloat(document.getElementById('da-qty').value) || 0;
+        const daPrice = parseFloat(document.getElementById('da-price').value) || 0;
+        const dbQty = parseFloat(document.getElementById('db-qty').value) || 0;
+        const dbPrice = parseFloat(document.getElementById('db-price').value) || 0;
+
+        const taxSub = parseFloat(document.getElementById('tax-sub').value) || 0;
+        const stateSelect = document.getElementById('tax-state');
+        const stateName = stateSelect.options[stateSelect.selectedIndex].text;
+        const stateRate = parseFloat(stateSelect.value) || 0;
+
+        const partnerName = document.getElementById('p-name').value || '—';
+        const partnerItemName = document.getElementById('p-i1-name').value || '—';
+        const partnerItemPrice = parseFloat(document.getElementById('p-i1-price').value) || 0;
+        const partnerDealQty = parseFloat(document.getElementById('p-deal-qty').value) || 0;
+        const partnerDealPrice = parseFloat(document.getElementById('p-deal-price').value) || 0;
+
+        const peerReflect = document.getElementById('peer-reflect').value || '';
+        const taxReflect = document.getElementById('tax-reflect').value || '';
+        const pitch = document.getElementById('pitch').value || '(no pitch written)';
+
+        // Computed values
+        const i1_10_pay = i1Price * 0.90;
+        const i1_20_pay = i1Price * 0.80;
+        const i1_25_pay = i1Price * 0.75;
+
+        const rateA = daQty ? (daPrice / daQty) : 0;
+        const rateB = dbQty ? (dbPrice / dbQty) : 0;
+        const bestRate = Math.min(rateA || Infinity, rateB || Infinity);
+        const bestRateStr = bestRate === Infinity ? '—' : fmtMoney(bestRate);
+
+        const stdTax = taxSub * 0.06;
+        const stdTotal = taxSub * 1.06;
+        const stateTax = taxSub * (stateRate / 100);
+        const stateTotal = taxSub * (1 + stateRate / 100);
+
+        const pRate = partnerDealQty ? (partnerDealPrice / partnerDealQty) : 0;
+
+        // Level 2 fields (if any)
+        const isL2 = document.getElementById('body').classList.contains('level-2');
+        let l2Section = '';
+        if (isL2) {
+          const l2Cost = parseFloat(document.getElementById('l2-cost').value) || 0;
+          const l2Retail = parseFloat(document.getElementById('l2-retail').value) || 0;
+          const l2Markup = parseFloat(document.getElementById('l2-markup').value) || 0;
+          
+          const l2RateA = parseFloat(document.getElementById('l2-rate-a').value) || 0;
+          const l2RateB = parseFloat(document.getElementById('l2-rate-b').value) || 0;
+
+          const l2Sale = parseFloat(document.getElementById('l2-sale').value) || 0;
+          const l2Total = parseFloat(document.getElementById('l2-tax-total').value) || 0;
+
+          l2Section = [
+            '',
+            '⚡ LEVEL 2 CHALLENGE RESULTS:',
+            `   - Wholesale cost: ${fmtMoney(l2Cost)} | Expected Retail: ${fmtMoney(l2Retail)} | Markup: ${l2Markup}%`,
+            `   - Supplier rates per oz: Option A: $${l2RateA.toFixed(2)}/oz vs Option B: $${l2RateB.toFixed(2)}/oz`,
+            `   - Stacked Promo: Sale price: ${fmtMoney(l2Sale)} | Total with 6% tax: ${fmtMoney(l2Total)}`
+          ].join('\n');
+        }
+
+        const lines = [
+          '═══ POP-UP SHOP OWNER — UNIT 4 PROJECT (Version A) ═══',
+          '',
+          '📖 MATH SKILLS USED: Percents, Discount Options, Unit Rates, Sales Tax',
+          '',
+          '🏷️ STEP 1 — SET YOUR PRICES & DISCOUNTS',
+          `   1. ${i1Name}: Original: ${fmtMoney(i1Price)} | 10% Off: ${fmtMoney(i1_10_pay)} | 20% Off: ${fmtMoney(i1_20_pay)} | 25% Off: ${fmtMoney(i1_25_pay)}`,
+          `   2. ${i2Name}: Original: ${fmtMoney(i2Price)}`,
+          `   3. ${i3Name}: Original: ${fmtMoney(i3Price)}`,
+          '',
+          '⚖️ STEP 2 — UNIT RATE DEALS',
+          `   - Deal A: ${daQty} items for ${fmtMoney(daPrice)} (Unit Rate: ${daQty ? fmtMoney(rateA) : '—'}/item)`,
+          `   - Deal B: ${dbQty} items for ${fmtMoney(dbPrice)} (Unit Rate: ${dbQty ? fmtMoney(rateB) : '—'}/item)`,
+          `   - Better bundle rate: ${bestRateStr} per item`,
+          '',
+          '🧾 STEP 3 — SALES TAX COMPARISON',
+          `   - Subtotal: ${fmtMoney(taxSub)}`,
+          `   - Standard 6% Sales Tax: Tax: ${fmtMoney(stdTax)} | Total: ${fmtMoney(stdTotal)}`,
+          `   - Selected State (${stateName} - ${stateRate}%): Tax: ${fmtMoney(stateTax)} | Total: ${fmtMoney(stateTotal)}`,
+          taxReflect ? `   - Reflection: ${taxReflect}` : '',
+          '',
+          '👥 STEP 4 — PARTNER COMPARISON',
+          `   - Classmate Shop: ${partnerName}`,
+          `   - Partner's Item (${partnerItemName}): ${fmtMoney(partnerItemPrice)}`,
+          `   - Partner's Deal Unit Rate: ${partnerDealQty ? fmtMoney(pRate) : '—'}/item`,
+          peerReflect ? `   - Comparison Reflection: ${peerReflect}` : '',
+          l2Section,
+          '',
+          '✍️ MY PERSUASIVE PITCH:',
+          pitch,
+          '',
+          '═══════════════════════════════',
+          `Generated: ${new Date().toLocaleDateString()}`,
+        ];
+
+        const box = document.getElementById('reportBox');
+        box.textContent = lines.join('\n');
+        box.classList.add('show');
+      }
+
+      function copyReport() {
+        const txt = document.getElementById('reportBox').textContent;
+        navigator.clipboard?.writeText(txt).then(() => alert('Summary copied to clipboard!'));
+      }
+
+      function downloadTxt() {
+        const txt = document.getElementById('reportBox').textContent;
+        const a = document.createElement('a');
+        a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(txt);
+        a.download = 'pop-up-shop-plan.txt';
+        a.click();
+      }
+
+      // ---- Save/Load State (Local Storage backup) ----
+      function saveState() {
+        const state = {};
+        document.querySelectorAll('input, select, textarea').forEach(input => {
+          if (input.id) {
+            if (input.type === 'checkbox') {
+              state[input.id] = input.checked;
+            } else {
+              state[input.id] = input.value;
+            }
+          }
+        });
+        state['currentStep'] = currentStep;
+        state['level'] = document.getElementById('body').className;
+        localStorage.setItem('popup_shop_state', JSON.stringify(state));
+      }
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem('popup_shop_state');
+          if (!raw) return;
+          const state = JSON.parse(raw);
+          document.querySelectorAll('input, select, textarea').forEach(input => {
+            if (input.id && state[input.id] !== undefined) {
+              if (input.type === 'checkbox') {
+                input.checked = state[input.id];
+              } else {
+                input.value = state[input.id];
+              }
+            }
+          });
+          if (state['currentStep']) {
+            currentStep = parseInt(state['currentStep']);
+            visited.add(currentStep);
+            for (let i = 1; i <= STEPS.length; i++) {
+              const el = document.getElementById('step-' + i);
+              if (el) el.classList.toggle('active', i === currentStep);
+            }
+          }
+          if (state['level']) {
+            const lvl = state['level'].includes('level-2') ? 2 : 1;
+            setLevel(lvl);
+          }
+          // Recalculate readouts
+          calcPrices();
+          compareDeals();
+          calcTax();
+          comparePartner();
+          buildReport();
+        } catch (e) {
+          console.error("Error loading state", e);
+        }
+      }
+
+      // ---- Event listeners for autosave ----
+      document.addEventListener('input', saveState);
+      document.addEventListener('change', saveState);
+
+      // ---- Init ----
+      buildTrail();
+      updateProgress();
+      loadState();
     </script>
-    <script src="/shared/projects/projects-tabs.js" defer></script>
-    <script src="/shared/projects/projects-interactive.js" defer></script>
-    <script src="/shared/projects/manip-percent-bar.js" defer></script>
-    <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
-    <script src="/assets/math-workbench-launcher.js" defer></script>
-    <!-- mwb-injected:end -->
   </body>
 </html>
