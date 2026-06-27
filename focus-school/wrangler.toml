@@ -2,7 +2,12 @@ name = "focus-school"
 pages_build_output_dir = "."
 compatibility_date = "2026-05-25"
 
-# Cloud sync KV Namespace binding for the Focus School planner
-[[kv_namespaces]]
-binding = "NOAM_SCHOOL_KV"
-id = "59075911253f400f807345430425946c"
+# Cloud sync KV binding (NOAM_SCHOOL_KV) is managed in the Cloudflare Pages
+# dashboard, NOT here. The live production binding points to the POPULATED sync
+# namespace (holds every device's routines/data). The id previously declared
+# here — "noam-school-sync" (59075911253f400f807345430425946c) — is an EMPTY
+# namespace in a different account. Declaring it let `wrangler pages deploy`
+# repoint production sync to that empty namespace on deploy, wiping every
+# device's synced data. Do NOT re-add a [[kv_namespaces]] block unless the id is
+# verified against the live Pages project binding (dashboard: Settings ->
+# Functions -> KV namespace bindings).
