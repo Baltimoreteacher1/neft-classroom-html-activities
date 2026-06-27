@@ -420,6 +420,7 @@
     ];
     s.homeOrder = order;
     s.hiddenCards = Array.isArray(s.hiddenCards) ? s.hiddenCards : [];
+    s.homeOrderAt = Number(s.homeOrderAt) || 0; // layout change-stamp for sync
     s.fontScale = clamp(Number(s.fontScale) || 1, 0.9, 1.5);
     s.defaultFocusMin = clamp(Number(s.defaultFocusMin) || 15, 5, 60);
     s.accent = ACCENTS.some((a) => a[0] === s.accent) ? s.accent : "teal";
@@ -728,6 +729,13 @@
     if (immediate) return write();
     saveTimer = setTimeout(write, 400);
   }
+
+  // Stamp the moment the Now-screen layout (card order / hidden cards) changed.
+  // Sync merges the layout by this stamp, so a rearrange on one device wins over
+  // unrelated newer activity on another (the document updatedAt isn't enough).
+  const touchLayout = () => {
+    state.settings.homeOrderAt = Date.now();
+  };
 
   // ---------------------------------------------------------------------------
   // Selectors / derived data
@@ -6042,6 +6050,20 @@ Due May 31"></textarea>
     }
     merged.settings.sync = { ...local.settings.sync };
 
+    // 11b. Home-screen layout (card order + hidden cards) is merged by its own
+    // change-stamp, not the document updatedAt — so a rearrange on one device
+    // isn't shadowed by unrelated newer activity on another.
+    const lha = local.settings?.homeOrderAt || 0;
+    const rha = remote.settings?.homeOrderAt || 0;
+    const layout = rha > lha ? remote.settings : local.settings;
+    if (layout) {
+      if (Array.isArray(layout.homeOrder))
+        merged.settings.homeOrder = layout.homeOrder;
+      if (Array.isArray(layout.hiddenCards))
+        merged.settings.hiddenCards = layout.hiddenCards;
+      merged.settings.homeOrderAt = Math.max(lha, rha);
+    }
+
     // 12. Merge synced devices registry by ID, keeping newer lastActive
     const devMap = new Map((local.syncDevices || []).map((d) => [d.id, d]));
     for (const d of remote.syncDevices || []) {
@@ -7945,6 +7967,7 @@ Due May 31"></textarea>
         j = arg === "up" ? i - 1 : i + 1;
       if (i < 0 || j < 0 || j >= a.length) return;
       [a[i], a[j]] = [a[j], a[i]];
+      touchLayout();
       save();
       render();
     },
@@ -7953,6 +7976,7 @@ Due May 31"></textarea>
       state.settings.hiddenCards = h.includes(id)
         ? h.filter((k) => k !== id)
         : [...h, id];
+      touchLayout();
       save();
       render();
     },
@@ -8558,6 +8582,7 @@ ${name}`;
             } else {
               if (insertAfter) to += 1;
               order.splice(to, 0, cardId);
+              touchLayout();
               save();
               render();
               toast("Layout updated");
@@ -8599,6 +8624,7 @@ ${name}`;
         0,
         cardId,
       );
+      touchLayout();
       save();
       render();
       requestAnimationFrame(() => {
