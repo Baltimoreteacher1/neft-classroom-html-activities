@@ -261,7 +261,7 @@
       },
       {
         id: uid("r"),
-        name: "Shutdown",
+        name: "Nighttime Shutdown",
         emoji: "🌙",
         items: [
           "Turn in anything finished",
@@ -440,7 +440,7 @@
         return list;
       })(),
       routineLog:
-        x.routineLog && typeof x.routineLog === "object" ? x.routineLog : {},
+        normalizeRoutineLog(x.routineLog),
       activity: x.activity && typeof x.activity === "object" ? x.activity : {},
       wins: Array.isArray(x.wins) ? x.wins : [],
       points: Number(x.points) || 0,
@@ -569,10 +569,40 @@
     };
   }
 
+  function normalizeRoutineLog(log) {
+    if (!log || typeof log !== "object") return {};
+    const out = {};
+    for (const [date, day] of Object.entries(log)) {
+      if (!DATE_RE.test(date) || !day || typeof day !== "object") continue;
+      const cleanDay = {};
+      for (const [routineId, itemIds] of Object.entries(day)) {
+        if (!Array.isArray(itemIds)) continue;
+        cleanDay[routineId] = [...new Set(itemIds.filter(Boolean).map(String))];
+      }
+      out[date] = cleanDay;
+    }
+    return out;
+  }
+
+  function mergeRoutineLogs(localLog, remoteLog) {
+    const merged = normalizeRoutineLog(localLog);
+    const remote = normalizeRoutineLog(remoteLog);
+    for (const [date, day] of Object.entries(remote)) {
+      const target = (merged[date] = merged[date] || {});
+      for (const [routineId, itemIds] of Object.entries(day)) {
+        target[routineId] = [
+          ...new Set([...(target[routineId] || []), ...itemIds]),
+        ];
+      }
+    }
+    return merged;
+  }
+
   let state = seed();
   const MIRROR_KEY = "noam-school:state"; // synchronous, never-lose-data fallback
   let saveTimer = null;
   let suppressPush = false; // true during init so we never push stale local over newer cloud
+  let renderedDateKey = todayKey();
   function mirror() {
     // localStorage is synchronous, so this can't be lost to a fast close/refresh.
     try {
@@ -595,6 +625,22 @@
     clearTimeout(saveTimer);
     if (immediate) return write();
     saveTimer = setTimeout(write, 400);
+  }
+  function handleDateRollover() {
+    const current = todayKey();
+    if (current === renderedDateKey) return false;
+    renderedDateKey = current;
+    mirror();
+    render();
+    checkReminders();
+    scheduleReminders();
+    if (state.settings.sync.enabled) cloud.autoPull();
+    toast("New day — routines are ready again.");
+    return true;
+  }
+  function startDateRolloverWatcher() {
+    renderedDateKey = todayKey();
+    setInterval(handleDateRollover, 60000);
   }
 
   // ---------------------------------------------------------------------------
@@ -3248,13 +3294,27 @@ Due May 31"></textarea>
   }
 
   function routineCard(r) {
-    if (!r)
+    if (!r) {
+      const next = nextRoutineWindow();
       return card(
         "routine",
         "Right routine",
-        "",
-        emptyState("🔁", "No routines yet."),
+        "Based on the time of day.",
+        next
+          ? `<div class="mini">
+              <b>Next: ${esc(next.label)} routine</b>
+              <p class="sub" style="margin:6px 0 0">${esc(next.routine.name)} starts ${esc(relativeStart(next.startsAt))} (${esc(formatWindow(next))}).</p>
+            </div>
+            <div class="row" style="margin-top:10px">
+              <button class="btn sm" data-act="guide-start" data-id="${next.routine.id}">Start early</button>
+              <button class="btn sm" data-act="nav" data-arg="routines">All routines →</button>
+            </div>`
+          : emptyState(
+              "🔁",
+              "No routine is active right now. Morning is 6:00–8:00 AM, after school is 3:30–6:00 PM, and nighttime is 8:30–10:00 PM.",
+            ),
       );
+    }
     const done = (state.routineLog[todayKey()] || {})[r.id] || [];
     const pct = r.items.length
       ? Math.round((done.length / r.items.length) * 100)
@@ -3277,24 +3337,100 @@ Due May 31"></textarea>
        </div>`,
     );
   }
-  function pickRoutineForNow() {
-    const d = new Date().getDay();
-    const isWeekend = (d === 0 || d === 6);
-    const h = new Date().getHours();
-    
-    let want = "";
-    if (isWeekend) {
-      want = h < 12 ? "Weekend Launch" : "Weekend Reset";
-    } else {
-      want = h < 11 ? "Morning Launch" : h < 18 ? "After-School Reset" : "Shutdown";
+  const minutesSinceMidnight = (d = new Date()) =>
+    d.getHours() * 60 + d.getMinutes();
+  const inTimeWindow = (mins, start, end) => mins >= start && mins <= end;
+  const ROUTINE_WINDOWS = [
+    {
+      label: "Morning",
+      start: 6 * 60,
+      end: 8 * 60,
+      weekday: ["Morning Launch"],
+      weekend: ["Weekend Launch", "Morning Launch"],
+    },
+    {
+      label: "After School",
+      start: 15 * 60 + 30,
+      end: 18 * 60,
+      weekday: ["After-School Reset"],
+      weekend: ["Weekend Reset", "After-School Reset"],
+    },
+    {
+      label: "Nighttime",
+      start: 20 * 60 + 30,
+      end: 22 * 60,
+      weekday: ["Nighttime Shutdown", "Shutdown"],
+      weekend: ["Nighttime Shutdown", "Shutdown"],
+    },
+  ];
+  function routineByName(names) {
+    for (const name of names) {
+      const found = state.routines.find((r) => r.name === name);
+      if (found) return found;
     }
-    
-    return (
-      state.routines.find((r) => r.name === want) || 
-      state.routines.find((r) => r.name === "Morning Launch") ||
-      state.routines[0] || 
-      null
-    );
+    return null;
+  }
+  function routineForWindow(win, when) {
+    const isWeekend = when.getDay() === 0 || when.getDay() === 6;
+    return routineByName(isWeekend ? win.weekend : win.weekday);
+  }
+  function routineWindowFor(now = new Date()) {
+    const mins = minutesSinceMidnight(now);
+    for (const win of ROUTINE_WINDOWS) {
+      if (!inTimeWindow(mins, win.start, win.end)) continue;
+      const routine = routineForWindow(win, now);
+      if (routine) {
+        return {
+          ...win,
+          routine,
+          startsAt: dateAtMinutes(now, win.start),
+          endsAt: dateAtMinutes(now, win.end),
+        };
+      }
+    }
+    return null;
+  }
+  function pickRoutineForNow(now = new Date()) {
+    return routineWindowFor(now)?.routine || null;
+  }
+  function dateAtMinutes(base, mins) {
+    const d = new Date(base);
+    d.setHours(0, mins, 0, 0);
+    return d;
+  }
+  function nextRoutineWindow(now = new Date()) {
+    for (let dayOffset = 0; dayOffset < 8; dayOffset++) {
+      const day = new Date(now);
+      day.setDate(now.getDate() + dayOffset);
+      day.setHours(0, 0, 0, 0);
+      for (const win of ROUTINE_WINDOWS) {
+        const startsAt = dateAtMinutes(day, win.start);
+        const endsAt = dateAtMinutes(day, win.end);
+        if (endsAt <= now) continue;
+        const routine = routineForWindow(win, day);
+        if (routine) return { ...win, routine, startsAt, endsAt };
+      }
+    }
+    return null;
+  }
+  function formatClock(d) {
+    return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  }
+  function formatWindow(win) {
+    return `${formatClock(win.startsAt)}-${formatClock(win.endsAt)}`;
+  }
+  function relativeStart(startsAt, now = new Date()) {
+    const diff = startsAt - now;
+    if (diff <= 0) return "now";
+    const mins = Math.ceil(diff / 60000);
+    if (mins < 60) return `in ${mins} min`;
+    const hrs = Math.floor(mins / 60);
+    const rem = mins % 60;
+    const dayLabel =
+      startsAt.toDateString() === now.toDateString() ? "today" : "tomorrow";
+    return rem
+      ? `${dayLabel} in ${hrs} hr ${rem} min`
+      : `${dayLabel} in ${hrs} hr`;
   }
 
   function updateGardenPlantStage() {
@@ -4074,7 +4210,7 @@ Due May 31"></textarea>
         addPoints(5);
         bumpActivity("routines");
       }
-      save();
+      save({ immediate: true });
       this.idx++;
       vibrate();
       this.render();
@@ -4443,6 +4579,11 @@ Due May 31"></textarea>
         routines: Math.max(locAct.routines || 0, remAct.routines || 0)
       };
     }
+
+    // Merge routine checklists by day and routine. This is intentionally a
+    // union: if one device checks step A and another checks step B today, both
+    // steps should stay checked after sync, and tomorrow starts from a new date.
+    merged.routineLog = mergeRoutineLogs(local.routineLog, remote.routineLog);
     
     // Merge wins
     const winsMap = new Map(local.wins.map(w => [w.text + w.date, w]));
@@ -4644,12 +4785,13 @@ Due May 31"></textarea>
           }
           const prev = suppressPush;
           suppressPush = true;
-          state = normalize(data.state);
+          state = normalize(mergeStates(state, data.state));
           await save({ touch: false, immediate: true });
           suppressPush = prev;
           state.settings.sync.lastAt = new Date().toISOString();
           mirror();
           this._setStatus("synced");
+          if (!prev) await this.push();
           return true;
         }
         // Local is same/newer — nothing to apply, but we're in sync.
@@ -6462,7 +6604,7 @@ ${name}`;
           toast(`${r.name} complete! +5 🎉`);
           triggerConfetti();
         }
-        save();
+        save({ immediate: true });
         const label = box.parentElement.querySelector(".steptext");
         if (label) label.classList.toggle("done", box.checked);
         updateProgressBars();
@@ -6831,6 +6973,7 @@ ${name}`;
     checkReminders(); // fires anything already due (incl. passed reminder times)
     scheduleReminders(); // arms precise setTimeouts for today's upcoming times
     setInterval(checkReminders, 60000);
+    startDateRolloverWatcher();
     // Re-arm timers when the tab is refocused (a backgrounded tab can throttle
     // timers; refocusing recomputes them and catches anything missed).
     addEventListener("visibilitychange", () => {
@@ -6860,6 +7003,17 @@ ${name}`;
         })
         .catch(() => {});
     }
+  }
+
+  if (window.__NOAM_SCHOOL_TEST__) {
+    Object.assign(window.__NOAM_SCHOOL_TEST__, {
+      mergeRoutineLogs,
+      mergeStates,
+      nextRoutineWindow,
+      normalize,
+      pickRoutineForNow,
+      seed,
+    });
   }
 
   if (document.readyState === "loading")
