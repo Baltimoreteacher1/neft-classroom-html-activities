@@ -75,9 +75,9 @@ const at = (hour, minute = 0, day = 1) => {
   assert.equal(api.pickRoutineForNow(at(15, 30)).name, "After-School Reset");
   assert.equal(api.pickRoutineForNow(at(18, 0)).name, "After-School Reset");
   assert.equal(api.pickRoutineForNow(at(18, 1)), null);
-  assert.equal(api.pickRoutineForNow(at(20, 30)).name, "Nighttime Shutdown");
-  assert.equal(api.pickRoutineForNow(at(22, 0)).name, "Nighttime Shutdown");
-  assert.equal(api.pickRoutineForNow(at(22, 1)), null);
+  assert.equal(api.pickRoutineForNow(at(19, 0)).name, "Nighttime Shutdown");
+  assert.equal(api.pickRoutineForNow(at(23, 30)).name, "Nighttime Shutdown");
+  assert.equal(api.pickRoutineForNow(at(23, 31)), null);
   ok("Right routine follows requested live time windows");
 }
 
@@ -88,10 +88,10 @@ const at = (hour, minute = 0, day = 1) => {
   assert.equal(next.startsAt.getHours(), 15);
   assert.equal(next.startsAt.getMinutes(), 30);
 
-  next = api.nextRoutineWindow(at(22, 1));
+  next = api.nextRoutineWindow(at(23, 31));
   assert.equal(next.label, "Morning");
   assert.equal(next.routine.name, "Morning Launch");
-  assert.equal(next.startsAt.getDate(), at(22, 1).getDate() + 1);
+  assert.equal(next.startsAt.getDate(), at(23, 31).getDate() + 1);
   ok("Next routine window points to the upcoming live checklist");
 }
 

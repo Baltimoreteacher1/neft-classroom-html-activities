@@ -4551,7 +4551,7 @@ Due May 31"></textarea>
             </div>`
           : emptyState(
               "🔁",
-              "No routine is active right now. Morning is 6:00–8:00 AM, after school is 3:30–6:00 PM, and nighttime is 8:30–10:00 PM.",
+              "No routine is active right now. Morning is 6:00–8:00 AM, after school is 3:30–6:00 PM, and nighttime is 7:00–11:30 PM.",
             ),
       );
     }
@@ -4597,8 +4597,8 @@ Due May 31"></textarea>
     },
     {
       label: "Nighttime",
-      start: 20 * 60 + 30,
-      end: 22 * 60,
+      start: 19 * 60,
+      end: 23 * 60 + 30,
       weekday: ["Nighttime Shutdown", "Shutdown"],
       weekend: ["Nighttime Shutdown", "Shutdown"],
     },
