@@ -270,6 +270,28 @@
           "Phone away to charge",
         ],
       },
+      {
+        id: uid("r"),
+        name: "Weekend Launch",
+        emoji: "🥞",
+        items: [
+          "Sleep in & relax",
+          "Review upcoming tests next week",
+          "Do ELA/Math homework early",
+          "Plan outdoor or play activity",
+        ],
+      },
+      {
+        id: uid("r"),
+        name: "Weekend Reset",
+        emoji: "🧺",
+        items: [
+          "Clean study desk & screen",
+          "Sort loose papers",
+          "Organize class notebook",
+          "Pack backpack for Monday",
+        ],
+      },
     ].map((r) => ({
       ...r,
       items: r.items.map((t) => ({ id: uid("i"), text: t })),
@@ -404,10 +426,19 @@
         ? x.reminders.map(normalizeReminder)
         : [],
       todos: Array.isArray(x.todos) ? x.todos.map(normalizeTodo) : [],
-      routines:
-        Array.isArray(x.routines) && x.routines.length
-          ? x.routines
-          : base.routines,
+      routines: (() => {
+        let list = Array.isArray(x.routines) && x.routines.length ? x.routines : base.routines;
+        // Verify weekend routines exist, if not merge them in
+        const hasWeekendLaunch = list.some(r => r.name === "Weekend Launch");
+        if (!hasWeekendLaunch) {
+          const defaults = base.routines;
+          const weekendLaunch = defaults.find(r => r.name === "Weekend Launch");
+          const weekendReset = defaults.find(r => r.name === "Weekend Reset");
+          if (weekendLaunch) list.push(weekendLaunch);
+          if (weekendReset) list.push(weekendReset);
+        }
+        return list;
+      })(),
       routineLog:
         x.routineLog && typeof x.routineLog === "object" ? x.routineLog : {},
       activity: x.activity && typeof x.activity === "object" ? x.activity : {},
@@ -3247,11 +3278,22 @@ Due May 31"></textarea>
     );
   }
   function pickRoutineForNow() {
+    const d = new Date().getDay();
+    const isWeekend = (d === 0 || d === 6);
     const h = new Date().getHours();
-    const want =
-      h < 11 ? "Morning Launch" : h < 18 ? "After-School Reset" : "Shutdown";
+    
+    let want = "";
+    if (isWeekend) {
+      want = h < 12 ? "Weekend Launch" : "Weekend Reset";
+    } else {
+      want = h < 11 ? "Morning Launch" : h < 18 ? "After-School Reset" : "Shutdown";
+    }
+    
     return (
-      state.routines.find((r) => r.name === want) || state.routines[0] || null
+      state.routines.find((r) => r.name === want) || 
+      state.routines.find((r) => r.name === "Morning Launch") ||
+      state.routines[0] || 
+      null
     );
   }
 
