@@ -32,6 +32,26 @@ export function createApp(config) {
   // Publisher-grade editorial design layer (engine/styles/editorial.css) — the
   // approved look now applies to EVERY lesson, not just flagship pilots.
   document.body.classList.add("editorial");
+
+  // High Contrast stylesheet overrides
+  const hcSheet = document.createElement("style");
+  hcSheet.textContent = `
+    body.high-contrast {
+      filter: contrast(1.4) !important;
+      background: #000 !important;
+      color: #fff !important;
+    }
+    body.high-contrast input,
+    body.high-contrast select,
+    body.high-contrast button {
+      border: 2px solid #fff !important;
+      outline: 2px solid #000 !important;
+      background: #000 !important;
+      color: #fff !important;
+    }
+  `;
+  document.head.append(hcSheet);
+
   // Easy teacher-mode access: sticky per-device toggle + Alt+Shift+T + badge.
   initTeacherAccess();
   // Browser tab / SEO title (the engine shell ships a generic <title>).
@@ -452,6 +472,141 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
   main.setAttribute("role", "main");
 
   root.append(sidebar, main);
+
+  // ---- Publisher-Grade Accessibility & Drawing Overlay ----
+  (function initA11yAndDrawing() {
+    // 1. Accessibility Controls
+    const a11yBar = document.createElement("div");
+    a11yBar.id = "lesson-a11y-bar";
+    a11yBar.style.cssText = "display:flex; gap:8px; padding:8px 12px; margin-bottom:12px; flex-wrap:wrap; justify-content:center; border-bottom:1px solid rgba(255,255,255,0.1);";
+    a11yBar.innerHTML = `
+      <button class="pub-btn" id="btn-lesson-read" type="button" style="padding:4px 8px; font-size:11px; flex:1; min-width:80px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; border-radius:6px; cursor:pointer;">🔊 Read Aloud</button>
+      <button class="pub-btn" id="btn-lesson-contrast" type="button" style="padding:4px 8px; font-size:11px; flex:1; min-width:80px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; border-radius:6px; cursor:pointer;">🌓 Contrast: NORM</button>
+      <button class="pub-btn" id="btn-lesson-draw" type="button" style="padding:4px 8px; font-size:11px; flex:1; min-width:80px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; border-radius:6px; cursor:pointer;">✏️ Draw: OFF</button>
+    `;
+    
+    // Insert into sidebar before student-info or progress
+    const sidebarProgress = sidebar.querySelector(".sidebar-progress") || sidebar.querySelector(".student-info");
+    if (sidebarProgress) {
+      sidebarProgress.parentNode.insertBefore(a11yBar, sidebarProgress);
+    } else {
+      sidebar.append(a11yBar);
+    }
+
+    // 2. High Contrast toggle handler
+    const contrastBtn = a11yBar.querySelector("#btn-lesson-contrast");
+    contrastBtn.addEventListener("click", () => {
+      const hc = document.body.classList.toggle("high-contrast");
+      contrastBtn.textContent = hc ? "🌓 Contrast: HIGH" : "🌓 Contrast: NORM";
+      contrastBtn.style.background = hc ? "#f59e0b" : "rgba(255,255,255,0.1)";
+      contrastBtn.style.color = hc ? "#000" : "#fff";
+    });
+
+    // 3. Read Aloud toggle handler
+    const readBtn = a11yBar.querySelector("#btn-lesson-read");
+    readBtn.addEventListener("click", () => {
+      if (window.speechSynthesis && window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+        readBtn.textContent = "🔊 Read Aloud";
+        readBtn.style.background = "rgba(255,255,255,0.1)";
+        return;
+      }
+      readBtn.textContent = "⏹️ Stop";
+      readBtn.style.background = "#ef4444";
+      
+      const texts = [];
+      document.querySelectorAll(".section-title, .section-desc, p, li, h1, h2, h3, .problem-prompt").forEach(el => {
+        if (el.offsetParent !== null && !el.closest("#lesson-a11y-bar") && !el.closest(".sidebar")) {
+          texts.push(el.textContent.trim());
+        }
+      });
+      const speechText = texts.slice(0, 8).join(". ");
+      const utterance = new SpeechSynthesisUtterance(speechText);
+      utterance.onend = () => {
+        readBtn.textContent = "🔊 Read Aloud";
+        readBtn.style.background = "rgba(255,255,255,0.1)";
+      };
+      window.speechSynthesis.speak(utterance);
+    });
+
+    // 4. Whiteboard Canvas Drawing Overlay
+    const canvas = document.createElement("canvas");
+    canvas.id = "lesson-drawing-canvas";
+    canvas.style.cssText = "position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:9998; display:none;";
+    main.append(canvas);
+
+    const ctx = canvas.getContext("2d");
+    let drawing = false;
+    let color = "#ef4444";
+    let width = 3;
+
+    function resizeCanvas() {
+      canvas.width = main.clientWidth;
+      canvas.height = main.clientHeight;
+    }
+    window.addEventListener("resize", resizeCanvas);
+    
+    // Drawing event listeners
+    canvas.addEventListener("pointerdown", (e) => {
+      drawing = true;
+      ctx.beginPath();
+      const rect = canvas.getBoundingClientRect();
+      ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    });
+
+    canvas.addEventListener("pointermove", (e) => {
+      if (!drawing) return;
+      ctx.lineWidth = width;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = color;
+      const rect = canvas.getBoundingClientRect();
+      ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+      ctx.stroke();
+    });
+
+    canvas.addEventListener("pointerup", () => { drawing = false; });
+    canvas.addEventListener("pointerleave", () => { drawing = false; });
+
+    // Drawing Tool controls HUD
+    const drawHud = document.createElement("div");
+    drawHud.id = "lesson-draw-hud";
+    drawHud.style.cssText = "position:fixed; bottom:24px; left:270px; background:rgba(15,23,42,0.9); border:1px solid rgba(255,255,255,0.15); border-radius:30px; padding:6px 12px; display:none; gap:8px; z-index:9999; box-shadow:0 10px 30px rgba(0,0,0,0.25);";
+    drawHud.innerHTML = `
+      <button class="color-btn" data-color="#ef4444" style="width:20px; height:20px; border-radius:50%; border:2px solid #fff; background:#ef4444; cursor:pointer; padding:0;"></button>
+      <button class="color-btn" data-color="#3b82f6" style="width:20px; height:20px; border-radius:50%; border:none; background:#3b82f6; cursor:pointer; padding:0;"></button>
+      <button class="color-btn" data-color="#10b981" style="width:20px; height:20px; border-radius:50%; border:none; background:#10b981; cursor:pointer; padding:0;"></button>
+      <button class="color-btn" data-color="rgba(253,224,71,0.5)" style="width:20px; height:20px; border-radius:50%; border:none; background:#fde047; cursor:pointer; padding:0;"></button>
+      <button id="draw-clear-btn" style="background:transparent; border:none; color:#f3f4f6; font-size:12px; font-weight:700; cursor:pointer; margin-left:8px;">Clear</button>
+    `;
+    document.body.append(drawHud);
+
+    // Color controls wiring
+    drawHud.querySelectorAll(".color-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        color = btn.dataset.color;
+        width = color.startsWith("rgba") ? 12 : 3; // Highlighter width is larger
+        drawHud.querySelectorAll(".color-btn").forEach(b => b.style.border = "none");
+        btn.style.border = "2px solid #fff";
+      });
+    });
+
+    drawHud.querySelector("#draw-clear-btn").addEventListener("click", () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    });
+
+    // Toggle draw mode
+    const drawBtn = a11yBar.querySelector("#btn-lesson-draw");
+    drawBtn.addEventListener("click", () => {
+      const active = canvas.style.display === "none";
+      canvas.style.display = active ? "block" : "none";
+      drawHud.style.display = active ? "flex" : "none";
+      canvas.style.pointerEvents = active ? "auto" : "none";
+      drawBtn.textContent = active ? "✏️ Draw: ON" : "✏️ Draw: OFF";
+      drawBtn.style.background = active ? "#10b981" : "rgba(255,255,255,0.1)";
+      if (active) resizeCanvas();
+    });
+  })();
+
 
   mountTeacherPanel(root, config, state);
 
