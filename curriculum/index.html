@@ -555,7 +555,7 @@
       /* Three horizontally-aligned phase dropdowns: Pre / Lesson / Post. */
       .phase-selectors {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 1fr);
         gap: 10px;
         align-items: end;
       }
@@ -7702,6 +7702,15 @@
         function lessonPhaseIndex(act, isProject) {
           var name = (act.text || "").toLowerCase();
           var href = (act.href || "").toLowerCase();
+          
+          // Separate games bucket (index 3)
+          if (
+            /game|games|play|arcade|escape|relay|hunt|puzzle|maze|alchemy|forge|odyssey|coordinate defender|scoring engine|pricing engine|aquarium build|room designer|package design/.test(name) ||
+            /\/games\/|\/game\//.test(href)
+          ) {
+            return 3;
+          }
+          
           if (
             /get ready|readiness|pre-?lesson|pre-?test|vocab|warm[- ]?up/.test(
               name,
@@ -7715,7 +7724,7 @@
             act.isBonus ||
             act.isFamilyHomework ||
             act.isPrintable ||
-            /homework|family|forms|quiz|assessment|game|project|practice|printable|word search|color by|paper|relay|escape|arcade|odyssey|netfold|hunt|challenge|maze|puzzle/.test(
+            /homework|family|forms|quiz|assessment|project|practice|printable|word search|color by|paper|challenge/.test(
               name,
             )
           ) {
@@ -8109,7 +8118,7 @@
             // Phase Selectors — three horizontally-aligned dropdowns
             // (Pre-Lesson / Lesson / Post-Lesson). Each holds the resources
             // for that phase of the selected lesson.
-            var PHASE_LABELS = ["Pre-Lesson", "Lesson", "Post-Lesson"];
+            var PHASE_LABELS = ["Pre-Lesson", "Lesson", "Post-Lesson", "Games"];
             var phaseGroup = document.createElement("div");
             phaseGroup.className = "phase-selectors";
             var phaseSelects = [];
@@ -8179,7 +8188,7 @@
 
               // Sort each activity into a phase bucket:
               // 0 = Pre-Lesson, 1 = Lesson, 2 = Post-Lesson.
-              var phaseBuckets = [[], [], []];
+              var phaseBuckets = [[], [], [], []];
               allActs.forEach(function (act) {
                 var isProject = (lesson.projects || []).indexOf(act) > -1;
                 phaseBuckets[lessonPhaseIndex(act, isProject)].push(act);
