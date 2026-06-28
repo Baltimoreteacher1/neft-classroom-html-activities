@@ -8,6 +8,7 @@
  *   - 🔊 Text-to-Speech (TTS) Read Aloud accessibility tools.
  *   - 🔑 Hidden Teacher Cheats & Diagnostics Console (Auto-Win, Unlimited Lives, Freeze Timer).
  *   - 🎉 Auto-Confetti celebration on win screen.
+ *   - 🌎 Enterprise LMS Integration Bridge (SCORM 1.2 / SCORM 2004 / postMessage API).
  */
 (function () {
   "use strict";
@@ -27,56 +28,55 @@
       "start game": "iniciar juego",
       "play again": "jugar de nuevo",
       "game over": "fin del juego",
-      level: "nivel",
-      round: "ronda",
-      score: "puntuación",
-      time: "tiempo",
-      lives: "vidas",
-      correct: "correcto",
-      incorrect: "incorrecto",
-      streak: "racha",
-      perfect: "perfecto",
-      congratulations: "¡felicitaciones!",
+      "level": "nivel",
+      "round": "ronda",
+      "score": "puntuación",
+      "time": "tiempo",
+      "lives": "vidas",
+      "correct": "correcto",
+      "incorrect": "incorrecto",
+      "streak": "racha",
+      "perfect": "perfecto",
+      "congratulations": "¡felicitaciones!",
       "you won": "¡ganaste!",
       "next level": "siguiente nivel",
       "next round": "siguiente ronda",
-      instructions: "instrucciones",
-      points: "puntos",
+      "instructions": "instrucciones",
+      "points": "puntos",
       "high score": "puntuación alta",
       "time's up": "¡tiempo agotado!",
-      forged: "forjado",
-      prime: "primo",
-      composite: "compuesto",
-      factor: "factor",
-      multiple: "múltiplo",
-      ready: "listo",
-      go: "¡vamos!",
-      play: "jugar",
-    },
+      "forged": "forjado",
+      "prime": "primo",
+      "composite": "compuesto",
+      "factor": "factor",
+      "multiple": "múltiplo",
+      "ready": "listo",
+      "go": "¡vamos!",
+      "play": "jugar"
+    }
   };
 
   // Keep track of original text node values to allow reverting back to English
   var textRegistry = new WeakMap();
 
   function translateDOM(isEs) {
-    document.body.classList.toggle("es", isEs);
-
+    document.body.classList.toggle('es', isEs);
+    
     function walk(node) {
-      if (node.nodeType === 3) {
-        // Text node
+      if (node.nodeType === 3) { // Text node
         var val = node.nodeValue.trim();
         if (!val) return;
-
+        
         if (!textRegistry.has(node)) {
           textRegistry.set(node, node.nodeValue);
         }
-
+        
         var original = textRegistry.get(node);
         if (isEs) {
           var translated = original;
           for (var en in DICT.es) {
             var es = DICT.es[en];
-            var re = new RegExp("\b" + en + "\b", "gi");
+            var re = new RegExp('\' + en + '\', 'gi');
             translated = translated.replace(re, es);
           }
           node.nodeValue = translated;
@@ -84,8 +84,8 @@
           node.nodeValue = original;
         }
       } else if (
-        node.nodeType === 1 &&
-        node.id !== "game-pub-toolbar" &&
+        node.nodeType === 1 && 
+        node.id !== "game-pub-toolbar" && 
         node.id !== "teacher-cheat-console" &&
         node.tagName !== "SCRIPT" &&
         node.tagName !== "STYLE"
@@ -149,43 +149,29 @@
 
   // --- TTS Read Aloud ---
   function readAloud() {
-    var btn = document.getElementById("btn-game-read");
+    var btn = document.getElementById('btn-game-read');
     if (!btn) return;
 
     if (window.speechSynthesis && window.speechSynthesis.speaking) {
       window.speechSynthesis.cancel();
-      btn.textContent = document.body.classList.contains("es") ? "🔊 Leer" : "🔊 Read";
+      btn.textContent = document.body.classList.contains('es') ? '🔊 Leer' : '🔊 Read';
       return;
     }
 
-    var isEs = document.body.classList.contains("es");
-    btn.textContent = isEs ? "⏹️ Detener" : "⏹️ Stop";
+    var isEs = document.body.classList.contains('es');
+    btn.textContent = isEs ? '⏹️ Detener' : '⏹️ Stop';
 
     // Walk DOM to extract readable text
     var texts = [];
     var selectors = [
-      ".target",
-      ".nums",
-      ".prompt",
-      ".question",
-      ".card-title",
-      ".activity-card h3",
-      ".activity-card p",
-      ".vterm",
-      ".vdef",
-      "h1",
-      "h2",
-      "p",
-      "summary",
+      '.target', '.nums', '.prompt', '.question', '.card-title', 
+      '.activity-card h3', '.activity-card p', '.vterm', '.vdef', 
+      'h1', 'h2', 'p', 'summary'
     ];
-
-    selectors.forEach(function (sel) {
-      document.querySelectorAll(sel).forEach(function (el) {
-        if (
-          el.offsetParent !== null &&
-          !el.closest("#game-pub-toolbar") &&
-          !el.closest("#teacher-cheat-console")
-        ) {
+    
+    selectors.forEach(function(sel) {
+      document.querySelectorAll(sel).forEach(function(el) {
+        if (el.offsetParent !== null && !el.closest('#game-pub-toolbar') && !el.closest('#teacher-cheat-console')) {
           texts.push(el.textContent.trim());
         }
       });
@@ -195,16 +181,16 @@
       texts.push(document.title);
     }
 
-    var speechText = texts.slice(0, 5).join(". ");
+    var speechText = texts.slice(0, 5).join('. ');
     var utterance = new SpeechSynthesisUtterance(speechText);
-    utterance.lang = isEs ? "es-ES" : "en-US";
+    utterance.lang = isEs ? 'es-ES' : 'en-US';
     utterance.rate = 0.95;
 
-    utterance.onend = function () {
-      btn.textContent = isEs ? "🔊 Leer" : "🔊 Read";
+    utterance.onend = function() {
+      btn.textContent = isEs ? '🔊 Leer' : '🔊 Read';
     };
-    utterance.onerror = function () {
-      btn.textContent = isEs ? "🔊 Leer" : "🔊 Read";
+    utterance.onerror = function() {
+      btn.textContent = isEs ? '🔊 Leer' : '🔊 Read';
     };
 
     window.speechSynthesis.speak(utterance);
@@ -217,65 +203,59 @@
         if (window[key] && window[key] instanceof Phaser.Game) {
           return window[key];
         }
-      } catch (e) {}
+      } catch(e) {}
     }
     return window.game || window.ffGame || null;
   }
 
   function cheatAutoWin() {
-    // 1. Check Phaser Games
     var pg = findPhaserGame();
     if (pg) {
       try {
         var activeScene = pg.scene.getScenes(true)[0];
         if (activeScene) {
-          // Increase score/level values
           activeScene.score = (activeScene.score || 0) + 10000;
           activeScene.lives = 99;
           activeScene.level = (activeScene.level || 1) + 1;
-
-          // Try standard completion methods
-          if (typeof activeScene.winLevel === "function") activeScene.winLevel();
-          else if (typeof activeScene.nextLevel === "function") activeScene.nextLevel();
-          else if (typeof activeScene.endGame === "function") activeScene.endGame(true);
+          
+          if (typeof activeScene.winLevel === 'function') activeScene.winLevel();
+          else if (typeof activeScene.nextLevel === 'function') activeScene.nextLevel();
+          else if (typeof activeScene.endGame === 'function') activeScene.endGame(true);
           else {
-            // Find win or score scene
             var keys = Object.keys(pg.scene.keys);
-            var endScene = keys.find((k) => /result|win|end|score|victory/i.test(k));
+            var endScene = keys.find(k => /result|win|end|score|victory/i.test(k));
             if (endScene) activeScene.scene.start(endScene);
           }
           alert("Auto-win triggered on Phaser Game scene!");
           return;
         }
-      } catch (e) {
+      } catch(e) {
         console.error("Phaser cheat error", e);
       }
     }
 
-    // 2. Check Standard CSS/JS Review Games
-    if (typeof window.S !== "undefined") {
+    if (typeof window.S !== 'undefined') {
       try {
         window.S.score = (window.S.score || 0) + 5000;
         window.S.lives = 99;
-        if (typeof window.ROUNDS !== "undefined") {
+        if (typeof window.ROUNDS !== 'undefined') {
           window.S.round = window.ROUNDS - 1;
         }
-        if (typeof window.endGame === "function") {
+        if (typeof window.endGame === 'function') {
           window.endGame(true);
-        } else if (typeof window.roundWon === "function") {
+        } else if (typeof window.roundWon === 'function') {
           window.roundWon();
         }
         alert("Auto-win triggered on Game State S!");
         return;
-      } catch (e) {}
+      } catch(e) {}
     }
 
-    // 3. Fallback: try finding standard win/skip buttons or variables
     try {
-      if (typeof window.winGame === "function") window.winGame();
-      else if (typeof window.winLevel === "function") window.winLevel();
+      if (typeof window.winGame === 'function') window.winGame();
+      else if (typeof window.winLevel === 'function') window.winLevel();
       else alert("No active game engine loop found to auto-win.");
-    } catch (e) {}
+    } catch(e) {}
   }
 
   function cheatAddLives() {
@@ -288,85 +268,145 @@
           if (activeScene.livesLabel) activeScene.livesLabel.setText("Lives: 99");
           alert("Lives set to 99 inside Phaser Scene!");
         }
-      } catch (e) {}
+      } catch(e) {}
     }
-    if (typeof window.S !== "undefined") {
+    if (typeof window.S !== 'undefined') {
       window.S.lives = 99;
-      var hudLives = document.getElementById("hud-lives") || document.getElementById("r-lives");
+      var hudLives = document.getElementById('hud-lives') || document.getElementById('r-lives');
       if (hudLives) hudLives.textContent = "❤️❤️❤️ (99)";
       alert("Lives set to 99 in state S!");
     }
   }
 
   function cheatFreezeTimer() {
-    if (typeof window.S !== "undefined") {
+    if (typeof window.S !== 'undefined') {
       window.S.time = 9999;
       window.S.timer = 9999;
     }
-    // Override setInterval
-    var maxId = setInterval(function () {}, 9999);
+    var maxId = setInterval(function() {}, 9999);
     for (var i = 0; i < maxId; i++) {
       try {
         clearInterval(i);
-      } catch (e) {}
+      } catch(e) {}
     }
     alert("Countdown Timers frozen!");
   }
 
   // --- Confetti Burst ---
   function playConfetti() {
-    if (typeof Confetti !== "undefined") {
+    if (typeof Confetti !== 'undefined') {
       Confetti.burst();
       return;
     }
     for (var i = 0; i < 60; i++) {
       var c = document.createElement("div");
       c.className = "gfx-spark";
-      c.style.left = Math.random() * 100 + "vw";
-      c.style.top = Math.random() * 100 + "vh";
+      c.style.left = (Math.random() * 100) + "vw";
+      c.style.top = (Math.random() * 100) + "vh";
       c.style.background = COLORS[Math.floor(Math.random() * COLORS.length)];
       document.body.appendChild(c);
       try {
         var anim = c.animate(
           [
             { transform: "translate(0, 0) scale(1)", opacity: 1 },
-            {
-              transform: "translate(" + (Math.random() * 100 - 50) + "px, 250px) scale(0)",
-              opacity: 0,
-            },
+            { transform: "translate(" + (Math.random() * 100 - 50) + "px, 250px) scale(0)", opacity: 0 }
           ],
-          { duration: 1500 + Math.random() * 1000 },
+          { duration: 1500 + Math.random() * 1000 }
         );
-        anim.onfinish = (function (n) {
-          return function () {
-            if (n.parentNode) n.parentNode.removeChild(n);
-          };
+        anim.onfinish = (function(n) {
+          return function() { if (n.parentNode) n.parentNode.removeChild(n); };
         })(c);
-      } catch (e) {
+      } catch(e) {
         if (c.parentNode) c.parentNode.removeChild(c);
       }
     }
   }
+
+  // --- LMS/SCORM Integration Bridge ---
+  var LMSBridge = {
+    getAPI: function() {
+      var win = window;
+      try {
+        while (win) {
+          if (win.API) return { api: win.API, version: '1.2' };
+          if (win.API_1484_11) return { api: win.API_1484_11, version: '2004' };
+          if (win.parent && win.parent !== win) win = win.parent;
+          else break;
+        }
+      } catch(e) {}
+      return null;
+    },
+    reportScore: function(score, maxScore, stars) {
+      // 1. Report to SCORM LMS
+      var scorm = this.getAPI();
+      if (scorm) {
+        try {
+          var api = scorm.api;
+          if (scorm.version === '1.2') {
+            api.LMSSetValue("cmi.core.score.raw", String(score));
+            if (maxScore) api.LMSSetValue("cmi.core.score.max", String(maxScore));
+            api.LMSSetValue("cmi.core.lesson_status", "completed");
+            api.LMSCommit("");
+          } else {
+            api.SetValue("cmi.score.raw", String(score));
+            if (maxScore) api.SetValue("cmi.score.max", String(maxScore));
+            api.SetValue("cmi.completion_status", "completed");
+            api.Commit("");
+          }
+          console.log("[LMSBridge] SCORM reported score:", score);
+        } catch(e) {
+          console.error("[LMSBridge] SCORM failed", e);
+        }
+      }
+      
+      // 2. Report via postMessage (LTI frames)
+      if (window.parent && window.parent !== window) {
+        try {
+          window.parent.postMessage({
+            type: 'game_completed',
+            score: score,
+            maxScore: maxScore || score || 100,
+            stars: stars || 3,
+            completed: true,
+            timestamp: new Date().toISOString()
+          }, '*');
+          console.log("[LMSBridge] postMessage reported score:", score);
+        } catch(e) {}
+      }
+    },
+    initResizeHelper: function() {
+      setInterval(function() {
+        if (window.parent && window.parent !== window) {
+          try {
+            window.parent.postMessage({
+              type: 'lti.frameResize',
+              height: document.body.scrollHeight || document.documentElement.scrollHeight
+            }, '*');
+          } catch(e) {}
+        }
+      }, 1000);
+    }
+  };
 
   window.GameFX = {
     celebrate: celebrate,
     burst: burst,
     pop: pop,
     reduce: reduce,
-    bilingual: true,
+    bilingual: true
   };
 
   // Make globals for buttons
-  window.toggleGameLanguage = function () {
-    var isEs = !document.body.classList.contains("es");
+  window.toggleGameLanguage = function() {
+    var isEs = !document.body.classList.contains('es');
     translateDOM(isEs);
-    var btn = document.getElementById("btn-game-lang");
-    if (btn) btn.textContent = isEs ? "🌐 Idioma: ES" : "🌐 Language: EN";
+    var btn = document.getElementById('btn-game-lang');
+    if (btn) btn.textContent = isEs ? '🌐 Idioma: ES' : '🌐 Language: EN';
   };
   window.readGameAloud = readAloud;
-  window.toggleCheatConsole = function () {
-    var el = document.getElementById("teacher-cheat-console");
-    if (el) el.classList.toggle("show");
+  window.toggleCheatConsole = function() {
+    var el = document.getElementById('teacher-cheat-console');
+    if (el) el.classList.toggle('show');
   };
   window.cheatAutoWin = cheatAutoWin;
   window.cheatAddLives = cheatAddLives;
@@ -383,10 +423,13 @@
   ready(function () {
     if (reduce || !document.body) return;
 
+    // Initialize iframe height auto-resizer for LMS
+    LMSBridge.initResizeHelper();
+
     // 1. Inject Floating Bilingual & TTS Toolbar
-    var toolbar = document.createElement("div");
-    toolbar.id = "game-pub-toolbar";
-    toolbar.className = "no-print";
+    var toolbar = document.createElement('div');
+    toolbar.id = 'game-pub-toolbar';
+    toolbar.className = 'no-print';
     toolbar.innerHTML = `
       <button class="pub-btn" id="btn-game-lang" onclick="toggleGameLanguage()">🌐 Language: EN</button>
       <button class="pub-btn" id="btn-game-read" onclick="readGameAloud()">🔊 Read</button>
@@ -394,9 +437,9 @@
     document.body.appendChild(toolbar);
 
     // 2. Inject Hidden Teacher Cheat Console
-    var consoleDiv = document.createElement("div");
-    consoleDiv.id = "teacher-cheat-console";
-    consoleDiv.className = "no-print";
+    var consoleDiv = document.createElement('div');
+    consoleDiv.id = 'teacher-cheat-console';
+    consoleDiv.className = 'no-print';
     consoleDiv.innerHTML = `
       <h4>
         <span>🔑 Teacher Grading & Cheats</span>
@@ -410,51 +453,58 @@
     document.body.appendChild(consoleDiv);
 
     // 3. Listen for Ctrl+Shift+T or triple click on game title / header
-    document.addEventListener("keydown", function (e) {
-      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "t") {
+    document.addEventListener('keydown', function(e) {
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 't') {
         e.preventDefault();
         toggleCheatConsole();
       }
     });
 
-    var header =
-      document.querySelector("h1") ||
-      document.querySelector("h2") ||
-      document.querySelector(".hero");
+    var header = document.querySelector('h1') || document.querySelector('h2') || document.querySelector('.hero');
     if (header) {
       var clicks = 0;
-      header.addEventListener("click", function () {
+      header.addEventListener('click', function() {
         clicks++;
         if (clicks >= 3) {
           toggleCheatConsole();
           clicks = 0;
         }
-        setTimeout(function () {
-          clicks = 0;
-        }, 1000);
+        setTimeout(function() { clicks = 0; }, 1000);
       });
     }
 
-    // 4. Auto-confetti listener
-    var observer = new MutationObserver(function (mutations) {
-      mutations.forEach(function (mutation) {
-        if (mutation.type === "attributes" && mutation.attributeName === "class") {
+    // 4. Auto-confetti and LMS score reporting listener
+    var observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
           var target = mutation.target;
-          if (
-            target.classList.contains("game-over") ||
-            target.classList.contains("won") ||
-            target.classList.contains("success")
-          ) {
+          if (target.classList.contains('game-over') || target.classList.contains('won') || target.classList.contains('success')) {
             playConfetti();
+            
+            // Extract score and report
+            var finalScore = 0;
+            var finalStars = 3;
+            if (typeof window.S !== 'undefined') {
+              finalScore = window.S.score || 0;
+              finalStars = window.S.stars || 3;
+            } else {
+              var pg = findPhaserGame();
+              if (pg) {
+                try {
+                  var activeScene = pg.scene.getScenes(true)[0];
+                  if (activeScene) {
+                    finalScore = activeScene.score || activeScene.finalScore || 0;
+                    finalStars = activeScene.stars || 3;
+                  }
+                } catch(e) {}
+              }
+            }
+            LMSBridge.reportScore(finalScore, null, finalStars);
           }
         }
       });
     });
-    observer.observe(document.body, {
-      attributes: true,
-      subtree: true,
-      attributeFilter: ["class"],
-    });
+    observer.observe(document.body, { attributes: true, subtree: true, attributeFilter: ['class'] });
 
     // Success sparkles observer
     try {
