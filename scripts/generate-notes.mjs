@@ -3,10 +3,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { resolveVocabImage, vocabImageAlt } from "../engine/core/vocab-images.js";
 import { deriveWorkedSteps } from "../engine/core/worked-steps.js";
-import {
-  EDITORIAL_FONT_IMPORT,
-  EDITORIAL_OVERRIDES,
-} from "./lib/editorial-print.mjs";
+import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");

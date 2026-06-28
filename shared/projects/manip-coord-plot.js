@@ -36,8 +36,7 @@
   }
 
   function quadrant(x, y) {
-    if (x === 0 || y === 0)
-      return x === 0 && y === 0 ? "the Origin" : "on an axis";
+    if (x === 0 || y === 0) return x === 0 && y === 0 ? "the Origin" : "on an axis";
     if (x > 0 && y > 0) return "Quadrant I";
     if (x < 0 && y > 0) return "Quadrant II";
     if (x < 0 && y < 0) return "Quadrant III";
@@ -54,14 +53,7 @@
       PAD = 24;
     var span = SZ - PAD * 2;
     var unit = span / (2 * R);
-    var COLORS = [
-      "#1763c7",
-      "#ef6b52",
-      "#0e9a8c",
-      "#6d4ad6",
-      "#f4a924",
-      "#19a35a",
-    ];
+    var COLORS = ["#1763c7", "#ef6b52", "#0e9a8c", "#6d4ad6", "#f4a924", "#19a35a"];
     var points = [];
 
     function sx(x) {
@@ -193,21 +185,14 @@
       var svg = svgBox.querySelector("svg");
       svg.addEventListener("click", onTap);
       if (!points.length) {
-        listBox.innerHTML =
-          '<p class="pki-c-empty">No points yet — tap the map to start.</p>';
+        listBox.innerHTML = '<p class="pki-c-empty">No points yet — tap the map to start.</p>';
       } else {
         listBox.innerHTML =
           '<ul class="pki-c-list">' +
           points
             .map(function (p) {
               return (
-                "<li><b>(" +
-                p.x +
-                ", " +
-                p.y +
-                ")</b><span>" +
-                quadrant(p.x, p.y) +
-                "</span></li>"
+                "<li><b>(" + p.x + ", " + p.y + ")</b><span>" + quadrant(p.x, p.y) + "</span></li>"
               );
             })
             .join("") +
@@ -257,13 +242,9 @@
     else fn();
   }
   ready(function () {
-    document
-      .querySelectorAll('.pki-manip[data-manip="coord-plot"]')
-      .forEach(init);
+    document.querySelectorAll('.pki-manip[data-manip="coord-plot"]').forEach(init);
     setTimeout(function () {
-      document
-        .querySelectorAll('.pki-manip[data-manip="coord-plot"]')
-        .forEach(init);
+      document.querySelectorAll('.pki-manip[data-manip="coord-plot"]').forEach(init);
     }, 900);
   });
 })();

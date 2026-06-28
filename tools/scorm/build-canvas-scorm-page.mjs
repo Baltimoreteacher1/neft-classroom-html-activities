@@ -30,17 +30,23 @@ const build = (target, title, id) =>
   execFileSync("node", [buildOne, target, title, id || ""], { stdio: "pipe" });
 
 // --- lessons (non-flagship) ---
-const manifest = JSON.parse(readFileSync(resolve(repoRoot, "data/curriculum-manifest.json"), "utf8"));
-const lessons = (Array.isArray(manifest.lessons) ? manifest.lessons : Object.values(manifest.lessons)).filter(
-  (l) => l && l.id && !l.flagship,
+const manifest = JSON.parse(
+  readFileSync(resolve(repoRoot, "data/curriculum-manifest.json"), "utf8"),
 );
+const lessons = (
+  Array.isArray(manifest.lessons) ? manifest.lessons : Object.values(manifest.lessons)
+).filter((l) => l && l.id && !l.flagship);
 
 // --- activities (catalog) ---
 const catalog = JSON.parse(readFileSync(resolve(__dirname, "activity-catalog.json"), "utf8"));
 const seen = new Set();
 const activities = catalog.activities.filter((a) => (seen.has(a.path) ? false : seen.add(a.path)));
 
-const index = { generatedNote: "Rebuild with: npm run canvas-scorm:build", lessons: [], activities: [] };
+const index = {
+  generatedNote: "Rebuild with: npm run canvas-scorm:build",
+  lessons: [],
+  activities: [],
+};
 let ok = 0,
   fail = 0;
 
@@ -74,9 +80,13 @@ for (const a of activities) {
   }
 }
 
-index.lessons.sort((a, b) => (a.unit - b.unit) || a.id.localeCompare(b.id, undefined, { numeric: true }));
+index.lessons.sort(
+  (a, b) => a.unit - b.unit || a.id.localeCompare(b.id, undefined, { numeric: true }),
+);
 writeFileSync(resolve(pageDir, "packages-index.json"), JSON.stringify(index, null, 2) + "\n");
 
-console.log(`Canvas SCORM page build: ${ok} packages (${index.lessons.length} lessons + ${index.activities.length} activities), ${fail} failed`);
+console.log(
+  `Canvas SCORM page build: ${ok} packages (${index.lessons.length} lessons + ${index.activities.length} activities), ${fail} failed`,
+);
 console.log(`  → teacher-tools/canvas-scorm/packages/ + packages-index.json`);
 if (fail) console.log(`  (${fail} item(s) skipped — non-fatal)`);

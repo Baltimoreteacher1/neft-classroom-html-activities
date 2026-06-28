@@ -289,7 +289,13 @@ export function buildTogetherLadder(config = {}) {
   // 3★ extending (stretch). Take a few from each so the set spans easy → hard.
   const tiers = [
     { keys: ["approaching"], stars: "★", labelEn: "Start easy", labelEs: "Empieza fácil", take: 2 },
-    { keys: ["onLevel", "optional"], stars: "★★", labelEn: "Keep going", labelEs: "Sigan", take: 2 },
+    {
+      keys: ["onLevel", "optional"],
+      stars: "★★",
+      labelEn: "Keep going",
+      labelEs: "Sigan",
+      take: 2,
+    },
     { keys: ["extending"], stars: "★★★", labelEn: "Challenge", labelEs: "Reto", take: 1 },
   ];
 
@@ -922,8 +928,14 @@ export function renderWelcomeBanner(config, lessonId) {
 export function renderLearningTonight(config) {
   const { en, es } = learningTonight(config);
   const vocab = (config.vocabulary || []).slice(0, 5);
-  const wordsEn = vocab.map((v) => v.term).filter(Boolean).join(", ");
-  const wordsEs = vocab.map((v) => v.termEs || v.term).filter(Boolean).join(", ");
+  const wordsEn = vocab
+    .map((v) => v.term)
+    .filter(Boolean)
+    .join(", ");
+  const wordsEs = vocab
+    .map((v) => v.termEs || v.term)
+    .filter(Boolean)
+    .join(", ");
 
   return `
     <section class="guided-section card section-learn" aria-label="What we are learning tonight">
@@ -1481,8 +1493,7 @@ export function renderProblemHintButton(problem, visual = "") {
     es: hintEs,
     visual,
     frameEn: "Draw it first, then solve. Try saying: “This problem is asking me to…”",
-    frameEs:
-      "Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”",
+    frameEs: "Dibújenlo primero, luego resuelvan. Intenten decir: “Este problema me pide que…”",
   });
 }
 

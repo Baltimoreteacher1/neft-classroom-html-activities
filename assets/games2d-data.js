@@ -49,59 +49,62 @@ window.Games2DData = {
     },
   },
   "u3-ratio-rush": {
-    "ccss": "6.RP.A.1",
-    "title": "Ratio Rush",
-    "vocab": [
+    ccss: "6.RP.A.1",
+    title: "Ratio Rush",
+    vocab: [
       {
-        "term": "ratio",
-        "defn": "A way to compare two amounts, like 2 scoops of berry to 3 scoops of mango. We write it as 2:3.",
-        "img": ""
+        term: "ratio",
+        defn: "A way to compare two amounts, like 2 scoops of berry to 3 scoops of mango. We write it as 2:3.",
+        img: "",
       },
       {
-        "term": "equivalent ratios",
-        "defn": "Two ratios that compare the same way, like 3:4 and 6:8 — a bigger batch with the SAME flavor. Multiply both parts by the same number.",
-        "img": ""
+        term: "equivalent ratios",
+        defn: "Two ratios that compare the same way, like 3:4 and 6:8 — a bigger batch with the SAME flavor. Multiply both parts by the same number.",
+        img: "",
       },
       {
-        "term": "part",
-        "defn": "One of the two amounts in a ratio. In 3:4 the parts are 3 and 4 — here, the scoops in each tube of the smoothie.",
-        "img": ""
-      }
+        term: "part",
+        defn: "One of the two amounts in a ratio. In 3:4 the parts are 3 and 4 — here, the scoops in each tube of the smoothie.",
+        img: "",
+      },
     ],
-    "misconceptions": [
+    misconceptions: [
       {
-        "tag": "added-instead-of-scaled",
-        "trigger": "Adds the same number of scoops to each tube instead of multiplying both parts.",
-        "feedback": "Equivalent ratios MULTIPLY both parts by the same number. Adding the same amount to each tube changes the flavor."
+        tag: "added-instead-of-scaled",
+        trigger: "Adds the same number of scoops to each tube instead of multiplying both parts.",
+        feedback:
+          "Equivalent ratios MULTIPLY both parts by the same number. Adding the same amount to each tube changes the flavor.",
       },
       {
-        "tag": "scaled-one-part",
-        "trigger": "Pours more into one tube but leaves the other, so the ratio drifts.",
-        "feedback": "Fill BOTH tubes by the same factor so the smoothie keeps the same ratio."
+        tag: "scaled-one-part",
+        trigger: "Pours more into one tube but leaves the other, so the ratio drifts.",
+        feedback: "Fill BOTH tubes by the same factor so the smoothie keeps the same ratio.",
       },
       {
-        "tag": "matched-numbers-not-ratio",
-        "trigger": "Pours the exact target numbers when a simpler equivalent batch would also fill the order.",
-        "feedback": "An order for 6:8 is also filled by 3:4 — any equivalent ratio works. Match the FLAVOR, not just the numbers."
-      }
+        tag: "matched-numbers-not-ratio",
+        trigger:
+          "Pours the exact target numbers when a simpler equivalent batch would also fill the order.",
+        feedback:
+          "An order for 6:8 is also filled by 3:4 — any equivalent ratio works. Match the FLAVOR, not just the numbers.",
+      },
     ],
-    "tiers": {
-      "0": {
-        "label": "Level 0",
-        "sub": "Most support",
-        "desc": "Tiny ratios · the matching guide stays on screen · 5 lives"
+    tiers: {
+      0: {
+        label: "Level 0",
+        sub: "Most support",
+        desc: "Tiny ratios · the matching guide stays on screen · 5 lives",
       },
-      "1": {
-        "label": "Level 1",
-        "sub": "Support",
-        "desc": "Simplest-form orders · color preview helps you check · 4 lives"
+      1: {
+        label: "Level 1",
+        sub: "Support",
+        desc: "Simplest-form orders · color preview helps you check · 4 lives",
       },
-      "2": {
-        "label": "Level 2",
-        "sub": "Challenge",
-        "desc": "Scaled-up orders · serve a smaller equivalent batch · 3 lives"
-      }
-    }
+      2: {
+        label: "Level 2",
+        sub: "Challenge",
+        desc: "Scaled-up orders · serve a smaller equivalent batch · 3 lives",
+      },
+    },
   },
   "u1-factor-frenzy": {
     ccss: "6.NS.4",

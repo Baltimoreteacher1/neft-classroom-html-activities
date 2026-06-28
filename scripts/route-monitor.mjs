@@ -45,7 +45,14 @@ async function probe(url, timeoutMs, fetchImpl) {
     }
     return { ok: true, status: res.status, contentType: ct, body };
   } catch (err) {
-    return { ok: false, status: 0, contentType: "", body: "", error: err.name === "AbortError" ? `timeout after ${timeoutMs}ms` : String(err.message || err) };
+    return {
+      ok: false,
+      status: 0,
+      contentType: "",
+      body: "",
+      error:
+        err.name === "AbortError" ? `timeout after ${timeoutMs}ms` : String(err.message || err),
+    };
   } finally {
     clearTimeout(timer);
   }
@@ -70,19 +77,33 @@ function classify(route, forbidMarkers, r) {
     if (r.status === 401) return { level: "ok", note: "gate enforced (401)" };
     if (r.status === 200) {
       const miss = missingMarkers(r.body, route.requireMarkers);
-      if (forbidHit.length) return { level: "fail", note: `200 but foreign-app marker present: "${forbidHit[0]}"` };
-      if (miss.length) return { level: "fail", note: `200 but wrong content (missing: ${miss.map((m) => `"${m}"`).join(", ")})` };
-      return { level: "warn", note: "gate OPEN — SITE_PASSWORD not enforcing (right app, but teacher page is public)" };
+      if (forbidHit.length)
+        return { level: "fail", note: `200 but foreign-app marker present: "${forbidHit[0]}"` };
+      if (miss.length)
+        return {
+          level: "fail",
+          note: `200 but wrong content (missing: ${miss.map((m) => `"${m}"`).join(", ")})`,
+        };
+      return {
+        level: "warn",
+        note: "gate OPEN — SITE_PASSWORD not enforcing (right app, but teacher page is public)",
+      };
     }
     return { level: "fail", note: `unexpected status ${r.status} (expected 401 or gated 200)` };
   }
 
   // public
   if (r.status !== 200) return { level: "fail", note: `status ${r.status} (expected 200)` };
-  if (forbidHit.length) return { level: "fail", note: `foreign-app marker present: "${forbidHit[0]}" — wrong deploy?` };
+  if (forbidHit.length)
+    return { level: "fail", note: `foreign-app marker present: "${forbidHit[0]}" — wrong deploy?` };
   const miss = missingMarkers(r.body, route.requireMarkers);
-  if (miss.length) return { level: "fail", note: `right status, WRONG/stale content — missing: ${miss.map((m) => `"${m}"`).join(", ")}` };
-  if (!/html/i.test(r.contentType)) return { level: "warn", note: `markers ok but content-type is "${r.contentType || "?"}"` };
+  if (miss.length)
+    return {
+      level: "fail",
+      note: `right status, WRONG/stale content — missing: ${miss.map((m) => `"${m}"`).join(", ")}`,
+    };
+  if (!/html/i.test(r.contentType))
+    return { level: "warn", note: `markers ok but content-type is "${r.contentType || "?"}"` };
   return { level: "ok", note: "200, content verified" };
 }
 
@@ -119,10 +140,11 @@ export async function runRouteMonitor({ manifest, base, fetchImpl = fetch } = {}
     });
   }
 
-  const counts = results.reduce(
-    (a, x) => ((a[x.level] = (a[x.level] || 0) + 1), a),
-    { ok: 0, warn: 0, fail: 0 },
-  );
+  const counts = results.reduce((a, x) => ((a[x.level] = (a[x.level] || 0) + 1), a), {
+    ok: 0,
+    warn: 0,
+    fail: 0,
+  });
   return { base: root, when: new Date().toISOString(), counts, results };
 }
 

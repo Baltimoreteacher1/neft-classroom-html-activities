@@ -160,9 +160,7 @@ function sco(lessonUrl, launchQuery, origin, title) {
 /** Build the two package files. Returns { id, lessonUrl, files }. */
 export function buildScormFiles({ target, title, codes }, site = SITE_DEFAULT) {
   const { lessonUrl, id, origin } = resolveTarget(target, site);
-  const t = xmlEsc(
-    title && String(title).trim() ? title.trim() : `Activity ${id}`,
-  );
+  const t = xmlEsc(title && String(title).trim() ? title.trim() : `Activity ${id}`);
   const launchQuery = codes ? "?embed=1" : "?lms=scorm&embed=1";
   return {
     id,

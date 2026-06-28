@@ -435,13 +435,9 @@
     else fn();
   }
   ready(function () {
-    document
-      .querySelectorAll('.pki-manip[data-manip="line-grapher"]')
-      .forEach(init);
+    document.querySelectorAll('.pki-manip[data-manip="line-grapher"]').forEach(init);
     setTimeout(function () {
-      document
-        .querySelectorAll('.pki-manip[data-manip="line-grapher"]')
-        .forEach(init);
+      document.querySelectorAll('.pki-manip[data-manip="line-grapher"]').forEach(init);
     }, 900);
   });
 })();

@@ -233,13 +233,9 @@
     else fn();
   }
   ready(function () {
-    document
-      .querySelectorAll('.pki-manip[data-manip="expr-machine"]')
-      .forEach(init);
+    document.querySelectorAll('.pki-manip[data-manip="expr-machine"]').forEach(init);
     setTimeout(function () {
-      document
-        .querySelectorAll('.pki-manip[data-manip="expr-machine"]')
-        .forEach(init);
+      document.querySelectorAll('.pki-manip[data-manip="expr-machine"]').forEach(init);
     }, 900);
   });
 })();

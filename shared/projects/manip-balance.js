@@ -151,16 +151,12 @@
     },
   ];
   function formById(id) {
-    for (var i = 0; i < FORMS.length; i++)
-      if (FORMS[i].id === id) return FORMS[i];
+    for (var i = 0; i < FORMS.length; i++) if (FORMS[i].id === id) return FORMS[i];
     return FORMS[0];
   }
 
   function esc(s) {
-    return String(s)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
 
   function init(el) {
@@ -300,17 +296,12 @@
       var xVal = f.x(P, Q);
       // equation line: p,q are integers (safe); highlight the variable x.
       eqBox.innerHTML =
-        f.leftExpr(P, "x").replace("x", '<span class="pki-b-x">x</span>') +
-        " = " +
-        Q;
+        f.leftExpr(P, "x").replace("x", '<span class="pki-b-x">x</span>') + " = " + Q;
       // pan labels
-      panL.textContent = solved
-        ? f.leftExpr(P, String(xVal))
-        : f.leftExpr(P, "x");
+      panL.textContent = solved ? f.leftExpr(P, String(xVal)) : f.leftExpr(P, "x");
       panR.textContent = String(Q);
       // tilt: pre-solve uses x=0 placeholder; solved uses true x (balanced)
-      beam.style.transform =
-        "rotate(" + (solved ? 0 : tiltDeg(0)).toFixed(2) + "deg)";
+      beam.style.transform = "rotate(" + (solved ? 0 : tiltDeg(0)).toFixed(2) + "deg)";
       // steps
       if (solved) {
         stepsInner.innerHTML =
@@ -396,9 +387,7 @@
   ready(function () {
     document.querySelectorAll('.pki-manip[data-manip="balance"]').forEach(init);
     setTimeout(function () {
-      document
-        .querySelectorAll('.pki-manip[data-manip="balance"]')
-        .forEach(init);
+      document.querySelectorAll('.pki-manip[data-manip="balance"]').forEach(init);
     }, 900);
   });
 })();

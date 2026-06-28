@@ -44,8 +44,7 @@ const SKIP_DIRS = new Set([
 ]);
 
 // Files whose name marks them as a template/partial, not a real page.
-const SKIP_FILE = (name) =>
-  /(^|[._-])(template|partial|fragment)\b/i.test(name);
+const SKIP_FILE = (name) => /(^|[._-])(template|partial|fragment)\b/i.test(name);
 
 const args = new Set(process.argv.slice(2));
 const DRY = args.has("--dry-run");
@@ -70,8 +69,7 @@ function walk(dir, out) {
       continue;
     }
     if (st.isDirectory()) walk(full, out);
-    else if (name.toLowerCase().endsWith(".html") && !SKIP_FILE(name))
-      out.push(full);
+    else if (name.toLowerCase().endsWith(".html") && !SKIP_FILE(name)) out.push(full);
   }
 }
 
@@ -102,10 +100,7 @@ function processFile(file) {
     return;
   }
 
-  html = html.replace(
-    /<\/head>/i,
-    `  ${BEGIN}\n  ${LINK_TAG}\n  ${END}\n</head>`,
-  );
+  html = html.replace(/<\/head>/i, `  ${BEGIN}\n  ${LINK_TAG}\n  ${END}\n</head>`);
   if (!DRY) writeFileSync(file, html);
   report.injected++;
 }
@@ -114,9 +109,7 @@ const files = [];
 walk(ROOT, files);
 files.forEach(processFile);
 
-console.log(
-  `Mobile-access injection ${DRY ? "(dry-run)" : ""}${REVERT ? " — revert" : ""}`,
-);
+console.log(`Mobile-access injection ${DRY ? "(dry-run)" : ""}${REVERT ? " — revert" : ""}`);
 console.log("  HTML scanned     :", report.scanned);
 if (REVERT) {
   console.log("  reverted         :", report.reverted);

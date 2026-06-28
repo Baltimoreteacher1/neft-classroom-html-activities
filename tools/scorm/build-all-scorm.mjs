@@ -72,7 +72,8 @@ const lines = [
 const unitNum = (u) => (u === "?" ? Infinity : Number(u));
 for (const u of [...byUnit.keys()].sort((a, b) => unitNum(a) - unitNum(b))) {
   lines.push(`## Unit ${u}`);
-  for (const l of byUnit.get(u)) lines.push(`- [ ] \`neft-lesson-${l.id}.zip\` — ${l.title || l.id}`);
+  for (const l of byUnit.get(u))
+    lines.push(`- [ ] \`neft-lesson-${l.id}.zip\` — ${l.title || l.id}`);
   lines.push("");
 }
 writeFileSync(resolve(outRoot, "UPLOAD-CHECKLIST.md"), lines.join("\n"));

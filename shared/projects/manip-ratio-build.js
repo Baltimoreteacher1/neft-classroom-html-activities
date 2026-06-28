@@ -182,8 +182,7 @@
           B +
           "</b>　(base ratio — raise the scale to build an equal ratio)";
       } else {
-        eqBox.innerHTML =
-          A + " : " + B + " = <b>" + sa + "</b> : <b>" + sb + "</b>";
+        eqBox.innerHTML = A + " : " + B + " = <b>" + sa + "</b> : <b>" + sb + "</b>";
       }
 
       var g = gcd(A, B);
@@ -222,13 +221,9 @@
     else fn();
   }
   ready(function () {
-    document
-      .querySelectorAll('.pki-manip[data-manip="ratio-build"]')
-      .forEach(init);
+    document.querySelectorAll('.pki-manip[data-manip="ratio-build"]').forEach(init);
     setTimeout(function () {
-      document
-        .querySelectorAll('.pki-manip[data-manip="ratio-build"]')
-        .forEach(init);
+      document.querySelectorAll('.pki-manip[data-manip="ratio-build"]').forEach(init);
     }, 900);
   });
 })();

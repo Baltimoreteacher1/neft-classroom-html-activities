@@ -15,12 +15,9 @@ import { buildScormFiles, zipStore } from "../_lib/scorm.js";
 export async function onRequest(context) {
   const { request } = context;
   const url = new URL(request.url);
-  const target =
-    url.searchParams.get("activity") || url.searchParams.get("url") || "";
+  const target = url.searchParams.get("activity") || url.searchParams.get("url") || "";
   const title = url.searchParams.get("title") || "";
-  const codes =
-    url.searchParams.get("mode") === "codes" ||
-    url.searchParams.get("codes") === "1";
+  const codes = url.searchParams.get("mode") === "codes" || url.searchParams.get("codes") === "1";
 
   if (!target) {
     return new Response(

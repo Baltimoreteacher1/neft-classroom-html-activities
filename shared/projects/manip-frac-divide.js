@@ -281,13 +281,9 @@
     else fn();
   }
   ready(function () {
-    document
-      .querySelectorAll('.pki-manip[data-manip="frac-divide"]')
-      .forEach(init);
+    document.querySelectorAll('.pki-manip[data-manip="frac-divide"]').forEach(init);
     setTimeout(function () {
-      document
-        .querySelectorAll('.pki-manip[data-manip="frac-divide"]')
-        .forEach(init);
+      document.querySelectorAll('.pki-manip[data-manip="frac-divide"]').forEach(init);
     }, 900);
   });
 })();

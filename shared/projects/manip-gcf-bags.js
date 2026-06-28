@@ -241,13 +241,9 @@
     else fn();
   }
   ready(function () {
-    document
-      .querySelectorAll('.pki-manip[data-manip="gcf-bags"]')
-      .forEach(init);
+    document.querySelectorAll('.pki-manip[data-manip="gcf-bags"]').forEach(init);
     setTimeout(function () {
-      document
-        .querySelectorAll('.pki-manip[data-manip="gcf-bags"]')
-        .forEach(init);
+      document.querySelectorAll('.pki-manip[data-manip="gcf-bags"]').forEach(init);
     }, 900);
   });
 })();

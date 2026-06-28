@@ -72,7 +72,8 @@ for (const id of lessonIds) {
 
   // Core Quick Check is split into a Warm-up tier and a Level-up (challenge) tier.
   // Count both as the core problem set (Bonus/Más are excluded by design).
-  const quickChecks = (html.match(/(?:Warm-up \/ Calentamiento|Level up \/ Reto) \d/g) || []).length;
+  const quickChecks = (html.match(/(?:Warm-up \/ Calentamiento|Level up \/ Reto) \d/g) || [])
+    .length;
   if (quickChecks > 6) {
     issues.push({ id, level: "HIGH", msg: `Too many quick check problems: ${quickChecks}` });
   }
@@ -81,10 +82,7 @@ for (const id of lessonIds) {
   }
 
   // Student practice tools (AI Learning Lab + Math Workbench) are allowed links.
-  const htmlNoAiHub = html.replace(
-    /\/curriculum\/(ai-hub|math-workbench)\/[^"'\s]*/gi,
-    "",
-  );
+  const htmlNoAiHub = html.replace(/\/curriculum\/(ai-hub|math-workbench)\/[^"'\s]*/gi, "");
   if (
     /\/curriculum\//i.test(htmlNoAiHub) ||
     /Curriculum Hub/i.test(html) ||

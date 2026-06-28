@@ -73,14 +73,7 @@
     var span = H - PADV * 2;
     var unit = span / (2 * R);
     var step = niceStep(R);
-    var COLORS = [
-      "#1763c7",
-      "#ef6b52",
-      "#0e9a8c",
-      "#6d4ad6",
-      "#f4a924",
-      "#19a35a",
-    ];
+    var COLORS = ["#1763c7", "#ef6b52", "#0e9a8c", "#6d4ad6", "#f4a924", "#19a35a"];
     var markers = [];
 
     function sy(v) {
@@ -339,13 +332,9 @@
     else fn();
   }
   ready(function () {
-    document
-      .querySelectorAll('.pki-manip[data-manip="number-line"]')
-      .forEach(init);
+    document.querySelectorAll('.pki-manip[data-manip="number-line"]').forEach(init);
     setTimeout(function () {
-      document
-        .querySelectorAll('.pki-manip[data-manip="number-line"]')
-        .forEach(init);
+      document.querySelectorAll('.pki-manip[data-manip="number-line"]').forEach(init);
     }, 900);
   });
 })();

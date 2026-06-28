@@ -114,7 +114,8 @@ export const GAMES_2D = {
       },
       {
         tag: "matched-numbers-not-ratio",
-        trigger: "Pours the exact target numbers when a simpler equivalent batch would also fill the order.",
+        trigger:
+          "Pours the exact target numbers when a simpler equivalent batch would also fill the order.",
         feedback:
           "An order for 6:8 is also filled by 3:4 — any equivalent ratio works. Match the FLAVOR, not just the numbers.",
       },

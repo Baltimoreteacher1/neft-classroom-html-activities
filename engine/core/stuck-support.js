@@ -19,10 +19,7 @@ function esc(s) {
 }
 
 function buildHint(item) {
-  const authored =
-    (Array.isArray(item?.hints) && item.hints[0]) ||
-    item?.hint ||
-    item?.scaffold;
+  const authored = (Array.isArray(item?.hints) && item.hints[0]) || item?.hint || item?.scaffold;
   return (
     authored ||
     "Reread the question and underline exactly what it is asking you to find. What information are you given?"
@@ -160,9 +157,7 @@ export function mountStuckSupport(host, opts = {}) {
     chip.addEventListener("click", () => {
       const opt = options.find((o) => o.key === chip.dataset.help);
       const active = chip.classList.contains("is-active");
-      wrap
-        .querySelectorAll(".stuck-chip")
-        .forEach((c) => c.classList.remove("is-active"));
+      wrap.querySelectorAll(".stuck-chip").forEach((c) => c.classList.remove("is-active"));
       if (active) {
         panel.hidden = true;
         return;

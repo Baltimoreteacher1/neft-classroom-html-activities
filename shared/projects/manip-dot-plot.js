@@ -164,8 +164,7 @@
         var m = sum / n;
         mean = round1(m);
         var mid = Math.floor(n / 2);
-        median =
-          n % 2 ? sorted[mid] : round1((sorted[mid - 1] + sorted[mid]) / 2);
+        median = n % 2 ? sorted[mid] : round1((sorted[mid - 1] + sorted[mid]) / 2);
         range = sorted[n - 1] - sorted[0];
         // mode(s)
         var freq = {},
@@ -249,13 +248,9 @@
     else fn();
   }
   ready(function () {
-    document
-      .querySelectorAll('.pki-manip[data-manip="dot-plot"]')
-      .forEach(init);
+    document.querySelectorAll('.pki-manip[data-manip="dot-plot"]').forEach(init);
     setTimeout(function () {
-      document
-        .querySelectorAll('.pki-manip[data-manip="dot-plot"]')
-        .forEach(init);
+      document.querySelectorAll('.pki-manip[data-manip="dot-plot"]').forEach(init);
     }, 900);
   });
 })();

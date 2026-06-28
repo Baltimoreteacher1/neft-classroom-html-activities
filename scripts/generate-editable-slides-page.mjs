@@ -25,10 +25,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import {
-  EDITORIAL_FONT_IMPORT,
-  EDITORIAL_OVERRIDES,
-} from "./lib/editorial-print.mjs";
+import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");

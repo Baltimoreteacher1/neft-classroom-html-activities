@@ -8,10 +8,7 @@
 
 import { readFileSync, writeFileSync, readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
-import {
-  EDITORIAL_FONT_IMPORT,
-  EDITORIAL_OVERRIDES,
-} from "./lib/editorial-print.mjs";
+import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
 
 const root = join(import.meta.dirname, "..");
 const lessonsDir = join(root, "lessons");

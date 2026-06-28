@@ -1,7 +1,4 @@
-import {
-  PHASE_TIME_ESTIMATES,
-  countPracticeProblems,
-} from "./content-enrichment.js";
+import { PHASE_TIME_ESTIMATES, countPracticeProblems } from "./content-enrichment.js";
 import { t, stackHtml, phaseName } from "./i18n.js";
 
 function esc(s) {
@@ -39,8 +36,7 @@ export function isTeacherMode() {
   if (typeof window === "undefined") return false;
   const params = new URLSearchParams(window.location.search);
   // Force-student always wins (lets a teacher hand a device back instantly).
-  if (params.get("teacher") === "0" || params.get("student") === "1")
-    return false;
+  if (params.get("teacher") === "0" || params.get("student") === "1") return false;
   // No URL backdoor INTO teacher mode — entry requires the password.
   return readStickyTeacher();
 }
@@ -63,15 +59,13 @@ export function unlockTeacher(pin) {
 export function initTeacherAccess() {
   if (typeof window === "undefined") return;
   const params = new URLSearchParams(window.location.search);
-  if (params.get("teacher") === "0" || params.get("student") === "1")
-    setStickyTeacher(false);
+  if (params.get("teacher") === "0" || params.get("student") === "1") setStickyTeacher(false);
 
   document.addEventListener("keydown", (e) => {
     // Ignore while typing in a field so it never collides with student work.
     const el = e.target;
     const tag = (el && el.tagName ? el.tagName : "").toLowerCase();
-    if (tag === "input" || tag === "textarea" || (el && el.isContentEditable))
-      return;
+    if (tag === "input" || tag === "textarea" || (el && el.isContentEditable)) return;
     // Alt+Shift+T only EXITS (entry needs the password). e.code is
     // layout/Option-proof (Mac Option+Shift+T composes a glyph).
     if (e.altKey && e.shiftKey && e.code === "KeyT" && isTeacherMode()) {
@@ -121,9 +115,7 @@ export function mountIdentityTeacherButton(slot) {
         <span class="identity-teacher-label">👩‍🏫 Teacher Mode is on</span>
         <button type="button" class="identity-teacher-exit">Switch to Student</button>
       </div>`;
-    slot
-      .querySelector(".identity-teacher-exit")
-      .addEventListener("click", switchToStudent);
+    slot.querySelector(".identity-teacher-exit").addEventListener("click", switchToStudent);
     return;
   }
 
@@ -251,20 +243,11 @@ export function mountTeacherPanel(root, config, state) {
   const goPhase = (delta) => {
     const s = state.get();
     const total = (s.phases && s.phases.length) || config.phases.length || 0;
-    const next = Math.min(
-      Math.max((s.currentPhase || 0) + delta, 0),
-      total - 1,
-    );
-    document.dispatchEvent(
-      new CustomEvent("rma:navigate", { detail: { phase: next } }),
-    );
+    const next = Math.min(Math.max((s.currentPhase || 0) + delta, 0), total - 1);
+    document.dispatchEvent(new CustomEvent("rma:navigate", { detail: { phase: next } }));
   };
-  panel
-    .querySelector(".teacher-prev-phase")
-    ?.addEventListener("click", () => goPhase(-1));
-  panel
-    .querySelector(".teacher-next-phase")
-    ?.addEventListener("click", () => goPhase(1));
+  panel.querySelector(".teacher-prev-phase")?.addEventListener("click", () => goPhase(-1));
+  panel.querySelector(".teacher-next-phase")?.addEventListener("click", () => goPhase(1));
 
   // Simple class timer (count-up). No Date dependency beyond runtime clock.
   const timerDisplay = panel.querySelector(".teacher-timer-display");
@@ -298,23 +281,14 @@ export function mountTeacherPanel(root, config, state) {
   // Launch question + Exit reflection — quick discussion prompts for the teacher.
   const discussSlot = panel.querySelector('[data-bind="discuss"]');
   const launchQ =
-    config.launch?.question ||
-    config.launch?.prompt ||
-    config.launch?.narrative ||
-    "";
+    config.launch?.question || config.launch?.prompt || config.launch?.narrative || "";
   const exitR =
     config.reflect?.exitTicket ||
     config.reflect?.prompt ||
     (Array.isArray(config.reflect?.prompts) ? config.reflect.prompts[0] : "");
   const discussBits = [];
-  if (launchQ)
-    discussBits.push(
-      `<p><strong>🚀 Launch question:</strong> ${esc(launchQ)}</p>`,
-    );
-  if (exitR)
-    discussBits.push(
-      `<p><strong>🎟 Exit reflection:</strong> ${esc(exitR)}</p>`,
-    );
+  if (launchQ) discussBits.push(`<p><strong>🚀 Launch question:</strong> ${esc(launchQ)}</p>`);
+  if (exitR) discussBits.push(`<p><strong>🎟 Exit reflection:</strong> ${esc(exitR)}</p>`);
   if (discussBits.length && discussSlot) {
     discussSlot.innerHTML = `<h4>💬 Discuss</h4>${discussBits.join("")}`;
   } else if (discussSlot) {
@@ -325,10 +299,7 @@ export function mountTeacherPanel(root, config, state) {
   const listenSlot = panel.querySelector('[data-bind="listen-fors"]');
   const listenFors = (config.turnAndTalk || [])
     .filter((t) => t.listenFor)
-    .map(
-      (t) =>
-        `<li><strong>${esc(t.phase || "Phase")}:</strong> ${esc(t.listenFor)}</li>`,
-    );
+    .map((t) => `<li><strong>${esc(t.phase || "Phase")}:</strong> ${esc(t.listenFor)}</li>`);
   if (listenFors.length) {
     listenSlot.innerHTML = `<h4>${stackHtml(t("listenFor", "en"), t("listenFor", "es"))}</h4><ul class="teacher-listen">${listenFors.join("")}</ul>`;
   } else {
@@ -346,11 +317,9 @@ export function mountTeacherPanel(root, config, state) {
     keySlot.remove();
   }
 
-  panel
-    .querySelector(".teacher-print-packet")
-    ?.addEventListener("click", () => {
-      window.print();
-    });
+  panel.querySelector(".teacher-print-packet")?.addEventListener("click", () => {
+    window.print();
+  });
 
   root.append(panel);
   return panel;
@@ -362,10 +331,7 @@ function collectAnswerKey(config) {
   for (const b of buckets) {
     const items = config.practice?.[b] || [];
     items.forEach((item, i) => {
-      if (
-        item.type === "multiple-choice" &&
-        item.choices?.[item.correctIndex]
-      ) {
+      if (item.type === "multiple-choice" && item.choices?.[item.correctIndex]) {
         answers.push(
           `${b} #${i + 1}: ${item.choices[item.correctIndex]}${item.explanation ? ` — ${item.explanation}` : ""}`,
         );
@@ -384,8 +350,7 @@ function collectAnswerKey(config) {
  * them via the ?teacher=1 answer key. Keep this panel to pacing only. */
 export function buildWelcomeTeacherNotes(config) {
   const pacing = PHASE_TIME_ESTIMATES.map(
-    (p, i) =>
-      `<li><span>${p.icon} ${phaseName(i)}</span><span>~${p.minutes} min</span></li>`,
+    (p, i) => `<li><span>${p.icon} ${phaseName(i)}</span><span>~${p.minutes} min</span></li>`,
   ).join("");
 
   const wrap = document.createElement("div");

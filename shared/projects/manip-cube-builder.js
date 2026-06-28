@@ -80,9 +80,7 @@
       field("l", "Length", L) +
       field("w", "Width", W) +
       field("h", "Height", H) +
-      (isTank
-        ? '</div><div class="pki-cb-row">' + field("f", "Fill ≤ H", fill)
-        : "") +
+      (isTank ? '</div><div class="pki-cb-row">' + field("f", "Fill ≤ H", fill) : "") +
       "</div>" +
       "<div data-out></div>" +
       "</div>" +
@@ -211,17 +209,13 @@
 
       // ---- LEFT face (x = 0): W × H, darkest ----
       svg += poly([P(0, 0, 0), P(0, W, 0), P(0, W, H), P(0, 0, H)], "#9fb7d4");
-      for (var yi = 1; yi < W; yi++)
-        svg += line(P(0, yi, 0), P(0, yi, H), GRID, 1);
-      for (var zi = 1; zi < H; zi++)
-        svg += line(P(0, 0, zi), P(0, W, zi), GRID, 1);
+      for (var yi = 1; yi < W; yi++) svg += line(P(0, yi, 0), P(0, yi, H), GRID, 1);
+      for (var zi = 1; zi < H; zi++) svg += line(P(0, 0, zi), P(0, W, zi), GRID, 1);
 
       // ---- RIGHT face (y = 0): L × H, medium ----
       svg += poly([P(0, 0, 0), P(L, 0, 0), P(L, 0, H), P(0, 0, H)], "#c2d4ea");
-      for (var xi = 1; xi < L; xi++)
-        svg += line(P(xi, 0, 0), P(xi, 0, H), GRID, 1);
-      for (var zj = 1; zj < H; zj++)
-        svg += line(P(0, 0, zj), P(L, 0, zj), GRID, 1);
+      for (var xi = 1; xi < L; xi++) svg += line(P(xi, 0, 0), P(xi, 0, H), GRID, 1);
+      for (var zj = 1; zj < H; zj++) svg += line(P(0, 0, zj), P(L, 0, zj), GRID, 1);
 
       // ---- WATER (tank mode) — translucent fill on the two side faces + surface ----
       if (isTank && fill > 0) {
@@ -251,22 +245,11 @@
       // ---- TOP face (z = H) ----
       if (isTank) {
         // open-top: rim only (dashed opening), no lid
-        svg += poly(
-          [P(0, 0, H), P(L, 0, H), P(L, W, H), P(0, W, H)],
-          "#fbfdff",
-          EDGE,
-          1.6,
-          0.18,
-        );
+        svg += poly([P(0, 0, H), P(L, 0, H), P(L, W, H), P(0, W, H)], "#fbfdff", EDGE, 1.6, 0.18);
       } else {
-        svg += poly(
-          [P(0, 0, H), P(L, 0, H), P(L, W, H), P(0, W, H)],
-          "#e3edf9",
-        );
-        for (var xk = 1; xk < L; xk++)
-          svg += line(P(xk, 0, H), P(xk, W, H), "#b8c9de", 1);
-        for (var yk = 1; yk < W; yk++)
-          svg += line(P(0, yk, H), P(L, yk, H), "#b8c9de", 1);
+        svg += poly([P(0, 0, H), P(L, 0, H), P(L, W, H), P(0, W, H)], "#e3edf9");
+        for (var xk = 1; xk < L; xk++) svg += line(P(xk, 0, H), P(xk, W, H), "#b8c9de", 1);
+        for (var yk = 1; yk < W; yk++) svg += line(P(0, yk, H), P(L, yk, H), "#b8c9de", 1);
       }
 
       // ---- bold visible edges ----
@@ -344,9 +327,7 @@
           Vw +
           "</b> cubic " +
           word +
-          (fill === 0
-            ? " (empty tank)"
-            : " — that's " + Math.round((Vw / V) * 100) + "% full") +
+          (fill === 0 ? " (empty tank)" : " — that's " + Math.round((Vw / V) * 100) + "% full") +
           "</div>" +
           '<div class="pki-cb-note glass">🔷 Open-top glass (5 faces) = lw + 2lh + 2wh = ' +
           L * W +
@@ -415,13 +396,9 @@
     else fn();
   }
   ready(function () {
-    document
-      .querySelectorAll('.pki-manip[data-manip="cube-builder"]')
-      .forEach(init);
+    document.querySelectorAll('.pki-manip[data-manip="cube-builder"]').forEach(init);
     setTimeout(function () {
-      document
-        .querySelectorAll('.pki-manip[data-manip="cube-builder"]')
-        .forEach(init);
+      document.querySelectorAll('.pki-manip[data-manip="cube-builder"]').forEach(init);
     }, 900);
   });
 })();

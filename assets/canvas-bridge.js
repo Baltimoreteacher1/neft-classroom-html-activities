@@ -127,10 +127,7 @@
     return {
       studentName: (sum && (sum.studentName || sum.name)) || "",
       classPeriod: (sum && (sum.section || sum.classPeriod)) || "",
-      percent:
-        sum && typeof sum.percentComplete === "number"
-          ? sum.percentComplete
-          : null,
+      percent: sum && typeof sum.percentComplete === "number" ? sum.percentComplete : null,
     };
   }
 
@@ -138,9 +135,7 @@
     return String(cfg.activityId || slugFromPath());
   }
   function activityTitle() {
-    return String(
-      cfg.activityTitle || (document && document.title) || activityId(),
-    );
+    return String(cfg.activityTitle || (document && document.title) || activityId());
   }
 
   /** SCORM passback — the SCO relays this to the Canvas gradebook. */
@@ -203,17 +198,16 @@
       }, 1600);
     }
     function doCopy() {
-      return (
-        navigator.clipboard
-          ? navigator.clipboard.writeText(code)
-          : Promise.reject()
-      ).then(flag, function () {
-        safe(function () {
-          input.select();
-          document.execCommand("copy");
-          flag();
-        });
-      });
+      return (navigator.clipboard ? navigator.clipboard.writeText(code) : Promise.reject()).then(
+        flag,
+        function () {
+          safe(function () {
+            input.select();
+            document.execCommand("copy");
+            flag();
+          });
+        },
+      );
     }
     copyBtn.addEventListener("click", doCopy);
     doCopy().catch(function () {});
@@ -239,10 +233,8 @@
     if (fired && !(opts && opts.force)) return;
     fired = true;
     var id = identity();
-    var studentName =
-      opts && opts.studentName != null ? opts.studentName : id.studentName;
-    var classPeriod =
-      opts && opts.classPeriod != null ? opts.classPeriod : id.classPeriod;
+    var studentName = opts && opts.studentName != null ? opts.studentName : id.studentName;
+    var classPeriod = opts && opts.classPeriod != null ? opts.classPeriod : id.classPeriod;
     var pct = typeof percent === "number" ? percent : id.percent;
     if (typeof pct !== "number") pct = 100; // an explicit complete() with no data = done
     pct = Math.max(0, Math.min(100, Math.round(pct)));
@@ -283,10 +275,7 @@
     b.id = "nt-cb-finish";
     b.type = "button";
     b.textContent = "✓ I'm finished";
-    b.setAttribute(
-      "aria-label",
-      "Mark this activity finished and send my completion to Canvas",
-    );
+    b.setAttribute("aria-label", "Mark this activity finished and send my completion to Canvas");
     b.style.cssText =
       "position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:2147483646;" +
       "background:#1c8c8c;color:#fff;border:0;border-radius:999px;padding:14px 22px;" +

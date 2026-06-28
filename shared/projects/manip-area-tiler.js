@@ -73,9 +73,7 @@
     var unit = el.dataset.unit || "ft";
     var unitName = unit === "ft" ? "square feet" : "square units";
     var accent =
-      el.dataset.accent ||
-      getComputedStyle(el).getPropertyValue("--tp-accent").trim() ||
-      "#1763c7";
+      el.dataset.accent || getComputedStyle(el).getPropertyValue("--tp-accent").trim() || "#1763c7";
     var accent2 =
       el.dataset.accent2 ||
       getComputedStyle(el).getPropertyValue("--tp-accent2").trim() ||
@@ -178,27 +176,9 @@
     function gridSvg() {
       var g = '<g stroke="#e2e8f0" stroke-width="1">';
       for (var c = 0; c <= GW; c++)
-        g +=
-          '<line x1="' +
-          cx(c) +
-          '" y1="' +
-          cy(0) +
-          '" x2="' +
-          cx(c) +
-          '" y2="' +
-          cy(GH) +
-          '"/>';
+        g += '<line x1="' + cx(c) + '" y1="' + cy(0) + '" x2="' + cx(c) + '" y2="' + cy(GH) + '"/>';
       for (var r = 0; r <= GH; r++)
-        g +=
-          '<line x1="' +
-          cx(0) +
-          '" y1="' +
-          cy(r) +
-          '" x2="' +
-          cx(GW) +
-          '" y2="' +
-          cy(r) +
-          '"/>';
+        g += '<line x1="' + cx(0) + '" y1="' + cy(r) + '" x2="' + cx(GW) + '" y2="' + cy(r) + '"/>';
       return g + "</g>";
     }
 
@@ -238,17 +218,7 @@
       var m = /^#?([0-9a-f]{6})$/i.exec(hex.trim());
       if (!m) return hex;
       var n = parseInt(m[1], 16);
-      return (
-        "rgba(" +
-        ((n >> 16) & 255) +
-        "," +
-        ((n >> 8) & 255) +
-        "," +
-        (n & 255) +
-        "," +
-        a +
-        ")"
-      );
+      return "rgba(" + ((n >> 16) & 255) + "," + ((n >> 8) & 255) + "," + (n & 255) + "," + a + ")";
     }
 
     function draw() {
@@ -277,15 +247,7 @@
       var a1 = w1 * h1;
       if (!composite) {
         eqBox.innerHTML =
-          w1 +
-          " × " +
-          h1 +
-          " = " +
-          '<span class="pki-a-big">' +
-          a1 +
-          " " +
-          unitName +
-          "</span>";
+          w1 + " × " + h1 + " = " + '<span class="pki-a-big">' + a1 + " " + unitName + "</span>";
       } else {
         var a2 = w2 * h2;
         eqBox.innerHTML =
@@ -355,8 +317,7 @@
     toggle.addEventListener("change", function () {
       composite = toggle.checked;
       r2Box.hidden = !composite;
-      r2Key.parentNode.querySelector("i:nth-of-type(2)").style.opacity =
-        composite ? "1" : "0.25";
+      r2Key.parentNode.querySelector("i:nth-of-type(2)").style.opacity = composite ? "1" : "0.25";
       r2Key.style.opacity = composite ? "1" : "0.4";
       draw();
     });
@@ -374,13 +335,9 @@
     else fn();
   }
   ready(function () {
-    document
-      .querySelectorAll('.pki-manip[data-manip="area-tiler"]')
-      .forEach(init);
+    document.querySelectorAll('.pki-manip[data-manip="area-tiler"]').forEach(init);
     setTimeout(function () {
-      document
-        .querySelectorAll('.pki-manip[data-manip="area-tiler"]')
-        .forEach(init);
+      document.querySelectorAll('.pki-manip[data-manip="area-tiler"]').forEach(init);
     }, 900);
   });
 })();

@@ -93,7 +93,10 @@ rmSync(stage, { recursive: true, force: true });
 console.log("✓ SCORM package built:");
 console.log("  " + zip);
 console.log("  Lesson: " + lessonUrl);
-console.log("  Mode:   " + (CODES_MODE ? "save codes → Google Sheets gradebook" : "Canvas auto-grade (SCORM score)"));
+console.log(
+  "  Mode:   " +
+    (CODES_MODE ? "save codes → Google Sheets gradebook" : "Canvas auto-grade (SCORM score)"),
+);
 console.log(
   "\nUpload it in Canvas: Settings → Navigation/Apps → SCORM, or via the SCORM tool, then deploy as a graded assignment.",
 );

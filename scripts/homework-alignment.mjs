@@ -71,11 +71,15 @@ export function detectVisualTopic(config) {
     /express|algebraic|variable|coefficient|like term|simplif|equivalent expression/i.test(title)
   )
     return "expressions";
-  if (standard.startsWith("6.RP") || /\bratio|unit rate|\brate\b|percent/i.test(title)) return "ratios";
+  if (standard.startsWith("6.RP") || /\bratio|unit rate|\brate\b|percent/i.test(title))
+    return "ratios";
   if (unit === 5 || standard === "6.G.1") return "area";
   if (standard === "6.G.2" || /volume/i.test(title)) return "volume";
   if (standard === "6.G.4" || /surface/i.test(title)) return "surface-area";
-  if (standard.startsWith("6.SP") || /box plot|dot plot|histogram|display data|data distribution/i.test(title))
+  if (
+    standard.startsWith("6.SP") ||
+    /box plot|dot plot|histogram|display data|data distribution/i.test(title)
+  )
     return "statistics";
   if (/coordinate|quadrant|reflect|distance on/i.test(title)) return "coordinate-plane";
   if (/integer|absolute|rational number/i.test(title)) return "number-line";
@@ -247,13 +251,9 @@ export function isPrintableProblem(it) {
   // Family homework is straight practice — no "find the error" / error-analysis
   // problems. Families want to DO the math, easiest → hardest, not critique a
   // fictional student's mistake.
-  return [
-    "multiple-choice",
-    "fill-table",
-    "matching-game",
-    "drag-sort",
-    "open-response",
-  ].includes(it.type);
+  return ["multiple-choice", "fill-table", "matching-game", "drag-sort", "open-response"].includes(
+    it.type,
+  );
 }
 
 export function selectAlignedQuickCheckProblems(practice = {}, config = {}) {

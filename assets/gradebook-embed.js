@@ -55,15 +55,12 @@
     actions.insertBefore(codes, actions.firstChild);
 
     // Group the gradebook/codes card next to the AI Hub card (DOM move only).
-    var aiCard = document.querySelector(
-      ".ai-hub-feature:not(.class-brain-feature)",
-    );
+    var aiCard = document.querySelector(".ai-hub-feature:not(.class-brain-feature)");
     if (aiCard && aiCard !== card && aiCard.parentNode) {
       aiCard.insertAdjacentElement("afterend", card);
     }
   }
 
-  if (document.readyState === "loading")
-    document.addEventListener("DOMContentLoaded", init);
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
 })();

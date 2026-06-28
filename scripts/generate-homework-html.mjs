@@ -2,10 +2,7 @@ import { readFileSync, writeFileSync, readdirSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { resolveVocabImage, vocabImageAlt } from "../engine/core/vocab-images.js";
-import {
-  EDITORIAL_FONT_IMPORT,
-  EDITORIAL_OVERRIDES,
-} from "./lib/editorial-print.mjs";
+import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
 import {
   selectQuickCheckProblems,
   renderWelcomeBanner,
@@ -860,7 +857,9 @@ function generateHtml(lessonId, config) {
   const welcomeHtml = renderWelcomeBanner(config, lessonId);
   const quickCheckIntroHtml = renderQuickCheckIntro();
   const warmupHtml = warmup
-    .map((p, idx) => renderProblem(p, idx, topic, { badge: "Warm-up / Calentamiento", num: idx + 1 }))
+    .map((p, idx) =>
+      renderProblem(p, idx, topic, { badge: "Warm-up / Calentamiento", num: idx + 1 }),
+    )
     .join("\n");
   const challengeHtml = challenge
     .map((p, idx) =>

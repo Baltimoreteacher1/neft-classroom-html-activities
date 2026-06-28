@@ -31,10 +31,15 @@ function grid100() {
       cells += `<rect x="${x0 + col * c}" y="${y0 + r * c}" width="${c}" height="${c}" fill="${fill}" stroke="${NAVY}" stroke-width="1.2"/>`;
     }
   }
-  const label = `<text x="${x0 + 10 * c + 24}" y="${y0 + 110}" font-size="30" font-weight="800" fill="${NAVY}">75</text>` +
+  const label =
+    `<text x="${x0 + 10 * c + 24}" y="${y0 + 110}" font-size="30" font-weight="800" fill="${NAVY}">75</text>` +
     `<text x="${x0 + 10 * c + 24}" y="${y0 + 142}" font-size="18" fill="${INK}">of 100 cans</text>` +
     `<text x="${x0 + 10 * c + 24}" y="${y0 + 176}" font-size="16" fill="${TEAL}" font-weight="700">75/100 = 0.75 = 75%</text>`;
-  return wrap(540, 320, `<text x="${x0}" y="22" font-size="16" font-weight="700" fill="${INK}">Cans collected toward this week's goal</text>${cells}${label}`);
+  return wrap(
+    540,
+    320,
+    `<text x="${x0}" y="22" font-size="16" font-weight="700" fill="${INK}">Cans collected toward this week's goal</text>${cells}${label}`,
+  );
 }
 
 // ── 2-4: 3½ miles split into ¼-mile segments — number line ──
@@ -55,11 +60,17 @@ function numberLine() {
   for (let v = 0; v <= max + 0.001; v += step) {
     const whole = Math.abs(v - Math.round(v)) < 1e-9;
     ticks += `<line x1="${px(v)}" y1="${y - (whole ? 34 : 26)}" x2="${px(v)}" y2="${y + (whole ? 34 : 26)}" stroke="${NAVY}" stroke-width="${whole ? 2.5 : 1}"/>`;
-    if (whole) ticks += `<text x="${px(v)}" y="${y + 56}" font-size="18" font-weight="700" fill="${INK}" text-anchor="middle">${Math.round(v)}</text>`;
+    if (whole)
+      ticks += `<text x="${px(v)}" y="${y + 56}" font-size="18" font-weight="700" fill="${INK}" text-anchor="middle">${Math.round(v)}</text>`;
   }
-  const head = `<text x="${x0}" y="40" font-size="17" font-weight="700" fill="${INK}">A 3½-mile route split into equal ¼-mile segments</text>` +
+  const head =
+    `<text x="${x0}" y="40" font-size="17" font-weight="700" fill="${INK}">A 3½-mile route split into equal ¼-mile segments</text>` +
     `<text x="${x0}" y="64" font-size="15" fill="${TEAL}" font-weight="700">How many ¼-mile markers fit in 3½ miles?</text>`;
-  return wrap(780, 240, `${head}${segs}${ticks}<text x="${x1 - 4}" y="${y + 56}" font-size="16" fill="${INK}">miles</text>`);
+  return wrap(
+    780,
+    240,
+    `${head}${segs}${ticks}<text x="${x1 - 4}" y="${y + 56}" font-size="16" fill="${INK}">miles</text>`,
+  );
 }
 
 // ── 3-2: clay recipe ratio table ──

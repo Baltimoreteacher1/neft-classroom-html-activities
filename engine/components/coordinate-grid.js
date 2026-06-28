@@ -1,17 +1,6 @@
 export function renderCoordinateGrid(container, config = {}) {
   injectCoordinateGridStyles();
-  let {
-    xMin,
-    xMax,
-    yMin,
-    yMax,
-    xStep,
-    yStep,
-    xLabel,
-    yLabel,
-    showLine,
-    onComplete,
-  } = config;
+  let { xMin, xMax, yMin, yMax, xStep, yStep, xLabel, yLabel, showLine, onComplete } = config;
   // `targets` is the canonical field, but lessons also author the points to plot
   // as `points`. Accept either, and `label`/`instructions` for the prompt.
   let targets = Array.isArray(config.targets)
@@ -51,8 +40,7 @@ export function renderCoordinateGrid(container, config = {}) {
 
   if (label) {
     const lbl = document.createElement("p");
-    lbl.style.cssText =
-      "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
+    lbl.style.cssText = "font-size:1rem; font-weight:600; margin:0 0 var(--sp-4); line-height:1.5;";
     lbl.textContent = label;
     wrapper.append(lbl);
   }
@@ -91,46 +79,21 @@ export function renderCoordinateGrid(container, config = {}) {
 
   // Axes
   if (xMin <= 0 && xMax >= 0) {
-    svgLine(
-      svg,
-      toSvgX(0),
-      PAD.top,
-      toSvgX(0),
-      PAD.top + plotH,
-      "#12355b",
-      1.5,
-    );
+    svgLine(svg, toSvgX(0), PAD.top, toSvgX(0), PAD.top + plotH, "#12355b", 1.5);
   }
   if (yMin <= 0 && yMax >= 0) {
-    svgLine(
-      svg,
-      PAD.left,
-      toSvgY(0),
-      PAD.left + plotW,
-      toSvgY(0),
-      "#12355b",
-      1.5,
-    );
+    svgLine(svg, PAD.left, toSvgY(0), PAD.left + plotW, toSvgY(0), "#12355b", 1.5);
   }
 
   // Axis border
   svgLine(svg, PAD.left, PAD.top, PAD.left, PAD.top + plotH, "#1fa6a2", 2);
-  svgLine(
-    svg,
-    PAD.left,
-    PAD.top + plotH,
-    PAD.left + plotW,
-    PAD.top + plotH,
-    "#1fa6a2",
-    2,
-  );
+  svgLine(svg, PAD.left, PAD.top + plotH, PAD.left + plotW, PAD.top + plotH, "#1fa6a2", 2);
 
   // Tick labels — sit just beside the axes through the origin when those axes
   // are in view (so a 4-quadrant grid reads naturally), otherwise fall back to
   // the outer border for single-quadrant grids. The 0 is omitted to avoid a
   // collision at the origin.
-  const xLabelY =
-    yMin <= 0 && yMax >= 0 ? toSvgY(0) + 14 : PAD.top + plotH + 16;
+  const xLabelY = yMin <= 0 && yMax >= 0 ? toSvgY(0) + 14 : PAD.top + plotH + 16;
   const yLabelX = xMin <= 0 && xMax >= 0 ? toSvgX(0) - 7 : PAD.left - 10;
   for (let x = xMin; x <= xMax; x += xStep) {
     if (x === 0) continue;
@@ -139,27 +102,13 @@ export function renderCoordinateGrid(container, config = {}) {
   }
   for (let y = yMin; y <= yMax; y += yStep) {
     if (y === 0) continue;
-    const t = svgText(
-      svg,
-      yLabelX,
-      toSvgY(y) + 4,
-      String(y),
-      "10px",
-      "#5f6f80",
-    );
+    const t = svgText(svg, yLabelX, toSvgY(y) + 4, String(y), "10px", "#5f6f80");
     t.setAttribute("text-anchor", "end");
   }
 
   // Axis labels
   if (xLabel) {
-    const xl = svgText(
-      svg,
-      PAD.left + plotW / 2,
-      H - 4,
-      xLabel,
-      "12px",
-      "#12355b",
-    );
+    const xl = svgText(svg, PAD.left + plotW / 2, H - 4, xLabel, "12px", "#12355b");
     xl.setAttribute("text-anchor", "middle");
     xl.setAttribute("font-weight", "700");
   }
@@ -187,14 +136,8 @@ export function renderCoordinateGrid(container, config = {}) {
   });
 
   // Instruction text
-  const instrGroup = document.createElementNS(
-    "http://www.w3.org/2000/svg",
-    "g",
-  );
-  const instrBg = document.createElementNS(
-    "http://www.w3.org/2000/svg",
-    "rect",
-  );
+  const instrGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  const instrBg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
   instrBg.setAttribute("x", PAD.left + 10);
   instrBg.setAttribute("y", PAD.top + 6);
   instrBg.setAttribute("width", 200);
@@ -265,14 +208,7 @@ export function renderCoordinateGrid(container, config = {}) {
     g.classList.add("cgrid-point");
     const dot = svgCircle(g, finalSx, finalSy, 7, "#f2c15b", "#12355b", 2);
     dot.classList.add("cgrid-dot");
-    const lbl = svgText(
-      g,
-      finalSx + 12,
-      finalSy - 8,
-      `(${gx}, ${gy})`,
-      "10px",
-      "#12355b",
-    );
+    const lbl = svgText(g, finalSx + 12, finalSy - 8, `(${gx}, ${gy})`, "10px", "#12355b");
     lbl.setAttribute("font-weight", "700");
     dot.style.transformOrigin = `${finalSx}px ${finalSy}px`;
     dot.animate(
@@ -303,24 +239,12 @@ export function renderCoordinateGrid(container, config = {}) {
     const rect = svg.getBoundingClientRect();
     const sx = ((e.clientX - rect.left) / rect.width) * W;
     const sy = ((e.clientY - rect.top) / rect.height) * H;
-    if (
-      sx < PAD.left ||
-      sx > PAD.left + plotW ||
-      sy < PAD.top ||
-      sy > PAD.top + plotH
-    )
-      return;
+    if (sx < PAD.left || sx > PAD.left + plotW || sy < PAD.top || sy > PAD.top + plotH) return;
     const coord = fromSvg(sx, sy);
     // Snap to grid, then clamp inside the axis range so an edge click can't snap
     // off-grid (which would draw outside the plot and never match a target).
-    coord.x = Math.min(
-      xMax,
-      Math.max(xMin, Math.round(coord.x / xStep) * xStep),
-    );
-    coord.y = Math.min(
-      yMax,
-      Math.max(yMin, Math.round(coord.y / yStep) * yStep),
-    );
+    coord.x = Math.min(xMax, Math.max(xMin, Math.round(coord.x / xStep) * xStep));
+    coord.y = Math.min(yMax, Math.max(yMin, Math.round(coord.y / yStep) * yStep));
     placePoint(coord.x, coord.y);
   });
 
@@ -341,8 +265,7 @@ export function renderCoordinateGrid(container, config = {}) {
     else if (e.key === "ArrowLeft") cur.x = Math.max(xMin, cur.x - dx);
     else if (e.key === "ArrowUp") cur.y = Math.min(yMax, cur.y + dy);
     else if (e.key === "ArrowDown") cur.y = Math.max(yMin, cur.y - dy);
-    else if (e.key === "Enter" || e.key === " ")
-      placePoint(cur.x, cur.y, { announce: true });
+    else if (e.key === "Enter" || e.key === " ") placePoint(cur.x, cur.y, { announce: true });
     else if (e.key === "Backspace" || e.key === "Delete") {
       const last = placedPoints[placedPoints.length - 1];
       if (last) {
@@ -363,8 +286,7 @@ export function renderCoordinateGrid(container, config = {}) {
   // the right (next to the plane) so students never have to recall them from a
   // previous page. Stacks vertically on narrow screens.
   const layout = document.createElement("div");
-  layout.style.cssText =
-    "display:flex; flex-wrap:wrap; gap:var(--sp-4); align-items:flex-start;";
+  layout.style.cssText = "display:flex; flex-wrap:wrap; gap:var(--sp-4); align-items:flex-start;";
   const planeWrap = document.createElement("div");
   planeWrap.style.cssText = "flex:1 1 320px; min-width:260px;";
   planeWrap.append(svg);
@@ -410,10 +332,7 @@ export function renderCoordinateGrid(container, config = {}) {
     const cb = document.createElement("input");
     cb.type = "checkbox";
     cb.style.cssText = "width:18px; height:18px; accent-color:var(--teal);";
-    lineToggle.append(
-      cb,
-      document.createTextNode(" Connect points with a line"),
-    );
+    lineToggle.append(cb, document.createTextNode(" Connect points with a line"));
     wrapper.append(lineToggle);
 
     let drawnLine = null;
@@ -423,13 +342,8 @@ export function renderCoordinateGrid(container, config = {}) {
         drawnLine = null;
       }
       if (cb.checked && placedPoints.length >= 2) {
-        drawnLine = document.createElementNS(
-          "http://www.w3.org/2000/svg",
-          "polyline",
-        );
-        const pts = placedPoints
-          .map((p) => `${toSvgX(p.coord.x)},${toSvgY(p.coord.y)}`)
-          .join(" ");
+        drawnLine = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
+        const pts = placedPoints.map((p) => `${toSvgX(p.coord.x)},${toSvgY(p.coord.y)}`).join(" ");
         drawnLine.setAttribute("points", pts);
         drawnLine.setAttribute("fill", "none");
         drawnLine.setAttribute("stroke", "#1fa6a2");
@@ -452,11 +366,7 @@ export function renderCoordinateGrid(container, config = {}) {
   checkBtn.addEventListener("click", () => {
     if (done) return;
     if (placedPoints.length < targets.length) {
-      showFb(
-        feedbackSlot,
-        "hint",
-        `Place all ${targets.length} points before checking.`,
-      );
+      showFb(feedbackSlot, "hint", `Place all ${targets.length} points before checking.`);
       return;
     }
 
@@ -495,14 +405,8 @@ export function renderCoordinateGrid(container, config = {}) {
     if (correct === targets.length) {
       done = true;
       checkBtn.style.display = "none";
-      placedPoints.forEach((pp) =>
-        celebrateBurst(svg, pp.coord, toSvgX, toSvgY),
-      );
-      showFb(
-        feedbackSlot,
-        "success",
-        `All ${targets.length} points plotted correctly!`,
-      );
+      placedPoints.forEach((pp) => celebrateBurst(svg, pp.coord, toSvgX, toSvgY));
+      showFb(feedbackSlot, "success", `All ${targets.length} points plotted correctly!`);
       if (onComplete) onComplete(correct, targets.length);
     } else {
       showFb(

@@ -40,10 +40,7 @@ const report = {
 
 function revert(html) {
   const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  return html.replace(
-    new RegExp(`\\s*${esc(BEGIN)}[\\s\\S]*?${esc(END)}`, "g"),
-    "",
-  );
+  return html.replace(new RegExp(`\\s*${esc(BEGIN)}[\\s\\S]*?${esc(END)}`, "g"), "");
 }
 
 for (const p of paths) {
@@ -75,9 +72,7 @@ for (const p of paths) {
   report.injected++;
 }
 
-console.log(
-  `Canvas-bridge injection ${DRY ? "(dry-run)" : ""}${REVERT ? " — revert" : ""}`,
-);
+console.log(`Canvas-bridge injection ${DRY ? "(dry-run)" : ""}${REVERT ? " — revert" : ""}`);
 console.log("  activities :", paths.length);
 console.log("  scanned    :", report.scanned);
 if (REVERT) console.log("  reverted   :", report.reverted);
@@ -85,5 +80,4 @@ else {
   console.log("  injected   :", report.injected);
   console.log("  already    :", report.already);
 }
-if (report.missing.length)
-  console.log("  missing    :", report.missing.join(", "));
+if (report.missing.length) console.log("  missing    :", report.missing.join(", "));

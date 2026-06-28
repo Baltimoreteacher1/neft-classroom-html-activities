@@ -214,12 +214,9 @@
       var btn = e.target.closest && e.target.closest("[data-mode]");
       if (!btn) return;
       mode = btn.getAttribute("data-mode");
-      Array.prototype.forEach.call(
-        el.querySelectorAll("[data-mode]"),
-        function (b) {
-          b.setAttribute("aria-pressed", b === btn ? "true" : "false");
-        },
-      );
+      Array.prototype.forEach.call(el.querySelectorAll("[data-mode]"), function (b) {
+        b.setAttribute("aria-pressed", b === btn ? "true" : "false");
+      });
       render();
     });
     el.addEventListener("click", function (e) {
@@ -374,8 +371,7 @@
 
       if (winner === null && isFinite(ua) && isFinite(ub)) {
         statusBox.className = "pki-pb-status win";
-        statusBox.innerHTML =
-          "Both packages cost <b>" + money(ua) + " per unit</b> — it’s a tie!";
+        statusBox.innerHTML = "Both packages cost <b>" + money(ua) + " per unit</b> — it’s a tie!";
       } else if (winner) {
         var wu = winner === "a" ? ua : ub;
         var lu = winner === "a" ? ub : ua;
@@ -433,9 +429,7 @@
   }
 
   function scan() {
-    document
-      .querySelectorAll('.pki-manip[data-manip="percent-bar"]')
-      .forEach(init);
+    document.querySelectorAll('.pki-manip[data-manip="percent-bar"]').forEach(init);
   }
   function ready(fn) {
     if (document.readyState === "loading")
