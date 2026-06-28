@@ -502,7 +502,7 @@
             <span class="en-text">🔍 Pose your Statistical Question for this weather investigation:</span>
             <span class="es-text">🔍 Plantea tu pregunta estadística para esta investigación del clima:</span>
           </label>
-          <input type="text" id="stat-question" placeholder="e.g., What are the daily high temperatures in Denver during October?" />
+          <input type="text" id="stat-question" placeholder="" />
 
           <details class="hint">
             <summary>
@@ -541,35 +541,35 @@
                 <span class="en-text">Day 1 Temp</span>
                 <span class="es-text">Temp Día 1</span>
               </label>
-              <input type="number" id="temp-1" placeholder="e.g. 72" oninput="clearCalculation()" />
+              <input type="number" id="temp-1" placeholder="" oninput="clearCalculation()" />
             </div>
             <div>
               <label class="lbl" for="temp-2">
                 <span class="en-text">Day 2 Temp</span>
                 <span class="es-text">Temp Día 2</span>
               </label>
-              <input type="number" id="temp-2" placeholder="e.g. 75" oninput="clearCalculation()" />
+              <input type="number" id="temp-2" placeholder="" oninput="clearCalculation()" />
             </div>
             <div>
               <label class="lbl" for="temp-3">
                 <span class="en-text">Day 3 Temp</span>
                 <span class="es-text">Temp Día 3</span>
               </label>
-              <input type="number" id="temp-3" placeholder="e.g. 78" oninput="clearCalculation()" />
+              <input type="number" id="temp-3" placeholder="" oninput="clearCalculation()" />
             </div>
             <div>
               <label class="lbl" for="temp-4">
                 <span class="en-text">Day 4 Temp</span>
                 <span class="es-text">Temp Día 4</span>
               </label>
-              <input type="number" id="temp-4" placeholder="e.g. 70" oninput="clearCalculation()" />
+              <input type="number" id="temp-4" placeholder="" oninput="clearCalculation()" />
             </div>
             <div>
               <label class="lbl" for="temp-5">
                 <span class="en-text">Day 5 Temp</span>
                 <span class="es-text">Temp Día 5</span>
               </label>
-              <input type="number" id="temp-5" placeholder="e.g. 75" oninput="clearCalculation()" />
+              <input type="number" id="temp-5" placeholder="" oninput="clearCalculation()" />
             </div>
 
             <!-- Days 6-8 are Level 2 challenge elements -->
@@ -578,21 +578,21 @@
                 <span class="en-text">Day 6 Temp (Lvl 2)</span>
                 <span class="es-text">Temp Día 6 (Niv 2)</span>
               </label>
-              <input type="number" id="temp-6" placeholder="e.g. 74" oninput="clearCalculation()" />
+              <input type="number" id="temp-6" placeholder="" oninput="clearCalculation()" />
             </div>
             <div class="lvl2-only">
               <label class="lbl" for="temp-7">
                 <span class="en-text">Day 7 Temp (Lvl 2)</span>
                 <span class="es-text">Temp Día 7 (Niv 2)</span>
               </label>
-              <input type="number" id="temp-7" placeholder="e.g. 82" oninput="clearCalculation()" />
+              <input type="number" id="temp-7" placeholder="" oninput="clearCalculation()" />
             </div>
             <div class="lvl2-only">
               <label class="lbl" for="temp-8">
                 <span class="en-text">Day 8 Temp (Lvl 2)</span>
                 <span class="es-text">Temp Día 8 (Niv 2)</span>
               </label>
-              <input type="number" id="temp-8" placeholder="e.g. 68" oninput="clearCalculation()" />
+              <input type="number" id="temp-8" placeholder="" oninput="clearCalculation()" />
             </div>
           </div>
 
@@ -883,7 +883,7 @@
             <span class="en-text">Classmate's Name or Initials</span>
             <span class="es-text">Nombre o iniciales del compañero</span>
           </label>
-          <input type="text" id="p-name" placeholder="e.g. Alex" />
+          <input type="text" id="p-name" placeholder="" />
 
           <div class="grid2">
             <div>
@@ -891,14 +891,14 @@
                 <span class="en-text">Partner's Median Temperature (°F)</span>
                 <span class="es-text">Temperatura mediana del compañero (°F)</span>
               </label>
-              <input type="number" id="p-median" step="0.1" placeholder="e.g. 74.0" />
+              <input type="number" id="p-median" step="0.1" placeholder="" />
             </div>
             <div>
               <label class="lbl" for="p-iqr">
                 <span class="en-text">Partner's Temperature IQR (°F)</span>
                 <span class="es-text">RIC de temperatura del compañero (°F)</span>
               </label>
-              <input type="number" id="p-iqr" step="0.1" placeholder="e.g. 7.5" />
+              <input type="number" id="p-iqr" step="0.1" placeholder="" />
             </div>
           </div>
 
@@ -1775,8 +1775,8 @@
         const statQuestionInput = document.getElementById('stat-question');
         if (statQuestionInput) {
           statQuestionInput.placeholder = isEs 
-            ? "ej. ¿Cuáles son las temperaturas máximas diarias en Denver durante octubre?"
-            : "e.g., What are the daily high temperatures in Denver during October?";
+            ? ""
+            : "";
         }
 
         const outlierReflect = document.getElementById('outlier-reflect');
@@ -1809,17 +1809,17 @@
 
         const pName = document.getElementById('p-name');
         if (pName) {
-          pName.placeholder = isEs ? "ej. Alejandro" : "e.g. Alex";
+          pName.placeholder = isEs ? "" : "";
         }
 
         const pMedian = document.getElementById('p-median');
         if (pMedian) {
-          pMedian.placeholder = isEs ? "ej. 74.0" : "e.g. 74.0";
+          pMedian.placeholder = isEs ? "" : "";
         }
 
         const pIqr = document.getElementById('p-iqr');
         if (pIqr) {
-          pIqr.placeholder = isEs ? "ej. 7.5" : "e.g. 7.5";
+          pIqr.placeholder = isEs ? "" : "";
         }
 
         const pReflect = document.getElementById('p-reflect');

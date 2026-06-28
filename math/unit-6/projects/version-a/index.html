@@ -288,6 +288,17 @@
       body.es .en-text { display: none !important; }
       body.es .es-text { display: inline !important; }
       span.es-text { display: none; }
+      .level-btn#btn-read.speaking {
+        background-color: var(--coral);
+        color: #fff;
+        animation: pulse 1.5s infinite alternate;
+        box-shadow: 0 0 10px rgba(196, 90, 60, 0.6);
+        border-color: var(--coral);
+      }
+      @keyframes pulse {
+        0% { opacity: 0.85; }
+        100% { opacity: 1; transform: scale(1.03); }
+      }
     </style>
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
@@ -414,19 +425,19 @@
           <div class="grid2">
             <div>
               <label class="lbl" for="g-title"><span class="en-text">🕹️ Video Game Title</span><span class="es-text">🕹️ Título del videojuego</span></label>
-              <input type="text" id="g-title" placeholder="e.g. Pixel Quest" data-placeholder-en="e.g. Pixel Quest" data-placeholder-es="ej. Búsqueda de Píxeles" value="Pixel Quest" oninput="calcBaseScore()" />
+              <input type="text" id="g-title" placeholder="" data-placeholder-en="" data-placeholder-es="" value="Pixel Quest" oninput="calcBaseScore()" />
             </div>
             <div>
               <label class="lbl" for="g-pt-rate"><span class="en-text">➕ Points Coefficient (value per point action)</span><span class="es-text">➕ Coeficiente de puntos (valor por acción de punto)</span></label>
-              <input type="number" id="g-pt-rate" min="1" placeholder="e.g. 10" data-placeholder-en="e.g. 10" data-placeholder-es="ej. 10" value="10" oninput="calcBaseScore()" />
+              <input type="number" id="g-pt-rate" min="1" placeholder="" data-placeholder-en="" data-placeholder-es="" value="10" oninput="calcBaseScore()" />
             </div>
             <div>
               <label class="lbl" for="g-bn-rate"><span class="en-text">🎁 Bonus Coefficient (value per bonus item)</span><span class="es-text">🎁 Coeficiente de bonificación (valor por elemento de bonificación)</span></label>
-              <input type="number" id="g-bn-rate" min="1" placeholder="e.g. 5" data-placeholder-en="e.g. 5" data-placeholder-es="ej. 5" value="5" oninput="calcBaseScore()" />
+              <input type="number" id="g-bn-rate" min="1" placeholder="" data-placeholder-en="" data-placeholder-es="" value="5" oninput="calcBaseScore()" />
             </div>
             <div class="lvl2-only">
               <label class="lbl" for="g-constant"><span class="en-text">📌 Starting Constant (flat initial score bonus)</span><span class="es-text">📌 Constante inicial (bonificación de puntuación inicial fija)</span></label>
-              <input type="number" id="g-constant" min="0" placeholder="e.g. 50" data-placeholder-en="e.g. 50" data-placeholder-es="ej. 50" value="0" oninput="calcBaseScore()" />
+              <input type="number" id="g-constant" min="0" placeholder="" data-placeholder-en="" data-placeholder-es="" value="0" oninput="calcBaseScore()" />
             </div>
           </div>
 
@@ -551,28 +562,28 @@
                 <td><span class="en-text">Level 2</span><span class="es-text">Nivel 2</span></td>
                 <td><span class="formula-m-base">2</span><sup>2</sup></td>
                 <td><span class="formula-m-exp2">2 × 2</span></td>
-                <td><input type="number" id="eval-m-l2" style="width:120px; padding:6px 10px;" placeholder="e.g. 4" data-placeholder-en="e.g. 4" data-placeholder-es="ej. 4" oninput="calcMultipliers()" /></td>
+                <td><input type="number" id="eval-m-l2" style="width:120px; padding:6px 10px;" placeholder="" data-placeholder-en="" data-placeholder-es="" oninput="calcMultipliers()" /></td>
                 <td><span id="eval-m-l2-feedback" class="feedback"></span></td>
               </tr>
               <tr>
                 <td><span class="en-text">Level 3</span><span class="es-text">Nivel 3</span></td>
                 <td><span class="formula-m-base">2</span><sup>3</sup></td>
                 <td><span class="formula-m-exp3">2 × 2 × 2</span></td>
-                <td><input type="number" id="eval-m-l3" style="width:120px; padding:6px 10px;" placeholder="e.g. 8" data-placeholder-en="e.g. 8" data-placeholder-es="ej. 8" oninput="calcMultipliers()" /></td>
+                <td><input type="number" id="eval-m-l3" style="width:120px; padding:6px 10px;" placeholder="" data-placeholder-en="" data-placeholder-es="" oninput="calcMultipliers()" /></td>
                 <td><span id="eval-m-l3-feedback" class="feedback"></span></td>
               </tr>
               <tr>
                 <td><span class="en-text">Level 4</span><span class="es-text">Nivel 4</span></td>
                 <td><span class="formula-m-base">2</span><sup>4</sup></td>
                 <td><span class="formula-m-exp4">2 × 2 × 2 × 2</span></td>
-                <td><input type="number" id="eval-m-l4" style="width:120px; padding:6px 10px;" placeholder="e.g. 16" data-placeholder-en="e.g. 16" data-placeholder-es="ej. 16" oninput="calcMultipliers()" /></td>
+                <td><input type="number" id="eval-m-l4" style="width:120px; padding:6px 10px;" placeholder="" data-placeholder-en="" data-placeholder-es="" oninput="calcMultipliers()" /></td>
                 <td><span id="eval-m-l4-feedback" class="feedback"></span></td>
               </tr>
               <tr>
                 <td><span class="en-text">Level 5</span><span class="es-text">Nivel 5</span></td>
                 <td><span class="formula-m-base">2</span><sup>5</sup></td>
                 <td><span class="formula-m-exp5">2 × 2 × 2 × 2 × 2</span></td>
-                <td><input type="number" id="eval-m-l5" style="width:120px; padding:6px 10px;" placeholder="e.g. 32" data-placeholder-en="e.g. 32" data-placeholder-es="ej. 32" oninput="calcMultipliers()" /></td>
+                <td><input type="number" id="eval-m-l5" style="width:120px; padding:6px 10px;" placeholder="" data-placeholder-en="" data-placeholder-es="" oninput="calcMultipliers()" /></td>
                 <td><span id="eval-m-l5-feedback" class="feedback"></span></td>
               </tr>
             </tbody>
@@ -655,12 +666,12 @@
             <div class="grid2">
               <div>
                 <label class="lbl" for="eq1-left"><span class="en-text">Evaluate Left: 3(2(3) + 4(2))</span><span class="es-text">Evaluar izquierda: 3(2(3) + 4(2))</span></label>
-                <input type="number" id="eq1-left" placeholder="e.g. 42" data-placeholder-en="e.g. 42" data-placeholder-es="ej. 42" oninput="validateEquiv()" />
+                <input type="number" id="eq1-left" placeholder="" data-placeholder-en="" data-placeholder-es="" oninput="validateEquiv()" />
                 <span id="eq1-left-feedback" class="feedback"></span>
               </div>
               <div>
                 <label class="lbl" for="eq1-right"><span class="en-text">Evaluate Right: 6(3) + 12(2)</span><span class="es-text">Evaluar derecha: 6(3) + 12(2)</span></label>
-                <input type="number" id="eq1-right" placeholder="e.g. 42" data-placeholder-en="e.g. 42" data-placeholder-es="ej. 42" oninput="validateEquiv()" />
+                <input type="number" id="eq1-right" placeholder="" data-placeholder-en="" data-placeholder-es="" oninput="validateEquiv()" />
                 <span id="eq1-right-feedback" class="feedback"></span>
               </div>
             </div>
@@ -682,12 +693,12 @@
             <div class="grid2">
               <div>
                 <label class="lbl" for="eq2-left"><span class="en-text">Evaluate Left: 4(3 + 3(2))</span><span class="es-text">Evaluar izquierda: 4(3 + 3(2))</span></label>
-                <input type="number" id="eq2-left" placeholder="e.g. 36" data-placeholder-en="e.g. 36" data-placeholder-es="ej. 36" oninput="validateEquiv()" />
+                <input type="number" id="eq2-left" placeholder="" data-placeholder-en="" data-placeholder-es="" oninput="validateEquiv()" />
                 <span id="eq2-left-feedback" class="feedback"></span>
               </div>
               <div>
                 <label class="lbl" for="eq2-right"><span class="en-text">Evaluate Right: 4(3) + 3(2)</span><span class="es-text">Evaluar derecha: 4(3) + 3(2)</span></label>
-                <input type="number" id="eq2-right" placeholder="e.g. 18" data-placeholder-en="e.g. 18" data-placeholder-es="ej. 18" oninput="validateEquiv()" />
+                <input type="number" id="eq2-right" placeholder="" data-placeholder-en="" data-placeholder-es="" oninput="validateEquiv()" />
                 <span id="eq2-right-feedback" class="feedback"></span>
               </div>
             </div>
@@ -709,12 +720,12 @@
             <div class="grid2">
               <div>
                 <label class="lbl" for="eq3-left"><span class="en-text">Evaluate Left: 5(2(3) + 2 + 8)</span><span class="es-text">Evaluar izquierda: 5(2(3) + 2 + 8)</span></label>
-                <input type="number" id="eq3-left" placeholder="e.g. 80" data-placeholder-en="e.g. 80" data-placeholder-es="ej. 80" oninput="validateEquiv()" />
+                <input type="number" id="eq3-left" placeholder="" data-placeholder-en="" data-placeholder-es="" oninput="validateEquiv()" />
                 <span id="eq3-left-feedback" class="feedback"></span>
               </div>
               <div>
                 <label class="lbl" for="eq3-right"><span class="en-text">Evaluate Right: 10(3) + 5(2) + 40</span><span class="es-text">Evaluar derecha: 10(3) + 5(2) + 40</span></label>
-                <input type="number" id="eq3-right" placeholder="e.g. 80" data-placeholder-en="e.g. 80" data-placeholder-es="ej. 80" oninput="validateEquiv()" />
+                <input type="number" id="eq3-right" placeholder="" data-placeholder-en="" data-placeholder-es="" oninput="validateEquiv()" />
                 <span id="eq3-right-feedback" class="feedback"></span>
               </div>
             </div>
@@ -795,15 +806,15 @@
           <div class="grid2">
             <div>
               <label class="lbl" for="p-name"><span class="en-text">👤 Partner's Name</span><span class="es-text">👤 Nombre del compañero</span></label>
-              <input type="text" id="p-name" placeholder="e.g. Alex" data-placeholder-en="e.g. Alex" data-placeholder-es="ej. Alex" oninput="comparePartner()" />
+              <input type="text" id="p-name" placeholder="" data-placeholder-en="" data-placeholder-es="" oninput="comparePartner()" />
             </div>
             <div>
               <label class="lbl" for="p-pt-rate"><span class="en-text">➕ Partner's Points Rate</span><span class="es-text">➕ Tasa de puntos del compañero</span></label>
-              <input type="number" id="p-pt-rate" min="1" placeholder="e.g. 8" data-placeholder-en="e.g. 8" data-placeholder-es="ej. 8" value="8" oninput="comparePartner()" />
+              <input type="number" id="p-pt-rate" min="1" placeholder="" data-placeholder-en="" data-placeholder-es="" value="8" oninput="comparePartner()" />
             </div>
             <div>
               <label class="lbl" for="p-bn-rate"><span class="en-text">🎁 Partner's Bonus Rate</span><span class="es-text">🎁 Tasa de bonificación del compañero</span></label>
-              <input type="number" id="p-bn-rate" min="1" placeholder="e.g. 6" data-placeholder-en="e.g. 6" data-placeholder-es="ej. 6" value="6" oninput="comparePartner()" />
+              <input type="number" id="p-bn-rate" min="1" placeholder="" data-placeholder-en="" data-placeholder-es="" value="6" oninput="comparePartner()" />
             </div>
             <div class="lvl2-only">
               <label class="lbl" for="p-exp-base"><span class="en-text">⚙️ Partner's Multiplier Base (Level 2 only)</span><span class="es-text">⚙️ Base del multiplicador del compañero (Nivel 2 solamente)</span></label>
