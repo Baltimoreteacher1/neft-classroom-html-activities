@@ -8199,6 +8199,19 @@
               // opens it. Empty phases are disabled with a "— None —" label.
               phaseSelects.forEach(function (sel, pIdx) {
                 var items = phaseBuckets[pIdx];
+                
+                // Inject universal Practice Arcade Game option for Games dropdown (pIdx === 3)
+                if (pIdx === 3) {
+                  items = items.slice();
+                  var hasArcade = items.some(function(it) { return it.href.indexOf('practice-arcade') > -1; });
+                  if (!hasArcade) {
+                    items.push({
+                      text: "⚙️ Practice Arcade Game",
+                      href: "/math/games/practice-arcade/?lesson=" + lesson.lessonId
+                    });
+                  }
+                }
+                
                 sel.innerHTML = "";
                 var placeholder = document.createElement("option");
                 placeholder.value = "";

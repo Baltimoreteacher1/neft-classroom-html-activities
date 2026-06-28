@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/math-mobile.css" />
+    <title>Practice Arcade — Arcade Review Lab</title>
+    <meta name="description" content="Arcade math review simulator — shoots down answers to practice problems." />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background: #0f172a;
+        overflow: hidden;
+        font-family: "Segoe UI", system-ui, sans-serif;
+      }
+      canvas {
+        display: block;
+        margin: 0 auto;
+        max-width: 100%;
+        max-height: 100%;
+      }
+      #loader {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #0f172a;
+        color: #fff;
+        z-index: 10;
+        font-size: 18px;
+        font-weight: 700;
+        gap: 10px;
+      }
+      .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(255,255,255,0.1);
+        border-top-color: #38bdf8;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+    <script src="/games/vendor/phaser/phaser-3.80.1.min.js"></script>
+    <script>
+      if (typeof Phaser === "undefined") {
+        document.write(
+          '<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"><\/script>'
+        );
+      }
+    </script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+    <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
+    <!-- nsr-injected:end -->
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <link rel="stylesheet" href="/assets/game-fx.css" />
+    <!-- gfx-injected:end -->
+  </head>
+  <body>
+    <div id="loader">
+      <div class="spinner"></div>
+      <div id="loader-text">Loading Practice Arcade...</div>
+    </div>
+    
+    <script>
+      // Practice Arcade — Universal Review Game
+      // Dynamically extracts practice questions from lesson config.json and runs a Phaser 3 Meteor Smasher game.
+      
+      const W = 1024;
+      const H = 768;
+      let questions = [];
+      let activeLesson = "1-1";
+      let lessonTitle = "Lesson";
+
+      // 1. Read URL params and fetch config
+      async function loadLessonConfig() {
+        const params = new URLSearchParams(window.location.search);
+        activeLesson = params.get("lesson") || "1-1";
+        
+        try {
+          const res = await fetch(`/lessons/${encodeURIComponent(activeLesson)}/config.json`);
+          if (!res.ok) throw new Error("Config not found");
+          const data = await res.json();
+          
+          lessonTitle = data.title || "Lesson";
+          document.title = `${lessonTitle} — Practice Arcade`;
+          
+          // Gather multiple choice questions
+          const opt = data.practice?.optional || [];
+          opt.forEach(prob => {
+            if (prob.type === "multiple-choice" && prob.stem && prob.choices) {
+              questions.push({
+                prompt: prob.stem,
+                choices: prob.choices,
+                correctIndex: prob.correctIndex || 0
+              });
+            }
+          });
+        } catch(e) {
+          console.warn("Could not load lesson config, falling back to dummy questions", e);
+        }
+        
+        // Fallback questions if none found
+        if (questions.length === 0) {
+          questions = [
+            {
+              prompt: "Select the option that evaluates to 12.",
+              choices: ["6 + 6", "10 - 2", "5 * 3", "20 / 4"],
+              correctIndex: 0
+            },
+            {
+              prompt: "Which number is a prime number?",
+              choices: ["15", "21", "29", "35"],
+              correctIndex: 2
+            },
+            {
+              prompt: "What is the GCF of 12 and 18?",
+              choices: ["2", "3", "6", "12"],
+              correctIndex: 2
+            }
+          ];
+        }
+        
+        // Hide loader and launch Phaser
+        document.getElementById("loader").style.display = "none";
+        initGame();
+      }
+
+      function initGame() {
+        const config = {
+          type: Phaser.AUTO,
+          width: W,
+          height: H,
+          backgroundColor: '#0b0f19',
+          parent: document.body,
+          physics: {
+            default: 'arcade',
+            arcade: { gravity: { y: 0 }, debug: false }
+          },
+          scene: [BootScene, PlayScene, WinScene]
+        };
+        window.game = new Phaser.Game(config);
+      }
+
+      // --- Phaser Scenes ---
+
+      class BootScene extends Phaser.Scene {
+        constructor() { super('BootScene'); }
+        preload() {
+          // Programmatic graphics generation so no external assets are required
+          const canvas = this.textures.createCanvas('ship', 48, 48);
+          const ctx = canvas.context;
+          ctx.fillStyle = '#0ea5e9';
+          ctx.beginPath();
+          ctx.moveTo(24, 0);
+          ctx.lineTo(48, 48);
+          ctx.lineTo(24, 36);
+          ctx.lineTo(0, 48);
+          ctx.closePath();
+          ctx.fill();
+          canvas.refresh();
+          
+          const laser = this.textures.createCanvas('laser', 8, 24);
+          const lCtx = laser.context;
+          lCtx.fillStyle = '#f43f5e';
+          lCtx.fillRect(0, 0, 8, 24);
+          laser.refresh();
+        }
+        create() {
+          this.scene.start('PlayScene');
+        }
+      }
+
+      class PlayScene extends Phaser.Scene {
+        constructor() { super('PlayScene'); }
+        create() {
+          this.qIdx = 0;
+          this.score = 0;
+          this.lives = 3;
+          this.streak = 0;
+          
+          // Space Background Stars
+          this.stars = this.add.graphics();
+          this.stars.fillStyle(0xffffff, 0.4);
+          for(let i=0; i<80; i++) {
+            this.stars.fillCircle(Phaser.Math.Between(0, W), Phaser.Math.Between(0, H), Phaser.Math.Between(1, 3));
+          }
+
+          // UI Headers
+          this.titleText = this.add.text(24, 24, `${lessonTitle.toUpperCase()} — ARCADE`, { font: 'bold 18px Nunito, sans-serif', fill: '#38bdf8' });
+          this.scoreText = this.add.text(24, 52, 'Score: 0', { font: 'bold 20px Nunito, sans-serif', fill: '#ffffff' });
+          
+          // Lives UI
+          this.livesGroup = this.add.group();
+          this.updateLivesUI();
+
+          // Spaceship
+          this.player = this.physics.add.sprite(W/2, H - 80, 'ship').setCollideWorldBounds(true);
+          this.player.setDrag(800);
+          
+          // Controls
+          this.cursors = this.input.keyboard.createCursorKeys();
+          
+          // Answer group
+          this.meteors = this.physics.add.group();
+          
+          // Lasers
+          this.lasers = this.physics.add.group();
+
+          // Question Prompt Panel
+          this.promptPanel = this.add.graphics();
+          this.promptPanel.fillStyle(0x1e293b, 0.95);
+          this.promptPanel.lineStyle(2, 0x38bdf8, 0.8);
+          this.promptPanel.fillRoundedRect(100, 100, W - 200, 100, 16);
+          this.promptPanel.strokeRoundedRect(100, 100, W - 200, 100, 16);
+
+          this.promptText = this.add.text(W/2, 150, '', {
+            font: 'bold 22px Nunito, sans-serif',
+            fill: '#ffffff',
+            align: 'center',
+            wordWrap: { width: W - 240 }
+          }).setOrigin(0.5);
+
+          // Bullet overlaps
+          this.physics.add.overlap(this.lasers, this.meteors, this.hitMeteor, null, this);
+          this.physics.add.overlap(this.player, this.meteors, this.playerHit, null, this);
+
+          // Keyboard Listener
+          this.input.keyboard.on('keydown-SPACE', this.shootLaser, this);
+
+          // Touch Pointer Listeners
+          this.input.on('pointerdown', (pointer) => {
+            this.physics.moveToObject(this.player, pointer, 300);
+            this.shootLaser();
+          });
+
+          this.loadQuestion();
+        }
+
+        update() {
+          if (this.cursors.left.isDown) {
+            this.player.setVelocityX(-400);
+          } else if (this.cursors.right.isDown) {
+            this.player.setVelocityX(400);
+          } else {
+            this.player.setVelocityX(0);
+          }
+
+          this.stars.y = (this.stars.y + 0.5) % H;
+        }
+
+        updateLivesUI() {
+          this.livesGroup.clear(true, true);
+          for(let i=0; i<this.lives; i++) {
+            const heart = this.add.text(W - 140 + (i * 32), 24, '❤️', { font: '24px Arial' });
+            this.livesGroup.add(heart);
+          }
+        }
+
+        loadQuestion() {
+          this.promptPanel.setVisible(true);
+          this.promptText.setVisible(true);
+          
+          if (this.qIdx >= questions.length) {
+            this.scene.start('WinScene', { score: this.score });
+            return;
+          }
+
+          const q = questions[this.qIdx];
+          this.promptText.setText(q.prompt);
+
+          this.meteors.clear(true, true);
+
+          const laneWidth = (W - 200) / q.choices.length;
+          q.choices.forEach((choice, index) => {
+            const x = 150 + (index * laneWidth) + (laneWidth / 2);
+            const y = 300;
+            
+            const met = this.physics.add.sprite(x, y, null);
+            met.setCircle(32);
+            met.setImmovable(true);
+            met.setVelocityY(20 + (this.qIdx * 5));
+            
+            met.answerText = choice;
+            met.isCorrect = (index === q.correctIndex);
+            
+            const label = this.add.text(x, y, choice, {
+              font: 'bold 20px Nunito, sans-serif',
+              fill: '#ffffff',
+              backgroundPadding: 10,
+              backgroundColor: '#334155'
+            }).setOrigin(0.5);
+            
+            met.label = label;
+            this.meteors.add(met);
+          });
+        }
+
+        shootLaser() {
+          const l = this.physics.add.sprite(this.player.x, this.player.y - 30, 'laser');
+          l.setVelocityY(-600);
+          this.lasers.add(l);
+          if (window.AudioSynth) window.AudioSynth.playTone(600, 'sine', 0.08, 0.05);
+        }
+
+        hitMeteor(laser, meteor) {
+          laser.destroy();
+          meteor.label.destroy();
+          
+          const exp = this.add.graphics();
+          exp.fillStyle(meteor.isCorrect ? 0x10b981 : 0xef4444, 0.8);
+          for(let i=0; i<12; i++) {
+            exp.fillCircle(meteor.x + Phaser.Math.Between(-30, 30), meteor.y + Phaser.Math.Between(-30, 30), Phaser.Math.Between(2, 6));
+          }
+          this.time.delayedCall(400, () => exp.destroy());
+
+          if (meteor.isCorrect) {
+            this.score += 1000 + (this.streak * 200);
+            this.scoreText.setText(`Score: ${this.score}`);
+            this.streak++;
+            
+            document.body.classList.add('gfx-correct');
+            setTimeout(() => document.body.classList.remove('gfx-correct'), 200);
+
+            this.qIdx++;
+            meteor.destroy();
+            this.loadQuestion();
+          } else {
+            this.streak = 0;
+            document.body.classList.add('gfx-wrong');
+            setTimeout(() => document.body.classList.remove('gfx-wrong'), 200);
+
+            this.lives--;
+            this.updateLivesUI();
+            meteor.destroy();
+            
+            if (this.lives <= 0) {
+              this.scene.start('WinScene', { score: this.score, gameover: true });
+            } else {
+              this.loadQuestion();
+            }
+          }
+        }
+
+        playerHit(player, meteor) {
+          this.hitMeteor(this.physics.add.sprite(0,0,null), meteor);
+        }
+      }
+
+      class WinScene extends Phaser.Scene {
+        constructor() { super('WinScene'); }
+        init(data) {
+          this.finalScore = data.score;
+          this.gameover = data.gameover;
+        }
+        create() {
+          this.add.text(W/2, H/2 - 100, this.gameover ? 'GAME OVER' : 'VICTORY!', {
+            font: 'bold 48px Nunito, sans-serif',
+            fill: this.gameover ? '#ef4444' : '#10b981'
+          }).setOrigin(0.5);
+
+          this.add.text(W/2, H/2, `Final Score: ${this.finalScore}`, {
+            font: '24px Nunito, sans-serif',
+            fill: '#ffffff'
+          }).setOrigin(0.5);
+
+          const btn = this.add.text(W/2, H/2 + 80, 'PLAY AGAIN', {
+            font: 'bold 20px Nunito, sans-serif',
+            fill: '#0f172a',
+            backgroundColor: '#38bdf8',
+            padding: { x: 20, y: 10 }
+          }).setOrigin(0.5).setInteractive();
+
+          btn.on('pointerdown', () => {
+            window.location.reload();
+          });
+
+          if (!this.gameover) {
+            document.body.classList.add('won');
+          }
+        }
+      }
+
+      window.addEventListener("DOMContentLoaded", loadLessonConfig);
+    </script>
+    <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
+    <script src="/assets/game-fx.js" defer></script>
+    <!-- gfx-injected:end -->
+  </body>
+</html>
