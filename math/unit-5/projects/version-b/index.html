@@ -281,6 +281,28 @@
         text-decoration: line-through;
         transition: all 0.25s ease;
       }
+    
+      /* ---- Teacher Diagnostics Console ---- */
+      #teacher-console {
+        position: fixed; bottom: 20px; right: 20px; z-index: 10000;
+        width: 330px; max-height: 480px; overflow-y: auto;
+        background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 12px;
+        padding: 16px; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif;
+        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3), 0 8px 10px -6px rgba(0,0,0,0.3);
+        display: none; box-sizing: border-box; text-align: left;
+      }
+      #teacher-console.show { display: block; }
+      #teacher-console h4 { margin: 0 0 8px 0; color: #38bdf8; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; }
+      #teacher-console .close-btn { background: transparent; border: none; color: #94a3b8; font-size: 20px; cursor: pointer; padding: 0 4px; line-height: 1; }
+      #teacher-console .close-btn:hover { color: #f1f5f9; }
+      #teacher-console table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
+      #teacher-console td { padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.08); color: #e2e8f0; }
+      #teacher-console .lbl { font-weight: 600; color: #94a3b8; }
+      #teacher-console .val { font-weight: 700; text-align: right; color: #38bdf8; word-break: break-all; }
+      #teacher-console .prefill-btn { width: 100%; margin-top: 12px; background: #0284c7; border: none; border-radius: 6px; padding: 8px; color: #fff; font-size: 12px; font-weight: 700; cursor: pointer; transition: background .15s; }
+      #teacher-console .prefill-btn:hover { background: #0369a1; }
+
     </style>
     <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css" />
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
@@ -1966,6 +1988,112 @@
       buildTrail();
       updateProgress();
       recalcAll();
+
+      function toggleGradingConsole() {
+        const el = document.getElementById('teacher-console');
+        if (el) {
+          el.classList.toggle('show');
+          if (el.classList.contains('show')) updateGradingAnswers();
+        }
+      }
+      
+      function prefillGradingConsole() {
+        const presets = {"bed-len": 12, "bed-wid": 6};
+        for (const [id, val] of Object.entries(presets)) {
+          const el = document.getElementById(id);
+          if (el) {
+            el.value = val;
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+            el.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+        }
+        // Also prefill student calculation answers
+        if (document.getElementById('student-gcf-input')) {
+          document.getElementById('student-gcf-input').value = document.getElementById('student-gcf-input').min || 1;
+          document.getElementById('student-gcf-input').dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        if (document.getElementById('student-lcm-input')) {
+          document.getElementById('student-lcm-input').value = document.getElementById('student-lcm-input').min || 1;
+          document.getElementById('student-lcm-input').dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        updateGradingAnswers();
+      }
+      
+      function updateGradingAnswers() {
+        try {
+          const resolver = function() {
+            
+          const l = parseFloat(document.getElementById('bed-len').value) || 12;
+          const w = parseFloat(document.getElementById('bed-wid').value) || 6;
+          const area = l * w;
+          const rate = 3.25; // Soil cost rate
+          return {
+            'Bed Length': l + ' ft',
+            'Bed Width': w + ' ft',
+            'Expected Bed Area': area.toFixed(2) + ' sq ft',
+            'Expected Soil Cost ($3.25/sq ft)': '$' + (area * rate).toFixed(2)
+          };
+        
+          };
+          const ans = resolver();
+          const body = document.getElementById('teacher-answers-body');
+          if (body && ans) {
+            body.innerHTML = Object.entries(ans).map(([k, v]) => `
+              <tr>
+                <td class="lbl">${k}</td>
+                <td class="val">${v}</td>
+              </tr>
+            `).join('');
+          }
+        } catch(e) {
+          console.error("Grading resolver error", e);
+        }
+      }
+      
+      // Wire up key listener (Ctrl+Shift+T) and triple click on h1
+      document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 't') {
+          e.preventDefault();
+          toggleGradingConsole();
+        }
+      });
+      
+      document.addEventListener('DOMContentLoaded', function() {
+        const titleEl = document.querySelector('.hero h1');
+        if (titleEl) {
+          let clicks = 0;
+          titleEl.addEventListener('click', function() {
+            clicks++;
+            if (clicks >= 3) {
+              toggleGradingConsole();
+              clicks = 0;
+            }
+            setTimeout(() => { clicks = 0; }, 1000);
+          });
+        }
+        // Re-calculate answers when input event fires
+        document.addEventListener('input', function(e) {
+          const inputs = ["bed-len", "bed-wid"];
+          if (inputs.includes(e.target.id)) {
+            updateGradingAnswers();
+          }
+        });
+      });
+
     </script>
+  
+    <!-- ====== HIDDEN TEACHER GRADING CONSOLE ====== -->
+    <div id="teacher-console" class="no-print">
+      <h4>
+        <span>🔑 Teacher Grading Console</span>
+        <button class="close-btn" onclick="toggleGradingConsole()">×</button>
+      </h4>
+      <p style="font-size:11px;color:#94a3b8;margin:0 0 10px;">Calculated dynamically based on student inputs:</p>
+      <table>
+        <tbody id="teacher-answers-body"></tbody>
+      </table>
+      <button class="prefill-btn" onclick="prefillGradingConsole()">Prefill Sample Answers</button>
+    </div>
+
   </body>
 </html>
